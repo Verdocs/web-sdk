@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+button.test {
+  color: #fff;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: #5a5767;
+  border: 1px solid #ccc;
+}
+
+#pdf-container canvas {
+  max-width: 100%;
+}
