@@ -13,7 +13,8 @@ const angularValueAccessorBindings: ValueAccessorConfig[] = [
 
 export const config: Config = {
   namespace: 'verdocs-web-sdk',
-  outputTargets: [
+  buildEs5: true,
+  outputTargets:  [
     angularOutputTarget({
       componentCorePackage: 'verdocs-web-sdk',
       directivesProxyFile: '../verdocs-web-sdk-angular/src/directives/proxies.ts',

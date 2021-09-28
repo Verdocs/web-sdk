@@ -4,22 +4,19 @@
     "allowUnreachableCode": false,
     "declaration": false,
     "experimentalDecorators": true,
-    "lib": [
-      "dom",
-      "es2017"
-    ],
+    "lib": ["dom", "es2015", "es2017"],
     "moduleResolution": "node",
     "module": "esnext",
-    "target": "es2017",
+    "target": "es2018",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "jsx": "react",
-    "jsxFactory": "h"
+    "jsxFactory": "h",
+    "preserveConstEnums": true,
+    "resolveJsonModule": true,
+    "stripInternal": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src", "./typings.d.ts"],
+  "typeRoots": ["node_modules/@types", "./typings.d.ts"],
+  "exclude": ["node_modules", "dist-stencil", "dist-storybook"]
 }
