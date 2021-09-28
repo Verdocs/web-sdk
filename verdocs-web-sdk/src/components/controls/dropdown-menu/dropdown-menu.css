@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+.arrow {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 26px;
+  border-radius: 4px;
+  background: #fff;
+
+  border: 1px solid #ccc;
+}
+
+.arrow svg {
+  width: 16px;
+  margin-top: -8px;
+  color: #50BE80;
+}

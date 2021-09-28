@@ -5,7 +5,14 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { MenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
 export namespace Components {
+    interface DropdownMenu {
+        /**
+          * The menu options to display
+         */
+        "options": MenuOption[];
+    }
     interface MyComponent {
         /**
           * The first name
@@ -38,6 +45,12 @@ export namespace Components {
     }
 }
 declare global {
+    interface HTMLDropdownMenuElement extends Components.DropdownMenu, HTMLStencilElement {
+    }
+    var HTMLDropdownMenuElement: {
+        prototype: HTMLDropdownMenuElement;
+        new (): HTMLDropdownMenuElement;
+    };
     interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
     }
     var HTMLMyComponentElement: {
@@ -57,12 +70,20 @@ declare global {
         new (): HTMLPdfViewerElement;
     };
     interface HTMLElementTagNameMap {
+        "dropdown-menu": HTMLDropdownMenuElement;
         "my-component": HTMLMyComponentElement;
         "org-popup": HTMLOrgPopupElement;
         "pdf-viewer": HTMLPdfViewerElement;
     }
 }
 declare namespace LocalJSX {
+    interface DropdownMenu {
+        "onSelectOption"?: (event: CustomEvent<MenuOption>) => void;
+        /**
+          * The menu options to display
+         */
+        "options"?: MenuOption[];
+    }
     interface MyComponent {
         /**
           * The first name
@@ -96,6 +117,7 @@ declare namespace LocalJSX {
         "src"?: string;
     }
     interface IntrinsicElements {
+        "dropdown-menu": DropdownMenu;
         "my-component": MyComponent;
         "org-popup": OrgPopup;
         "pdf-viewer": PdfViewer;
@@ -105,6 +127,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "dropdown-menu": LocalJSX.DropdownMenu & JSXBase.HTMLAttributes<HTMLDropdownMenuElement>;
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
             "org-popup": LocalJSX.OrgPopup & JSXBase.HTMLAttributes<HTMLOrgPopupElement>;
             "pdf-viewer": LocalJSX.PdfViewer & JSXBase.HTMLAttributes<HTMLPdfViewerElement>;

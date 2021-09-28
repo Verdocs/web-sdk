@@ -24,6 +24,8 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@stencil/core": "^2.8.1",
     "pdfjs-dist": "2.5.207"
   },
