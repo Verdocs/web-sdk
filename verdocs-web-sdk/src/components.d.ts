@@ -20,6 +20,12 @@ export namespace Components {
          */
         "middle": string;
     }
+    interface OrgPopup {
+        /**
+          * The organization to display
+         */
+        "organization": any;
+    }
     interface PdfViewer {
         /**
           * Rotate the PDF in degrees {number}
@@ -38,6 +44,12 @@ declare global {
         prototype: HTMLMyComponentElement;
         new (): HTMLMyComponentElement;
     };
+    interface HTMLOrgPopupElement extends Components.OrgPopup, HTMLStencilElement {
+    }
+    var HTMLOrgPopupElement: {
+        prototype: HTMLOrgPopupElement;
+        new (): HTMLOrgPopupElement;
+    };
     interface HTMLPdfViewerElement extends Components.PdfViewer, HTMLStencilElement {
     }
     var HTMLPdfViewerElement: {
@@ -46,6 +58,7 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "my-component": HTMLMyComponentElement;
+        "org-popup": HTMLOrgPopupElement;
         "pdf-viewer": HTMLPdfViewerElement;
     }
 }
@@ -64,6 +77,12 @@ declare namespace LocalJSX {
          */
         "middle"?: string;
     }
+    interface OrgPopup {
+        /**
+          * The organization to display
+         */
+        "organization"?: any;
+    }
     interface PdfViewer {
         "onPageChange"?: (event: CustomEvent<number>) => void;
         "onPageRendered"?: (event: CustomEvent<number>) => void;
@@ -78,6 +97,7 @@ declare namespace LocalJSX {
     }
     interface IntrinsicElements {
         "my-component": MyComponent;
+        "org-popup": OrgPopup;
         "pdf-viewer": PdfViewer;
     }
 }
@@ -86,6 +106,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "org-popup": LocalJSX.OrgPopup & JSXBase.HTMLAttributes<HTMLOrgPopupElement>;
             "pdf-viewer": LocalJSX.PdfViewer & JSXBase.HTMLAttributes<HTMLPdfViewerElement>;
         }
     }

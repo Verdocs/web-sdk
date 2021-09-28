@@ -1,4 +1,4 @@
-# my-component
+# org-popup
 
 Test docs
 
