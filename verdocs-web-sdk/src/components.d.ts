@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { MenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
+import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
 export namespace Components {
     interface DropdownMenu {
         /**
@@ -15,7 +15,7 @@ export namespace Components {
         /**
           * The menu options to display
          */
-        "options": MenuOption[];
+        "options": IMenuOption[];
     }
     interface MyComponent {
         /**
@@ -85,7 +85,7 @@ declare namespace LocalJSX {
         /**
           * Called when a menu option is clicked
          */
-        "onSelectOption"?: (event: CustomEvent<MenuOption>) => void;
+        "onSelectOption"?: (event: CustomEvent<IMenuOption>) => void;
         /**
           * If set, the component will be open by default
          */
@@ -93,7 +93,7 @@ declare namespace LocalJSX {
         /**
           * The menu options to display
          */
-        "options"?: MenuOption[];
+        "options"?: IMenuOption[];
     }
     interface MyComponent {
         /**

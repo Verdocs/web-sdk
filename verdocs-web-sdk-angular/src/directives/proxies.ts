@@ -5,6 +5,29 @@ import { ProxyCmp, proxyOutputs } from './angular-component-lib/utils';
 
 import { Components } from 'verdocs-web-sdk';
 
+import { DropdownMenu as IDropdownMenu } from 'verdocs-web-sdk/dist/custom-elements/components/controls/dropdown-menu/dropdown-menu';
+export declare interface DropdownMenu extends Components.DropdownMenu {}
+@ProxyCmp({
+  inputs: ['open', 'options']
+})
+@Component({
+  selector: 'dropdown-menu',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['open', 'options'],
+  outputs: ['selectOption']
+})
+export class DropdownMenu {
+  /** Called when a menu option is clicked */
+  selectOption!: IDropdownMenu['selectOption'];
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['selectOption']);
+  }
+}
+
 
 export declare interface MyComponent extends Components.MyComponent {}
 @ProxyCmp({
@@ -17,6 +40,25 @@ export declare interface MyComponent extends Components.MyComponent {}
   inputs: ['first', 'last', 'middle']
 })
 export class MyComponent {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface OrgPopup extends Components.OrgPopup {}
+@ProxyCmp({
+  inputs: ['organization']
+})
+@Component({
+  selector: 'org-popup',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['organization']
+})
+export class OrgPopup {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();

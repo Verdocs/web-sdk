@@ -42,7 +42,13 @@ export const config: Config = {
       type: 'dist-custom-elements-bundle',
     },
     {
+      // dir: '../docs',
       type: 'docs-readme',
+      footer: '*[Verdocs](https://verdocs.com/)*',
+    },
+    {
+      type: 'docs-vscode',
+      file: 'dist/custom-elements.json'
     },
     {
       type: 'www',

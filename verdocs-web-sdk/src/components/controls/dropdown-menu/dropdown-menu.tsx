@@ -3,7 +3,7 @@ import SortDown from './down-arrow.svg';
 // import {icon} from '@fortawesome/fontawesome-svg-core';
 // <div className="arrow" innerHTML={icon({ prefix: 'fas', iconName: 'sort-down' }).html[0]}/>
 
-export interface MenuOption {
+export interface IMenuOption {
   label: string;
   id?: any;
   faIcon?: any;
@@ -19,7 +19,7 @@ export class DropdownMenu {
   /**
    * The menu options to display
    */
-  @Prop() options: MenuOption[];
+  @Prop() options: IMenuOption[];
 
   /**
    * If set, the component will be open by default
@@ -34,7 +34,7 @@ export class DropdownMenu {
   /**
    * Called when a menu option is clicked
    */
-  @Event() selectOption: EventEmitter<MenuOption>;
+  @Event() selectOption: EventEmitter<IMenuOption>;
 
   componentWillLoad() {
     this.isOpen = !!this.open;
@@ -43,7 +43,7 @@ export class DropdownMenu {
   render() {
     return (
       <div class={{open: !!this.isOpen}}>
-        <button class="arrow" innerHTML={SortDown} onClick={() => (this.isOpen = !this.isOpen)} />
+        <button class="arrow" innerHTML={SortDown} onClick={() => (this.isOpen = !this.isOpen)} aria-label="Open Menu" />
 
         <div class="items">
           {this.options?.map(option => (

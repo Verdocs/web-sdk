@@ -30,4 +30,18 @@ working example.
 
 ### Creating components
 
-To create or update a component
+To create or update a component it is best to use the generator command:
+
+    npm run generate
+
+When asked, provide a kebab-style component name, and leave the Stylesheet/Spec/E2E options enabled (the default). This will generate
+the required skeleton files for you in `src/components`. Move the folder created to the appropriate subdirectory:
+
+- `controls` - Low level UI controls such as drop-downs, buttons, etc. UI controls should be 100% independent from one another. If
+  a control requires data to operate properly, it should be passed in as a property (controls should not call the API directly).
+- `elements` - Elements are widgets that combine one or more controls and potentially additional business logic into a functional unit,
+  such as a search result entry, a Template preview "card", or a document "actions" menu (with appropriate logic to hide/show certain
+  options that may not be available based on the document's state). Elements are more complex than simple controls, but still require the
+  parent to provide some data, control, and business logic.
+- `embeds` - Embeds are fully functional "mini-apps". If provided with appropriate configurations (e.g API endpoints and authorization
+  details) they can be used to represent entire experiences such as document preview, document signing, or search.

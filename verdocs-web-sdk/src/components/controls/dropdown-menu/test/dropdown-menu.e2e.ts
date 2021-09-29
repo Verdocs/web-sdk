@@ -12,7 +12,7 @@ describe('dropdown-menu', () => {
 
     await page.setContent('<dropdown-menu open></dropdown-menu>');
     const component = await page.find('dropdown-menu');
-    component.setProperty('options', [{label: 'Test'}]);
+    component.setProperty('options', [{label: 'Test 1'}, {label: 'Test Disabled', disabled: true}, {label: 'Test 2'}]);
 
     await page.waitForChanges();
 

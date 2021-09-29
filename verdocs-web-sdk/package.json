@@ -16,7 +16,8 @@
   ],
   "scripts": {
     "build": "stencil build --docs",
-    "start": "stencil build --dev --watch --serve --es5",
+    "serve": "stencil build --dev --watch --serve --es5",
+    "start": "stencil build --dev --watch --docs --es5",
     "test": "stencil test --spec --e2e --screenshot",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
@@ -32,6 +33,7 @@
     "@stencil/angular-output-target": "0.0.7",
     "@stencil/react-output-target": "0.1.0",
     "@storybook/addon-actions": "^6.3.8",
+    "@storybook/addon-docs": "^6.3.8",
     "@storybook/addon-essentials": "^6.3.8",
     "@storybook/addon-links": "^6.3.8",
     "@storybook/web-components": "^6.3.8",

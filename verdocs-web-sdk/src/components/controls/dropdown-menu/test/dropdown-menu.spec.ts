@@ -1,5 +1,5 @@
 import {newSpecPage} from '@stencil/core/testing';
-import {DropdownMenu} from './dropdown-menu';
+import {DropdownMenu} from '../dropdown-menu';
 
 describe('dropdown-menu', () => {
   it('renders', async () => {
