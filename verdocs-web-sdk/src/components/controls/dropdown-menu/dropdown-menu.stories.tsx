@@ -15,11 +15,12 @@ export default {
   title: 'Controls/Dropdown Menu',
   // Hint to help the docs addon find the component
   component: 'dropdown-menu',
-  // Here we can apply overrides to component property documentation. Note that we don't need to (and shouldn't) specify every field
-  // here. Only those that need special attention.
+  // We can apply default args only shown in Storybook as follows
   args: {
     options: [{label: 'Option 1'}, {label: 'Disabled Option', disabled: true}, {label: 'Option 2'}],
   },
+  // Here we can apply overrides to component property documentation. Note that we don't need to (and shouldn't) specify every field
+  // here. Only those that need special attention.
   argTypes: {
     optionSelected: {action: 'optionSelected'},
     // optionSelected: {action: 'onOptionSelected'},
