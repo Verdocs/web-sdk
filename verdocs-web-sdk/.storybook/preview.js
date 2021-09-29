@@ -21,7 +21,7 @@ export const parameters = {
     },
   },
   // Automatically consider args that start with 'on' to be actions
-  actions: {argTypesRegex: '^on.*'},
+  // actions: {argTypesRegex: '^on.*'},
   viewMode: 'docs',
   docs: {
     iframeHeight: 500,

@@ -20,7 +20,8 @@
 }
 
 .arrow svg {
-  color: #50be80;
+  fill: #50be80;
+  transition: 0.3s;
 }
 
 .items {
@@ -49,9 +50,27 @@
   background: #50be80;
 }
 
+.option[disabled] {
+  color: #aaa;
+}
+
+.option[disabled]:hover {
+  color: #aaa;
+  cursor: inherit;
+  background: transparent;
+}
+
 .open .items {
   display: block;
 }
 
 .open .arrow {
+  background: #4c56cb;
+  border: 1px solid #707ae5;
+}
+
+.open .arrow svg {
+  /*transform: rotate(180deg);*/
+  transform: scaleY(-1);
+  fill: #fff;
 }

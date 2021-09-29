@@ -13,7 +13,7 @@ export namespace Components {
          */
         "options": IMenuOption[];
         /**
-          * If set, the component will reserve space for demom-display purposesd
+          * If set, the component will reserve space for Storybook-display purposes.
          */
         "tall": boolean;
     }
@@ -83,7 +83,7 @@ declare global {
 declare namespace LocalJSX {
     interface DropdownMenu {
         /**
-          * Called when a menu option is clicked
+          * Event fired when a menu option is clicked.
          */
         "onOptionSelected"?: (event: CustomEvent<IMenuOption>) => void;
         /**
@@ -91,7 +91,7 @@ declare namespace LocalJSX {
          */
         "options"?: IMenuOption[];
         /**
-          * If set, the component will reserve space for demom-display purposesd
+          * If set, the component will reserve space for Storybook-display purposes.
          */
         "tall"?: boolean;
     }

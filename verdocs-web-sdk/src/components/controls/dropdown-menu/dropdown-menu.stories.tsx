@@ -1,5 +1,6 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
+// import {action} from '@storybook/addon-actions';
 
 // This component is heavily commented so it can be used as a reference for developing other components. Please use the comments here
 // as a guide / resource, but do not copy them to new components (so we don't create a maintenance hassle). If you copy this component
@@ -16,12 +17,12 @@ export default {
   component: 'dropdown-menu',
   // Here we can apply overrides to component property documentation. Note that we don't need to (and shouldn't) specify every field
   // here. Only those that need special attention.
+  args: {
+    options: [{label: 'Option 1'}, {label: 'Disabled Option', disabled: true}, {label: 'Option 2'}],
+  },
   argTypes: {
-    options: {
-      defaultValue: [{label: 'Option 1'}, {label: 'Disabled Option', disabled: true}, {label: 'Option 2'}],
-    },
-
-    // optionSelected: {action: 'optionSelected'},
+    optionSelected: {action: 'optionSelected'},
+    // optionSelected: {action: 'onOptionSelected'},
 
     // Here we take advantage of "hidden" properties to make an undocumented feature. We will allow "tall" to be set as an
     // attribute to force the component to set a fixed height on its host container. (See the CSS for how this is applied.)

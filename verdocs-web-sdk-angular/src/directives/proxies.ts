@@ -18,7 +18,7 @@ export declare interface DropdownMenu extends Components.DropdownMenu {}
   outputs: ['optionSelected']
 })
 export class DropdownMenu {
-  /** Called when a menu option is clicked */
+  /** Event fired when a menu option is clicked. */
   optionSelected!: IDropdownMenu['optionSelected'];
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
