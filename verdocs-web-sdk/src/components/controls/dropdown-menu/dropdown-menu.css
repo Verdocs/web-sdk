@@ -3,6 +3,10 @@
   position: relative;
 }
 
+:host([tall]) {
+  height: 160px;
+}
+
 .arrow {
   width: 32px;
   height: 26px;
@@ -22,7 +26,6 @@
 .items {
   left: 0;
   top: 32px;
-  z-index: -1;
   width: 200px;
   display: none;
   position: absolute;
@@ -31,7 +34,7 @@
   border: 1px solid #654dcb;
 }
 
-.item {
+.option {
   width: 100%;
   color: #fff;
   border: none;
@@ -41,7 +44,7 @@
   padding: 10px 20px;
 }
 
-.item:hover {
+.option:hover {
   cursor: pointer;
   background: #50be80;
 }

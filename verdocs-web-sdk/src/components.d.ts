@@ -9,13 +9,13 @@ import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
 export namespace Components {
     interface DropdownMenu {
         /**
-          * If set, the component will be open by default
-         */
-        "open": boolean;
-        /**
-          * The menu options to display
+          * The menu options to display.
          */
         "options": IMenuOption[];
+        /**
+          * If set, the component will reserve space for demom-display purposesd
+         */
+        "tall": boolean;
     }
     interface MyComponent {
         /**
@@ -85,15 +85,15 @@ declare namespace LocalJSX {
         /**
           * Called when a menu option is clicked
          */
-        "onSelectOption"?: (event: CustomEvent<IMenuOption>) => void;
+        "onOptionSelected"?: (event: CustomEvent<IMenuOption>) => void;
         /**
-          * If set, the component will be open by default
-         */
-        "open"?: boolean;
-        /**
-          * The menu options to display
+          * The menu options to display.
          */
         "options"?: IMenuOption[];
+        /**
+          * If set, the component will reserve space for demom-display purposesd
+         */
+        "tall"?: boolean;
     }
     interface MyComponent {
         /**

@@ -23,4 +23,4 @@ Test
 
 ----------------------------------------------
 
-*[Verdocs](https://verdocs.com/)*
+*Built with [StencilJS](https://stenciljs.com/)*

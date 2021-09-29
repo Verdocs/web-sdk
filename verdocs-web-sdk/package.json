@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
+    "@pxtrn/storybook-addon-docs-stencil": "^1.0.0",
     "@stencil/angular-output-target": "0.0.7",
     "@stencil/react-output-target": "0.1.0",
     "@storybook/addon-actions": "^6.3.8",
