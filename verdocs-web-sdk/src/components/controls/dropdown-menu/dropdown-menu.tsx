@@ -38,6 +38,11 @@ export class DropdownMenu {
   @Prop() options: IMenuOption[] = [];
 
   /**
+   * If set, the component will belopen by default. This is primarily intended to be used for testing.
+   */
+  @Prop() open: boolean;
+
+  /**
    * If set, the component will reserve space for Storybook-display purposes.
    */
   @Prop() tall: boolean;
@@ -51,6 +56,10 @@ export class DropdownMenu {
    * Event fired when a menu option is clicked.
    */
   @Event() optionSelected: EventEmitter<IMenuOption> = null;
+
+  componentWillLoad() {
+    this.isOpen = !!this.open;
+  }
 
   handleSelectOption(option: IMenuOption) {
     this.isOpen = false;

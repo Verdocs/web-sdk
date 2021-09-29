@@ -9,6 +9,10 @@ import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
 export namespace Components {
     interface DropdownMenu {
         /**
+          * If set, the component will belopen by default. This is primarily intended to be used for testing.
+         */
+        "open": boolean;
+        /**
           * The menu options to display.
          */
         "options": IMenuOption[];
@@ -86,6 +90,10 @@ declare namespace LocalJSX {
           * Event fired when a menu option is clicked.
          */
         "onOptionSelected"?: (event: CustomEvent<IMenuOption>) => void;
+        /**
+          * If set, the component will belopen by default. This is primarily intended to be used for testing.
+         */
+        "open"?: boolean;
         /**
           * The menu options to display.
          */

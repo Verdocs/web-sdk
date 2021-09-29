@@ -38,4 +38,5 @@ export default {
 } as Meta;
 
 // See https://lit-html.polymer-project.org/guide/template-reference "Binding Types" for an explanation of '.' vs '@'
-export const DropdownMenu = ({options, optionSelected}) => html`<dropdown-menu .options=${options} @optionSelected=${optionSelected} tall />`;
+export const Default = ({options, optionSelected}) => html`<dropdown-menu .options=${options} @optionSelected=${optionSelected} tall />`;
+export const Open = ({options, optionSelected}) => html`<dropdown-menu .options=${options} @optionSelected=${optionSelected} tall open />`;

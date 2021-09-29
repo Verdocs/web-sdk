@@ -8,13 +8,13 @@ import { Components } from 'verdocs-web-sdk';
 import { DropdownMenu as IDropdownMenu } from 'verdocs-web-sdk/dist/custom-elements/components/controls/dropdown-menu/dropdown-menu';
 export declare interface DropdownMenu extends Components.DropdownMenu {}
 @ProxyCmp({
-  inputs: ['options', 'tall']
+  inputs: ['open', 'options', 'tall']
 })
 @Component({
   selector: 'dropdown-menu',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['options', 'tall'],
+  inputs: ['open', 'options', 'tall'],
   outputs: ['optionSelected']
 })
 export class DropdownMenu {
