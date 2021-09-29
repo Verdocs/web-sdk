@@ -1,4 +1,5 @@
 import {Config} from '@stencil/core';
+import {inlineSvg} from 'stencil-inline-svg';
 import {reactOutputTarget} from '@stencil/react-output-target';
 import {angularOutputTarget, ValueAccessorConfig} from '@stencil/angular-output-target';
 
@@ -14,7 +15,15 @@ const angularValueAccessorBindings: ValueAccessorConfig[] = [
 export const config: Config = {
   namespace: 'verdocs-web-sdk',
   buildEs5: true,
-  outputTargets:  [
+  devServer: {
+    openBrowser: false,
+  },
+  testing: {
+    transform: {
+      '^.+\\.svg$': 'jest-svg-transformer',
+    },
+  },
+  outputTargets: [
     angularOutputTarget({
       componentCorePackage: 'verdocs-web-sdk',
       directivesProxyFile: '../verdocs-web-sdk-angular/src/directives/proxies.ts',
@@ -40,4 +49,5 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
+  plugins: [inlineSvg()],
 };

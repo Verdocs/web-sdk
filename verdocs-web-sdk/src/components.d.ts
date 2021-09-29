@@ -9,6 +9,10 @@ import { MenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
 export namespace Components {
     interface DropdownMenu {
         /**
+          * If set, the component will be open by default
+         */
+        "open": boolean;
+        /**
           * The menu options to display
          */
         "options": MenuOption[];
@@ -78,7 +82,14 @@ declare global {
 }
 declare namespace LocalJSX {
     interface DropdownMenu {
+        /**
+          * Called when a menu option is clicked
+         */
         "onSelectOption"?: (event: CustomEvent<MenuOption>) => void;
+        /**
+          * If set, the component will be open by default
+         */
+        "open"?: boolean;
         /**
           * The menu options to display
          */

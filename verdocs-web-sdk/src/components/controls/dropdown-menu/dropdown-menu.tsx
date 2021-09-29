@@ -1,5 +1,7 @@
-import {Component, Prop, h, Event, EventEmitter} from '@stencil/core';
-import {icon} from '@fortawesome/fontawesome-svg-core';
+import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
+import SortDown from './down-arrow.svg';
+// import {icon} from '@fortawesome/fontawesome-svg-core';
+// <div className="arrow" innerHTML={icon({ prefix: 'fas', iconName: 'sort-down' }).html[0]}/>
 
 export interface MenuOption {
   label: string;
@@ -20,17 +22,36 @@ export class DropdownMenu {
   @Prop() options: MenuOption[];
 
   /**
-   *
+   * If set, the component will be open by default
+   */
+  @Prop() open: boolean;
+
+  /**
+   * If set, the component will be open by default
+   */
+  @State() isOpen: boolean;
+
+  /**
+   * Called when a menu option is clicked
    */
   @Event() selectOption: EventEmitter<MenuOption>;
 
+  componentWillLoad() {
+    this.isOpen = !!this.open;
+  }
+
   render() {
     return (
-      <div>
-        <div class="arrow" innerHTML={icon({prefix: 'fas', iconName: 'sort-down'}).html[0]} />
-        {this.options.map(option => (
-          <div onClick={() => this.selectOption.emit(option)}>{option.label}</div>
-        ))}
+      <div class={{open: !!this.isOpen}}>
+        <button class="arrow" innerHTML={SortDown} onClick={() => (this.isOpen = !this.isOpen)} />
+
+        <div class="items">
+          {this.options?.map(option => (
+            <button onClick={() => this.selectOption.emit(option)} class="item" disabled={option.disabled}>
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
     );
   }

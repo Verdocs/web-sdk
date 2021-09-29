@@ -13,7 +13,9 @@ console.log('[PDFVIEWER] Loading PDF-JS', {PDF_WORKER_URL, CMAPS_URL});
 
 // pdf.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
 // pdf.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJSversion}/pdf.worker.min.js`;
-pdf.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
+
+// TODO: Re-enable this
+// pdf.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 
 // export interface PDFViewerEvent {
 //   type: 'click';

@@ -11,7 +11,8 @@ describe('dropdown-menu', () => {
       <dropdown-menu>
         <mock:shadow-root>
           <div>
-            Hello, World! I'm
+            <button class="arrow"></button>
+            <div class="items"></div>
           </div>
         </mock:shadow-root>
       </dropdown-menu>
@@ -21,13 +22,14 @@ describe('dropdown-menu', () => {
   it('renders with values', async () => {
     const {root} = await newSpecPage({
       components: [DropdownMenu],
-      html: `<dropdown-menu first="Stencil" last="'Don't call me a framework' JS"></dropdown-menu>`,
+      html: `<dropdown-menu></dropdown-menu>`,
     });
     expect(root).toEqualHtml(`
-      <dropdown-menu first="Stencil" last="'Don't call me a framework' JS">
+      <dropdown-menu>
         <mock:shadow-root>
           <div>
-            Hello, World! I'm Stencil 'Don't call me a framework' JS
+             <button class="arrow"></button>
+              <div class="items"></div>
           </div>
         </mock:shadow-root>
       </dropdown-menu>

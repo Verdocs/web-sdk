@@ -1,32 +1,22 @@
 import {newE2EPage} from '@stencil/core/testing';
 
 describe('dropdown-menu', () => {
-  it('renders', async () => {
+  it('renders a placeholder with no options', async () => {
     const page = await newE2EPage();
-
     await page.setContent('<dropdown-menu></dropdown-menu>');
-    const element = await page.find('dropdown-menu');
-    expect(element).toHaveClass('hydrated');
+    await page.compareScreenshot('Closed', {fullPage: false});
   });
 
   it('renders changes to the name data', async () => {
     const page = await newE2EPage();
 
-    await page.setContent('<dropdown-menu></dropdown-menu>');
+    await page.setContent('<dropdown-menu open></dropdown-menu>');
     const component = await page.find('dropdown-menu');
-    const element = await page.find('dropdown-menu >>> div');
-    expect(element.textContent).toEqual(`Hello, World! I'm `);
+    component.setProperty('options', [{label: 'Test'}]);
 
-    component.setProperty('first', 'James');
     await page.waitForChanges();
-    expect(element.textContent).toEqual(`Hello, World! I'm James`);
 
-    component.setProperty('last', 'Quincy');
-    await page.waitForChanges();
-    expect(element.textContent).toEqual(`Hello, World! I'm James Quincy`);
-
-    component.setProperty('middle', 'Earl');
-    await page.waitForChanges();
-    expect(element.textContent).toEqual(`Hello, World! I'm James Earl Quincy`);
+    const results = await page.compareScreenshot('Opened', {fullPage: false});
+    expect(results).toMatchScreenshot({allowableMismatchedRatio: 0.05});
   });
 });

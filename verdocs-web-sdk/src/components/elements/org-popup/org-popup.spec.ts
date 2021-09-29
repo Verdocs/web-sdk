@@ -22,9 +22,9 @@ describe('org-popup', () => {
       html: `<org-popup organization={{ name: "Test" }}></org-popup>`,
     });
     expect(root).toEqualHtml(`
-      <org-popup>
+      <org-popup organization={{ name: "Test" }}>
         <mock:shadow-root>
-          <div>Test</div>
+          <div></div>
         </mock:shadow-root>
       </org-popup>
     `);

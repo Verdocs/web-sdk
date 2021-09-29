@@ -10,7 +10,7 @@ describe('pdf-viewer', () => {
     expect(page.root).toEqualHtml(`
       <pdf-viewer>
         <mock:shadow-root>
-          <slot></slot>
+           <div id="pdf-container"></div>
         </mock:shadow-root>
       </pdf-viewer>
     `);

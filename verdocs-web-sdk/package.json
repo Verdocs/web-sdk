@@ -17,15 +17,13 @@
   "scripts": {
     "build": "stencil build --docs",
     "start": "stencil build --dev --watch --serve --es5",
-    "test": "stencil test --spec --e2e",
+    "test": "stencil test --spec --e2e --screenshot",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@stencil/core": "^2.8.1",
     "pdfjs-dist": "2.5.207"
   },
@@ -37,14 +35,16 @@
     "@storybook/addon-essentials": "^6.3.8",
     "@storybook/addon-links": "^6.3.8",
     "@storybook/web-components": "^6.3.8",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^26.0.24",
     "@types/pdfjs-dist": "^2.7.5",
     "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^9.0.1",
-    "jest": "^27.2.2",
-    "jest-cli": "^27.2.2",
+    "jest": "^26.6.3",
+    "jest-cli": "^26.6.3",
+    "jest-svg-transformer": "^1.0.0",
     "lit-html": "^2.0.0",
     "puppeteer": "^10.4.0",
+    "stencil-inline-svg": "^1.1.0",
     "typescript": "^4.4.3",
     "write-file-webpack-plugin": "^4.5.1"
   },
