@@ -32,6 +32,10 @@ export namespace Components {
           * The organization to display
          */
         "organization": any;
+        /**
+          * The "theme" to be used
+         */
+        "theme": "light" | "dark";
     }
     interface PdfViewer {
         /**
@@ -103,6 +107,10 @@ declare namespace LocalJSX {
           * The organization to display
          */
         "organization"?: any;
+        /**
+          * The "theme" to be used
+         */
+        "theme"?: "light" | "dark";
     }
     interface PdfViewer {
         "onPageChange"?: (event: CustomEvent<number>) => void;
