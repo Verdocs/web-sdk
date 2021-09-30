@@ -1,3 +1,94 @@
 :host {
   display: block;
 }
+
+.container {
+  width: 230px;
+  height: 60px;
+  background-color: #33364b;
+  border-radius: 5px;
+  border: 1px solid #f5f5fa;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.container:hover > .popup {
+  display: flex;
+  background: #ffffff;
+  color: #33364b;
+  box-shadow: 1px 0px 3px 0px #33364b;
+}
+
+.icon {
+  flex: 1;
+  margin-left: 15px;
+  margin-right: 0px;
+}
+
+.icon svg {
+  width: 24px;
+  color: #ffffff;
+  margin-bottom: -5px;
+}
+
+.content {
+  color: #fff;
+  flex: 4;
+  font-family: sans-serif;
+}
+
+.popup {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: none;
+  border-radius: 5px;
+  width: 240px;
+  height: 120px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-evenly;
+  font-family: sans-serif;
+}
+
+.popup-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  justify-content: space-evenly;
+  font-size: 18px;
+  color: #4c56cb;
+}
+
+.popup-body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.popup-body span {
+  display: block;
+  flex: 2 80px;
+  margin-left: 7px;
+}
+
+.popup-body span:last-child {
+  margin-top: 5px;
+}
+
+.status {
+  width: 20px;
+  height: 20px;
+  background-color: #aeb4bf;
+  border-radius: 50%;
+}
+
+
