@@ -1,6 +1,13 @@
 import {Component, Prop, h} from '@stencil/core';
-import {icon} from '@fortawesome/fontawesome-svg-core';
+import UserGroup from './user-group.svg';
 
+/**
+ * Display a pop-up describing the company that was hovered over
+ *
+ * ```typescript
+ *
+ * ```
+ */
 @Component({
   tag: 'org-popup',
   styleUrl: 'org-popup.css',
@@ -20,7 +27,7 @@ export class OrgPopup {
   render() {
     return (
       <div class="container">
-        <span class="icon" innerHTML={icon({prefix: 'fas', iconName: 'users'}).html[0]}/>
+        <span class="icon" innerHTML={UserGroup}/>
         <span class="content">{this.organization?.name}</span>
         <div class="popup">
           <div class="popup-header">
