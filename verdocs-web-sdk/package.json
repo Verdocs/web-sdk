@@ -25,6 +25,7 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "@popperjs/core": "^2.10.2",
     "@stencil/core": "^2.8.1",
     "pdfjs-dist": "2.5.207"
   },
@@ -33,11 +34,11 @@
     "@pxtrn/storybook-addon-docs-stencil": "^1.0.0",
     "@stencil/angular-output-target": "0.0.7",
     "@stencil/react-output-target": "0.1.0",
-    "@storybook/addon-actions": "^6.3.8",
-    "@storybook/addon-docs": "^6.3.8",
-    "@storybook/addon-essentials": "^6.3.8",
-    "@storybook/addon-links": "^6.3.8",
-    "@storybook/web-components": "^6.3.8",
+    "@storybook/addon-actions": "^6.3.9",
+    "@storybook/addon-docs": "^6.3.9",
+    "@storybook/addon-essentials": "^6.3.9",
+    "@storybook/addon-links": "^6.3.9",
+    "@storybook/web-components": "^6.3.9",
     "@types/jest": "^26.0.24",
     "@types/pdfjs-dist": "^2.7.5",
     "babel-loader": "^8.2.2",

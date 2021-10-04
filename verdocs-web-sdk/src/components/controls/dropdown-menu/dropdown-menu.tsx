@@ -1,5 +1,6 @@
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import SortDown from './down-arrow.svg';
+import {createPopper, Instance} from '@popperjs/core';
 
 export interface IMenuOption {
   label: string;
@@ -32,13 +33,17 @@ export interface IMenuOption {
   shadow: true,
 })
 export class DropdownMenu {
+  private dropdownButton?: HTMLButtonElement;
+  private dropdownMenu?: HTMLDivElement;
+  private popper?: Instance;
+
   /**
    * The menu options to display.
    */
   @Prop() options: IMenuOption[] = [];
 
   /**
-   * If set, the component will belopen by default. This is primarily intended to be used for testing.
+   * If set, the component will be open by default. This is primarily intended to be used for testing.
    */
   @Prop() open: boolean;
 
@@ -61,17 +66,61 @@ export class DropdownMenu {
     this.isOpen = !!this.open;
   }
 
+  componentDidLoad() {
+    this.popper = createPopper(this.dropdownButton, this.dropdownMenu, {placement: 'bottom-start', modifiers: [{name: 'offset', options: {offset: [0, 10]}}]});
+  }
+
   handleSelectOption(option: IMenuOption) {
     this.isOpen = false;
     this.optionSelected?.emit(option);
   }
 
+  // See https://popper.js.org/docs/v2/tutorial/
+  // What we're doing here is clearing event listeners when they aren't needed, to increase performance in lists
+  showDropdown() {
+    this.isOpen = true;
+    this.dropdownMenu.setAttribute('data-show', '');
+    this.dropdownMenu.removeAttribute('aria-hidden');
+
+    this.popper?.setOptions(options => ({
+      ...options,
+      modifiers: [...options.modifiers, {name: 'eventListeners', enabled: true}],
+    }));
+
+    this.popper?.update();
+  }
+
+  hideDropdown() {
+    this.isOpen = false;
+    this.dropdownMenu.removeAttribute('data-show');
+    this.dropdownMenu.setAttribute('aria-hidden', 'true');
+    this.popper?.setOptions(options => ({
+      ...options,
+      modifiers: [...options.modifiers, {name: 'eventListeners', enabled: false}],
+    }));
+  }
+
+  toggleDropdown() {
+    if (this.isOpen) {
+      this.hideDropdown();
+    } else {
+      this.showDropdown();
+    }
+  }
+
   render() {
     return (
       <div class={{open: !!this.isOpen}}>
-        <button class="arrow" innerHTML={SortDown} onClick={() => (this.isOpen = !this.isOpen)} aria-label="Open Menu" />
+        <button
+          class="arrow"
+          innerHTML={SortDown}
+          aria-label="Open Menu"
+          onClick={() => this.toggleDropdown()}
+          onBlur={() => this.hideDropdown()}
+          ref={el => (this.dropdownButton = el as HTMLButtonElement)}
+        />
 
-        <div class="items" aria-hidden={!this.isOpen}>
+        <div class="items" aria-hidden={!this.open} ref={el => (this.dropdownMenu = el as HTMLDivElement)}>
           {this.options?.map(option => (
             <button onClick={() => this.handleSelectOption(option)} class="option" disabled={option.disabled}>
               {option.label}

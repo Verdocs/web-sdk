@@ -50,13 +50,13 @@ export class MyComponent {
 
 export declare interface OrgPopup extends Components.OrgPopup {}
 @ProxyCmp({
-  inputs: ['organization']
+  inputs: ['organization', 'theme']
 })
 @Component({
   selector: 'org-popup',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['organization']
+  inputs: ['organization', 'theme']
 })
 export class OrgPopup {
   protected el: HTMLElement;

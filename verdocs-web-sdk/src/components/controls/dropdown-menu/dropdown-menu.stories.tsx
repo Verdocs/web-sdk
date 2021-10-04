@@ -1,6 +1,6 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
-// import {action} from '@storybook/addon-actions';
+import {action} from '@storybook/addon-actions';
 
 // This component is heavily commented so it can be used as a reference for developing other components. Please use the comments here
 // as a guide / resource, but do not copy them to new components (so we don't create a maintenance hassle). If you copy this component
@@ -37,6 +37,13 @@ export default {
   },
 } as Meta;
 
+const listener = {
+  handleEvent(e) {
+    action('selected', e);
+  },
+  capture: true,
+};
+
 // See https://lit-html.polymer-project.org/guide/template-reference "Binding Types" for an explanation of '.' vs '@'
-export const Default = ({options, optionSelected}) => html`<dropdown-menu .options=${options} @optionSelected=${optionSelected} tall />`;
-export const Open = ({options, optionSelected}) => html`<dropdown-menu .options=${options} @optionSelected=${optionSelected} tall open />`;
+export const Default = ({options}) => html`<dropdown-menu .options=${options} @optionSelected=${listener} tall />`;
+export const Open = ({options}) => html`<dropdown-menu .options=${options} @optionSelected=${listener} tall open />`;

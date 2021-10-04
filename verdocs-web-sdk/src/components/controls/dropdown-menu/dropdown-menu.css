@@ -14,9 +14,8 @@
   border-radius: 4px;
   align-items: center;
   display: inline-flex;
-  justify-content: center;
-
   border: 1px solid #ccc;
+  justify-content: center;
 }
 
 .arrow svg {
@@ -25,14 +24,15 @@
 }
 
 .items {
-  left: 0;
-  top: 32px;
   width: 200px;
   display: none;
-  position: absolute;
   border-radius: 5px;
   background: #33364b;
   border: 1px solid #654dcb;
+}
+
+.items[data-show] {
+  display: block;
 }
 
 .option {
