@@ -1,0 +1,22 @@
+.container {
+  width: 195px;
+  height: 72px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  background-color: #33364b;
+  font-family: sans-serif;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.icon {
+  margin-right: 15px;
+}
+
+svg {
+  height: 32px;
+  width: 32px;
+}
