@@ -2,6 +2,9 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 import {action} from '@storybook/addon-actions';
 
+/**
+ * Display a list of saved searches.
+ */
 export default {
   title: 'Elements/Search/Saved',
   component: 'search-saved',

@@ -6,7 +6,18 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
+import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
 export namespace Components {
+    interface DocumentStatusIndicator {
+        /**
+          * The status to display
+         */
+        "status": 'finished' | 'complete' | 'pending' | 'in-progress' | 'declined' | 'cancelled';
+        /**
+          * The "theme" to be used
+         */
+        "theme": 'light' | 'dark';
+    }
     interface DropdownMenu {
         /**
           * If set, the component will be open by default. This is primarily intended to be used for testing.
@@ -20,20 +31,6 @@ export namespace Components {
           * If set, the component will reserve space for Storybook-display purposes.
          */
         "tall": boolean;
-    }
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first": string;
-        /**
-          * The last name
-         */
-        "last": string;
-        /**
-          * The middle name
-         */
-        "middle": string;
     }
     interface OrgPopup {
         /**
@@ -55,19 +52,63 @@ export namespace Components {
          */
         "src": string;
     }
+    interface SearchBox {
+    }
+    interface SearchEmbed {
+    }
+    interface SearchQuickFunctions {
+    }
+    interface SearchRecent {
+    }
+    interface SearchSaved {
+    }
+    interface SearchStarred {
+    }
+    interface SearchTabs {
+    }
+    interface TagsIndicator {
+        /**
+          * The tags to display
+         */
+        "tags": any[];
+        /**
+          * The "theme" to be used
+         */
+        "theme": "light" | "dark";
+    }
+    interface TemplateCard {
+        /**
+          * The template whose information is gonna be displayed
+         */
+        "template": any;
+        /**
+          * The "theme" to be used
+         */
+        "theme": "light" | "dark";
+    }
+    interface ToggleIconButtons {
+        /**
+          * The tags to display
+         */
+        "options": IToggleIconButtons;
+        /**
+          * The "theme" to be used
+         */
+        "theme": "light" | "dark";
+    }
 }
 declare global {
+    interface HTMLDocumentStatusIndicatorElement extends Components.DocumentStatusIndicator, HTMLStencilElement {
+    }
+    var HTMLDocumentStatusIndicatorElement: {
+        prototype: HTMLDocumentStatusIndicatorElement;
+        new (): HTMLDocumentStatusIndicatorElement;
+    };
     interface HTMLDropdownMenuElement extends Components.DropdownMenu, HTMLStencilElement {
     }
     var HTMLDropdownMenuElement: {
         prototype: HTMLDropdownMenuElement;
         new (): HTMLDropdownMenuElement;
-    };
-    interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
-    }
-    var HTMLMyComponentElement: {
-        prototype: HTMLMyComponentElement;
-        new (): HTMLMyComponentElement;
     };
     interface HTMLOrgPopupElement extends Components.OrgPopup, HTMLStencilElement {
     }
@@ -81,14 +122,94 @@ declare global {
         prototype: HTMLPdfViewerElement;
         new (): HTMLPdfViewerElement;
     };
+    interface HTMLSearchBoxElement extends Components.SearchBox, HTMLStencilElement {
+    }
+    var HTMLSearchBoxElement: {
+        prototype: HTMLSearchBoxElement;
+        new (): HTMLSearchBoxElement;
+    };
+    interface HTMLSearchEmbedElement extends Components.SearchEmbed, HTMLStencilElement {
+    }
+    var HTMLSearchEmbedElement: {
+        prototype: HTMLSearchEmbedElement;
+        new (): HTMLSearchEmbedElement;
+    };
+    interface HTMLSearchQuickFunctionsElement extends Components.SearchQuickFunctions, HTMLStencilElement {
+    }
+    var HTMLSearchQuickFunctionsElement: {
+        prototype: HTMLSearchQuickFunctionsElement;
+        new (): HTMLSearchQuickFunctionsElement;
+    };
+    interface HTMLSearchRecentElement extends Components.SearchRecent, HTMLStencilElement {
+    }
+    var HTMLSearchRecentElement: {
+        prototype: HTMLSearchRecentElement;
+        new (): HTMLSearchRecentElement;
+    };
+    interface HTMLSearchSavedElement extends Components.SearchSaved, HTMLStencilElement {
+    }
+    var HTMLSearchSavedElement: {
+        prototype: HTMLSearchSavedElement;
+        new (): HTMLSearchSavedElement;
+    };
+    interface HTMLSearchStarredElement extends Components.SearchStarred, HTMLStencilElement {
+    }
+    var HTMLSearchStarredElement: {
+        prototype: HTMLSearchStarredElement;
+        new (): HTMLSearchStarredElement;
+    };
+    interface HTMLSearchTabsElement extends Components.SearchTabs, HTMLStencilElement {
+    }
+    var HTMLSearchTabsElement: {
+        prototype: HTMLSearchTabsElement;
+        new (): HTMLSearchTabsElement;
+    };
+    interface HTMLTagsIndicatorElement extends Components.TagsIndicator, HTMLStencilElement {
+    }
+    var HTMLTagsIndicatorElement: {
+        prototype: HTMLTagsIndicatorElement;
+        new (): HTMLTagsIndicatorElement;
+    };
+    interface HTMLTemplateCardElement extends Components.TemplateCard, HTMLStencilElement {
+    }
+    var HTMLTemplateCardElement: {
+        prototype: HTMLTemplateCardElement;
+        new (): HTMLTemplateCardElement;
+    };
+    interface HTMLToggleIconButtonsElement extends Components.ToggleIconButtons, HTMLStencilElement {
+    }
+    var HTMLToggleIconButtonsElement: {
+        prototype: HTMLToggleIconButtonsElement;
+        new (): HTMLToggleIconButtonsElement;
+    };
     interface HTMLElementTagNameMap {
+        "document-status-indicator": HTMLDocumentStatusIndicatorElement;
         "dropdown-menu": HTMLDropdownMenuElement;
-        "my-component": HTMLMyComponentElement;
         "org-popup": HTMLOrgPopupElement;
         "pdf-viewer": HTMLPdfViewerElement;
+        "search-box": HTMLSearchBoxElement;
+        "search-embed": HTMLSearchEmbedElement;
+        "search-quick-functions": HTMLSearchQuickFunctionsElement;
+        "search-recent": HTMLSearchRecentElement;
+        "search-saved": HTMLSearchSavedElement;
+        "search-starred": HTMLSearchStarredElement;
+        "search-tabs": HTMLSearchTabsElement;
+        "tags-indicator": HTMLTagsIndicatorElement;
+        "template-card": HTMLTemplateCardElement;
+        "toggle-icon-buttons": HTMLToggleIconButtonsElement;
     }
 }
 declare namespace LocalJSX {
+    interface DocumentStatusIndicator {
+        /**
+          * The status to display
+         */
+        "status"?: 'finished' | 'complete' | 'pending' | 'in-progress' | 'declined' | 'cancelled';
+        /**
+          * The "theme" to be used
+         */
+        "theme"?: 'light' | 'dark';
+    }
     interface DropdownMenu {
         /**
           * Event fired when a menu option is clicked.
@@ -106,20 +227,6 @@ declare namespace LocalJSX {
           * If set, the component will reserve space for Storybook-display purposes.
          */
         "tall"?: boolean;
-    }
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-        /**
-          * The middle name
-         */
-        "middle"?: string;
     }
     interface OrgPopup {
         /**
@@ -143,21 +250,85 @@ declare namespace LocalJSX {
          */
         "src"?: string;
     }
+    interface SearchBox {
+    }
+    interface SearchEmbed {
+    }
+    interface SearchQuickFunctions {
+    }
+    interface SearchRecent {
+    }
+    interface SearchSaved {
+    }
+    interface SearchStarred {
+    }
+    interface SearchTabs {
+    }
+    interface TagsIndicator {
+        /**
+          * The tags to display
+         */
+        "tags"?: any[];
+        /**
+          * The "theme" to be used
+         */
+        "theme"?: "light" | "dark";
+    }
+    interface TemplateCard {
+        /**
+          * The template whose information is gonna be displayed
+         */
+        "template"?: any;
+        /**
+          * The "theme" to be used
+         */
+        "theme"?: "light" | "dark";
+    }
+    interface ToggleIconButtons {
+        /**
+          * The tags to display
+         */
+        "options"?: IToggleIconButtons;
+        /**
+          * The "theme" to be used
+         */
+        "theme"?: "light" | "dark";
+    }
     interface IntrinsicElements {
+        "document-status-indicator": DocumentStatusIndicator;
         "dropdown-menu": DropdownMenu;
-        "my-component": MyComponent;
         "org-popup": OrgPopup;
         "pdf-viewer": PdfViewer;
+        "search-box": SearchBox;
+        "search-embed": SearchEmbed;
+        "search-quick-functions": SearchQuickFunctions;
+        "search-recent": SearchRecent;
+        "search-saved": SearchSaved;
+        "search-starred": SearchStarred;
+        "search-tabs": SearchTabs;
+        "tags-indicator": TagsIndicator;
+        "template-card": TemplateCard;
+        "toggle-icon-buttons": ToggleIconButtons;
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "document-status-indicator": LocalJSX.DocumentStatusIndicator & JSXBase.HTMLAttributes<HTMLDocumentStatusIndicatorElement>;
             "dropdown-menu": LocalJSX.DropdownMenu & JSXBase.HTMLAttributes<HTMLDropdownMenuElement>;
-            "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
             "org-popup": LocalJSX.OrgPopup & JSXBase.HTMLAttributes<HTMLOrgPopupElement>;
             "pdf-viewer": LocalJSX.PdfViewer & JSXBase.HTMLAttributes<HTMLPdfViewerElement>;
+            "search-box": LocalJSX.SearchBox & JSXBase.HTMLAttributes<HTMLSearchBoxElement>;
+            "search-embed": LocalJSX.SearchEmbed & JSXBase.HTMLAttributes<HTMLSearchEmbedElement>;
+            "search-quick-functions": LocalJSX.SearchQuickFunctions & JSXBase.HTMLAttributes<HTMLSearchQuickFunctionsElement>;
+            "search-recent": LocalJSX.SearchRecent & JSXBase.HTMLAttributes<HTMLSearchRecentElement>;
+            "search-saved": LocalJSX.SearchSaved & JSXBase.HTMLAttributes<HTMLSearchSavedElement>;
+            "search-starred": LocalJSX.SearchStarred & JSXBase.HTMLAttributes<HTMLSearchStarredElement>;
+            "search-tabs": LocalJSX.SearchTabs & JSXBase.HTMLAttributes<HTMLSearchTabsElement>;
+            "tags-indicator": LocalJSX.TagsIndicator & JSXBase.HTMLAttributes<HTMLTagsIndicatorElement>;
+            "template-card": LocalJSX.TemplateCard & JSXBase.HTMLAttributes<HTMLTemplateCardElement>;
+            "toggle-icon-buttons": LocalJSX.ToggleIconButtons & JSXBase.HTMLAttributes<HTMLToggleIconButtonsElement>;
         }
     }
 }

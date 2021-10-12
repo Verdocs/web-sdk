@@ -5,6 +5,25 @@ import { ProxyCmp, proxyOutputs } from './angular-component-lib/utils';
 
 import { Components } from 'verdocs-web-sdk';
 
+
+export declare interface DocumentStatusIndicator extends Components.DocumentStatusIndicator {}
+@ProxyCmp({
+  inputs: ['status', 'theme']
+})
+@Component({
+  selector: 'document-status-indicator',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['status', 'theme']
+})
+export class DocumentStatusIndicator {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
 import { DropdownMenu as IDropdownMenu } from 'verdocs-web-sdk/dist/custom-elements/components/controls/dropdown-menu/dropdown-menu';
 export declare interface DropdownMenu extends Components.DropdownMenu {}
 @ProxyCmp({
@@ -25,25 +44,6 @@ export class DropdownMenu {
     c.detach();
     this.el = r.nativeElement;
     proxyOutputs(this, this.el, ['optionSelected']);
-  }
-}
-
-
-export declare interface MyComponent extends Components.MyComponent {}
-@ProxyCmp({
-  inputs: ['first', 'last', 'middle']
-})
-@Component({
-  selector: 'my-component',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['first', 'last', 'middle']
-})
-export class MyComponent {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
   }
 }
 
@@ -88,5 +88,174 @@ export class PdfViewer {
     c.detach();
     this.el = r.nativeElement;
     proxyOutputs(this, this.el, ['pageRendered', 'pageChange']);
+  }
+}
+
+
+export declare interface SearchBox extends Components.SearchBox {}
+
+@Component({
+  selector: 'search-box',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class SearchBox {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface SearchEmbed extends Components.SearchEmbed {}
+
+@Component({
+  selector: 'search-embed',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class SearchEmbed {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface SearchQuickFunctions extends Components.SearchQuickFunctions {}
+
+@Component({
+  selector: 'search-quick-functions',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class SearchQuickFunctions {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface SearchRecent extends Components.SearchRecent {}
+
+@Component({
+  selector: 'search-recent',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class SearchRecent {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface SearchSaved extends Components.SearchSaved {}
+
+@Component({
+  selector: 'search-saved',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class SearchSaved {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface SearchStarred extends Components.SearchStarred {}
+
+@Component({
+  selector: 'search-starred',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class SearchStarred {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface SearchTabs extends Components.SearchTabs {}
+
+@Component({
+  selector: 'search-tabs',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class SearchTabs {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface TagsIndicator extends Components.TagsIndicator {}
+@ProxyCmp({
+  inputs: ['tags', 'theme']
+})
+@Component({
+  selector: 'tags-indicator',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['tags', 'theme']
+})
+export class TagsIndicator {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface TemplateCard extends Components.TemplateCard {}
+@ProxyCmp({
+  inputs: ['template', 'theme']
+})
+@Component({
+  selector: 'template-card',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['template', 'theme']
+})
+export class TemplateCard {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface ToggleIconButtons extends Components.ToggleIconButtons {}
+@ProxyCmp({
+  inputs: ['options', 'theme']
+})
+@Component({
+  selector: 'toggle-icon-buttons',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['options', 'theme']
+})
+export class ToggleIconButtons {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
   }
 }

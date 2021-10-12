@@ -2,6 +2,9 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 import {action} from '@storybook/addon-actions';
 
+/**
+ * Display a set of tabs to filter by searchable content types.
+ */
 export default {
   title: 'Elements/Search/Tabs',
   component: 'search-tabs',

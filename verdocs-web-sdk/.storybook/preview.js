@@ -1,7 +1,14 @@
-// import {fas} from '@fortawesome/free-solid-svg-icons';
-// import {library} from '@fortawesome/fontawesome-svg-core';
-
-// library.add(fas);
+import {setupWorker} from 'msw';
+import {handlers} from './mocks';
+export const worker = setupWorker(...handlers);
+worker
+  .start()
+  .then(() => {
+    console.log('Started MSW');
+  })
+  .catch(e => {
+    console.warn('Unable to start MSW', e);
+  });
 
 import {defineCustomElements} from '../dist/esm/loader';
 defineCustomElements();
