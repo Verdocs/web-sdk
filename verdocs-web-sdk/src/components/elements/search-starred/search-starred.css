@@ -1,3 +1,64 @@
 :host {
   display: block;
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 490px;
+  background-color: #1e2031;
+  text-transform: uppercase;
+  padding: 10px;
+  font-family: sans-serif;
+  color: #ffffff;
+}
+
+.title {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 53px;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  margin-top: 58px;
+  align-items: flex-start;
+}
+
+.item {
+  background: transparent;
+  border: none;
+  height: 70px;
+  display: flex;
+  align-items: center;
+}
+
+.item:not(:last-child) {
+  margin-bottom: 58px;
+}
+
+.item svg {
+  fill: #707ae5;
+  width: 30px;
+  height: 30px;
+  margin-right: 26px;
+}
+
+.item .item-title {
+  font-size: 28px;
+  font-family: 'Roboto';
+  font-weight: 400;
+  line-height: 33px;
+  color: #ffffff;
+}
+
+.item .item-pages, .item-recipients {
+  font-size: 22px;
+  font-family: sans-serif;
+  font-weight: 500;
+  line-height: 23px;
+  color: #aeb4bf;
+}
