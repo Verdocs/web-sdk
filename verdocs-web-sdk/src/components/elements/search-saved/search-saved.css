@@ -1,3 +1,52 @@
 :host {
   display: block;
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 470px;
+  background-color: #1e2031;
+  text-transform: uppercase;
+  padding: 10px;
+  font-family: sans-serif;
+  color: #ffffff;
+}
+
+.title {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 53px;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  margin-top: 58px;
+  align-items: flex-start;
+}
+
+.button {
+  background: transparent;
+  border: none;
+  height: 35px;
+  font-size: 28px;
+  font-family: sans-serif;
+  color: #ffffff;
+  line-height: 34px;
+  display: flex;
+  align-items: center;
+}
+
+.button:not(:last-child) {
+  margin-bottom: 36px;
+}
+
+.button svg {
+  fill: #707ae5;
+  width: 28px;
+  height: 28px;
+  margin-right: 26px;
+}
