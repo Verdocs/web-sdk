@@ -12,7 +12,7 @@ const dummyData = [
     pages: 1,
     recipients: 2
   }, { 
-    params: {q: 'AGNT Verdocs MSA & QA', type: 'template'}, 
+    params: {q: 'AGNT Verdocs MSA', type: 'template'}, 
     recipients: [ 'Pierce Alizadeh', 'Patrick Haney' ]
   }, { 
     params: {q: 'Verdocs Template', type: 'template'}, 

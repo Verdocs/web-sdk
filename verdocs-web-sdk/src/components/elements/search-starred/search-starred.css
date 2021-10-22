@@ -25,40 +25,59 @@
   flex-direction: column;
   flex-wrap: nowrap;
   margin-top: 58px;
-  align-items: flex-start;
 }
 
 .item {
   background: transparent;
   border: none;
-  height: 70px;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(10,  1fr);
+  grid-template-rows: repeat(2, 35px);
   align-items: center;
+  justify-items: flex-start;
+  text-align: left;
+}
+
+.item:hover {
+  cursor: pointer;
 }
 
 .item:not(:last-child) {
   margin-bottom: 58px;
 }
 
-.item svg {
+.item .item-icon {
+  margin-right: 26px;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.item-icon svg {
   fill: #707ae5;
   width: 30px;
   height: 30px;
-  margin-right: 26px;
 }
 
 .item .item-title {
   font-size: 28px;
-  font-family: 'Roboto';
+  font-family: sans-serif;
   font-weight: 400;
   line-height: 33px;
   color: #ffffff;
+  grid-column: 2/10;
+  grid-row: 1;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.item .item-pages, .item-recipients {
+.item .item-info {
   font-size: 22px;
   font-family: sans-serif;
   font-weight: 500;
   line-height: 23px;
   color: #aeb4bf;
+  grid-column: 2/10;
+  grid-row: 2;
 }

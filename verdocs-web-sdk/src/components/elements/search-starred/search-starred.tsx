@@ -39,14 +39,13 @@ export class SearchStarred {
           <p class="title">My Starred Items</p>
           <div class="items">
             {this.options?.map(option => (
-              <button class="item" innerHTML={DocumentIcon} onClick={() => this.handleSelectOption(option)} >
+              <button class="item" onClick={() => this.handleSelectOption(option)} >
+                <span class="item-icon" innerHTML={DocumentIcon} />
                 <span class="item-title">{option.params.q}</span>
-                {option.pages ? 
-                  (<span class="item-pages">{this.computePagesText(option.pages)}</span>) : '' 
-                }
-                {option.recipients ? 
-                  (<span class="item-recipients">{this.computeRecipientsText(option.recipients)}</span>) : ''
-                }
+                <span class="item-info">
+                  {option.pages ? `${this.computePagesText(option.pages)} ` : ''}
+                  {option.recipients ? this.computeRecipientsText(option.recipients) : ''}
+                </span>
               </button>
             ))}
           </div>
