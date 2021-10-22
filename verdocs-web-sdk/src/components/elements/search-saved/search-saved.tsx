@@ -1,4 +1,6 @@
-import { Component, Host, h } from '@stencil/core';
+import { Component, Host, h, Prop } from '@stencil/core';
+
+import SearchIcon from './search-icon.svg'
 
 @Component({
   tag: 'search-saved',
@@ -6,11 +8,25 @@ import { Component, Host, h } from '@stencil/core';
   shadow: true,
 })
 export class SearchSaved {
+  @Prop() options: any;
+
+  handleSelectOption(option: any) {
+    console.log('option ', option, ' has been clicked!')
+  }
 
   render() {
     return (
       <Host>
-        <slot></slot>
+        <div class="container">
+          <p class="title">Saved Searches</p>
+          <div class="items">
+            {this.options?.map(option => (
+              <button class="button" innerHTML={SearchIcon} onClick={() => this.handleSelectOption(option)} >
+                {option.params.q}
+              </button>
+            ))}
+          </div>
+        </div>
       </Host>
     );
   }
