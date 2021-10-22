@@ -5,7 +5,11 @@ import {action} from '@storybook/addon-actions';
 export default {
   title: 'Elements/Search/Quick Functions',
   component: 'search-quick-functions',
-  args: {},
+  args: {
+    options: {
+      title: 'Quick Create'
+    }
+  },
   argTypes: {},
 } as Meta;
 
