@@ -125,11 +125,14 @@ export class SearchEmbed {
 
 
 export declare interface SearchQuickFunctions extends Components.SearchQuickFunctions {}
-
+@ProxyCmp({
+  inputs: ['options']
+})
 @Component({
   selector: 'search-quick-functions',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  inputs: ['options']
 })
 export class SearchQuickFunctions {
   protected el: HTMLElement;
@@ -141,11 +144,14 @@ export class SearchQuickFunctions {
 
 
 export declare interface SearchRecent extends Components.SearchRecent {}
-
+@ProxyCmp({
+  inputs: ['options']
+})
 @Component({
   selector: 'search-recent',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  inputs: ['options']
 })
 export class SearchRecent {
   protected el: HTMLElement;
@@ -157,11 +163,14 @@ export class SearchRecent {
 
 
 export declare interface SearchSaved extends Components.SearchSaved {}
-
+@ProxyCmp({
+  inputs: ['options']
+})
 @Component({
   selector: 'search-saved',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  inputs: ['options']
 })
 export class SearchSaved {
   protected el: HTMLElement;
@@ -173,11 +182,14 @@ export class SearchSaved {
 
 
 export declare interface SearchStarred extends Components.SearchStarred {}
-
+@ProxyCmp({
+  inputs: ['options']
+})
 @Component({
   selector: 'search-starred',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  inputs: ['options']
 })
 export class SearchStarred {
   protected el: HTMLElement;

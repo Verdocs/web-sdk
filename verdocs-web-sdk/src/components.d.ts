@@ -57,12 +57,16 @@ export namespace Components {
     interface SearchEmbed {
     }
     interface SearchQuickFunctions {
+        "options": any;
     }
     interface SearchRecent {
+        "options": any;
     }
     interface SearchSaved {
+        "options": any;
     }
     interface SearchStarred {
+        "options": any;
     }
     interface SearchTabs {
     }
@@ -255,12 +259,16 @@ declare namespace LocalJSX {
     interface SearchEmbed {
     }
     interface SearchQuickFunctions {
+        "options"?: any;
     }
     interface SearchRecent {
+        "options"?: any;
     }
     interface SearchSaved {
+        "options"?: any;
     }
     interface SearchStarred {
+        "options"?: any;
     }
     interface SearchTabs {
     }

@@ -1,7 +1,7 @@
 import {Component, Host, h, Prop} from '@stencil/core';
 import {getRecentSearches} from '@verdocs/js-sdk/dist/Search/Content';
 
-import SearchIcon from './search-icon.svg'
+import SearchIcon from './search-icon.svg';
 
 /**
  * Display a list of recent search queries.
@@ -12,7 +12,7 @@ import SearchIcon from './search-icon.svg'
   shadow: true,
 })
 export class SearchRecent {
-  private container: HTMLDivElement;
+  // private container: HTMLDivElement;
 
   @Prop() options: any;
 
@@ -27,17 +27,18 @@ export class SearchRecent {
   }
 
   handleSelectOption(option: any) {
-    console.log('option ', option, ' has been clicked!')
+    console.log('option ', option, ' has been clicked!');
   }
 
+  //         <div class="container" ref={el => (this.container = el as HTMLDivElement)} >
   render() {
     return (
       <Host>
-        <div class="container" ref={el => (this.container = el as HTMLDivElement)} >
+        <div class="container">
           <p class="title">Recent Searches</p>
           <div class="items">
             {this.options?.map(option => (
-              <button class="button" innerHTML={SearchIcon} onClick={() => this.handleSelectOption(option)} >
+              <button class="button" innerHTML={SearchIcon} onClick={() => this.handleSelectOption(option)}>
                 {option.params.q}
               </button>
             ))}
