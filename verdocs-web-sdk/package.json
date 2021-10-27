@@ -1,5 +1,5 @@
 {
-  "name": "verdocs-web-sdk",
+  "name": "@verdocs/web-sdk",
   "version": "1.0.1",
   "description": "Verdocs Web SDK",
   "license": "MIT",

@@ -1,9 +1,14 @@
 {
-  "name": "verdocs-web-sdk-react",
-  "sideEffects": false,
+  "name": "@verdocs/web-sdk-react",
   "version": "1.0.0",
-  "private": true,
-  "description": "React specific wrapper for component-library",
+  "description": "Verdocs Web SDK for React",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf dist",
@@ -11,12 +16,6 @@
     "tsc": "tsc -p .",
     "rollup": "rollup -c"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist/"
-  ],
   "devDependencies": {
     "@types/jest": "23.3.9",
     "@types/node": "^15.12.2",
@@ -30,7 +29,7 @@
     "typescript": "^3.3.4000"
   },
   "dependencies": {
-    "verdocs-web-sdk": "^1.0.0"
+    "verdocs-web-sdk": "^1.0.1"
   },
   "peerDependencies": {
     "react": "^16.7.0",

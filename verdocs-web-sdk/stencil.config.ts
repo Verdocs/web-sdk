@@ -25,12 +25,12 @@ export const config: Config = {
   },
   outputTargets: [
     angularOutputTarget({
-      componentCorePackage: 'verdocs-web-sdk',
+      componentCorePackage: '@verdocs/web-sdk',
       directivesProxyFile: '../verdocs-web-sdk-angular/src/directives/proxies.ts',
       valueAccessorConfigs: angularValueAccessorBindings,
     }),
     reactOutputTarget({
-      componentCorePackage: 'verdocs-web-sdk',
+      componentCorePackage: '@verdocs/web-sdk',
       proxiesFile: '../verdocs-web-sdk-react/src/components.ts',
       includeDefineCustomElements: true,
     }),

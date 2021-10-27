@@ -3,9 +3,9 @@
 /* auto-generated react proxies */
 import { createReactComponent } from './react-component-lib';
 
-import type { JSX } from 'verdocs-web-sdk';
+import type { JSX } from '@verdocs/web-sdk';
 
-import { defineCustomElements } from 'verdocs-web-sdk/loader';
+import { defineCustomElements } from '@verdocs/web-sdk/loader';
 
 defineCustomElements();
 export const DocumentStatusIndicator = /*@__PURE__*/createReactComponent<JSX.DocumentStatusIndicator, HTMLDocumentStatusIndicatorElement>('document-status-indicator');

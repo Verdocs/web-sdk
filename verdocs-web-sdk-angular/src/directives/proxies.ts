@@ -3,7 +3,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone } from '@angular/core';
 import { ProxyCmp, proxyOutputs } from './angular-component-lib/utils';
 
-import { Components } from 'verdocs-web-sdk';
+import { Components } from '@verdocs/web-sdk';
 
 
 export declare interface DocumentStatusIndicator extends Components.DocumentStatusIndicator {}
@@ -24,7 +24,7 @@ export class DocumentStatusIndicator {
   }
 }
 
-import { DropdownMenu as IDropdownMenu } from 'verdocs-web-sdk/dist/custom-elements/components/controls/dropdown-menu/dropdown-menu';
+import { DropdownMenu as IDropdownMenu } from '@verdocs/web-sdk/dist/custom-elements/components/controls/dropdown-menu/dropdown-menu';
 export declare interface DropdownMenu extends Components.DropdownMenu {}
 @ProxyCmp({
   inputs: ['open', 'options', 'tall']
@@ -67,7 +67,7 @@ export class OrgPopup {
   }
 }
 
-import { PdfViewer as IPdfViewer } from 'verdocs-web-sdk/dist/custom-elements/components/pdf-viewer/pdf-viewer';
+import { PdfViewer as IPdfViewer } from '@verdocs/web-sdk/dist/custom-elements/components/pdf-viewer/pdf-viewer';
 export declare interface PdfViewer extends Components.PdfViewer {}
 @ProxyCmp({
   inputs: ['rotation', 'src']
@@ -124,7 +124,7 @@ export class SearchEmbed {
   }
 }
 
-import { SearchQuickFunctions as ISearchQuickFunctions } from 'verdocs-web-sdk/dist/custom-elements/components/elements/search-quick-functions/search-quick-functions';
+import { SearchQuickFunctions as ISearchQuickFunctions } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-quick-functions/search-quick-functions';
 export declare interface SearchQuickFunctions extends Components.SearchQuickFunctions {}
 
 @Component({
@@ -146,7 +146,7 @@ export class SearchQuickFunctions {
   }
 }
 
-import { SearchRecent as ISearchRecent } from 'verdocs-web-sdk/dist/custom-elements/components/elements/search-recent/search-recent';
+import { SearchRecent as ISearchRecent } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-recent/search-recent';
 export declare interface SearchRecent extends Components.SearchRecent {}
 @ProxyCmp({
   inputs: ['limit']
@@ -169,7 +169,7 @@ export class SearchRecent {
   }
 }
 
-import { SearchSaved as ISearchSaved } from 'verdocs-web-sdk/dist/custom-elements/components/elements/search-saved/search-saved';
+import { SearchSaved as ISearchSaved } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-saved/search-saved';
 export declare interface SearchSaved extends Components.SearchSaved {}
 @ProxyCmp({
   inputs: ['limit']
