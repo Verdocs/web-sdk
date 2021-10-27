@@ -1,6 +1,6 @@
 {
   "name": "verdocs-web-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Verdocs Web SDK",
   "license": "MIT",
   "main": "dist/index.cjs.js",
@@ -23,7 +23,7 @@
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
     "storybook": "BROWSER=none start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public",
+    "build-storybook": "rm -rf storybook-static && build-storybook -s public",
     "copy-storybook": "cp -aR storybook-static ../../partner-portal/site/static/embeds"
   },
   "msw": {
