@@ -1,23 +1,19 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
-import {action} from '@storybook/addon-actions';
 
 export default {
   title: 'Elements/Search/Quick Functions',
   component: 'search-quick-functions',
   args: {
     options: {
-      title: 'Quick Create'
-    }
+      title: 'Quick Create',
+    },
   },
-  argTypes: {},
+  argTypes: {
+    createTemplate: {action: 'createTemplate'},
+    createDocument: {action: 'createDocument'},
+  },
 } as Meta;
 
-const listener = {
-  handleEvent(e) {
-    action('selected', e);
-  },
-  capture: true,
-};
-
-export const Default = ({options}) => html`<search-quick-functions .options=${options} @optionSelected=${listener} tall />`;
+export const Default = ({options, createTemplate, createDocument}) =>
+  html`<search-quick-functions .options=${options} @createTemplate=${createTemplate} @createDocument=${createDocument} tall />`;

@@ -6,6 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
+import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/dist/Search/Types";
 import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
 export namespace Components {
     interface DocumentStatusIndicator {
@@ -57,13 +58,18 @@ export namespace Components {
     interface SearchEmbed {
     }
     interface SearchQuickFunctions {
-        "options": any;
     }
     interface SearchRecent {
-        "options": any;
+        /**
+          * If set, limits the number of entries that will be shown. Note that there is a server-imposed limit of 20 entries that cannot currently be increased (only reduced).
+         */
+        "limit": number;
     }
     interface SearchSaved {
-        "options": any;
+        /**
+          * If set, limits the number of entries that will be shown. Note that there is a server-imposed limit of 20 entries that cannot currently be increased (only reduced).
+         */
+        "limit": number;
     }
     interface SearchStarred {
         "options": any;
@@ -216,7 +222,7 @@ declare namespace LocalJSX {
     }
     interface DropdownMenu {
         /**
-          * Event fired when a menu option is clicked.
+          * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
          */
         "onOptionSelected"?: (event: CustomEvent<IMenuOption>) => void;
         /**
@@ -259,13 +265,34 @@ declare namespace LocalJSX {
     interface SearchEmbed {
     }
     interface SearchQuickFunctions {
-        "options"?: any;
+        /**
+          * Event fired when an entry is clicked.
+         */
+        "onCreateDocument"?: (event: CustomEvent<any>) => void;
+        /**
+          * Event fired when an entry is clicked.
+         */
+        "onCreateTemplate"?: (event: CustomEvent<any>) => void;
     }
     interface SearchRecent {
-        "options"?: any;
+        /**
+          * If set, limits the number of entries that will be shown. Note that there is a server-imposed limit of 20 entries that cannot currently be increased (only reduced).
+         */
+        "limit"?: number;
+        /**
+          * Event fired when an entry is clicked.
+         */
+        "onEntrySelected"?: (event: CustomEvent<IRecentSearch>) => void;
     }
     interface SearchSaved {
-        "options"?: any;
+        /**
+          * If set, limits the number of entries that will be shown. Note that there is a server-imposed limit of 20 entries that cannot currently be increased (only reduced).
+         */
+        "limit"?: number;
+        /**
+          * Event fired when an entry is clicked.
+         */
+        "onEntrySelected"?: (event: CustomEvent<ISavedSearch>) => void;
     }
     interface SearchStarred {
         "options"?: any;

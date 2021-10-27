@@ -40,6 +40,10 @@
   align-items: center;
 }
 
+.button:hover {
+  cursor: pointer;
+}
+
 .button:not(:last-child) {
   margin-bottom: 36px;
 }
@@ -49,4 +53,14 @@
   width: 28px;
   height: 28px;
   margin-right: 26px;
+}
+
+.pill {
+  font-size: 14px;
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-right: 8px;
+  background-color: #999999;
+  color: #333;
 }

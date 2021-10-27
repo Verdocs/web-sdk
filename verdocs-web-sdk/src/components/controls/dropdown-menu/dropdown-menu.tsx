@@ -1,6 +1,6 @@
+import {createPopper, Instance} from '@popperjs/core';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import SortDown from './down-arrow.svg';
-import {createPopper, Instance} from '@popperjs/core';
 
 export interface IMenuOption {
   label: string;
@@ -59,8 +59,9 @@ export class DropdownMenu {
 
   /**
    * Event fired when a menu option is clicked.
+   * Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
    */
-  @Event() optionSelected: EventEmitter<IMenuOption> = null;
+  @Event({composed: true}) optionSelected: EventEmitter<IMenuOption>;
 
   componentWillLoad() {
     this.isOpen = !!this.open;
@@ -72,7 +73,7 @@ export class DropdownMenu {
 
   handleSelectOption(option: IMenuOption) {
     this.isOpen = false;
-    this.optionSelected?.emit(option);
+    this.optionSelected.emit(option);
   }
 
   // See https://popper.js.org/docs/v2/tutorial/

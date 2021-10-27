@@ -1,22 +1,46 @@
 import {rest} from 'msw';
 
 export const handlers = [
-  rest.post('https://stage-api.verdocs.com/search/recent', (req, res, ctx) => {
+  rest.get('https://stage-api.verdocs.com/search/history', (req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.delay(150),
       ctx.json({
-        searches: [
+        recent: [
           {
-            saved: false,
-            name: false,
-            lastSearched: '2021-10-04T16:14:11Z',
+            id: '311cb7ec-46fd-4bd1-9fd2-c33214b78744',
+            created_at: '2021-10-11T14:57:21Z',
+            updated_at: '2021-10-11T14:57:21Z',
+            profile_id: '4b2f21bc-ca2d-491f-b95f-0186a45f3ecf',
+            organization_id: 'b3b9cfc5-12a1-4b60-af05-cafc3e1275de',
             params: {q: 'w9'},
           },
           {
-            saved: false,
-            name: false,
-            lastSearched: '2021-10-02T08:45:52Z',
+            id: '9916a97e-53b6-4cd2-b339-522aac1d0ecc',
+            created_at: '2021-10-10T14:57:21Z',
+            updated_at: '2021-10-10T14:57:21Z',
+            profile_id: '4b2f21bc-ca2d-491f-b95f-0186a45f3ecf',
+            organization_id: 'b3b9cfc5-12a1-4b60-af05-cafc3e1275de',
+            params: {q: 'lease', type: 'template'},
+          },
+        ],
+        saved: [
+          {
+            id: '311cb7ec-46fd-4bd1-9fd2-c33214b78744',
+            created_at: '2021-10-11T14:57:21Z',
+            updated_at: '2021-10-11T14:57:21Z',
+            profile_id: '4b2f21bc-ca2d-491f-b95f-0186a45f3ecf',
+            organization_id: 'b3b9cfc5-12a1-4b60-af05-cafc3e1275de',
+            name: 'W9 Forms',
+            params: {q: 'w9'},
+          },
+          {
+            id: '9916a97e-53b6-4cd2-b339-522aac1d0ecc',
+            created_at: '2021-10-10T14:57:21Z',
+            updated_at: '2021-10-10T14:57:21Z',
+            profile_id: '4b2f21bc-ca2d-491f-b95f-0186a45f3ecf',
+            organization_id: 'b3b9cfc5-12a1-4b60-af05-cafc3e1275de',
+            name: 'Lease Templates',
             params: {q: 'lease', type: 'template'},
           },
         ],

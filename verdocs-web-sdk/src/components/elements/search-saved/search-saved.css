@@ -40,6 +40,10 @@
   align-items: center;
 }
 
+.button:hover {
+  cursor: pointer;
+}
+
 .button:not(:last-child) {
   margin-bottom: 36px;
 }

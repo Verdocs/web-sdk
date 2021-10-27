@@ -1,17 +1,41 @@
-import { Component, Host, h, Prop } from '@stencil/core';
+import {ISavedSearch} from '@verdocs/js-sdk/dist/Search/Types';
+import {getSearchHistory} from '@verdocs/js-sdk/dist/Search/Content';
+import {Component, Host, h, Prop, State, Event, EventEmitter} from '@stencil/core';
+import SearchIcon from './search-icon.svg';
 
-import SearchIcon from './search-icon.svg'
-
+/**
+ * Display a list of saved searches. Note that only some types of searches are automatically saved in the
+ * user's history (those that contain a unique `q` query string from the next-most-recent search.
+ */
 @Component({
   tag: 'search-saved',
   styleUrl: 'search-saved.css',
   shadow: true,
 })
 export class SearchSaved {
-  @Prop() options: any;
+  /**
+   * If set, limits the number of entries that will be shown. Note that there is a server-imposed limit of 20 entries
+   * that cannot currently be increased (only reduced).
+   */
+  @Prop() limit: number = 10;
 
-  handleSelectOption(option: any) {
-    console.log('option ', option, ' has been clicked!')
+  /**
+   * Event fired when an entry is clicked.
+   */
+  @Event({composed: true}) entrySelected: EventEmitter<ISavedSearch>;
+
+  @State() saved: ISavedSearch[] = [];
+
+  componentDidLoad() {
+    getSearchHistory()
+      .then(r => {
+        this.saved = r.saved;
+      })
+      .catch(e => console.warn('[Verdocs/search-saved] Error getting search history', e));
+  }
+
+  handleSelectEntry(entry: ISavedSearch) {
+    this.entrySelected.emit(entry);
   }
 
   render() {
@@ -20,9 +44,9 @@ export class SearchSaved {
         <div class="container">
           <p class="title">Saved Searches</p>
           <div class="items">
-            {this.options?.map(option => (
-              <button class="button" innerHTML={SearchIcon} onClick={() => this.handleSelectOption(option)} >
-                {option.params.q}
+            {this.saved.slice(0, this.limit).map(entry => (
+              <button class="button" innerHTML={SearchIcon} onClick={() => this.handleSelectEntry(entry)}>
+                {entry.name}
               </button>
             ))}
           </div>
@@ -30,5 +54,4 @@ export class SearchSaved {
       </Host>
     );
   }
-
 }

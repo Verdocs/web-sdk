@@ -37,7 +37,8 @@ export declare interface DropdownMenu extends Components.DropdownMenu {}
   outputs: ['optionSelected']
 })
 export class DropdownMenu {
-  /** Event fired when a menu option is clicked. */
+  /** Event fired when a menu option is clicked.
+Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks. */
   optionSelected!: IDropdownMenu['optionSelected'];
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
@@ -123,60 +124,71 @@ export class SearchEmbed {
   }
 }
 
-
+import { SearchQuickFunctions as ISearchQuickFunctions } from 'verdocs-web-sdk/dist/custom-elements/components/elements/search-quick-functions/search-quick-functions';
 export declare interface SearchQuickFunctions extends Components.SearchQuickFunctions {}
-@ProxyCmp({
-  inputs: ['options']
-})
+
 @Component({
   selector: 'search-quick-functions',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['options']
+  outputs: ['createTemplate', 'createDocument']
 })
 export class SearchQuickFunctions {
+  /** Event fired when an entry is clicked. */
+  createTemplate!: ISearchQuickFunctions['createTemplate'];
+  /** Event fired when an entry is clicked. */
+  createDocument!: ISearchQuickFunctions['createDocument'];
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['createTemplate', 'createDocument']);
   }
 }
 
-
+import { SearchRecent as ISearchRecent } from 'verdocs-web-sdk/dist/custom-elements/components/elements/search-recent/search-recent';
 export declare interface SearchRecent extends Components.SearchRecent {}
 @ProxyCmp({
-  inputs: ['options']
+  inputs: ['limit']
 })
 @Component({
   selector: 'search-recent',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['options']
+  inputs: ['limit'],
+  outputs: ['entrySelected']
 })
 export class SearchRecent {
+  /** Event fired when an entry is clicked. */
+  entrySelected!: ISearchRecent['entrySelected'];
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['entrySelected']);
   }
 }
 
-
+import { SearchSaved as ISearchSaved } from 'verdocs-web-sdk/dist/custom-elements/components/elements/search-saved/search-saved';
 export declare interface SearchSaved extends Components.SearchSaved {}
 @ProxyCmp({
-  inputs: ['options']
+  inputs: ['limit']
 })
 @Component({
   selector: 'search-saved',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['options']
+  inputs: ['limit'],
+  outputs: ['entrySelected']
 })
 export class SearchSaved {
+  /** Event fired when an entry is clicked. */
+  entrySelected!: ISearchSaved['entrySelected'];
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['entrySelected']);
   }
 }
 
