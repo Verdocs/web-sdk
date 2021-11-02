@@ -1,5 +1,5 @@
-import {IRecentSearch} from '@verdocs/js-sdk/dist/Search/Types';
-import {getSearchHistory} from '@verdocs/js-sdk/dist/Search/Content';
+import {IRecentSearch} from '@verdocs/js-sdk/Search/Types';
+import {getSearchHistory} from '@verdocs/js-sdk/Search/Content';
 import {Component, Host, h, Prop, State, Event, EventEmitter} from '@stencil/core';
 import SearchIcon from './search-icon.svg';
 
@@ -50,6 +50,7 @@ export class SearchRecent {
                 {entry.params.q}
               </button>
             ))}
+            {this.recent.length < 1 && <div class="empty">You do not have any recent searches.</div>}
           </div>
         </div>
       </Host>

@@ -6,7 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
-import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/dist/Search/Types";
+import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
 import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
 export namespace Components {
     interface DocumentStatusIndicator {

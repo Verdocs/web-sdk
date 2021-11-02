@@ -6,36 +6,36 @@
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  width: 470px;
+  width: 240px;
   background-color: #1e2031;
   text-transform: uppercase;
-  padding: 10px;
+  padding: 10px 10px 20px 10px;
   font-family: sans-serif;
   color: #ffffff;
 }
 
 .title {
-  font-size: 44px;
+  font-size: 22px;
   font-weight: 700;
-  line-height: 53px;
+  line-height: 30px;
 }
 
 .items {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  margin-top: 58px;
   align-items: flex-start;
+  margin-top: 20px;
 }
 
 .button {
   background: transparent;
   border: none;
-  height: 35px;
-  font-size: 28px;
+  height: 20px;
+  font-size: 16px;
   font-family: sans-serif;
   color: #ffffff;
-  line-height: 34px;
+  line-height: 26px;
   display: flex;
   align-items: center;
 }
@@ -53,4 +53,10 @@
   width: 28px;
   height: 28px;
   margin-right: 26px;
+}
+
+.empty {
+  text-transform: none;
+  line-height: 22px;
+  color: #ccc;
 }
