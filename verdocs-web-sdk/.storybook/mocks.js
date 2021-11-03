@@ -1,7 +1,10 @@
 import {rest} from 'msw';
+import {Transport} from '@verdocs/js-sdk/HTTP';
+
+Transport.Endpoint.defaults.baseURL = 'http://localhost:8080';
 
 export const handlers = [
-  rest.get('https://stage-api.verdocs.com/search/history', (req, res, ctx) => {
+  rest.get('http://localhost:8080/search/history', (req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.delay(150),
@@ -65,7 +68,7 @@ export const handlers = [
     // }
   }),
 
-  rest.post('https://stage-api.verdocs.com/search/saved', (req, res, ctx) => {
+  rest.post('http://localhost:8080/search/saved', (req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.delay(150),

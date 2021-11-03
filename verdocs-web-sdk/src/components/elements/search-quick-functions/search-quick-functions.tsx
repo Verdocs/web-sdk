@@ -34,10 +34,10 @@ export class SearchQuickFunctions {
       <Host>
         <div class="container">
           <p class="title">Quick Create</p>
-          <button onClick={() => this.handleCreateTemplate()} innerHTML={TemplateIcon} class="buttons">
+          <button onClick={() => this.handleCreateTemplate()} innerHTML={TemplateIcon}>
             Template
           </button>
-          <button onClick={() => this.handleCreateDocument()} innerHTML={DocumentIcon} class="buttons">
+          <button onClick={() => this.handleCreateDocument()} innerHTML={DocumentIcon}>
             Document
           </button>
         </div>
