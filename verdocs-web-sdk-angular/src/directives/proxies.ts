@@ -94,11 +94,14 @@ export class PdfViewer {
 
 import { SearchBox as ISearchBox } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-box/search-box';
 export declare interface SearchBox extends Components.SearchBox {}
-
+@ProxyCmp({
+  inputs: ['type']
+})
 @Component({
   selector: 'search-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
+  inputs: ['type'],
   outputs: ['search']
 })
 export class SearchBox {

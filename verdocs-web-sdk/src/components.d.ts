@@ -6,7 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
-import { ISearchEvent } from "./components/elements/search-box/search-box";
+import { ISearchEvent, TContentType } from "./components/elements/search-box/search-box";
 import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
 import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
 export namespace Components {
@@ -55,6 +55,7 @@ export namespace Components {
         "src": string;
     }
     interface SearchBox {
+        "type": TContentType;
     }
     interface SearchEmbed {
     }
@@ -266,6 +267,7 @@ declare namespace LocalJSX {
           * Event fired when the query value has changed.
          */
         "onSearch"?: (event: CustomEvent<ISearchEvent>) => void;
+        "type"?: TContentType;
     }
     interface SearchEmbed {
     }

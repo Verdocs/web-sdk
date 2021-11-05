@@ -1,19 +1,16 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
-import {action} from '@storybook/addon-actions';
 
 export default {
   title: 'Elements/Search/Search Box',
   component: 'search-box',
-  args: {},
-  argTypes: {},
+  args: {
+    type: 'all',
+  },
+  argTypes: {
+    search: {action: 'search'},
+    type: {type: 'string', control: 'radio', options: ['all', 'document', 'template', 'organization']},
+  },
 } as Meta;
 
-const listener = {
-  handleEvent(e) {
-    action('selected', e);
-  },
-  capture: true,
-};
-
-export const Default = ({options}) => html`<search-box .options=${options} @optionSelected=${listener} tall />`;
+export const Default = ({type, search}) => html`<search-box .type=${type} @search=${search} />`;

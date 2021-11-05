@@ -1,5 +1,6 @@
-import {Component, Host, h, State, Event, EventEmitter} from '@stencil/core';
+import {Component, Host, h, State, Event, EventEmitter, Prop} from '@stencil/core';
 import SearchIcon from './search.svg';
+import CloseIcon from './close.svg';
 
 export type TContentType = 'all' | 'document' | 'template' | 'organization';
 
@@ -13,6 +14,8 @@ export interface ISearchEvent {
   styleUrl: 'search-box.scss',
 })
 export class SearchBox {
+  @Prop() type: TContentType = 'all';
+
   @State() q: string;
 
   /**
@@ -22,8 +25,7 @@ export class SearchBox {
 
   handleSubmit(e) {
     e.preventDefault();
-    console.log(this.q);
-    this.search.emit({type: 'all', q: this.q});
+    this.search.emit({type: this.type, q: this.q});
   }
 
   handleChange(event) {
@@ -34,8 +36,13 @@ export class SearchBox {
     return (
       <Host>
         <form onSubmit={e => this.handleSubmit(e)}>
+          {this.type !== undefined && this.type !== 'all' && (
+            <span class="type">
+              {this.type}s <button class="remove" innerHTML={CloseIcon} />
+            </span>
+          )}
           <input type="text" placeholder="search documents, templates, people..." value={this.q} onInput={e => this.handleChange(e)} />
-          <button onClick={e => this.handleSubmit(e)}>
+          <button onClick={e => this.handleSubmit(e)} class="search">
             <span innerHTML={SearchIcon} />
             Search
           </button>
