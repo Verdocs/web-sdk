@@ -206,7 +206,7 @@ export class PdfViewer {
   // }
 
   componentDidLoad(): void {
-    this.pdfContainer = this.component.shadowRoot.getElementById('pdf-container') as HTMLDivElement;
+    this.pdfContainer = document.getElementById('verdocs-pdf-viewer-container') as HTMLDivElement;
     // this.canvas = this.component.shadowRoot.getElementById('pdf-canvas') as HTMLCanvasElement;
     // this.ctx = this.canvas.getContext('2d');
 
@@ -244,7 +244,7 @@ export class PdfViewer {
       <Host>
         {/*<button onClick={this.pagePrev.bind(this)}>Prev</button>*/}
         {/*<button onClick={this.pageNext.bind(this)}>Next</button>*/}
-        <div id="pdf-container" />
+        <div id="verdocs-pdf-viewer-container" />
         {/*<canvas id="pdf-canvas" />*/}
       </Host>
     );

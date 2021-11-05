@@ -96,18 +96,18 @@ import { ISearchEvent as ISearchBoxISearchEvent } from '@verdocs/web-sdk';
 import { TContentType as ISearchBoxTContentType } from '@verdocs/web-sdk';
 export declare interface SearchBox extends Components.SearchBox {}
 @ProxyCmp({
-  inputs: ['query', 'type']
+  inputs: ['placeholder', 'query', 'type']
 })
 @Component({
   selector: 'search-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['query', 'type'],
-  outputs: ['search', 'typeChanged', 'queryChanged']
+  inputs: ['placeholder', 'query', 'type'],
+  outputs: ['searchClicked', 'typeChanged', 'queryChanged']
 })
 export class SearchBox {
   /** Event fired when the user changes the type. */
-  search!: EventEmitter<CustomEvent<ISearchBoxISearchEvent>>;
+  searchClicked!: EventEmitter<CustomEvent<ISearchBoxISearchEvent>>;
   /** Event fired when the user changes the type. */
   typeChanged!: EventEmitter<CustomEvent<ISearchBoxTContentType>>;
   /** Event fired when the user changes the query string. */
@@ -116,7 +116,7 @@ export class SearchBox {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['search', 'typeChanged', 'queryChanged']);
+    proxyOutputs(this, this.el, ['searchClicked', 'typeChanged', 'queryChanged']);
   }
 }
 

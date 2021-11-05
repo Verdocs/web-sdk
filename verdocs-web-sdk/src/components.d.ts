@@ -56,6 +56,10 @@ export namespace Components {
     }
     interface SearchBox {
         /**
+          * The placeholder to display in the input field.
+         */
+        "placeholder": string;
+        /**
           * The text search string entered by the user.
          */
         "query": string;
@@ -277,11 +281,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user changes the type.
          */
-        "onSearch"?: (event: CustomEvent<ISearchEvent>) => void;
+        "onSearchClicked"?: (event: CustomEvent<ISearchEvent>) => void;
         /**
           * Event fired when the user changes the type.
          */
         "onTypeChanged"?: (event: CustomEvent<TContentType>) => void;
+        /**
+          * The placeholder to display in the input field.
+         */
+        "placeholder"?: string;
         /**
           * The text search string entered by the user.
          */

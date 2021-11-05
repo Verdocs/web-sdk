@@ -8,12 +8,12 @@ export default {
     type: 'all',
   },
   argTypes: {
-    search: {action: 'search'},
+    searchClicked: {action: 'searchClicked'},
     typeChanged: {action: 'typeChanged'},
     queryChanged: {action: 'queryChanged'},
     type: {type: 'string', control: 'radio', options: ['all', 'document', 'template', 'organization']},
   },
 } as Meta;
 
-export const Default = ({type, search, typeChanged, queryChanged}) =>
-  html`<search-box .type=${type} @search=${search} @typeChanged=${typeChanged} @queryChanged=${queryChanged} />`;
+export const Default = ({type, searchClicked, typeChanged, queryChanged}) =>
+  html`<search-box .type=${type} @searchClicked=${searchClicked} @typeChanged=${typeChanged} @queryChanged=${queryChanged} />`;
