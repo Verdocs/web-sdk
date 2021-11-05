@@ -9,8 +9,7 @@ import SearchIcon from './search-icon.svg';
  */
 @Component({
   tag: 'search-recent',
-  styleUrl: 'search-recent.css',
-  shadow: true,
+  styleUrl: 'search-recent.scss',
 })
 export class SearchRecent {
   /**

@@ -9,6 +9,17 @@ are supported:
 - VueJS - Imported directly from `verdocs-web-sdk`. See the [StencilJS Vue Integration](https://stenciljs.com/docs/vue) for instructions.
 - Standard Javascript - See the StencilJS [Components without a Framework](https://stenciljs.com/docs/javascript) guide for more information.
 
+## Styles and Fonts
+
+Most of the widgets in this library specify "Barlow" as the default font, but do not include it as a dependency to keep the package size
+as small as possible. To support Barlow in your own app, including the following lines of code in your `<head>` tag:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&display=swap" rel="stylesheet">
+```
+
 ## Development
 
 Work on this project requires an up-to-date (LTS is recommended) NodeJS installation. There are three main directories:

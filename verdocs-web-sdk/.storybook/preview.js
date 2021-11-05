@@ -1,3 +1,5 @@
+import '../www/build/verdocs-web-sdk.css';
+
 import {setupWorker} from 'msw';
 import {handlers} from './mocks';
 export const worker = setupWorker(...handlers);

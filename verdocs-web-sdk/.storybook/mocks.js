@@ -1,7 +1,4 @@
 import {rest} from 'msw';
-import {Transport} from '@verdocs/js-sdk/HTTP';
-
-Transport.Endpoint.defaults.baseURL = 'http://localhost:8080';
 
 export const handlers = [
   rest.get('http://localhost:8080/search/history', (req, res, ctx) => {

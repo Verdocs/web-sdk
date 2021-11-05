@@ -1,4 +1,10 @@
-.container {
+document-status-indicator {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+}
+
+document-status-indicator .container {
   width: 195px;
   height: 72px;
   display: flex;
@@ -12,11 +18,11 @@
   color: #ffffff;
 }
 
-.icon {
+document-status-indicator .icon {
   margin-right: 15px;
 }
 
-svg {
+document-status-indicator svg {
   height: 24px;
   width: 24px;
 }

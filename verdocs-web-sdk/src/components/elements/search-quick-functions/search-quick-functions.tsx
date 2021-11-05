@@ -7,8 +7,7 @@ import DocumentIcon from './document-icon.svg';
  */
 @Component({
   tag: 'search-quick-functions',
-  styleUrl: 'search-quick-functions.css',
-  shadow: true,
+  styleUrl: 'search-quick-functions.scss',
 })
 export class SearchQuickFunctions {
   /**

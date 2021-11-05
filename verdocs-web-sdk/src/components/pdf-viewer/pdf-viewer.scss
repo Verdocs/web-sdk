@@ -1,9 +1,12 @@
-:host {
+pdf-viewer {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
   display: flex;
   flex-direction: column;
 }
 
-button.test {
+pdf-viewer button.test {
   color: #fff;
   cursor: pointer;
   padding: 5px 10px;
@@ -12,6 +15,6 @@ button.test {
   border: 1px solid #ccc;
 }
 
-#pdf-container canvas {
+pdf-viewer #pdf-container canvas {
   max-width: 100%;
 }

@@ -29,8 +29,7 @@ export interface IMenuOption {
  */
 @Component({
   tag: 'dropdown-menu',
-  styleUrl: 'dropdown-menu.css',
-  shadow: true,
+  styleUrl: 'dropdown-menu.scss',
 })
 export class DropdownMenu {
   private dropdownButton?: HTMLButtonElement;

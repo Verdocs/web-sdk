@@ -1,4 +1,10 @@
-.container {
+template-card {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+}
+
+template-card .container {
   height: 640px;
   width: 645px;
   box-sizing: border-box;
@@ -10,45 +16,45 @@
   padding: 52px 50px 20px 50px;
 }
 
-.template-img {
+template-card .template-img {
   width: 545px;
   height: 315px;
   background-color: salmon;
   margin-bottom: 22px;
 }
 
-.template-name {
+template-card .template-name {
   font-size: 28px;
   font-family: sans-serif;
   font-weight: 700;
   margin-bottom: 13px;
 }
 
-.template-org-bname {
+template-card .template-org-bname {
   font-size: 24px;
   font-family: sans-serif;
   font-weight: 700;
   margin-bottom: 12px;
 }
 
-.template-org-name {
+template-card .template-org-name {
   margin-bottom: 34px;
 }
 
-.template-org-name label {
+template-card .template-org-name label {
   font-size: 24px;
   font-family: sans-serif;
   font-weight: 700;
   color: #666666;
 }
 
-hr {
+template-card hr {
   width: 100%;
   margin-bottom: 17px;
   color: #aeb4bf;
 }
 
-.template-controls {
+template-card .template-controls {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -57,11 +63,11 @@ hr {
   font-size: 21px;
 }
 
-.template-controls span:nth-child(-n + 3) {
+template-card .template-controls span:nth-child(-n + 3) {
   border-right: 1px solid #adb6bd;
 }
 
-.template-controls svg {
+template-card .template-controls svg {
   fill: #adb6bd;
   height: 30px;
   width: 30px;
@@ -69,14 +75,16 @@ hr {
   margin-right: 18px;
 }
 
-.additional-controls svg {
+template-card .additional-controls svg {
   margin-right: 0;
 }
 
-.additional-controls {
+template-card .additional-controls {
   flex: 1;
 }
 
-.pages, .star-counter, .counter {
+template-card .pages,
+template-card .star-counter,
+template-card .counter {
   flex: 2;
 }

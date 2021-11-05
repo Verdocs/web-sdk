@@ -69,3 +69,14 @@ Components available in this package are broken down into three categories:
   details) they can be used to represent entire experiences such as document preview, document signing, or search.
 
 For more information, please refer to the [Verdocs Embeds Documentation](https://developers.verdocs.com/embeds/index.html).
+
+## Styles and Fonts
+
+Most of the widgets in this library specify "Barlow" as the default font, but do not include it as a dependency to keep the package size
+as small as possible. To support Barlow in your own app, including the following lines of code in your `<head>` tag:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&display=swap" rel="stylesheet">
+```

@@ -92,19 +92,23 @@ export class PdfViewer {
   }
 }
 
-
+import { SearchBox as ISearchBox } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-box/search-box';
 export declare interface SearchBox extends Components.SearchBox {}
 
 @Component({
   selector: 'search-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  outputs: ['search']
 })
 export class SearchBox {
+  /** Event fired when the query value has changed. */
+  search!: ISearchBox['search'];
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['search']);
   }
 }
 
@@ -192,7 +196,7 @@ export class SearchSaved {
   }
 }
 
-
+import { SearchStarred as ISearchStarred } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-starred/search-starred';
 export declare interface SearchStarred extends Components.SearchStarred {}
 @ProxyCmp({
   inputs: ['options']
@@ -201,13 +205,17 @@ export declare interface SearchStarred extends Components.SearchStarred {}
   selector: 'search-starred',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['options']
+  inputs: ['options'],
+  outputs: ['entrySelected']
 })
 export class SearchStarred {
+  /** Event fired when an entry is clicked. */
+  entrySelected!: ISearchStarred['entrySelected'];
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['entrySelected']);
   }
 }
 

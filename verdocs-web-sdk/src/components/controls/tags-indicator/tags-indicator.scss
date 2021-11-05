@@ -1,4 +1,10 @@
-.container {
+tags-indicator {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+}
+
+tags-indicator .container {
   width: 270px;
   height: 35px;
   background-color: #33364b;
@@ -10,7 +16,7 @@
   justify-content: flex-start;
 }
 
-.tags {
+tags-indicator .tags {
   display: inline-flex;
   box-sizing: border-box;
   flex-basis: content;

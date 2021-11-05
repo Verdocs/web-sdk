@@ -6,6 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
+import { ISearchEvent } from "./components/elements/search-box/search-box";
 import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
 import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
 export namespace Components {
@@ -94,7 +95,7 @@ export namespace Components {
         /**
           * The "theme" to be used
          */
-        "theme": "light" | "dark";
+        "theme": 'light' | 'dark';
     }
     interface ToggleIconButtons {
         /**
@@ -261,6 +262,10 @@ declare namespace LocalJSX {
         "src"?: string;
     }
     interface SearchBox {
+        /**
+          * Event fired when the query value has changed.
+         */
+        "onSearch"?: (event: CustomEvent<ISearchEvent>) => void;
     }
     interface SearchEmbed {
     }
@@ -295,6 +300,10 @@ declare namespace LocalJSX {
         "onEntrySelected"?: (event: CustomEvent<ISavedSearch>) => void;
     }
     interface SearchStarred {
+        /**
+          * Event fired when an entry is clicked.
+         */
+        "onEntrySelected"?: (event: CustomEvent<IRecentSearch>) => void;
         "options"?: any;
     }
     interface SearchTabs {
@@ -317,7 +326,7 @@ declare namespace LocalJSX {
         /**
           * The "theme" to be used
          */
-        "theme"?: "light" | "dark";
+        "theme"?: 'light' | 'dark';
     }
     interface ToggleIconButtons {
         /**

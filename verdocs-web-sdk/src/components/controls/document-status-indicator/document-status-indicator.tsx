@@ -14,8 +14,7 @@ import PendingIcon from './pending-icon.svg';
  */
 @Component({
   tag: 'document-status-indicator',
-  styleUrl: 'document-status-indicator.css',
-  shadow: true,
+  styleUrl: 'document-status-indicator.scss',
 })
 export class DocumentStatusIndicator {
   /**
@@ -62,7 +61,7 @@ export class DocumentStatusIndicator {
         statusMessage = 'Declined'
         break;
     }
-    
+
 
     return (
       <div class="container">

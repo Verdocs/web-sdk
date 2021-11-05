@@ -1,0 +1,79 @@
+search-starred {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+
+  .container {
+    display: flex;
+    width: 240px;
+    color: #ffffff;
+    flex-direction: column;
+    text-transform: uppercase;
+    padding: 10px 10px 20px 10px;
+    background-color: var(--verdocs-background-dark);
+  }
+
+  .title {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 30px;
+  }
+
+  .items {
+    display: flex;
+    margin-top: 20px;
+    flex-direction: column;
+  }
+
+  .item {
+    border: none;
+    display: flex;
+    text-align: left;
+    margin-bottom: 20px;
+    flex-direction: row;
+    background: transparent;
+  }
+
+  .item:hover {
+    cursor: pointer;
+  }
+
+  .icon {
+    flex: 0 0 22px;
+    margin-right: 14px;
+  }
+
+  .icon svg {
+    fill: #707ae5;
+    width: 22px;
+    height: 22px;
+  }
+
+  .details {
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+  }
+
+  .item-title {
+    font-size: 16px;
+    font-weight: 400;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .info {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 23px;
+    color: #aeb4bf;
+  }
+
+  .empty {
+    text-transform: none;
+    line-height: 22px;
+    color: #ccc;
+  }
+}

@@ -9,8 +9,7 @@ import SearchIcon from './search-icon.svg';
  */
 @Component({
   tag: 'search-saved',
-  styleUrl: 'search-saved.css',
-  shadow: true,
+  styleUrl: 'search-saved.scss',
 })
 export class SearchSaved {
   /**

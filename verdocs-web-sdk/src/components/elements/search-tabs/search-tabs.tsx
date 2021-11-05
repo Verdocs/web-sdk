@@ -1,11 +1,13 @@
-import { Component, Host, h } from '@stencil/core';
+import {Component, Host, h, State} from '@stencil/core';
+
+export type TContentType = 'all' | 'document' | 'template' | 'organization';
 
 @Component({
   tag: 'search-tabs',
-  styleUrl: 'search-tabs.css',
-  shadow: true,
+  styleUrl: 'search-tabs.scss',
 })
 export class SearchTabs {
+  @State() selected: TContentType = 'all';
 
   render() {
     return (
@@ -14,5 +16,4 @@ export class SearchTabs {
       </Host>
     );
   }
-
 }

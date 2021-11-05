@@ -15,7 +15,7 @@ console.log('[PDFVIEWER] Loading PDF-JS', {PDF_WORKER_URL, CMAPS_URL});
 // pdf.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJSversion}/pdf.worker.min.js`;
 
 // TODO: Re-enable this
-// pdf.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
+pdf.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 
 // export interface PDFViewerEvent {
 //   type: 'click';
@@ -24,8 +24,7 @@ console.log('[PDFVIEWER] Loading PDF-JS', {PDF_WORKER_URL, CMAPS_URL});
 
 @Component({
   tag: 'pdf-viewer',
-  styleUrl: 'pdf-viewer.css',
-  shadow: true,
+  styleUrl: 'pdf-viewer.scss',
 })
 export class PdfViewer {
   @Element() component: HTMLElement;

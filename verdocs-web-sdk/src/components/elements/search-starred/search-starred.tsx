@@ -1,17 +1,25 @@
-import {Component, Host, h, Prop} from '@stencil/core';
+import {Component, Host, h, Prop, Event, EventEmitter} from '@stencil/core';
 
 import DocumentIcon from './document-icon.svg';
+import {IRecentSearch} from '@verdocs/js-sdk/Search/Types';
 
+/**
+ * Display a list of starred items.
+ */
 @Component({
   tag: 'search-starred',
-  styleUrl: 'search-starred.css',
-  shadow: true,
+  styleUrl: 'search-starred.scss',
 })
 export class SearchStarred {
   @Prop() options: any;
 
-  handleSelectOption(option: any) {
-    console.log('option ', option, ' has been clicked!');
+  /**
+   * Event fired when an entry is clicked.
+   */
+  @Event({composed: true}) entrySelected: EventEmitter<IRecentSearch>;
+
+  handleSelectEntry(entry: any) {
+    this.entrySelected.emit(entry);
   }
 
   computePagesText(pages) {
@@ -39,14 +47,14 @@ export class SearchStarred {
           <p class="title">My Starred Items</p>
           <div class="items">
             {this.options?.map(option => (
-              <button class="item" onClick={() => this.handleSelectOption(option)}>
+              <button class="item" onClick={() => this.handleSelectEntry(option)}>
                 <div class="icon" innerHTML={DocumentIcon} />
                 <div class="details">
-                  <span class="item-title">{option.params.q}</span>
-                  <span class="info">
+                  <div class="item-title">{option.params.q}</div>
+                  <div class="info">
                     {option.pages ? `${this.computePagesText(option.pages)} ` : ''}
                     {option.recipients ? this.computeRecipientsText(option.recipients) : ''}
-                  </span>
+                  </div>
                 </div>
               </button>
             ))}

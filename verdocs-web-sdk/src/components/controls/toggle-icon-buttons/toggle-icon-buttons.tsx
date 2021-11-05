@@ -20,14 +20,13 @@ export interface IToggleIconButtons {
  */
 @Component({
   tag: 'toggle-icon-buttons',
-  styleUrl: 'toggle-icon-buttons.css',
-  shadow: true,
+  styleUrl: 'toggle-icon-buttons.scss',
 })
 export class ToggleIconButtons {
   /**
    * The tags to display
    */
-  @Prop() options: IToggleIconButtons; 
+  @Prop() options: IToggleIconButtons;
 
   /**
    * The "theme" to be used
@@ -48,8 +47,8 @@ export class ToggleIconButtons {
       const siblings = Array.from(element.parentElement.children).filter((child) => { return child !== element })
       siblings.map((sibling: any) => { return sibling.classList.remove('selected') })
       if(!element.classList.contains('selected')) {
-        element.classList.add('selected')  
-      
+        element.classList.add('selected')
+
       }
     }
   }
@@ -62,7 +61,7 @@ export class ToggleIconButtons {
         </span>
         <div class="buttons">
           {this.options.buttons.map((button: IButtons, index: number) => (
-            <button 
+            <button
               id={button.id}
               key={button.id}
               innerHTML={button.icon}

@@ -1,3 +1,4 @@
+import {sass} from '@stencil/sass';
 import {Config} from '@stencil/core';
 import {inlineSvg} from 'stencil-inline-svg';
 import {reactOutputTarget} from '@stencil/react-output-target';
@@ -18,6 +19,7 @@ export const config: Config = {
   devServer: {
     openBrowser: false,
   },
+  globalStyle: 'src/variables.css',
   testing: {
     transform: {
       '^.+\\.svg$': 'jest-svg-transformer',
@@ -62,5 +64,5 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  plugins: [inlineSvg()],
+  plugins: [inlineSvg(), sass()],
 };

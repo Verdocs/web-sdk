@@ -9,14 +9,13 @@ import {Component, Prop, h} from '@stencil/core';
  */
 @Component({
   tag: 'tags-indicator',
-  styleUrl: 'tags-indicator.css',
-  shadow: true,
+  styleUrl: 'tags-indicator.scss',
 })
 export class TagsIndicator {
   /**
    * The tags to display
    */
-  @Prop() tags: any[]; 
+  @Prop() tags: any[];
 
   /**
    * The "theme" to be used

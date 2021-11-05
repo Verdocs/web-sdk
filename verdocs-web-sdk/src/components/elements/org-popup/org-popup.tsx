@@ -10,8 +10,7 @@ import UserGroup from './user-group.svg';
  */
 @Component({
   tag: 'org-popup',
-  styleUrl: 'org-popup.css',
-  shadow: true,
+  styleUrl: 'org-popup.scss',
 })
 export class OrgPopup {
   /**
