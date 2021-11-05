@@ -9,8 +9,11 @@ export default {
   },
   argTypes: {
     search: {action: 'search'},
+    typeChanged: {action: 'typeChanged'},
+    queryChanged: {action: 'queryChanged'},
     type: {type: 'string', control: 'radio', options: ['all', 'document', 'template', 'organization']},
   },
 } as Meta;
 
-export const Default = ({type, search}) => html`<search-box .type=${type} @search=${search} />`;
+export const Default = ({type, search, typeChanged, queryChanged}) =>
+  html`<search-box .type=${type} @search=${search} @typeChanged=${typeChanged} @queryChanged=${queryChanged} />`;

@@ -55,6 +55,13 @@ export namespace Components {
         "src": string;
     }
     interface SearchBox {
+        /**
+          * The text search string entered by the user.
+         */
+        "query": string;
+        /**
+          * If set to a value other than 'all', a removeable filter indicator will be displayed.
+         */
         "type": TContentType;
     }
     interface SearchEmbed {
@@ -264,9 +271,24 @@ declare namespace LocalJSX {
     }
     interface SearchBox {
         /**
-          * Event fired when the query value has changed.
+          * Event fired when the user changes the query string.
+         */
+        "onQueryChanged"?: (event: CustomEvent<string>) => void;
+        /**
+          * Event fired when the user changes the type.
          */
         "onSearch"?: (event: CustomEvent<ISearchEvent>) => void;
+        /**
+          * Event fired when the user changes the type.
+         */
+        "onTypeChanged"?: (event: CustomEvent<TContentType>) => void;
+        /**
+          * The text search string entered by the user.
+         */
+        "query"?: string;
+        /**
+          * If set to a value other than 'all', a removeable filter indicator will be displayed.
+         */
         "type"?: TContentType;
     }
     interface SearchEmbed {

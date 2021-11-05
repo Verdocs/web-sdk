@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* auto-generated angular directive proxies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, NgZone } from '@angular/core';
 import { ProxyCmp, proxyOutputs } from './angular-component-lib/utils';
 
 import { Components } from '@verdocs/web-sdk';
@@ -24,7 +24,7 @@ export class DocumentStatusIndicator {
   }
 }
 
-import { DropdownMenu as IDropdownMenu } from '@verdocs/web-sdk/dist/custom-elements/components/controls/dropdown-menu/dropdown-menu';
+import { IMenuOption as IDropdownMenuIMenuOption } from '@verdocs/web-sdk';
 export declare interface DropdownMenu extends Components.DropdownMenu {}
 @ProxyCmp({
   inputs: ['open', 'options', 'tall']
@@ -39,7 +39,7 @@ export declare interface DropdownMenu extends Components.DropdownMenu {}
 export class DropdownMenu {
   /** Event fired when a menu option is clicked.
 Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks. */
-  optionSelected!: IDropdownMenu['optionSelected'];
+  optionSelected!: EventEmitter<CustomEvent<IDropdownMenuIMenuOption>>;
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -67,7 +67,7 @@ export class OrgPopup {
   }
 }
 
-import { PdfViewer as IPdfViewer } from '@verdocs/web-sdk/dist/custom-elements/components/pdf-viewer/pdf-viewer';
+
 export declare interface PdfViewer extends Components.PdfViewer {}
 @ProxyCmp({
   inputs: ['rotation', 'src']
@@ -81,9 +81,9 @@ export declare interface PdfViewer extends Components.PdfViewer {}
 })
 export class PdfViewer {
   /**  */
-  pageRendered!: IPdfViewer['pageRendered'];
+  pageRendered!: EventEmitter<CustomEvent<number>>;
   /**  */
-  pageChange!: IPdfViewer['pageChange'];
+  pageChange!: EventEmitter<CustomEvent<number>>;
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -92,26 +92,31 @@ export class PdfViewer {
   }
 }
 
-import { SearchBox as ISearchBox } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-box/search-box';
+import { ISearchEvent as ISearchBoxISearchEvent } from '@verdocs/web-sdk';
+import { TContentType as ISearchBoxTContentType } from '@verdocs/web-sdk';
 export declare interface SearchBox extends Components.SearchBox {}
 @ProxyCmp({
-  inputs: ['type']
+  inputs: ['query', 'type']
 })
 @Component({
   selector: 'search-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['type'],
-  outputs: ['search']
+  inputs: ['query', 'type'],
+  outputs: ['search', 'typeChanged', 'queryChanged']
 })
 export class SearchBox {
-  /** Event fired when the query value has changed. */
-  search!: ISearchBox['search'];
+  /** Event fired when the user changes the type. */
+  search!: EventEmitter<CustomEvent<ISearchBoxISearchEvent>>;
+  /** Event fired when the user changes the type. */
+  typeChanged!: EventEmitter<CustomEvent<ISearchBoxTContentType>>;
+  /** Event fired when the user changes the query string. */
+  queryChanged!: EventEmitter<CustomEvent<string>>;
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['search']);
+    proxyOutputs(this, this.el, ['search', 'typeChanged', 'queryChanged']);
   }
 }
 
@@ -131,7 +136,7 @@ export class SearchEmbed {
   }
 }
 
-import { SearchQuickFunctions as ISearchQuickFunctions } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-quick-functions/search-quick-functions';
+
 export declare interface SearchQuickFunctions extends Components.SearchQuickFunctions {}
 
 @Component({
@@ -142,9 +147,9 @@ export declare interface SearchQuickFunctions extends Components.SearchQuickFunc
 })
 export class SearchQuickFunctions {
   /** Event fired when an entry is clicked. */
-  createTemplate!: ISearchQuickFunctions['createTemplate'];
+  createTemplate!: EventEmitter<CustomEvent<any>>;
   /** Event fired when an entry is clicked. */
-  createDocument!: ISearchQuickFunctions['createDocument'];
+  createDocument!: EventEmitter<CustomEvent<any>>;
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -153,7 +158,7 @@ export class SearchQuickFunctions {
   }
 }
 
-import { SearchRecent as ISearchRecent } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-recent/search-recent';
+import { IRecentSearch as ISearchRecentIRecentSearch } from '@verdocs/web-sdk';
 export declare interface SearchRecent extends Components.SearchRecent {}
 @ProxyCmp({
   inputs: ['limit']
@@ -167,7 +172,7 @@ export declare interface SearchRecent extends Components.SearchRecent {}
 })
 export class SearchRecent {
   /** Event fired when an entry is clicked. */
-  entrySelected!: ISearchRecent['entrySelected'];
+  entrySelected!: EventEmitter<CustomEvent<ISearchRecentIRecentSearch>>;
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -176,7 +181,7 @@ export class SearchRecent {
   }
 }
 
-import { SearchSaved as ISearchSaved } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-saved/search-saved';
+import { ISavedSearch as ISearchSavedISavedSearch } from '@verdocs/web-sdk';
 export declare interface SearchSaved extends Components.SearchSaved {}
 @ProxyCmp({
   inputs: ['limit']
@@ -190,7 +195,7 @@ export declare interface SearchSaved extends Components.SearchSaved {}
 })
 export class SearchSaved {
   /** Event fired when an entry is clicked. */
-  entrySelected!: ISearchSaved['entrySelected'];
+  entrySelected!: EventEmitter<CustomEvent<ISearchSavedISavedSearch>>;
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -199,7 +204,7 @@ export class SearchSaved {
   }
 }
 
-import { SearchStarred as ISearchStarred } from '@verdocs/web-sdk/dist/custom-elements/components/elements/search-starred/search-starred';
+import { IRecentSearch as ISearchStarredIRecentSearch } from '@verdocs/web-sdk';
 export declare interface SearchStarred extends Components.SearchStarred {}
 @ProxyCmp({
   inputs: ['options']
@@ -213,7 +218,7 @@ export declare interface SearchStarred extends Components.SearchStarred {}
 })
 export class SearchStarred {
   /** Event fired when an entry is clicked. */
-  entrySelected!: ISearchStarred['entrySelected'];
+  entrySelected!: EventEmitter<CustomEvent<ISearchStarredIRecentSearch>>;
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();

@@ -1,11 +1,11 @@
-import {Component, Host, h, State, Event, EventEmitter, Prop} from '@stencil/core';
+import {Component, Host, h, Event, EventEmitter, Prop} from '@stencil/core';
 import SearchIcon from './search.svg';
 import CloseIcon from './close.svg';
 
 export type TContentType = 'all' | 'document' | 'template' | 'organization';
 
 export interface ISearchEvent {
-  q: string;
+  query: string;
   type: TContentType;
 }
 
@@ -14,35 +14,54 @@ export interface ISearchEvent {
   styleUrl: 'search-box.scss',
 })
 export class SearchBox {
+  /**
+   * If set to a value other than 'all', a removeable filter indicator will be displayed.
+   */
   @Prop() type: TContentType = 'all';
 
-  @State() q: string;
+  /**
+   * The text search string entered by the user.
+   */
+  @Prop() query = '';
 
   /**
-   * Event fired when the query value has changed.
+   * Event fired when the user changes the type.
    */
   @Event({composed: true}) search: EventEmitter<ISearchEvent>;
 
-  handleSubmit(e) {
-    e.preventDefault();
-    this.search.emit({type: this.type, q: this.q});
+  /**
+   * Event fired when the user changes the type.
+   */
+  @Event({composed: true}) typeChanged: EventEmitter<TContentType>;
+
+  /**
+   * Event fired when the user changes the query string.
+   */
+  @Event({composed: true}) queryChanged: EventEmitter<string>;
+
+  handleSearch() {
+    this.search.emit({type: this.type, query: this.query});
   }
 
-  handleChange(event) {
-    this.q = event.target.value;
+  handleChange(e) {
+    this.queryChanged.emit(e.target.value);
+  }
+
+  handleClearFilter() {
+    this.typeChanged.emit('all');
   }
 
   render() {
     return (
       <Host>
-        <form onSubmit={e => this.handleSubmit(e)}>
+        <form onSubmit={e => this.handleSearch(e)}>
           {this.type !== undefined && this.type !== 'all' && (
             <span class="type">
-              {this.type}s <button class="remove" innerHTML={CloseIcon} />
+              {this.type}s <button class="remove" innerHTML={CloseIcon} onClick={() => this.handleClearFilter} />
             </span>
           )}
-          <input type="text" placeholder="search documents, templates, people..." value={this.q} onInput={e => this.handleChange(e)} />
-          <button onClick={e => this.handleSubmit(e)} class="search">
+          <input type="text" placeholder="search documents, templates, people..." value={this.query} onInput={e => this.handleChange(e)} />
+          <button onClick={e => this.handleSearch(e)} class="search">
             <span innerHTML={SearchIcon} />
             Search
           </button>
