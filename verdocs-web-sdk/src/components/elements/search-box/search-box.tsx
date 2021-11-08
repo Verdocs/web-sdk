@@ -9,6 +9,9 @@ export interface ISearchEvent {
   type: TContentType;
 }
 
+/**
+ * Displays a customizable input box for search queries.
+ */
 @Component({
   tag: 'search-box',
   styleUrl: 'search-box.scss',
