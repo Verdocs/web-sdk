@@ -5,6 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { TDocumentStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
 import { ISearchEvent, TContentType } from "./components/elements/search-box/search-box";
 import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
@@ -14,11 +15,7 @@ export namespace Components {
         /**
           * The status to display
          */
-        "status": 'finished' | 'complete' | 'pending' | 'in-progress' | 'declined' | 'cancelled';
-        /**
-          * The "theme" to be used
-         */
-        "theme": 'light' | 'dark';
+        "status": TDocumentStatus;
     }
     interface DropdownMenu {
         /**
@@ -227,11 +224,7 @@ declare namespace LocalJSX {
         /**
           * The status to display
          */
-        "status"?: 'finished' | 'complete' | 'pending' | 'in-progress' | 'declined' | 'cancelled';
-        /**
-          * The "theme" to be used
-         */
-        "theme"?: 'light' | 'dark';
+        "status"?: TDocumentStatus;
     }
     interface DropdownMenu {
         /**

@@ -8,13 +8,13 @@ import { Components } from '@verdocs/web-sdk';
 
 export declare interface DocumentStatusIndicator extends Components.DocumentStatusIndicator {}
 @ProxyCmp({
-  inputs: ['status', 'theme']
+  inputs: ['status']
 })
 @Component({
   selector: 'document-status-indicator',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['status', 'theme']
+  inputs: ['status']
 })
 export class DocumentStatusIndicator {
   protected el: HTMLElement;

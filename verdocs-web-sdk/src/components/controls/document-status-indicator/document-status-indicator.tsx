@@ -1,5 +1,5 @@
 import {Component, Prop, h} from '@stencil/core';
-import {IDocumentStatus} from '@verdocs/js-sdk/Documents/Documents';
+import {TDocumentStatus} from '@verdocs/js-sdk/Documents/Documents';
 import CancelledIcon from './cancelled-icon.svg';
 import DeclinedIcon from './declined-icon.svg';
 import FinishedIcon from './finished-icon.svg';
@@ -16,7 +16,7 @@ export class DocumentStatusIndicator {
   /**
    * The status to display
    */
-  @Prop() status: IDocumentStatus;
+  @Prop() status: TDocumentStatus;
 
   render() {
     let icon;
