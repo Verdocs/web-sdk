@@ -45,7 +45,6 @@ export class SearchRecent {
           <div class="items">
             {this.recent.slice(0, this.limit).map(entry => (
               <button class="button" innerHTML={SearchIcon} onClick={() => this.handleSelectEntry(entry)}>
-                {entry.params.type && <span class="pill">type: {entry.params.type}</span>}
                 {entry.params.q}
               </button>
             ))}
