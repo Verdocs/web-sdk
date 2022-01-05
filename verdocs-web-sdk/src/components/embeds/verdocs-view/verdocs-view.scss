@@ -1,4 +1,4 @@
-pdf-viewer {
+verdocs-view {
   /* Fallback font for old browsers */
   font-family: sans-serif;
   font-family: var(--verdocs-font);
@@ -6,7 +6,7 @@ pdf-viewer {
   flex-direction: column;
 }
 
-pdf-viewer button.test {
+verdocs-view button.test {
   color: #fff;
   cursor: pointer;
   padding: 5px 10px;
@@ -15,6 +15,6 @@ pdf-viewer button.test {
   border: 1px solid #ccc;
 }
 
-pdf-viewer #pdf-container canvas {
+#verdocs-view-pdf-container canvas {
   max-width: 100%;
 }

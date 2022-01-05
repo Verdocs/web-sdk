@@ -13,10 +13,15 @@ export default {
       templates: '9'
     }
   },
-  argTypes: {
-    organization: {type: 'object', control: 'object'},
-    theme: {type: 'string', control: 'radio', options:['light', 'dark'], defaultValue: 'light'}
-  },
+  // argTypes: {
+  //   organization: {type: 'object', control: 'object'},
+  //   theme: {type: 'string', control: 'radio', options:['light', 'dark'], defaultValue: 'light'}
+  // },
+  //     name?: string;
+  //     description?: string;
+  //     defaultValue?: any;
+  //     type?: SBType | SBScalarType['name'];
+  //     [key: string]: any;
 } as Meta;
 
 export const Default = ({organization, theme}) => html`<org-popup .organization="${organization}" .theme="${theme}"></org-popup>`;

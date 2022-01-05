@@ -3,8 +3,8 @@ import {Meta} from '@storybook/web-components';
 import {action} from '@storybook/addon-actions';
 
 export default {
-  title: 'Embeds/Search',
-  component: 'search-embed',
+  title: 'Embeds/Sign',
+  component: 'verdocs-sign',
   args: {},
   argTypes: {},
 } as Meta;
@@ -16,4 +16,4 @@ const listener = {
   capture: true,
 };
 
-export const Default = ({options}) => html`<search-embed .options=${options} @optionSelected=${listener} tall />`;
+export const Default = ({options}) => html`<verdocs-sign .options=${options} @optionSelected=${listener} tall />`;

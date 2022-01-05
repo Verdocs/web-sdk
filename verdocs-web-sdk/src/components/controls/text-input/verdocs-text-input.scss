@@ -1,0 +1,37 @@
+verdocs-text-input {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+  box-sizing: border-box;
+
+  .input-field {
+    box-sizing: border-box;
+    margin: 20px 0;
+  }
+
+  .input-element {
+    box-sizing: border-box;
+    border: 1px solid #707ae5;
+    border-radius: 4px;
+    background: #fff;
+    color: #000;
+    width: 100%;
+    font-size: 16px;
+    height: 28px;
+    padding: 4px 12px;
+
+    &::placeholder {
+      color: #aaa;
+      opacity: 1;
+    }
+  }
+
+  .input-label {
+    display: block;
+    color: #333;
+    font-weight: 400;
+    //color: #aeb4bf;
+    font-size: 14px;
+    margin: 0 0 7px 0;
+  }
+}

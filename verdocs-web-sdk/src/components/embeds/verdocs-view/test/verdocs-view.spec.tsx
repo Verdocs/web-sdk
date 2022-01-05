@@ -1,18 +1,18 @@
 import {newSpecPage} from '@stencil/core/testing';
-import {PdfViewer} from '../pdf-viewer';
+import {VerdocsView} from '../verdocs-view';
 
 describe('pdf-viewer', () => {
   it('renders', async () => {
     const page = await newSpecPage({
-      components: [PdfViewer],
-      html: `<pdf-viewer></pdf-viewer>`,
+      components: [VerdocsView],
+      html: `<verdocs-view></verdocs-view>`,
     });
     expect(page.root).toEqualHtml(`
-      <pdf-viewer>
+      <verdocs-view>
         <mock:shadow-root>
            <div id="pdf-container"></div>
         </mock:shadow-root>
-      </pdf-viewer>
+      </verdocs-view>
     `);
   });
 });

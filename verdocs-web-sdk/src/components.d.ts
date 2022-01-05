@@ -10,6 +10,7 @@ import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
 import { ISearchEvent, TContentType } from "./components/elements/search-box/search-box";
 import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
 import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
+import { IAuthStatus, TSessionSource } from "./components/embeds/verdocs-auth/verdocs-auth";
 export namespace Components {
     interface DocumentStatusIndicator {
         /**
@@ -41,16 +42,6 @@ export namespace Components {
          */
         "theme": "light" | "dark";
     }
-    interface PdfViewer {
-        /**
-          * Rotate the PDF in degrees {number}
-         */
-        "rotation": 0 | 90 | 180 | 270 | 360;
-        /**
-          * Src of the PDF to load and render {number}
-         */
-        "src": string;
-    }
     interface SearchBox {
         /**
           * The placeholder to display in the input field.
@@ -64,8 +55,6 @@ export namespace Components {
           * If set to a value other than 'all', a removeable filter indicator will be displayed.
          */
         "type": TContentType;
-    }
-    interface SearchEmbed {
     }
     interface SearchQuickFunctions {
     }
@@ -116,6 +105,60 @@ export namespace Components {
          */
         "theme": "light" | "dark";
     }
+    interface VerdocsAuth {
+        /**
+          * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
+         */
+        "debug": boolean;
+        /**
+          * By default, a Verdocs logo will be displayed above the login/signup forms. This may be used to override its source. (Alternatively, you may simply hide it via CSS overrides.) Logos should be in SVG format for best results.
+         */
+        "logo": string;
+        /**
+          * By default, this embed will check the user's standard Verdocs session, which allows access to all functions within the platform. Applications only presenting e-signing experiences should use `verdocs-sign` instead, which provides a more streamlined interface - direct login and signup will be disabled, and the user's session will only be checked and loaded if possible.  It is also possible to specify other values here to target private / sandboxed session environments. This should only be done after discussion with a Verdocs Customer Solutions Engineering contact.
+         */
+        "source": TSessionSource;
+        /**
+          * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
+         */
+        "visible": boolean;
+    }
+    interface VerdocsSearch {
+    }
+    interface VerdocsSign {
+    }
+    interface VerdocsTextInput {
+        /**
+          * If desired, the autocomplete attribute to set.
+         */
+        "autocomplete": string;
+        /**
+          * The label for the field.
+         */
+        "label": string;
+        /**
+          * The placeholder for the field.
+         */
+        "placeholder": string;
+        /**
+          * The type of field to render. Only text-type fields are allowed here for the current styling. Additional types (e.g. a date picker) will be supported by other controls in the future.
+         */
+        "type": 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url';
+        /**
+          * The value for the input field.
+         */
+        "value": string;
+    }
+    interface VerdocsView {
+        /**
+          * Rotate the PDF in degrees {number}
+         */
+        "rotation": 0 | 90 | 180 | 270;
+        /**
+          * Src of the PDF to load and render {string}
+         */
+        "source": string;
+    }
 }
 declare global {
     interface HTMLDocumentStatusIndicatorElement extends Components.DocumentStatusIndicator, HTMLStencilElement {
@@ -136,23 +179,11 @@ declare global {
         prototype: HTMLOrgPopupElement;
         new (): HTMLOrgPopupElement;
     };
-    interface HTMLPdfViewerElement extends Components.PdfViewer, HTMLStencilElement {
-    }
-    var HTMLPdfViewerElement: {
-        prototype: HTMLPdfViewerElement;
-        new (): HTMLPdfViewerElement;
-    };
     interface HTMLSearchBoxElement extends Components.SearchBox, HTMLStencilElement {
     }
     var HTMLSearchBoxElement: {
         prototype: HTMLSearchBoxElement;
         new (): HTMLSearchBoxElement;
-    };
-    interface HTMLSearchEmbedElement extends Components.SearchEmbed, HTMLStencilElement {
-    }
-    var HTMLSearchEmbedElement: {
-        prototype: HTMLSearchEmbedElement;
-        new (): HTMLSearchEmbedElement;
     };
     interface HTMLSearchQuickFunctionsElement extends Components.SearchQuickFunctions, HTMLStencilElement {
     }
@@ -202,13 +233,41 @@ declare global {
         prototype: HTMLToggleIconButtonsElement;
         new (): HTMLToggleIconButtonsElement;
     };
+    interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
+    }
+    var HTMLVerdocsAuthElement: {
+        prototype: HTMLVerdocsAuthElement;
+        new (): HTMLVerdocsAuthElement;
+    };
+    interface HTMLVerdocsSearchElement extends Components.VerdocsSearch, HTMLStencilElement {
+    }
+    var HTMLVerdocsSearchElement: {
+        prototype: HTMLVerdocsSearchElement;
+        new (): HTMLVerdocsSearchElement;
+    };
+    interface HTMLVerdocsSignElement extends Components.VerdocsSign, HTMLStencilElement {
+    }
+    var HTMLVerdocsSignElement: {
+        prototype: HTMLVerdocsSignElement;
+        new (): HTMLVerdocsSignElement;
+    };
+    interface HTMLVerdocsTextInputElement extends Components.VerdocsTextInput, HTMLStencilElement {
+    }
+    var HTMLVerdocsTextInputElement: {
+        prototype: HTMLVerdocsTextInputElement;
+        new (): HTMLVerdocsTextInputElement;
+    };
+    interface HTMLVerdocsViewElement extends Components.VerdocsView, HTMLStencilElement {
+    }
+    var HTMLVerdocsViewElement: {
+        prototype: HTMLVerdocsViewElement;
+        new (): HTMLVerdocsViewElement;
+    };
     interface HTMLElementTagNameMap {
         "document-status-indicator": HTMLDocumentStatusIndicatorElement;
         "dropdown-menu": HTMLDropdownMenuElement;
         "org-popup": HTMLOrgPopupElement;
-        "pdf-viewer": HTMLPdfViewerElement;
         "search-box": HTMLSearchBoxElement;
-        "search-embed": HTMLSearchEmbedElement;
         "search-quick-functions": HTMLSearchQuickFunctionsElement;
         "search-recent": HTMLSearchRecentElement;
         "search-saved": HTMLSearchSavedElement;
@@ -217,6 +276,11 @@ declare global {
         "tags-indicator": HTMLTagsIndicatorElement;
         "template-card": HTMLTemplateCardElement;
         "toggle-icon-buttons": HTMLToggleIconButtonsElement;
+        "verdocs-auth": HTMLVerdocsAuthElement;
+        "verdocs-search": HTMLVerdocsSearchElement;
+        "verdocs-sign": HTMLVerdocsSignElement;
+        "verdocs-text-input": HTMLVerdocsTextInputElement;
+        "verdocs-view": HTMLVerdocsViewElement;
     }
 }
 declare namespace LocalJSX {
@@ -254,18 +318,6 @@ declare namespace LocalJSX {
          */
         "theme"?: "light" | "dark";
     }
-    interface PdfViewer {
-        "onPageChange"?: (event: CustomEvent<number>) => void;
-        "onPageRendered"?: (event: CustomEvent<number>) => void;
-        /**
-          * Rotate the PDF in degrees {number}
-         */
-        "rotation"?: 0 | 90 | 180 | 270 | 360;
-        /**
-          * Src of the PDF to load and render {number}
-         */
-        "src"?: string;
-    }
     interface SearchBox {
         /**
           * Event fired when the user changes the query string.
@@ -291,8 +343,6 @@ declare namespace LocalJSX {
           * If set to a value other than 'all', a removeable filter indicator will be displayed.
          */
         "type"?: TContentType;
-    }
-    interface SearchEmbed {
     }
     interface SearchQuickFunctions {
         /**
@@ -363,13 +413,83 @@ declare namespace LocalJSX {
          */
         "theme"?: "light" | "dark";
     }
+    interface VerdocsAuth {
+        /**
+          * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
+         */
+        "debug"?: boolean;
+        /**
+          * By default, a Verdocs logo will be displayed above the login/signup forms. This may be used to override its source. (Alternatively, you may simply hide it via CSS overrides.) Logos should be in SVG format for best results.
+         */
+        "logo"?: string;
+        /**
+          * Event fired when session authentication process has completed. Check the event contents for completion status.
+         */
+        "onAuthenticated"?: (event: CustomEvent<IAuthStatus>) => void;
+        /**
+          * By default, this embed will check the user's standard Verdocs session, which allows access to all functions within the platform. Applications only presenting e-signing experiences should use `verdocs-sign` instead, which provides a more streamlined interface - direct login and signup will be disabled, and the user's session will only be checked and loaded if possible.  It is also possible to specify other values here to target private / sandboxed session environments. This should only be done after discussion with a Verdocs Customer Solutions Engineering contact.
+         */
+        "source"?: TSessionSource;
+        /**
+          * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
+         */
+        "visible"?: boolean;
+    }
+    interface VerdocsSearch {
+    }
+    interface VerdocsSign {
+    }
+    interface VerdocsTextInput {
+        /**
+          * If desired, the autocomplete attribute to set.
+         */
+        "autocomplete"?: string;
+        /**
+          * The label for the field.
+         */
+        "label"?: string;
+        /**
+          * Event fired when the field loses focus.
+         */
+        "onTblur"?: (event: CustomEvent<any>) => void;
+        /**
+          * Event fired when the field receives focus.
+         */
+        "onTfocus"?: (event: CustomEvent<any>) => void;
+        /**
+          * Event fired when the input value changes.
+         */
+        "onTinput"?: (event: CustomEvent<string>) => void;
+        /**
+          * The placeholder for the field.
+         */
+        "placeholder"?: string;
+        /**
+          * The type of field to render. Only text-type fields are allowed here for the current styling. Additional types (e.g. a date picker) will be supported by other controls in the future.
+         */
+        "type"?: 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url';
+        /**
+          * The value for the input field.
+         */
+        "value"?: string;
+    }
+    interface VerdocsView {
+        "onPageChange"?: (event: CustomEvent<number>) => void;
+        "onPageRendered"?: (event: CustomEvent<number>) => void;
+        /**
+          * Rotate the PDF in degrees {number}
+         */
+        "rotation"?: 0 | 90 | 180 | 270;
+        /**
+          * Src of the PDF to load and render {string}
+         */
+        "source"?: string;
+    }
     interface IntrinsicElements {
         "document-status-indicator": DocumentStatusIndicator;
         "dropdown-menu": DropdownMenu;
         "org-popup": OrgPopup;
-        "pdf-viewer": PdfViewer;
         "search-box": SearchBox;
-        "search-embed": SearchEmbed;
         "search-quick-functions": SearchQuickFunctions;
         "search-recent": SearchRecent;
         "search-saved": SearchSaved;
@@ -378,6 +498,11 @@ declare namespace LocalJSX {
         "tags-indicator": TagsIndicator;
         "template-card": TemplateCard;
         "toggle-icon-buttons": ToggleIconButtons;
+        "verdocs-auth": VerdocsAuth;
+        "verdocs-search": VerdocsSearch;
+        "verdocs-sign": VerdocsSign;
+        "verdocs-text-input": VerdocsTextInput;
+        "verdocs-view": VerdocsView;
     }
 }
 export { LocalJSX as JSX };
@@ -387,9 +512,7 @@ declare module "@stencil/core" {
             "document-status-indicator": LocalJSX.DocumentStatusIndicator & JSXBase.HTMLAttributes<HTMLDocumentStatusIndicatorElement>;
             "dropdown-menu": LocalJSX.DropdownMenu & JSXBase.HTMLAttributes<HTMLDropdownMenuElement>;
             "org-popup": LocalJSX.OrgPopup & JSXBase.HTMLAttributes<HTMLOrgPopupElement>;
-            "pdf-viewer": LocalJSX.PdfViewer & JSXBase.HTMLAttributes<HTMLPdfViewerElement>;
             "search-box": LocalJSX.SearchBox & JSXBase.HTMLAttributes<HTMLSearchBoxElement>;
-            "search-embed": LocalJSX.SearchEmbed & JSXBase.HTMLAttributes<HTMLSearchEmbedElement>;
             "search-quick-functions": LocalJSX.SearchQuickFunctions & JSXBase.HTMLAttributes<HTMLSearchQuickFunctionsElement>;
             "search-recent": LocalJSX.SearchRecent & JSXBase.HTMLAttributes<HTMLSearchRecentElement>;
             "search-saved": LocalJSX.SearchSaved & JSXBase.HTMLAttributes<HTMLSearchSavedElement>;
@@ -398,6 +521,11 @@ declare module "@stencil/core" {
             "tags-indicator": LocalJSX.TagsIndicator & JSXBase.HTMLAttributes<HTMLTagsIndicatorElement>;
             "template-card": LocalJSX.TemplateCard & JSXBase.HTMLAttributes<HTMLTemplateCardElement>;
             "toggle-icon-buttons": LocalJSX.ToggleIconButtons & JSXBase.HTMLAttributes<HTMLToggleIconButtonsElement>;
+            "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
+            "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
+            "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
+            "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
+            "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
         }
     }
 }

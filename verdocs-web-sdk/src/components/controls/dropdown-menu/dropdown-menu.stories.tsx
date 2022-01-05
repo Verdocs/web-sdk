@@ -21,7 +21,13 @@ export default {
   // Here we can apply overrides to component property documentation. Note that we don't need to (and shouldn't) specify every field
   // here. Only those that need special attention.
   argTypes: {
-    optionSelected: {action: 'optionSelected'},
+    optionSelected: {
+      action: 'optionSelected',
+      // Prevents a duplicate event entry from appearing in the properties table
+      table: {
+        disable: true,
+      },
+    },
 
     // Here we take advantage of "hidden" properties to make an undocumented feature. We will allow "tall" to be set as an
     // attribute to force the component to set a fixed height on its host container. (See the CSS for how this is applied.)

@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 400px;
+  background-color: #1e2031;
+  text-transform: uppercase;
+  padding: 10px;
+  font-family: sans-serif;
+  color: #ffffff;
+}
+
+.title {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 53px;
+}
+
+.buttons {
+  width: 193px;
+  height: 63px;
+  background-color: #50be50;
+  border-radius: 10px;
+  border: none;
+  text-transform: uppercase;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 25px;
+  cursor: pointer;
+}
+
+.buttons svg {
+  fill: #ffffff;
+}
+
+.buttons:nth-child(n + 1) {
+  margin-bottom: 43px;
+}

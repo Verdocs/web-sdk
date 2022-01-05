@@ -16,10 +16,10 @@ export default {
   args: {
     template: dummyTemplate
   },
-  argTypes: {
-    template: {type: 'object', control: 'object'},
-    theme: {type: 'string', control: 'radio', options:['light', 'dark'], defaultValue: 'light'}
-  },
+  // argTypes: {
+  //   template: {type: 'object', control: 'object'},
+  //   theme: {type: 'string', control: 'radio', options:['light', 'dark'], defaultValue: 'light'}
+  // },
 } as Meta;
 
 export const Default = ({template, theme}) => html`<template-card .template="${template}" .theme="${theme}"></template-card>`;

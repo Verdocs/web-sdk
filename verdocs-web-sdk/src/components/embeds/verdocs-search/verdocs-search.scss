@@ -1,0 +1,29 @@
+verdocs-search {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+
+  display: flex;
+  background-color: var(--verdocs-background-dark);
+
+  search-box {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 10px;
+  }
+
+  .boxes {
+    flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    margin: 20px 0;
+  }
+
+  search-recent,
+  search-saved,
+  search-quick-functions,
+  search-starred {
+    display: flex;
+    margin: 0 20px 20px 0;
+  }
+}

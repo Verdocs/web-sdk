@@ -81,39 +81,6 @@ export class OrgPopup {
   }
 }
 
-
-export declare interface PdfViewer extends Components.PdfViewer {
-  /**
-   *  
-   */
-  pageRendered: EventEmitter<CustomEvent<number>>;
-  /**
-   *  
-   */
-  pageChange: EventEmitter<CustomEvent<number>>;
-
-}
-
-@ProxyCmp({
-  tagName: 'pdf-viewer',
-  customElement: undefined,
-  inputs: ['rotation', 'src']
-})
-@Component({
-  selector: 'pdf-viewer',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['rotation', 'src']
-})
-export class PdfViewer {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['pageRendered', 'pageChange']);
-  }
-}
-
 import type { ISearchEvent as ISearchBoxISearchEvent } from '@verdocs/web-sdk';
 import type { TContentType as ISearchBoxTContentType } from '@verdocs/web-sdk';
 export declare interface SearchBox extends Components.SearchBox {
@@ -149,26 +116,6 @@ export class SearchBox {
     c.detach();
     this.el = r.nativeElement;
     proxyOutputs(this, this.el, ['searchClicked', 'typeChanged', 'queryChanged']);
-  }
-}
-
-
-export declare interface SearchEmbed extends Components.SearchEmbed {}
-
-@ProxyCmp({
-  tagName: 'search-embed',
-  customElement: undefined
-})
-@Component({
-  selector: 'search-embed',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
-})
-export class SearchEmbed {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
   }
 }
 
@@ -373,5 +320,144 @@ export class ToggleIconButtons {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+  }
+}
+
+import type { IAuthStatus as IVerdocsAuthIAuthStatus } from '@verdocs/web-sdk';
+export declare interface VerdocsAuth extends Components.VerdocsAuth {
+  /**
+   * Event fired when session authentication process has completed. Check the event contents for completion status. 
+   */
+  authenticated: EventEmitter<CustomEvent<IVerdocsAuthIAuthStatus>>;
+
+}
+
+@ProxyCmp({
+  tagName: 'verdocs-auth',
+  customElement: undefined,
+  inputs: ['debug', 'logo', 'source', 'visible']
+})
+@Component({
+  selector: 'verdocs-auth',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['debug', 'logo', 'source', 'visible']
+})
+export class VerdocsAuth {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['authenticated']);
+  }
+}
+
+
+export declare interface VerdocsSearch extends Components.VerdocsSearch {}
+
+@ProxyCmp({
+  tagName: 'verdocs-search',
+  customElement: undefined
+})
+@Component({
+  selector: 'verdocs-search',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class VerdocsSearch {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsSign extends Components.VerdocsSign {}
+
+@ProxyCmp({
+  tagName: 'verdocs-sign',
+  customElement: undefined
+})
+@Component({
+  selector: 'verdocs-sign',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class VerdocsSign {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsTextInput extends Components.VerdocsTextInput {
+  /**
+   * Event fired when the input value changes. 
+   */
+  tinput: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired when the field receives focus. 
+   */
+  tfocus: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the field loses focus. 
+   */
+  tblur: EventEmitter<CustomEvent<any>>;
+
+}
+
+@ProxyCmp({
+  tagName: 'verdocs-text-input',
+  customElement: undefined,
+  inputs: ['autocomplete', 'label', 'placeholder', 'type', 'value']
+})
+@Component({
+  selector: 'verdocs-text-input',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['autocomplete', 'label', 'placeholder', 'type', 'value']
+})
+export class VerdocsTextInput {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['tinput', 'tfocus', 'tblur']);
+  }
+}
+
+
+export declare interface VerdocsView extends Components.VerdocsView {
+  /**
+   *  
+   */
+  pageRendered: EventEmitter<CustomEvent<number>>;
+  /**
+   *  
+   */
+  pageChange: EventEmitter<CustomEvent<number>>;
+
+}
+
+@ProxyCmp({
+  tagName: 'verdocs-view',
+  customElement: undefined,
+  inputs: ['rotation', 'source']
+})
+@Component({
+  selector: 'verdocs-view',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['rotation', 'source']
+})
+export class VerdocsView {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['pageRendered', 'pageChange']);
   }
 }

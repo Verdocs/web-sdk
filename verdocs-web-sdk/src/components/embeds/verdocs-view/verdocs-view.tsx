@@ -1,9 +1,9 @@
 import pdf from 'pdfjs-dist/build/pdf';
 import {PDFDocumentProxy, PDFProgressData, PDFSource, VerbosityLevel, version as PDFJSversion} from 'pdfjs-dist';
-import {Component, Host, h, Element, Event, Prop, Watch, EventEmitter} from '@stencil/core';
+import {Component, h, Element, Event, Prop, Watch, EventEmitter} from '@stencil/core';
 // import {PDFDocumentProxy, PDFPageProxy, PDFPageViewport, PDFRenderParams, PDFRenderTask} from 'pdfjs-dist';
 // import * as PDFJSViewer from 'pdfjs-dist/web/pdf_viewer';
-import {integerSequence} from '../../utils/utils';
+import {integerSequence} from '../../../utils/utils';
 
 const PDF_WORKER_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJSversion}/pdf.worker.min.js`;
 const CMAPS_URL = `https://unpkg.com/pdfjs-dist@${PDFJSversion}/cmaps/`;
@@ -23,10 +23,11 @@ pdf.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 // }
 
 @Component({
-  tag: 'pdf-viewer',
-  styleUrl: 'pdf-viewer.scss',
+  tag: 'verdocs-view',
+  styleUrl: 'verdocs-view.scss',
+  shadow: false,
 })
-export class PdfViewer {
+export class VerdocsView {
   @Element() component: HTMLElement;
 
   // @Event() pdfClicked: EventEmitter<PDFViewerEvent>;
@@ -52,21 +53,20 @@ export class PdfViewer {
    * Rotate the PDF in degrees
    * {number}
    */
-  @Prop() rotation: 0 | 90 | 180 | 270 | 360 = 0;
+  @Prop() rotation: 0 | 90 | 180 | 270 = 0;
 
   /**
    * Src of the PDF to load and render
-   * {number}
+   * {string}
    */
-  @Prop() src: string;
+  @Prop() source: string;
 
   /**
    * Listen for changes to src
    * @param newValue
    * @param oldValue
    */
-
-  @Watch('src')
+  @Watch('source')
   doSrc(newValue: string | null, oldValue: string | null): void {
     if (newValue === oldValue) {
       return;
@@ -127,7 +127,7 @@ export class PdfViewer {
     for await (let pageNum of pageNumbersToRender) {
       console.log('Rendering page', pageNum);
       const page = await this.pdfDocument.getPage(pageNum);
-      const viewport = page.getViewport({scale: 2});
+      const viewport = page.getViewport({scale:1.5});
       const canvas = document.createElement('canvas');
       const canvasContext = canvas.getContext('2d');
       canvas.height = viewport.height;
@@ -210,8 +210,8 @@ export class PdfViewer {
     // this.canvas = this.component.shadowRoot.getElementById('pdf-canvas') as HTMLCanvasElement;
     // this.ctx = this.canvas.getContext('2d');
 
-    if (this.src) {
-      this.loadAndRender(this.src);
+    if (this.source) {
+      this.loadAndRender(this.source);
     }
   }
 
@@ -241,12 +241,12 @@ export class PdfViewer {
 
   render() {
     return (
-      <Host>
+      <div class="container">
         {/*<button onClick={this.pagePrev.bind(this)}>Prev</button>*/}
         {/*<button onClick={this.pageNext.bind(this)}>Next</button>*/}
         <div id="verdocs-pdf-viewer-container" />
         {/*<canvas id="pdf-canvas" />*/}
-      </Host>
+      </div>
     );
   }
 }

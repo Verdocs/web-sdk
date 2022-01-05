@@ -1,11 +1,11 @@
 import {Component, Host, h} from '@stencil/core';
 
 @Component({
-  tag: 'search-embed',
-  styleUrl: 'search-embed.scss',
+  tag: 'verdocs-sign',
+  styleUrl: 'verdocs-sign.scss',
   shadow: true,
 })
-export class SearchEmbed {
+export class VerdocsSign {
   render() {
     return (
       <Host>

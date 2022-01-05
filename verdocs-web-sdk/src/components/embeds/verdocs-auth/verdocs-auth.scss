@@ -1,0 +1,94 @@
+verdocs-auth {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+  background-color: #4c56cb;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .login-form,
+  .signup-form {
+    background: #f2f5fa;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    flex-direction: column;
+    display: flex;
+    padding: 20px;
+    width: 300px;
+    max-width: 100%;
+  }
+
+  .logo {
+    margin: 20px 0 30px;
+    width: 128px;
+    max-width: 100%;
+  }
+
+  h3 {
+    text-align: center;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  h4 {
+    text-align: center;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.43;
+    margin: 0;
+  }
+
+  .text-button {
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #4c56cb;
+    font-weight: 400;
+    background: transparent;
+    padding: 0 4px;
+  }
+
+  .forgot-button {
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #4c56cb;
+    font-weight: 300;
+    background: transparent;
+    padding: 0 4px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .status-result {
+    display: none;
+  }
+
+  form {
+    width: 100%;
+    margin: 20px 0;
+  }
+
+  .submit-button {
+    font-family: sans-serif;
+    font-family: var(--verdocs-font);
+    text-transform: uppercase;
+    background: #50be80;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    color: white;
+    border: none;
+    outline: none;
+    width: 120px;
+    height: 32px;
+    margin: 30px auto 0;
+    display: block;
+  }
+}
