@@ -1,0 +1,21 @@
+verdocs-text-button {
+  .button {
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #4c56cb;
+    font-weight: 400;
+    outline: none;
+    background: transparent;
+    padding: 0 4px;
+
+    &:disabled {
+      color: #999;
+      cursor: none;
+    }
+
+    &:active {
+      color: #5962cb;
+    }
+  }
+}

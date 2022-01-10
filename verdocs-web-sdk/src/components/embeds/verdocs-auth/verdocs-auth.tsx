@@ -1,12 +1,13 @@
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
+import {Transport} from '@verdocs/js-sdk/HTTP';
 import {Auth} from '@verdocs/js-sdk/Users';
+import {endSession, getSession, setSession} from '../../../api/session';
+import {IActiveSession} from '@verdocs/js-sdk/Users/Types';
 
 export interface IAuthStatus {
   authenticated: boolean;
   session: any | null;
 }
-
-export type TSessionSource = 'verdocs-user' | 'verdocs-sign';
 
 /**
  * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
@@ -27,7 +28,7 @@ export type TSessionSource = 'verdocs-user' | 'verdocs-sign';
  *   authenticated: boolean;
  *
  *   // Details for the user's session
- *   session: any | null;
+ *   session: IActiveSession | null;
  * }
  * ```
  */
@@ -52,7 +53,7 @@ export class VerdocsAuth {
    * It is also possible to specify other values here to target private / sandboxed session environments.
    * This should only be done after discussion with a Verdocs Customer Solutions Engineering contact.
    */
-  @Prop() source: TSessionSource = 'verdocs-user';
+  @Prop() source: 'verdocs-user' | 'verdocs-sign' = 'verdocs-user';
 
   /**
    * By default, a Verdocs logo will be displayed above the login/signup forms. This may be used to
@@ -75,27 +76,26 @@ export class VerdocsAuth {
 
   @State() isAuthenticated: boolean = false;
   @State() displayMode: string = 'login';
+  @State() username: string = '';
+  @State() password: string = '';
+  @State() loggingIn: boolean = false;
+  @State() activeSession: IActiveSession | null = null;
+  @State() loginError: string | null = null;
 
-  componentWillLoad() {}
+  componentWillLoad() {
+    Transport.setBaseUrl('https://stage-api.verdocs.com/');
+    getSession(this.source);
+  }
 
   componentDidLoad() {
-    console.log('[Verdocs Auth] Validating user session');
-    const token = localStorage.getItem(this.source);
-    if (!token) {
-      this.isAuthenticated = false;
+    const session = getSession(this.source);
+    if (session) {
+      this.isAuthenticated = true;
+      this.activeSession = session;
+      this.authenticated.emit({authenticated: true, session});
+    } else {
       this.authenticated.emit({authenticated: false, session: null});
-      return;
     }
-
-    console.log('Loaded token', token);
-    this.isAuthenticated = true;
-    Auth.validateToken({token})
-      .then(r => {
-        console.log('Validated token', r);
-      })
-      .catch(e => {
-        console.log('Error validating token', e);
-      });
   }
 
   // handleSelectOption(option: IMenuOption) {
@@ -103,14 +103,52 @@ export class VerdocsAuth {
   //   this.authenticated.emit(option);
   // }
 
-  handleLogin(e: any) {
-    e.preventDefault();
-    console.log('login', e);
+  handleLogin() {
+    this.loggingIn = true;
+    Auth.authenticateUser({username: this.username, password: this.password})
+      .then(r => {
+        this.loggingIn = false;
+        console.log('Login result', r.accessToken);
+        const session = setSession(this.source, r.accessToken, true);
+        this.isAuthenticated = true;
+        console.log('set session', session);
+        this.authenticated.emit({authenticated: true, session});
+      })
+      .catch(e => {
+        console.log('Login error', JSON.stringify(e));
+        console.log('e.response', e.response);
+        this.loggingIn = false;
+        this.authenticated.emit({authenticated: false, session: null});
+
+        if (e?.response?.status === 403) {
+          this.loginError = 'Please check your username and password and try again.';
+        }
+      });
+  }
+
+  handleLogout() {
+    endSession(this.source);
+    this.isAuthenticated = false;
+    this.authenticated.emit({authenticated: false, session: null});
+  }
+
+  handleClearError() {
+    this.loginError = null;
   }
 
   render() {
     if (this.isAuthenticated) {
-      return this.debug ? <div class="status-result">Authenticated</div> : <div class="status-result">Authenticated</div>;
+      if (this.debug) {
+        return (
+          <div class="status-result debug">
+            <verdocs-button label="Logout" disabled={this.loggingIn} onPress={() => this.handleLogout()} />
+
+            {JSON.stringify(this.activeSession, null, 2)}
+          </div>
+        );
+      }
+
+      return <div class="status-result">Authenticated</div>;
     }
 
     if (this.displayMode === 'signup') {
@@ -121,49 +159,53 @@ export class VerdocsAuth {
           <h3>Sign up for an account</h3>
           <h4>
             Already have an account?
-            <button class="text-button" aria-label="Sign Up" onClick={() => (this.displayMode = 'login')}>
-              Log In
-            </button>
+            <verdocs-text-button label="Log In" onClick={() => (this.displayMode = 'login')} disabled={this.loggingIn} />
           </h4>
 
-          <form onSubmit={e => this.handleLogin(e)}>
-            <verdocs-text-input label="Email" autocomplete="username" />
-            <verdocs-text-input label="Password" type="password" autocomplete="current-password" />
+          <form onSubmit={() => this.handleLogin()}>
+            <verdocs-text-input label="Email" autocomplete="username" value={this.username} onTinput={e => (this.username = e.detail)} disabled={this.loggingIn} />
+            <verdocs-text-input
+              label="Password"
+              type="password"
+              autocomplete="current-password"
+              value={this.password}
+              onTinput={e => (this.password = e.detail)}
+              disabled={this.loggingIn}
+            />
 
-            <button type="submit" class="submit-button" aria-label="Sign Up">
-              Signup
-            </button>
+            <verdocs-button label="Signup" disabled={this.loggingIn} onPress={() => this.handleLogin()} />
           </form>
-
-          <div class="items">{this.source}</div>
         </div>
       );
     }
 
     return (
-      <div class="login-form">
+      <div class="login-form" style={{display: this.visible ? 'block' : 'none'}}>
         <img src={this.logo} alt="Verdocs Logo" class="logo" />
 
         <h3>Log in to your account</h3>
         <h4>
           Don't have an account?
-          <button class="text-button" aria-label="Sign Up" onClick={() => (this.displayMode = 'signup')}>
-            Sign Up
-          </button>
+          <verdocs-text-button label="Sign Up" onClick={() => (this.displayMode = 'signup')} disabled={this.loggingIn} />
         </h4>
 
-        <form onSubmit={e => this.handleLogin(e)}>
-          <verdocs-text-input label="Email" autocomplete="username" />
-          <verdocs-text-input label="Password" type="password" autocomplete="current-password" />
+        <form onSubmit={() => this.handleLogin()}>
+          <verdocs-text-input label="Email" autocomplete="username" value={this.username} onTinput={e => (this.username = e.detail)} disabled={this.loggingIn} />
+          <verdocs-text-input
+            label="Password"
+            type="password"
+            autocomplete="current-password"
+            value={this.password}
+            onTinput={e => (this.password = e.detail)}
+            disabled={this.loggingIn}
+          />
 
-          <button class="forgot-button" aria-label="Sign Up" onClick={() => (this.displayMode = 'signup')}>
-            Forgot your password?
-          </button>
+          <verdocs-text-button label="Forgot Your Password?" onClick={() => (this.displayMode = 'signup')} disabled={this.loggingIn} style={{alignSelf: 'center'}} />
 
-          <button type="submit" class="submit-button" aria-label="Log In">
-            Login
-          </button>
+          <verdocs-button label="Login" disabled={this.loggingIn} onPress={() => this.handleLogin()} />
         </form>
+
+        {this.loginError ? <verdocs-ok-dialog open={true} heading="Login Error" message={this.loginError} onClosed={() => this.handleClearError()} /> : <div />}
       </div>
     );
   }

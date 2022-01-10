@@ -38,6 +38,11 @@ export class VerdocsTextInput {
    */
   @Prop() type: 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url' = 'text';
 
+  /**
+   * Should the field be disabled?
+   */
+  @Prop() disabled: boolean = false;
+
   @State() _value: string = '';
 
   /**
@@ -83,6 +88,7 @@ export class VerdocsTextInput {
             type={this.type}
             placeholder={this.placeholder}
             autoComplete={this.autocomplete}
+            disabled={this.disabled}
             value={this._value}
             class="input-element"
             onInput={event => this.handleInput(event)}

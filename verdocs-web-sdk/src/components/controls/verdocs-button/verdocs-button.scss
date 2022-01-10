@@ -1,0 +1,28 @@
+verdocs-button {
+  .button {
+    font-family: sans-serif;
+    font-family: var(--verdocs-font);
+    text-transform: uppercase;
+    background: #50be80;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    color: white;
+    border: none;
+    outline: none;
+    width: 120px;
+    height: 32px;
+    margin: 30px auto 0;
+    display: block;
+    cursor: pointer;
+
+    &:disabled {
+      background-color: #999;
+      cursor: none;
+    }
+
+    &:active {
+      background: #5fc388;
+    }
+  }
+}

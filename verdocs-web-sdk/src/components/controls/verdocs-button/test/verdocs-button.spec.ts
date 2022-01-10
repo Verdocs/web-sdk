@@ -1,38 +1,38 @@
 import {newSpecPage} from '@stencil/core/testing';
-import {TextInput} from '../dropdown-menu';
+import {VerdocsButton} from '../verdocs-button';
 
-describe('dropdown-menu', () => {
+describe('verdocs-button', () => {
   it('renders', async () => {
     const {root} = await newSpecPage({
-      components: [TextInput],
-      html: '<dropdown-menu></dropdown-menu>',
+      components: [VerdocsButton],
+      html: '<verdocs-button></verdocs-button>',
     });
     expect(root).toEqualHtml(`
-      <dropdown-menu>
+      <verdocs-button>
         <mock:shadow-root>
           <div>
             <button class="arrow"></button>
             <div class="items"></div>
           </div>
         </mock:shadow-root>
-      </dropdown-menu>
+      </verdocs-button>
     `);
   });
 
   it('renders with values', async () => {
     const {root} = await newSpecPage({
-      components: [TextInput],
-      html: `<dropdown-menu></dropdown-menu>`,
+      components: [VerdocsButton],
+      html: `<verdocs-button></verdocs-button>`,
     });
     expect(root).toEqualHtml(`
-      <dropdown-menu>
+      <verdocs-button>
         <mock:shadow-root>
           <div>
              <button class="arrow"></button>
               <div class="items"></div>
           </div>
         </mock:shadow-root>
-      </dropdown-menu>
+      </verdocs-button>
     `);
   });
 });

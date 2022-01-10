@@ -353,6 +353,64 @@ export class VerdocsAuth {
 }
 
 
+export declare interface VerdocsButton extends Components.VerdocsButton {
+  /**
+   * Event fired when the button is pressed. 
+   */
+  press: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  tagName: 'verdocs-button',
+  customElement: undefined,
+  inputs: ['disabled', 'label', 'type']
+})
+@Component({
+  selector: 'verdocs-button',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['disabled', 'label', 'type']
+})
+export class VerdocsButton {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['press']);
+  }
+}
+
+
+export declare interface VerdocsOkDialog extends Components.VerdocsOkDialog {
+  /**
+   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   */
+  closed: EventEmitter<CustomEvent<'cancel' | 'ok'>>;
+
+}
+
+@ProxyCmp({
+  tagName: 'verdocs-ok-dialog',
+  customElement: undefined,
+  inputs: ['heading', 'message', 'open']
+})
+@Component({
+  selector: 'verdocs-ok-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['heading', 'message', 'open']
+})
+export class VerdocsOkDialog {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['closed']);
+  }
+}
+
+
 export declare interface VerdocsSearch extends Components.VerdocsSearch {}
 
 @ProxyCmp({
@@ -393,6 +451,35 @@ export class VerdocsSign {
 }
 
 
+export declare interface VerdocsTextButton extends Components.VerdocsTextButton {
+  /**
+   * Event fired when the button is clicked. 
+   */
+  press: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  tagName: 'verdocs-text-button',
+  customElement: undefined,
+  inputs: ['disabled', 'label', 'type']
+})
+@Component({
+  selector: 'verdocs-text-button',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['disabled', 'label', 'type']
+})
+export class VerdocsTextButton {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['press']);
+  }
+}
+
+
 export declare interface VerdocsTextInput extends Components.VerdocsTextInput {
   /**
    * Event fired when the input value changes. 
@@ -412,13 +499,13 @@ export declare interface VerdocsTextInput extends Components.VerdocsTextInput {
 @ProxyCmp({
   tagName: 'verdocs-text-input',
   customElement: undefined,
-  inputs: ['autocomplete', 'label', 'placeholder', 'type', 'value']
+  inputs: ['autocomplete', 'disabled', 'label', 'placeholder', 'type', 'value']
 })
 @Component({
   selector: 'verdocs-text-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['autocomplete', 'label', 'placeholder', 'type', 'value']
+  inputs: ['autocomplete', 'disabled', 'label', 'placeholder', 'type', 'value']
 })
 export class VerdocsTextInput {
   protected el: HTMLElement;

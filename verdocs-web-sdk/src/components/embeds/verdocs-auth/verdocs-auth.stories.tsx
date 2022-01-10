@@ -19,6 +19,4 @@ export default {
   },
 } as Meta;
 
-// See https://lit-html.polymer-project.org/guide/template-reference "Binding Types" for an explanation of '.' vs '@'
-export const Default = ({visible, source, debug, authenticated}) =>
-  html`<verdocs-auth .visible=${visible} .source=${source} .debug=${debug} @authenticated=${authenticated} tall />`;
+export const Default = ({visible, source, debug, authenticated}) => html`<verdocs-auth .visible=${visible} .source=${source} .debug=${debug} @authenticated=${authenticated} />`;

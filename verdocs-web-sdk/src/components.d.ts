@@ -10,7 +10,7 @@ import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
 import { ISearchEvent, TContentType } from "./components/elements/search-box/search-box";
 import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
 import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
-import { IAuthStatus, TSessionSource } from "./components/embeds/verdocs-auth/verdocs-auth";
+import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export namespace Components {
     interface DocumentStatusIndicator {
         /**
@@ -117,21 +117,67 @@ export namespace Components {
         /**
           * By default, this embed will check the user's standard Verdocs session, which allows access to all functions within the platform. Applications only presenting e-signing experiences should use `verdocs-sign` instead, which provides a more streamlined interface - direct login and signup will be disabled, and the user's session will only be checked and loaded if possible.  It is also possible to specify other values here to target private / sandboxed session environments. This should only be done after discussion with a Verdocs Customer Solutions Engineering contact.
          */
-        "source": TSessionSource;
+        "source": 'verdocs-user' | 'verdocs-sign';
         /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
          */
         "visible": boolean;
     }
+    interface VerdocsButton {
+        /**
+          * Whether the button should be disabled.
+         */
+        "disabled": boolean;
+        /**
+          * The label for the  button.
+         */
+        "label": string;
+        /**
+          * The type of the button.
+         */
+        "type": 'button' | 'submit' | 'reset';
+    }
+    interface VerdocsOkDialog {
+        /**
+          * The title of the dialog. "title" is a reserved word, so we use heading.
+         */
+        "heading": string;
+        /**
+          * The message content to display.
+         */
+        "message": string;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open": boolean;
+    }
     interface VerdocsSearch {
     }
     interface VerdocsSign {
+    }
+    interface VerdocsTextButton {
+        /**
+          * Whether the button should be disabled.
+         */
+        "disabled": boolean;
+        /**
+          * The label for the  button.
+         */
+        "label": string;
+        /**
+          * The type of the button.
+         */
+        "type": 'button' | 'submit' | 'reset';
     }
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
          */
         "autocomplete": string;
+        /**
+          * Should the field be disabled?
+         */
+        "disabled": boolean;
         /**
           * The label for the field.
          */
@@ -239,6 +285,18 @@ declare global {
         prototype: HTMLVerdocsAuthElement;
         new (): HTMLVerdocsAuthElement;
     };
+    interface HTMLVerdocsButtonElement extends Components.VerdocsButton, HTMLStencilElement {
+    }
+    var HTMLVerdocsButtonElement: {
+        prototype: HTMLVerdocsButtonElement;
+        new (): HTMLVerdocsButtonElement;
+    };
+    interface HTMLVerdocsOkDialogElement extends Components.VerdocsOkDialog, HTMLStencilElement {
+    }
+    var HTMLVerdocsOkDialogElement: {
+        prototype: HTMLVerdocsOkDialogElement;
+        new (): HTMLVerdocsOkDialogElement;
+    };
     interface HTMLVerdocsSearchElement extends Components.VerdocsSearch, HTMLStencilElement {
     }
     var HTMLVerdocsSearchElement: {
@@ -250,6 +308,12 @@ declare global {
     var HTMLVerdocsSignElement: {
         prototype: HTMLVerdocsSignElement;
         new (): HTMLVerdocsSignElement;
+    };
+    interface HTMLVerdocsTextButtonElement extends Components.VerdocsTextButton, HTMLStencilElement {
+    }
+    var HTMLVerdocsTextButtonElement: {
+        prototype: HTMLVerdocsTextButtonElement;
+        new (): HTMLVerdocsTextButtonElement;
     };
     interface HTMLVerdocsTextInputElement extends Components.VerdocsTextInput, HTMLStencilElement {
     }
@@ -277,8 +341,11 @@ declare global {
         "template-card": HTMLTemplateCardElement;
         "toggle-icon-buttons": HTMLToggleIconButtonsElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
+        "verdocs-button": HTMLVerdocsButtonElement;
+        "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-search": HTMLVerdocsSearchElement;
         "verdocs-sign": HTMLVerdocsSignElement;
+        "verdocs-text-button": HTMLVerdocsTextButtonElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
         "verdocs-view": HTMLVerdocsViewElement;
     }
@@ -429,21 +496,79 @@ declare namespace LocalJSX {
         /**
           * By default, this embed will check the user's standard Verdocs session, which allows access to all functions within the platform. Applications only presenting e-signing experiences should use `verdocs-sign` instead, which provides a more streamlined interface - direct login and signup will be disabled, and the user's session will only be checked and loaded if possible.  It is also possible to specify other values here to target private / sandboxed session environments. This should only be done after discussion with a Verdocs Customer Solutions Engineering contact.
          */
-        "source"?: TSessionSource;
+        "source"?: 'verdocs-user' | 'verdocs-sign';
         /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
          */
         "visible"?: boolean;
     }
+    interface VerdocsButton {
+        /**
+          * Whether the button should be disabled.
+         */
+        "disabled"?: boolean;
+        /**
+          * The label for the  button.
+         */
+        "label"?: string;
+        /**
+          * Event fired when the button is pressed.
+         */
+        "onPress"?: (event: CustomEvent<string>) => void;
+        /**
+          * The type of the button.
+         */
+        "type"?: 'button' | 'submit' | 'reset';
+    }
+    interface VerdocsOkDialog {
+        /**
+          * The title of the dialog. "title" is a reserved word, so we use heading.
+         */
+        "heading"?: string;
+        /**
+          * The message content to display.
+         */
+        "message"?: string;
+        /**
+          * Event fired when the dialog is closed. The event data will contain the closure reason.
+         */
+        "onClosed"?: (event: CustomEvent<'cancel' | 'ok'>) => void;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open"?: boolean;
+    }
     interface VerdocsSearch {
     }
     interface VerdocsSign {
+    }
+    interface VerdocsTextButton {
+        /**
+          * Whether the button should be disabled.
+         */
+        "disabled"?: boolean;
+        /**
+          * The label for the  button.
+         */
+        "label"?: string;
+        /**
+          * Event fired when the button is clicked.
+         */
+        "onPress"?: (event: CustomEvent<string>) => void;
+        /**
+          * The type of the button.
+         */
+        "type"?: 'button' | 'submit' | 'reset';
     }
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
          */
         "autocomplete"?: string;
+        /**
+          * Should the field be disabled?
+         */
+        "disabled"?: boolean;
         /**
           * The label for the field.
          */
@@ -499,8 +624,11 @@ declare namespace LocalJSX {
         "template-card": TemplateCard;
         "toggle-icon-buttons": ToggleIconButtons;
         "verdocs-auth": VerdocsAuth;
+        "verdocs-button": VerdocsButton;
+        "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-search": VerdocsSearch;
         "verdocs-sign": VerdocsSign;
+        "verdocs-text-button": VerdocsTextButton;
         "verdocs-text-input": VerdocsTextInput;
         "verdocs-view": VerdocsView;
     }
@@ -522,8 +650,11 @@ declare module "@stencil/core" {
             "template-card": LocalJSX.TemplateCard & JSXBase.HTMLAttributes<HTMLTemplateCardElement>;
             "toggle-icon-buttons": LocalJSX.ToggleIconButtons & JSXBase.HTMLAttributes<HTMLToggleIconButtonsElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
+            "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
+            "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
+            "verdocs-text-button": LocalJSX.VerdocsTextButton & JSXBase.HTMLAttributes<HTMLVerdocsTextButtonElement>;
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
             "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
         }
