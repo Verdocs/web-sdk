@@ -7,7 +7,7 @@ export default {
   args: {
     debug: true,
     visible: true,
-    source: 'verdocs-user',
+    logo: 'https://verdocs.com/assets/blue-logo.svg',
   },
   argTypes: {
     authenticated: {
@@ -19,4 +19,4 @@ export default {
   },
 } as Meta;
 
-export const Default = ({visible, source, debug, authenticated}) => html`<verdocs-auth .visible=${visible} .source=${source} .debug=${debug} @authenticated=${authenticated} />`;
+export const Default = ({visible, logo, debug, authenticated}) => html`<verdocs-auth .visible=${visible} .logo=${logo} .debug=${debug} @authenticated=${authenticated} />`;

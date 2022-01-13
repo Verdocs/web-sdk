@@ -1,0 +1,77 @@
+verdocs-dropdown {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+  display: block;
+
+  .arrow {
+    width: 32px;
+    height: 26px;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    align-items: center;
+    display: inline-flex;
+    border: 1px solid #ccc;
+    justify-content: center;
+  }
+
+  .arrow svg {
+    fill: #50be80;
+    transition: 0.3s;
+  }
+
+  .items {
+    width: 200px;
+    display: none;
+    border-radius: 5px;
+    background: #33364b;
+    border: 1px solid #654dcb;
+  }
+
+  .items[data-show] {
+    display: block;
+  }
+
+  .option {
+    width: 100%;
+    color: #fff;
+    border: none;
+    display: block;
+    text-align: left;
+    background: none;
+    padding: 10px 20px;
+  }
+
+  .option:hover {
+    cursor: pointer;
+    background: #50be80;
+  }
+
+  .option[disabled] {
+    color: #aaa;
+  }
+
+  .option[disabled]:hover {
+    color: #aaa;
+    cursor: inherit;
+    background: transparent;
+  }
+
+  &.open {
+    .items {
+      display: block;
+    }
+
+    .arrow {
+      background: #4c56cb;
+      border: 1px solid #707ae5;
+    }
+
+    .arrow svg {
+      /*transform: rotate(180deg);*/
+      transform: scaleY(-1);
+      fill: #fff;
+    }
+  }
+}

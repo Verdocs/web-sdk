@@ -6,31 +6,17 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { TDocumentStatus } from "@verdocs/js-sdk/Documents/Documents";
-import { IMenuOption } from "./components/controls/dropdown-menu/dropdown-menu";
 import { ISearchEvent, TContentType } from "./components/elements/search-box/search-box";
 import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
 import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
+import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 export namespace Components {
     interface DocumentStatusIndicator {
         /**
           * The status to display
          */
         "status": TDocumentStatus;
-    }
-    interface DropdownMenu {
-        /**
-          * If set, the component will be open by default. This is primarily intended to be used for testing.
-         */
-        "open": boolean;
-        /**
-          * The menu options to display.
-         */
-        "options": IMenuOption[];
-        /**
-          * If set, the component will reserve space for Storybook-display purposes.
-         */
-        "tall": boolean;
     }
     interface OrgPopup {
         /**
@@ -115,10 +101,6 @@ export namespace Components {
          */
         "logo": string;
         /**
-          * By default, this embed will check the user's standard Verdocs session, which allows access to all functions within the platform. Applications only presenting e-signing experiences should use `verdocs-sign` instead, which provides a more streamlined interface - direct login and signup will be disabled, and the user's session will only be checked and loaded if possible.  It is also possible to specify other values here to target private / sandboxed session environments. This should only be done after discussion with a Verdocs Customer Solutions Engineering contact.
-         */
-        "source": 'verdocs-user' | 'verdocs-sign';
-        /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
          */
         "visible": boolean;
@@ -137,6 +119,16 @@ export namespace Components {
          */
         "type": 'button' | 'submit' | 'reset';
     }
+    interface VerdocsDropdown {
+        /**
+          * If set, the component will be open by default. This is primarily intended to be used for testing.
+         */
+        "open": boolean;
+        /**
+          * The menu options to display.
+         */
+        "options": IMenuOption[];
+    }
     interface VerdocsOkDialog {
         /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
@@ -154,6 +146,18 @@ export namespace Components {
     interface VerdocsSearch {
     }
     interface VerdocsSign {
+        /**
+          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+         */
+        "documentid": string | null;
+        /**
+          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+         */
+        "invitecode": string | null;
+        /**
+          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+         */
+        "roleid": string | null;
     }
     interface VerdocsTextButton {
         /**
@@ -201,9 +205,13 @@ export namespace Components {
          */
         "rotation": 0 | 90 | 180 | 270;
         /**
-          * Src of the PDF to load and render {string}
+          * Src of the PDF to load and render
          */
         "source": string;
+        /**
+          * Access token to use. This component is a wrapper for PDF.js which does not use a VerdocsEndpoint, so the token must be supplied directly.
+         */
+        "token": string | null;
     }
 }
 declare global {
@@ -212,12 +220,6 @@ declare global {
     var HTMLDocumentStatusIndicatorElement: {
         prototype: HTMLDocumentStatusIndicatorElement;
         new (): HTMLDocumentStatusIndicatorElement;
-    };
-    interface HTMLDropdownMenuElement extends Components.DropdownMenu, HTMLStencilElement {
-    }
-    var HTMLDropdownMenuElement: {
-        prototype: HTMLDropdownMenuElement;
-        new (): HTMLDropdownMenuElement;
     };
     interface HTMLOrgPopupElement extends Components.OrgPopup, HTMLStencilElement {
     }
@@ -291,6 +293,12 @@ declare global {
         prototype: HTMLVerdocsButtonElement;
         new (): HTMLVerdocsButtonElement;
     };
+    interface HTMLVerdocsDropdownElement extends Components.VerdocsDropdown, HTMLStencilElement {
+    }
+    var HTMLVerdocsDropdownElement: {
+        prototype: HTMLVerdocsDropdownElement;
+        new (): HTMLVerdocsDropdownElement;
+    };
     interface HTMLVerdocsOkDialogElement extends Components.VerdocsOkDialog, HTMLStencilElement {
     }
     var HTMLVerdocsOkDialogElement: {
@@ -329,7 +337,6 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "document-status-indicator": HTMLDocumentStatusIndicatorElement;
-        "dropdown-menu": HTMLDropdownMenuElement;
         "org-popup": HTMLOrgPopupElement;
         "search-box": HTMLSearchBoxElement;
         "search-quick-functions": HTMLSearchQuickFunctionsElement;
@@ -342,6 +349,7 @@ declare global {
         "toggle-icon-buttons": HTMLToggleIconButtonsElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-button": HTMLVerdocsButtonElement;
+        "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-search": HTMLVerdocsSearchElement;
         "verdocs-sign": HTMLVerdocsSignElement;
@@ -356,24 +364,6 @@ declare namespace LocalJSX {
           * The status to display
          */
         "status"?: TDocumentStatus;
-    }
-    interface DropdownMenu {
-        /**
-          * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
-         */
-        "onOptionSelected"?: (event: CustomEvent<IMenuOption>) => void;
-        /**
-          * If set, the component will be open by default. This is primarily intended to be used for testing.
-         */
-        "open"?: boolean;
-        /**
-          * The menu options to display.
-         */
-        "options"?: IMenuOption[];
-        /**
-          * If set, the component will reserve space for Storybook-display purposes.
-         */
-        "tall"?: boolean;
     }
     interface OrgPopup {
         /**
@@ -494,10 +484,6 @@ declare namespace LocalJSX {
          */
         "onAuthenticated"?: (event: CustomEvent<IAuthStatus>) => void;
         /**
-          * By default, this embed will check the user's standard Verdocs session, which allows access to all functions within the platform. Applications only presenting e-signing experiences should use `verdocs-sign` instead, which provides a more streamlined interface - direct login and signup will be disabled, and the user's session will only be checked and loaded if possible.  It is also possible to specify other values here to target private / sandboxed session environments. This should only be done after discussion with a Verdocs Customer Solutions Engineering contact.
-         */
-        "source"?: 'verdocs-user' | 'verdocs-sign';
-        /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
          */
         "visible"?: boolean;
@@ -520,6 +506,20 @@ declare namespace LocalJSX {
          */
         "type"?: 'button' | 'submit' | 'reset';
     }
+    interface VerdocsDropdown {
+        /**
+          * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
+         */
+        "onOptionSelected"?: (event: CustomEvent<IMenuOption>) => void;
+        /**
+          * If set, the component will be open by default. This is primarily intended to be used for testing.
+         */
+        "open"?: boolean;
+        /**
+          * The menu options to display.
+         */
+        "options"?: IMenuOption[];
+    }
     interface VerdocsOkDialog {
         /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
@@ -541,6 +541,22 @@ declare namespace LocalJSX {
     interface VerdocsSearch {
     }
     interface VerdocsSign {
+        /**
+          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+         */
+        "documentid"?: string | null;
+        /**
+          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+         */
+        "invitecode"?: string | null;
+        /**
+          * Event fired when a signing session has been obtained.
+         */
+        "onAuthenticated"?: (event: CustomEvent<any>) => void;
+        /**
+          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+         */
+        "roleid"?: string | null;
     }
     interface VerdocsTextButton {
         /**
@@ -606,13 +622,16 @@ declare namespace LocalJSX {
          */
         "rotation"?: 0 | 90 | 180 | 270;
         /**
-          * Src of the PDF to load and render {string}
+          * Src of the PDF to load and render
          */
         "source"?: string;
+        /**
+          * Access token to use. This component is a wrapper for PDF.js which does not use a VerdocsEndpoint, so the token must be supplied directly.
+         */
+        "token"?: string | null;
     }
     interface IntrinsicElements {
         "document-status-indicator": DocumentStatusIndicator;
-        "dropdown-menu": DropdownMenu;
         "org-popup": OrgPopup;
         "search-box": SearchBox;
         "search-quick-functions": SearchQuickFunctions;
@@ -625,6 +644,7 @@ declare namespace LocalJSX {
         "toggle-icon-buttons": ToggleIconButtons;
         "verdocs-auth": VerdocsAuth;
         "verdocs-button": VerdocsButton;
+        "verdocs-dropdown": VerdocsDropdown;
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-search": VerdocsSearch;
         "verdocs-sign": VerdocsSign;
@@ -638,7 +658,6 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "document-status-indicator": LocalJSX.DocumentStatusIndicator & JSXBase.HTMLAttributes<HTMLDocumentStatusIndicatorElement>;
-            "dropdown-menu": LocalJSX.DropdownMenu & JSXBase.HTMLAttributes<HTMLDropdownMenuElement>;
             "org-popup": LocalJSX.OrgPopup & JSXBase.HTMLAttributes<HTMLOrgPopupElement>;
             "search-box": LocalJSX.SearchBox & JSXBase.HTMLAttributes<HTMLSearchBoxElement>;
             "search-quick-functions": LocalJSX.SearchQuickFunctions & JSXBase.HTMLAttributes<HTMLSearchQuickFunctionsElement>;
@@ -651,6 +670,7 @@ declare module "@stencil/core" {
             "toggle-icon-buttons": LocalJSX.ToggleIconButtons & JSXBase.HTMLAttributes<HTMLToggleIconButtonsElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
+            "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;

@@ -1,8 +1,11 @@
-import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
-import {Transport} from '@verdocs/js-sdk/HTTP';
 import {Auth} from '@verdocs/js-sdk/Users';
-import {endSession, getSession, setSession} from '../../../api/session';
 import {IActiveSession} from '@verdocs/js-sdk/Users/Types';
+import {Transport, VerdocsEndpoint} from '@verdocs/js-sdk/HTTP';
+import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
+import {loadSession, setSession} from '@verdocs/js-sdk/Users/Auth';
+
+const BASE_URL = 'https://stage-api.verdocs.com/';
+const SOURCE = 'verdocs-stage';
 
 export interface IAuthStatus {
   authenticated: boolean;
@@ -45,17 +48,6 @@ export class VerdocsAuth {
   @Prop() visible: boolean = true;
 
   /**
-   * By default, this embed will check the user's standard Verdocs session, which allows access to all
-   * functions within the platform. Applications only presenting e-signing experiences should use
-   * `verdocs-sign` instead, which provides a more streamlined interface - direct login and signup will be
-   * disabled, and the user's session will only be checked and loaded if possible.
-   *
-   * It is also possible to specify other values here to target private / sandboxed session environments.
-   * This should only be done after discussion with a Verdocs Customer Solutions Engineering contact.
-   */
-  @Prop() source: 'verdocs-user' | 'verdocs-sign' = 'verdocs-user';
-
-  /**
    * By default, a Verdocs logo will be displayed above the login/signup forms. This may be used to
    * override its source. (Alternatively, you may simply hide it via CSS overrides.) Logos should be
    * in SVG format for best results.
@@ -67,7 +59,7 @@ export class VerdocsAuth {
    * if the user's session details will be displayed instead. This may be useful while debugging authentication
    * flows in new applications.
    */
-  @Prop() debug: boolean = true;
+  @Prop() debug: boolean = false;
 
   /**
    * Event fired when session authentication process has completed. Check the event contents for completion status.
@@ -83,15 +75,17 @@ export class VerdocsAuth {
   @State() loginError: string | null = null;
 
   componentWillLoad() {
-    Transport.setBaseUrl('https://stage-api.verdocs.com/');
-    getSession(this.source);
+    const staging = new VerdocsEndpoint({baseURL: BASE_URL});
+    Transport.setActiveEndpoint(staging);
+    console.log('Set active endpoint', Transport.getEndpoint());
   }
 
   componentDidLoad() {
-    const session = getSession(this.source);
-    if (session) {
+    const session = loadSession(SOURCE);
+    console.log('loaded session', session, SOURCE);
+    if (session !== null) {
       this.isAuthenticated = true;
-      this.activeSession = session;
+      this.activeSession = session as IActiveSession;
       this.authenticated.emit({authenticated: true, session});
     } else {
       this.authenticated.emit({authenticated: false, session: null});
@@ -109,15 +103,16 @@ export class VerdocsAuth {
       .then(r => {
         this.loggingIn = false;
         console.log('Login result', r.accessToken);
-        const session = setSession(this.source, r.accessToken, true);
+        const session = setSession(SOURCE, r.accessToken, true);
+        this.activeSession = session as IActiveSession;
         this.isAuthenticated = true;
         console.log('set session', session);
         this.authenticated.emit({authenticated: true, session});
       })
       .catch(e => {
-        console.log('Login error', JSON.stringify(e));
-        console.log('e.response', e.response);
+        console.log('Login error', e.response, JSON.stringify(e));
         this.loggingIn = false;
+        this.activeSession = null;
         this.authenticated.emit({authenticated: false, session: null});
 
         if (e?.response?.status === 403) {
@@ -127,7 +122,7 @@ export class VerdocsAuth {
   }
 
   handleLogout() {
-    endSession(this.source);
+    // endSession(SOURCE);
     this.isAuthenticated = false;
     this.authenticated.emit({authenticated: false, session: null});
   }

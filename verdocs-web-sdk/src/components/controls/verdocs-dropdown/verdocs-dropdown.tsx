@@ -1,3 +1,4 @@
+import {Host} from '@stencil/core';
 import {createPopper, Instance} from '@popperjs/core';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import SortDown from './down-arrow.svg';
@@ -28,10 +29,10 @@ export interface IMenuOption {
  * ```
  */
 @Component({
-  tag: 'dropdown-menu',
-  styleUrl: 'dropdown-menu.scss',
+  tag: 'verdocs-dropdown',
+  styleUrl: 'verdocs-dropdown.scss',
 })
-export class DropdownMenu {
+export class VerdocsDropdown {
   private dropdownButton?: HTMLButtonElement;
   private dropdownMenu?: HTMLDivElement;
   private popper?: Instance;
@@ -45,11 +46,6 @@ export class DropdownMenu {
    * If set, the component will be open by default. This is primarily intended to be used for testing.
    */
   @Prop() open: boolean;
-
-  /**
-   * If set, the component will reserve space for Storybook-display purposes.
-   */
-  @Prop() tall: boolean;
 
   /**
    * If set, the component will be open by default.
@@ -73,6 +69,7 @@ export class DropdownMenu {
   handleSelectOption(option: IMenuOption) {
     this.isOpen = false;
     this.optionSelected.emit(option);
+    this.hide();
   }
 
   // See https://popper.js.org/docs/v2/tutorial/
@@ -90,7 +87,24 @@ export class DropdownMenu {
     this.popper?.update();
   }
 
-  hideDropdown() {
+  handleHideDropdown(e: any) {
+    if (e?.target?.localName === 'button' && e?.target?.className === 'arrow') {
+      // This event is fired when a menu element is clicked because the button "loses focus" then too
+      return;
+    }
+
+    this.hide();
+  }
+
+  toggleDropdown() {
+    if (this.isOpen) {
+      this.hide();
+    } else {
+      this.showDropdown();
+    }
+  }
+
+  hide() {
     this.isOpen = false;
     this.dropdownMenu.removeAttribute('data-show');
     this.dropdownMenu.setAttribute('aria-hidden', 'true');
@@ -100,23 +114,15 @@ export class DropdownMenu {
     }));
   }
 
-  toggleDropdown() {
-    if (this.isOpen) {
-      this.hideDropdown();
-    } else {
-      this.showDropdown();
-    }
-  }
-
   render() {
     return (
-      <div class={{open: !!this.isOpen}}>
+      <Host class={{storybook: !!window?.['STORYBOOK_ENV'], open: !!this.isOpen}}>
         <button
           class="arrow"
           innerHTML={SortDown}
           aria-label="Open Menu"
           onClick={() => this.toggleDropdown()}
-          onBlur={() => this.hideDropdown()}
+          onBlur={e => this.handleHideDropdown(e)}
           ref={el => (this.dropdownButton = el as HTMLButtonElement)}
         />
 
@@ -127,7 +133,7 @@ export class DropdownMenu {
             </button>
           ))}
         </div>
-      </div>
+      </Host>
     );
   }
 }

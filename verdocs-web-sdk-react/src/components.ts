@@ -9,7 +9,6 @@ import { defineCustomElements } from '@verdocs/web-sdk/loader';
 
 defineCustomElements();
 export const DocumentStatusIndicator = /*@__PURE__*/createReactComponent<JSX.DocumentStatusIndicator, HTMLDocumentStatusIndicatorElement>('document-status-indicator');
-export const DropdownMenu = /*@__PURE__*/createReactComponent<JSX.DropdownMenu, HTMLDropdownMenuElement>('dropdown-menu');
 export const OrgPopup = /*@__PURE__*/createReactComponent<JSX.OrgPopup, HTMLOrgPopupElement>('org-popup');
 export const SearchBox = /*@__PURE__*/createReactComponent<JSX.SearchBox, HTMLSearchBoxElement>('search-box');
 export const SearchQuickFunctions = /*@__PURE__*/createReactComponent<JSX.SearchQuickFunctions, HTMLSearchQuickFunctionsElement>('search-quick-functions');
@@ -22,6 +21,7 @@ export const TemplateCard = /*@__PURE__*/createReactComponent<JSX.TemplateCard, 
 export const ToggleIconButtons = /*@__PURE__*/createReactComponent<JSX.ToggleIconButtons, HTMLToggleIconButtonsElement>('toggle-icon-buttons');
 export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HTMLVerdocsAuthElement>('verdocs-auth');
 export const VerdocsButton = /*@__PURE__*/createReactComponent<JSX.VerdocsButton, HTMLVerdocsButtonElement>('verdocs-button');
+export const VerdocsDropdown = /*@__PURE__*/createReactComponent<JSX.VerdocsDropdown, HTMLVerdocsDropdownElement>('verdocs-dropdown');
 export const VerdocsOkDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsOkDialog, HTMLVerdocsOkDialogElement>('verdocs-ok-dialog');
 export const VerdocsSearch = /*@__PURE__*/createReactComponent<JSX.VerdocsSearch, HTMLVerdocsSearchElement>('verdocs-search');
 export const VerdocsSign = /*@__PURE__*/createReactComponent<JSX.VerdocsSign, HTMLVerdocsSignElement>('verdocs-sign');

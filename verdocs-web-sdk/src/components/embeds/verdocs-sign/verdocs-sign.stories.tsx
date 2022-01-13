@@ -1,19 +1,23 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
-import {action} from '@storybook/addon-actions';
 
 export default {
   title: 'Embeds/Sign',
   component: 'verdocs-sign',
-  args: {},
-  argTypes: {},
+  args: {
+    documentid: 'f484a296-4f4c-4783-9adf-a3302915a503',
+    roleid: 'Recipient 2',
+    invitecode: 'ea2328b1181b26118f5c676119232df6',
+  },
+  argTypes: {
+    authenticated: {
+      action: 'authenticated',
+      table: {
+        disable: true,
+      },
+    },
+  },
 } as Meta;
 
-const listener = {
-  handleEvent(e) {
-    action('selected', e);
-  },
-  capture: true,
-};
-
-export const Default = ({options}) => html`<verdocs-sign .options=${options} @optionSelected=${listener} tall />`;
+export const Default = ({documentid, roleid, invitecode, authenticated}) =>
+  html`<verdocs-sign .documentid=${documentid} .roleid=${roleid} .invitecode=${invitecode} @authenticated=${authenticated} />`;

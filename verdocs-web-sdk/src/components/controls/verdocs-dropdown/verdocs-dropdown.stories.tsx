@@ -13,7 +13,7 @@ export default {
   // Where in Storybook this control will be listed
   title: 'Controls/Dropdown Menu',
   // Hint to help the docs addon find the component
-  component: 'dropdown-menu',
+  component: 'verdocs-dropdown',
   // We can apply default args only shown in Storybook as follows
   args: {
     options: [{label: 'Option 1'}, {label: 'Disabled Option', disabled: true}, {label: 'Option 2'}],
@@ -28,19 +28,9 @@ export default {
         disable: true,
       },
     },
-
-    // Here we take advantage of "hidden" properties to make an undocumented feature. We will allow "tall" to be set as an
-    // attribute to force the component to set a fixed height on its host container. (See the CSS for how this is applied.)
-    // We are doing this only so Storybook can draw it properly, though, and don't want it used as a regular feature, so we
-    // hide it from the documentation
-    tall: {
-      table: {
-        disable: true,
-      },
-    },
   },
 } as Meta;
 
 // See https://lit-html.polymer-project.org/guide/template-reference "Binding Types" for an explanation of '.' vs '@'
-export const Default = ({options, optionSelected}) => html`<dropdown-menu .options=${options} @optionSelected=${optionSelected} tall />`;
-export const Open = ({options, optionSelected}) => html`<dropdown-menu .options=${options} @optionSelected=${optionSelected} tall open />`;
+export const Default = ({options, optionSelected}) => html`<verdocs-dropdown .options=${options} @optionSelected=${optionSelected} />`;
+export const Open = ({options, optionSelected}) => html`<verdocs-dropdown .options=${options} @optionSelected=${optionSelected} open />`;

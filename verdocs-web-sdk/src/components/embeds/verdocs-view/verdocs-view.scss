@@ -4,17 +4,59 @@ verdocs-view {
   font-family: var(--verdocs-font);
   display: flex;
   flex-direction: column;
+  min-height: 600px;
+  background: #ccc;
+  box-sizing: border-box;
+  position: relative;
+
+  div {
+    box-sizing: border-box;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    //position: relative;
+
+    canvas {
+      border: 1px solid #999;
+      background: white;
+    }
+  }
+
+  button.test {
+    color: #fff;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background: #5a5767;
+    border: 1px solid #ccc;
+  }
+
+  .load-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: #000;
+    z-index: 2000;
+
+    .bar {
+      background: #50be80;
+      height: 6px;
+    }
+  }
 }
 
-verdocs-view button.test {
-  color: #fff;
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
-  background: #5a5767;
-  border: 1px solid #ccc;
-}
+#verdocs-pdf-viewer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-#verdocs-view-pdf-container canvas {
-  max-width: 100%;
+  canvas {
+    max-width: 100%;
+    margin: 10px 0;
+  }
 }

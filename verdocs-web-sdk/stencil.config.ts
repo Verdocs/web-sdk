@@ -1,6 +1,7 @@
 import {sass} from '@stencil/sass';
 import {Config} from '@stencil/core';
 import {inlineSvg} from 'stencil-inline-svg';
+import nodePolyfills from 'rollup-plugin-node-polyfills';
 import {reactOutputTarget} from '@stencil/react-output-target';
 import {angularOutputTarget, ValueAccessorConfig} from '@stencil/angular-output-target';
 
@@ -24,6 +25,9 @@ export const config: Config = {
     transform: {
       '^.+\\.svg$': 'jest-svg-transformer',
     },
+  },
+  rollupPlugins: {
+    after: [nodePolyfills()],
   },
   outputTargets: [
     angularOutputTarget({

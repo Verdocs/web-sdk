@@ -11,8 +11,7 @@ import { Components } from '@verdocs/web-sdk';
 export declare interface DocumentStatusIndicator extends Components.DocumentStatusIndicator {}
 
 @ProxyCmp({
-  tagName: 'document-status-indicator',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['status']
 })
 @Component({
@@ -29,42 +28,11 @@ export class DocumentStatusIndicator {
   }
 }
 
-import type { IMenuOption as IDropdownMenuIMenuOption } from '@verdocs/web-sdk';
-export declare interface DropdownMenu extends Components.DropdownMenu {
-  /**
-   * Event fired when a menu option is clicked.
-Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks. 
-   */
-  optionSelected: EventEmitter<CustomEvent<IDropdownMenuIMenuOption>>;
-
-}
-
-@ProxyCmp({
-  tagName: 'dropdown-menu',
-  customElement: undefined,
-  inputs: ['open', 'options', 'tall']
-})
-@Component({
-  selector: 'dropdown-menu',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['open', 'options', 'tall']
-})
-export class DropdownMenu {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['optionSelected']);
-  }
-}
-
 
 export declare interface OrgPopup extends Components.OrgPopup {}
 
 @ProxyCmp({
-  tagName: 'org-popup',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['organization', 'theme']
 })
 @Component({
@@ -100,8 +68,7 @@ export declare interface SearchBox extends Components.SearchBox {
 }
 
 @ProxyCmp({
-  tagName: 'search-box',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['placeholder', 'query', 'type']
 })
 @Component({
@@ -133,8 +100,7 @@ export declare interface SearchQuickFunctions extends Components.SearchQuickFunc
 }
 
 @ProxyCmp({
-  tagName: 'search-quick-functions',
-  customElement: undefined
+  defineCustomElementFn: undefined
 })
 @Component({
   selector: 'search-quick-functions',
@@ -160,8 +126,7 @@ export declare interface SearchRecent extends Components.SearchRecent {
 }
 
 @ProxyCmp({
-  tagName: 'search-recent',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['limit']
 })
 @Component({
@@ -189,8 +154,7 @@ export declare interface SearchSaved extends Components.SearchSaved {
 }
 
 @ProxyCmp({
-  tagName: 'search-saved',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['limit']
 })
 @Component({
@@ -218,8 +182,7 @@ export declare interface SearchStarred extends Components.SearchStarred {
 }
 
 @ProxyCmp({
-  tagName: 'search-starred',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['options']
 })
 @Component({
@@ -241,8 +204,7 @@ export class SearchStarred {
 export declare interface SearchTabs extends Components.SearchTabs {}
 
 @ProxyCmp({
-  tagName: 'search-tabs',
-  customElement: undefined
+  defineCustomElementFn: undefined
 })
 @Component({
   selector: 'search-tabs',
@@ -261,8 +223,7 @@ export class SearchTabs {
 export declare interface TagsIndicator extends Components.TagsIndicator {}
 
 @ProxyCmp({
-  tagName: 'tags-indicator',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['tags', 'theme']
 })
 @Component({
@@ -283,8 +244,7 @@ export class TagsIndicator {
 export declare interface TemplateCard extends Components.TemplateCard {}
 
 @ProxyCmp({
-  tagName: 'template-card',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['template', 'theme']
 })
 @Component({
@@ -305,8 +265,7 @@ export class TemplateCard {
 export declare interface ToggleIconButtons extends Components.ToggleIconButtons {}
 
 @ProxyCmp({
-  tagName: 'toggle-icon-buttons',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['options', 'theme']
 })
 @Component({
@@ -333,15 +292,14 @@ export declare interface VerdocsAuth extends Components.VerdocsAuth {
 }
 
 @ProxyCmp({
-  tagName: 'verdocs-auth',
-  customElement: undefined,
-  inputs: ['debug', 'logo', 'source', 'visible']
+  defineCustomElementFn: undefined,
+  inputs: ['debug', 'logo', 'visible']
 })
 @Component({
   selector: 'verdocs-auth',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['debug', 'logo', 'source', 'visible']
+  inputs: ['debug', 'logo', 'visible']
 })
 export class VerdocsAuth {
   protected el: HTMLElement;
@@ -362,8 +320,7 @@ export declare interface VerdocsButton extends Components.VerdocsButton {
 }
 
 @ProxyCmp({
-  tagName: 'verdocs-button',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['disabled', 'label', 'type']
 })
 @Component({
@@ -381,6 +338,35 @@ export class VerdocsButton {
   }
 }
 
+import type { IMenuOption as IVerdocsDropdownIMenuOption } from '@verdocs/web-sdk';
+export declare interface VerdocsDropdown extends Components.VerdocsDropdown {
+  /**
+   * Event fired when a menu option is clicked.
+Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks. 
+   */
+  optionSelected: EventEmitter<CustomEvent<IVerdocsDropdownIMenuOption>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['open', 'options']
+})
+@Component({
+  selector: 'verdocs-dropdown',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['open', 'options']
+})
+export class VerdocsDropdown {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['optionSelected']);
+  }
+}
+
 
 export declare interface VerdocsOkDialog extends Components.VerdocsOkDialog {
   /**
@@ -391,8 +377,7 @@ export declare interface VerdocsOkDialog extends Components.VerdocsOkDialog {
 }
 
 @ProxyCmp({
-  tagName: 'verdocs-ok-dialog',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['heading', 'message', 'open']
 })
 @Component({
@@ -414,8 +399,7 @@ export class VerdocsOkDialog {
 export declare interface VerdocsSearch extends Components.VerdocsSearch {}
 
 @ProxyCmp({
-  tagName: 'verdocs-search',
-  customElement: undefined
+  defineCustomElementFn: undefined
 })
 @Component({
   selector: 'verdocs-search',
@@ -431,22 +415,30 @@ export class VerdocsSearch {
 }
 
 
-export declare interface VerdocsSign extends Components.VerdocsSign {}
+export declare interface VerdocsSign extends Components.VerdocsSign {
+  /**
+   * Event fired when a signing session has been obtained. 
+   */
+  authenticated: EventEmitter<CustomEvent<any>>;
+
+}
 
 @ProxyCmp({
-  tagName: 'verdocs-sign',
-  customElement: undefined
+  defineCustomElementFn: undefined,
+  inputs: ['documentid', 'invitecode', 'roleid']
 })
 @Component({
   selector: 'verdocs-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  inputs: ['documentid', 'invitecode', 'roleid']
 })
 export class VerdocsSign {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['authenticated']);
   }
 }
 
@@ -460,8 +452,7 @@ export declare interface VerdocsTextButton extends Components.VerdocsTextButton 
 }
 
 @ProxyCmp({
-  tagName: 'verdocs-text-button',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['disabled', 'label', 'type']
 })
 @Component({
@@ -497,8 +488,7 @@ export declare interface VerdocsTextInput extends Components.VerdocsTextInput {
 }
 
 @ProxyCmp({
-  tagName: 'verdocs-text-input',
-  customElement: undefined,
+  defineCustomElementFn: undefined,
   inputs: ['autocomplete', 'disabled', 'label', 'placeholder', 'type', 'value']
 })
 @Component({
@@ -530,15 +520,14 @@ export declare interface VerdocsView extends Components.VerdocsView {
 }
 
 @ProxyCmp({
-  tagName: 'verdocs-view',
-  customElement: undefined,
-  inputs: ['rotation', 'source']
+  defineCustomElementFn: undefined,
+  inputs: ['rotation', 'source', 'token']
 })
 @Component({
   selector: 'verdocs-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['rotation', 'source']
+  inputs: ['rotation', 'source', 'token']
 })
 export class VerdocsView {
   protected el: HTMLElement;

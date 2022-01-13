@@ -1,15 +1,19 @@
-import pdf from 'pdfjs-dist/build/pdf';
-import {PDFDocumentProxy, PDFProgressData, PDFSource, VerbosityLevel, version as PDFJSversion} from 'pdfjs-dist';
-import {Component, h, Element, Event, Prop, Watch, EventEmitter} from '@stencil/core';
+import pdf from 'pdfjs-dist';
+// import pdf from 'pdfjs-dist/build/pdf';
+// import pdf from 'pdfjs-dist/build/pdf';
+import {PDFDocumentProxy, VerbosityLevel, version as PDFJSversion} from 'pdfjs-dist';
+// import {PDFDocumentProxy, PDFProgressData, PDFSource, VerbosityLevel, version as PDFJSversion} from 'pdfjs-dist';
+import {Component, h, Element, Event, Prop, Watch, EventEmitter, State} from '@stencil/core';
 // import {PDFDocumentProxy, PDFPageProxy, PDFPageViewport, PDFRenderParams, PDFRenderTask} from 'pdfjs-dist';
 // import * as PDFJSViewer from 'pdfjs-dist/web/pdf_viewer';
 import {integerSequence} from '../../../utils/utils';
+import {DocumentInitParameters, OnProgressParameters} from 'pdfjs-dist/types/src/display/api';
 
 const PDF_WORKER_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJSversion}/pdf.worker.min.js`;
 const CMAPS_URL = `https://unpkg.com/pdfjs-dist@${PDFJSversion}/cmaps/`;
 // https://unpkg.com/pdfjs-dist@2.0.550/cmaps/78-EUC-H.bcmap
 
-console.log('[PDFVIEWER] Loading PDF-JS', {PDF_WORKER_URL, CMAPS_URL});
+console.log('[VIEW] Loading PDF-JS', {PDF_WORKER_URL, CMAPS_URL});
 
 // pdf.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
 // pdf.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJSversion}/pdf.worker.min.js`;
@@ -47,6 +51,7 @@ export class VerdocsView {
   // private scale = 2;
   // private pageNum = 1;
   private numPages = 1;
+
   private fingerprint = null as string | null;
 
   /**
@@ -57,14 +62,17 @@ export class VerdocsView {
 
   /**
    * Src of the PDF to load and render
-   * {string}
    */
   @Prop() source: string;
 
   /**
+   * Access token to use. This component is a wrapper for PDF.js which does not use a VerdocsEndpoint, so the token must be supplied
+   * directly.
+   */
+  @Prop() token: string | null = null;
+
+  /**
    * Listen for changes to src
-   * @param newValue
-   * @param oldValue
    */
   @Watch('source')
   doSrc(newValue: string | null, oldValue: string | null): void {
@@ -80,6 +88,8 @@ export class VerdocsView {
   @Event() pageRendered: EventEmitter<number>;
   // @Event() error: EventEmitter<any>;
   @Event() pageChange: EventEmitter<number>;
+
+  @State() loadProgress = 0;
 
   // @Method()
   // async pageNext(e: MouseEvent) {
@@ -112,7 +122,7 @@ export class VerdocsView {
     // async renderPage(pageNumber: number): Promise<void> {
     // this.isPageRendering = true;
 
-    console.log('offset width', this.component.offsetWidth);
+    // console.log('offset width', this.component.offsetWidth);
 
     // const numPages = this.pdf._pdfInfo.numPages;
     // const offsetWidth = 10;
@@ -120,14 +130,13 @@ export class VerdocsView {
     // let largestWidth = 0;
     // let scale = 1;
     // let stickToPage = true;
-    console.log('n', this.numPages);
     const pageNumbersToRender = integerSequence(1, this.numPages);
 
     console.log('Page numbers to render', pageNumbersToRender);
     for await (let pageNum of pageNumbersToRender) {
       console.log('Rendering page', pageNum);
       const page = await this.pdfDocument.getPage(pageNum);
-      const viewport = page.getViewport({scale:1.5});
+      const viewport = page.getViewport({scale: 1.5});
       const canvas = document.createElement('canvas');
       const canvasContext = canvas.getContext('2d');
       canvas.height = viewport.height;
@@ -207,45 +216,57 @@ export class VerdocsView {
 
   componentDidLoad(): void {
     this.pdfContainer = document.getElementById('verdocs-pdf-viewer-container') as HTMLDivElement;
-    // this.canvas = this.component.shadowRoot.getElementById('pdf-canvas') as HTMLCanvasElement;
-    // this.ctx = this.canvas.getContext('2d');
 
     if (this.source) {
       this.loadAndRender(this.source);
     }
   }
 
-  private onProgress(progress: PDFProgressData) {
-    console.log('Loading progress', progress);
+  onProgress(progress: OnProgressParameters) {
+    this.loadProgress = Math.floor((100 * progress.loaded) / progress.total);
   }
 
-  private loadAndRender(src: string): void {
-    console.log('[PDF-VIEWER] Loading', src);
+  loadAndRender(src: string): void {
+    console.log('[VIEW] Loading', src);
+    const httpHeaders = this.token ? {Authorization: `Bearer ${this.token}`} : {};
+
     const source = {
       url: src,
       withCredentials: true,
       cMapUrl: CMAPS_URL,
       cMapPacked: true,
-      verbosity: VerbosityLevel.INFOS,
-    } as PDFSource;
-    pdf.getDocument(source, null, null, this.onProgress).promise.then((pdfDocument: PDFDocumentProxy) => {
+      verbosity: VerbosityLevel.WARNINGS,
+      // verbosity: VerbosityLevel.INFOS,
+      httpHeaders,
+    } as DocumentInitParameters;
+
+    // @ts-ignore
+    const loadingTask = pdf.getDocument(source, null, null, this.onProgress);
+    loadingTask.onProgress = this.onProgress;
+    loadingTask.promise.then((pdfDocument: PDFDocumentProxy) => {
+      this.loadProgress = 100;
       this.numPages = pdfDocument.numPages;
-      this.fingerprint = pdfDocument.fingerprint;
-      console.log(`[PDF-VIEWER] Got PDF document fingerprint "${this.fingerprint}, ${this.numPages} pages`);
+      this.fingerprint = pdfDocument.fingerprints[0];
+      console.log(`[VIEW] Got PDF document fingerprint "${this.fingerprint}, ${this.numPages} pages`, pdfDocument);
 
       this.pdfDocument = pdfDocument;
       this.renderPages().catch(e => console.log('Rendering error', e));
-      // this.renderPage(this.pageNum);
     });
   }
 
   render() {
     return (
       <div class="container">
-        {/*<button onClick={this.pagePrev.bind(this)}>Prev</button>*/}
-        {/*<button onClick={this.pageNext.bind(this)}>Next</button>*/}
+        {this.loadProgress < 100 ? (
+          <div class="load-progress">
+            <div class="bar" style={{width: `${this.loadProgress}%`}}>
+              &nbsp;
+            </div>
+          </div>
+        ) : (
+          <div style={{display: 'none'}} />
+        )}
         <div id="verdocs-pdf-viewer-container" />
-        {/*<canvas id="pdf-canvas" />*/}
       </div>
     );
   }
