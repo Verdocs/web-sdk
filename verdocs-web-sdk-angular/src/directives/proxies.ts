@@ -368,6 +368,281 @@ export class VerdocsDropdown {
 }
 
 
+export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {
+  /**
+   *  
+   */
+  signatureComplete: EventEmitter<CustomEvent<string>>;
+  /**
+   *  
+   */
+  initialComplete: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+@Component({
+  selector: 'verdocs-field-attachment',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+export class VerdocsFieldAttachment {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+  }
+}
+
+
+export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {
+  /**
+   *  
+   */
+  signatureComplete: EventEmitter<CustomEvent<string>>;
+  /**
+   *  
+   */
+  initialComplete: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+@Component({
+  selector: 'verdocs-field-checkbox',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+export class VerdocsFieldCheckbox {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+  }
+}
+
+
+export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
+  /**
+   *  
+   */
+  signatureComplete: EventEmitter<CustomEvent<string>>;
+  /**
+   *  
+   */
+  initialComplete: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+@Component({
+  selector: 'verdocs-field-date',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+export class VerdocsFieldDate {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+  }
+}
+
+
+export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
+  /**
+   *  
+   */
+  signatureComplete: EventEmitter<CustomEvent<string>>;
+  /**
+   *  
+   */
+  initialComplete: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+@Component({
+  selector: 'verdocs-field-dropdown',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+export class VerdocsFieldDropdown {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+  }
+}
+
+
+export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInitial {
+  /**
+   *  
+   */
+  signatureComplete: EventEmitter<CustomEvent<string>>;
+  /**
+   *  
+   */
+  initialComplete: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+@Component({
+  selector: 'verdocs-field-initial',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+export class VerdocsFieldInitial {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+  }
+}
+
+
+export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPayment {
+  /**
+   *  
+   */
+  signatureComplete: EventEmitter<CustomEvent<string>>;
+  /**
+   *  
+   */
+  initialComplete: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+@Component({
+  selector: 'verdocs-field-payment',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+export class VerdocsFieldPayment {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+  }
+}
+
+
+export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSignature {
+  /**
+   *  
+   */
+  signatureComplete: EventEmitter<CustomEvent<string>>;
+  /**
+   *  
+   */
+  initialComplete: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+@Component({
+  selector: 'verdocs-field-signature',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+export class VerdocsFieldSignature {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+  }
+}
+
+
+export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
+  /**
+   *  
+   */
+  signatureComplete: EventEmitter<CustomEvent<string>>;
+  /**
+   *  
+   */
+  initialComplete: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+@Component({
+  selector: 'verdocs-field-textbox',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+})
+export class VerdocsFieldTextbox {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+  }
+}
+
+
+export declare interface VerdocsLoader extends Components.VerdocsLoader {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined
+})
+@Component({
+  selector: 'verdocs-loader',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class VerdocsLoader {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
 export declare interface VerdocsOkDialog extends Components.VerdocsOkDialog {
   /**
    * Event fired when the dialog is closed. The event data will contain the closure reason. 
@@ -415,13 +690,7 @@ export class VerdocsSearch {
 }
 
 
-export declare interface VerdocsSign extends Components.VerdocsSign {
-  /**
-   * Event fired when a signing session has been obtained. 
-   */
-  authenticated: EventEmitter<CustomEvent<any>>;
-
-}
+export declare interface VerdocsSign extends Components.VerdocsSign {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -438,7 +707,6 @@ export class VerdocsSign {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['authenticated']);
   }
 }
 
@@ -506,16 +774,32 @@ export class VerdocsTextInput {
   }
 }
 
-
+import type { IPDFRenderEvent as IVerdocsViewIPDFRenderEvent } from '@verdocs/web-sdk';
 export declare interface VerdocsView extends Components.VerdocsView {
   /**
-   *  
+   * Fired when a page has been rendered 
    */
-  pageRendered: EventEmitter<CustomEvent<number>>;
+  pageRendered: EventEmitter<CustomEvent<IVerdocsViewIPDFRenderEvent>>;
   /**
-   *  
+   * Fired when a page has been changed 
+   */
+  pageLoaded: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when a page has been changed 
    */
   pageChange: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when a page has been initialized 
+   */
+  pageInit: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when a page has been scaled 
+   */
+  scaleChange: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when the document has completed rendered. The event will include the rendered page count. 
+   */
+  documentRendered: EventEmitter<CustomEvent<IVerdocsViewIPDFRenderEvent>>;
 
 }
 
@@ -534,6 +818,6 @@ export class VerdocsView {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['pageRendered', 'pageChange']);
+    proxyOutputs(this, this.el, ['pageRendered', 'pageLoaded', 'pageChange', 'pageInit', 'scaleChange', 'documentRendered']);
   }
 }

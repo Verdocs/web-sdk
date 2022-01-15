@@ -35,7 +35,7 @@
   "dependencies": {
     "@popperjs/core": "^2.11.2",
     "@stencil/core": "^2.10.0",
-    "@verdocs/js-sdk": "^1.1.7",
+    "@verdocs/js-sdk": "^1.1.9",
     "pdfjs-dist": "2.12.313"
   },
   "devDependencies": {

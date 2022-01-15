@@ -2,7 +2,7 @@ import {Meta} from '@storybook/web-components';
 import {html} from 'lit-html';
 
 export default {
-  title: 'Elements/Tags Indicator',
+  title: 'Controls/Tags Indicator',
   component: 'tags-indicator',
   args: {
     tags: ['contractors', 'taxes', 'irs']

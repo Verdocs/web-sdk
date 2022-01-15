@@ -2,7 +2,7 @@ import {Meta} from '@storybook/web-components';
 import {html} from 'lit-html';
 
 export default {
-  title: 'Elements/Document Status Indicator',
+  title: 'Controls/Document Status Indicator',
   component: 'document-status-indicator',
   args: {
     status: 'finished',

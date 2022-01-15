@@ -2,11 +2,13 @@ verdocs-sign {
   /* Fallback font for old browsers */
   font-family: sans-serif;
   font-family: var(--verdocs-font);
+
   position: relative;
   display: flex;
   flex-direction: column;
   min-height: 600px;
   box-sizing: border-box;
+  overflow: hidden;
 
   &.storybook {
     max-height: 600px;
@@ -65,6 +67,8 @@ verdocs-sign {
 
   .document {
     flex: 1;
+    height: 100%;
+    position: relative;
     overflow-y: scroll;
   }
 
@@ -132,5 +136,15 @@ verdocs-sign {
         cursor: default;
       }
     }
+  }
+
+  .page-controls {
+    position: absolute;
+    //left: 15px;
+    //right: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: #ffc0cb7f;
   }
 }

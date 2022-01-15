@@ -1,13 +1,12 @@
 import {Host} from '@stencil/core';
-import {IActiveSession} from '@verdocs/js-sdk/Users/Types';
-// import {setActiveEndpoint} from '@verdocs/js-sdk/HTTP/Transport';
-// import {getSigningSession} from '@verdocs/js-sdk/Documents/Documents';
-import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
+import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
+import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {VerdocsEndpoint} from '@verdocs/js-sdk/HTTP';
-import {getEndpoint, setActiveEndpoint} from '@verdocs/js-sdk/HTTP/Transport';
-import {getSigningSession, getDocument, getDocumentFile, IDocument} from '@verdocs/js-sdk/Documents/Documents';
+import {Component, Prop, State, h} from '@stencil/core';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Documents/Recipients';
-// import {getSession} from '../../../api/session';
+import {getEndpoint, setActiveEndpoint} from '@verdocs/js-sdk/HTTP/Transport';
+import {getSigningSession, getDocument, getDocumentFile, IDocument, IDocumentField} from '@verdocs/js-sdk/Documents/Documents';
+import {IPDFRenderEvent} from '../verdocs-view/verdocs-view';
 
 const BASE_URL = 'https://stage-api.verdocs.com';
 
@@ -38,23 +37,14 @@ export class VerdocsSign {
   @Prop() invitecode: string | null = null;
 
   @State() endpoint = null;
-
-  /**
-   * Event fired when a signing session has been obtained.
-   */
-  @Event({composed: true}) authenticated: EventEmitter<any>;
-
-  @State() isAuthenticated: boolean = false;
-  @State() displayMode: string = 'login';
-  @State() username: string = '';
-  @State() password: string = '';
-  @State() loggingIn: boolean = false;
-  @State() activeSession: IActiveSession | null = null;
-  @State() loginError: string | null = null;
   @State() recipient = null;
+
   @State() signerToken = null;
   @State() pdfUrl = null;
+  @State() recipientIndex: number = -1;
   @State() document: IDocument | null = null;
+  @State() fields: IDocumentField[] = [];
+  @State() pdfPageInfo: IPDFRenderEvent;
 
   componentWillLoad() {
     const endpoint = new VerdocsEndpoint({baseURL: BASE_URL});
@@ -69,35 +59,31 @@ export class VerdocsSign {
         roleId: this.roleid,
         inviteCode: this.invitecode,
       });
-      console.log('[SIGN] Got signing session', session, recipient);
+      console.log('[SIGN] Got signing session', session);
+      console.log('[SIGN] Recipient', recipient);
       this.recipient = recipient;
       this.signerToken = signerToken;
       getEndpoint().setAuthorization(signerToken);
 
-      console.log('Getting document details');
       const document = await getDocument(this.documentid);
       this.document = document;
-      console.log('got document details', document);
+      console.log('[SIGN] Document', document);
 
       this.pdfUrl = `${BASE_URL}/documents/${this.documentid}/envelope_documents/${document.envelope_document_id}?file=true`;
-      console.log('Got PDF url', this.pdfUrl);
+      // https://stage.verdocs.com/view/sign/f484a296-4f4c-4783-9adf-a3302915a503/roleName/Recipient%202/invitation/ea2328b1181b26118f5c676119232df6
       // https://stage-api.verdocs.com/documents/f484a296-4f4c-4783-9adf-a3302915a503/envelope_documents/e7968994-b859-40ad-8577-c7b3a1fe76bd?file=true
       // https://stage-api.verdocs.com/envelopes/f484a296-4f4c-4783-9adf-a3302915a503/envelope_documents/e7968994-b859-40ad-8577-c7b3a1fe76bd?file=true
-      //   // const session = getSession(this.source);
-      //   // if (session) {
-      //   //   this.isAuthenticated = true;
-      //   //   this.activeSession = session;
-      //   //   this.authenticated.emit({authenticated: true, session});
-      //   // } else {
-      //   //   this.authenticated.emit({authenticated: false, session: null});
-      //   // }
+
+      this.recipientIndex = this.document.recipients.findIndex(recipient => recipient.role_name == this.roleid);
+      if (this.recipientIndex > -1) {
+        console.log('Found recipient', this.document.recipients[this.recipientIndex]);
+      }
+
+      this.fields = this.document.fields.filter(field => field.recipient_role === this.roleid);
+      console.log('Loaded fields', this.fields);
     } catch (e) {
       console.log('Error with signing session', e);
     }
-  }
-
-  handleClearError() {
-    this.loginError = null;
   }
 
   handleClickAgree() {
@@ -139,6 +125,10 @@ export class VerdocsSign {
   async handleOptionSelected(e) {
     switch (e.detail.id) {
       case 'later':
+        // this.router.navigate([`view/sign/${this.envelopeId}/role/${this.roleName}/saved`]);
+        if (!window?.['STORYBOOK_ENV']) {
+          window.alert('User intends to sign later.');
+        }
         break;
       case 'claim':
         break;
@@ -152,6 +142,59 @@ export class VerdocsSign {
     }
   }
 
+  renderField(field: IDocumentField) {
+    const renderOnPage = this.pdfPageInfo.pages.find(page => page.pageNumber === field.page);
+    if (!renderOnPage) {
+      console.log('Unable to render invalid field', field);
+      return <div class="invalid-field">Invalid field.</div>;
+    }
+
+    const left = rescale(renderOnPage.xRatio, field.settings.x);
+    const bottom = rescale(renderOnPage.yRatio, field.settings.y);
+
+    const style = {
+      left: `${left}px`,
+      bottom: `${bottom}px`,
+      position: 'absolute',
+      transform: `scale(${renderOnPage.xRatio}, ${renderOnPage.yRatio})`,
+      backgroundColor: field.settings.rgba || getRGBA(this.recipientIndex),
+    };
+
+    switch (field.type) {
+      case 'signature':
+        return <verdocs-field-signature style={style} field={field} />;
+      case 'initial':
+        return <verdocs-field-initial style={style} field={field} />;
+      case 'textbox':
+        return <verdocs-field-textbox style={style} field={field} />;
+      case 'date':
+        return <verdocs-field-date style={style} field={field} />;
+      case 'timestamp':
+        break;
+      case 'placeholder':
+        break;
+      case 'dropdown':
+        return <verdocs-field-dropdown style={style} field={field} />;
+      case 'checkbox':
+        return <verdocs-field-checkbox style={style} field={field} />;
+      case 'checkbox_group':
+        break;
+      case 'radio_button_group':
+        break;
+      case 'attachment':
+        return <verdocs-field-attachment style={style} field={field} />;
+      case 'payment':
+        return <verdocs-field-payment style={style} field={field} />;
+    }
+
+    return <div style={{display: 'none'}}>Unsupported field type "{field.type}"</div>;
+  }
+
+  handleDocumentRendered(e) {
+    console.log('[SIGN] Document rendered', e.detail);
+    this.pdfPageInfo = e.detail;
+  }
+
   render() {
     const menuOptions = [
       {id: 'later', label: 'Finish Later'}, //
@@ -160,6 +203,7 @@ export class VerdocsSign {
       {id: 'print', label: 'Print Without Signing'},
       {id: 'download', label: 'Download'},
     ];
+    console.log('rendering', menuOptions);
 
     return (
       <Host class={{storybook: !!window?.['STORYBOOK_ENV'], agreed: this.recipient?.agreed}}>
@@ -189,7 +233,18 @@ export class VerdocsSign {
 
         {!this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
-        <div class="document">{this.pdfUrl ? <verdocs-view source={this.pdfUrl} token={this.signerToken} /> : <div>Authenticating...</div>}</div>
+        <div class="document">
+          {this.pdfUrl ? <verdocs-view source={this.pdfUrl} token={this.signerToken} onDocumentRendered={e => this.handleDocumentRendered(e)} /> : <verdocs-loader />}
+          {(this.pdfPageInfo?.pages || []).map(page => (
+            <div class="page-controls" style={{height: `${page.height}px`, width: `${page.width}px`, top: `${page.canvasTop}px`, margin: '0 auto'}}>
+              {this.pdfPageInfo?.numRendered > 0 ? (
+                this.fields.filter(field => field.page === page.pageNumber).map(field => this.renderField(field))
+              ) : (
+                <div style={{display: 'none'}}>Waiting for PDF to render...</div>
+              )}
+            </div>
+          ))}
+        </div>
       </Host>
     );
   }

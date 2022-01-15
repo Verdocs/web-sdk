@@ -5,12 +5,13 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { TDocumentStatus } from "@verdocs/js-sdk/Documents/Documents";
+import { IDocumentField, TDocumentStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { ISearchEvent, TContentType } from "./components/elements/search-box/search-box";
 import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
 import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
+import { IPDFRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
 export namespace Components {
     interface DocumentStatusIndicator {
         /**
@@ -129,6 +130,160 @@ export namespace Components {
          */
         "options": IMenuOption[];
     }
+    interface VerdocsFieldAttachment {
+        "currentInitial": string;
+        "currentInitialId": string;
+        "currentSignature": string;
+        "currentSignatureId": string;
+        /**
+          * The field to display.
+         */
+        "field": IDocumentField;
+        "fieldId": string;
+        "fields": any[];
+        "focused": boolean;
+        "pageNum": number;
+        "pdfPages": any[];
+        "recipients": any;
+        "roleName": string;
+        "selectedRoleName": string;
+        "signed": boolean;
+    }
+    interface VerdocsFieldCheckbox {
+        "currentInitial": string;
+        "currentInitialId": string;
+        "currentSignature": string;
+        "currentSignatureId": string;
+        /**
+          * The field to display.
+         */
+        "field": IDocumentField;
+        "fieldId": string;
+        "fields": any[];
+        "focused": boolean;
+        "pageNum": number;
+        "pdfPages": any[];
+        "recipients": any;
+        "roleName": string;
+        "selectedRoleName": string;
+        "signed": boolean;
+    }
+    interface VerdocsFieldDate {
+        "currentInitial": string;
+        "currentInitialId": string;
+        "currentSignature": string;
+        "currentSignatureId": string;
+        /**
+          * The field to display.
+         */
+        "field": IDocumentField;
+        "fieldId": string;
+        "fields": any[];
+        "focused": boolean;
+        "pageNum": number;
+        "pdfPages": any[];
+        "recipients": any;
+        "roleName": string;
+        "selectedRoleName": string;
+        "signed": boolean;
+    }
+    interface VerdocsFieldDropdown {
+        "currentInitial": string;
+        "currentInitialId": string;
+        "currentSignature": string;
+        "currentSignatureId": string;
+        /**
+          * The field to display.
+         */
+        "field": IDocumentField;
+        "fieldId": string;
+        "fields": any[];
+        "focused": boolean;
+        "pageNum": number;
+        "pdfPages": any[];
+        "recipients": any;
+        "roleName": string;
+        "selectedRoleName": string;
+        "signed": boolean;
+    }
+    interface VerdocsFieldInitial {
+        "currentInitial": string;
+        "currentInitialId": string;
+        "currentSignature": string;
+        "currentSignatureId": string;
+        /**
+          * The field to display.
+         */
+        "field": IDocumentField;
+        "fieldId": string;
+        "fields": any[];
+        "focused": boolean;
+        "pageNum": number;
+        "pdfPages": any[];
+        "recipients": any;
+        "roleName": string;
+        "selectedRoleName": string;
+        "signed": boolean;
+    }
+    interface VerdocsFieldPayment {
+        "currentInitial": string;
+        "currentInitialId": string;
+        "currentSignature": string;
+        "currentSignatureId": string;
+        /**
+          * The field to display.
+         */
+        "field": IDocumentField;
+        "fieldId": string;
+        "fields": any[];
+        "focused": boolean;
+        "pageNum": number;
+        "pdfPages": any[];
+        "recipients": any;
+        "roleName": string;
+        "selectedRoleName": string;
+        "signed": boolean;
+    }
+    interface VerdocsFieldSignature {
+        "currentInitial": string;
+        "currentInitialId": string;
+        "currentSignature": string;
+        "currentSignatureId": string;
+        /**
+          * The field to display.
+         */
+        "field": IDocumentField;
+        "fieldId": string;
+        "fields": any[];
+        "focused": boolean;
+        "pageNum": number;
+        "pdfPages": any[];
+        "recipients": any;
+        "roleName": string;
+        "selectedRoleName": string;
+        "signed": boolean;
+    }
+    interface VerdocsFieldTextbox {
+        "currentInitial": string;
+        "currentInitialId": string;
+        "currentSignature": string;
+        "currentSignatureId": string;
+        /**
+          * The field to display.
+         */
+        "field": IDocumentField;
+        "fieldId": string;
+        "fields": any[];
+        "focused": boolean;
+        "pageNum": number;
+        "pdfPages": any[];
+        "recipients": any;
+        "roleName": string;
+        "selectedRoleName": string;
+        "signed": boolean;
+    }
+    interface VerdocsLoader {
+    }
     interface VerdocsOkDialog {
         /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
@@ -201,7 +356,7 @@ export namespace Components {
     }
     interface VerdocsView {
         /**
-          * Rotate the PDF in degrees {number}
+          * Rotate the PDF in degrees
          */
         "rotation": 0 | 90 | 180 | 270;
         /**
@@ -299,6 +454,60 @@ declare global {
         prototype: HTMLVerdocsDropdownElement;
         new (): HTMLVerdocsDropdownElement;
     };
+    interface HTMLVerdocsFieldAttachmentElement extends Components.VerdocsFieldAttachment, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldAttachmentElement: {
+        prototype: HTMLVerdocsFieldAttachmentElement;
+        new (): HTMLVerdocsFieldAttachmentElement;
+    };
+    interface HTMLVerdocsFieldCheckboxElement extends Components.VerdocsFieldCheckbox, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldCheckboxElement: {
+        prototype: HTMLVerdocsFieldCheckboxElement;
+        new (): HTMLVerdocsFieldCheckboxElement;
+    };
+    interface HTMLVerdocsFieldDateElement extends Components.VerdocsFieldDate, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldDateElement: {
+        prototype: HTMLVerdocsFieldDateElement;
+        new (): HTMLVerdocsFieldDateElement;
+    };
+    interface HTMLVerdocsFieldDropdownElement extends Components.VerdocsFieldDropdown, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldDropdownElement: {
+        prototype: HTMLVerdocsFieldDropdownElement;
+        new (): HTMLVerdocsFieldDropdownElement;
+    };
+    interface HTMLVerdocsFieldInitialElement extends Components.VerdocsFieldInitial, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldInitialElement: {
+        prototype: HTMLVerdocsFieldInitialElement;
+        new (): HTMLVerdocsFieldInitialElement;
+    };
+    interface HTMLVerdocsFieldPaymentElement extends Components.VerdocsFieldPayment, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldPaymentElement: {
+        prototype: HTMLVerdocsFieldPaymentElement;
+        new (): HTMLVerdocsFieldPaymentElement;
+    };
+    interface HTMLVerdocsFieldSignatureElement extends Components.VerdocsFieldSignature, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldSignatureElement: {
+        prototype: HTMLVerdocsFieldSignatureElement;
+        new (): HTMLVerdocsFieldSignatureElement;
+    };
+    interface HTMLVerdocsFieldTextboxElement extends Components.VerdocsFieldTextbox, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldTextboxElement: {
+        prototype: HTMLVerdocsFieldTextboxElement;
+        new (): HTMLVerdocsFieldTextboxElement;
+    };
+    interface HTMLVerdocsLoaderElement extends Components.VerdocsLoader, HTMLStencilElement {
+    }
+    var HTMLVerdocsLoaderElement: {
+        prototype: HTMLVerdocsLoaderElement;
+        new (): HTMLVerdocsLoaderElement;
+    };
     interface HTMLVerdocsOkDialogElement extends Components.VerdocsOkDialog, HTMLStencilElement {
     }
     var HTMLVerdocsOkDialogElement: {
@@ -350,6 +559,15 @@ declare global {
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-button": HTMLVerdocsButtonElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
+        "verdocs-field-attachment": HTMLVerdocsFieldAttachmentElement;
+        "verdocs-field-checkbox": HTMLVerdocsFieldCheckboxElement;
+        "verdocs-field-date": HTMLVerdocsFieldDateElement;
+        "verdocs-field-dropdown": HTMLVerdocsFieldDropdownElement;
+        "verdocs-field-initial": HTMLVerdocsFieldInitialElement;
+        "verdocs-field-payment": HTMLVerdocsFieldPaymentElement;
+        "verdocs-field-signature": HTMLVerdocsFieldSignatureElement;
+        "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
+        "verdocs-loader": HTMLVerdocsLoaderElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-search": HTMLVerdocsSearchElement;
         "verdocs-sign": HTMLVerdocsSignElement;
@@ -520,6 +738,176 @@ declare namespace LocalJSX {
          */
         "options"?: IMenuOption[];
     }
+    interface VerdocsFieldAttachment {
+        "currentInitial"?: string;
+        "currentInitialId"?: string;
+        "currentSignature"?: string;
+        "currentSignatureId"?: string;
+        /**
+          * The field to display.
+         */
+        "field"?: IDocumentField;
+        "fieldId"?: string;
+        "fields"?: any[];
+        "focused"?: boolean;
+        "onInitialComplete"?: (event: CustomEvent<string>) => void;
+        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
+        "pageNum"?: number;
+        "pdfPages"?: any[];
+        "recipients"?: any;
+        "roleName"?: string;
+        "selectedRoleName"?: string;
+        "signed"?: boolean;
+    }
+    interface VerdocsFieldCheckbox {
+        "currentInitial"?: string;
+        "currentInitialId"?: string;
+        "currentSignature"?: string;
+        "currentSignatureId"?: string;
+        /**
+          * The field to display.
+         */
+        "field"?: IDocumentField;
+        "fieldId"?: string;
+        "fields"?: any[];
+        "focused"?: boolean;
+        "onInitialComplete"?: (event: CustomEvent<string>) => void;
+        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
+        "pageNum"?: number;
+        "pdfPages"?: any[];
+        "recipients"?: any;
+        "roleName"?: string;
+        "selectedRoleName"?: string;
+        "signed"?: boolean;
+    }
+    interface VerdocsFieldDate {
+        "currentInitial"?: string;
+        "currentInitialId"?: string;
+        "currentSignature"?: string;
+        "currentSignatureId"?: string;
+        /**
+          * The field to display.
+         */
+        "field"?: IDocumentField;
+        "fieldId"?: string;
+        "fields"?: any[];
+        "focused"?: boolean;
+        "onInitialComplete"?: (event: CustomEvent<string>) => void;
+        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
+        "pageNum"?: number;
+        "pdfPages"?: any[];
+        "recipients"?: any;
+        "roleName"?: string;
+        "selectedRoleName"?: string;
+        "signed"?: boolean;
+    }
+    interface VerdocsFieldDropdown {
+        "currentInitial"?: string;
+        "currentInitialId"?: string;
+        "currentSignature"?: string;
+        "currentSignatureId"?: string;
+        /**
+          * The field to display.
+         */
+        "field"?: IDocumentField;
+        "fieldId"?: string;
+        "fields"?: any[];
+        "focused"?: boolean;
+        "onInitialComplete"?: (event: CustomEvent<string>) => void;
+        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
+        "pageNum"?: number;
+        "pdfPages"?: any[];
+        "recipients"?: any;
+        "roleName"?: string;
+        "selectedRoleName"?: string;
+        "signed"?: boolean;
+    }
+    interface VerdocsFieldInitial {
+        "currentInitial"?: string;
+        "currentInitialId"?: string;
+        "currentSignature"?: string;
+        "currentSignatureId"?: string;
+        /**
+          * The field to display.
+         */
+        "field"?: IDocumentField;
+        "fieldId"?: string;
+        "fields"?: any[];
+        "focused"?: boolean;
+        "onInitialComplete"?: (event: CustomEvent<string>) => void;
+        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
+        "pageNum"?: number;
+        "pdfPages"?: any[];
+        "recipients"?: any;
+        "roleName"?: string;
+        "selectedRoleName"?: string;
+        "signed"?: boolean;
+    }
+    interface VerdocsFieldPayment {
+        "currentInitial"?: string;
+        "currentInitialId"?: string;
+        "currentSignature"?: string;
+        "currentSignatureId"?: string;
+        /**
+          * The field to display.
+         */
+        "field"?: IDocumentField;
+        "fieldId"?: string;
+        "fields"?: any[];
+        "focused"?: boolean;
+        "onInitialComplete"?: (event: CustomEvent<string>) => void;
+        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
+        "pageNum"?: number;
+        "pdfPages"?: any[];
+        "recipients"?: any;
+        "roleName"?: string;
+        "selectedRoleName"?: string;
+        "signed"?: boolean;
+    }
+    interface VerdocsFieldSignature {
+        "currentInitial"?: string;
+        "currentInitialId"?: string;
+        "currentSignature"?: string;
+        "currentSignatureId"?: string;
+        /**
+          * The field to display.
+         */
+        "field"?: IDocumentField;
+        "fieldId"?: string;
+        "fields"?: any[];
+        "focused"?: boolean;
+        "onInitialComplete"?: (event: CustomEvent<string>) => void;
+        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
+        "pageNum"?: number;
+        "pdfPages"?: any[];
+        "recipients"?: any;
+        "roleName"?: string;
+        "selectedRoleName"?: string;
+        "signed"?: boolean;
+    }
+    interface VerdocsFieldTextbox {
+        "currentInitial"?: string;
+        "currentInitialId"?: string;
+        "currentSignature"?: string;
+        "currentSignatureId"?: string;
+        /**
+          * The field to display.
+         */
+        "field"?: IDocumentField;
+        "fieldId"?: string;
+        "fields"?: any[];
+        "focused"?: boolean;
+        "onInitialComplete"?: (event: CustomEvent<string>) => void;
+        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
+        "pageNum"?: number;
+        "pdfPages"?: any[];
+        "recipients"?: any;
+        "roleName"?: string;
+        "selectedRoleName"?: string;
+        "signed"?: boolean;
+    }
+    interface VerdocsLoader {
+    }
     interface VerdocsOkDialog {
         /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
@@ -549,10 +937,6 @@ declare namespace LocalJSX {
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
         "invitecode"?: string | null;
-        /**
-          * Event fired when a signing session has been obtained.
-         */
-        "onAuthenticated"?: (event: CustomEvent<any>) => void;
         /**
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
@@ -615,10 +999,32 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface VerdocsView {
-        "onPageChange"?: (event: CustomEvent<number>) => void;
-        "onPageRendered"?: (event: CustomEvent<number>) => void;
         /**
-          * Rotate the PDF in degrees {number}
+          * Fired when the document has completed rendered. The event will include the rendered page count.
+         */
+        "onDocumentRendered"?: (event: CustomEvent<IPDFRenderEvent>) => void;
+        /**
+          * Fired when a page has been changed
+         */
+        "onPageChange"?: (event: CustomEvent<number>) => void;
+        /**
+          * Fired when a page has been initialized
+         */
+        "onPageInit"?: (event: CustomEvent<number>) => void;
+        /**
+          * Fired when a page has been changed
+         */
+        "onPageLoaded"?: (event: CustomEvent<number>) => void;
+        /**
+          * Fired when a page has been rendered
+         */
+        "onPageRendered"?: (event: CustomEvent<IPDFRenderEvent>) => void;
+        /**
+          * Fired when a page has been scaled
+         */
+        "onScaleChange"?: (event: CustomEvent<number>) => void;
+        /**
+          * Rotate the PDF in degrees
          */
         "rotation"?: 0 | 90 | 180 | 270;
         /**
@@ -645,6 +1051,15 @@ declare namespace LocalJSX {
         "verdocs-auth": VerdocsAuth;
         "verdocs-button": VerdocsButton;
         "verdocs-dropdown": VerdocsDropdown;
+        "verdocs-field-attachment": VerdocsFieldAttachment;
+        "verdocs-field-checkbox": VerdocsFieldCheckbox;
+        "verdocs-field-date": VerdocsFieldDate;
+        "verdocs-field-dropdown": VerdocsFieldDropdown;
+        "verdocs-field-initial": VerdocsFieldInitial;
+        "verdocs-field-payment": VerdocsFieldPayment;
+        "verdocs-field-signature": VerdocsFieldSignature;
+        "verdocs-field-textbox": VerdocsFieldTextbox;
+        "verdocs-loader": VerdocsLoader;
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-search": VerdocsSearch;
         "verdocs-sign": VerdocsSign;
@@ -671,6 +1086,15 @@ declare module "@stencil/core" {
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
+            "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
+            "verdocs-field-checkbox": LocalJSX.VerdocsFieldCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;
+            "verdocs-field-date": LocalJSX.VerdocsFieldDate & JSXBase.HTMLAttributes<HTMLVerdocsFieldDateElement>;
+            "verdocs-field-dropdown": LocalJSX.VerdocsFieldDropdown & JSXBase.HTMLAttributes<HTMLVerdocsFieldDropdownElement>;
+            "verdocs-field-initial": LocalJSX.VerdocsFieldInitial & JSXBase.HTMLAttributes<HTMLVerdocsFieldInitialElement>;
+            "verdocs-field-payment": LocalJSX.VerdocsFieldPayment & JSXBase.HTMLAttributes<HTMLVerdocsFieldPaymentElement>;
+            "verdocs-field-signature": LocalJSX.VerdocsFieldSignature & JSXBase.HTMLAttributes<HTMLVerdocsFieldSignatureElement>;
+            "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
+            "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;

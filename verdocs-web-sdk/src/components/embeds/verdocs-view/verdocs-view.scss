@@ -2,27 +2,23 @@ verdocs-view {
   /* Fallback font for old browsers */
   font-family: sans-serif;
   font-family: var(--verdocs-font);
-  display: flex;
-  flex-direction: column;
-  min-height: 600px;
-  background: #ccc;
-  box-sizing: border-box;
-  position: relative;
 
-  div {
+  display: flex;
+  background: #ccc;
+  min-height: 600px;
+  position: relative;
+  box-sizing: border-box;
+  flex-direction: column;
+
+  div,
+  canvas {
     box-sizing: border-box;
   }
 
   .container {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    //position: relative;
-
-    canvas {
-      border: 1px solid #999;
-      background: white;
-    }
+    flex-direction: column;
   }
 
   button.test {
@@ -40,23 +36,26 @@ verdocs-view {
     left: 0;
     right: 0;
     height: 6px;
-    background: #000;
     z-index: 2000;
+    background: #000;
 
     .bar {
-      background: #50be80;
       height: 6px;
+      background: #50be80;
     }
   }
 }
 
 #verdocs-pdf-viewer-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  flex-direction: column;
 
   canvas {
+    background: white;
     max-width: 100%;
-    margin: 10px 0;
+    // To avoid performance problems in some browsers with getClientBoundingRect() we hard-code the calculations for canvas offsets.
+    // If you change the margin here you need to adjust the code as well.
+    margin: 15px 0 0 0;
   }
 }
