@@ -1,17 +1,5 @@
 import '../www/build/verdocs-web-sdk.css';
 
-// import {setupWorker} from 'msw';
-// import {handlers} from './mocks';
-// export const worker = setupWorker(...handlers);
-// worker
-//   .start()
-//   .then(() => {
-//     console.log('Started MSW');
-//   })
-//   .catch(e => {
-//     console.warn('Unable to start MSW', e);
-//   });
-
 import {defineCustomElements} from '../dist/esm/loader';
 defineCustomElements();
 

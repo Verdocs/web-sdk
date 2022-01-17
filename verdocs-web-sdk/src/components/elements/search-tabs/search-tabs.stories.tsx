@@ -19,4 +19,4 @@ const listener = {
   capture: true,
 };
 
-export const Default = ({options}) => html`<search-tabs .options=${options} @optionSelected=${listener} tall />`;
+export const Tabs = ({options}) => html`<search-tabs .options=${options} @optionSelected=${listener} tall />`;

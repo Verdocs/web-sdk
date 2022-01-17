@@ -370,128 +370,123 @@ export class VerdocsDropdown {
 
 export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {
   /**
-   *  
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
    */
-  signatureComplete: EventEmitter<CustomEvent<string>>;
-  /**
-   *  
-   */
-  initialComplete: EventEmitter<CustomEvent<string>>;
+  fieldChange: EventEmitter<CustomEvent<string>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['disabled', 'order', 'required', 'value']
 })
 @Component({
   selector: 'verdocs-field-attachment',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['disabled', 'order', 'required', 'value']
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+    proxyOutputs(this, this.el, ['fieldChange']);
   }
 }
 
 
 export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {
   /**
-   *  
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
    */
-  signatureComplete: EventEmitter<CustomEvent<string>>;
-  /**
-   *  
-   */
-  initialComplete: EventEmitter<CustomEvent<string>>;
+  fieldChange: EventEmitter<CustomEvent<string>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['disabled', 'order', 'required', 'value']
 })
 @Component({
   selector: 'verdocs-field-checkbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['disabled', 'order', 'required', 'value']
 })
 export class VerdocsFieldCheckbox {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+    proxyOutputs(this, this.el, ['fieldChange']);
   }
 }
 
 
 export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   /**
-   *  
+   * Event fired when the input field loses focus. 
    */
-  signatureComplete: EventEmitter<CustomEvent<string>>;
+  fieldFocus: EventEmitter<CustomEvent<boolean>>;
   /**
-   *  
+   * Event fired when the input field gains focus. 
    */
-  initialComplete: EventEmitter<CustomEvent<string>>;
+  fieldBlur: EventEmitter<CustomEvent<boolean>>;
+  /**
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
+   */
+  fieldChange: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired on every character entered into / deleted from the field. 
+   */
+  fieldInput: EventEmitter<CustomEvent<string>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
 })
 @Component({
   selector: 'verdocs-field-date',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
 })
 export class VerdocsFieldDate {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput']);
   }
 }
 
 
-export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
-  /**
-   *  
-   */
-  signatureComplete: EventEmitter<CustomEvent<string>>;
-  /**
-   *  
-   */
-  initialComplete: EventEmitter<CustomEvent<string>>;
-
-}
+export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['field', 'options']
 })
 @Component({
   selector: 'verdocs-field-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['field', 'options']
 })
 export class VerdocsFieldDropdown {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
   }
 }
 
@@ -560,6 +555,36 @@ export class VerdocsFieldPayment {
 }
 
 
+export declare interface VerdocsFieldRadioButton extends Components.VerdocsFieldRadioButton {
+  /**
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
+   */
+  fieldChange: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['checked', 'disabled', 'name', 'order', 'required', 'value']
+})
+@Component({
+  selector: 'verdocs-field-radio-button',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['checked', 'disabled', 'name', 'order', 'required', 'value']
+})
+export class VerdocsFieldRadioButton {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['fieldChange']);
+  }
+}
+
+
 export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSignature {
   /**
    *  
@@ -574,13 +599,13 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'placeholder', 'recipients', 'roleName', 'selectedRoleName', 'signed']
 })
 @Component({
   selector: 'verdocs-field-signature',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'placeholder', 'recipients', 'roleName', 'selectedRoleName', 'signed']
 })
 export class VerdocsFieldSignature {
   protected el: HTMLElement;
@@ -592,34 +617,86 @@ export class VerdocsFieldSignature {
 }
 
 
-export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
+export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {
   /**
-   *  
+   * Event fired when the input field loses focus. 
    */
-  signatureComplete: EventEmitter<CustomEvent<string>>;
+  fieldFocus: EventEmitter<CustomEvent<boolean>>;
   /**
-   *  
+   * Event fired when the input field gains focus. 
    */
-  initialComplete: EventEmitter<CustomEvent<string>>;
+  fieldBlur: EventEmitter<CustomEvent<boolean>>;
+  /**
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
+   */
+  fieldChange: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired on every character entered into / deleted from the field. 
+   */
+  fieldInput: EventEmitter<CustomEvent<string>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
+})
+@Component({
+  selector: 'verdocs-field-textarea',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
+})
+export class VerdocsFieldTextarea {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput']);
+  }
+}
+
+
+export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
+  /**
+   * Event fired when the input field loses focus. 
+   */
+  fieldFocus: EventEmitter<CustomEvent<boolean>>;
+  /**
+   * Event fired when the input field gains focus. 
+   */
+  fieldBlur: EventEmitter<CustomEvent<boolean>>;
+  /**
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
+   */
+  fieldChange: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired on every character entered into / deleted from the field. 
+   */
+  fieldInput: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
 })
 @Component({
   selector: 'verdocs-field-textbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput']);
   }
 }
 
@@ -743,15 +820,15 @@ export declare interface VerdocsTextInput extends Components.VerdocsTextInput {
   /**
    * Event fired when the input value changes. 
    */
-  tinput: EventEmitter<CustomEvent<string>>;
+  fieldInput: EventEmitter<CustomEvent<string>>;
   /**
    * Event fired when the field receives focus. 
    */
-  tfocus: EventEmitter<CustomEvent<any>>;
+  fieldFocus: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the field loses focus. 
    */
-  tblur: EventEmitter<CustomEvent<any>>;
+  fieldBlur: EventEmitter<CustomEvent<any>>;
 
 }
 
@@ -770,7 +847,7 @@ export class VerdocsTextInput {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['tinput', 'tfocus', 'tblur']);
+    proxyOutputs(this, this.el, ['fieldInput', 'fieldFocus', 'fieldBlur']);
   }
 }
 

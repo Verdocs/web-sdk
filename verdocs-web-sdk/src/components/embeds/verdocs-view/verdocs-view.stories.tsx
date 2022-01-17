@@ -23,4 +23,4 @@ export default {
 //   capture: true,
 // };
 
-export const Default = ({source}) => html`<verdocs-view .source=${source} />`;
+export const View = ({source}) => html`<verdocs-view .source=${source} />`;

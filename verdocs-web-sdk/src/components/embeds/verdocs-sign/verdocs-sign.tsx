@@ -5,8 +5,8 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk/HTTP';
 import {Component, Prop, State, h} from '@stencil/core';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Documents/Recipients';
 import {getEndpoint, setActiveEndpoint} from '@verdocs/js-sdk/HTTP/Transport';
-import {getSigningSession, getDocument, getDocumentFile, IDocument, IDocumentField} from '@verdocs/js-sdk/Documents/Documents';
-import {IPDFRenderEvent} from '../verdocs-view/verdocs-view';
+import {getSigningSession, getDocument, getDocumentFile, IDocument, IDocumentField, updateDocumentField} from '@verdocs/js-sdk/Documents/Documents';
+import {IPDFPageInfo, IPDFRenderEvent} from '../verdocs-view/verdocs-view';
 
 const BASE_URL = 'https://stage-api.verdocs.com';
 
@@ -63,7 +63,7 @@ export class VerdocsSign {
       console.log('[SIGN] Recipient', recipient);
       this.recipient = recipient;
       this.signerToken = signerToken;
-      getEndpoint().setAuthorization(signerToken);
+      getEndpoint().setSigningAuthorization(signerToken);
 
       const document = await getDocument(this.documentid);
       this.document = document;
@@ -142,7 +142,60 @@ export class VerdocsSign {
     }
   }
 
-  renderField(field: IDocumentField) {
+  async handleFieldChange(field: IDocumentField, e: any, optionId?: string) {
+    console.log('fieldChange', field, e.detail);
+    switch (field.type) {
+      case 'textbox':
+        updateDocumentField(this.documentid, field.name, {prepared: false, value: e.detail})
+          .then(r => console.log('Update result', r))
+          .catch(e => console.log('Error updating', e));
+        break;
+
+      case 'checkbox_group':
+        updateDocumentField(this.documentid, field.name, {prepared: false, value: {options: [{id: optionId, checked: e.detail}]}})
+          .then(r => console.log('Update result', r))
+          .catch(e => console.log('Error updating', e));
+        break;
+
+      case 'radio_button_group':
+        updateDocumentField(this.documentid, field.name, {prepared: false, value: e.detail})
+          .then(r => console.log('Update result', r))
+          .catch(e => console.log('Error updating', e));
+        break;
+    }
+  }
+
+  renderCheckboxGroupOption(page: IPDFPageInfo, field: IDocumentField, option: any, index: number) {
+    const left = rescale(page.xRatio, option.x);
+    const bottom = rescale(page.yRatio, option.y);
+
+    const style = {
+      left: `${left}px`,
+      bottom: `${bottom}px`,
+      position: 'absolute',
+      transform: `scale(${page.xRatio}, ${page.yRatio})`,
+      backgroundColor: getRGBA(this.recipientIndex),
+    } as any;
+
+    return <verdocs-field-checkbox style={style} order={index} value={option.checked} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
+  }
+
+  renderRadioGroupOption(page: IPDFPageInfo, field: IDocumentField, option: any, index: number) {
+    const left = rescale(page.xRatio, option.x);
+    const bottom = rescale(page.yRatio, option.y);
+
+    const style = {
+      left: `${left}px`,
+      bottom: `${bottom}px`,
+      position: 'absolute',
+      transform: `scale(${page.xRatio}, ${page.yRatio})`,
+      backgroundColor: getRGBA(this.recipientIndex),
+    } as any;
+
+    return <verdocs-field-radio-button style={style} order={index} value={option.checked} name={field.name} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
+  }
+
+  renderField(field: IDocumentField, index: number) {
     const renderOnPage = this.pdfPageInfo.pages.find(page => page.pageNumber === field.page);
     if (!renderOnPage) {
       console.log('Unable to render invalid field', field);
@@ -158,7 +211,17 @@ export class VerdocsSign {
       position: 'absolute',
       transform: `scale(${renderOnPage.xRatio}, ${renderOnPage.yRatio})`,
       backgroundColor: field.settings.rgba || getRGBA(this.recipientIndex),
-    };
+    } as any;
+
+    if (field.settings.height) {
+      style.height = `${field.settings.height}px`;
+    }
+
+    if (field.settings.width) {
+      style.width = `${field.settings.width}px`;
+    }
+
+    console.log('rendering field', field.type, field);
 
     switch (field.type) {
       case 'signature':
@@ -166,23 +229,41 @@ export class VerdocsSign {
       case 'initial':
         return <verdocs-field-initial style={style} field={field} />;
       case 'textbox':
-        return <verdocs-field-textbox style={style} field={field} />;
+        return (
+          <verdocs-field-textbox
+            style={style}
+            order={index}
+            value={field.settings.result || ''}
+            placeholder={field.settings.placeholder || ''}
+            onFieldChange={e => this.handleFieldChange(field, e)}
+          />
+        );
+      case 'textarea':
+        return <verdocs-field-textarea style={style} placeholder={field.settings.placeholder || ''} />;
       case 'date':
-        return <verdocs-field-date style={style} field={field} />;
+        return <verdocs-field-date style={style} order={index} value={field.settings.result || ''} placeholder={field.settings.placeholder || ''} />;
       case 'timestamp':
         break;
       case 'placeholder':
         break;
       case 'dropdown':
-        return <verdocs-field-dropdown style={style} field={field} />;
+        return <verdocs-field-dropdown style={style} field={field} options={field.settings.options} />;
       case 'checkbox':
-        return <verdocs-field-checkbox style={style} field={field} />;
+        return <verdocs-field-checkbox style={style} value={field.settings.result || ''} />;
       case 'checkbox_group':
-        break;
+        return (
+          <div style={{position: 'absolute', width: '100%', height: '100%'}}>
+            {field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index))}
+          </div>
+        );
       case 'radio_button_group':
-        break;
+        return (
+          <div style={{position: 'absolute', width: '100%', height: '100%'}}>
+            {field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index))}
+          </div>
+        );
       case 'attachment':
-        return <verdocs-field-attachment style={style} field={field} />;
+        return <verdocs-field-attachment style={style} value={field.settings.result || ''} />;
       case 'payment':
         return <verdocs-field-payment style={style} field={field} />;
     }
@@ -203,7 +284,6 @@ export class VerdocsSign {
       {id: 'print', label: 'Print Without Signing'},
       {id: 'download', label: 'Download'},
     ];
-    console.log('rendering', menuOptions);
 
     return (
       <Host class={{storybook: !!window?.['STORYBOOK_ENV'], agreed: this.recipient?.agreed}}>
@@ -238,7 +318,7 @@ export class VerdocsSign {
           {(this.pdfPageInfo?.pages || []).map(page => (
             <div class="page-controls" style={{height: `${page.height}px`, width: `${page.width}px`, top: `${page.canvasTop}px`, margin: '0 auto'}}>
               {this.pdfPageInfo?.numRendered > 0 ? (
-                this.fields.filter(field => field.page === page.pageNumber).map(field => this.renderField(field))
+                this.fields.filter(field => field.page === page.pageNumber).map((field, index) => this.renderField(field, index))
               ) : (
                 <div style={{display: 'none'}}>Waiting for PDF to render...</div>
               )}

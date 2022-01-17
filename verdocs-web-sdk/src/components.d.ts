@@ -131,80 +131,72 @@ export namespace Components {
         "options": IMenuOption[];
     }
     interface VerdocsFieldAttachment {
-        "currentInitial": string;
-        "currentInitialId": string;
-        "currentSignature": string;
-        "currentSignatureId": string;
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field": IDocumentField;
-        "fieldId": string;
-        "fields": any[];
-        "focused": boolean;
-        "pageNum": number;
-        "pdfPages": any[];
-        "recipients": any;
-        "roleName": string;
-        "selectedRoleName": string;
-        "signed": boolean;
+        "disabled": boolean;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order": number;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required": boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value": string;
     }
     interface VerdocsFieldCheckbox {
-        "currentInitial": string;
-        "currentInitialId": string;
-        "currentSignature": string;
-        "currentSignatureId": string;
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field": IDocumentField;
-        "fieldId": string;
-        "fields": any[];
-        "focused": boolean;
-        "pageNum": number;
-        "pdfPages": any[];
-        "recipients": any;
-        "roleName": string;
-        "selectedRoleName": string;
-        "signed": boolean;
+        "disabled": boolean;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order": number;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required": boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value": boolean;
     }
     interface VerdocsFieldDate {
-        "currentInitial": string;
-        "currentInitialId": string;
-        "currentSignature": string;
-        "currentSignatureId": string;
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field": IDocumentField;
-        "fieldId": string;
-        "fields": any[];
-        "focused": boolean;
-        "pageNum": number;
-        "pdfPages": any[];
-        "recipients": any;
-        "roleName": string;
-        "selectedRoleName": string;
-        "signed": boolean;
+        "disabled": boolean;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order": number;
+        /**
+          * A placeholder to assist the user in completing the field.
+         */
+        "placeholder": string;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required": boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value": string;
     }
     interface VerdocsFieldDropdown {
-        "currentInitial": string;
-        "currentInitialId": string;
-        "currentSignature": string;
-        "currentSignatureId": string;
         /**
           * The field to display.
          */
         "field": IDocumentField;
-        "fieldId": string;
-        "fields": any[];
-        "focused": boolean;
-        "pageNum": number;
-        "pdfPages": any[];
-        "recipients": any;
-        "roleName": string;
-        "selectedRoleName": string;
-        "signed": boolean;
+        /**
+          * The optoins to choose from.
+         */
+        "options": any[];
     }
     interface VerdocsFieldInitial {
         "currentInitial": string;
@@ -244,6 +236,32 @@ export namespace Components {
         "selectedRoleName": string;
         "signed": boolean;
     }
+    interface VerdocsFieldRadioButton {
+        /**
+          * Sets the value of the input element.
+         */
+        "checked": boolean;
+        /**
+          * Sets the disabled attribute of the input element.
+         */
+        "disabled": boolean;
+        /**
+          * Sets the name of the input element.
+         */
+        "name": string;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order": number;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required": boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value": string;
+    }
     interface VerdocsFieldSignature {
         "currentInitial": string;
         "currentInitialId": string;
@@ -258,29 +276,58 @@ export namespace Components {
         "focused": boolean;
         "pageNum": number;
         "pdfPages": any[];
+        /**
+          * A placeholder to assist the user in completing the field.
+         */
+        "placeholder": string;
         "recipients": any;
         "roleName": string;
         "selectedRoleName": string;
         "signed": boolean;
     }
-    interface VerdocsFieldTextbox {
-        "currentInitial": string;
-        "currentInitialId": string;
-        "currentSignature": string;
-        "currentSignatureId": string;
+    interface VerdocsFieldTextarea {
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field": IDocumentField;
-        "fieldId": string;
-        "fields": any[];
-        "focused": boolean;
-        "pageNum": number;
-        "pdfPages": any[];
-        "recipients": any;
-        "roleName": string;
-        "selectedRoleName": string;
-        "signed": boolean;
+        "disabled": boolean;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order": number;
+        /**
+          * A placeholder to assist the user in completing the field.
+         */
+        "placeholder": string;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required": boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value": string;
+    }
+    interface VerdocsFieldTextbox {
+        /**
+          * Sets the disabled attribute of the input element.
+         */
+        "disabled": boolean;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order": number;
+        /**
+          * A placeholder to assist the user in completing the field.
+         */
+        "placeholder": string;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required": boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value": string;
     }
     interface VerdocsLoader {
     }
@@ -490,11 +537,23 @@ declare global {
         prototype: HTMLVerdocsFieldPaymentElement;
         new (): HTMLVerdocsFieldPaymentElement;
     };
+    interface HTMLVerdocsFieldRadioButtonElement extends Components.VerdocsFieldRadioButton, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldRadioButtonElement: {
+        prototype: HTMLVerdocsFieldRadioButtonElement;
+        new (): HTMLVerdocsFieldRadioButtonElement;
+    };
     interface HTMLVerdocsFieldSignatureElement extends Components.VerdocsFieldSignature, HTMLStencilElement {
     }
     var HTMLVerdocsFieldSignatureElement: {
         prototype: HTMLVerdocsFieldSignatureElement;
         new (): HTMLVerdocsFieldSignatureElement;
+    };
+    interface HTMLVerdocsFieldTextareaElement extends Components.VerdocsFieldTextarea, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldTextareaElement: {
+        prototype: HTMLVerdocsFieldTextareaElement;
+        new (): HTMLVerdocsFieldTextareaElement;
     };
     interface HTMLVerdocsFieldTextboxElement extends Components.VerdocsFieldTextbox, HTMLStencilElement {
     }
@@ -565,7 +624,9 @@ declare global {
         "verdocs-field-dropdown": HTMLVerdocsFieldDropdownElement;
         "verdocs-field-initial": HTMLVerdocsFieldInitialElement;
         "verdocs-field-payment": HTMLVerdocsFieldPaymentElement;
+        "verdocs-field-radio-button": HTMLVerdocsFieldRadioButtonElement;
         "verdocs-field-signature": HTMLVerdocsFieldSignatureElement;
+        "verdocs-field-textarea": HTMLVerdocsFieldTextareaElement;
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
         "verdocs-loader": HTMLVerdocsLoaderElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
@@ -739,88 +800,96 @@ declare namespace LocalJSX {
         "options"?: IMenuOption[];
     }
     interface VerdocsFieldAttachment {
-        "currentInitial"?: string;
-        "currentInitialId"?: string;
-        "currentSignature"?: string;
-        "currentSignatureId"?: string;
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field"?: IDocumentField;
-        "fieldId"?: string;
-        "fields"?: any[];
-        "focused"?: boolean;
-        "onInitialComplete"?: (event: CustomEvent<string>) => void;
-        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
-        "pageNum"?: number;
-        "pdfPages"?: any[];
-        "recipients"?: any;
-        "roleName"?: string;
-        "selectedRoleName"?: string;
-        "signed"?: boolean;
+        "disabled"?: boolean;
+        /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order"?: number;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required"?: boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value"?: string;
     }
     interface VerdocsFieldCheckbox {
-        "currentInitial"?: string;
-        "currentInitialId"?: string;
-        "currentSignature"?: string;
-        "currentSignatureId"?: string;
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field"?: IDocumentField;
-        "fieldId"?: string;
-        "fields"?: any[];
-        "focused"?: boolean;
-        "onInitialComplete"?: (event: CustomEvent<string>) => void;
-        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
-        "pageNum"?: number;
-        "pdfPages"?: any[];
-        "recipients"?: any;
-        "roleName"?: string;
-        "selectedRoleName"?: string;
-        "signed"?: boolean;
+        "disabled"?: boolean;
+        /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order"?: number;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required"?: boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value"?: boolean;
     }
     interface VerdocsFieldDate {
-        "currentInitial"?: string;
-        "currentInitialId"?: string;
-        "currentSignature"?: string;
-        "currentSignatureId"?: string;
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field"?: IDocumentField;
-        "fieldId"?: string;
-        "fields"?: any[];
-        "focused"?: boolean;
-        "onInitialComplete"?: (event: CustomEvent<string>) => void;
-        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
-        "pageNum"?: number;
-        "pdfPages"?: any[];
-        "recipients"?: any;
-        "roleName"?: string;
-        "selectedRoleName"?: string;
-        "signed"?: boolean;
+        "disabled"?: boolean;
+        /**
+          * Event fired when the input field gains focus.
+         */
+        "onFieldBlur"?: (event: CustomEvent<boolean>) => void;
+        /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        /**
+          * Event fired when the input field loses focus.
+         */
+        "onFieldFocus"?: (event: CustomEvent<boolean>) => void;
+        /**
+          * Event fired on every character entered into / deleted from the field.
+         */
+        "onFieldInput"?: (event: CustomEvent<string>) => void;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order"?: number;
+        /**
+          * A placeholder to assist the user in completing the field.
+         */
+        "placeholder"?: string;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required"?: boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value"?: string;
     }
     interface VerdocsFieldDropdown {
-        "currentInitial"?: string;
-        "currentInitialId"?: string;
-        "currentSignature"?: string;
-        "currentSignatureId"?: string;
         /**
           * The field to display.
          */
         "field"?: IDocumentField;
-        "fieldId"?: string;
-        "fields"?: any[];
-        "focused"?: boolean;
-        "onInitialComplete"?: (event: CustomEvent<string>) => void;
-        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
-        "pageNum"?: number;
-        "pdfPages"?: any[];
-        "recipients"?: any;
-        "roleName"?: string;
-        "selectedRoleName"?: string;
-        "signed"?: boolean;
+        /**
+          * The optoins to choose from.
+         */
+        "options"?: any[];
     }
     interface VerdocsFieldInitial {
         "currentInitial"?: string;
@@ -864,6 +933,36 @@ declare namespace LocalJSX {
         "selectedRoleName"?: string;
         "signed"?: boolean;
     }
+    interface VerdocsFieldRadioButton {
+        /**
+          * Sets the value of the input element.
+         */
+        "checked"?: boolean;
+        /**
+          * Sets the disabled attribute of the input element.
+         */
+        "disabled"?: boolean;
+        /**
+          * Sets the name of the input element.
+         */
+        "name"?: string;
+        /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order"?: number;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required"?: boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value"?: string;
+    }
     interface VerdocsFieldSignature {
         "currentInitial"?: string;
         "currentInitialId"?: string;
@@ -880,31 +979,90 @@ declare namespace LocalJSX {
         "onSignatureComplete"?: (event: CustomEvent<string>) => void;
         "pageNum"?: number;
         "pdfPages"?: any[];
+        /**
+          * A placeholder to assist the user in completing the field.
+         */
+        "placeholder"?: string;
         "recipients"?: any;
         "roleName"?: string;
         "selectedRoleName"?: string;
         "signed"?: boolean;
     }
-    interface VerdocsFieldTextbox {
-        "currentInitial"?: string;
-        "currentInitialId"?: string;
-        "currentSignature"?: string;
-        "currentSignatureId"?: string;
+    interface VerdocsFieldTextarea {
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field"?: IDocumentField;
-        "fieldId"?: string;
-        "fields"?: any[];
-        "focused"?: boolean;
-        "onInitialComplete"?: (event: CustomEvent<string>) => void;
-        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
-        "pageNum"?: number;
-        "pdfPages"?: any[];
-        "recipients"?: any;
-        "roleName"?: string;
-        "selectedRoleName"?: string;
-        "signed"?: boolean;
+        "disabled"?: boolean;
+        /**
+          * Event fired when the input field gains focus.
+         */
+        "onFieldBlur"?: (event: CustomEvent<boolean>) => void;
+        /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        /**
+          * Event fired when the input field loses focus.
+         */
+        "onFieldFocus"?: (event: CustomEvent<boolean>) => void;
+        /**
+          * Event fired on every character entered into / deleted from the field.
+         */
+        "onFieldInput"?: (event: CustomEvent<string>) => void;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order"?: number;
+        /**
+          * A placeholder to assist the user in completing the field.
+         */
+        "placeholder"?: string;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required"?: boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value"?: string;
+    }
+    interface VerdocsFieldTextbox {
+        /**
+          * Sets the disabled attribute of the input element.
+         */
+        "disabled"?: boolean;
+        /**
+          * Event fired when the input field gains focus.
+         */
+        "onFieldBlur"?: (event: CustomEvent<boolean>) => void;
+        /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        /**
+          * Event fired when the input field loses focus.
+         */
+        "onFieldFocus"?: (event: CustomEvent<boolean>) => void;
+        /**
+          * Event fired on every character entered into / deleted from the field.
+         */
+        "onFieldInput"?: (event: CustomEvent<string>) => void;
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order"?: number;
+        /**
+          * A placeholder to assist the user in completing the field.
+         */
+        "placeholder"?: string;
+        /**
+          * If true, the field will be marked required.
+         */
+        "required"?: boolean;
+        /**
+          * Sets the value of the input element.
+         */
+        "value"?: string;
     }
     interface VerdocsLoader {
     }
@@ -976,15 +1134,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field loses focus.
          */
-        "onTblur"?: (event: CustomEvent<any>) => void;
+        "onFieldBlur"?: (event: CustomEvent<any>) => void;
         /**
           * Event fired when the field receives focus.
          */
-        "onTfocus"?: (event: CustomEvent<any>) => void;
+        "onFieldFocus"?: (event: CustomEvent<any>) => void;
         /**
           * Event fired when the input value changes.
          */
-        "onTinput"?: (event: CustomEvent<string>) => void;
+        "onFieldInput"?: (event: CustomEvent<string>) => void;
         /**
           * The placeholder for the field.
          */
@@ -1057,7 +1215,9 @@ declare namespace LocalJSX {
         "verdocs-field-dropdown": VerdocsFieldDropdown;
         "verdocs-field-initial": VerdocsFieldInitial;
         "verdocs-field-payment": VerdocsFieldPayment;
+        "verdocs-field-radio-button": VerdocsFieldRadioButton;
         "verdocs-field-signature": VerdocsFieldSignature;
+        "verdocs-field-textarea": VerdocsFieldTextarea;
         "verdocs-field-textbox": VerdocsFieldTextbox;
         "verdocs-loader": VerdocsLoader;
         "verdocs-ok-dialog": VerdocsOkDialog;
@@ -1092,7 +1252,9 @@ declare module "@stencil/core" {
             "verdocs-field-dropdown": LocalJSX.VerdocsFieldDropdown & JSXBase.HTMLAttributes<HTMLVerdocsFieldDropdownElement>;
             "verdocs-field-initial": LocalJSX.VerdocsFieldInitial & JSXBase.HTMLAttributes<HTMLVerdocsFieldInitialElement>;
             "verdocs-field-payment": LocalJSX.VerdocsFieldPayment & JSXBase.HTMLAttributes<HTMLVerdocsFieldPaymentElement>;
+            "verdocs-field-radio-button": LocalJSX.VerdocsFieldRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsFieldRadioButtonElement>;
             "verdocs-field-signature": LocalJSX.VerdocsFieldSignature & JSXBase.HTMLAttributes<HTMLVerdocsFieldSignatureElement>;
+            "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
             "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;

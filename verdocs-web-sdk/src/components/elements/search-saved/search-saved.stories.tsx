@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Elements/Search/Saved',
+  title: 'Elements/Search/Saved Searches',
   component: 'search-saved',
   args: {
     limit: 10,
@@ -12,4 +12,4 @@ export default {
   },
 } as Meta;
 
-export const Default = ({limit, entrySelected}) => html`<search-saved .limit=${limit} @entrySelected=${entrySelected} />`;
+export const SavedSearches = ({limit, entrySelected}) => html`<search-saved .limit=${limit} @entrySelected=${entrySelected} />`;

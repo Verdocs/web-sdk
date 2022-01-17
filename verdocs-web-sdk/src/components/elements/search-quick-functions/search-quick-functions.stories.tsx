@@ -15,5 +15,5 @@ export default {
   },
 } as Meta;
 
-export const Default = ({options, createTemplate, createDocument}) =>
+export const QuickFunctions = ({options, createTemplate, createDocument}) =>
   html`<search-quick-functions .options=${options} @createTemplate=${createTemplate} @createDocument=${createDocument} tall />`;

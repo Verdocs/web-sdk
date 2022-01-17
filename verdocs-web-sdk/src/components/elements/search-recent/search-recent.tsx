@@ -6,6 +6,9 @@ import SearchIcon from './search-icon.svg';
 /**
  * Display a list of recent searches. Note that only some types of searches are automatically saved in the
  * user's history (those that contain a unique `q` query string from the next-most-recent search.
+ *
+ * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+ * embed. This Element will reuse the same session produced by logging in via that Embed.
  */
 @Component({
   tag: 'search-recent',
@@ -25,12 +28,20 @@ export class SearchRecent {
 
   @State() recent: IRecentSearch[] = [];
 
+  @State() emptyMessage = 'You do not have any recent searches.';
+
   componentDidLoad() {
     getSearchHistory()
       .then(r => {
         this.recent = r.recent;
+        this.emptyMessage = 'You do not have any recent searches.';
       })
-      .catch(e => console.warn('[Verdocs/search-recent] Error getting search history', e));
+      .catch(e => {
+        console.warn('[Verdocs/search-recent] Error getting reent searches', e);
+        if (e?.response?.status === 401) {
+          this.emptyMessage = 'Authenticated required.';
+        }
+      });
   }
 
   handleSelectEntry(entry: IRecentSearch) {
@@ -48,7 +59,7 @@ export class SearchRecent {
                 {entry.params.q}
               </button>
             ))}
-            {this.recent.length < 1 && <div class="empty">You do not have any recent searches.</div>}
+            {this.recent.length < 1 && <div class="empty">{this.emptyMessage}</div>}
           </div>
         </div>
       </Host>

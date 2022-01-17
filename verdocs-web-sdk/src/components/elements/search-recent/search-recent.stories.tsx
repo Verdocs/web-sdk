@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Elements/Search/Recent',
+  title: 'Elements/Search/Recent Searches',
   component: 'search-recent',
   args: {
     limit: 10,
@@ -12,4 +12,4 @@ export default {
   },
 } as Meta;
 
-export const Default = ({limit, entrySelected}) => html`<search-recent .limit=${limit} @entrySelected=${entrySelected} />`;
+export const RecentSearches = ({limit, entrySelected}) => html`<search-recent .limit=${limit} @entrySelected=${entrySelected} />`;

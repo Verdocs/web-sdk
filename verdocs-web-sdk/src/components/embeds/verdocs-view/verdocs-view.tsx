@@ -142,7 +142,6 @@ export class VerdocsView {
       this.pagesRendered.sort((a, b) => a.pageNumber - b.pageNumber);
       const previousSibling = this.pagesRendered.filter(page => page.pageNumber < pageNumber).pop();
       const canvasTop = (previousSibling?.canvasBottom || 0) + CANVAS_MARGIN;
-      console.log(`Computed top of ${canvasTop} for page ${pageNumber}`);
 
       const pageDetails = {
         pageNumber,

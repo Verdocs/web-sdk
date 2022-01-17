@@ -4,6 +4,9 @@ import DocumentIcon from './document-icon.svg';
 
 /**
  * Display quick-function buttons for creating templates and documents.
+ *
+ * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+ * embed. This Element will reuse the same session produced by logging in via that Embed.
  */
 @Component({
   tag: 'search-quick-functions',

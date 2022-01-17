@@ -16,4 +16,4 @@ const listener = {
   capture: true,
 };
 
-export const Default = ({options}) => html`<verdocs-search .options=${options} @optionSelected=${listener} tall />`;
+export const Search = ({options}) => html`<verdocs-search .options=${options} @optionSelected=${listener} tall />`;

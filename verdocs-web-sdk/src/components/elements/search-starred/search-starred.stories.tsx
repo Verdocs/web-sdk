@@ -26,7 +26,7 @@ const dummyData = [
  * Display a list of starred items (favorite templates).
  */
 export default {
-  title: 'Elements/Search/Starred',
+  title: 'Elements/Search/Starred Items',
   component: 'search-starred',
   args: {
     options: dummyData,
@@ -36,4 +36,4 @@ export default {
   },
 } as Meta;
 
-export const Default = ({options, entrySelected}) => html`<search-starred .options=${options} @entrySelected=${entrySelected} tall />`;
+export const StarredItems = ({options, entrySelected}) => html`<search-starred .options=${options} @entrySelected=${entrySelected} tall />`;

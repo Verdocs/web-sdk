@@ -1,10 +1,12 @@
-import {Component, Host, h, Prop, Event, EventEmitter} from '@stencil/core';
-
-import DocumentIcon from './document-icon.svg';
 import {IRecentSearch} from '@verdocs/js-sdk/Search/Types';
+import {Component, Host, h, Prop, Event, EventEmitter, State} from '@stencil/core';
+import DocumentIcon from './document-icon.svg';
 
 /**
  * Display a list of starred items.
+ *
+ * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+ * embed. This Element will reuse the same session produced by logging in via that Embed.
  */
 @Component({
   tag: 'search-starred',
@@ -17,6 +19,23 @@ export class SearchStarred {
    * Event fired when an entry is clicked.
    */
   @Event({composed: true}) entrySelected: EventEmitter<IRecentSearch>;
+
+  @State() emptyMessage = 'You do not have any starred searches.';
+
+  componentDidLoad() {
+    // TODO
+    // getStarred()
+    //   .then(r => {
+    //     this.saved = r.saved;
+    //     this.emptyMessage = 'You do not have any saved searches.';
+    //   })
+    //   .catch(e => {
+    //     console.warn('[Verdocs/search-recent] Error getting saved searches', e);
+    //     if (e?.response?.status === 401) {
+    //       this.emptyMessage = 'Authenticated required.';
+    //     }
+    //   });
+  }
 
   handleSelectEntry(entry: any) {
     this.entrySelected.emit(entry);
@@ -58,7 +77,7 @@ export class SearchStarred {
                 </div>
               </button>
             ))}
-            {(this.options?.length || []) < 1 && <div class="empty">You do not have any starred items.</div>}
+            {(this.options?.length || []) < 1 && <div class="empty">{this.emptyMessage}</div>}
           </div>
         </div>
       </Host>

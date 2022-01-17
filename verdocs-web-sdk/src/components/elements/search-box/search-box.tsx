@@ -11,6 +11,9 @@ export interface ISearchEvent {
 
 /**
  * Displays a customizable input box for search queries.
+ *
+ * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+ * embed. This Element will reuse the same session produced by logging in via that Embed.
  */
 @Component({
   tag: 'search-box',

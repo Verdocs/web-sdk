@@ -19,4 +19,4 @@ export default {
   },
 } as Meta;
 
-export const Default = ({visible, logo, debug, authenticated}) => html`<verdocs-auth .visible=${visible} .logo=${logo} .debug=${debug} @authenticated=${authenticated} />`;
+export const Auth = ({visible, logo, debug, authenticated}) => html`<verdocs-auth .visible=${visible} .logo=${logo} .debug=${debug} @authenticated=${authenticated} />`;

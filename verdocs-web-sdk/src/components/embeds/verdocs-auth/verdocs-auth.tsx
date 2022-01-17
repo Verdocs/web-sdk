@@ -25,6 +25,9 @@ export interface IAuthStatus {
  * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
  * cancels) authentication steps.
  *
+ * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+ * embed. This Element will reuse the same session produced by logging in via that Embed.
+ *
  * ```typescript
  * interface IAuthStatus {
  *   // If true, the user is authenticated with a valid session
@@ -137,8 +140,6 @@ export class VerdocsAuth {
         return (
           <div class="status-result debug">
             <verdocs-button label="Logout" disabled={this.loggingIn} onPress={() => this.handleLogout()} />
-
-            {JSON.stringify(this.activeSession, null, 2)}
           </div>
         );
       }
@@ -158,13 +159,13 @@ export class VerdocsAuth {
           </h4>
 
           <form onSubmit={() => this.handleLogin()}>
-            <verdocs-text-input label="Email" autocomplete="username" value={this.username} onTinput={e => (this.username = e.detail)} disabled={this.loggingIn} />
+            <verdocs-text-input label="Email" autocomplete="username" value={this.username} onFieldInput={e => (this.username = e.detail)} disabled={this.loggingIn} />
             <verdocs-text-input
               label="Password"
               type="password"
               autocomplete="current-password"
               value={this.password}
-              onTinput={e => (this.password = e.detail)}
+              onFieldInput={e => (this.password = e.detail)}
               disabled={this.loggingIn}
             />
 
@@ -185,13 +186,13 @@ export class VerdocsAuth {
         </h4>
 
         <form onSubmit={() => this.handleLogin()}>
-          <verdocs-text-input label="Email" autocomplete="username" value={this.username} onTinput={e => (this.username = e.detail)} disabled={this.loggingIn} />
+          <verdocs-text-input label="Email" autocomplete="username" value={this.username} onFieldInput={e => (this.username = e.detail)} disabled={this.loggingIn} />
           <verdocs-text-input
             label="Password"
             type="password"
             autocomplete="current-password"
             value={this.password}
-            onTinput={e => (this.password = e.detail)}
+            onFieldInput={e => (this.password = e.detail)}
             disabled={this.loggingIn}
           />
 

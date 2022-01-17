@@ -15,5 +15,5 @@ export default {
   },
 } as Meta;
 
-export const Default = ({type, searchClicked, typeChanged, queryChanged}) =>
+export const SearchBox = ({type, searchClicked, typeChanged, queryChanged}) =>
   html`<search-box .type=${type} @searchClicked=${searchClicked} @typeChanged=${typeChanged} @queryChanged=${queryChanged} />`;

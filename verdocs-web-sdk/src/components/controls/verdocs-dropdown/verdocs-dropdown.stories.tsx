@@ -11,7 +11,7 @@ import {Meta} from '@storybook/web-components';
 
 export default {
   // Where in Storybook this control will be listed
-  title: 'Controls/Dropdown Menu',
+  title: 'Controls/Inputs/Dropdown',
   // Hint to help the docs addon find the component
   component: 'verdocs-dropdown',
   // We can apply default args only shown in Storybook as follows
@@ -32,5 +32,4 @@ export default {
 } as Meta;
 
 // See https://lit-html.polymer-project.org/guide/template-reference "Binding Types" for an explanation of '.' vs '@'
-export const Default = ({options, optionSelected}) => html`<verdocs-dropdown .options=${options} @optionSelected=${optionSelected} />`;
-export const Open = ({options, optionSelected}) => html`<verdocs-dropdown .options=${options} @optionSelected=${optionSelected} open />`;
+export const Dropdown = ({options, optionSelected}) => html`<verdocs-dropdown .options=${options} @optionSelected=${optionSelected} />`;
