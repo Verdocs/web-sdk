@@ -135,6 +135,10 @@ export class VerdocsAuth {
   }
 
   render() {
+    if (!this.visible) {
+      return <div style={{display: 'none'}}>Verdocs Auth Placeholder</div>;
+    }
+
     if (this.isAuthenticated) {
       if (this.debug) {
         return (
@@ -169,14 +173,19 @@ export class VerdocsAuth {
               disabled={this.loggingIn}
             />
 
-            <verdocs-button label="Signup" disabled={this.loggingIn} onPress={() => this.handleLogin()} />
+            <verdocs-button
+              label="Signup"
+              disabled={this.loggingIn}
+              onPress={() => this.handleLogin()}
+              style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
+            />
           </form>
         </div>
       );
     }
 
     return (
-      <div class="login-form" style={{display: this.visible ? 'block' : 'none'}}>
+      <div class="login-form">
         <img src={this.logo} alt="Verdocs Logo" class="logo" />
 
         <h3>Log in to your account</h3>
@@ -196,9 +205,14 @@ export class VerdocsAuth {
             disabled={this.loggingIn}
           />
 
-          <verdocs-text-button label="Forgot Your Password?" onClick={() => (this.displayMode = 'signup')} disabled={this.loggingIn} style={{alignSelf: 'center'}} />
+          <verdocs-text-button
+            label="Forgot Your Password?"
+            onClick={() => (this.displayMode = 'signup')}
+            disabled={this.loggingIn}
+            style={{display: 'flex', justifyContent: 'center', margin: '10px auto 20px'}}
+          />
 
-          <verdocs-button label="Login" disabled={this.loggingIn} onPress={() => this.handleLogin()} />
+          <verdocs-button label="Login" disabled={this.loggingIn} onPress={() => this.handleLogin()} style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}} />
         </form>
 
         {this.loginError ? <verdocs-ok-dialog open={true} heading="Login Error" message={this.loginError} onClosed={() => this.handleClearError()} /> : <div />}

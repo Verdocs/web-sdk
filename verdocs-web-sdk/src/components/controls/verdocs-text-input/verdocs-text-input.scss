@@ -4,6 +4,7 @@ verdocs-text-input {
   font-family: var(--verdocs-font);
   box-sizing: border-box;
   margin: 20px 0;
+  display: block;
 
   .input-element {
     box-sizing: border-box;
@@ -27,6 +28,6 @@ verdocs-text-input {
     color: #333;
     font-weight: 400;
     font-size: 14px;
-    margin: 0 0 7px 0;
+    margin: 0 0 4px 0;
   }
 }
