@@ -3,7 +3,7 @@ verdocs-text-button {
     border: none;
     cursor: pointer;
     font-size: 14px;
-    color: #4c56cb;
+    color: var(--verdocs-secondary-color);
     font-weight: 400;
     outline: none;
     background: transparent;
@@ -15,7 +15,7 @@ verdocs-text-button {
     }
 
     &:active {
-      color: #5962cb;
+      filter: brightness(110%);
     }
   }
 }

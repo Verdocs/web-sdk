@@ -1,0 +1,47 @@
+// See https://www.kallmanation.com/styling-a-checkbox-with-only-css
+verdocs-field-checkbox {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+
+  font-size: 11px;
+  background-color: transparent;
+  transform-origin: bottom left;
+
+  label > input[type='checkbox'] {
+    display: none;
+  }
+
+  label > input[type='checkbox'] + *::before {
+    content: '';
+    display: block;
+    vertical-align: bottom;
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+  }
+
+  label > input[type='checkbox']:checked + * {
+    color: var(--verdocs-primary-color);
+  }
+
+  label > input[type='checkbox']:checked + *::before {
+    content: '✓';
+    color: white;
+    text-align: center;
+    background: var(--verdocs-primary-color);
+    border-color: var(--verdocs-primary-color);
+  }
+
+  &.required {
+    label > input[type='checkbox'] + *::before {
+      border: 1px solid var(--verdocs-required-color);
+    }
+  }
+
+  &.hide {
+    display: none;
+  }
+}

@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Controls/Dialogs/Ok Dialog',
+  title: 'Controls/Ok Dialog',
   component: 'verdocs-ok-dialog',
   args: {
     open: true,

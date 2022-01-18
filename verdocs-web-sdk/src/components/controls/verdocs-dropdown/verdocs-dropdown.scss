@@ -17,7 +17,7 @@ verdocs-dropdown {
   }
 
   .arrow svg {
-    fill: #50be80;
+    fill: var(--verdocs-primary-color);
     transition: 0.3s;
   }
 
@@ -45,7 +45,7 @@ verdocs-dropdown {
 
   .option:hover {
     cursor: pointer;
-    background: #50be80;
+    background: var(--verdocs-primary-color);
   }
 
   .option[disabled] {

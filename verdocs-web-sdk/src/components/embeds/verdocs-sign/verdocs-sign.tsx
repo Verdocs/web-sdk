@@ -46,6 +46,8 @@ export class VerdocsSign {
   @State() fields: IDocumentField[] = [];
   @State() pdfPageInfo: IPDFRenderEvent;
 
+  @State() hasSignature = false;
+
   componentWillLoad() {
     const endpoint = new VerdocsEndpoint({baseURL: BASE_URL});
     setActiveEndpoint(endpoint);
@@ -81,6 +83,10 @@ export class VerdocsSign {
 
       this.fields = this.document.fields.filter(field => field.recipient_role === this.roleid);
       console.log('Loaded fields', this.fields);
+
+      // TODO: Fix service to allow this?
+      // const sigs = await getSignatures();
+      // console.log('sigs', sigs);
     } catch (e) {
       console.log('Error with signing session', e);
     }
@@ -158,9 +164,24 @@ export class VerdocsSign {
         break;
 
       case 'radio_button_group':
+        const options = field.settings.options.map(option => ({id: option.id, selected: optionId === option.id}));
+        updateDocumentField(this.documentid, field.name, {prepared: false, value: {options}})
+          .then(r => console.log('Update result', r))
+          .catch(e => console.log('Error updating', e));
+        break;
+
+      case 'dropdown':
         updateDocumentField(this.documentid, field.name, {prepared: false, value: e.detail})
           .then(r => console.log('Update result', r))
           .catch(e => console.log('Error updating', e));
+        break;
+
+      case 'initial':
+        console.log('Got initial', e.detail);
+        break;
+
+      case 'signature':
+        console.log('Got signature', e.detail);
         break;
     }
   }
@@ -192,18 +213,30 @@ export class VerdocsSign {
       backgroundColor: getRGBA(this.recipientIndex),
     } as any;
 
-    return <verdocs-field-radio-button style={style} order={index} value={option.checked} name={field.name} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
+    return (
+      <verdocs-field-radio-button
+        style={style}
+        order={index}
+        value={option.id}
+        name={field.name}
+        checked={option.selected}
+        onFieldChange={e => this.handleFieldChange(field, e, option.id)}
+      />
+    );
   }
 
   renderField(field: IDocumentField, index: number) {
+    const {required = false, settings = {} as any} = field;
+    const {x = 0, y = 0, base64 = '', placeholder = '', options = [], value = '', result = ''} = settings;
+
     const renderOnPage = this.pdfPageInfo.pages.find(page => page.pageNumber === field.page);
     if (!renderOnPage) {
       console.log('Unable to render invalid field', field);
       return <div class="invalid-field">Invalid field.</div>;
     }
 
-    const left = rescale(renderOnPage.xRatio, field.settings.x);
-    const bottom = rescale(renderOnPage.yRatio, field.settings.y);
+    const left = rescale(renderOnPage.xRatio, x);
+    const bottom = rescale(renderOnPage.yRatio, y);
 
     const style = {
       left: `${left}px`,
@@ -225,47 +258,29 @@ export class VerdocsSign {
 
     switch (field.type) {
       case 'signature':
-        return <verdocs-field-signature style={style} field={field} />;
+        return <verdocs-field-signature style={style} value={base64} required={required} />;
       case 'initial':
-        return <verdocs-field-initial style={style} field={field} />;
+        return <verdocs-field-initial style={style} required={required} />;
       case 'textbox':
-        return (
-          <verdocs-field-textbox
-            style={style}
-            order={index}
-            value={field.settings.result || ''}
-            placeholder={field.settings.placeholder || ''}
-            onFieldChange={e => this.handleFieldChange(field, e)}
-          />
-        );
+        return <verdocs-field-textbox style={style} order={index} value={result || ''} placeholder={placeholder} onFieldChange={e => this.handleFieldChange(field, e)} />;
       case 'textarea':
-        return <verdocs-field-textarea style={style} placeholder={field.settings.placeholder || ''} />;
+        return <verdocs-field-textarea style={style} placeholder={placeholder || ''} />;
       case 'date':
-        return <verdocs-field-date style={style} order={index} value={field.settings.result || ''} placeholder={field.settings.placeholder || ''} />;
-      case 'timestamp':
-        break;
-      case 'placeholder':
-        break;
+        return <verdocs-field-date style={style} order={index} value={result || ''} placeholder={placeholder} required={required} />;
       case 'dropdown':
-        return <verdocs-field-dropdown style={style} field={field} options={field.settings.options} />;
+        return <verdocs-field-dropdown style={style} options={options} value={value} required={required} onFieldChange={e => this.handleFieldChange(field, e)} />;
       case 'checkbox':
-        return <verdocs-field-checkbox style={style} value={field.settings.result || ''} />;
+        return <verdocs-field-checkbox style={style} value={result || ''} />;
       case 'checkbox_group':
-        return (
-          <div style={{position: 'absolute', width: '100%', height: '100%'}}>
-            {field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index))}
-          </div>
-        );
+        return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
       case 'radio_button_group':
-        return (
-          <div style={{position: 'absolute', width: '100%', height: '100%'}}>
-            {field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index))}
-          </div>
-        );
+        return field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index));
       case 'attachment':
-        return <verdocs-field-attachment style={style} value={field.settings.result || ''} />;
+        return <verdocs-field-attachment style={style} value={result || ''} />;
       case 'payment':
         return <verdocs-field-payment style={style} field={field} />;
+      default:
+        console.log('[SIGN] Skipping unsupported field type', field);
     }
 
     return <div style={{display: 'none'}}>Unsupported field type "{field.type}"</div>;
@@ -329,3 +344,34 @@ export class VerdocsSign {
     );
   }
 }
+
+/*
+            if (result && result.id && result.url) {
+              currentField = this.signatureService.currField;
+              this.signatureService.updateSigned(currentField.fName, true);
+              this.signatureService.toggleSig(false);
+              this.signatureService.setSignatureId(result.id);
+              this.signatureService.putSignatureField(this.envelopeId, this.fieldName, result.id).then(res => {
+                this.eventTracker.createEvent({
+                  category: 'verdoc',
+                  action: 'verdoc signed',
+                  label: `verdoc id: ${this.envelopeId}`
+                })
+                if (res && res.settings) {
+                  this.signatureService.setSignatureData(res.settings.base64);
+                  this.signatureService.setSignatureId(res.settings.signature_id);
+                }
+                this.snackbarService.dismiss();
+                this.dialog.close({ status: 'saved', temp_sig: res.settings.base64, sig_id: res.settings.signature_id });
+              }).catch(err => {
+                this.snackbarService.open('Failed to save signature. Please try again.', 'DISMISS', {
+                  duration: 3000
+                });
+                this.adoptedAndSigned = false;
+                return err;
+              });
+            }
+          });
+        } else {
+
+ */

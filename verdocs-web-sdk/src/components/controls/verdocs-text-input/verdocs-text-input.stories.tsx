@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Controls/Inputs/Text Input',
+  title: 'Controls/Text Input',
   component: 'verdocs-text-input',
   args: {
     label: 'Name',

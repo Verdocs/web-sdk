@@ -1,0 +1,101 @@
+verdocs-signature-dialog {
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+  box-sizing: border-box;
+  display: none;
+
+  &.open {
+    display: block;
+  }
+
+  .background-overlay {
+    position: absolute;
+    z-index: 10000;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0000007f;
+  }
+
+  .dialog {
+    width: 100%;
+    max-width: 340px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
+    background: #f9f9f9;
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: row;
+    padding: 20px 20px 0 20px;
+    line-height: 28px;
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .content {
+    font-size: 14px;
+    padding: 20px;
+  }
+
+  .buttons {
+    display: flex;
+    margin: 20px 0 0 0;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+
+    button {
+      margin-left: 16px;
+    }
+  }
+
+  canvas {
+    background: #fff;
+    box-sizing: border-box;
+    margin: 0 auto;
+    width: 300px;
+    // TODO: The original app had an aspect ratio of (80 / 305) * (signatureBodyWidth - 20)
+    height: 79px;
+    max-width: 100%;
+    box-shadow: 0 0 6px 0 #0000001f;
+  }
+
+  .disclaimer {
+    text-align: justify;
+    padding: 8px 0;
+    font-size: 11px;
+    line-height: 14px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .as-shown {
+    font-size: 11px;
+    margin: 4px 0 20px 4px;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .tabs {
+    display: flex;
+    flex-direction: row;
+
+    .tab {
+      padding: 8px 15px;
+      cursor: pointer;
+
+      &.active {
+        border-bottom: 2px solid #ccc;
+      }
+
+      &:hover {
+        color: var(--verdocs-primary-color);
+      }
+    }
+  }
+}

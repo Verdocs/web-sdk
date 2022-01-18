@@ -1,0 +1,20 @@
+verdocs-document-status {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+
+  width: 140px;
+  display: flex;
+  font-size: 16px;
+  flex-wrap: nowrap;
+  align-items: center;
+  flex-direction: row;
+  color: var(--verdocs-label-color);
+
+  svg {
+    height: 20px;
+    width: 20px;
+    margin: 0 8px -4px 0;
+    fill: var(--verdocs-icon-color);
+  }
+}

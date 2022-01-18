@@ -7,48 +7,6 @@ import { Components } from '@verdocs/web-sdk';
 
 
 
-
-export declare interface DocumentStatusIndicator extends Components.DocumentStatusIndicator {}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['status']
-})
-@Component({
-  selector: 'document-status-indicator',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['status']
-})
-export class DocumentStatusIndicator {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface OrgPopup extends Components.OrgPopup {}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['organization', 'theme']
-})
-@Component({
-  selector: 'org-popup',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['organization', 'theme']
-})
-export class OrgPopup {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
 import type { ISearchEvent as ISearchBoxISearchEvent } from '@verdocs/web-sdk';
 import type { TContentType as ISearchBoxTContentType } from '@verdocs/web-sdk';
 export declare interface SearchBox extends Components.SearchBox {
@@ -220,48 +178,6 @@ export class SearchTabs {
 }
 
 
-export declare interface TagsIndicator extends Components.TagsIndicator {}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['tags', 'theme']
-})
-@Component({
-  selector: 'tags-indicator',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['tags', 'theme']
-})
-export class TagsIndicator {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface TemplateCard extends Components.TemplateCard {}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['template', 'theme']
-})
-@Component({
-  selector: 'template-card',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['template', 'theme']
-})
-export class TemplateCard {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
 export declare interface ToggleIconButtons extends Components.ToggleIconButtons {}
 
 @ProxyCmp({
@@ -335,6 +251,27 @@ export class VerdocsButton {
     c.detach();
     this.el = r.nativeElement;
     proxyOutputs(this, this.el, ['press']);
+  }
+}
+
+
+export declare interface VerdocsDocumentStatus extends Components.VerdocsDocumentStatus {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['status']
+})
+@Component({
+  selector: 'verdocs-document-status',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['status']
+})
+export class VerdocsDocumentStatus {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
   }
 }
 
@@ -470,55 +407,64 @@ export class VerdocsFieldDate {
 }
 
 
-export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {}
+export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
+  /**
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
+   */
+  fieldChange: EventEmitter<CustomEvent<string>>;
+
+}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['field', 'options']
+  inputs: ['disabled', 'options', 'required', 'value']
 })
 @Component({
   selector: 'verdocs-field-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['field', 'options']
+  inputs: ['disabled', 'options', 'required', 'value']
 })
 export class VerdocsFieldDropdown {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['fieldChange']);
   }
 }
 
 
 export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInitial {
   /**
-   *  
+   * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image. 
    */
-  signatureComplete: EventEmitter<CustomEvent<string>>;
+  adopt: EventEmitter<CustomEvent<string>>;
   /**
-   *  
+   * Event emitted when the user cancels the process. 
    */
-  initialComplete: EventEmitter<CustomEvent<string>>;
+  cancel: EventEmitter<CustomEvent<any>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['required', 'value']
 })
 @Component({
   selector: 'verdocs-field-initial',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['required', 'value']
 })
 export class VerdocsFieldInitial {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+    proxyOutputs(this, this.el, ['adopt', 'cancel']);
   }
 }
 
@@ -587,32 +533,32 @@ export class VerdocsFieldRadioButton {
 
 export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSignature {
   /**
-   *  
+   * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image. 
    */
-  signatureComplete: EventEmitter<CustomEvent<string>>;
+  adopt: EventEmitter<CustomEvent<string>>;
   /**
-   *  
+   * Event emitted when the user cancels the process. 
    */
-  initialComplete: EventEmitter<CustomEvent<string>>;
+  cancel: EventEmitter<CustomEvent<any>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'placeholder', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['required', 'value']
 })
 @Component({
   selector: 'verdocs-field-signature',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'placeholder', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['required', 'value']
 })
 export class VerdocsFieldSignature {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+    proxyOutputs(this, this.el, ['adopt', 'cancel']);
   }
 }
 
@@ -701,6 +647,38 @@ export class VerdocsFieldTextbox {
 }
 
 
+export declare interface VerdocsInitialDialog extends Components.VerdocsInitialDialog {
+  /**
+   * Event fired when the initials are adopted. 
+   */
+  adopt: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired when the step is cancelled. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['initials', 'open']
+})
+@Component({
+  selector: 'verdocs-initial-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['initials', 'open']
+})
+export class VerdocsInitialDialog {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['adopt', 'cancel']);
+  }
+}
+
+
 export declare interface VerdocsLoader extends Components.VerdocsLoader {}
 
 @ProxyCmp({
@@ -748,6 +726,27 @@ export class VerdocsOkDialog {
 }
 
 
+export declare interface VerdocsOrganizationCard extends Components.VerdocsOrganizationCard {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['organization']
+})
+@Component({
+  selector: 'verdocs-organization-card',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['organization']
+})
+export class VerdocsOrganizationCard {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
 export declare interface VerdocsSearch extends Components.VerdocsSearch {}
 
 @ProxyCmp({
@@ -780,6 +779,80 @@ export declare interface VerdocsSign extends Components.VerdocsSign {}
   inputs: ['documentid', 'invitecode', 'roleid']
 })
 export class VerdocsSign {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsSignatureDialog extends Components.VerdocsSignatureDialog {
+  /**
+   * Event fired when the initials are adopted. 
+   */
+  adopt: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired when the step is cancelled. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['fullName', 'open']
+})
+@Component({
+  selector: 'verdocs-signature-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['fullName', 'open']
+})
+export class VerdocsSignatureDialog {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['adopt', 'cancel']);
+  }
+}
+
+
+export declare interface VerdocsTemplateCard extends Components.VerdocsTemplateCard {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['template']
+})
+@Component({
+  selector: 'verdocs-template-card',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['template']
+})
+export class VerdocsTemplateCard {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsTemplateTags extends Components.VerdocsTemplateTags {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['tags']
+})
+@Component({
+  selector: 'verdocs-template-tags',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['tags']
+})
+export class VerdocsTemplateTags {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();

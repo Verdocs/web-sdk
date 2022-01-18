@@ -2,7 +2,7 @@ verdocs-auth {
   /* Fallback font for old browsers */
   font-family: sans-serif;
   font-family: var(--verdocs-font);
-  background-color: #4c56cb;
+  background-color: var(--verdocs-secondary-color);
   padding: 40px;
   display: flex;
   flex-direction: column;

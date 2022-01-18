@@ -4,7 +4,7 @@ verdocs-button {
     font-family: var(--verdocs-font);
 
     text-transform: uppercase;
-    background: #50be80;
+    background: var(--verdocs-primary-color);
     border-radius: 4px;
     font-weight: 500;
     font-size: 14px;
@@ -23,7 +23,7 @@ verdocs-button {
     }
 
     &:active {
-      background: #5fc388;
+      filter: brightness(110%);
     }
   }
 }

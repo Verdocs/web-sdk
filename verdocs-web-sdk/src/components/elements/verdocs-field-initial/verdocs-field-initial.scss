@@ -1,0 +1,40 @@
+verdocs-field-initial {
+  /* Fallback font for old browsers */
+  font-family: sans-serif;
+  font-family: var(--verdocs-font);
+
+  width: 83px;
+  height: 36px;
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  background-color: transparent;
+  transform-origin: bottom left;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  button {
+    box-sizing: border-box;
+    border: none;
+    color: rgba(0, 0, 0, 0.87);
+    font-weight: 500;
+    transform-origin: 0 0;
+    height: 100%;
+    width: 100%;
+    background: none;
+    font-size: 11px;
+
+    &.hide {
+      display: none;
+    }
+  }
+
+  &.required {
+    border: 1px solid var(--verdocs-required-color);
+  }
+}

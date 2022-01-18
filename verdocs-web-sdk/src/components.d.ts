@@ -5,30 +5,16 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { IDocumentField, TDocumentStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { ISearchEvent, TContentType } from "./components/elements/search-box/search-box";
 import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
 import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
+import { IDocumentField, TDocumentStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
+import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
+import { ITemplate } from "@verdocs/js-sdk/Templates/Types";
 import { IPDFRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
 export namespace Components {
-    interface DocumentStatusIndicator {
-        /**
-          * The status to display
-         */
-        "status": TDocumentStatus;
-    }
-    interface OrgPopup {
-        /**
-          * The organization to display
-         */
-        "organization": any;
-        /**
-          * The "theme" to be used
-         */
-        "theme": "light" | "dark";
-    }
     interface SearchBox {
         /**
           * The placeholder to display in the input field.
@@ -61,26 +47,6 @@ export namespace Components {
         "options": any;
     }
     interface SearchTabs {
-    }
-    interface TagsIndicator {
-        /**
-          * The tags to display
-         */
-        "tags": any[];
-        /**
-          * The "theme" to be used
-         */
-        "theme": "light" | "dark";
-    }
-    interface TemplateCard {
-        /**
-          * The template whose information is gonna be displayed
-         */
-        "template": any;
-        /**
-          * The "theme" to be used
-         */
-        "theme": 'light' | 'dark';
     }
     interface ToggleIconButtons {
         /**
@@ -119,6 +85,12 @@ export namespace Components {
           * The type of the button.
          */
         "type": 'button' | 'submit' | 'reset';
+    }
+    interface VerdocsDocumentStatus {
+        /**
+          * The status to display
+         */
+        "status": TDocumentStatus;
     }
     interface VerdocsDropdown {
         /**
@@ -190,32 +162,31 @@ export namespace Components {
     }
     interface VerdocsFieldDropdown {
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field": IDocumentField;
+        "disabled": boolean;
         /**
           * The optoins to choose from.
          */
         "options": any[];
+        /**
+          * If true, the field will be marked required.
+         */
+        "required": boolean;
+        /**
+          * The currently selected value.
+         */
+        "value": string;
     }
     interface VerdocsFieldInitial {
-        "currentInitial": string;
-        "currentInitialId": string;
-        "currentSignature": string;
-        "currentSignatureId": string;
         /**
-          * The field to display.
+          * Whether the field is required.
          */
-        "field": IDocumentField;
-        "fieldId": string;
-        "fields": any[];
-        "focused": boolean;
-        "pageNum": number;
-        "pdfPages": any[];
-        "recipients": any;
-        "roleName": string;
-        "selectedRoleName": string;
-        "signed": boolean;
+        "required": boolean;
+        /**
+          * The base64 signature value.
+         */
+        "value": string;
     }
     interface VerdocsFieldPayment {
         "currentInitial": string;
@@ -263,27 +234,14 @@ export namespace Components {
         "value": string;
     }
     interface VerdocsFieldSignature {
-        "currentInitial": string;
-        "currentInitialId": string;
-        "currentSignature": string;
-        "currentSignatureId": string;
         /**
-          * The field to display.
+          * Whether the field is required.
          */
-        "field": IDocumentField;
-        "fieldId": string;
-        "fields": any[];
-        "focused": boolean;
-        "pageNum": number;
-        "pdfPages": any[];
+        "required": boolean;
         /**
-          * A placeholder to assist the user in completing the field.
+          * The base64 signature value.
          */
-        "placeholder": string;
-        "recipients": any;
-        "roleName": string;
-        "selectedRoleName": string;
-        "signed": boolean;
+        "value": string;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -329,6 +287,16 @@ export namespace Components {
          */
         "value": string;
     }
+    interface VerdocsInitialDialog {
+        /**
+          * Signature text
+         */
+        "initials": string;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open": boolean;
+    }
     interface VerdocsLoader {
     }
     interface VerdocsOkDialog {
@@ -345,6 +313,12 @@ export namespace Components {
          */
         "open": boolean;
     }
+    interface VerdocsOrganizationCard {
+        /**
+          * The organization to display
+         */
+        "organization": IOrganization;
+    }
     interface VerdocsSearch {
     }
     interface VerdocsSign {
@@ -360,6 +334,28 @@ export namespace Components {
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
         "roleid": string | null;
+    }
+    interface VerdocsSignatureDialog {
+        /**
+          * Signature text
+         */
+        "fullName": string;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open": boolean;
+    }
+    interface VerdocsTemplateCard {
+        /**
+          * The template for which the card will be rendered.
+         */
+        "template": ITemplate;
+    }
+    interface VerdocsTemplateTags {
+        /**
+          * The tags to display
+         */
+        "tags": any[];
     }
     interface VerdocsTextButton {
         /**
@@ -417,18 +413,6 @@ export namespace Components {
     }
 }
 declare global {
-    interface HTMLDocumentStatusIndicatorElement extends Components.DocumentStatusIndicator, HTMLStencilElement {
-    }
-    var HTMLDocumentStatusIndicatorElement: {
-        prototype: HTMLDocumentStatusIndicatorElement;
-        new (): HTMLDocumentStatusIndicatorElement;
-    };
-    interface HTMLOrgPopupElement extends Components.OrgPopup, HTMLStencilElement {
-    }
-    var HTMLOrgPopupElement: {
-        prototype: HTMLOrgPopupElement;
-        new (): HTMLOrgPopupElement;
-    };
     interface HTMLSearchBoxElement extends Components.SearchBox, HTMLStencilElement {
     }
     var HTMLSearchBoxElement: {
@@ -465,18 +449,6 @@ declare global {
         prototype: HTMLSearchTabsElement;
         new (): HTMLSearchTabsElement;
     };
-    interface HTMLTagsIndicatorElement extends Components.TagsIndicator, HTMLStencilElement {
-    }
-    var HTMLTagsIndicatorElement: {
-        prototype: HTMLTagsIndicatorElement;
-        new (): HTMLTagsIndicatorElement;
-    };
-    interface HTMLTemplateCardElement extends Components.TemplateCard, HTMLStencilElement {
-    }
-    var HTMLTemplateCardElement: {
-        prototype: HTMLTemplateCardElement;
-        new (): HTMLTemplateCardElement;
-    };
     interface HTMLToggleIconButtonsElement extends Components.ToggleIconButtons, HTMLStencilElement {
     }
     var HTMLToggleIconButtonsElement: {
@@ -494,6 +466,12 @@ declare global {
     var HTMLVerdocsButtonElement: {
         prototype: HTMLVerdocsButtonElement;
         new (): HTMLVerdocsButtonElement;
+    };
+    interface HTMLVerdocsDocumentStatusElement extends Components.VerdocsDocumentStatus, HTMLStencilElement {
+    }
+    var HTMLVerdocsDocumentStatusElement: {
+        prototype: HTMLVerdocsDocumentStatusElement;
+        new (): HTMLVerdocsDocumentStatusElement;
     };
     interface HTMLVerdocsDropdownElement extends Components.VerdocsDropdown, HTMLStencilElement {
     }
@@ -561,6 +539,12 @@ declare global {
         prototype: HTMLVerdocsFieldTextboxElement;
         new (): HTMLVerdocsFieldTextboxElement;
     };
+    interface HTMLVerdocsInitialDialogElement extends Components.VerdocsInitialDialog, HTMLStencilElement {
+    }
+    var HTMLVerdocsInitialDialogElement: {
+        prototype: HTMLVerdocsInitialDialogElement;
+        new (): HTMLVerdocsInitialDialogElement;
+    };
     interface HTMLVerdocsLoaderElement extends Components.VerdocsLoader, HTMLStencilElement {
     }
     var HTMLVerdocsLoaderElement: {
@@ -573,6 +557,12 @@ declare global {
         prototype: HTMLVerdocsOkDialogElement;
         new (): HTMLVerdocsOkDialogElement;
     };
+    interface HTMLVerdocsOrganizationCardElement extends Components.VerdocsOrganizationCard, HTMLStencilElement {
+    }
+    var HTMLVerdocsOrganizationCardElement: {
+        prototype: HTMLVerdocsOrganizationCardElement;
+        new (): HTMLVerdocsOrganizationCardElement;
+    };
     interface HTMLVerdocsSearchElement extends Components.VerdocsSearch, HTMLStencilElement {
     }
     var HTMLVerdocsSearchElement: {
@@ -584,6 +574,24 @@ declare global {
     var HTMLVerdocsSignElement: {
         prototype: HTMLVerdocsSignElement;
         new (): HTMLVerdocsSignElement;
+    };
+    interface HTMLVerdocsSignatureDialogElement extends Components.VerdocsSignatureDialog, HTMLStencilElement {
+    }
+    var HTMLVerdocsSignatureDialogElement: {
+        prototype: HTMLVerdocsSignatureDialogElement;
+        new (): HTMLVerdocsSignatureDialogElement;
+    };
+    interface HTMLVerdocsTemplateCardElement extends Components.VerdocsTemplateCard, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateCardElement: {
+        prototype: HTMLVerdocsTemplateCardElement;
+        new (): HTMLVerdocsTemplateCardElement;
+    };
+    interface HTMLVerdocsTemplateTagsElement extends Components.VerdocsTemplateTags, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateTagsElement: {
+        prototype: HTMLVerdocsTemplateTagsElement;
+        new (): HTMLVerdocsTemplateTagsElement;
     };
     interface HTMLVerdocsTextButtonElement extends Components.VerdocsTextButton, HTMLStencilElement {
     }
@@ -604,19 +612,16 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
-        "document-status-indicator": HTMLDocumentStatusIndicatorElement;
-        "org-popup": HTMLOrgPopupElement;
         "search-box": HTMLSearchBoxElement;
         "search-quick-functions": HTMLSearchQuickFunctionsElement;
         "search-recent": HTMLSearchRecentElement;
         "search-saved": HTMLSearchSavedElement;
         "search-starred": HTMLSearchStarredElement;
         "search-tabs": HTMLSearchTabsElement;
-        "tags-indicator": HTMLTagsIndicatorElement;
-        "template-card": HTMLTemplateCardElement;
         "toggle-icon-buttons": HTMLToggleIconButtonsElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-button": HTMLVerdocsButtonElement;
+        "verdocs-document-status": HTMLVerdocsDocumentStatusElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-field-attachment": HTMLVerdocsFieldAttachmentElement;
         "verdocs-field-checkbox": HTMLVerdocsFieldCheckboxElement;
@@ -628,32 +633,21 @@ declare global {
         "verdocs-field-signature": HTMLVerdocsFieldSignatureElement;
         "verdocs-field-textarea": HTMLVerdocsFieldTextareaElement;
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
+        "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
         "verdocs-loader": HTMLVerdocsLoaderElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
+        "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
         "verdocs-search": HTMLVerdocsSearchElement;
         "verdocs-sign": HTMLVerdocsSignElement;
+        "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
+        "verdocs-template-card": HTMLVerdocsTemplateCardElement;
+        "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-text-button": HTMLVerdocsTextButtonElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
         "verdocs-view": HTMLVerdocsViewElement;
     }
 }
 declare namespace LocalJSX {
-    interface DocumentStatusIndicator {
-        /**
-          * The status to display
-         */
-        "status"?: TDocumentStatus;
-    }
-    interface OrgPopup {
-        /**
-          * The organization to display
-         */
-        "organization"?: any;
-        /**
-          * The "theme" to be used
-         */
-        "theme"?: "light" | "dark";
-    }
     interface SearchBox {
         /**
           * Event fired when the user changes the query string.
@@ -719,26 +713,6 @@ declare namespace LocalJSX {
     }
     interface SearchTabs {
     }
-    interface TagsIndicator {
-        /**
-          * The tags to display
-         */
-        "tags"?: any[];
-        /**
-          * The "theme" to be used
-         */
-        "theme"?: "light" | "dark";
-    }
-    interface TemplateCard {
-        /**
-          * The template whose information is gonna be displayed
-         */
-        "template"?: any;
-        /**
-          * The "theme" to be used
-         */
-        "theme"?: 'light' | 'dark';
-    }
     interface ToggleIconButtons {
         /**
           * The tags to display
@@ -784,6 +758,12 @@ declare namespace LocalJSX {
           * The type of the button.
          */
         "type"?: 'button' | 'submit' | 'reset';
+    }
+    interface VerdocsDocumentStatus {
+        /**
+          * The status to display
+         */
+        "status"?: TDocumentStatus;
     }
     interface VerdocsDropdown {
         /**
@@ -883,34 +863,43 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldDropdown {
         /**
-          * The field to display.
+          * Sets the disabled attribute of the input element.
          */
-        "field"?: IDocumentField;
+        "disabled"?: boolean;
+        /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onFieldChange"?: (event: CustomEvent<string>) => void;
         /**
           * The optoins to choose from.
          */
         "options"?: any[];
+        /**
+          * If true, the field will be marked required.
+         */
+        "required"?: boolean;
+        /**
+          * The currently selected value.
+         */
+        "value"?: string;
     }
     interface VerdocsFieldInitial {
-        "currentInitial"?: string;
-        "currentInitialId"?: string;
-        "currentSignature"?: string;
-        "currentSignatureId"?: string;
         /**
-          * The field to display.
+          * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
          */
-        "field"?: IDocumentField;
-        "fieldId"?: string;
-        "fields"?: any[];
-        "focused"?: boolean;
-        "onInitialComplete"?: (event: CustomEvent<string>) => void;
-        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
-        "pageNum"?: number;
-        "pdfPages"?: any[];
-        "recipients"?: any;
-        "roleName"?: string;
-        "selectedRoleName"?: string;
-        "signed"?: boolean;
+        "onAdopt"?: (event: CustomEvent<string>) => void;
+        /**
+          * Event emitted when the user cancels the process.
+         */
+        "onCancel"?: (event: CustomEvent<any>) => void;
+        /**
+          * Whether the field is required.
+         */
+        "required"?: boolean;
+        /**
+          * The base64 signature value.
+         */
+        "value"?: string;
     }
     interface VerdocsFieldPayment {
         "currentInitial"?: string;
@@ -964,29 +953,22 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface VerdocsFieldSignature {
-        "currentInitial"?: string;
-        "currentInitialId"?: string;
-        "currentSignature"?: string;
-        "currentSignatureId"?: string;
         /**
-          * The field to display.
+          * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
          */
-        "field"?: IDocumentField;
-        "fieldId"?: string;
-        "fields"?: any[];
-        "focused"?: boolean;
-        "onInitialComplete"?: (event: CustomEvent<string>) => void;
-        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
-        "pageNum"?: number;
-        "pdfPages"?: any[];
+        "onAdopt"?: (event: CustomEvent<string>) => void;
         /**
-          * A placeholder to assist the user in completing the field.
+          * Event emitted when the user cancels the process.
          */
-        "placeholder"?: string;
-        "recipients"?: any;
-        "roleName"?: string;
-        "selectedRoleName"?: string;
-        "signed"?: boolean;
+        "onCancel"?: (event: CustomEvent<any>) => void;
+        /**
+          * Whether the field is required.
+         */
+        "required"?: boolean;
+        /**
+          * The base64 signature value.
+         */
+        "value"?: string;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -1064,6 +1046,24 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
+    interface VerdocsInitialDialog {
+        /**
+          * Signature text
+         */
+        "initials"?: string;
+        /**
+          * Event fired when the initials are adopted.
+         */
+        "onAdopt"?: (event: CustomEvent<string>) => void;
+        /**
+          * Event fired when the step is cancelled.
+         */
+        "onCancel"?: (event: CustomEvent<any>) => void;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open"?: boolean;
+    }
     interface VerdocsLoader {
     }
     interface VerdocsOkDialog {
@@ -1084,6 +1084,12 @@ declare namespace LocalJSX {
          */
         "open"?: boolean;
     }
+    interface VerdocsOrganizationCard {
+        /**
+          * The organization to display
+         */
+        "organization"?: IOrganization;
+    }
     interface VerdocsSearch {
     }
     interface VerdocsSign {
@@ -1099,6 +1105,36 @@ declare namespace LocalJSX {
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
         "roleid"?: string | null;
+    }
+    interface VerdocsSignatureDialog {
+        /**
+          * Signature text
+         */
+        "fullName"?: string;
+        /**
+          * Event fired when the initials are adopted.
+         */
+        "onAdopt"?: (event: CustomEvent<string>) => void;
+        /**
+          * Event fired when the step is cancelled.
+         */
+        "onCancel"?: (event: CustomEvent<any>) => void;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open"?: boolean;
+    }
+    interface VerdocsTemplateCard {
+        /**
+          * The template for which the card will be rendered.
+         */
+        "template"?: ITemplate;
+    }
+    interface VerdocsTemplateTags {
+        /**
+          * The tags to display
+         */
+        "tags"?: any[];
     }
     interface VerdocsTextButton {
         /**
@@ -1195,19 +1231,16 @@ declare namespace LocalJSX {
         "token"?: string | null;
     }
     interface IntrinsicElements {
-        "document-status-indicator": DocumentStatusIndicator;
-        "org-popup": OrgPopup;
         "search-box": SearchBox;
         "search-quick-functions": SearchQuickFunctions;
         "search-recent": SearchRecent;
         "search-saved": SearchSaved;
         "search-starred": SearchStarred;
         "search-tabs": SearchTabs;
-        "tags-indicator": TagsIndicator;
-        "template-card": TemplateCard;
         "toggle-icon-buttons": ToggleIconButtons;
         "verdocs-auth": VerdocsAuth;
         "verdocs-button": VerdocsButton;
+        "verdocs-document-status": VerdocsDocumentStatus;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-field-attachment": VerdocsFieldAttachment;
         "verdocs-field-checkbox": VerdocsFieldCheckbox;
@@ -1219,10 +1252,15 @@ declare namespace LocalJSX {
         "verdocs-field-signature": VerdocsFieldSignature;
         "verdocs-field-textarea": VerdocsFieldTextarea;
         "verdocs-field-textbox": VerdocsFieldTextbox;
+        "verdocs-initial-dialog": VerdocsInitialDialog;
         "verdocs-loader": VerdocsLoader;
         "verdocs-ok-dialog": VerdocsOkDialog;
+        "verdocs-organization-card": VerdocsOrganizationCard;
         "verdocs-search": VerdocsSearch;
         "verdocs-sign": VerdocsSign;
+        "verdocs-signature-dialog": VerdocsSignatureDialog;
+        "verdocs-template-card": VerdocsTemplateCard;
+        "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-text-button": VerdocsTextButton;
         "verdocs-text-input": VerdocsTextInput;
         "verdocs-view": VerdocsView;
@@ -1232,19 +1270,16 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "document-status-indicator": LocalJSX.DocumentStatusIndicator & JSXBase.HTMLAttributes<HTMLDocumentStatusIndicatorElement>;
-            "org-popup": LocalJSX.OrgPopup & JSXBase.HTMLAttributes<HTMLOrgPopupElement>;
             "search-box": LocalJSX.SearchBox & JSXBase.HTMLAttributes<HTMLSearchBoxElement>;
             "search-quick-functions": LocalJSX.SearchQuickFunctions & JSXBase.HTMLAttributes<HTMLSearchQuickFunctionsElement>;
             "search-recent": LocalJSX.SearchRecent & JSXBase.HTMLAttributes<HTMLSearchRecentElement>;
             "search-saved": LocalJSX.SearchSaved & JSXBase.HTMLAttributes<HTMLSearchSavedElement>;
             "search-starred": LocalJSX.SearchStarred & JSXBase.HTMLAttributes<HTMLSearchStarredElement>;
             "search-tabs": LocalJSX.SearchTabs & JSXBase.HTMLAttributes<HTMLSearchTabsElement>;
-            "tags-indicator": LocalJSX.TagsIndicator & JSXBase.HTMLAttributes<HTMLTagsIndicatorElement>;
-            "template-card": LocalJSX.TemplateCard & JSXBase.HTMLAttributes<HTMLTemplateCardElement>;
             "toggle-icon-buttons": LocalJSX.ToggleIconButtons & JSXBase.HTMLAttributes<HTMLToggleIconButtonsElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
+            "verdocs-document-status": LocalJSX.VerdocsDocumentStatus & JSXBase.HTMLAttributes<HTMLVerdocsDocumentStatusElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
             "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
             "verdocs-field-checkbox": LocalJSX.VerdocsFieldCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;
@@ -1256,10 +1291,15 @@ declare module "@stencil/core" {
             "verdocs-field-signature": LocalJSX.VerdocsFieldSignature & JSXBase.HTMLAttributes<HTMLVerdocsFieldSignatureElement>;
             "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
             "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
+            "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
+            "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
+            "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
+            "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
+            "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             "verdocs-text-button": LocalJSX.VerdocsTextButton & JSXBase.HTMLAttributes<HTMLVerdocsTextButtonElement>;
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
             "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;

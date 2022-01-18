@@ -10,6 +10,24 @@
   /* Standard container border */
   --verdocs-container-border-color: #707ae5;
 
+  /* Off-white tinted background for containers */
+  --verdocs-container-background-color: #f5f5fa;
+
+  /* Standard control color */
+  --verdocs-primary-color: #55bc81;
+
+  /* Secondary control color */
+  --verdocs-secondary-color: #4c56cb;
+
+  /* Text label color */
+  --verdocs-label-color: #33364b;
+
+  /* SVG icon color */
+  --verdocs-icon-color: #aeb4bf;
+
+  /* Border color for required document components */
+  --verdocs-required-color: rgb(204, 0, 0);
+
   /* Standard font */
   --verdocs-font: 'Barlow', sans-serif;
 }
