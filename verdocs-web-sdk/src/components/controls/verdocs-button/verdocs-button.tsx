@@ -1,7 +1,9 @@
-import {Component, Prop, h, Event, EventEmitter} from '@stencil/core';
+import {Component, Prop, h, Host, Event, EventEmitter} from '@stencil/core';
 
 /**
- * Display a button.
+ * Display a simple button. Three variants are supported. Standard and Outline buttons look like traditional form buttons and are
+ * ideal candidates for 'Ok' and 'Cancel' options in most cases. Text buttons are intended to be used inline in content blocks or
+ * for more subtle button options. (Auth uses text buttons for the Forgot Password and Sign Up options.)
  */
 @Component({
   tag: 'verdocs-button',
@@ -19,6 +21,11 @@ export class VerdocsButton {
   @Prop() type: 'button' | 'submit' | 'reset' = 'button';
 
   /**
+   * The display variant of the button.
+   */
+  @Prop() variant: 'standard' | 'text' | 'outline' = 'standard';
+
+  /**
    * Whether the button should be disabled.
    */
   @Prop() disabled: boolean = false;
@@ -26,7 +33,7 @@ export class VerdocsButton {
   /**
    * Event fired when the button is pressed.
    */
-  @Event({composed: true}) press: EventEmitter<string>;
+  @Event({composed: true}) press: EventEmitter;
 
   componentWillLoad() {}
 
@@ -34,14 +41,16 @@ export class VerdocsButton {
 
   handleClick(e: any) {
     e.preventDefault();
-    this.press.emit(e);
+    this.press.emit();
   }
 
   render() {
     return (
-      <button class="button" disabled={this.disabled} type={this.type} onClick={e => this.handleClick(e)}>
-        {this.label}
-      </button>
+      <Host class={`${this.variant}`}>
+        <button disabled={this.disabled} type={this.type} onClick={e => this.handleClick(e)}>
+          {this.label}
+        </button>
+      </Host>
     );
   }
 }

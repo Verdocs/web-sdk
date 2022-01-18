@@ -1,29 +1,83 @@
 verdocs-button {
-  .button {
+  button {
     font-family: sans-serif;
     font-family: var(--verdocs-font);
 
     text-transform: uppercase;
-    background: var(--verdocs-primary-color);
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 14px;
-    color: white;
-    border: none;
-    outline: none;
-    height: 32px;
-    margin: 0;
-    display: block;
     cursor: pointer;
-    padding: 0 20px;
+    font-weight: 500;
 
     &:disabled {
-      background-color: #999;
-      cursor: default;
+      cursor: none;
     }
+  }
 
-    &:active {
-      filter: brightness(110%);
+  &.standard {
+    button {
+      background: var(--verdocs-primary-color);
+      border-radius: 4px;
+      font-size: 14px;
+      color: white;
+      border: none;
+      outline: none;
+      height: 32px;
+      margin: 0;
+      display: block;
+      padding: 0 20px;
+
+      &:disabled {
+        background-color: #999;
+        cursor: default;
+      }
+
+      &:active {
+        filter: brightness(110%);
+      }
+    }
+  }
+
+  &.text {
+    button {
+      border: none;
+      font-size: 14px;
+      color: var(--verdocs-secondary-color);
+      font-weight: 400;
+      outline: none;
+      background: transparent;
+      padding: 0 4px;
+
+      &:disabled {
+        color: #999;
+        cursor: none;
+      }
+
+      &:active {
+        filter: brightness(130%);
+      }
+    }
+  }
+
+  &.outline {
+    button {
+      font-size: 14px;
+      border: 1px solid var(--verdocs-secondary-color);
+      color: var(--verdocs-secondary-color);
+      outline: none;
+      background: transparent;
+      height: 32px;
+      border-radius: 4px;
+      padding: 0 20px;
+
+      &:disabled {
+        color: #999;
+        cursor: none;
+        border: 1px solid #999;
+      }
+
+      &:active {
+        background: var(--verdocs-secondary-color);
+        color: white;
+      }
     }
   }
 }

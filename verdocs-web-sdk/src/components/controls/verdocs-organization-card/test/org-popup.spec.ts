@@ -1,14 +1,14 @@
 import {newSpecPage} from '@stencil/core/testing';
-import {VerdocsOrganizationCard} from '../org-popup';
+import {VerdocsOrganizationCard} from '../verdocs-organization-card';
 
-describe('org-popup', () => {
+describe('verdocs-organization-card', () => {
   it('renders', async () => {
     const {root} = await newSpecPage({
       components: [VerdocsOrganizationCard],
-      html: '<org-popup></org-popup>',
+      html: '<verdocs-organization-card></verdocs-organization-card>',
     });
     expect(root).toEqualHtml(`
-      <org-popup>
+      <verdocs-organization-card>
         <mock:shadow-root>
           <div class="container">
             <span class="icon"></span>
@@ -28,18 +28,17 @@ describe('org-popup', () => {
             </div>
           </div>
         </mock:shadow-root>
-      </org-popup>
+      </verdocs-organization-card>
     `);
   });
 
   it('renders with values', async () => {
     const {root} = await newSpecPage({
       components: [VerdocsOrganizationCard],
-      html: `<org-popup
-                organization={{ name: 'Acme Organization', created_at: '2014', followers: '123', website: 'www.acmeorganization.com', templates: '9' }></org-popup>`,
+      html: `<verdocs-organization-card organization={{ name: 'Acme Organization', created_at: '2014', followers: '123', website: 'www.acmeorganization.com', templates: '9' }}/>`,
     });
     expect(root).toEqualHtml(`
-      <org-popup organization={{ name: "Test" }}>
+      <verdocs-organization-card organization={{ name: "Test" }}>
         <mock:shadow-root>
           <div class="container">
             <span class="icon">
@@ -61,7 +60,7 @@ describe('org-popup', () => {
             </div>
           </div>
         </mock:shadow-root>
-      </org-popup>
+      </verdocs-organization-card>
     `);
   });
 });

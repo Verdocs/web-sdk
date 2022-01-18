@@ -1,4 +1,4 @@
-verdocs-ok-dialog {
+verdocs-upload-dialog {
   font-family: sans-serif;
   font-family: var(--verdocs-font);
   box-sizing: border-box;
@@ -44,7 +44,6 @@ verdocs-ok-dialog {
     display: flex;
     margin: 20px 0 0 0;
     flex-direction: row;
-    align-items: center;
     justify-content: flex-end;
 
     button {

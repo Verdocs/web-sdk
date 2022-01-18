@@ -7,12 +7,12 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { ISearchEvent, TContentType } from "./components/elements/search-box/search-box";
 import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
-import { IToggleIconButtons } from "./components/controls/toggle-icon-buttons/toggle-icon-buttons";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { IDocumentField, TDocumentStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { ITemplate } from "@verdocs/js-sdk/Templates/Types";
+import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { IPDFRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
 export namespace Components {
     interface SearchBox {
@@ -48,16 +48,6 @@ export namespace Components {
     }
     interface SearchTabs {
     }
-    interface ToggleIconButtons {
-        /**
-          * The tags to display
-         */
-        "options": IToggleIconButtons;
-        /**
-          * The "theme" to be used
-         */
-        "theme": "light" | "dark";
-    }
     interface VerdocsAuth {
         /**
           * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
@@ -85,6 +75,10 @@ export namespace Components {
           * The type of the button.
          */
         "type": 'button' | 'submit' | 'reset';
+        /**
+          * The display variant of the button.
+         */
+        "variant": 'standard' | 'text' | 'outline';
     }
     interface VerdocsDocumentStatus {
         /**
@@ -301,6 +295,10 @@ export namespace Components {
     }
     interface VerdocsOkDialog {
         /**
+          * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background overlay to dismiss it.
+         */
+        "cancel": boolean;
+        /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
          */
         "heading": string;
@@ -357,20 +355,6 @@ export namespace Components {
          */
         "tags": any[];
     }
-    interface VerdocsTextButton {
-        /**
-          * Whether the button should be disabled.
-         */
-        "disabled": boolean;
-        /**
-          * The label for the  button.
-         */
-        "label": string;
-        /**
-          * The type of the button.
-         */
-        "type": 'button' | 'submit' | 'reset';
-    }
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
@@ -396,6 +380,30 @@ export namespace Components {
           * The value for the input field.
          */
         "value": string;
+    }
+    interface VerdocsToggle {
+        /**
+          * The tags to display
+         */
+        "options": IToggleIconButtons;
+        /**
+          * The "theme" to be used
+         */
+        "theme": 'light' | 'dark';
+    }
+    interface VerdocsUploadDialog {
+        /**
+          * The title of the dialog. "title" is a reserved word, so we use heading.
+         */
+        "heading": string;
+        /**
+          * The message content to display.
+         */
+        "message": string;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open": boolean;
     }
     interface VerdocsView {
         /**
@@ -448,12 +456,6 @@ declare global {
     var HTMLSearchTabsElement: {
         prototype: HTMLSearchTabsElement;
         new (): HTMLSearchTabsElement;
-    };
-    interface HTMLToggleIconButtonsElement extends Components.ToggleIconButtons, HTMLStencilElement {
-    }
-    var HTMLToggleIconButtonsElement: {
-        prototype: HTMLToggleIconButtonsElement;
-        new (): HTMLToggleIconButtonsElement;
     };
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
     }
@@ -593,17 +595,23 @@ declare global {
         prototype: HTMLVerdocsTemplateTagsElement;
         new (): HTMLVerdocsTemplateTagsElement;
     };
-    interface HTMLVerdocsTextButtonElement extends Components.VerdocsTextButton, HTMLStencilElement {
-    }
-    var HTMLVerdocsTextButtonElement: {
-        prototype: HTMLVerdocsTextButtonElement;
-        new (): HTMLVerdocsTextButtonElement;
-    };
     interface HTMLVerdocsTextInputElement extends Components.VerdocsTextInput, HTMLStencilElement {
     }
     var HTMLVerdocsTextInputElement: {
         prototype: HTMLVerdocsTextInputElement;
         new (): HTMLVerdocsTextInputElement;
+    };
+    interface HTMLVerdocsToggleElement extends Components.VerdocsToggle, HTMLStencilElement {
+    }
+    var HTMLVerdocsToggleElement: {
+        prototype: HTMLVerdocsToggleElement;
+        new (): HTMLVerdocsToggleElement;
+    };
+    interface HTMLVerdocsUploadDialogElement extends Components.VerdocsUploadDialog, HTMLStencilElement {
+    }
+    var HTMLVerdocsUploadDialogElement: {
+        prototype: HTMLVerdocsUploadDialogElement;
+        new (): HTMLVerdocsUploadDialogElement;
     };
     interface HTMLVerdocsViewElement extends Components.VerdocsView, HTMLStencilElement {
     }
@@ -618,7 +626,6 @@ declare global {
         "search-saved": HTMLSearchSavedElement;
         "search-starred": HTMLSearchStarredElement;
         "search-tabs": HTMLSearchTabsElement;
-        "toggle-icon-buttons": HTMLToggleIconButtonsElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-button": HTMLVerdocsButtonElement;
         "verdocs-document-status": HTMLVerdocsDocumentStatusElement;
@@ -642,8 +649,9 @@ declare global {
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
-        "verdocs-text-button": HTMLVerdocsTextButtonElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
+        "verdocs-toggle": HTMLVerdocsToggleElement;
+        "verdocs-upload-dialog": HTMLVerdocsUploadDialogElement;
         "verdocs-view": HTMLVerdocsViewElement;
     }
 }
@@ -713,16 +721,6 @@ declare namespace LocalJSX {
     }
     interface SearchTabs {
     }
-    interface ToggleIconButtons {
-        /**
-          * The tags to display
-         */
-        "options"?: IToggleIconButtons;
-        /**
-          * The "theme" to be used
-         */
-        "theme"?: "light" | "dark";
-    }
     interface VerdocsAuth {
         /**
           * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
@@ -753,11 +751,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the button is pressed.
          */
-        "onPress"?: (event: CustomEvent<string>) => void;
+        "onPress"?: (event: CustomEvent<any>) => void;
         /**
           * The type of the button.
          */
         "type"?: 'button' | 'submit' | 'reset';
+        /**
+          * The display variant of the button.
+         */
+        "variant"?: 'standard' | 'text' | 'outline';
     }
     interface VerdocsDocumentStatus {
         /**
@@ -1068,6 +1070,10 @@ declare namespace LocalJSX {
     }
     interface VerdocsOkDialog {
         /**
+          * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background overlay to dismiss it.
+         */
+        "cancel"?: boolean;
+        /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
          */
         "heading"?: string;
@@ -1136,24 +1142,6 @@ declare namespace LocalJSX {
          */
         "tags"?: any[];
     }
-    interface VerdocsTextButton {
-        /**
-          * Whether the button should be disabled.
-         */
-        "disabled"?: boolean;
-        /**
-          * The label for the  button.
-         */
-        "label"?: string;
-        /**
-          * Event fired when the button is clicked.
-         */
-        "onPress"?: (event: CustomEvent<string>) => void;
-        /**
-          * The type of the button.
-         */
-        "type"?: 'button' | 'submit' | 'reset';
-    }
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
@@ -1191,6 +1179,34 @@ declare namespace LocalJSX {
           * The value for the input field.
          */
         "value"?: string;
+    }
+    interface VerdocsToggle {
+        /**
+          * The tags to display
+         */
+        "options"?: IToggleIconButtons;
+        /**
+          * The "theme" to be used
+         */
+        "theme"?: 'light' | 'dark';
+    }
+    interface VerdocsUploadDialog {
+        /**
+          * The title of the dialog. "title" is a reserved word, so we use heading.
+         */
+        "heading"?: string;
+        /**
+          * The message content to display.
+         */
+        "message"?: string;
+        /**
+          * Event fired when the dialog is closed. The event data will contain the closure reason.
+         */
+        "onClosed"?: (event: CustomEvent<'cancel' | 'ok'>) => void;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open"?: boolean;
     }
     interface VerdocsView {
         /**
@@ -1237,7 +1253,6 @@ declare namespace LocalJSX {
         "search-saved": SearchSaved;
         "search-starred": SearchStarred;
         "search-tabs": SearchTabs;
-        "toggle-icon-buttons": ToggleIconButtons;
         "verdocs-auth": VerdocsAuth;
         "verdocs-button": VerdocsButton;
         "verdocs-document-status": VerdocsDocumentStatus;
@@ -1261,8 +1276,9 @@ declare namespace LocalJSX {
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-tags": VerdocsTemplateTags;
-        "verdocs-text-button": VerdocsTextButton;
         "verdocs-text-input": VerdocsTextInput;
+        "verdocs-toggle": VerdocsToggle;
+        "verdocs-upload-dialog": VerdocsUploadDialog;
         "verdocs-view": VerdocsView;
     }
 }
@@ -1276,7 +1292,6 @@ declare module "@stencil/core" {
             "search-saved": LocalJSX.SearchSaved & JSXBase.HTMLAttributes<HTMLSearchSavedElement>;
             "search-starred": LocalJSX.SearchStarred & JSXBase.HTMLAttributes<HTMLSearchStarredElement>;
             "search-tabs": LocalJSX.SearchTabs & JSXBase.HTMLAttributes<HTMLSearchTabsElement>;
-            "toggle-icon-buttons": LocalJSX.ToggleIconButtons & JSXBase.HTMLAttributes<HTMLToggleIconButtonsElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
             "verdocs-document-status": LocalJSX.VerdocsDocumentStatus & JSXBase.HTMLAttributes<HTMLVerdocsDocumentStatusElement>;
@@ -1300,8 +1315,9 @@ declare module "@stencil/core" {
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
-            "verdocs-text-button": LocalJSX.VerdocsTextButton & JSXBase.HTMLAttributes<HTMLVerdocsTextButtonElement>;
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
+            "verdocs-toggle": LocalJSX.VerdocsToggle & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;
+            "verdocs-upload-dialog": LocalJSX.VerdocsUploadDialog & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
             "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
         }
     }

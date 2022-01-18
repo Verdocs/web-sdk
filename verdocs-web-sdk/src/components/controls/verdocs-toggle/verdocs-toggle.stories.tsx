@@ -19,8 +19,8 @@ const dummyOptions = {
 };
 
 export default {
-  title: 'Controls/Buttons/Toggle Icons',
-  component: 'toggle-icon-buttons',
+  title: 'Controls/Toggle',
+  component: 'verdocs-toggle',
   args: {
     options: dummyOptions,
   },
@@ -30,4 +30,4 @@ export default {
   // },
 } as Meta;
 
-export const ToggleIcons = ({options, theme}) => html`<toggle-icon-buttons .options="${options}" .theme="${theme}"></toggle-icon-buttons>`;
+export const Toggle = ({options, theme}) => html`<toggle-icon-buttons .options="${options}" .theme="${theme}"></toggle-icon-buttons>`;

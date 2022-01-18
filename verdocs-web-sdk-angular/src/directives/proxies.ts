@@ -177,27 +177,6 @@ export class SearchTabs {
   }
 }
 
-
-export declare interface ToggleIconButtons extends Components.ToggleIconButtons {}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['options', 'theme']
-})
-@Component({
-  selector: 'toggle-icon-buttons',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['options', 'theme']
-})
-export class ToggleIconButtons {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
 import type { IAuthStatus as IVerdocsAuthIAuthStatus } from '@verdocs/web-sdk';
 export declare interface VerdocsAuth extends Components.VerdocsAuth {
   /**
@@ -231,19 +210,19 @@ export declare interface VerdocsButton extends Components.VerdocsButton {
   /**
    * Event fired when the button is pressed. 
    */
-  press: EventEmitter<CustomEvent<string>>;
+  press: EventEmitter<CustomEvent<any>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'label', 'type']
+  inputs: ['disabled', 'label', 'type', 'variant']
 })
 @Component({
   selector: 'verdocs-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'label', 'type']
+  inputs: ['disabled', 'label', 'type', 'variant']
 })
 export class VerdocsButton {
   protected el: HTMLElement;
@@ -708,13 +687,13 @@ export declare interface VerdocsOkDialog extends Components.VerdocsOkDialog {
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['heading', 'message', 'open']
+  inputs: ['cancel', 'heading', 'message', 'open']
 })
 @Component({
   selector: 'verdocs-ok-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['heading', 'message', 'open']
+  inputs: ['cancel', 'heading', 'message', 'open']
 })
 export class VerdocsOkDialog {
   protected el: HTMLElement;
@@ -861,34 +840,6 @@ export class VerdocsTemplateTags {
 }
 
 
-export declare interface VerdocsTextButton extends Components.VerdocsTextButton {
-  /**
-   * Event fired when the button is clicked. 
-   */
-  press: EventEmitter<CustomEvent<string>>;
-
-}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['disabled', 'label', 'type']
-})
-@Component({
-  selector: 'verdocs-text-button',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'label', 'type']
-})
-export class VerdocsTextButton {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['press']);
-  }
-}
-
-
 export declare interface VerdocsTextInput extends Components.VerdocsTextInput {
   /**
    * Event fired when the input value changes. 
@@ -921,6 +872,55 @@ export class VerdocsTextInput {
     c.detach();
     this.el = r.nativeElement;
     proxyOutputs(this, this.el, ['fieldInput', 'fieldFocus', 'fieldBlur']);
+  }
+}
+
+
+export declare interface VerdocsToggle extends Components.VerdocsToggle {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['options', 'theme']
+})
+@Component({
+  selector: 'verdocs-toggle',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['options', 'theme']
+})
+export class VerdocsToggle {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDialog {
+  /**
+   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   */
+  closed: EventEmitter<CustomEvent<'cancel' | 'ok'>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['heading', 'message', 'open']
+})
+@Component({
+  selector: 'verdocs-upload-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['heading', 'message', 'open']
+})
+export class VerdocsUploadDialog {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['closed']);
   }
 }
 
