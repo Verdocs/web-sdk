@@ -1,4 +1,4 @@
-import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/core';
 import Paperclip from './paperclip.svg';
 
 /**
@@ -38,15 +38,25 @@ export class VerdocsFieldAttachment {
    */
   @Event({composed: true}) fieldChange: EventEmitter<string>;
 
-  handleChange(e: any) {
-    this.fieldChange.emit(e.target.checked);
+  @State() showDialog = false;
+
+  handleShow() {
+    this.showDialog = true;
+  }
+
+  handleCancel() {
+    this.showDialog = false;
+  }
+
+  handleDone(e) {
+    console.log('done', e.detail);
   }
 
   render() {
     return (
       <Host class={{required: this.required, storybook: !!window?.['STORYBOOK_ENV']}}>
-        <span innerHTML={Paperclip} />
-        <input type="file" />
+        <span innerHTML={Paperclip} onClick={() => this.handleShow()} />
+        <verdocs-upload-dialog open={this.showDialog} onCancel={() => this.handleCancel()} onDone={e => this.handleDone(e)} />
       </Host>
     );
   }

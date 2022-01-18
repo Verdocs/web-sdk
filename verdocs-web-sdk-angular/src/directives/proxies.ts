@@ -896,31 +896,35 @@ export class VerdocsToggle {
   }
 }
 
-
+import type { FileWithData as IVerdocsUploadDialogFileWithData } from '@verdocs/web-sdk';
 export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDialog {
   /**
    * Event fired when the dialog is closed. The event data will contain the closure reason. 
    */
-  closed: EventEmitter<CustomEvent<'cancel' | 'ok'>>;
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   */
+  done: EventEmitter<CustomEvent<FileWithData[]>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['heading', 'message', 'open']
+  inputs: ['message', 'open']
 })
 @Component({
   selector: 'verdocs-upload-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['heading', 'message', 'open']
+  inputs: ['message', 'open']
 })
 export class VerdocsUploadDialog {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['closed']);
+    proxyOutputs(this, this.el, ['cancel', 'done']);
   }
 }
 

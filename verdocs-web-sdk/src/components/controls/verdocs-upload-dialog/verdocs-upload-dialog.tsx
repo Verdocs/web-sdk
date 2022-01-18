@@ -1,4 +1,7 @@
-import {Component, Prop, h, Event, EventEmitter, Host} from '@stencil/core';
+import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
+import {fileToDataUrl, FileWithData} from '@verdocs/js-sdk/Utils/Files';
+import Paperclip from './paperclip.svg';
+import Trash from './trash.svg';
 
 /**
  * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
@@ -10,10 +13,7 @@ import {Component, Prop, h, Event, EventEmitter, Host} from '@stencil/core';
   styleUrl: 'verdocs-upload-dialog.scss',
 })
 export class VerdocsUploadDialog {
-  /**
-   * The title of the dialog. "title" is a reserved word, so we use heading.
-   */
-  @Prop() heading: string = '';
+  private fileInput?: HTMLInputElement;
 
   /**
    * The message content to display.
@@ -28,10 +28,19 @@ export class VerdocsUploadDialog {
   /**
    * Event fired when the dialog is closed. The event data will contain the closure reason.
    */
-  @Event({composed: true}) closed: EventEmitter<'cancel' | 'ok'>;
+  @Event({composed: true}) cancel: EventEmitter;
 
-  handleClose(reason: 'cancel' | 'ok') {
-    this.closed.emit(reason);
+  /**
+   * Event fired when the dialog is closed. The event data will contain the closure reason.
+   */
+  @Event({composed: true}) done: EventEmitter<FileWithData[]>;
+
+  @State() draggingOver = false;
+
+  @State() decodedFiles = [] as FileWithData[];
+
+  handleCancel() {
+    this.cancel.emit();
     this.open = false;
   }
 
@@ -39,8 +48,63 @@ export class VerdocsUploadDialog {
   handleDismiss(e: any) {
     if (e.target.className === 'background-overlay') {
       e.preventDefault();
-      this.handleClose('cancel');
+      this.handleCancel();
     }
+  }
+
+  handleDone() {
+    this.done.emit(this.decodedFiles);
+    this.open = false;
+  }
+
+  handleDragOver(e) {
+    e.preventDefault();
+    this.draggingOver = true;
+  }
+
+  handleDragLeave(e) {
+    e.preventDefault();
+    this.draggingOver = false;
+  }
+
+  async handleDrop(e) {
+    e.preventDefault();
+    this.draggingOver = false;
+
+    // Required for cross-browser support. Note that dataTransfer.items is of type DataTransferItemList and is not an array.
+    let droppedFiles = [] as File[];
+    if (e.dataTransfer.items) {
+      for (let i = 0; i < e.dataTransfer.items.length; i++) {
+        if (e.dataTransfer.items[i].kind === 'file') {
+          const file = e.dataTransfer.items[i].getAsFile();
+          droppedFiles.push(file);
+        }
+      }
+    } else {
+      droppedFiles = e.dataTransfer.files;
+    }
+
+    this.decodedFiles = await Promise.all(droppedFiles.map(fileToDataUrl));
+  }
+
+  handleRemoveAttachment(index: number) {
+    const newFiles = [...this.decodedFiles];
+    newFiles.splice(index, 1);
+    this.decodedFiles = newFiles;
+  }
+
+  handleSelectFile() {
+    this.fileInput?.click();
+  }
+
+  async handleFileChange(e) {
+    console.log('fileChange', e);
+    console.log('files', this.fileInput?.files);
+    let droppedFiles = [] as File[];
+    for (let i = 0; i < this.fileInput?.files.length; i++) {
+      droppedFiles.push(this.fileInput?.files[i]);
+    }
+    this.decodedFiles = await Promise.all(droppedFiles.map(fileToDataUrl));
   }
 
   render() {
@@ -48,13 +112,36 @@ export class VerdocsUploadDialog {
       <Host style={{display: this.open ? 'block' : 'none'}}>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
-            <div class="heading">{this.heading}</div>
-            <div class="content">
-              {this.message}
+            <div class="heading">Upload attachment</div>
 
-              <div class="buttons">
-                <verdocs-button label="OK" onPress={() => this.handleClose('ok')} />
+            {this.decodedFiles.length < 1 ? (
+              <div
+                class={{'drop-target': true, 'dragging-over': this.draggingOver}}
+                onDragOver={e => this.handleDragOver(e)}
+                onDragLeave={e => this.handleDragLeave(e)}
+                onDrop={e => this.handleDrop(e)}
+              >
+                <p>Drag and drop a file here...</p>
+                <p>- or -</p>
+
+                <verdocs-button label="Select a file..." onPress={() => this.handleSelectFile()} />
+                <input type="file" ref={el => (this.fileInput = el as HTMLInputElement)} style={{display: 'none'}} onChange={e => this.handleFileChange(e)} />
               </div>
+            ) : (
+              <div class="attachments">
+                {this.decodedFiles.map((file, index) => (
+                  <div class="attachment">
+                    <div class="icon" innerHTML={Paperclip} />
+                    <div class="name">{file.name}</div>
+                    <div class="icon trash" innerHTML={Trash} onClick={() => this.handleRemoveAttachment(index)} />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div class="buttons">
+              <verdocs-button label="Cancel" variant="outline" onPress={() => this.handleCancel()} />
+              <verdocs-button label="Done" onPress={() => this.handleDone()} disabled={this.decodedFiles.length < 1} />
             </div>
           </div>
         </div>

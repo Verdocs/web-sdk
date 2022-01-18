@@ -13,6 +13,7 @@ import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-drop
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { ITemplate } from "@verdocs/js-sdk/Templates/Types";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
+import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 import { IPDFRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
 export namespace Components {
     interface SearchBox {
@@ -392,10 +393,6 @@ export namespace Components {
         "theme": 'light' | 'dark';
     }
     interface VerdocsUploadDialog {
-        /**
-          * The title of the dialog. "title" is a reserved word, so we use heading.
-         */
-        "heading": string;
         /**
           * The message content to display.
          */
@@ -1192,17 +1189,17 @@ declare namespace LocalJSX {
     }
     interface VerdocsUploadDialog {
         /**
-          * The title of the dialog. "title" is a reserved word, so we use heading.
-         */
-        "heading"?: string;
-        /**
           * The message content to display.
          */
         "message"?: string;
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
          */
-        "onClosed"?: (event: CustomEvent<'cancel' | 'ok'>) => void;
+        "onCancel"?: (event: CustomEvent<any>) => void;
+        /**
+          * Event fired when the dialog is closed. The event data will contain the closure reason.
+         */
+        "onDone"?: (event: CustomEvent<FileWithData[]>) => void;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */

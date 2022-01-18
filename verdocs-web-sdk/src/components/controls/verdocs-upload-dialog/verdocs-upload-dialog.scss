@@ -3,6 +3,10 @@ verdocs-upload-dialog {
   font-family: var(--verdocs-font);
   box-sizing: border-box;
 
+  div {
+    box-sizing: border-box;
+  }
+
   .background-overlay {
     position: absolute;
     z-index: 10000;
@@ -17,37 +21,94 @@ verdocs-upload-dialog {
   }
 
   .dialog {
-    max-width: 50%;
+    width: 300px;
     display: flex;
     flex-direction: column;
     border-radius: 4px;
     overflow: hidden;
+    background: #fff;
+    padding: 16px;
     box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
   }
 
   .heading {
     display: flex;
-    font-size: 16px;
     flex-direction: row;
-    background: #444444;
-    padding: 8px 16px;
-    color: white;
-  }
-
-  .content {
-    font-size: 14px;
-    background: #fff;
-    padding: 20px;
+    font-size: 20px;
+    font-weight: 500;
   }
 
   .buttons {
     display: flex;
-    margin: 20px 0 0 0;
+    align-items: center;
     flex-direction: row;
     justify-content: flex-end;
 
-    button {
+    verdocs-button {
       margin-left: 16px;
+    }
+  }
+
+  .drop-target {
+    padding: 30px 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f5f5;
+    border: 2px dashed #979797;
+    min-height: 260px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.54);
+    opacity: 1;
+    margin: 20px 0;
+
+    p {
+      margin: 12px 0;
+    }
+
+    &.dragging-over {
+      border: 5px solid blue;
+    }
+
+    > verdocs-button {
+      margin: 12px 0;
+      display: inline-block;
+    }
+  }
+
+  .attachments {
+    height: 56px;
+    font-size: 0;
+    margin: 20px 0;
+    padding: 0 16px;
+    line-height: 56px;
+    white-space: normal;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 12%), 0 0 2px 0 rgb(0 0 0 / 14%);
+
+    .attachment {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+
+      .icon {
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+
+        &.trash {
+          cursor: pointer;
+        }
+      }
+
+      .name {
+        flex: 1;
+        display: flex;
+        padding: 0 8px;
+        font-size: 14px;
+        font-weight: 400;
+      }
     }
   }
 }

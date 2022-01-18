@@ -159,7 +159,7 @@ export class VerdocsAuth {
           <h3>Sign up for an account</h3>
           <h4>
             Already have an account?
-            <verdocs-text-button label="Log In" onClick={() => (this.displayMode = 'login')} disabled={this.loggingIn} />
+            <verdocs-button label="Log In" variant="text" onClick={() => (this.displayMode = 'login')} disabled={this.loggingIn} />
           </h4>
 
           <form onSubmit={() => this.handleLogin()}>
@@ -191,7 +191,7 @@ export class VerdocsAuth {
         <h3>Log in to your account</h3>
         <h4>
           Don't have an account?
-          <verdocs-text-button label="Sign Up" onClick={() => (this.displayMode = 'signup')} disabled={this.loggingIn} />
+          <verdocs-button label="Sign Up" variant="text" onClick={() => (this.displayMode = 'signup')} disabled={this.loggingIn} />
         </h4>
 
         <form onSubmit={() => this.handleLogin()}>
@@ -205,8 +205,9 @@ export class VerdocsAuth {
             disabled={this.loggingIn}
           />
 
-          <verdocs-text-button
+          <verdocs-button
             label="Forgot Your Password?"
+            variant="text"
             onClick={() => (this.displayMode = 'signup')}
             disabled={this.loggingIn}
             style={{display: 'flex', justifyContent: 'center', margin: '10px auto 20px'}}

@@ -6,7 +6,6 @@ export default {
   component: 'verdocs-upload-dialog',
   args: {
     open: true,
-    heading: 'Login Error',
     message: 'Login failed. Please check your username and password and try again.',
   },
   argTypes: {
@@ -19,4 +18,4 @@ export default {
   },
 } as Meta;
 
-export const UploadDialog = ({heading, message, open, closed}) => html`<verdocs-upload-dialog .heading=${heading} .message=${message} .open=${open} @closed=${closed} />`;
+export const UploadDialog = ({message, open, closed}) => html`<verdocs-upload-dialog .message=${message} .open=${open} @closed=${closed} />`;

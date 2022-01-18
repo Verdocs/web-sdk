@@ -35,7 +35,7 @@
   "dependencies": {
     "@popperjs/core": "^2.11.2",
     "@stencil/core": "^2.10.0",
-    "@verdocs/js-sdk": "^1.1.15",
+    "@verdocs/js-sdk": "^1.1.17",
     "pdfjs-dist": "2.12.313",
     "vanillajs-datepicker": "^1.2.0"
   },
