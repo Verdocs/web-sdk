@@ -344,34 +344,3 @@ export class VerdocsSign {
     );
   }
 }
-
-/*
-            if (result && result.id && result.url) {
-              currentField = this.signatureService.currField;
-              this.signatureService.updateSigned(currentField.fName, true);
-              this.signatureService.toggleSig(false);
-              this.signatureService.setSignatureId(result.id);
-              this.signatureService.putSignatureField(this.envelopeId, this.fieldName, result.id).then(res => {
-                this.eventTracker.createEvent({
-                  category: 'verdoc',
-                  action: 'verdoc signed',
-                  label: `verdoc id: ${this.envelopeId}`
-                })
-                if (res && res.settings) {
-                  this.signatureService.setSignatureData(res.settings.base64);
-                  this.signatureService.setSignatureId(res.settings.signature_id);
-                }
-                this.snackbarService.dismiss();
-                this.dialog.close({ status: 'saved', temp_sig: res.settings.base64, sig_id: res.settings.signature_id });
-              }).catch(err => {
-                this.snackbarService.open('Failed to save signature. Please try again.', 'DISMISS', {
-                  duration: 3000
-                });
-                this.adoptedAndSigned = false;
-                return err;
-              });
-            }
-          });
-        } else {
-
- */

@@ -16,11 +16,6 @@ export class VerdocsUploadDialog {
   private fileInput?: HTMLInputElement;
 
   /**
-   * The message content to display.
-   */
-  @Prop() message: string = '';
-
-  /**
    * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
    */
   @Prop() open: boolean = false;

@@ -430,13 +430,13 @@ export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInit
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['required', 'value']
+  inputs: ['fullName', 'required', 'value']
 })
 @Component({
   selector: 'verdocs-field-initial',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['required', 'value']
+  inputs: ['fullName', 'required', 'value']
 })
 export class VerdocsFieldInitial {
   protected el: HTMLElement;
@@ -524,13 +524,13 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['required', 'value']
+  inputs: ['fullName', 'required', 'value']
 })
 @Component({
   selector: 'verdocs-field-signature',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['required', 'value']
+  inputs: ['fullName', 'required', 'value']
 })
 export class VerdocsFieldSignature {
   protected el: HTMLElement;
@@ -640,13 +640,13 @@ export declare interface VerdocsInitialDialog extends Components.VerdocsInitialD
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['initials', 'open']
+  inputs: ['fullname', 'open']
 })
 @Component({
   selector: 'verdocs-initial-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['initials', 'open']
+  inputs: ['fullname', 'open']
 })
 export class VerdocsInitialDialog {
   protected el: HTMLElement;
@@ -780,13 +780,13 @@ export declare interface VerdocsSignatureDialog extends Components.VerdocsSignat
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['fullName', 'open']
+  inputs: ['fullname', 'open']
 })
 @Component({
   selector: 'verdocs-signature-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['fullName', 'open']
+  inputs: ['fullname', 'open']
 })
 export class VerdocsSignatureDialog {
   protected el: HTMLElement;
@@ -911,13 +911,13 @@ export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDia
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['message', 'open']
+  inputs: ['open']
 })
 @Component({
   selector: 'verdocs-upload-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['message', 'open']
+  inputs: ['open']
 })
 export class VerdocsUploadDialog {
   protected el: HTMLElement;

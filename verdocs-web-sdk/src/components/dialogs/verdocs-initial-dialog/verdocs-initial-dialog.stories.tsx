@@ -2,11 +2,11 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Elements/Dialogs/Initial Dialog',
+  title: 'Dialogs/Initial Dialog',
   component: 'verdocs-initial-dialog',
   args: {
     open: true,
-    initials: 'PT',
+    fullname: 'Paige Turner',
   },
   argTypes: {
     closed: {
@@ -18,4 +18,4 @@ export default {
   },
 } as Meta;
 
-export const InitialDialog = ({initials, open, closed}) => html`<verdocs-initial-dialog .initials=${initials} .open=${open} @closed=${closed} />`;
+export const InitialDialog = ({fullname, open, closed}) => html`<verdocs-initial-dialog .fullname=${fullname} .open=${open} @closed=${closed} />`;

@@ -1,20 +1,20 @@
-import {Component, Prop, h, Event, EventEmitter, State, Host} from '@stencil/core';
+import {Component, Prop, Host, h, Event, EventEmitter, State} from '@stencil/core';
 
 /**
- * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
- * based on their full name, or by hand-drawing their signature with a mouse or tablet.
+ * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
+ * based on their full name, or by hand-drawing their initials with a mouse or tablet.
  */
 @Component({
-  tag: 'verdocs-signature-dialog',
-  styleUrl: 'verdocs-signature-dialog.scss',
+  tag: 'verdocs-initial-dialog',
+  styleUrl: 'verdocs-initial-dialog.scss',
 })
-export class VerdocsSignatureDialog {
+export class VerdocsInitialDialog {
   private canvasElement?: HTMLCanvasElement;
 
   /**
-   * Signature text
+   * Initial signature text
    */
-  @Prop() fullName: string = '';
+  @Prop() fullname: string = '';
 
   /**
    * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
@@ -33,12 +33,16 @@ export class VerdocsSignatureDialog {
 
   @State() fontLoaded = false;
 
-  @State() enteredName: string = '';
+  @State() enteredInitials: string = '';
 
   @State() mode: string = 'type';
 
   componentWillLoad() {
-    this.enteredName = this.fullName;
+    this.enteredInitials = this.fullname
+      .split(' ')
+      .map(s => s.substring(0, 1))
+      .join('')
+      .toUpperCase();
 
     const ds = new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v19/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup6hNX6plRP.woff)');
     ds.load().then(font => {
@@ -69,12 +73,12 @@ export class VerdocsSignatureDialog {
     do {
       fontSize -= 2;
       context.font = `${fontSize}px Dancing Script`;
-    } while (context.measureText(this.enteredName).width > canvasWidth - 32); // 32px padding each side
+    } while (context.measureText(this.enteredInitials).width > canvasWidth - 32); // 32px padding each side
 
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.font = `${fontSize}px Dancing Script`;
-    context.fillText(this.enteredName, this.canvasElement.width / 2, this.canvasElement.height / 2);
+    context.fillText(this.enteredInitials, this.canvasElement.width / 2, this.canvasElement.height / 2);
   }
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
@@ -86,7 +90,7 @@ export class VerdocsSignatureDialog {
   }
 
   handleNameChange(e) {
-    this.enteredName = e.detail;
+    this.enteredInitials = e.detail;
   }
 
   handleAdopt() {
@@ -263,10 +267,10 @@ export class VerdocsSignatureDialog {
       <Host class={{open: this.open}}>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
-            <div class="heading">Create Your Signature</div>
+            <div class="heading">Create Your Initial</div>
 
             <div class="content">
-              <verdocs-text-input placeholder="Full Name..." label="Full Name" value={this.enteredName} onFieldInput={e => this.handleNameChange(e)} />
+              <verdocs-text-input placeholder="Initials..." label="Initials" value={this.enteredInitials} onFieldInput={e => this.handleNameChange(e)} />
               <div class="as-shown">As shown on driver's license or govt. ID card.</div>
 
               <div class="tabs">
@@ -286,7 +290,7 @@ export class VerdocsSignatureDialog {
               </div>
 
               <div class="buttons">
-                <verdocs-button label="CANCEL" variant="text" onPress={() => this.handleCancel()} />
+                <verdocs-button label="CANCEL" variant="outline" onPress={() => this.handleCancel()} />
                 <verdocs-button label="Adopt & Sign" onPress={() => this.handleAdopt()} />
               </div>
             </div>

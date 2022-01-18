@@ -2,12 +2,10 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Controls/Dialogs/Ok Dialog',
-  component: 'verdocs-ok-dialog',
+  title: 'Dialogs/Upload Dialog',
+  component: 'verdocs-upload-dialog',
   args: {
     open: true,
-    cancel: true,
-    heading: 'Login Error',
     message: 'Login failed. Please check your username and password and try again.',
   },
   argTypes: {
@@ -20,5 +18,4 @@ export default {
   },
 } as Meta;
 
-export const OkDialog = ({heading, message, open, cancel, closed}) =>
-  html`<verdocs-ok-dialog .heading=${heading} .message=${message} .open=${open} .cancel=${cancel} @closed=${closed} />`;
+export const UploadDialog = ({message, open, closed}) => html`<verdocs-upload-dialog .message=${message} .open=${open} @closed=${closed} />`;

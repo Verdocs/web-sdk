@@ -175,6 +175,10 @@ export namespace Components {
     }
     interface VerdocsFieldInitial {
         /**
+          * The user's full name.
+         */
+        "fullName": string;
+        /**
           * Whether the field is required.
          */
         "required": boolean;
@@ -230,6 +234,10 @@ export namespace Components {
     }
     interface VerdocsFieldSignature {
         /**
+          * The user's full name.
+         */
+        "fullName": string;
+        /**
           * Whether the field is required.
          */
         "required": boolean;
@@ -284,9 +292,9 @@ export namespace Components {
     }
     interface VerdocsInitialDialog {
         /**
-          * Signature text
+          * Initial signature text
          */
-        "initials": string;
+        "fullname": string;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -336,9 +344,9 @@ export namespace Components {
     }
     interface VerdocsSignatureDialog {
         /**
-          * Signature text
+          * Initial signature text
          */
-        "fullName": string;
+        "fullname": string;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -393,10 +401,6 @@ export namespace Components {
         "theme": 'light' | 'dark';
     }
     interface VerdocsUploadDialog {
-        /**
-          * The message content to display.
-         */
-        "message": string;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -884,6 +888,10 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldInitial {
         /**
+          * The user's full name.
+         */
+        "fullName"?: string;
+        /**
           * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
          */
         "onAdopt"?: (event: CustomEvent<string>) => void;
@@ -952,6 +960,10 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface VerdocsFieldSignature {
+        /**
+          * The user's full name.
+         */
+        "fullName"?: string;
         /**
           * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
          */
@@ -1047,9 +1059,9 @@ declare namespace LocalJSX {
     }
     interface VerdocsInitialDialog {
         /**
-          * Signature text
+          * Initial signature text
          */
-        "initials"?: string;
+        "fullname"?: string;
         /**
           * Event fired when the initials are adopted.
          */
@@ -1111,9 +1123,9 @@ declare namespace LocalJSX {
     }
     interface VerdocsSignatureDialog {
         /**
-          * Signature text
+          * Initial signature text
          */
-        "fullName"?: string;
+        "fullname"?: string;
         /**
           * Event fired when the initials are adopted.
          */
@@ -1188,10 +1200,6 @@ declare namespace LocalJSX {
         "theme"?: 'light' | 'dark';
     }
     interface VerdocsUploadDialog {
-        /**
-          * The message content to display.
-         */
-        "message"?: string;
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
          */
