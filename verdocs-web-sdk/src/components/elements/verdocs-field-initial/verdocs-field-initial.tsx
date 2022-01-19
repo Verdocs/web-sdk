@@ -1,4 +1,4 @@
-import {Component, Event, EventEmitter, h, Host, Prop} from '@stencil/core';
+import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/core';
 
 /**
  * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
@@ -34,6 +34,10 @@ export class VerdocsFieldInitial {
    * Event emitted when the user cancels the process.
    */
   @Event({composed: true}) cancel: EventEmitter;
+
+  @Method() async focusField() {
+    this.handleShow();
+  }
 
   private dialog?: any;
 

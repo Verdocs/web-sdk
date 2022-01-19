@@ -296,7 +296,8 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'order', 'required', 'value']
+  inputs: ['disabled', 'order', 'required', 'value'],
+  methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-attachment',
@@ -368,7 +369,8 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
+  inputs: ['disabled', 'order', 'placeholder', 'required', 'value'],
+  methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-date',
@@ -388,6 +390,14 @@ export class VerdocsFieldDate {
 
 export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
   /**
+   * Event fired when the input field loses focus. 
+   */
+  fieldFocus: EventEmitter<CustomEvent<boolean>>;
+  /**
+   * Event fired when the input field gains focus. 
+   */
+  fieldBlur: EventEmitter<CustomEvent<boolean>>;
+  /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
 It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
 keypress. 
@@ -398,20 +408,21 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'options', 'required', 'value']
+  inputs: ['disabled', 'options', 'order', 'required', 'value'],
+  methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'options', 'required', 'value']
+  inputs: ['disabled', 'options', 'order', 'required', 'value']
 })
 export class VerdocsFieldDropdown {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange']);
+    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange']);
   }
 }
 
@@ -430,7 +441,8 @@ export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInit
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['fullName', 'required', 'value']
+  inputs: ['fullName', 'required', 'value'],
+  methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-initial',
@@ -524,7 +536,8 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['fullName', 'required', 'value']
+  inputs: ['fullName', 'required', 'value'],
+  methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-signature',
@@ -566,7 +579,8 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
+  inputs: ['disabled', 'order', 'placeholder', 'required', 'value'],
+  methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-textarea',
@@ -608,7 +622,8 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
+  inputs: ['disabled', 'order', 'placeholder', 'required', 'value'],
+  methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-textbox',

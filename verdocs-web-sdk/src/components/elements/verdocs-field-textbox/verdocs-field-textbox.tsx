@@ -1,4 +1,4 @@
-import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
 
 /**
  * Display a text input field.
@@ -9,6 +9,8 @@ import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/cor
   shadow: false,
 })
 export class VerdocsFieldTextbox {
+  private el: HTMLInputElement;
+
   /**
    * A placeholder to assist the user in completing the field.
    */
@@ -58,6 +60,12 @@ export class VerdocsFieldTextbox {
 
   @State() focused = false;
 
+  @Method() async focusField() {
+    this.focused = true;
+    this.el.focus();
+    this.fieldFocus.emit(true);
+  }
+
   handleBlur() {
     this.focused = false;
     this.fieldBlur.emit(true);
@@ -78,7 +86,7 @@ export class VerdocsFieldTextbox {
 
   render() {
     return (
-      <Host class={{focused: this.focused, required: this.required, storybook: !!window?.['STORYBOOK_ENV']}}>
+      <Host class={{focused: this.focused, required: this.required}}>
         <input
           type="text"
           placeholder={this.placeholder || ''}
@@ -86,6 +94,7 @@ export class VerdocsFieldTextbox {
           value={this.value}
           disabled={this.disabled}
           required={this.required}
+          ref={el => (this.el = el)}
           onBlur={() => this.handleBlur()}
           onFocus={() => this.handleFocus()}
           onChange={e => this.handleChange(e)}

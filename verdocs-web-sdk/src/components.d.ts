@@ -102,6 +102,7 @@ export namespace Components {
           * Sets the disabled attribute of the input element.
          */
         "disabled": boolean;
+        "focusField": () => Promise<void>;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -138,6 +139,7 @@ export namespace Components {
           * Sets the disabled attribute of the input element.
          */
         "disabled": boolean;
+        "focusField": () => Promise<void>;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -160,10 +162,15 @@ export namespace Components {
           * Sets the disabled attribute of the input element.
          */
         "disabled": boolean;
+        "focusField": () => Promise<void>;
         /**
           * The optoins to choose from.
          */
         "options": any[];
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order": number;
         /**
           * If true, the field will be marked required.
          */
@@ -174,6 +181,7 @@ export namespace Components {
         "value": string;
     }
     interface VerdocsFieldInitial {
+        "focusField": () => Promise<void>;
         /**
           * The user's full name.
          */
@@ -233,6 +241,7 @@ export namespace Components {
         "value": string;
     }
     interface VerdocsFieldSignature {
+        "focusField": () => Promise<void>;
         /**
           * The user's full name.
          */
@@ -251,6 +260,7 @@ export namespace Components {
           * Sets the disabled attribute of the input element.
          */
         "disabled": boolean;
+        "focusField": () => Promise<void>;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -273,6 +283,7 @@ export namespace Components {
           * Sets the disabled attribute of the input element.
          */
         "disabled": boolean;
+        "focusField": () => Promise<void>;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -870,13 +881,25 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * Event fired when the input field gains focus.
+         */
+        "onFieldBlur"?: (event: CustomEvent<boolean>) => void;
+        /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: CustomEvent<string>) => void;
         /**
+          * Event fired when the input field loses focus.
+         */
+        "onFieldFocus"?: (event: CustomEvent<boolean>) => void;
+        /**
           * The optoins to choose from.
          */
         "options"?: any[];
+        /**
+          * Sets the tabIndex of the input element.
+         */
+        "order"?: number;
         /**
           * If true, the field will be marked required.
          */

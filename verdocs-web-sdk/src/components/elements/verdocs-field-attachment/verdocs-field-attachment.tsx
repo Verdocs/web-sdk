@@ -1,4 +1,4 @@
-import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/core';
 import Paperclip from './paperclip.svg';
 
 /**
@@ -37,6 +37,10 @@ export class VerdocsFieldAttachment {
    * keypress.
    */
   @Event({composed: true}) fieldChange: EventEmitter<string>;
+
+  @Method() async focusField() {
+    this.handleShow();
+  }
 
   private dialog?: any;
 

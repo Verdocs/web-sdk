@@ -31,3 +31,15 @@
   /* Standard font */
   --verdocs-font: 'Barlow', sans-serif;
 }
+
+@keyframes verdocs-field-pulse {
+  0% {
+    background-color: rgba(0, 0, 0, .35)
+  }
+  50% {
+    background-color: rgba(0, 0, 0, 0)
+  }
+  100% {
+    background-color: rgba(0, 0, 0, .35)
+  }
+}

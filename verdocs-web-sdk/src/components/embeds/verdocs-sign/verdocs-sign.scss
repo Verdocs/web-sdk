@@ -140,11 +140,8 @@ verdocs-sign {
 
   .page-controls {
     position: absolute;
-    //left: 15px;
-    //right: 15px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1000;
-    //background: #ffc0cb7f;
+    z-index: 500;
   }
 }

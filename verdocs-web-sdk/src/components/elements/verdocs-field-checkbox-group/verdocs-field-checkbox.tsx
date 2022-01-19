@@ -43,7 +43,7 @@ export class VerdocsFieldCheckbox {
 
   render() {
     return (
-      <Host class={{required: this.required, storybook: !!window?.['STORYBOOK_ENV']}}>
+      <Host class={{required: this.required}}>
         <label>
           <input type="checkbox" tabIndex={this.order} checked={this.value} disabled={this.disabled} required={this.required} onChange={e => this.handleChange(e)} />
           <span />

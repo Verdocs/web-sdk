@@ -1,4 +1,4 @@
-import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
 
 /**
  * Display a multi-line text input field.
@@ -9,6 +9,8 @@ import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/cor
   shadow: false,
 })
 export class VerdocsFieldTextarea {
+  private el: HTMLTextAreaElement;
+
   /**
    * A placeholder to assist the user in completing the field.
    */
@@ -58,6 +60,12 @@ export class VerdocsFieldTextarea {
 
   @State() focused = false;
 
+  @Method() async focusField() {
+    this.focused = true;
+    this.el.focus();
+    this.fieldFocus.emit(true);
+  }
+
   handleBlur() {
     this.focused = false;
     this.fieldBlur.emit(true);
@@ -85,6 +93,7 @@ export class VerdocsFieldTextarea {
           value={this.value}
           disabled={this.disabled}
           required={this.required}
+          ref={el => (this.el = el)}
           onBlur={() => this.handleBlur()}
           onFocus={() => this.handleFocus()}
           onChange={e => this.handleChange(e)}

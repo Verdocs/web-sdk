@@ -1,4 +1,4 @@
-import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/core';
 
 /**
  * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
@@ -34,6 +34,10 @@ export class VerdocsFieldSignature {
    * Event emitted when the user cancels the process.
    */
   @Event({composed: true}) cancel: EventEmitter;
+
+  @Method() async focusField() {
+    this.handleShow();
+  }
 
   private dialog?: any;
 

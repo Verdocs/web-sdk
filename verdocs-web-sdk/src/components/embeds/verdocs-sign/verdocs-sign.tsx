@@ -7,6 +7,7 @@ import {updateRecipientStatus} from '@verdocs/js-sdk/Documents/Recipients';
 import {getEndpoint, setActiveEndpoint} from '@verdocs/js-sdk/HTTP/Transport';
 import {getSigningSession, getDocument, getDocumentFile, IDocument, IDocumentField, updateDocumentField} from '@verdocs/js-sdk/Documents/Documents';
 import {IPDFPageInfo, IPDFRenderEvent} from '../verdocs-view/verdocs-view';
+import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 
 const BASE_URL = 'https://stage-api.verdocs.com';
 
@@ -48,6 +49,10 @@ export class VerdocsSign {
 
   @State() hasSignature = false;
 
+  @State() nextButtonLabel = 'Start';
+
+  @State() focusedField = '';
+
   componentWillLoad() {
     const endpoint = new VerdocsEndpoint({baseURL: BASE_URL});
     setActiveEndpoint(endpoint);
@@ -66,6 +71,10 @@ export class VerdocsSign {
       this.recipient = recipient;
       this.signerToken = signerToken;
       getEndpoint().setSigningAuthorization(signerToken);
+
+      if (this.recipient.agreed) {
+        this.nextButtonLabel = 'Next';
+      }
 
       const document = await getDocument(this.documentid);
       this.document = document;
@@ -97,6 +106,7 @@ export class VerdocsSign {
     updateRecipientStatus(this.documentid, this.roleid, 'update', {agreed: true})
       .then(r => {
         console.log('update result', r);
+        this.nextButtonLabel = 'Next';
         this.recipient = r;
       })
       .catch(e => {
@@ -256,29 +266,30 @@ export class VerdocsSign {
 
     console.log('rendering field', field.type, field);
 
+    const id = `field-${field.name}`;
     switch (field.type) {
       case 'signature':
-        return <verdocs-field-signature style={style} value={base64} required={required} />;
+        return <verdocs-field-signature style={style} value={base64} required={required} id={id} />;
       case 'initial':
-        return <verdocs-field-initial style={style} required={required} />;
+        return <verdocs-field-initial style={style} required={required} id={id} />;
       case 'textbox':
-        return <verdocs-field-textbox style={style} order={index} value={result || ''} placeholder={placeholder} onFieldChange={e => this.handleFieldChange(field, e)} />;
+        return <verdocs-field-textbox style={style} order={index} value={result || ''} placeholder={placeholder} id={id} onFieldChange={e => this.handleFieldChange(field, e)} />;
       case 'textarea':
-        return <verdocs-field-textarea style={style} placeholder={placeholder || ''} />;
+        return <verdocs-field-textarea style={style} placeholder={placeholder || ''} id={id} />;
       case 'date':
-        return <verdocs-field-date style={style} order={index} value={result || ''} placeholder={placeholder} required={required} />;
+        return <verdocs-field-date style={style} order={index} value={result || ''} placeholder={placeholder} required={required} id={id} />;
       case 'dropdown':
-        return <verdocs-field-dropdown style={style} options={options} value={value} required={required} onFieldChange={e => this.handleFieldChange(field, e)} />;
+        return <verdocs-field-dropdown style={style} options={options} value={value} required={required} id={id} onFieldChange={e => this.handleFieldChange(field, e)} />;
       case 'checkbox':
-        return <verdocs-field-checkbox style={style} value={result || ''} />;
+        return <verdocs-field-checkbox style={style} value={result || ''} id={id} />;
       case 'checkbox_group':
         return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
       case 'radio_button_group':
         return field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index));
       case 'attachment':
-        return <verdocs-field-attachment style={style} value={result || ''} />;
+        return <verdocs-field-attachment style={style} value={result || ''} id={id} />;
       case 'payment':
-        return <verdocs-field-payment style={style} field={field} />;
+        return <verdocs-field-payment style={style} field={field} id={id} />;
       default:
         console.log('[SIGN] Skipping unsupported field type', field);
     }
@@ -286,9 +297,67 @@ export class VerdocsSign {
     return <div style={{display: 'none'}}>Unsupported field type "{field.type}"</div>;
   }
 
+  isFieldValid(field: IDocumentField) {
+    switch (field.type) {
+      case 'textbox':
+        switch (field.settings?.validator || '') {
+          case 'email':
+            return isValidEmail(field.settings?.result || '');
+          case 'phone':
+            return isValidPhone(field.settings?.result || '');
+          default:
+            return !!field.settings?.result;
+        }
+
+      case 'signature':
+      case 'initial':
+      case 'textarea':
+      case 'date':
+      case 'attachment':
+        return !!field.settings?.result;
+      case 'dropdown':
+        return !!field.settings?.value;
+      case 'checkbox_group':
+        const checked = (field.settings?.options?.filter(option => option.checked) || []).length;
+        return checked >= (field.settings?.minimum_checked || 0) && checked <= (field.settings?.maximum_checked || 999);
+      case 'radio_button_group':
+        return (field.settings?.options?.filter(option => option.selected) || []).length > 0;
+      // TODO
+      // case 'checkbox':
+      //   return <verdocs-field-checkbox style={style} value={result || ''} id={id} />;
+      // case 'payment':
+      //   return <verdocs-field-payment style={style} field={field} id={id} />;
+      default:
+        return false;
+    }
+  }
+
   handleDocumentRendered(e) {
     console.log('[SIGN] Document rendered', e.detail);
     this.pdfPageInfo = e.detail;
+  }
+
+  handleNext() {
+    // Find and focus the next incomplete required field
+    const requiredFields = this.fields.filter(field => field.required);
+    console.log('required Fields', requiredFields);
+
+    const focusedIndex = requiredFields.findIndex(field => field.name === this.focusedField);
+    console.log('focused Index', focusedIndex);
+
+    let nextFocusedIndex = focusedIndex + 1;
+    if (nextFocusedIndex >= requiredFields.length) {
+      nextFocusedIndex = 0;
+    }
+
+    const nextRequiredField = requiredFields[nextFocusedIndex];
+    console.log('next required fielod', nextRequiredField);
+
+    if (nextRequiredField) {
+      const el = document.getElementById(`field-${nextRequiredField.name}`) as any;
+      el?.focusField();
+      this.focusedField = nextRequiredField.name;
+    }
   }
 
   render() {
@@ -307,21 +376,19 @@ export class VerdocsSign {
           <div class="toolbar">
             <div class="tools">
               <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
-              <div class="agree-checkbox">
-                <input
-                  type="checkbox"
-                  value="None"
-                  id="agree-checkbox-element"
-                  name="agree"
-                  disabled={this.recipient?.agreed}
-                  checked={this.recipient?.agreed}
-                  onChange={() => this.handleClickAgree()}
-                />
-                <label htmlFor="agree-checkbox-element" />
-              </div>
-              I agree to use electronic records and signatures.
-              <div style={{flex: '1'}} />
-              <verdocs-button label="Start" disabled={!this.recipient?.agreed} />
+
+              {!this.recipient?.agreed ? (
+                <div style={{flex: '1', flexDirection: 'row'}}>
+                  <div class="agree-checkbox">
+                    <input type="checkbox" value="None" id="agree-checkbox-element" name="agree" onChange={() => this.handleClickAgree()} />
+                    <label htmlFor="agree-checkbox-element" />
+                  </div>
+                  I agree to use electronic records and signatures.
+                </div>
+              ) : (
+                <div style={{flex: '1'}} />
+              )}
+              <verdocs-button label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />
             </div>
           </div>
         </div>

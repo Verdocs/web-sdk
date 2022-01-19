@@ -1,6 +1,6 @@
 // @ts-ignore
 import {Datepicker} from 'vanillajs-datepicker';
-import {Component, Event, EventEmitter, h, Host, Prop, State} from '@stencil/core';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, State} from '@stencil/core';
 
 /**
  * Displays a date field. When tapped or clicked, the input element will display a date picker component.
@@ -61,6 +61,12 @@ export class VerdocsFieldDate {
   @Event({composed: true}) fieldInput: EventEmitter<string>;
 
   @State() focused = false;
+
+  @Method() async focusField() {
+    this.focused = true;
+    this.el.focus();
+    this.fieldFocus.emit(true);
+  }
 
   componentDidLoad() {
     new Datepicker(this.el, {

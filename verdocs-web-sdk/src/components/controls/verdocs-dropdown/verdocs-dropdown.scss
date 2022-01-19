@@ -24,6 +24,7 @@ verdocs-dropdown {
   .items {
     width: 200px;
     display: none;
+    z-index: 10000;
     border-radius: 5px;
     background: #33364b;
     border: 1px solid #654dcb;

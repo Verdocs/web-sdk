@@ -38,4 +38,8 @@ verdocs-field-signature {
   &.required {
     border: 1px solid var(--verdocs-required-color);
   }
+
+  &.focused {
+    animation: verdocs-field-pulse 0.75s 2;
+  }
 }

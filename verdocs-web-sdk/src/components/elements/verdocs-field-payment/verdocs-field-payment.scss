@@ -61,18 +61,6 @@ verdocs-field-payment {
   }
 
   &.focused {
-    animation: verdocs-pulse-kf 0.75s 2;
-  }
-}
-
-@keyframes verdocs-pulse-kf {
-  0% {
-    background-color: rgba(0, 0, 0, 0.35);
-  }
-  50% {
-    background-color: rgba(0, 0, 0, 0);
-  }
-  100% {
-    background-color: rgba(0, 0, 0, 0.35);
+    animation: verdocs-field-pulse 0.75s 2;
   }
 }
