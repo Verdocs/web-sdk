@@ -24,10 +24,7 @@
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
     "storybook": "BROWSER=none start-storybook -p 6006 -s public",
-    "build-storybook": "rm -rf storybook-static && build-storybook -s public",
-    "copy-storybook": "cp -aR storybook-static ../../partner-portal/site/static/embeds",
-    "clear-docs": "aws --profile=verdocs cloudfront create-invalidation --distribution-id E2V8LVV0H1KJQ7 --paths \"/*\"",
-    "deploy-docs": "npm run build-storybook && aws --profile=verdocs s3 sync --acl public-read --delete storybook-static s3://verdocs-developers-embeds/ && yarn clear-docs"
+    "build-storybook": "rm -rf storybook-static && build-storybook -s public"
   },
   "msw": {
     "workerDirectory": "public"

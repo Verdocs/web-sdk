@@ -1,0 +1,41 @@
+name: Generate Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "verdocs-web-sdk/**"
+      - "README.md"
+      - ".github/workflows/generate-docs.yml"
+
+defaults:
+  run:
+    shell: bash
+
+# We only want to run one job at a time in this group
+concurrency:
+  group: web-sdk-docs
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      - name: Install and Build 🔧
+        run: |
+          cd verdocs-web-sdk
+          npm ci
+          npm run build
+          npm run build-storybook
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4.2.3
+        with:
+          branch: gh-pages
+          folder: verdocs-web-sdk/storybook-static
+          clean: true
