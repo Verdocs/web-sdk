@@ -1,4 +1,4 @@
-import {Component, Host, h, Event, EventEmitter} from '@stencil/core';
+import {Component, h, Event, EventEmitter} from '@stencil/core';
 import TemplateIcon from './template-icon.svg';
 import DocumentIcon from './document-icon.svg';
 
@@ -9,10 +9,10 @@ import DocumentIcon from './document-icon.svg';
  * embed. This Element will reuse the same session produced by logging in via that Embed.
  */
 @Component({
-  tag: 'search-quick-functions',
-  styleUrl: 'search-quick-functions.scss',
+  tag: 'verdocs-quick-functions',
+  styleUrl: 'verdocs-quick-functions.scss',
 })
-export class SearchQuickFunctions {
+export class VerdocsQuickFunctions {
   /**
    * Event fired when an entry is clicked.
    */
@@ -33,17 +33,15 @@ export class SearchQuickFunctions {
 
   render() {
     return (
-      <Host>
-        <div class="container">
-          <p class="title">Quick Create</p>
-          <button onClick={() => this.handleCreateTemplate()} innerHTML={TemplateIcon}>
-            Template
-          </button>
-          <button onClick={() => this.handleCreateDocument()} innerHTML={DocumentIcon}>
-            Document
-          </button>
-        </div>
-      </Host>
+      <div class="container">
+        <p class="title">Quick Create</p>
+        <button onClick={() => this.handleCreateTemplate()} innerHTML={TemplateIcon}>
+          Template
+        </button>
+        <button onClick={() => this.handleCreateDocument()} innerHTML={DocumentIcon}>
+          Document
+        </button>
+      </div>
     );
   }
 }

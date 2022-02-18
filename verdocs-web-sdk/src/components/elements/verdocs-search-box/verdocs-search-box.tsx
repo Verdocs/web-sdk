@@ -1,4 +1,4 @@
-import {Component, Host, h, Event, EventEmitter, Prop} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Prop} from '@stencil/core';
 import SearchIcon from './search.svg';
 import CloseIcon from './close.svg';
 
@@ -16,10 +16,11 @@ export interface ISearchEvent {
  * embed. This Element will reuse the same session produced by logging in via that Embed.
  */
 @Component({
-  tag: 'search-box',
-  styleUrl: 'search-box.scss',
+  tag: 'verdocs-search-box',
+  styleUrl: 'verdocs-search-box.scss',
+  shadow: false,
 })
-export class SearchBox {
+export class VerdocsSearchBox {
   /**
    * The placeholder to display in the input field.
    */
@@ -72,20 +73,18 @@ export class SearchBox {
 
   render() {
     return (
-      <Host>
-        <form onSubmit={e => this.handleSearch(e)}>
-          {this.type !== undefined && this.type !== 'all' && (
-            <span class="type">
-              {this.type}s <button class="remove" innerHTML={CloseIcon} onClick={() => this.handleClearFilter()} />
-            </span>
-          )}
-          <input type="text" placeholder={this.placeholder} value={this.query} onInput={e => this.handleChange(e)} onKeyUp={e => this.handleKeyUp(e)} />
-          <button onClick={e => this.handleSearch(e)} class="search">
-            <span innerHTML={SearchIcon} />
-            Search
-          </button>
-        </form>
-      </Host>
+      <form onSubmit={e => this.handleSearch(e)}>
+        {this.type !== undefined && this.type !== 'all' && (
+          <span class="type">
+            {this.type}s <button class="remove" innerHTML={CloseIcon} onClick={() => this.handleClearFilter()} />
+          </span>
+        )}
+        <input type="text" placeholder={this.placeholder} value={this.query} onInput={e => this.handleChange(e)} onKeyUp={e => this.handleKeyUp(e)} />
+        <button onClick={e => this.handleSearch(e)} class="search">
+          <span innerHTML={SearchIcon} />
+          Search
+        </button>
+      </form>
     );
   }
 }

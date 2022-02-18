@@ -7,7 +7,7 @@ import {action} from '@storybook/addon-actions';
  */
 export default {
   title: 'Elements/Search/Tabs',
-  component: 'search-tabs',
+  component: 'verdocs-search-tabs',
   args: {},
   argTypes: {},
 } as Meta;
@@ -19,4 +19,4 @@ const listener = {
   capture: true,
 };
 
-export const Tabs = ({options}) => html`<search-tabs .options=${options} @optionSelected=${listener} tall />`;
+export const Tabs = ({options}) => html`<verdocs-search-tabs .options=${options} @optionSelected=${listener} tall />`;

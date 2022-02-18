@@ -1,8 +1,8 @@
 import {Auth} from '@verdocs/js-sdk/Users';
 import {IActiveSession} from '@verdocs/js-sdk/Users/Types';
 import {Transport, VerdocsEndpoint} from '@verdocs/js-sdk/HTTP';
-import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {loadSession, setSession} from '@verdocs/js-sdk/Users/Auth';
+import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 
 const BASE_URL = 'https://stage-api.verdocs.com/';
 const SOURCE = 'verdocs-stage';
@@ -78,7 +78,7 @@ export class VerdocsAuth {
   @State() loginError: string | null = null;
 
   componentWillLoad() {
-    const staging = new VerdocsEndpoint({baseURL: BASE_URL});
+    const staging = new VerdocsEndpoint().setBaseURL(BASE_URL);
     Transport.setActiveEndpoint(staging);
     console.log('Set active endpoint', Transport.getEndpoint());
   }

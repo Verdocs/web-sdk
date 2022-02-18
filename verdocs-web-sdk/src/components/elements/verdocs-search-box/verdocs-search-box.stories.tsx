@@ -3,7 +3,7 @@ import {Meta} from '@storybook/web-components';
 
 export default {
   title: 'Elements/Search/Search Box',
-  component: 'search-box',
+  component: 'verdocs-search-box',
   args: {
     type: 'all',
   },
@@ -16,4 +16,4 @@ export default {
 } as Meta;
 
 export const SearchBox = ({type, searchClicked, typeChanged, queryChanged}) =>
-  html`<search-box .type=${type} @searchClicked=${searchClicked} @typeChanged=${typeChanged} @queryChanged=${queryChanged} />`;
+  html`<verdocs-search-box .type=${type} @searchClicked=${searchClicked} @typeChanged=${typeChanged} @queryChanged=${queryChanged} />`;

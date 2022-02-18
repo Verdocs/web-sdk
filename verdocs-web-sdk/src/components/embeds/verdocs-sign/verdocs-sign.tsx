@@ -54,7 +54,7 @@ export class VerdocsSign {
   @State() focusedField = '';
 
   componentWillLoad() {
-    const endpoint = new VerdocsEndpoint({baseURL: BASE_URL});
+    const endpoint = new VerdocsEndpoint().setBaseURL(BASE_URL);
     setActiveEndpoint(endpoint);
   }
 

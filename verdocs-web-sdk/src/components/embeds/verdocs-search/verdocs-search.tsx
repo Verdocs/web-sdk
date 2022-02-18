@@ -9,13 +9,13 @@ export class VerdocsSearch {
   render() {
     return (
       <div class="container">
-        <search-box />
+        <verdocs-search-box />
 
         <div class="boxes">
-          <search-recent/>
-          <search-starred/>
-          <search-saved/>
-          <search-quick-functions/>
+          <verdocs-search-activity type="recent" />
+          <verdocs-search-activity type="saved" />
+          <verdocs-search-activity type="starred" />
+          <search-quick-functions />
         </div>
       </div>
     );

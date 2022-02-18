@@ -5,50 +5,17 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ISearchEvent, TContentType } from "./components/elements/search-box/search-box";
-import { IRecentSearch, ISavedSearch } from "@verdocs/js-sdk/Search/Types";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { IDocumentField, TDocumentStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
+import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
+import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { ITemplate } from "@verdocs/js-sdk/Templates/Types";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 import { IPDFRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
 export namespace Components {
-    interface SearchBox {
-        /**
-          * The placeholder to display in the input field.
-         */
-        "placeholder": string;
-        /**
-          * The text search string entered by the user.
-         */
-        "query": string;
-        /**
-          * If set to a value other than 'all', a removeable filter indicator will be displayed.
-         */
-        "type": TContentType;
-    }
-    interface SearchQuickFunctions {
-    }
-    interface SearchRecent {
-        /**
-          * If set, limits the number of entries that will be shown. Note that there is a server-imposed limit of 20 entries that cannot currently be increased (only reduced).
-         */
-        "limit": number;
-    }
-    interface SearchSaved {
-        /**
-          * If set, limits the number of entries that will be shown. Note that there is a server-imposed limit of 20 entries that cannot currently be increased (only reduced).
-         */
-        "limit": number;
-    }
-    interface SearchStarred {
-        "options": any;
-    }
-    interface SearchTabs {
-    }
     interface VerdocsAuth {
         /**
           * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
@@ -337,7 +304,29 @@ export namespace Components {
          */
         "organization": IOrganization;
     }
+    interface VerdocsQuickFunctions {
+    }
     interface VerdocsSearch {
+    }
+    interface VerdocsSearchActivity {
+        "options": any;
+        "type": 'recent' | 'saved' | 'starred';
+    }
+    interface VerdocsSearchBox {
+        /**
+          * The placeholder to display in the input field.
+         */
+        "placeholder": string;
+        /**
+          * The text search string entered by the user.
+         */
+        "query": string;
+        /**
+          * If set to a value other than 'all', a removeable filter indicator will be displayed.
+         */
+        "type": TContentType;
+    }
+    interface VerdocsSearchTabs {
     }
     interface VerdocsSign {
         /**
@@ -433,42 +422,6 @@ export namespace Components {
     }
 }
 declare global {
-    interface HTMLSearchBoxElement extends Components.SearchBox, HTMLStencilElement {
-    }
-    var HTMLSearchBoxElement: {
-        prototype: HTMLSearchBoxElement;
-        new (): HTMLSearchBoxElement;
-    };
-    interface HTMLSearchQuickFunctionsElement extends Components.SearchQuickFunctions, HTMLStencilElement {
-    }
-    var HTMLSearchQuickFunctionsElement: {
-        prototype: HTMLSearchQuickFunctionsElement;
-        new (): HTMLSearchQuickFunctionsElement;
-    };
-    interface HTMLSearchRecentElement extends Components.SearchRecent, HTMLStencilElement {
-    }
-    var HTMLSearchRecentElement: {
-        prototype: HTMLSearchRecentElement;
-        new (): HTMLSearchRecentElement;
-    };
-    interface HTMLSearchSavedElement extends Components.SearchSaved, HTMLStencilElement {
-    }
-    var HTMLSearchSavedElement: {
-        prototype: HTMLSearchSavedElement;
-        new (): HTMLSearchSavedElement;
-    };
-    interface HTMLSearchStarredElement extends Components.SearchStarred, HTMLStencilElement {
-    }
-    var HTMLSearchStarredElement: {
-        prototype: HTMLSearchStarredElement;
-        new (): HTMLSearchStarredElement;
-    };
-    interface HTMLSearchTabsElement extends Components.SearchTabs, HTMLStencilElement {
-    }
-    var HTMLSearchTabsElement: {
-        prototype: HTMLSearchTabsElement;
-        new (): HTMLSearchTabsElement;
-    };
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
     }
     var HTMLVerdocsAuthElement: {
@@ -577,11 +530,35 @@ declare global {
         prototype: HTMLVerdocsOrganizationCardElement;
         new (): HTMLVerdocsOrganizationCardElement;
     };
+    interface HTMLVerdocsQuickFunctionsElement extends Components.VerdocsQuickFunctions, HTMLStencilElement {
+    }
+    var HTMLVerdocsQuickFunctionsElement: {
+        prototype: HTMLVerdocsQuickFunctionsElement;
+        new (): HTMLVerdocsQuickFunctionsElement;
+    };
     interface HTMLVerdocsSearchElement extends Components.VerdocsSearch, HTMLStencilElement {
     }
     var HTMLVerdocsSearchElement: {
         prototype: HTMLVerdocsSearchElement;
         new (): HTMLVerdocsSearchElement;
+    };
+    interface HTMLVerdocsSearchActivityElement extends Components.VerdocsSearchActivity, HTMLStencilElement {
+    }
+    var HTMLVerdocsSearchActivityElement: {
+        prototype: HTMLVerdocsSearchActivityElement;
+        new (): HTMLVerdocsSearchActivityElement;
+    };
+    interface HTMLVerdocsSearchBoxElement extends Components.VerdocsSearchBox, HTMLStencilElement {
+    }
+    var HTMLVerdocsSearchBoxElement: {
+        prototype: HTMLVerdocsSearchBoxElement;
+        new (): HTMLVerdocsSearchBoxElement;
+    };
+    interface HTMLVerdocsSearchTabsElement extends Components.VerdocsSearchTabs, HTMLStencilElement {
+    }
+    var HTMLVerdocsSearchTabsElement: {
+        prototype: HTMLVerdocsSearchTabsElement;
+        new (): HTMLVerdocsSearchTabsElement;
     };
     interface HTMLVerdocsSignElement extends Components.VerdocsSign, HTMLStencilElement {
     }
@@ -632,12 +609,6 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
-        "search-box": HTMLSearchBoxElement;
-        "search-quick-functions": HTMLSearchQuickFunctionsElement;
-        "search-recent": HTMLSearchRecentElement;
-        "search-saved": HTMLSearchSavedElement;
-        "search-starred": HTMLSearchStarredElement;
-        "search-tabs": HTMLSearchTabsElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-button": HTMLVerdocsButtonElement;
         "verdocs-document-status": HTMLVerdocsDocumentStatusElement;
@@ -656,7 +627,11 @@ declare global {
         "verdocs-loader": HTMLVerdocsLoaderElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
+        "verdocs-quick-functions": HTMLVerdocsQuickFunctionsElement;
         "verdocs-search": HTMLVerdocsSearchElement;
+        "verdocs-search-activity": HTMLVerdocsSearchActivityElement;
+        "verdocs-search-box": HTMLVerdocsSearchBoxElement;
+        "verdocs-search-tabs": HTMLVerdocsSearchTabsElement;
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
@@ -668,71 +643,6 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    interface SearchBox {
-        /**
-          * Event fired when the user changes the query string.
-         */
-        "onQueryChanged"?: (event: CustomEvent<string>) => void;
-        /**
-          * Event fired when the user changes the type.
-         */
-        "onSearchClicked"?: (event: CustomEvent<ISearchEvent>) => void;
-        /**
-          * Event fired when the user changes the type.
-         */
-        "onTypeChanged"?: (event: CustomEvent<TContentType>) => void;
-        /**
-          * The placeholder to display in the input field.
-         */
-        "placeholder"?: string;
-        /**
-          * The text search string entered by the user.
-         */
-        "query"?: string;
-        /**
-          * If set to a value other than 'all', a removeable filter indicator will be displayed.
-         */
-        "type"?: TContentType;
-    }
-    interface SearchQuickFunctions {
-        /**
-          * Event fired when an entry is clicked.
-         */
-        "onCreateDocument"?: (event: CustomEvent<any>) => void;
-        /**
-          * Event fired when an entry is clicked.
-         */
-        "onCreateTemplate"?: (event: CustomEvent<any>) => void;
-    }
-    interface SearchRecent {
-        /**
-          * If set, limits the number of entries that will be shown. Note that there is a server-imposed limit of 20 entries that cannot currently be increased (only reduced).
-         */
-        "limit"?: number;
-        /**
-          * Event fired when an entry is clicked.
-         */
-        "onEntrySelected"?: (event: CustomEvent<IRecentSearch>) => void;
-    }
-    interface SearchSaved {
-        /**
-          * If set, limits the number of entries that will be shown. Note that there is a server-imposed limit of 20 entries that cannot currently be increased (only reduced).
-         */
-        "limit"?: number;
-        /**
-          * Event fired when an entry is clicked.
-         */
-        "onEntrySelected"?: (event: CustomEvent<ISavedSearch>) => void;
-    }
-    interface SearchStarred {
-        /**
-          * Event fired when an entry is clicked.
-         */
-        "onEntrySelected"?: (event: CustomEvent<IRecentSearch>) => void;
-        "options"?: any;
-    }
-    interface SearchTabs {
-    }
     interface VerdocsAuth {
         /**
           * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
@@ -1128,7 +1038,53 @@ declare namespace LocalJSX {
          */
         "organization"?: IOrganization;
     }
+    interface VerdocsQuickFunctions {
+        /**
+          * Event fired when an entry is clicked.
+         */
+        "onCreateDocument"?: (event: CustomEvent<any>) => void;
+        /**
+          * Event fired when an entry is clicked.
+         */
+        "onCreateTemplate"?: (event: CustomEvent<any>) => void;
+    }
     interface VerdocsSearch {
+    }
+    interface VerdocsSearchActivity {
+        /**
+          * Event fired when an entry is clicked.
+         */
+        "onEntrySelected"?: (event: CustomEvent<IRecentSearch>) => void;
+        "options"?: any;
+        "type"?: 'recent' | 'saved' | 'starred';
+    }
+    interface VerdocsSearchBox {
+        /**
+          * Event fired when the user changes the query string.
+         */
+        "onQueryChanged"?: (event: CustomEvent<string>) => void;
+        /**
+          * Event fired when the user changes the type.
+         */
+        "onSearchClicked"?: (event: CustomEvent<ISearchEvent>) => void;
+        /**
+          * Event fired when the user changes the type.
+         */
+        "onTypeChanged"?: (event: CustomEvent<TContentType>) => void;
+        /**
+          * The placeholder to display in the input field.
+         */
+        "placeholder"?: string;
+        /**
+          * The text search string entered by the user.
+         */
+        "query"?: string;
+        /**
+          * If set to a value other than 'all', a removeable filter indicator will be displayed.
+         */
+        "type"?: TContentType;
+    }
+    interface VerdocsSearchTabs {
     }
     interface VerdocsSign {
         /**
@@ -1275,12 +1231,6 @@ declare namespace LocalJSX {
         "token"?: string | null;
     }
     interface IntrinsicElements {
-        "search-box": SearchBox;
-        "search-quick-functions": SearchQuickFunctions;
-        "search-recent": SearchRecent;
-        "search-saved": SearchSaved;
-        "search-starred": SearchStarred;
-        "search-tabs": SearchTabs;
         "verdocs-auth": VerdocsAuth;
         "verdocs-button": VerdocsButton;
         "verdocs-document-status": VerdocsDocumentStatus;
@@ -1299,7 +1249,11 @@ declare namespace LocalJSX {
         "verdocs-loader": VerdocsLoader;
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
+        "verdocs-quick-functions": VerdocsQuickFunctions;
         "verdocs-search": VerdocsSearch;
+        "verdocs-search-activity": VerdocsSearchActivity;
+        "verdocs-search-box": VerdocsSearchBox;
+        "verdocs-search-tabs": VerdocsSearchTabs;
         "verdocs-sign": VerdocsSign;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-template-card": VerdocsTemplateCard;
@@ -1314,12 +1268,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "search-box": LocalJSX.SearchBox & JSXBase.HTMLAttributes<HTMLSearchBoxElement>;
-            "search-quick-functions": LocalJSX.SearchQuickFunctions & JSXBase.HTMLAttributes<HTMLSearchQuickFunctionsElement>;
-            "search-recent": LocalJSX.SearchRecent & JSXBase.HTMLAttributes<HTMLSearchRecentElement>;
-            "search-saved": LocalJSX.SearchSaved & JSXBase.HTMLAttributes<HTMLSearchSavedElement>;
-            "search-starred": LocalJSX.SearchStarred & JSXBase.HTMLAttributes<HTMLSearchStarredElement>;
-            "search-tabs": LocalJSX.SearchTabs & JSXBase.HTMLAttributes<HTMLSearchTabsElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
             "verdocs-document-status": LocalJSX.VerdocsDocumentStatus & JSXBase.HTMLAttributes<HTMLVerdocsDocumentStatusElement>;
@@ -1338,7 +1286,11 @@ declare module "@stencil/core" {
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
+            "verdocs-quick-functions": LocalJSX.VerdocsQuickFunctions & JSXBase.HTMLAttributes<HTMLVerdocsQuickFunctionsElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
+            "verdocs-search-activity": LocalJSX.VerdocsSearchActivity & JSXBase.HTMLAttributes<HTMLVerdocsSearchActivityElement>;
+            "verdocs-search-box": LocalJSX.VerdocsSearchBox & JSXBase.HTMLAttributes<HTMLVerdocsSearchBoxElement>;
+            "verdocs-search-tabs": LocalJSX.VerdocsSearchTabs & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;

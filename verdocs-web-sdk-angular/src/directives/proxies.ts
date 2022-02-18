@@ -7,176 +7,6 @@ import { Components } from '@verdocs/web-sdk';
 
 
 
-import type { ISearchEvent as ISearchBoxISearchEvent } from '@verdocs/web-sdk';
-import type { TContentType as ISearchBoxTContentType } from '@verdocs/web-sdk';
-export declare interface SearchBox extends Components.SearchBox {
-  /**
-   * Event fired when the user changes the type. 
-   */
-  searchClicked: EventEmitter<CustomEvent<ISearchBoxISearchEvent>>;
-  /**
-   * Event fired when the user changes the type. 
-   */
-  typeChanged: EventEmitter<CustomEvent<ISearchBoxTContentType>>;
-  /**
-   * Event fired when the user changes the query string. 
-   */
-  queryChanged: EventEmitter<CustomEvent<string>>;
-
-}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['placeholder', 'query', 'type']
-})
-@Component({
-  selector: 'search-box',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['placeholder', 'query', 'type']
-})
-export class SearchBox {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchClicked', 'typeChanged', 'queryChanged']);
-  }
-}
-
-
-export declare interface SearchQuickFunctions extends Components.SearchQuickFunctions {
-  /**
-   * Event fired when an entry is clicked. 
-   */
-  createTemplate: EventEmitter<CustomEvent<any>>;
-  /**
-   * Event fired when an entry is clicked. 
-   */
-  createDocument: EventEmitter<CustomEvent<any>>;
-
-}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined
-})
-@Component({
-  selector: 'search-quick-functions',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
-})
-export class SearchQuickFunctions {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['createTemplate', 'createDocument']);
-  }
-}
-
-import type { IRecentSearch as ISearchRecentIRecentSearch } from '@verdocs/web-sdk';
-export declare interface SearchRecent extends Components.SearchRecent {
-  /**
-   * Event fired when an entry is clicked. 
-   */
-  entrySelected: EventEmitter<CustomEvent<ISearchRecentIRecentSearch>>;
-
-}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['limit']
-})
-@Component({
-  selector: 'search-recent',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['limit']
-})
-export class SearchRecent {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['entrySelected']);
-  }
-}
-
-import type { ISavedSearch as ISearchSavedISavedSearch } from '@verdocs/web-sdk';
-export declare interface SearchSaved extends Components.SearchSaved {
-  /**
-   * Event fired when an entry is clicked. 
-   */
-  entrySelected: EventEmitter<CustomEvent<ISearchSavedISavedSearch>>;
-
-}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['limit']
-})
-@Component({
-  selector: 'search-saved',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['limit']
-})
-export class SearchSaved {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['entrySelected']);
-  }
-}
-
-import type { IRecentSearch as ISearchStarredIRecentSearch } from '@verdocs/web-sdk';
-export declare interface SearchStarred extends Components.SearchStarred {
-  /**
-   * Event fired when an entry is clicked. 
-   */
-  entrySelected: EventEmitter<CustomEvent<ISearchStarredIRecentSearch>>;
-
-}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['options']
-})
-@Component({
-  selector: 'search-starred',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['options']
-})
-export class SearchStarred {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['entrySelected']);
-  }
-}
-
-
-export declare interface SearchTabs extends Components.SearchTabs {}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined
-})
-@Component({
-  selector: 'search-tabs',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
-})
-export class SearchTabs {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
 import type { IAuthStatus as IVerdocsAuthIAuthStatus } from '@verdocs/web-sdk';
 export declare interface VerdocsAuth extends Components.VerdocsAuth {
   /**
@@ -741,6 +571,36 @@ export class VerdocsOrganizationCard {
 }
 
 
+export declare interface VerdocsQuickFunctions extends Components.VerdocsQuickFunctions {
+  /**
+   * Event fired when an entry is clicked. 
+   */
+  createTemplate: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when an entry is clicked. 
+   */
+  createDocument: EventEmitter<CustomEvent<any>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined
+})
+@Component({
+  selector: 'verdocs-quick-functions',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class VerdocsQuickFunctions {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['createTemplate', 'createDocument']);
+  }
+}
+
+
 export declare interface VerdocsSearch extends Components.VerdocsSearch {}
 
 @ProxyCmp({
@@ -752,6 +612,90 @@ export declare interface VerdocsSearch extends Components.VerdocsSearch {}
   template: '<ng-content></ng-content>'
 })
 export class VerdocsSearch {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+import type { IRecentSearch as IVerdocsSearchActivityIRecentSearch } from '@verdocs/web-sdk';
+export declare interface VerdocsSearchActivity extends Components.VerdocsSearchActivity {
+  /**
+   * Event fired when an entry is clicked. 
+   */
+  entrySelected: EventEmitter<CustomEvent<IVerdocsSearchActivityIRecentSearch>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['options', 'type']
+})
+@Component({
+  selector: 'verdocs-search-activity',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['options', 'type']
+})
+export class VerdocsSearchActivity {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['entrySelected']);
+  }
+}
+
+import type { ISearchEvent as IVerdocsSearchBoxISearchEvent } from '@verdocs/web-sdk';
+import type { TContentType as IVerdocsSearchBoxTContentType } from '@verdocs/web-sdk';
+export declare interface VerdocsSearchBox extends Components.VerdocsSearchBox {
+  /**
+   * Event fired when the user changes the type. 
+   */
+  searchClicked: EventEmitter<CustomEvent<IVerdocsSearchBoxISearchEvent>>;
+  /**
+   * Event fired when the user changes the type. 
+   */
+  typeChanged: EventEmitter<CustomEvent<IVerdocsSearchBoxTContentType>>;
+  /**
+   * Event fired when the user changes the query string. 
+   */
+  queryChanged: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['placeholder', 'query', 'type']
+})
+@Component({
+  selector: 'verdocs-search-box',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['placeholder', 'query', 'type']
+})
+export class VerdocsSearchBox {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['searchClicked', 'typeChanged', 'queryChanged']);
+  }
+}
+
+
+export declare interface VerdocsSearchTabs extends Components.VerdocsSearchTabs {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined
+})
+@Component({
+  selector: 'verdocs-search-tabs',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>'
+})
+export class VerdocsSearchTabs {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();

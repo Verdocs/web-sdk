@@ -8,12 +8,6 @@ import type { JSX } from '@verdocs/web-sdk';
 import { defineCustomElements } from '@verdocs/web-sdk/loader';
 
 defineCustomElements();
-export const SearchBox = /*@__PURE__*/createReactComponent<JSX.SearchBox, HTMLSearchBoxElement>('search-box');
-export const SearchQuickFunctions = /*@__PURE__*/createReactComponent<JSX.SearchQuickFunctions, HTMLSearchQuickFunctionsElement>('search-quick-functions');
-export const SearchRecent = /*@__PURE__*/createReactComponent<JSX.SearchRecent, HTMLSearchRecentElement>('search-recent');
-export const SearchSaved = /*@__PURE__*/createReactComponent<JSX.SearchSaved, HTMLSearchSavedElement>('search-saved');
-export const SearchStarred = /*@__PURE__*/createReactComponent<JSX.SearchStarred, HTMLSearchStarredElement>('search-starred');
-export const SearchTabs = /*@__PURE__*/createReactComponent<JSX.SearchTabs, HTMLSearchTabsElement>('search-tabs');
 export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HTMLVerdocsAuthElement>('verdocs-auth');
 export const VerdocsButton = /*@__PURE__*/createReactComponent<JSX.VerdocsButton, HTMLVerdocsButtonElement>('verdocs-button');
 export const VerdocsDocumentStatus = /*@__PURE__*/createReactComponent<JSX.VerdocsDocumentStatus, HTMLVerdocsDocumentStatusElement>('verdocs-document-status');
@@ -32,7 +26,11 @@ export const VerdocsInitialDialog = /*@__PURE__*/createReactComponent<JSX.Verdoc
 export const VerdocsLoader = /*@__PURE__*/createReactComponent<JSX.VerdocsLoader, HTMLVerdocsLoaderElement>('verdocs-loader');
 export const VerdocsOkDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsOkDialog, HTMLVerdocsOkDialogElement>('verdocs-ok-dialog');
 export const VerdocsOrganizationCard = /*@__PURE__*/createReactComponent<JSX.VerdocsOrganizationCard, HTMLVerdocsOrganizationCardElement>('verdocs-organization-card');
+export const VerdocsQuickFunctions = /*@__PURE__*/createReactComponent<JSX.VerdocsQuickFunctions, HTMLVerdocsQuickFunctionsElement>('verdocs-quick-functions');
 export const VerdocsSearch = /*@__PURE__*/createReactComponent<JSX.VerdocsSearch, HTMLVerdocsSearchElement>('verdocs-search');
+export const VerdocsSearchActivity = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchActivity, HTMLVerdocsSearchActivityElement>('verdocs-search-activity');
+export const VerdocsSearchBox = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchBox, HTMLVerdocsSearchBoxElement>('verdocs-search-box');
+export const VerdocsSearchTabs = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchTabs, HTMLVerdocsSearchTabsElement>('verdocs-search-tabs');
 export const VerdocsSign = /*@__PURE__*/createReactComponent<JSX.VerdocsSign, HTMLVerdocsSignElement>('verdocs-sign');
 export const VerdocsSignatureDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsSignatureDialog, HTMLVerdocsSignatureDialogElement>('verdocs-signature-dialog');
 export const VerdocsTemplateCard = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateCard, HTMLVerdocsTemplateCardElement>('verdocs-template-card');

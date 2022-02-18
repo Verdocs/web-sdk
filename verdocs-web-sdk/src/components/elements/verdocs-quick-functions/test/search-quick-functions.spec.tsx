@@ -1,10 +1,10 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { SearchQuickFunctions } from '../search-quick-functions';
+import { VerdocsQuickFunctions } from '../search-quick-functions';
 
 describe('search-quick-functions', () => {
   it('renders', async () => {
     const page = await newSpecPage({
-      components: [SearchQuickFunctions],
+      components: [VerdocsQuickFunctions],
       html: `<search-quick-functions></search-quick-functions>`,
     });
     expect(page.root).toEqualHtml(`

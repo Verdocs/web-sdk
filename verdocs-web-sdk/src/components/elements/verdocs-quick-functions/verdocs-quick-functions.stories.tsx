@@ -3,7 +3,7 @@ import {Meta} from '@storybook/web-components';
 
 export default {
   title: 'Elements/Search/Quick Functions',
-  component: 'search-quick-functions',
+  component: 'verdocs-quick-functions',
   args: {
     options: {
       title: 'Quick Create',
@@ -16,4 +16,4 @@ export default {
 } as Meta;
 
 export const QuickFunctions = ({options, createTemplate, createDocument}) =>
-  html`<search-quick-functions .options=${options} @createTemplate=${createTemplate} @createDocument=${createDocument} tall />`;
+  html`<verdocs-quick-functions .options=${options} @createTemplate=${createTemplate} @createDocument=${createDocument} tall />`;
