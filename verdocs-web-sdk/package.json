@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -17,7 +17,7 @@
     "loader/"
   ],
   "scripts": {
-    "build": "stencil build --docs",
+    "build": "stencil build --docs && cp www/build/verdocs-web-sdk.css ../verdocs-web-sdk-react/src",
     "serve": "stencil build --dev --watch --serve --es5",
     "start": "stencil build --dev --watch --docs --es5",
     "test": "stencil test --spec --e2e --screenshot",

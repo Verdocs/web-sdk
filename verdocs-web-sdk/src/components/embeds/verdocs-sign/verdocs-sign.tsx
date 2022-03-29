@@ -81,9 +81,6 @@ export class VerdocsSign {
       console.log('[SIGN] Document', document);
 
       this.pdfUrl = `${BASE_URL}/documents/${this.documentid}/envelope_documents/${document.envelope_document_id}?file=true`;
-      // https://stage.verdocs.com/view/sign/f484a296-4f4c-4783-9adf-a3302915a503/roleName/Recipient%202/invitation/ea2328b1181b26118f5c676119232df6
-      // https://stage-api.verdocs.com/documents/f484a296-4f4c-4783-9adf-a3302915a503/envelope_documents/e7968994-b859-40ad-8577-c7b3a1fe76bd?file=true
-      // https://stage-api.verdocs.com/envelopes/f484a296-4f4c-4783-9adf-a3302915a503/envelope_documents/e7968994-b859-40ad-8577-c7b3a1fe76bd?file=true
 
       this.recipientIndex = this.document.recipients.findIndex(recipient => recipient.role_name == this.roleid);
       if (this.recipientIndex > -1) {
@@ -378,7 +375,7 @@ export class VerdocsSign {
               <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
 
               {!this.recipient?.agreed ? (
-                <div style={{flex: '1', flexDirection: 'row'}}>
+                <div style={{flex: '1', flexDirection: 'row', display: 'flex', alignItems: 'center'}}>
                   <div class="agree-checkbox">
                     <input type="checkbox" value="None" id="agree-checkbox-element" name="agree" onChange={() => this.handleClickAgree()} />
                     <label htmlFor="agree-checkbox-element" />
