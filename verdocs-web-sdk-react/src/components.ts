@@ -23,6 +23,7 @@ export const VerdocsFieldSignature = /*@__PURE__*/createReactComponent<JSX.Verdo
 export const VerdocsFieldTextarea = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldTextarea, HTMLVerdocsFieldTextareaElement>('verdocs-field-textarea');
 export const VerdocsFieldTextbox = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldTextbox, HTMLVerdocsFieldTextboxElement>('verdocs-field-textbox');
 export const VerdocsInitialDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsInitialDialog, HTMLVerdocsInitialDialogElement>('verdocs-initial-dialog');
+export const VerdocsKbaDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsKbaDialog, HTMLVerdocsKbaDialogElement>('verdocs-kba-dialog');
 export const VerdocsLoader = /*@__PURE__*/createReactComponent<JSX.VerdocsLoader, HTMLVerdocsLoaderElement>('verdocs-loader');
 export const VerdocsOkDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsOkDialog, HTMLVerdocsOkDialogElement>('verdocs-ok-dialog');
 export const VerdocsOrganizationCard = /*@__PURE__*/createReactComponent<JSX.VerdocsOrganizationCard, HTMLVerdocsOrganizationCardElement>('verdocs-organization-card');

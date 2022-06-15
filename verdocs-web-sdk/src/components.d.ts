@@ -278,6 +278,44 @@ export namespace Components {
          */
         "open": boolean;
     }
+    interface VerdocsKbaDialog {
+        /**
+          * For choice challenges, a set of choices to choose from. 6 choices is recommended to fit most screen sizes.
+         */
+        "choices": string[];
+        /**
+          * If set, a help/instructions box will be displayed with this text
+         */
+        "helptext": string;
+        /**
+          * If set, a help/instructions box will be displayed with this title
+         */
+        "helptitle": string;
+        /**
+          * For text input challenges, the label to display next to the input field.
+         */
+        "label": string;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "mode": 'text' | 'choice';
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open": boolean;
+        /**
+          * For text input challenges, the placeholder to display inside the input field.
+         */
+        "placeholder": string;
+        /**
+          * Which step this confirmation is for, in a multi-step process. Ignored if `steps` is < 2.
+         */
+        "step": number;
+        /**
+          * How many steps exist in a multi-step process. Set to 1 for a single-step process (hides the indicator).
+         */
+        "steps": number;
+    }
     interface VerdocsLoader {
     }
     interface VerdocsOkDialog {
@@ -512,6 +550,12 @@ declare global {
         prototype: HTMLVerdocsInitialDialogElement;
         new (): HTMLVerdocsInitialDialogElement;
     };
+    interface HTMLVerdocsKbaDialogElement extends Components.VerdocsKbaDialog, HTMLStencilElement {
+    }
+    var HTMLVerdocsKbaDialogElement: {
+        prototype: HTMLVerdocsKbaDialogElement;
+        new (): HTMLVerdocsKbaDialogElement;
+    };
     interface HTMLVerdocsLoaderElement extends Components.VerdocsLoader, HTMLStencilElement {
     }
     var HTMLVerdocsLoaderElement: {
@@ -624,6 +668,7 @@ declare global {
         "verdocs-field-textarea": HTMLVerdocsFieldTextareaElement;
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
         "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
+        "verdocs-kba-dialog": HTMLVerdocsKbaDialogElement;
         "verdocs-loader": HTMLVerdocsLoaderElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
@@ -1008,6 +1053,52 @@ declare namespace LocalJSX {
          */
         "open"?: boolean;
     }
+    interface VerdocsKbaDialog {
+        /**
+          * For choice challenges, a set of choices to choose from. 6 choices is recommended to fit most screen sizes.
+         */
+        "choices"?: string[];
+        /**
+          * If set, a help/instructions box will be displayed with this text
+         */
+        "helptext"?: string;
+        /**
+          * If set, a help/instructions box will be displayed with this title
+         */
+        "helptitle"?: string;
+        /**
+          * For text input challenges, the label to display next to the input field.
+         */
+        "label"?: string;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "mode"?: 'text' | 'choice';
+        /**
+          * Event fired when the dialog is closed. The event data will contain the closure reason.
+         */
+        "onCancel"?: (event: CustomEvent<any>) => void;
+        /**
+          * Event fired when the dialog is closed. The event data will contain the closure reason.
+         */
+        "onDone"?: (event: CustomEvent<string>) => void;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open"?: boolean;
+        /**
+          * For text input challenges, the placeholder to display inside the input field.
+         */
+        "placeholder"?: string;
+        /**
+          * Which step this confirmation is for, in a multi-step process. Ignored if `steps` is < 2.
+         */
+        "step"?: number;
+        /**
+          * How many steps exist in a multi-step process. Set to 1 for a single-step process (hides the indicator).
+         */
+        "steps"?: number;
+    }
     interface VerdocsLoader {
     }
     interface VerdocsOkDialog {
@@ -1246,6 +1337,7 @@ declare namespace LocalJSX {
         "verdocs-field-textarea": VerdocsFieldTextarea;
         "verdocs-field-textbox": VerdocsFieldTextbox;
         "verdocs-initial-dialog": VerdocsInitialDialog;
+        "verdocs-kba-dialog": VerdocsKbaDialog;
         "verdocs-loader": VerdocsLoader;
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
@@ -1283,6 +1375,7 @@ declare module "@stencil/core" {
             "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
             "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
             "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
+            "verdocs-kba-dialog": LocalJSX.VerdocsKbaDialog & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;

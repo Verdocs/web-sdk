@@ -503,6 +503,38 @@ export class VerdocsInitialDialog {
 }
 
 
+export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
+  /**
+   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   */
+  done: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'open', 'placeholder', 'step', 'steps']
+})
+@Component({
+  selector: 'verdocs-kba-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'open', 'placeholder', 'step', 'steps']
+})
+export class VerdocsKbaDialog {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['cancel', 'done']);
+  }
+}
+
+
 export declare interface VerdocsLoader extends Components.VerdocsLoader {}
 
 @ProxyCmp({
