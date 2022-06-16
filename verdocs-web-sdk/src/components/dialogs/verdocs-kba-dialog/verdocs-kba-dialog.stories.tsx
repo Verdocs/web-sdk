@@ -25,7 +25,7 @@ export default {
   },
 } as Meta;
 
-export const KbaDialog = ({helptitle, helptext, label, placeholder, mode, step, steps, choices, open, closed}) =>
+export const KBADialog = ({helptitle, helptext, label, placeholder, mode, step, steps, choices, open, closed}) =>
   html`<verdocs-kba-dialog
     .mode=${mode}
     .helptitle=${helptitle}

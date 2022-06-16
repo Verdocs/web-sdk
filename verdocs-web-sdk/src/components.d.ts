@@ -459,6 +459,98 @@ export namespace Components {
         "token": string | null;
     }
 }
+export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsAuthElement;
+}
+export interface VerdocsButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsButtonElement;
+}
+export interface VerdocsDropdownCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsDropdownElement;
+}
+export interface VerdocsFieldAttachmentCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldAttachmentElement;
+}
+export interface VerdocsFieldCheckboxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldCheckboxElement;
+}
+export interface VerdocsFieldDateCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldDateElement;
+}
+export interface VerdocsFieldDropdownCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldDropdownElement;
+}
+export interface VerdocsFieldInitialCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldInitialElement;
+}
+export interface VerdocsFieldPaymentCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldPaymentElement;
+}
+export interface VerdocsFieldRadioButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldRadioButtonElement;
+}
+export interface VerdocsFieldSignatureCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldSignatureElement;
+}
+export interface VerdocsFieldTextareaCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldTextareaElement;
+}
+export interface VerdocsFieldTextboxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldTextboxElement;
+}
+export interface VerdocsInitialDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsInitialDialogElement;
+}
+export interface VerdocsKbaDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsKbaDialogElement;
+}
+export interface VerdocsOkDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsOkDialogElement;
+}
+export interface VerdocsQuickFunctionsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsQuickFunctionsElement;
+}
+export interface VerdocsSearchActivityCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSearchActivityElement;
+}
+export interface VerdocsSearchBoxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSearchBoxElement;
+}
+export interface VerdocsSignatureDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSignatureDialogElement;
+}
+export interface VerdocsTextInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTextInputElement;
+}
+export interface VerdocsUploadDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsUploadDialogElement;
+}
+export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsViewElement;
+}
 declare global {
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
     }
@@ -700,7 +792,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when session authentication process has completed. Check the event contents for completion status.
          */
-        "onAuthenticated"?: (event: CustomEvent<IAuthStatus>) => void;
+        "onAuthenticated"?: (event: VerdocsAuthCustomEvent<IAuthStatus>) => void;
         /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
          */
@@ -718,7 +810,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the button is pressed.
          */
-        "onPress"?: (event: CustomEvent<any>) => void;
+        "onPress"?: (event: VerdocsButtonCustomEvent<any>) => void;
         /**
           * The type of the button.
          */
@@ -738,7 +830,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
          */
-        "onOptionSelected"?: (event: CustomEvent<IMenuOption>) => void;
+        "onOptionSelected"?: (event: VerdocsDropdownCustomEvent<IMenuOption>) => void;
         /**
           * If set, the component will be open by default. This is primarily intended to be used for testing.
          */
@@ -756,7 +848,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldAttachmentCustomEvent<string>) => void;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -778,7 +870,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldCheckboxCustomEvent<string>) => void;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -800,19 +892,19 @@ declare namespace LocalJSX {
         /**
           * Event fired when the input field gains focus.
          */
-        "onFieldBlur"?: (event: CustomEvent<boolean>) => void;
+        "onFieldBlur"?: (event: VerdocsFieldDateCustomEvent<boolean>) => void;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldDateCustomEvent<string>) => void;
         /**
           * Event fired when the input field loses focus.
          */
-        "onFieldFocus"?: (event: CustomEvent<boolean>) => void;
+        "onFieldFocus"?: (event: VerdocsFieldDateCustomEvent<boolean>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
-        "onFieldInput"?: (event: CustomEvent<string>) => void;
+        "onFieldInput"?: (event: VerdocsFieldDateCustomEvent<string>) => void;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -838,15 +930,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the input field gains focus.
          */
-        "onFieldBlur"?: (event: CustomEvent<boolean>) => void;
+        "onFieldBlur"?: (event: VerdocsFieldDropdownCustomEvent<boolean>) => void;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldDropdownCustomEvent<string>) => void;
         /**
           * Event fired when the input field loses focus.
          */
-        "onFieldFocus"?: (event: CustomEvent<boolean>) => void;
+        "onFieldFocus"?: (event: VerdocsFieldDropdownCustomEvent<boolean>) => void;
         /**
           * The optoins to choose from.
          */
@@ -872,11 +964,11 @@ declare namespace LocalJSX {
         /**
           * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
          */
-        "onAdopt"?: (event: CustomEvent<string>) => void;
+        "onAdopt"?: (event: VerdocsFieldInitialCustomEvent<string>) => void;
         /**
           * Event emitted when the user cancels the process.
          */
-        "onCancel"?: (event: CustomEvent<any>) => void;
+        "onCancel"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
           * Whether the field is required.
          */
@@ -898,8 +990,8 @@ declare namespace LocalJSX {
         "fieldId"?: string;
         "fields"?: any[];
         "focused"?: boolean;
-        "onInitialComplete"?: (event: CustomEvent<string>) => void;
-        "onSignatureComplete"?: (event: CustomEvent<string>) => void;
+        "onInitialComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
+        "onSignatureComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
         "pageNum"?: number;
         "pdfPages"?: any[];
         "recipients"?: any;
@@ -923,7 +1015,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldRadioButtonCustomEvent<string>) => void;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -945,11 +1037,11 @@ declare namespace LocalJSX {
         /**
           * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
          */
-        "onAdopt"?: (event: CustomEvent<string>) => void;
+        "onAdopt"?: (event: VerdocsFieldSignatureCustomEvent<string>) => void;
         /**
           * Event emitted when the user cancels the process.
          */
-        "onCancel"?: (event: CustomEvent<any>) => void;
+        "onCancel"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
         /**
           * Whether the field is required.
          */
@@ -967,19 +1059,19 @@ declare namespace LocalJSX {
         /**
           * Event fired when the input field gains focus.
          */
-        "onFieldBlur"?: (event: CustomEvent<boolean>) => void;
+        "onFieldBlur"?: (event: VerdocsFieldTextareaCustomEvent<boolean>) => void;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldTextareaCustomEvent<string>) => void;
         /**
           * Event fired when the input field loses focus.
          */
-        "onFieldFocus"?: (event: CustomEvent<boolean>) => void;
+        "onFieldFocus"?: (event: VerdocsFieldTextareaCustomEvent<boolean>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
-        "onFieldInput"?: (event: CustomEvent<string>) => void;
+        "onFieldInput"?: (event: VerdocsFieldTextareaCustomEvent<string>) => void;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -1005,19 +1097,19 @@ declare namespace LocalJSX {
         /**
           * Event fired when the input field gains focus.
          */
-        "onFieldBlur"?: (event: CustomEvent<boolean>) => void;
+        "onFieldBlur"?: (event: VerdocsFieldTextboxCustomEvent<boolean>) => void;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onFieldChange"?: (event: CustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
         /**
           * Event fired when the input field loses focus.
          */
-        "onFieldFocus"?: (event: CustomEvent<boolean>) => void;
+        "onFieldFocus"?: (event: VerdocsFieldTextboxCustomEvent<boolean>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
-        "onFieldInput"?: (event: CustomEvent<string>) => void;
+        "onFieldInput"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
         /**
           * Sets the tabIndex of the input element.
          */
@@ -1043,11 +1135,11 @@ declare namespace LocalJSX {
         /**
           * Event fired when the initials are adopted.
          */
-        "onAdopt"?: (event: CustomEvent<string>) => void;
+        "onAdopt"?: (event: VerdocsInitialDialogCustomEvent<string>) => void;
         /**
           * Event fired when the step is cancelled.
          */
-        "onCancel"?: (event: CustomEvent<any>) => void;
+        "onCancel"?: (event: VerdocsInitialDialogCustomEvent<any>) => void;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -1077,11 +1169,11 @@ declare namespace LocalJSX {
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
          */
-        "onCancel"?: (event: CustomEvent<any>) => void;
+        "onCancel"?: (event: VerdocsKbaDialogCustomEvent<any>) => void;
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
          */
-        "onDone"?: (event: CustomEvent<string>) => void;
+        "onDone"?: (event: VerdocsKbaDialogCustomEvent<string>) => void;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -1117,7 +1209,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
          */
-        "onClosed"?: (event: CustomEvent<'cancel' | 'ok'>) => void;
+        "onClosed"?: (event: VerdocsOkDialogCustomEvent<'cancel' | 'ok'>) => void;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -1133,11 +1225,11 @@ declare namespace LocalJSX {
         /**
           * Event fired when an entry is clicked.
          */
-        "onCreateDocument"?: (event: CustomEvent<any>) => void;
+        "onCreateDocument"?: (event: VerdocsQuickFunctionsCustomEvent<any>) => void;
         /**
           * Event fired when an entry is clicked.
          */
-        "onCreateTemplate"?: (event: CustomEvent<any>) => void;
+        "onCreateTemplate"?: (event: VerdocsQuickFunctionsCustomEvent<any>) => void;
     }
     interface VerdocsSearch {
     }
@@ -1145,7 +1237,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when an entry is clicked.
          */
-        "onEntrySelected"?: (event: CustomEvent<IRecentSearch>) => void;
+        "onEntrySelected"?: (event: VerdocsSearchActivityCustomEvent<IRecentSearch>) => void;
         "options"?: any;
         "type"?: 'recent' | 'saved' | 'starred';
     }
@@ -1153,15 +1245,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user changes the query string.
          */
-        "onQueryChanged"?: (event: CustomEvent<string>) => void;
+        "onQueryChanged"?: (event: VerdocsSearchBoxCustomEvent<string>) => void;
         /**
           * Event fired when the user changes the type.
          */
-        "onSearchClicked"?: (event: CustomEvent<ISearchEvent>) => void;
+        "onSearchClicked"?: (event: VerdocsSearchBoxCustomEvent<ISearchEvent>) => void;
         /**
           * Event fired when the user changes the type.
          */
-        "onTypeChanged"?: (event: CustomEvent<TContentType>) => void;
+        "onTypeChanged"?: (event: VerdocsSearchBoxCustomEvent<TContentType>) => void;
         /**
           * The placeholder to display in the input field.
          */
@@ -1199,11 +1291,11 @@ declare namespace LocalJSX {
         /**
           * Event fired when the initials are adopted.
          */
-        "onAdopt"?: (event: CustomEvent<string>) => void;
+        "onAdopt"?: (event: VerdocsSignatureDialogCustomEvent<string>) => void;
         /**
           * Event fired when the step is cancelled.
          */
-        "onCancel"?: (event: CustomEvent<any>) => void;
+        "onCancel"?: (event: VerdocsSignatureDialogCustomEvent<any>) => void;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -1237,15 +1329,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field loses focus.
          */
-        "onFieldBlur"?: (event: CustomEvent<any>) => void;
+        "onFieldBlur"?: (event: VerdocsTextInputCustomEvent<any>) => void;
         /**
           * Event fired when the field receives focus.
          */
-        "onFieldFocus"?: (event: CustomEvent<any>) => void;
+        "onFieldFocus"?: (event: VerdocsTextInputCustomEvent<any>) => void;
         /**
           * Event fired when the input value changes.
          */
-        "onFieldInput"?: (event: CustomEvent<string>) => void;
+        "onFieldInput"?: (event: VerdocsTextInputCustomEvent<string>) => void;
         /**
           * The placeholder for the field.
          */
@@ -1273,11 +1365,11 @@ declare namespace LocalJSX {
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
          */
-        "onCancel"?: (event: CustomEvent<any>) => void;
+        "onCancel"?: (event: VerdocsUploadDialogCustomEvent<any>) => void;
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
          */
-        "onDone"?: (event: CustomEvent<FileWithData[]>) => void;
+        "onDone"?: (event: VerdocsUploadDialogCustomEvent<FileWithData[]>) => void;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -1287,27 +1379,27 @@ declare namespace LocalJSX {
         /**
           * Fired when the document has completed rendered. The event will include the rendered page count.
          */
-        "onDocumentRendered"?: (event: CustomEvent<IPDFRenderEvent>) => void;
+        "onDocumentRendered"?: (event: VerdocsViewCustomEvent<IPDFRenderEvent>) => void;
         /**
           * Fired when a page has been changed
          */
-        "onPageChange"?: (event: CustomEvent<number>) => void;
+        "onPageChange"?: (event: VerdocsViewCustomEvent<number>) => void;
         /**
           * Fired when a page has been initialized
          */
-        "onPageInit"?: (event: CustomEvent<number>) => void;
+        "onPageInit"?: (event: VerdocsViewCustomEvent<number>) => void;
         /**
           * Fired when a page has been changed
          */
-        "onPageLoaded"?: (event: CustomEvent<number>) => void;
+        "onPageLoaded"?: (event: VerdocsViewCustomEvent<number>) => void;
         /**
           * Fired when a page has been rendered
          */
-        "onPageRendered"?: (event: CustomEvent<IPDFRenderEvent>) => void;
+        "onPageRendered"?: (event: VerdocsViewCustomEvent<IPDFRenderEvent>) => void;
         /**
           * Fired when a page has been scaled
          */
-        "onScaleChange"?: (event: CustomEvent<number>) => void;
+        "onScaleChange"?: (event: VerdocsViewCustomEvent<number>) => void;
         /**
           * Rotate the PDF in degrees
          */
