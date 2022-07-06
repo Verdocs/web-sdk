@@ -5,9 +5,9 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk/HTTP';
 import {Component, Prop, State, h} from '@stencil/core';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Documents/Recipients';
 import {getEndpoint, setActiveEndpoint} from '@verdocs/js-sdk/HTTP/Transport';
+import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {getSigningSession, getDocument, getDocumentFile, IDocument, IDocumentField, updateDocumentField} from '@verdocs/js-sdk/Documents/Documents';
 import {IPDFPageInfo, IPDFRenderEvent} from '../verdocs-view/verdocs-view';
-import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 
 const BASE_URL = 'https://stage-api.verdocs.com';
 

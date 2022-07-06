@@ -45,8 +45,13 @@ export const config: Config = {
       esmLoaderPath: '../loader',
     },
     {
-      type: 'dist-custom-elements-bundle',
+      type: 'dist-custom-elements',
+      autoDefineCustomElements:true,
+      generateTypeDeclarations:true,
     },
+    // {
+    //   type: 'dist-custom-elements-bundle',
+    // },
     // We actually don't need these docs, we want Storybook to use "inline" docs instead. But commenting out this block
     // didn't appear to actually disable their generation. Overriding the target directory gets them out of the way so
     // storybook can do its job.
