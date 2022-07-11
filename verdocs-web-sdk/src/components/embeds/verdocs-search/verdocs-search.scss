@@ -1,10 +1,9 @@
-verdocs-search {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+@import '../../../theme.scss';
 
+verdocs-search {
+  font-family: $primary-font;
   display: flex;
-  background-color: var(--verdocs-background-dark);
+  background-color: $dark-bg;
 
   search-box {
     display: flex;

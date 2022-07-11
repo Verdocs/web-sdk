@@ -1,8 +1,7 @@
-verdocs-view {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+@import '../../../theme.scss';
 
+verdocs-view {
+  font-family: $primary-font;
   display: flex;
   background: #ccc;
   min-height: 600px;
