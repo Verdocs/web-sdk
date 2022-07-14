@@ -1,6 +1,7 @@
+@import '../../../theme.scss';
+
 verdocs-signature-dialog {
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+  font-family: $primary-font;
   box-sizing: border-box;
   display: none;
 

@@ -1,14 +1,14 @@
+@import '../../../theme.scss';
+
 verdocs-text-input {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+  font-family: $primary-font;
   box-sizing: border-box;
   margin: 20px 0;
   display: block;
 
   .input-element {
     box-sizing: border-box;
-    border: 1px solid #707ae5;
+    border: 1px solid $border-color;
     border-radius: 4px;
     background: #fff;
     color: #000;
@@ -18,14 +18,14 @@ verdocs-text-input {
     padding: 4px 12px;
 
     &::placeholder {
-      color: #aaa;
+      color: $light-disabled-color;
       opacity: 1;
     }
   }
 
   .input-label {
     display: block;
-    color: #333;
+    color: $medium-bg;
     font-weight: 400;
     font-size: 14px;
     margin: 0 0 4px 0;

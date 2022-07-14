@@ -1,6 +1,7 @@
+@import '../../../theme.scss';
+
 verdocs-kba-dialog {
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+  font-family: $primary-font;
   box-sizing: border-box;
 
   div {
@@ -44,7 +45,7 @@ verdocs-kba-dialog {
   }
 
   .help-box {
-    background-color: var(--verdocs-container-border-color);
+    background-color: $border-color;
     display: flex;
     flex-direction: row;
     margin: 14px 0;
@@ -82,18 +83,18 @@ verdocs-kba-dialog {
   }
 
   .choice {
-    border: 1px solid var(--verdocs-container-border-color);
+    border: $border-color;
     border-radius: 5px;
     display: flex;
     height: 60px;
     justify-content: center;
     align-items: center;
     text-align: center;
-    color: #5c6575;
+    color: $choice-available-color;
     cursor: pointer;
 
     &.selected {
-      background-color: var(--verdocs-container-border-color);
+      background-color: $border-color;
       color: white;
     }
   }

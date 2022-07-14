@@ -1,7 +1,7 @@
+@import '../../../theme.scss';
+
 verdocs-dropdown {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+  font-family: $primary-font;
   display: block;
 
   .arrow {
@@ -12,12 +12,12 @@ verdocs-dropdown {
     border-radius: 4px;
     align-items: center;
     display: inline-flex;
-    border: 1px solid #ccc;
+    border: 1px solid $light-border-color;
     justify-content: center;
   }
 
   .arrow svg {
-    fill: var(--verdocs-primary-color);
+    fill: $primary-color;
     transition: 0.3s;
   }
 
@@ -26,8 +26,8 @@ verdocs-dropdown {
     display: none;
     z-index: 10000;
     border-radius: 5px;
-    background: #33364b;
-    border: 1px solid #654dcb;
+    background: $medium-bg;
+    border: 1px solid $item-border-color;
   }
 
   .items[data-show] {
@@ -46,15 +46,15 @@ verdocs-dropdown {
 
   .option:hover {
     cursor: pointer;
-    background: var(--verdocs-primary-color);
+    background: $primary-color;
   }
 
   .option[disabled] {
-    color: #aaa;
+    color: $light-disabled-color;
   }
 
   .option[disabled]:hover {
-    color: #aaa;
+    color: $light-disabled-color;
     cursor: inherit;
     background: transparent;
   }
@@ -65,8 +65,8 @@ verdocs-dropdown {
     }
 
     .arrow {
-      background: #4c56cb;
-      border: 1px solid #707ae5;
+      background: $secondary-color;
+      border: 1px solid $border-color;
     }
 
     .arrow svg {

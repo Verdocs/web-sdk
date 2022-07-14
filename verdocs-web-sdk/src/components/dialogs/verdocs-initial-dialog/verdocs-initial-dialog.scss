@@ -1,6 +1,7 @@
+@import '../../../theme.scss';
+
 verdocs-initial-dialog {
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+  font-family: $primary-font;
   box-sizing: border-box;
   display: none;
 
@@ -27,7 +28,7 @@ verdocs-initial-dialog {
     border-radius: 4px;
     overflow: hidden;
     box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
-    background: #f9f9f9;
+    background: $dialog-bg;
   }
 
   .heading {
@@ -90,11 +91,11 @@ verdocs-initial-dialog {
       cursor: pointer;
 
       &.active {
-        border-bottom: 2px solid #ccc;
+        border-bottom: 2px solid $light-border-color;
       }
 
       &:hover {
-        color: var(--verdocs-primary-color);
+        color: $primary-color;
       }
     }
   }

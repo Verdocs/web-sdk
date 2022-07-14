@@ -46,13 +46,13 @@ export declare interface VerdocsButton extends Components.VerdocsButton {
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'label', 'type', 'variant']
+  inputs: ['disabled', 'endIcon', 'label', 'size', 'startIcon', 'type', 'variant']
 })
 @Component({
   selector: 'verdocs-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'label', 'type', 'variant']
+  inputs: ['disabled', 'endIcon', 'label', 'size', 'startIcon', 'type', 'variant']
 })
 export class VerdocsButton {
   protected el: HTMLElement;

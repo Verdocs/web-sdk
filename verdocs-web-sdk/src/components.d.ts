@@ -36,9 +36,21 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * The label for the  button.
+          * If desired, a suffix icon for the button
+         */
+        "endIcon": any;
+        /**
+          * The label for the button.
          */
         "label": string;
+        /**
+          * The size (height) of the button.
+         */
+        "size": 'small' | 'normal' | 'medium' | 'large';
+        /**
+          * If desired, a prefix icon for the button
+         */
+        "startIcon": any;
         /**
           * The type of the button.
          */
@@ -804,13 +816,25 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * The label for the  button.
+          * If desired, a suffix icon for the button
+         */
+        "endIcon"?: any;
+        /**
+          * The label for the button.
          */
         "label"?: string;
         /**
           * Event fired when the button is pressed.
          */
         "onPress"?: (event: VerdocsButtonCustomEvent<any>) => void;
+        /**
+          * The size (height) of the button.
+         */
+        "size"?: 'small' | 'normal' | 'medium' | 'large';
+        /**
+          * If desired, a prefix icon for the button
+         */
+        "startIcon"?: any;
         /**
           * The type of the button.
          */

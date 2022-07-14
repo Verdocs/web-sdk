@@ -1,18 +1,16 @@
-verdocs-organization-card {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+@import '../../../theme.scss';
 
+verdocs-organization-card {
+  font-family: $primary-font;
   width: 242px;
   position: relative;
   display: flex;
   flex-direction: row;
-  //align-items: center;
 
   &:hover > .popup {
     display: flex;
     background: #ffffff;
-    color: #33364b;
+    color: $medium-bg;
   }
 
   .icon {
@@ -20,7 +18,7 @@ verdocs-organization-card {
     margin: 0 7px 0 0;
 
     svg {
-      fill: var(--verdocs-icon-color);
+      fill: $icon-color;
       width: 24px;
       margin-bottom: -5px;
     }
@@ -31,7 +29,7 @@ verdocs-organization-card {
     top: -1px;
     left: -4px;
     display: none;
-    border: 1px solid var(--verdocs-background-dark);
+    border: 1px solid $dark-bg;
     border-radius: 10px;
     width: 326px;
     height: 220px;
@@ -50,7 +48,7 @@ verdocs-organization-card {
     height: 69px;
     justify-content: space-between;
     font-size: 21px;
-    color: #4c56cb;
+    color: $secondary-color;
   }
 
   .popup-body {
@@ -77,7 +75,7 @@ verdocs-organization-card {
   .status {
     width: 29px;
     height: 29px;
-    background-color: #aeb4bf;
+    background-color: $icon-color;
     border-radius: 50%;
   }
 }

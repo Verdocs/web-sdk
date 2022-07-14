@@ -1,4 +1,4 @@
-import {Component, Prop, h, Host, Event, EventEmitter} from '@stencil/core';
+import {Component, Prop, h, Event, EventEmitter} from '@stencil/core';
 
 /**
  * Display a simple button. Three variants are supported. Standard and Outline buttons look like traditional form buttons and are
@@ -11,9 +11,24 @@ import {Component, Prop, h, Host, Event, EventEmitter} from '@stencil/core';
 })
 export class VerdocsButton {
   /**
-   * The label for the  button.
+   * The label for the button.
    */
   @Prop() label: string = '';
+
+  /**
+   * If desired, a prefix icon for the button
+   */
+  @Prop() startIcon: any = null;
+
+  /**
+   * If desired, a suffix icon for the button
+   */
+  @Prop() endIcon: any = null;
+
+  /**
+   * The size (height) of the button.
+   */
+  @Prop() size: 'small' | 'normal' | 'medium' | 'large' = 'normal';
 
   /**
    * The type of the button.
@@ -35,22 +50,19 @@ export class VerdocsButton {
    */
   @Event({composed: true}) press: EventEmitter;
 
-  componentWillLoad() {}
-
-  componentDidLoad() {}
-
   handleClick(e: any) {
     e.preventDefault();
     this.press.emit();
   }
 
   render() {
+    console.log('Rendering button', this.startIcon);
     return (
-      <Host class={`${this.variant}`}>
-        <button disabled={this.disabled} type={this.type} onClick={e => this.handleClick(e)}>
-          {this.label}
-        </button>
-      </Host>
+      <button disabled={this.disabled} type={this.type} onClick={e => this.handleClick(e)} class={`${this.variant} ${this.size} ${this.type}`}>
+        {this.startIcon ? <span class="icon start" innerHTML={this.startIcon} /> : null}
+        <span class="label">{this.label}</span>
+        {this.endIcon ? <span class="icon end" innerHTML={this.endIcon} /> : null}
+      </button>
     );
   }
 }

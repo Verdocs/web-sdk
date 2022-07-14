@@ -1,8 +1,7 @@
-verdocs-template-card {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+@import '../../../theme.scss';
 
+verdocs-template-card {
+  font-family: $primary-font;
   width: 320px;
   height: 320px;
   display: flex;
@@ -36,7 +35,7 @@ verdocs-template-card {
   hr {
     width: 100%;
     margin-bottom: 17px;
-    background-color: var(--verdocs-icon-color);
+    background-color: $icon-color;
   }
 
   .controls {
@@ -52,14 +51,14 @@ verdocs-template-card {
       display: flex;
       margin-right: 8px;
       align-items: flex-start;
-      border-right: 1px solid var(--verdocs-icon-color);
+      border-right: 1px solid $icon-color;
 
       &.secondary {
         justify-content: center;
       }
 
       svg {
-        fill: #adb6bd;
+        fill: $icon-color;
         height: 16px;
         max-width: 16px;
         margin: 0 8px -2px 0;

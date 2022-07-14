@@ -1,12 +1,61 @@
+$verdocs-primary-font: 'Barlow', sans-serif;
+
+$verdocs-green: #55bc81;
+$verdocs-green-shade: #2b995b;
+$verdocs-green-highlight: #54d68c;
+
+$verdocs-purple: #654dcb;
+$verdocs-purple-shade: #4c56cb;
+$verdocs-purple-highlight: #707ae5;
+
+$verdocs-light-blue: #707ae5;
+$verdocs-deep-blue: #4c56cb;
+$verdocs-dark-blue: #33364b;
+
+$verdocs-grey-1: #33364b;
+$verdocs-grey-2: #aeb4bf;
+$verdocs-grey-3: #f5f5fa;
+$verdocs-grey-4: #ffffff;
+
+$verdocs-bg-1: #cccccc;
+$verdocs-bg-2: #aaaaaa;
+$verdocs-bg-3: #999999;
+$verdocs-bg-4: #5c6575;
+$verdocs-bg-5: #1e2031;
+
+$verdocs-red-1: #cc0000;
+
+$verdocs-h1-size: 72px;
+$verdocs-h2-size: 60px;
+$verdocs-h3-size: 28px;
+$verdocs-h4-size: 30px;
+$verdocs-h5-size: 28px;
+$verdocs-h6-size: 24px;
+
+// The Figma sizes are all larger than "real" screens by this factor.
+$design-scale: 1.73;
+$font-scale: 1.2;
+
+$primary-color: #55bc81; // $verdocs-green
+$secondary-color: #4c56cb; // $verdocs-deep-blue
+
+$border-color: #707ae5; // $verdocs-light-blue
+$item-border-color: #654dcb; // $verdocs-purple
+
 $primary-font: 'Barlow', sans-serif;
 
-$primary-color: #55bc81;
-$secondary-color: #4c56cb;
-$border-color: #707ae5;
+$light-border-color: #cccccc;
+$light-disabled-color: #aaaaaa;
+$disabled-color: #999999;
+$choice-available-color: #5c6575;
+
 $label-color: #33364b;
 $icon-color: #aeb4bf;
+
 $required-color: rgb(204, 0, 0);
 
-$container-bg: #f5f5fa;
 $dark-bg: #1e2031;
 $medium-bg: #33354c;
+
+$dialog-bg: #f9f9f9;
+$container-bg: #f5f5fa;
