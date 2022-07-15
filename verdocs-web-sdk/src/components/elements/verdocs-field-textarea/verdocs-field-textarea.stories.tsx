@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Elements/Document Fields/Textarea',
+  title: 'Document Fields/Textarea',
   component: 'verdocs-field-textarea',
   args: {
     placeholder: 'Email address...',

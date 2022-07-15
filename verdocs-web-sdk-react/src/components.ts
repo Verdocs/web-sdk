@@ -10,7 +10,6 @@ import { defineCustomElements } from '@verdocs/web-sdk/loader';
 defineCustomElements();
 export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HTMLVerdocsAuthElement>('verdocs-auth');
 export const VerdocsButton = /*@__PURE__*/createReactComponent<JSX.VerdocsButton, HTMLVerdocsButtonElement>('verdocs-button');
-export const VerdocsDocumentStatus = /*@__PURE__*/createReactComponent<JSX.VerdocsDocumentStatus, HTMLVerdocsDocumentStatusElement>('verdocs-document-status');
 export const VerdocsDropdown = /*@__PURE__*/createReactComponent<JSX.VerdocsDropdown, HTMLVerdocsDropdownElement>('verdocs-dropdown');
 export const VerdocsFieldAttachment = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldAttachment, HTMLVerdocsFieldAttachmentElement>('verdocs-field-attachment');
 export const VerdocsFieldCheckbox = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldCheckbox, HTMLVerdocsFieldCheckboxElement>('verdocs-field-checkbox');
@@ -34,6 +33,7 @@ export const VerdocsSearchBox = /*@__PURE__*/createReactComponent<JSX.VerdocsSea
 export const VerdocsSearchTabs = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchTabs, HTMLVerdocsSearchTabsElement>('verdocs-search-tabs');
 export const VerdocsSign = /*@__PURE__*/createReactComponent<JSX.VerdocsSign, HTMLVerdocsSignElement>('verdocs-sign');
 export const VerdocsSignatureDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsSignatureDialog, HTMLVerdocsSignatureDialogElement>('verdocs-signature-dialog');
+export const VerdocsStatusIndicator = /*@__PURE__*/createReactComponent<JSX.VerdocsStatusIndicator, HTMLVerdocsStatusIndicatorElement>('verdocs-status-indicator');
 export const VerdocsTemplateCard = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateCard, HTMLVerdocsTemplateCardElement>('verdocs-template-card');
 export const VerdocsTemplateTags = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateTags, HTMLVerdocsTemplateTagsElement>('verdocs-template-tags');
 export const VerdocsTextInput = /*@__PURE__*/createReactComponent<JSX.VerdocsTextInput, HTMLVerdocsTextInputElement>('verdocs-text-input');

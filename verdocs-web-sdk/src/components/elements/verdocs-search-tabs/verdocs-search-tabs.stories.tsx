@@ -6,7 +6,7 @@ import {action} from '@storybook/addon-actions';
  * Display a set of tabs to filter by searchable content types.
  */
 export default {
-  title: 'Elements/Search/Tabs',
+  title: 'Search/Tabs',
   component: 'verdocs-search-tabs',
   args: {},
   argTypes: {},

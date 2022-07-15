@@ -21,9 +21,27 @@ export const parameters = {
   // actions: {argTypesRegex: '^on.*'},
   viewMode: 'docs',
   docs: {
-    iframeHeight: 500,
+    iframeHeight: 400,
     extractArgTypes,
     extractComponentDescription,
+  },
+  layout: 'centered',
+  backgrounds: {
+    default: 'light',
+    values: [
+      {
+        name: 'light',
+        value: '#f5f5f5',
+      },
+      {
+        name: 'medium',
+        value: '#5c6575',
+      },
+      {
+        name: 'dark',
+        value: '#33364b',
+      },
+    ],
   },
 };
 

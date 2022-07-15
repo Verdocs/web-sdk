@@ -1,9 +1,19 @@
 import {Component, Prop, h, Event, EventEmitter} from '@stencil/core';
 
 /**
- * Display a simple button. Three variants are supported. Standard and Outline buttons look like traditional form buttons and are
- * ideal candidates for 'Ok' and 'Cancel' options in most cases. Text buttons are intended to be used inline in content blocks or
- * for more subtle button options. (Auth uses text buttons for the Forgot Password and Sign Up options.)
+ * Display a simple button.
+ *
+ * Three variants are supported. `standard` and `outline` buttons look like traditional form buttons and are ideal candidates for 'Ok' and
+ * 'Cancel' options in most cases. `text` buttons are intended to be used inline in content blocks or for more subtle button options.
+ * (Auth uses text buttons for the Forgot Password and Sign Up options.)
+ *
+ * Four sizes are also supported. Most use cases will call for the `normal` size, but a `small` size is ideal for more subtle controls, such
+ * as pagination or other secondary functions. `medium` buttons are slightly larger to provide balance in forms where other items are also
+ * bigger, and `large` buttons are for cases where the page has mostly white-space and the buttons need to fill more space.
+ *
+ * Icons may be placed either before ("start") or after ("end") the button label. Icons should be SVG objects passed as strings and will
+ * be rendered as HTML inside the button label area. It is important that the root <SVG> tag contains a default `fill="#ffffff"` setting
+ * for the base color, and that child elements below it do not. This allows the button color to carry into the icon properly.
  */
 @Component({
   tag: 'verdocs-button',
@@ -13,17 +23,17 @@ export class VerdocsButton {
   /**
    * The label for the button.
    */
-  @Prop() label: string = '';
+  @Prop() label!: string;
 
   /**
    * If desired, a prefix icon for the button
    */
-  @Prop() startIcon: any = null;
+  @Prop() startIcon: string | null = null;
 
   /**
    * If desired, a suffix icon for the button
    */
-  @Prop() endIcon: any = null;
+  @Prop() endIcon: string | null = null;
 
   /**
    * The size (height) of the button.
@@ -48,7 +58,7 @@ export class VerdocsButton {
   /**
    * Event fired when the button is pressed.
    */
-  @Event({composed: true}) press: EventEmitter;
+  @Event({composed: true}) press!: EventEmitter;
 
   handleClick(e: any) {
     e.preventDefault();

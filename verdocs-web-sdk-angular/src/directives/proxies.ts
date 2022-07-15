@@ -63,27 +63,6 @@ export class VerdocsButton {
   }
 }
 
-
-export declare interface VerdocsDocumentStatus extends Components.VerdocsDocumentStatus {}
-
-@ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['status']
-})
-@Component({
-  selector: 'verdocs-document-status',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['status']
-})
-export class VerdocsDocumentStatus {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
 import type { IMenuOption as IVerdocsDropdownIMenuOption } from '@verdocs/web-sdk';
 export declare interface VerdocsDropdown extends Components.VerdocsDropdown {
   /**
@@ -785,6 +764,27 @@ export class VerdocsSignatureDialog {
     c.detach();
     this.el = r.nativeElement;
     proxyOutputs(this, this.el, ['adopt', 'cancel']);
+  }
+}
+
+
+export declare interface VerdocsStatusIndicator extends Components.VerdocsStatusIndicator {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['document', 'size', 'status', 'theme']
+})
+@Component({
+  selector: 'verdocs-status-indicator',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['document', 'size', 'status', 'theme']
+})
+export class VerdocsStatusIndicator {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
   }
 }
 

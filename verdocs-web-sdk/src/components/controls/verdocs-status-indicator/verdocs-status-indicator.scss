@@ -1,0 +1,59 @@
+@import '../../../theme.scss';
+
+verdocs-status-indicator {
+  display: flex;
+  font-size: 18px;
+  flex-wrap: nowrap;
+  padding: 4px 12px;
+  border-radius: 6px;
+  color: $label-color;
+  align-items: center;
+  flex-direction: row;
+  font-family: $primary-font;
+
+  &.has-document:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .icon {
+    width: 25px;
+    height: 25px;
+    margin: 0 10px -4px 0;
+  }
+
+  &.dark {
+    color: $verdocs-grey-4;
+  }
+
+  &.small {
+    font-size: 16px;
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      margin: 0 8px -4px 0;
+    }
+  }
+
+  .detail-panel {
+    display: none;
+
+    background: $verdocs-grey-4;
+    border: 1px solid $verdocs-bg-5;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 10px;
+    font-weight: 500;
+
+    h1 {
+      font-size: $verdocs-h1-size;
+      color: $verdocs-grey-0;
+    }
+  }
+
+  .detail-panel[data-show] {
+    display: flex;
+  }
+}

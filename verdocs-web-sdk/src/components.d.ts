@@ -6,8 +6,8 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
-import { IDocumentField, TDocumentStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
+import { IDocument, IDocumentField, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
@@ -38,7 +38,7 @@ export namespace Components {
         /**
           * If desired, a suffix icon for the button
          */
-        "endIcon": any;
+        "endIcon": string | null;
         /**
           * The label for the button.
          */
@@ -50,7 +50,7 @@ export namespace Components {
         /**
           * If desired, a prefix icon for the button
          */
-        "startIcon": any;
+        "startIcon": string | null;
         /**
           * The type of the button.
          */
@@ -59,12 +59,6 @@ export namespace Components {
           * The display variant of the button.
          */
         "variant": 'standard' | 'text' | 'outline';
-    }
-    interface VerdocsDocumentStatus {
-        /**
-          * The status to display
-         */
-        "status": TDocumentStatus;
     }
     interface VerdocsDropdown {
         /**
@@ -402,6 +396,24 @@ export namespace Components {
          */
         "open": boolean;
     }
+    interface VerdocsStatusIndicator {
+        /**
+          * The document to display status for. Ignored if `status` is set directly.
+         */
+        "document"?: IDocument;
+        /**
+          * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
+         */
+        "size": 'small' | 'normal';
+        /**
+          * The status to display.
+         */
+        "status"?: TDocumentStatus | TRecipientStatus | 'accepted';
+        /**
+          * The theme to use for diplay.
+         */
+        "theme"?: 'dark' | 'light';
+    }
     interface VerdocsTemplateCard {
         /**
           * The template for which the card will be rendered.
@@ -576,12 +588,6 @@ declare global {
         prototype: HTMLVerdocsButtonElement;
         new (): HTMLVerdocsButtonElement;
     };
-    interface HTMLVerdocsDocumentStatusElement extends Components.VerdocsDocumentStatus, HTMLStencilElement {
-    }
-    var HTMLVerdocsDocumentStatusElement: {
-        prototype: HTMLVerdocsDocumentStatusElement;
-        new (): HTMLVerdocsDocumentStatusElement;
-    };
     interface HTMLVerdocsDropdownElement extends Components.VerdocsDropdown, HTMLStencilElement {
     }
     var HTMLVerdocsDropdownElement: {
@@ -720,6 +726,12 @@ declare global {
         prototype: HTMLVerdocsSignatureDialogElement;
         new (): HTMLVerdocsSignatureDialogElement;
     };
+    interface HTMLVerdocsStatusIndicatorElement extends Components.VerdocsStatusIndicator, HTMLStencilElement {
+    }
+    var HTMLVerdocsStatusIndicatorElement: {
+        prototype: HTMLVerdocsStatusIndicatorElement;
+        new (): HTMLVerdocsStatusIndicatorElement;
+    };
     interface HTMLVerdocsTemplateCardElement extends Components.VerdocsTemplateCard, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateCardElement: {
@@ -759,7 +771,6 @@ declare global {
     interface HTMLElementTagNameMap {
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-button": HTMLVerdocsButtonElement;
-        "verdocs-document-status": HTMLVerdocsDocumentStatusElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-field-attachment": HTMLVerdocsFieldAttachmentElement;
         "verdocs-field-checkbox": HTMLVerdocsFieldCheckboxElement;
@@ -783,6 +794,7 @@ declare global {
         "verdocs-search-tabs": HTMLVerdocsSearchTabsElement;
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
+        "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
@@ -818,11 +830,11 @@ declare namespace LocalJSX {
         /**
           * If desired, a suffix icon for the button
          */
-        "endIcon"?: any;
+        "endIcon"?: string | null;
         /**
           * The label for the button.
          */
-        "label"?: string;
+        "label": string;
         /**
           * Event fired when the button is pressed.
          */
@@ -834,7 +846,7 @@ declare namespace LocalJSX {
         /**
           * If desired, a prefix icon for the button
          */
-        "startIcon"?: any;
+        "startIcon"?: string | null;
         /**
           * The type of the button.
          */
@@ -843,12 +855,6 @@ declare namespace LocalJSX {
           * The display variant of the button.
          */
         "variant"?: 'standard' | 'text' | 'outline';
-    }
-    interface VerdocsDocumentStatus {
-        /**
-          * The status to display
-         */
-        "status"?: TDocumentStatus;
     }
     interface VerdocsDropdown {
         /**
@@ -1325,6 +1331,24 @@ declare namespace LocalJSX {
          */
         "open"?: boolean;
     }
+    interface VerdocsStatusIndicator {
+        /**
+          * The document to display status for. Ignored if `status` is set directly.
+         */
+        "document"?: IDocument;
+        /**
+          * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
+         */
+        "size"?: 'small' | 'normal';
+        /**
+          * The status to display.
+         */
+        "status"?: TDocumentStatus | TRecipientStatus | 'accepted';
+        /**
+          * The theme to use for diplay.
+         */
+        "theme"?: 'dark' | 'light';
+    }
     interface VerdocsTemplateCard {
         /**
           * The template for which the card will be rendered.
@@ -1440,7 +1464,6 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "verdocs-auth": VerdocsAuth;
         "verdocs-button": VerdocsButton;
-        "verdocs-document-status": VerdocsDocumentStatus;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-field-attachment": VerdocsFieldAttachment;
         "verdocs-field-checkbox": VerdocsFieldCheckbox;
@@ -1464,6 +1487,7 @@ declare namespace LocalJSX {
         "verdocs-search-tabs": VerdocsSearchTabs;
         "verdocs-sign": VerdocsSign;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
+        "verdocs-status-indicator": VerdocsStatusIndicator;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-text-input": VerdocsTextInput;
@@ -1478,7 +1502,6 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
-            "verdocs-document-status": LocalJSX.VerdocsDocumentStatus & JSXBase.HTMLAttributes<HTMLVerdocsDocumentStatusElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
             "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
             "verdocs-field-checkbox": LocalJSX.VerdocsFieldCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;
@@ -1502,6 +1525,7 @@ declare module "@stencil/core" {
             "verdocs-search-tabs": LocalJSX.VerdocsSearchTabs & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
+            "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;

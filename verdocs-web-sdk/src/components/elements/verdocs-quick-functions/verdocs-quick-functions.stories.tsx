@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Elements/Search/Quick Functions',
+  title: 'Search/Quick Functions',
   component: 'verdocs-quick-functions',
   args: {
     options: {

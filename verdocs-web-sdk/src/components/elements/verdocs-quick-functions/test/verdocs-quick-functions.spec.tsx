@@ -1,18 +1,18 @@
-import { newSpecPage } from '@stencil/core/testing';
-import { VerdocsQuickFunctions } from '../search-quick-functions';
+import {newSpecPage} from '@stencil/core/testing';
+import {VerdocsQuickFunctions} from '../verdocs-quick-functions';
 
 describe('search-quick-functions', () => {
   it('renders', async () => {
     const page = await newSpecPage({
       components: [VerdocsQuickFunctions],
-      html: `<search-quick-functions></search-quick-functions>`,
+      html: `<verdocs-quick-functions></verdocs-quick-functions>`,
     });
     expect(page.root).toEqualHtml(`
-      <search-quick-functions>
+      <verdocs-quick-functions>
         <mock:shadow-root>
           <slot></slot>
         </mock:shadow-root>
-      </search-quick-functions>
+      </verdocs-quick-functions>
     `);
   });
 });

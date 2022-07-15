@@ -2,7 +2,7 @@
 
 verdocs-button {
   button {
-    //font-family: sans-serif;
+    // Base styles
     font-family: $verdocs-primary-font;
     text-transform: uppercase;
     justify-content: center;
@@ -10,12 +10,14 @@ verdocs-button {
     align-items: center;
     font-weight: 700;
     cursor: pointer;
+    margin: 0;
 
     .icon {
       margin: 0 12px;
 
       svg {
         fill: #fff;
+        display: block;
       }
     }
 
@@ -23,66 +25,148 @@ verdocs-button {
       padding: 0 12px;
     }
 
-    &.small {
-      height: 44px;
-      font-size: 14px;
-    }
-
-    &.normal {
-      height: 44px;
-      font-size: 14px;
-    }
-
-    &.medium {
-      height: 62px;
-      font-size: 16px;
-    }
-
-    &.large {
-      height: 68px;
-      font-size: 20px;
-    }
-
     &:disabled {
       cursor: none;
     }
 
+    // Small-sized button size adjustments
+    &.small {
+      height: 34px;
+      font-size: 13px;
+
+      .icon {
+        margin: 0 4px;
+
+        svg {
+          margin: 2px 0 0 0;
+          height: 20px;
+        }
+      }
+
+      .label {
+        padding: 0 4px;
+      }
+    }
+
+    // Normal-sized button size adjustments
+    &.normal {
+      height: 44px;
+      font-size: 14px;
+
+      .icon.start {
+        margin: 0 4px 0 8px;
+      }
+
+      .icon.end {
+        margin: 0 8px 0 4px;
+      }
+
+      .icon {
+        svg {
+          margin: 2px 0 0 0;
+          height: 22px;
+        }
+      }
+
+      .label {
+        padding: 0 10px;
+      }
+    }
+
+    // Medium-sized button size adjustments
+    &.medium {
+      height: 52px;
+      font-size: 16px;
+
+      .icon.start {
+        margin: 0 0 0 18px;
+      }
+
+      .icon.end {
+        margin: 0 18px 0 0;
+      }
+
+      .icon {
+        svg {
+          margin: 2px 0 0 0;
+          height: 26px;
+        }
+      }
+
+      .label {
+        padding: 0 20px;
+      }
+    }
+
+    // Large-sized button size adjustments
+    &.large {
+      height: 60px;
+      font-size: 20px;
+
+      .icon.start {
+        margin: 0 0 0 24px;
+      }
+
+      .icon.end {
+        margin: 0 24px 0 0;
+      }
+
+      .icon {
+        svg {
+          margin: 2px 0 0 0;
+          height: 32px;
+        }
+      }
+
+      .label {
+        padding: 0 34px;
+      }
+    }
+
+    // Standard variant is a solid color
     &.standard {
       background: $verdocs-green;
       border-radius: 4px;
-      color: white;
-      border: none;
       outline: none;
-      margin: 0;
+      border: none;
+      color: white;
 
       &:disabled {
         background-color: $disabled-color;
         cursor: default;
       }
 
-      &:active {
+      &:active:not([disabled]) {
         filter: brightness(110%);
       }
     }
 
+    // Text variant is just a label
     &.text {
-      border: none;
       color: $secondary-color;
-      font-weight: 400;
-      outline: none;
       background: transparent;
+      font-weight: 500;
       padding: 0 4px;
+      outline: none;
+      border: none;
 
       &:disabled {
         color: $disabled-color;
         cursor: none;
       }
 
-      &:active {
+      &:active:not([disabled]) {
         filter: brightness(130%);
+      }
+
+      .icon {
+        svg {
+          fill: $secondary-color;
+        }
       }
     }
 
+    // Standard variant is a solid color
     &.outline {
       border: 1px solid $secondary-color;
       color: $secondary-color;
@@ -100,6 +184,12 @@ verdocs-button {
       &:active {
         background: $secondary-color;
         color: white;
+      }
+
+      .icon {
+        svg {
+          fill: $secondary-color;
+        }
       }
     }
   }

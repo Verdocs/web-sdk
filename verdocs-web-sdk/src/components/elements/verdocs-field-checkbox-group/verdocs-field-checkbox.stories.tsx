@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Elements/Document Fields/Checkbox',
+  title: 'Document Fields/Checkbox',
   component: 'verdocs-field-checkbox',
   args: {
     required: false,

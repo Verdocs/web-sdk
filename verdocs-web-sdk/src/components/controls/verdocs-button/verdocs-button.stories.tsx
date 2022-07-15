@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 // Circle with three dots in it
-const Icon1 = `
+const CircleIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#ffffff">
     <g>
       <rect fill="none" height="24" width="24"/>
@@ -16,6 +16,19 @@ const Icon1 = `
       </g>
     </g>
   </svg>
+`;
+
+const ArrowIcon = `
+<svg width="10" height="26" viewBox="0 0 10 26" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_31568_3647)">
+<path d="M9.64682 13.431L2.10645 20.9466C1.86503 21.1853 1.47466 21.1853 1.23324 20.9466L0.216218 19.9411C-0.0251976 19.7025 -0.0251976 19.3165 0.216218 19.0778L6.30296 12.9993L0.216218 6.9208C-0.0251976 6.68213 -0.0251976 6.29619 0.216218 6.05752L1.23324 5.05205C1.47466 4.81338 1.86503 4.81338 2.10645 5.05205L9.64682 12.5677C9.88824 12.8064 9.88824 13.1923 9.64682 13.431Z"/>
+</g>
+<defs>
+<clipPath id="clip0_31568_3647">
+<rect width="9.86207" height="26"/>
+</clipPath>
+</defs>
+</svg>
 `;
 
 export default {
@@ -43,8 +56,8 @@ export default {
 export const Button = ({label, size, variant, disabled, startIcon, endIcon, press}) =>
   html`<verdocs-button
     .label=${label}
-    .startIcon=${startIcon ? Icon1 : null}
-    .endIcon=${endIcon ? Icon1 : null}
+    .startIcon=${startIcon ? CircleIcon : null}
+    .endIcon=${endIcon ? ArrowIcon : null}
     .size=${size}
     .variant=${variant}
     .disabled=${disabled}

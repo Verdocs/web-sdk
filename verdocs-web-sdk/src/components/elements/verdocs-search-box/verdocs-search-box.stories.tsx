@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Elements/Search/Search Box',
+  title: 'Search/Search Box',
   component: 'verdocs-search-box',
   args: {
     type: 'all',

@@ -5,7 +5,7 @@ import {Meta} from '@storybook/web-components';
  * Display a list of starred items (favorite templates).
  */
 export default {
-  title: 'Elements/Search/Search Activity',
+  title: 'Search/Search Activity',
   component: 'verdocs-search-activity',
   args: {},
   argTypes: {
