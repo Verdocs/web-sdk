@@ -30,4 +30,4 @@ export default {
   // },
 } as Meta;
 
-export const Toggle = ({options, theme}) => html`<toggle-icon-buttons .options="${options}" .theme="${theme}"></toggle-icon-buttons>`;
+export const Toggle = ({options, theme}) => html`<verdocs-toggle .options=${options} .theme=${theme}></verdocs-toggle>`;

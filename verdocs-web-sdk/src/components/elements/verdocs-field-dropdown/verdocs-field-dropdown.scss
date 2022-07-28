@@ -1,8 +1,7 @@
-verdocs-field-dropdown {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+@import '../../../theme.scss';
 
+verdocs-field-dropdown {
+  font-family: $verdocs-primary-font;
   width: 85px;
   height: 20px;
   display: block;

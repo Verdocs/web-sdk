@@ -28,7 +28,7 @@ verdocs-signature-dialog {
     border-radius: 4px;
     overflow: hidden;
     box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
-    background: #f9f9f9;
+    background: $verdocs-grey-3;
   }
 
   .heading {
@@ -58,7 +58,7 @@ verdocs-signature-dialog {
   }
 
   canvas {
-    background: #fff;
+    background: $verdocs-grey-4;
     box-sizing: border-box;
     margin: 0 auto;
     width: 300px;
@@ -91,11 +91,11 @@ verdocs-signature-dialog {
       cursor: pointer;
 
       &.active {
-        border-bottom: 2px solid #ccc;
+        border-bottom: 2px solid $light-border-color;
       }
 
       &:hover {
-        color: var(--verdocs-primary-color);
+        color: $primary-color;
       }
     }
   }

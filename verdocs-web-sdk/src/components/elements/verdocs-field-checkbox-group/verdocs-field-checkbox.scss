@@ -1,9 +1,8 @@
+@import '../../../theme.scss';
+
 // See https://www.kallmanation.com/styling-a-checkbox-with-only-css
 verdocs-field-checkbox {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
-
+  font-family: $verdocs-primary-font;
   font-size: 11px;
   background-color: transparent;
   transform-origin: bottom left;

@@ -1,10 +1,9 @@
+@import '../../../theme.scss';
+
 @import 'node_modules/vanillajs-datepicker/sass/datepicker';
 
 verdocs-field-date {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
-
+  font-family: $verdocs-primary-font;
   width: 64px;
   height: 15px;
   display: block;

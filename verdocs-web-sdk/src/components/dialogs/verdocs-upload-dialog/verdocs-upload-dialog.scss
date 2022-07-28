@@ -27,7 +27,7 @@ verdocs-upload-dialog {
     flex-direction: column;
     border-radius: 4px;
     overflow: hidden;
-    background: #fff;
+    background: $verdocs-grey-4;
     padding: 16px;
     box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
   }
@@ -70,7 +70,7 @@ verdocs-upload-dialog {
     }
 
     &.dragging-over {
-      border: 5px solid blue;
+      border: 5px solid $verdocs-deep-blue;
     }
 
     > verdocs-button {

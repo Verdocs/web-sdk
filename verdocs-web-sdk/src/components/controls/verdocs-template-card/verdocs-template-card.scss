@@ -9,7 +9,7 @@ verdocs-template-card {
   flex-wrap: nowrap;
   box-sizing: border-box;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: $verdocs-grey-4;
   box-shadow: 2px 2px 5px rgba(51, 54, 75, 0.05);
 
   .thumbnail {
@@ -68,6 +68,6 @@ verdocs-template-card {
 
   .additional-controls svg {
     margin-right: 0;
-    fill: #6c7de2;
+    fill: $verdocs-purple;
   }
 }

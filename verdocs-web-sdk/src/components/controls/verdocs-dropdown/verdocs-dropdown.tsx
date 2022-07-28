@@ -13,20 +13,6 @@ export interface IMenuOption {
 /**
  * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
  * when the button is pressed again, or an option is selected.
- *
- * ```typescript
- * interface IMenuOption {
- *   // The label to display on the menu option.
- *   label: string;
- *   // Optional icon to display next to the option's label. Specify icons as SVG strings.
- *   icon?: string;
- *   // If true, the option will be shown disabled (dimmed and not clickable).
- *   disabled?: boolean;
- *   // Optional additional fields such as IDs or other data. When a menu option is clicked/tapped, the associated
- *   // IMenuOptionwill be passed to the event handler. This data may be used to help identify the option selected.
- *   [key: string]: any;
- * }
- * ```
  */
 @Component({
   tag: 'verdocs-dropdown',
@@ -63,7 +49,7 @@ export class VerdocsDropdown {
   }
 
   componentDidLoad() {
-    this.popper = createPopper(this.dropdownButton, this.dropdownMenu, {placement: 'bottom-start', modifiers: [{name: 'offset', options: {offset: [0, 10]}}]});
+    this.popper = createPopper(this.dropdownButton, this.dropdownMenu, {placement: 'bottom-start', modifiers: [{name: 'offset', options: {offset: [0, 6]}}]});
   }
 
   handleSelectOption(option: IMenuOption) {

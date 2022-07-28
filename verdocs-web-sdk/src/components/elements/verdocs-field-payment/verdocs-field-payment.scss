@@ -1,8 +1,7 @@
-verdocs-field-payment {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+@import '../../../theme.scss';
 
+verdocs-field-payment {
+  font-family: $verdocs-primary-font;
   width: 24px;
   height: 24px;
   display: block;

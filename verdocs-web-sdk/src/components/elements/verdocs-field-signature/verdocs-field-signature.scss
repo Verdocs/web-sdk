@@ -1,8 +1,7 @@
-verdocs-field-signature {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+@import '../../../theme.scss';
 
+verdocs-field-signature {
+  font-family: $verdocs-primary-font;
   width: 83px;
   height: 36px;
   display: block;

@@ -32,12 +32,12 @@ verdocs-ok-dialog {
     flex-direction: row;
     background: #444444;
     padding: 8px 16px;
-    color: white;
+    color: $verdocs-grey-4;
   }
 
   .content {
     font-size: 14px;
-    background: #fff;
+    background: $verdocs-grey-4;
     padding: 20px;
   }
 

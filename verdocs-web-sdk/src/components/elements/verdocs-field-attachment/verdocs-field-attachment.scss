@@ -1,8 +1,7 @@
-verdocs-field-attachment {
-  /* Fallback font for old browsers */
-  font-family: sans-serif;
-  font-family: var(--verdocs-font);
+@import '../../../theme.scss';
 
+verdocs-field-attachment {
+  font-family: $verdocs-primary-font;
   width: 24px;
   height: 24px;
   display: block;
@@ -17,7 +16,7 @@ verdocs-field-attachment {
 
   &.required {
     span {
-      border: 1px solid var(--verdocs-required-color);
+      border: 1px solid $verdocs-red-1;
     }
   }
 

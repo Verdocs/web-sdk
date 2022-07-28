@@ -24,7 +24,7 @@
     "dist/"
   ],
   "dependencies": {
-    "verdocs-web-sdk": "1.0.0",
+    "@verdocs/web-sdk": "^1.4.0",
     "tslib": "^1.9.3"
   },
   "peerDependencies": {
