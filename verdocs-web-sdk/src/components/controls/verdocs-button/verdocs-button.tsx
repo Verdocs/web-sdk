@@ -66,7 +66,6 @@ export class VerdocsButton {
   }
 
   render() {
-    console.log('Rendering button', this.startIcon);
     return (
       <button disabled={this.disabled} type={this.type} onClick={e => this.handleClick(e)} class={`${this.variant} ${this.size} ${this.type}`}>
         {this.startIcon ? <span class="icon start" innerHTML={this.startIcon} /> : null}

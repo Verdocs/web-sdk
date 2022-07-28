@@ -1,7 +1,7 @@
 import {Auth} from '@verdocs/js-sdk/Users';
 import {IActiveSession} from '@verdocs/js-sdk/Users/Types';
 import {Transport, VerdocsEndpoint} from '@verdocs/js-sdk/HTTP';
-import {loadSession, setSession} from '@verdocs/js-sdk/Users/Auth';
+import {endSession, loadSession, setSession} from '@verdocs/js-sdk/Users/Auth';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 
 const BASE_URL = 'https://stage-api.verdocs.com/';
@@ -15,8 +15,10 @@ export interface IAuthStatus {
 /**
  * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
  * occur during the process (especially successful completion). The success callback will be fired immediately if the
- * user is already authenticated with a valid session, so this component may not always display visibly. To simplify
- * some types of authentication flows, a visibility flag can force this component to never display.
+ * user is already authenticated with a valid session, so this component may not always display visibly.
+ *
+ * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
+ * allows you to susbcribe to notifications from the
  *
  * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
  * container to allow sufficient space for the required forms.
@@ -80,12 +82,10 @@ export class VerdocsAuth {
   componentWillLoad() {
     const staging = new VerdocsEndpoint().setBaseURL(BASE_URL);
     Transport.setActiveEndpoint(staging);
-    console.log('Set active endpoint', Transport.getEndpoint());
   }
 
   componentDidLoad() {
     const session = loadSession(SOURCE);
-    console.log('loaded session', session, SOURCE);
     if (session !== null) {
       this.isAuthenticated = true;
       this.activeSession = session as IActiveSession;
@@ -105,15 +105,13 @@ export class VerdocsAuth {
     Auth.authenticateUser({username: this.username, password: this.password})
       .then(r => {
         this.loggingIn = false;
-        console.log('Login result', r.accessToken);
         const session = setSession(SOURCE, r.accessToken, true);
         this.activeSession = session as IActiveSession;
         this.isAuthenticated = true;
-        console.log('set session', session);
         this.authenticated.emit({authenticated: true, session});
       })
       .catch(e => {
-        console.log('Login error', e.response, JSON.stringify(e));
+        console.log('[VERDOCS] Login error', e.response, JSON.stringify(e));
         this.loggingIn = false;
         this.activeSession = null;
         this.authenticated.emit({authenticated: false, session: null});
@@ -125,7 +123,7 @@ export class VerdocsAuth {
   }
 
   handleLogout() {
-    // endSession(SOURCE);
+    endSession(SOURCE);
     this.isAuthenticated = false;
     this.authenticated.emit({authenticated: false, session: null});
   }
