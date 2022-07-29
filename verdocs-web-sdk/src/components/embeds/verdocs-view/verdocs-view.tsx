@@ -1,4 +1,5 @@
 import pdf from 'pdfjs-dist';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {PDFDocumentProxy, VerbosityLevel, version as PDFJSversion} from 'pdfjs-dist';
 import {Component, h, Element, Event, Prop, Watch, EventEmitter, State} from '@stencil/core';
 import {DocumentInitParameters, OnProgressParameters} from 'pdfjs-dist/types/src/display/api';
@@ -47,6 +48,11 @@ export class VerdocsView {
   private pdfContainer: HTMLDivElement;
   private numPages = 1;
   private fingerprint = null as string | null;
+
+  /**
+   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+   */
+  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
    * Rotate the PDF in degrees

@@ -18,13 +18,13 @@ export declare interface VerdocsAuth extends Components.VerdocsAuth {
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['debug', 'logo', 'visible']
+  inputs: ['debug', 'endpoint', 'logo', 'visible']
 })
 @Component({
   selector: 'verdocs-auth',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['debug', 'logo', 'visible']
+  inputs: ['debug', 'endpoint', 'logo', 'visible']
 })
 export class VerdocsAuth {
   protected el: HTMLElement;
@@ -595,12 +595,14 @@ export declare interface VerdocsQuickFunctions extends Components.VerdocsQuickFu
 }
 
 @ProxyCmp({
-  defineCustomElementFn: undefined
+  defineCustomElementFn: undefined,
+  inputs: ['endpoint']
 })
 @Component({
   selector: 'verdocs-quick-functions',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  inputs: ['endpoint']
 })
 export class VerdocsQuickFunctions {
   protected el: HTMLElement;
@@ -615,12 +617,14 @@ export class VerdocsQuickFunctions {
 export declare interface VerdocsSearch extends Components.VerdocsSearch {}
 
 @ProxyCmp({
-  defineCustomElementFn: undefined
+  defineCustomElementFn: undefined,
+  inputs: ['endpoint']
 })
 @Component({
   selector: 'verdocs-search',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  inputs: ['endpoint']
 })
 export class VerdocsSearch {
   protected el: HTMLElement;
@@ -641,13 +645,13 @@ export declare interface VerdocsSearchActivity extends Components.VerdocsSearchA
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['options', 'type']
+  inputs: ['endpoint', 'options', 'type']
 })
 @Component({
   selector: 'verdocs-search-activity',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['options', 'type']
+  inputs: ['endpoint', 'options', 'type']
 })
 export class VerdocsSearchActivity {
   protected el: HTMLElement;
@@ -678,13 +682,13 @@ export declare interface VerdocsSearchBox extends Components.VerdocsSearchBox {
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['placeholder', 'query', 'type']
+  inputs: ['endpoint', 'placeholder', 'query', 'type']
 })
 @Component({
   selector: 'verdocs-search-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['placeholder', 'query', 'type']
+  inputs: ['endpoint', 'placeholder', 'query', 'type']
 })
 export class VerdocsSearchBox {
   protected el: HTMLElement;
@@ -719,13 +723,13 @@ export declare interface VerdocsSign extends Components.VerdocsSign {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['documentid', 'invitecode', 'roleid']
+  inputs: ['documentid', 'endpoint', 'invitecode', 'roleid']
 })
 @Component({
   selector: 'verdocs-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['documentid', 'invitecode', 'roleid']
+  inputs: ['documentid', 'endpoint', 'invitecode', 'roleid']
 })
 export class VerdocsSign {
   protected el: HTMLElement;
@@ -950,13 +954,13 @@ export declare interface VerdocsView extends Components.VerdocsView {
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['rotation', 'source', 'token']
+  inputs: ['endpoint', 'rotation', 'source', 'token']
 })
 @Component({
   selector: 'verdocs-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['rotation', 'source', 'token']
+  inputs: ['endpoint', 'rotation', 'source', 'token']
 })
 export class VerdocsView {
   protected el: HTMLElement;

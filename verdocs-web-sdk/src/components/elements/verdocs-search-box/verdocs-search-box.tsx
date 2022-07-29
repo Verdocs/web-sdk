@@ -1,3 +1,4 @@
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop} from '@stencil/core';
 import SearchIcon from './search.svg';
 import CloseIcon from './close.svg';
@@ -21,6 +22,11 @@ export interface ISearchEvent {
   shadow: false,
 })
 export class VerdocsSearchBox {
+  /**
+   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+   */
+  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+
   /**
    * The placeholder to display in the input field.
    */

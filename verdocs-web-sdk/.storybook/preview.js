@@ -5,6 +5,7 @@ defineCustomElements();
 
 import {extractArgTypes, extractComponentDescription, setStencilDocJson} from '@pxtrn/storybook-addon-docs-stencil';
 import docJson from '../dist/docs.json';
+
 if (docJson) setStencilDocJson(docJson);
 
 export const parameters = {
@@ -21,7 +22,7 @@ export const parameters = {
   // actions: {argTypesRegex: '^on.*'},
   viewMode: 'docs',
   docs: {
-    iframeHeight: 400,
+    iframeHeight: 500,
     extractArgTypes,
     extractComponentDescription,
   },
@@ -31,7 +32,7 @@ export const parameters = {
     values: [
       {
         name: 'light',
-        value: '#f5f5f5',
+        value: '#eeeeee',
       },
       {
         name: 'medium',

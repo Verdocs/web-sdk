@@ -5,6 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocument, IDocumentField, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Documents";
@@ -21,6 +22,10 @@ export namespace Components {
           * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
          */
         "debug": boolean;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
         /**
           * By default, a Verdocs logo will be displayed above the login/signup forms. This may be used to override its source. (Alternatively, you may simply hide it via CSS overrides.) Logos should be in SVG format for best results.
          */
@@ -349,14 +354,30 @@ export namespace Components {
         "organization": IOrganization;
     }
     interface VerdocsQuickFunctions {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
     }
     interface VerdocsSearch {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
     }
     interface VerdocsSearchActivity {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
         "options": any;
         "type": 'recent' | 'saved' | 'starred';
     }
     interface VerdocsSearchBox {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
         /**
           * The placeholder to display in the input field.
          */
@@ -377,6 +398,10 @@ export namespace Components {
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
         "documentid": string | null;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
         /**
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
@@ -469,6 +494,10 @@ export namespace Components {
         "open": boolean;
     }
     interface VerdocsView {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
         /**
           * Rotate the PDF in degrees
          */
@@ -809,6 +838,10 @@ declare namespace LocalJSX {
           * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
          */
         "debug"?: boolean;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
         /**
           * By default, a Verdocs logo will be displayed above the login/signup forms. This may be used to override its source. (Alternatively, you may simply hide it via CSS overrides.) Logos should be in SVG format for best results.
          */
@@ -1253,6 +1286,10 @@ declare namespace LocalJSX {
     }
     interface VerdocsQuickFunctions {
         /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
           * Event fired when an entry is clicked.
          */
         "onCreateDocument"?: (event: VerdocsQuickFunctionsCustomEvent<any>) => void;
@@ -1262,8 +1299,16 @@ declare namespace LocalJSX {
         "onCreateTemplate"?: (event: VerdocsQuickFunctionsCustomEvent<any>) => void;
     }
     interface VerdocsSearch {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
     }
     interface VerdocsSearchActivity {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
         /**
           * Event fired when an entry is clicked.
          */
@@ -1272,6 +1317,10 @@ declare namespace LocalJSX {
         "type"?: 'recent' | 'saved' | 'starred';
     }
     interface VerdocsSearchBox {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
         /**
           * Event fired when the user changes the query string.
          */
@@ -1304,6 +1353,10 @@ declare namespace LocalJSX {
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
         "documentid"?: string | null;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
         /**
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
@@ -1424,6 +1477,10 @@ declare namespace LocalJSX {
         "open"?: boolean;
     }
     interface VerdocsView {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
         /**
           * Fired when the document has completed rendered. The event will include the rendered page count.
          */

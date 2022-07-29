@@ -1,12 +1,10 @@
-import {loadSession} from '@verdocs/js-sdk/Users/Auth';
 import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {getSearchHistory} from '@verdocs/js-sdk/Search/Content';
 import {getTemplates} from '@verdocs/js-sdk/Templates/Templates';
 import {IRecentSearch, ISavedSearch} from '@verdocs/js-sdk/Search/Types';
 import {Component, h, Prop, Event, EventEmitter, State} from '@stencil/core';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import DocumentIcon from './document-icon.svg';
-
-const SOURCE = 'verdocs-stage';
 
 /**
  * Display a list of starred items.
@@ -20,6 +18,11 @@ const SOURCE = 'verdocs-stage';
   shadow: false,
 })
 export class VerdocsSearchActivity {
+  /**
+   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+   */
+  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+
   @Prop() type: 'recent' | 'saved' | 'starred' = 'recent';
 
   @Prop() options: any;
@@ -42,7 +45,7 @@ export class VerdocsSearchActivity {
   @State() starred: ITemplate[] = [];
 
   componentWillLoad() {
-    loadSession(SOURCE);
+    this.endpoint.loadSession();
 
     const errorHandler = e => {
       console.warn('[Verdocs/search-activity] Error getting search data', e);
@@ -55,7 +58,7 @@ export class VerdocsSearchActivity {
       case 'recent':
         this.title = 'Recent Searches';
         this.emptyMessage = 'You do not have any recent searches.';
-        getSearchHistory()
+        getSearchHistory(this.endpoint)
           .then(r => (this.recent = r.recent))
           .catch(errorHandler);
         break;
@@ -63,7 +66,7 @@ export class VerdocsSearchActivity {
       case 'saved':
         this.title = 'Saved Searches';
         this.emptyMessage = 'You do not have any saved searches.';
-        getSearchHistory()
+        getSearchHistory(this.endpoint)
           .then(r => (this.saved = r.saved))
           .catch(errorHandler);
         break;
@@ -71,7 +74,7 @@ export class VerdocsSearchActivity {
       case 'starred':
         this.title = 'My Starred items';
         this.emptyMessage = 'You do not have any starred templates.';
-        getTemplates({is_starred: true})
+        getTemplates(this.endpoint, {is_starred: true})
           .then(r => (this.starred = r))
           .catch(errorHandler);
         break;

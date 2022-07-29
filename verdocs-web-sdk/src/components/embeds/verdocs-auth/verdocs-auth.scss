@@ -2,8 +2,6 @@
 
 verdocs-auth {
   font-family: $verdocs-primary-font;
-  background-color: $secondary-color;
-  padding: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,10 +9,9 @@ verdocs-auth {
 
   .login-form,
   .signup-form {
-    background: $container-bg;
+    background: $verdocs-grey-4;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
     flex-direction: column;
     display: flex;
     padding: 20px;

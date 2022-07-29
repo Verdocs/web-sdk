@@ -1,4 +1,5 @@
-import {Component, h, Event, EventEmitter} from '@stencil/core';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {Component, h, Event, EventEmitter, Prop} from '@stencil/core';
 import TemplateIcon from './template-icon.svg';
 import DocumentIcon from './document-icon.svg';
 
@@ -13,6 +14,11 @@ import DocumentIcon from './document-icon.svg';
   styleUrl: 'verdocs-quick-functions.scss',
 })
 export class VerdocsQuickFunctions {
+  /**
+   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+   */
+  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+
   /**
    * Event fired when an entry is clicked.
    */
