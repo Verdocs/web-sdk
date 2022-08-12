@@ -65,12 +65,6 @@ export class VerdocsView {
   @Prop() source: string;
 
   /**
-   * Access token to use. This component is a wrapper for PDF.js which does not use a VerdocsEndpoint, so the token must be supplied
-   * directly.
-   */
-  @Prop() token: string | null = null;
-
-  /**
    * Listen for changes to src
    */
   @Watch('source')
@@ -194,7 +188,8 @@ export class VerdocsView {
 
   loadAndRender(src: string): void {
     console.log('[VIEW] Loading', src);
-    const httpHeaders = this.token ? {Authorization: `Bearer ${this.token}`} : {};
+    const token = this.endpoint.getToken();
+    const httpHeaders = token ? {Authorization: `Bearer ${token}`} : {};
 
     const source = {
       url: src,

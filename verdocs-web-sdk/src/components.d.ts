@@ -506,10 +506,6 @@ export namespace Components {
           * Src of the PDF to load and render
          */
         "source": string;
-        /**
-          * Access token to use. This component is a wrapper for PDF.js which does not use a VerdocsEndpoint, so the token must be supplied directly.
-         */
-        "token": string | null;
     }
 }
 export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
@@ -1513,10 +1509,6 @@ declare namespace LocalJSX {
           * Src of the PDF to load and render
          */
         "source"?: string;
-        /**
-          * Access token to use. This component is a wrapper for PDF.js which does not use a VerdocsEndpoint, so the token must be supplied directly.
-         */
-        "token"?: string | null;
     }
     interface IntrinsicElements {
         "verdocs-auth": VerdocsAuth;

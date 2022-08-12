@@ -954,13 +954,13 @@ export declare interface VerdocsView extends Components.VerdocsView {
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['endpoint', 'rotation', 'source', 'token']
+  inputs: ['endpoint', 'rotation', 'source']
 })
 @Component({
   selector: 'verdocs-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['endpoint', 'rotation', 'source', 'token']
+  inputs: ['endpoint', 'rotation', 'source']
 })
 export class VerdocsView {
   protected el: HTMLElement;

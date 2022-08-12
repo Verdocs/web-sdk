@@ -390,7 +390,7 @@ export class VerdocsSign {
         {!this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
         <div class="document">
-          {this.pdfUrl ? <verdocs-view source={this.pdfUrl} token={this.signerToken} onDocumentRendered={e => this.handleDocumentRendered(e)} /> : <verdocs-loader />}
+          {this.pdfUrl ? <verdocs-view source={this.pdfUrl} endpoint={this.endpoint} onDocumentRendered={e => this.handleDocumentRendered(e)} /> : <verdocs-loader />}
           {(this.pdfPageInfo?.pages || []).map(page => (
             <div class="page-controls" style={{height: `${page.height}px`, width: `${page.width}px`, top: `${page.canvasTop}px`, margin: '0 auto'}}>
               {this.pdfPageInfo?.numRendered > 0 ? (
