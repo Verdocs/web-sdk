@@ -14,7 +14,8 @@
     "jsxFactory": "h",
     "preserveConstEnums": true,
     "resolveJsonModule": true,
-    "stripInternal": true
+    "stripInternal": true,
+    "sourceMap": true
   },
   "include": ["src", "./typings.d.ts"],
   "typeRoots": ["node_modules/@types", "./typings.d.ts"],

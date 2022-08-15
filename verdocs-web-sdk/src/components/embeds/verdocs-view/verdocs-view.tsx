@@ -188,6 +188,7 @@ export class VerdocsView {
 
   loadAndRender(src: string): void {
     console.log('[VIEW] Loading', src);
+    console.log('this', this);
     const token = this.endpoint.getToken();
     const httpHeaders = token ? {Authorization: `Bearer ${token}`} : {};
 

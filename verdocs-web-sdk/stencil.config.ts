@@ -1,7 +1,8 @@
 import {sass} from '@stencil/sass';
 import {Config} from '@stencil/core';
 import {inlineSvg} from 'stencil-inline-svg';
-import nodePolyfills from 'rollup-plugin-node-polyfills';
+// import typescript from 'rollup-plugin-typescript';
+// import nodePolyfills from 'rollup-plugin-node-polyfills';
 import {reactOutputTarget} from '@stencil/react-output-target';
 import {angularOutputTarget, ValueAccessorConfig} from '@stencil/angular-output-target';
 
@@ -17,17 +18,20 @@ const angularValueAccessorBindings: ValueAccessorConfig[] = [
 export const config: Config = {
   namespace: 'verdocs-web-sdk',
   buildEs5: true,
+  commonjs: {},
+  sourceMap: true,
   devServer: {
     openBrowser: false,
   },
-  globalStyle: 'src/variables.css',
+  // globalStyle: 'src/variables.css',
   testing: {
     transform: {
       '^.+\\.svg$': 'jest-svg-transformer',
     },
   },
   rollupPlugins: {
-    after: [nodePolyfills()],
+    // before: [typescript()],
+    // after: [nodePolyfills()],
   },
   outputTargets: [
     angularOutputTarget({
@@ -46,8 +50,8 @@ export const config: Config = {
     },
     {
       type: 'dist-custom-elements',
-      autoDefineCustomElements:true,
-      generateTypeDeclarations:true,
+      autoDefineCustomElements: true,
+      generateTypeDeclarations: true,
     },
     // {
     //   type: 'dist-custom-elements-bundle',

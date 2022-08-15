@@ -43,7 +43,7 @@ export class VerdocsAuth {
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
-  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+  @Prop() endpoint: VerdocsEndpoint;
 
   /**
    * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display
@@ -78,13 +78,24 @@ export class VerdocsAuth {
   @State() loggingIn: boolean = false;
   @State() activeSession: TSession = null;
   @State() loginError: string | null = null;
+  @State() _endpoint = VerdocsEndpoint.getDefault();
+
+  componentWillLoad() {
+    if (this.endpoint) {
+      console.log('Using user-supplied endpoint', this.endpoint);
+      this._endpoint = this.endpoint;
+    } else {
+      console.log('Using default endpoint', this._endpoint);
+    }
+  }
 
   componentDidLoad() {
-    this.endpoint.loadSession();
-    if (this.endpoint.session !== null) {
+    console.log('loaded', this);
+    this._endpoint.loadSession();
+    if (this._endpoint.session) {
       this.isAuthenticated = true;
-      this.activeSession = this.endpoint.session;
-      this.authenticated.emit({authenticated: true, session: this.endpoint.session});
+      this.activeSession = this._endpoint.session;
+      this.authenticated.emit({authenticated: true, session: this._endpoint.session});
     } else {
       this.authenticated.emit({authenticated: false, session: null});
     }
@@ -97,13 +108,13 @@ export class VerdocsAuth {
 
   handleLogin() {
     this.loggingIn = true;
-    Auth.authenticateUser(this.endpoint, {username: this.username, password: this.password})
+    Auth.authenticateUser(this._endpoint, {username: this.username, password: this.password})
       .then(r => {
         this.loggingIn = false;
-        this.endpoint.setToken(r.accessToken);
-        this.activeSession = this.endpoint.session;
+        this._endpoint.setToken(r.accessToken);
+        this.activeSession = this._endpoint.session;
         this.isAuthenticated = true;
-        this.authenticated.emit({authenticated: true, session: this.endpoint.session});
+        this.authenticated.emit({authenticated: true, session: this._endpoint.session});
       })
       .catch(e => {
         console.log('[VERDOCS] Login error', e.response, JSON.stringify(e));
@@ -118,7 +129,7 @@ export class VerdocsAuth {
   }
 
   handleLogout() {
-    this.endpoint.clearSession();
+    this._endpoint.clearSession();
     this.isAuthenticated = false;
     this.authenticated.emit({authenticated: false, session: null});
   }

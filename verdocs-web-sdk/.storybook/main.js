@@ -11,6 +11,11 @@ module.exports = {
     '@pxtrn/storybook-addon-docs-stencil',
     '@storybook/addon-essentials', // actions, viewport docs, controls, backgrounds, toolbars
   ],
+  webpackFinal: async (config, { configType }) => {
+    config.devtool = 'inline-source-map'
+    return config;
+  },
+  staticDirs: ['public'],
   // webpackFinal: async config => {
   //   // find web-components rule for extra transpilation
   //   const webComponentsRule = config.module.rules.find(rule => rule.use && rule.use.options && rule.use.options.babelrc === false);

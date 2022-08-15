@@ -1,4 +1,4 @@
-import '../www/build/verdocs-web-sdk.css';
+// import '../www/build/verdocs-web-sdk.css';
 
 import {defineCustomElements} from '../dist/esm/loader';
 defineCustomElements();

@@ -3,7 +3,6 @@
 verdocs-view {
   font-family: $verdocs-primary-font;
   display: flex;
-  background: #ccc;
   min-height: 600px;
   position: relative;
   padding: 0 0 20px 0;
@@ -56,6 +55,6 @@ verdocs-view {
     max-width: 100%;
     // To avoid performance problems in some browsers with getClientBoundingRect() we hard-code the calculations for canvas offsets.
     // If you change the margin here you need to adjust the code as well.
-    margin: 15px 0 0 0;
+    margin: 0 0 15px 0;
   }
 }
