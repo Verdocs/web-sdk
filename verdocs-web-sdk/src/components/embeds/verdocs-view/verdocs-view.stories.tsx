@@ -5,7 +5,8 @@ import {Meta} from '@storybook/web-components';
 // const templateId = "c3fc6310-bf9d-47a1-b0ad-daf2bbf657c2";
 // const documentId = "ed117472-4d4e-4c62-9386-af047a3373a2";
 // const pdfurl = `https://api.verdocs.com/templates/${templateId}/documents/${documentId}?file=true`;
-const localSource = 'https://verdocs-public-assets.s3.amazonaws.com/i-9-paper-version.pdf';
+const localSource = 'https://stage-api.verdocs.com/envelopes/64d7eb5a-a4fb-4044-accf-a0b9ba530e42/envelope_documents/bd92fcfa-63fd-4b94-856e-e7f4c7c0b2e1?file=true';
+// const localSource = 'https://verdocs-public-assets.s3.amazonaws.com/i-9-paper-version.pdf';
 // const localSource = '/i-9-paper-version.pdf';
 
 export default {

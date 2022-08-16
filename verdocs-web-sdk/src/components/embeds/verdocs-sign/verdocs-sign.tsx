@@ -15,6 +15,7 @@ import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 @Component({
   tag: 'verdocs-sign',
   styleUrl: 'verdocs-sign.scss',
+  shadow: false,
 })
 export class VerdocsSign {
   /**
