@@ -9,6 +9,7 @@
 // and this doesn't seem to allow replace() to run at the right step.
 
 const {readFileSync, writeFileSync} = require('fs');
+const {join} = require('path');
 
 const privateMethodReplacements = [
   '#ensureObj',
@@ -60,10 +61,17 @@ const privateMethodReplacements = [
   '#setMinDims',
 ];
 
-let pdfjs = readFileSync('node_modules/pdfjs-dist/build/pdf.js', 'utf8');
-privateMethodReplacements.forEach(replace => {
-  const replacement = replace.replace('#', '__');
-  pdfjs = pdfjs.replace(new RegExp(replace, 'g'), replacement);
-});
+const pdfJsFile = join(process.env.INIT_CWD, 'node_modules', 'pdfjs-dist', 'build', 'pdf.js');
+console.log('Fixing up', pdfJsFile);
 
-writeFileSync('node_modules/pdfjs-dist/build/pdf.js', pdfjs);
+try {
+  let pdfjs = readFileSync(pdfJsFile, 'utf8');
+  privateMethodReplacements.forEach(replace => {
+    const replacement = replace.replace('#', '__');
+    pdfjs = pdfjs.replace(new RegExp(replace, 'g'), replacement);
+  });
+
+  writeFileSync(pdfJsFile, pdfjs);
+} catch (e) {
+  console.log(e);
+}
