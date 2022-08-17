@@ -3,55 +3,16 @@
 verdocs-view {
   font-family: $verdocs-primary-font;
   display: flex;
-  min-height: 200px; // Just enough to allow a loading indicator
+  padding: 15px;
+  row-gap: 15px;
+  min-height: 200px;
   position: relative;
+  align-items: center;
   box-sizing: border-box;
   flex-direction: column;
 
   div,
   canvas {
     box-sizing: border-box;
-  }
-
-  .container {
-    display: flex;
-    padding: 15px;
-    align-items: center;
-    flex-direction: column;
-  }
-
-  button.test {
-    color: #fff;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 4px;
-    background: #5a5767;
-    border: 1px solid #ccc;
-  }
-
-  .load-progress {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    z-index: 2000;
-    background: #000;
-
-    .bar {
-      height: 6px;
-      background: #50be80;
-    }
-  }
-}
-
-#verdocs-pdf-viewer-container {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  row-gap: 15px;
-  column-gap: 15px;
-
-  canvas {
   }
 }

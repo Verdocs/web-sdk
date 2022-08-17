@@ -951,12 +951,12 @@ export class VerdocsUploadDialog {
   }
 }
 
-import type { IPDFRenderEvent as IVerdocsViewIPDFRenderEvent } from '@verdocs/web-sdk';
+import type { IPageRenderEvent as IVerdocsViewIPageRenderEvent } from '@verdocs/web-sdk';
 export declare interface VerdocsView extends Components.VerdocsView {
   /**
    * Fired when a page has been rendered 
    */
-  pageRendered: EventEmitter<CustomEvent<IVerdocsViewIPDFRenderEvent>>;
+  pageRendered: EventEmitter<CustomEvent<IVerdocsViewIPageRenderEvent>>;
   /**
    * Fired when a page has been changed 
    */
@@ -973,28 +973,24 @@ export declare interface VerdocsView extends Components.VerdocsView {
    * Fired when a page has been scaled 
    */
   scaleChange: EventEmitter<CustomEvent<number>>;
-  /**
-   * Fired when the document has completed rendered. The event will include the rendered page count. 
-   */
-  documentRendered: EventEmitter<CustomEvent<IVerdocsViewIPDFRenderEvent>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['endpoint', 'rotation', 'source']
+  inputs: ['endpoint', 'pageLayers', 'rotation', 'source']
 })
 @Component({
   selector: 'verdocs-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['endpoint', 'rotation', 'source']
+  inputs: ['endpoint', 'pageLayers', 'rotation', 'source']
 })
 export class VerdocsView {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['pageRendered', 'pageLoaded', 'pageChange', 'pageInit', 'scaleChange', 'documentRendered']);
+    proxyOutputs(this, this.el, ['pageRendered', 'pageLoaded', 'pageChange', 'pageInit', 'scaleChange']);
   }
 }

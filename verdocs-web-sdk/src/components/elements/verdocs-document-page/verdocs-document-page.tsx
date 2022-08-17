@@ -1,3 +1,5 @@
+// NOTE: This component does not have a story because it's not intended for external use.
+
 import {Component, h, Host, Prop, Event, EventEmitter, State, Element} from '@stencil/core';
 
 export interface IDocumentPageInfo {
@@ -37,12 +39,14 @@ export class VerdocsDocumentPage {
   @Prop() pageNumber: number = 1;
 
   /**
-   * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide.
+   * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute
+   * the aspect ratio of the final rendered element.
    */
   @Prop() virtualWidth: number = 612;
 
   /**
-   * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall.
+   * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute
+   * the aspect ratio of the final rendered element.
    */
   @Prop() virtualHeight: number = 792;
 
@@ -125,9 +129,9 @@ export class VerdocsDocumentPage {
       <Host id={`${this.containerId}`} style={{height}}>
         {this.layers.map(layer =>
           layer.type === 'div' ? (
-            <div class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{width: '100%', height}} />
+            <div class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
           ) : (
-            <canvas class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{width: '100%', height}} />
+            <canvas class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
           ),
         )}
       </Host>

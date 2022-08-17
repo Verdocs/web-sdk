@@ -16,7 +16,8 @@ import { ISearchEvent, TContentType } from "./components/elements/verdocs-search
 import { ITemplate } from "@verdocs/js-sdk/Templates/Types";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
-import { IPDFRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
+import { IPageLayer as IPageLayer1 } from "./components/elements/verdocs-document-page/verdocs-document-page";
+import { IPageRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
 export namespace Components {
     interface VerdocsAuth {
         /**
@@ -76,11 +77,11 @@ export namespace Components {
          */
         "pageNumber": number;
         /**
-          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall.
+          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element.
          */
         "virtualHeight": number;
         /**
-          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide.
+          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element.
          */
         "virtualWidth": number;
     }
@@ -518,6 +519,10 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
+          * Layers will be passed through to the individual pages inside this component.
+         */
+        "pageLayers": IPageLayer1[];
+        /**
           * Rotate the PDF in degrees
          */
         "rotation": 0 | 90 | 180 | 270;
@@ -929,11 +934,11 @@ declare namespace LocalJSX {
          */
         "pageNumber"?: number;
         /**
-          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall.
+          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element.
          */
         "virtualHeight"?: number;
         /**
-          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide.
+          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element.
          */
         "virtualWidth"?: number;
     }
@@ -1530,10 +1535,6 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * Fired when the document has completed rendered. The event will include the rendered page count.
-         */
-        "onDocumentRendered"?: (event: VerdocsViewCustomEvent<IPDFRenderEvent>) => void;
-        /**
           * Fired when a page has been changed
          */
         "onPageChange"?: (event: VerdocsViewCustomEvent<number>) => void;
@@ -1548,11 +1549,15 @@ declare namespace LocalJSX {
         /**
           * Fired when a page has been rendered
          */
-        "onPageRendered"?: (event: VerdocsViewCustomEvent<IPDFRenderEvent>) => void;
+        "onPageRendered"?: (event: VerdocsViewCustomEvent<IPageRenderEvent>) => void;
         /**
           * Fired when a page has been scaled
          */
         "onScaleChange"?: (event: VerdocsViewCustomEvent<number>) => void;
+        /**
+          * Layers will be passed through to the individual pages inside this component.
+         */
+        "pageLayers"?: IPageLayer1[];
         /**
           * Rotate the PDF in degrees
          */

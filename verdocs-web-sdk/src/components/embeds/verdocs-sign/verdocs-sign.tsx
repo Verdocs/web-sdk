@@ -5,9 +5,10 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {Component, Prop, State, h} from '@stencil/core';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Documents/Recipients';
-import {IPDFPageInfo, IPDFRenderEvent} from '../verdocs-view/verdocs-view';
-import {IDocument, IDocumentField} from '@verdocs/js-sdk/Documents/Documents';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
+import {IDocument, IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Documents';
+import {IDocumentPageInfo} from '../../elements/verdocs-document-page/verdocs-document-page';
+import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
 
 /**
  * Display a document signing experience.
@@ -41,14 +42,13 @@ export class VerdocsSign {
    */
   @Prop() invitecode: string | null = null;
 
-  @State() recipient = null;
+  @State() recipient: IRecipient | null = null;
 
   @State() signerToken = null;
   @State() pdfUrl = null;
   @State() recipientIndex: number = -1;
   @State() document: IDocument | null = null;
   @State() fields: IDocumentField[] = [];
-  @State() pdfPageInfo: IPDFRenderEvent;
 
   @State() hasSignature = false;
 
@@ -191,30 +191,30 @@ export class VerdocsSign {
     }
   }
 
-  renderCheckboxGroupOption(page: IPDFPageInfo, field: IDocumentField, option: any, index: number) {
-    const left = rescale(page.xRatio, option.x);
-    const bottom = rescale(page.yRatio, option.y);
+  renderCheckboxGroupOption(page: IDocumentPageInfo, field: IDocumentField, option: any, index: number) {
+    const left = rescale(page.xScale, option.x);
+    const bottom = rescale(page.yScale, option.y);
 
     const style = {
       left: `${left}px`,
       bottom: `${bottom}px`,
       position: 'absolute',
-      transform: `scale(${page.xRatio}, ${page.yRatio})`,
+      transform: `scale(${page.xScale}, ${page.yScale})`,
       backgroundColor: getRGBA(this.recipientIndex),
     } as any;
 
     return <verdocs-field-checkbox style={style} order={index} value={option.checked} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
   }
 
-  renderRadioGroupOption(page: IPDFPageInfo, field: IDocumentField, option: any, index: number) {
-    const left = rescale(page.xRatio, option.x);
-    const bottom = rescale(page.yRatio, option.y);
+  renderRadioGroupOption(page: IDocumentPageInfo, field: IDocumentField, option: any, index: number) {
+    const left = rescale(page.xScale, option.x);
+    const bottom = rescale(page.yScale, option.y);
 
     const style = {
       left: `${left}px`,
       bottom: `${bottom}px`,
       position: 'absolute',
-      transform: `scale(${page.xRatio}, ${page.yRatio})`,
+      transform: `scale(${page.xScale}, ${page.yScale})`,
       backgroundColor: getRGBA(this.recipientIndex),
     } as any;
 
@@ -230,67 +230,67 @@ export class VerdocsSign {
     );
   }
 
-  renderField(field: IDocumentField, index: number) {
-    const {required = false, settings = {} as any} = field;
-    const {x = 0, y = 0, base64 = '', placeholder = '', options = [], value = '', result = ''} = settings;
-
-    const renderOnPage = this.pdfPageInfo.pages.find(page => page.pageNumber === field.page);
-    if (!renderOnPage) {
-      console.log('Unable to render invalid field', field);
-      return <div class="invalid-field">Invalid field.</div>;
-    }
-
-    const left = rescale(renderOnPage.xRatio, x);
-    const bottom = rescale(renderOnPage.yRatio, y);
-    console.log('[SIGN] Computed field position', {type: field.type, xRatio: renderOnPage.xRatio, x, yRatio: renderOnPage.yRatio, y, settings});
-
-    const style = {
-      left: `${left}px`,
-      bottom: `${bottom}px`,
-      position: 'absolute',
-      transform: `scale(${renderOnPage.xRatio}, ${renderOnPage.yRatio})`,
-      backgroundColor: field.settings.rgba || getRGBA(this.recipientIndex),
-    } as any;
-
-    if (field.settings.height) {
-      style.height = `${field.settings.height}px`;
-    }
-
-    if (field.settings.width) {
-      style.width = `${field.settings.width}px`;
-    }
-
-    const id = `field-${field.name}`;
-    switch (field.type) {
-      case 'signature':
-        console.log('Computed signature style', field.settings, style);
-        return <verdocs-field-signature style={style} value={base64} required={required} id={id} />;
-      case 'initial':
-        return <verdocs-field-initial style={style} required={required} id={id} />;
-      case 'textbox':
-        return <verdocs-field-textbox style={style} order={index} value={result || ''} placeholder={placeholder} id={id} onFieldChange={e => this.handleFieldChange(field, e)} />;
-      case 'textarea':
-        return <verdocs-field-textarea style={style} placeholder={placeholder || ''} id={id} />;
-      case 'date':
-        return <verdocs-field-date style={style} order={index} value={result || ''} placeholder={placeholder} required={required} id={id} />;
-      case 'dropdown':
-        return <verdocs-field-dropdown style={style} options={options} value={value} required={required} id={id} onFieldChange={e => this.handleFieldChange(field, e)} />;
-      case 'checkbox':
-        return <verdocs-field-checkbox style={style} value={result || ''} id={id} />;
-      case 'checkbox_group':
-        return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
-      case 'radio_button_group':
-        return field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index));
-      case 'attachment':
-        return <verdocs-field-attachment style={style} value={result || ''} id={id} />;
-      case 'payment':
-        return <verdocs-field-payment style={style} field={field} id={id} />;
-      default:
-        console.log('[SIGN] Skipping unsupported field type', field);
-    }
-
-    return <div style={{display: 'none'}}>Unsupported field type "{field.type}"</div>;
-  }
+  // renderField(field: IDocumentField, index: number) {
+  //   const {required = false, settings = {} as any} = field;
+  //   const {x = 0, y = 0, base64 = '', placeholder = '', options = [], value = '', result = ''} = settings;
+  //
+  //   const renderOnPage = this.pdfPageInfo.pages.find(page => page.pageNumber === field.page);
+  //   if (!renderOnPage) {
+  //     console.log('Unable to render invalid field', field);
+  //     return <div class="invalid-field">Invalid field.</div>;
+  //   }
+  //
+  //   const left = rescale(renderOnPage.xScale, x);
+  //   const bottom = rescale(renderOnPage.yScale, y);
+  //   console.log('[SIGN] Computed field position', {type: field.type, xScale: renderOnPage.xScale, x, yScale: renderOnPage.yScale, y, settings});
+  //
+  //   const style = {
+  //     left: `${left}px`,
+  //     bottom: `${bottom}px`,
+  //     position: 'absolute',
+  //     transform: `scale(${renderOnPage.xScale}, ${renderOnPage.yScale})`,
+  //     backgroundColor: field.settings.rgba || getRGBA(this.recipientIndex),
+  //   } as any;
+  //
+  //   if (field.settings.height) {
+  //     style.height = `${field.settings.height}px`;
+  //   }
+  //
+  //   if (field.settings.width) {
+  //     style.width = `${field.settings.width}px`;
+  //   }
+  //
+  //   const id = `verdocs-document-field-${field.name}`;
+  //   switch (field.type) {
+  //     case 'signature':
+  //       console.log('Computed signature style', field.settings, style);
+  //       return <verdocs-field-signature style={style} value={base64} required={required} id={id} />;
+  //     case 'initial':
+  //       return <verdocs-field-initial style={style} required={required} id={id} />;
+  //     case 'textbox':
+  //       return <verdocs-field-textbox style={style} order={index} value={result || ''} placeholder={placeholder} id={id} onFieldChange={e => this.handleFieldChange(field, e)} />;
+  //     case 'textarea':
+  //       return <verdocs-field-textarea style={style} placeholder={placeholder || ''} id={id} />;
+  //     case 'date':
+  //       return <verdocs-field-date style={style} order={index} value={result || ''} placeholder={placeholder} required={required} id={id} />;
+  //     case 'dropdown':
+  //       return <verdocs-field-dropdown style={style} options={options} value={value} required={required} id={id} onFieldChange={e => this.handleFieldChange(field, e)} />;
+  //     case 'checkbox':
+  //       return <verdocs-field-checkbox style={style} value={result || ''} id={id} />;
+  //     case 'checkbox_group':
+  //       return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
+  //     case 'radio_button_group':
+  //       return field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index));
+  //     case 'attachment':
+  //       return <verdocs-field-attachment style={style} value={result || ''} id={id} />;
+  //     case 'payment':
+  //       return <verdocs-field-payment style={style} field={field} id={id} />;
+  //     default:
+  //       console.log('[SIGN] Skipping unsupported field type', field);
+  //   }
+  //
+  //   return <div style={{display: 'none'}}>Unsupported field type "{field.type}"</div>;
+  // }
 
   isFieldValid(field: IDocumentField) {
     switch (field.type) {
@@ -327,11 +327,6 @@ export class VerdocsSign {
     }
   }
 
-  handleDocumentRendered(e) {
-    console.log('[SIGN] Document rendered', e.detail);
-    this.pdfPageInfo = e.detail;
-  }
-
   handleNext() {
     // Find and focus the next incomplete required field
     const requiredFields = this.fields.filter(field => field.required);
@@ -355,18 +350,130 @@ export class VerdocsSign {
     }
   }
 
-  getWrapperStyle(field) {
-    const {x = 0, y = 0, width = 150, height = 50, page = 1} = field.settings;
-    const renderOnPage = this.pdfPageInfo.pages.find(p => p.pageNumber === page);
-    return {
-      bottom: `${rescale(renderOnPage.yRatio, y)}px`,
-      left: `${rescale(renderOnPage.xRatio, x)}px`,
-      height: `${height}px`,
-      width: `${width}px`,
-      position: 'absolute',
-      backgroundColor: field['rgba'] || getRGBA(this.recipientIndex),
-      transform: `scale(${renderOnPage.xRatio}, ${renderOnPage.yRatio})`,
-    };
+  // getWrapperStyle(field) {
+  //   console.log('getWrapperStyle', field);
+  // const {x = 0, y = 0, width = 150, height = 50, page = 1} = field.settings;
+  // const renderOnPage = this.pdfPageInfo.pages.find(p => p.pageNumber === page);
+  // return {
+  //   bottom: `${rescale(renderOnPage.yScale, y)}px`,
+  //   left: `${rescale(renderOnPage.xScale, x)}px`,
+  //   height: `${height}px`,
+  //   width: `${width}px`,
+  //   position: 'absolute',
+  //   backgroundColor: field['rgba'] || getRGBA(this.recipientIndex),
+  //   transform: `scale(${renderOnPage.xScale}, ${renderOnPage.yScale})`,
+  // };
+  // }
+
+  setControlStyles(el: HTMLElement, field, docPage: IDocumentPageInfo) {
+    console.log('setControlStyles', el, field, docPage);
+    const {x = 0, y = 0, width = 150, height = 50} = field.settings;
+
+    el.style.width = `${width}px`;
+    el.style.height = `${height}px`;
+    el.style.position = 'absolute';
+    el.style.left = `${rescale(docPage.xScale, x)}px`;
+    el.style.bottom = `${rescale(docPage.yScale, y)}px`;
+    el.style.transform = `scale(${docPage.xScale}, ${docPage.yScale})`;
+    el.style.backgroundColor = field['rgba'] || getRGBA(this.recipientIndex);
+  }
+
+  renderField(field: IDocumentField, docPage: IDocumentPageInfo /*, index: number*/) {
+    const {required = false, settings = {} as any, page} = field;
+    const {x = 0, y = 0, base64 = '', placeholder = '', options = [], value = '', result = ''} = settings;
+    console.log('[SIGN] Rendering field', {field, settings, docPage, x, y, base64, placeholder, options, value, result, required, page});
+
+    const controlsDiv = document.getElementById(docPage.containerId + '-controls');
+    if (!controlsDiv) {
+      return;
+    }
+
+    const id = `verdocs-document-field-${field.name}`;
+
+    const existingField = document.getElementById(id);
+    console.log('[SIGN] Existing field', existingField);
+
+    if (existingField) {
+      this.setControlStyles(existingField, field, docPage);
+      return;
+    }
+
+    console.log('[SIGN] Creating field', field, docPage);
+
+    let el;
+    switch (field.type) {
+      case 'signature':
+        el = document.createElement('verdocs-field-signature');
+        el.setAttribute('value', base64);
+        break;
+      case 'initial':
+        el = document.createElement('verdocs-field-initial');
+        el.setAttribute('value', base64);
+        break;
+      case 'textbox':
+        el = document.createElement('verdocs-field-textbox');
+        el.setAttribute('value', result || '');
+        el.setAttribute('placeholder', placeholder || '');
+        el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
+        break;
+      case 'textarea':
+        el = document.createElement('verdocs-field-textarea');
+        el.setAttribute('value', result || '');
+        el.setAttribute('placeholder', placeholder || '');
+        break;
+      case 'date':
+        el = document.createElement('verdocs-field-date');
+        el.setAttribute('value', result || '');
+        el.setAttribute('placeholder', placeholder || '');
+        break;
+      case 'dropdown':
+        el = document.createElement('verdocs-field-dropdown');
+        el.setAttribute('options', options);
+        el.setAttribute('value', value);
+        break;
+      case 'checkbox':
+        el = document.createElement('verdocs-field-checkbox');
+        el.setAttribute('value', result || '');
+        break;
+      // case 'checkbox_group':
+      //   el = document.createElement('verdocs-field-signature');
+      //   el.setAttribute('value', base64);
+      //   break;
+      //   return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
+      // case 'radio_button_group':
+      //   el = document.createElement('verdocs-field-signature');
+      //   el.setAttribute('value', base64);
+      //   break;
+      //   return field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index));
+      case 'attachment':
+        el = document.createElement('verdocs-field-attachment');
+        el.setAttribute('value', result || '');
+        break;
+      case 'payment':
+        el = document.createElement('verdocs-field-payment');
+        el.setAttribute('field', field);
+        break;
+      default:
+        console.log('[SIGN] Skipping unsupported field type', field);
+    }
+
+    if (el) {
+      el.setAttribute('id', id);
+      el.setAttribute('required', required);
+      this.setControlStyles(el, field, docPage);
+      controlsDiv.appendChild(el);
+    }
+  }
+
+  handlePageRendered(e) {
+    const pageInfo = e.detail as IPageRenderEvent;
+    console.log('[SIGN] Page rendered', pageInfo);
+
+    const fields = this.fields.filter(field => field.page === pageInfo.renderedPage.pageNumber);
+    console.log('[SIGN] Fields on page', fields);
+    fields.forEach(field => this.renderField(field, pageInfo.renderedPage));
+    // .map((field, index) => this.renderField(field, index));
+    // this.pdfPageInfo = e.detail;
   }
 
   render() {
@@ -405,17 +512,29 @@ export class VerdocsSign {
         {!this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
         <div class="document">
-          {this.pdfUrl ? <verdocs-view source={this.pdfUrl} endpoint={this.endpoint} onDocumentRendered={e => this.handleDocumentRendered(e)} /> : <verdocs-loader />}
+          {this.pdfUrl ? (
+            <verdocs-view
+              source={this.pdfUrl}
+              endpoint={this.endpoint}
+              onPageRendered={e => this.handlePageRendered(e)}
+              pageLayers={[
+                {name: 'page', type: 'canvas'},
+                {name: 'controls', type: 'div'},
+              ]}
+            />
+          ) : (
+            <verdocs-loader />
+          )}
 
-          {(this.pdfPageInfo?.pages || []).map(page => (
-            <div class="page-controls">
-              {this.pdfPageInfo?.numRendered > 0 ? (
-                this.fields.filter(field => field.page === page.pageNumber).map((field, index) => this.renderField(field, index))
-              ) : (
-                <div style={{display: 'none'}}>Waiting for PDF to render...</div>
-              )}
-            </div>
-          ))}
+          {/*{(this.pdfPageInfo?.pages || []).map(page => (*/}
+          {/*  <div class="page-controls">*/}
+          {/*    {this.pdfPageInfo?.numRendered > 0 ? (*/}
+          {/*      this.fields.filter(field => field.page === page.pageNumber).map((field, index) => this.renderField(field, index))*/}
+          {/*    ) : (*/}
+          {/*      <div style={{display: 'none'}}>Waiting for PDF to render...</div>*/}
+          {/*    )}*/}
+          {/*  </div>*/}
+          {/*))}*/}
         </div>
       </Host>
     );

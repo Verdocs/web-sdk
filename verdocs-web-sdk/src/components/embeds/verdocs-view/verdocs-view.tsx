@@ -2,38 +2,24 @@ import pdf from 'pdfjs-dist';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import PDFJSWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry';
-import {Component, h, Element, Event, Prop, Watch, EventEmitter, State} from '@stencil/core';
 import {DocumentInitParameters, OnProgressParameters} from 'pdfjs-dist/types/src/display/api';
+import {Component, h, Element, Event, Host, Prop, Watch, EventEmitter, State} from '@stencil/core';
+import {IDocumentPageInfo, IPageLayer} from '../../elements/verdocs-document-page/verdocs-document-page';
 import {integerSequence} from '../../../utils/utils';
-import {IDocumentPageInfo} from '../../elements/verdocs-document-page/verdocs-document-page';
 
-const CANVAS_MARGIN = 15;
-const PDF_WORKER_URL = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 const CMAPS_URL = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/cmaps/`;
 
-console.log('[VIEW] Loading PDF-JS', {PDF_WORKER_URL, CMAPS_URL});
 pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 
-export interface IPDFPageInfo {
-  height: number;
+export interface ISourcePageMetrics {
   width: number;
-  originalHeight: number;
-  originalWidth: number;
-  xRatio: number;
-  yRatio: number;
-  pageNumber: number;
-  canvasTop: number;
-  canvasRight: number;
-  canvasLeft: number;
-  canvasBottom: number;
+  height: number;
 }
 
-export interface IPDFRenderEvent {
-  numRendered: number;
-  numPages: number;
-  pages: IPDFPageInfo[];
-  canvasContainer: HTMLDivElement;
-  renderedPage: IPDFPageInfo;
+export interface IPageRenderEvent {
+  renderedPage: IDocumentPageInfo;
+  sourcePageMetrics: ISourcePageMetrics;
+  pages: Record<number, IDocumentPageInfo>;
 }
 
 @Component({
@@ -43,10 +29,8 @@ export interface IPDFRenderEvent {
 })
 export class VerdocsView {
   @Element() component: HTMLElement;
-  private resizeObserver: ResizeObserver;
 
-  private pdfDocument: any;
-  private pdfContainer: HTMLDivElement;
+  private pdfDocument: pdfjsLib.PDFDocumentProxy;
   private fingerprints = [] as string[];
 
   /**
@@ -58,6 +42,14 @@ export class VerdocsView {
    * Rotate the PDF in degrees
    */
   @Prop() rotation: 0 | 90 | 180 | 270 = 0;
+
+  /**
+   * Layers will be passed through to the individual pages inside this component.
+   */
+  @Prop() pageLayers: IPageLayer[] = [
+    {name: 'page', type: 'canvas'},
+    {name: 'controls', type: 'div'},
+  ];
 
   /**
    * Src of the PDF to load and render
@@ -78,7 +70,7 @@ export class VerdocsView {
   /**
    * Fired when a page has been rendered
    */
-  @Event() pageRendered: EventEmitter<IPDFRenderEvent>;
+  @Event() pageRendered: EventEmitter<IPageRenderEvent>;
 
   /**
    * Fired when a page has been changed
@@ -100,43 +92,23 @@ export class VerdocsView {
    */
   @Event() scaleChange: EventEmitter<number>;
 
-  /**
-   * Fired when the document has completed rendered. The event will include the rendered page count.
-   */
-  @Event() documentRendered: EventEmitter<IPDFRenderEvent>;
-
   @State() loadProgress = 0;
 
   @State()
   numPages = 0;
 
-  pagesRendered: IPDFPageInfo[] = [];
-
   domPages: Record<number, IDocumentPageInfo> = {};
+
+  sourcePageMetrics: Record<number, {width: number; height: number}> = {};
 
   componentWillLoad(): void {
     this.endpoint.loadSession();
   }
 
   componentDidLoad(): void {
-    this.pdfContainer = document.getElementById('verdocs-pdf-viewer-container') as HTMLDivElement;
-
     if (this.source) {
       this.loadAndRender(this.source);
     }
-
-    this.resizeObserver = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        console.log('resizeObserver entry', entry.contentRect);
-        // this.applySizeClasses(entry.contentRect.width);
-      }
-      // Do stuff!
-    });
-    this.resizeObserver.observe(this.component);
-  }
-
-  disconnectedCallback() {
-    this.resizeObserver?.disconnect();
   }
 
   // Determine whether a page is "rotated" (in either direction)
@@ -144,87 +116,41 @@ export class VerdocsView {
     return rotation !== 0 && rotation % 180 !== 0;
   }
 
-  // Render one document page
+  // Render one document page. Note that pageNumber is 1-based.
   async renderPage(pageNumber: number): Promise<void> {
-    const index = pageNumber - 1;
     const domPage = this.domPages[pageNumber];
 
     // Two async operations happen here, loading the PDF and rendering the DOM div/canvas placeholders to draw the pages on.
     if (!domPage) {
-      console.log('[VIEW] Skipping rendering page not yet in DOM', {index, pageNumber});
+      console.log('[VIEW] Skipping rendering page not yet in DOM', {pageNumber});
       return;
     }
 
-    console.log('[VIEW] Rendering page', {index, pageNumber, domPage});
+    const pageMetrics = this.sourcePageMetrics[pageNumber];
+
+    console.log('[VIEW] Rendering page', {pageNumber, pageMetrics, domPage});
     try {
-      const page = await this.pdfDocument.getPage(pageNumber);
-      const [pageX0, pageY0, pageX1, pageY1] = page.view;
-      console.log('[VIEW] Page metrics', {pageX0, pageY0, pageX1, pageY1});
-      const rotation = page.rotate;
+      const pdfPage = await this.pdfDocument.getPage(pageNumber);
+      const viewport = pdfPage.getViewport({scale: domPage.xScale});
+      // console.log('[VIEW] Page viewport', domPage.xScale, viewport);
 
-      const viewport = page.getViewport({scale: domPage.xScale});
-      console.log('[VIEW] Page viewport', viewport.width, viewport.height, viewport.viewBox);
-
-      // const viewport = page.getViewport({scale: 1.5});
       const canvas = document.getElementById(`${domPage.containerId}-page`) as HTMLCanvasElement | null;
       if (!canvas) {
         console.log('[VIEW] Unable to find canvas element');
         return;
       }
 
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      console.log('[VIEW] Canvas', canvas, canvas.width, canvas.height);
-
+      canvas.width = domPage.renderedWidth;
+      canvas.height = domPage.renderedHeight;
       const canvasContext = canvas.getContext('2d');
-      await page.render({canvasContext, viewport});
+      canvasContext.clearRect(0, 0, domPage.renderedWidth, domPage.renderedHeight);
+      await pdfPage.render({canvasContext, viewport});
 
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-      const pageWidth = pageX1 - pageX0;
-      const pageHeight = pageY1 - pageY0;
-
-      console.log('[VIEW] Final dimensions', {canvasWidth, canvasHeight, pageWidth, pageHeight});
-
-      this.pagesRendered.sort((a, b) => a.pageNumber - b.pageNumber);
-      const previousSibling = this.pagesRendered.filter(page => page.pageNumber < pageNumber).pop();
-      const canvasTop = (previousSibling?.canvasBottom || 0) + CANVAS_MARGIN;
-
-      const pageDetails: IPDFPageInfo = {
-        pageNumber,
-        width: canvasWidth,
-        height: canvasHeight,
-        originalWidth: this.isRotated(rotation) ? pageHeight : pageWidth,
-        originalHeight: this.isRotated(rotation) ? pageWidth : pageHeight,
-        xRatio: domPage.xScale,
-        yRatio: domPage.yScale,
-        canvasTop: canvasTop,
-        canvasLeft: CANVAS_MARGIN,
-        canvasRight: CANVAS_MARGIN + canvasWidth,
-        canvasBottom: canvasTop + canvasHeight,
-      };
-
-      if (this.pagesRendered[index]) {
-        this.pagesRendered[index] = pageDetails;
-      } else {
-        this.pagesRendered.push(pageDetails);
-      }
-
-      const eventData: IPDFRenderEvent = {
-        pages: this.pagesRendered,
-        numPages: this.numPages,
-        numRendered: this.pagesRendered.length,
-        canvasContainer: this.pdfContainer,
-        renderedPage: pageDetails,
-      };
-
-      this.pageRendered.emit(eventData);
-
-      if (pageNumber >= this.numPages) {
-        console.log('[VIEW] Done rendering');
-        this.pagesRendered.sort((a, b) => a.pageNumber - b.pageNumber);
-        this.documentRendered.emit(eventData);
-      }
+      this.pageRendered.emit({
+        renderedPage: domPage,
+        sourcePageMetrics: pageMetrics,
+        pages: this.domPages,
+      });
     } catch (e) {
       console.warn('[VIEW] Error rendering page', e);
     }
@@ -232,7 +158,6 @@ export class VerdocsView {
 
   async renderPages(): Promise<void> {
     const pageNumbersToRender = integerSequence(1, this.numPages);
-
     for await (let pageNumber of pageNumbersToRender) {
       try {
         await this.renderPage(pageNumber);
@@ -247,6 +172,19 @@ export class VerdocsView {
     this.loadProgress = Math.floor((100 * progress.loaded) / progress.total);
   }
 
+  // After a document is done loading, go through its pages to get their dimensions
+  async parsePageMetrics(pdfDocument: pdfjsLib.PDFDocumentProxy) {
+    const pageNumbersToRender = integerSequence(1, pdfDocument.numPages);
+
+    for await (let pageNumber of pageNumbersToRender) {
+      const pdfPage = await pdfDocument.getPage(1);
+      const [pageX0, pageY0, pageX1, pageY1] = pdfPage.view;
+      this.sourcePageMetrics[pageNumber] = {width: pageX1 - pageX0, height: pageY1 - pageY0};
+    }
+
+    console.log('[VIEW] Parsed page metrics', this.sourcePageMetrics);
+  }
+
   loadAndRender(src: string): void {
     console.log('[VIEW] Loading', src);
 
@@ -259,53 +197,61 @@ export class VerdocsView {
       cMapPacked: true,
       httpHeaders,
       withCredentials: true,
-      verbosity: pdfjsLib.VerbosityLevel.INFOS,
-
-      // TODO
       stopAtErrors: true,
+      verbosity: pdfjsLib.VerbosityLevel.WARNINGS,
+      // verbosity: pdfjsLib.VerbosityLevel.INFOS,
     } as DocumentInitParameters;
 
     // @ts-ignore
     const loadingTask = pdf.getDocument(source, null, null, this.onProgress);
     loadingTask.onProgress = this.onProgress;
     loadingTask.promise
-      .then((pdfDocument: pdfjsLib.PDFDocumentProxy) => {
-        this.loadProgress = 100;
-        this.numPages = pdfDocument.numPages;
-        this.fingerprints = pdfDocument.fingerprints;
-        console.log(`[VIEW] Got PDF document fingerprints "${this.fingerprints.join(', ')}", ${this.numPages} pages`);
+      .then(async (pdfDocument: pdfjsLib.PDFDocumentProxy) => {
+        await this.parsePageMetrics(pdfDocument);
 
         this.pdfDocument = pdfDocument;
-        this.renderPages().catch(e => console.log('Rendering error', e));
+        this.numPages = pdfDocument.numPages;
+        this.fingerprints = pdfDocument.fingerprints;
+        console.log(`[VIEW] Got PDF document fingerprints "${this.fingerprints.join(', ')}", ${this.numPages} page(s)`);
+
+        // We don't try to render the pages here, setting loadProtress triggers that by adding the individual page entries in
+        // DOM in render() below. Each page then fires onPageRendered when it is ready to receive content.
+        this.loadProgress = 100;
       })
       .catch(e => {
         console.log('[VIEW] Loading error', e);
       });
   }
 
+  async handlePageRendered(e: any) {
+    e.stopPropagation();
+
+    const domPage = e.detail as IDocumentPageInfo;
+    this.domPages[domPage.pageNumber] = domPage;
+    await this.renderPage(domPage.pageNumber);
+  }
+
   render() {
+    if (this.loadProgress < 100) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
     return (
-      <div class="container">
-        {this.loadProgress < 100 ? <verdocs-loader /> : <div style={{display: 'none'}} />}
-        <div id="verdocs-pdf-viewer-container" />
+      <Host>
         {Array.apply(null, Array(this.numPages)).map((_, index) => (
           <verdocs-document-page
+            virtualWidth={this.sourcePageMetrics[index + 1]?.width || 612}
+            virtualHeight={this.sourcePageMetrics[index + 1]?.height || 792}
             pageNumber={index + 1}
-            virtualWidth={612}
-            virtualHeight={792}
-            layers={[
-              {name: 'page', type: 'canvas'},
-              {name: 'controls', type: 'div'},
-            ]}
-            onPageRendered={(e: any) => {
-              const domPage = e.detail as IDocumentPageInfo;
-              this.domPages[domPage.pageNumber] = domPage;
-              console.log('[VIEW] Document pages updated', domPage.pageNumber, this.domPages);
-              this.renderPage(domPage.pageNumber).catch(() => {});
-            }}
+            layers={this.pageLayers}
+            onPageRendered={p => this.handlePageRendered(p)}
           />
         ))}
-      </div>
+      </Host>
     );
   }
 }

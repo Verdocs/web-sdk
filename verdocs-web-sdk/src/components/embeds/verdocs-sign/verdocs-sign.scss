@@ -1,18 +1,13 @@
 @import '../../../theme.scss';
 
 verdocs-sign {
-  font-family: $verdocs-primary-font;
-  position: relative;
   display: flex;
-  flex-direction: column;
-  min-height: 600px;
-  box-sizing: border-box;
   overflow: hidden;
-  //width: 360px;
-
-  &.storybook {
-    max-height: 600px;
-  }
+  position: relative;
+  min-height: 600px;
+  flex-direction: column;
+  box-sizing: border-box;
+  font-family: $verdocs-primary-font;
 
   div {
     box-sizing: border-box;
@@ -134,14 +129,5 @@ verdocs-sign {
         }
       }
     }
-  }
-
-  .page-controls {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 500;
-    position: absolute;
   }
 }
