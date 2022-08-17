@@ -17,6 +17,9 @@ export default {
       },
     },
   },
+  parameters: {
+    layout: 'fullscreen',
+  },
 } as Meta;
 
 export const Sign = ({documentid, roleid, invitecode, authenticated}) =>

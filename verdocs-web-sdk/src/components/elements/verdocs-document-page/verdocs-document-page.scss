@@ -1,0 +1,16 @@
+@import '../../../theme.scss';
+
+verdocs-document-page {
+  width: 100%;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 0 10px 5px #0000000f;
+
+  .verdocs-document-page-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}

@@ -242,6 +242,7 @@ export class VerdocsSign {
 
     const left = rescale(renderOnPage.xRatio, x);
     const bottom = rescale(renderOnPage.yRatio, y);
+    console.log('[SIGN] Computed field position', {type: field.type, xRatio: renderOnPage.xRatio, x, yRatio: renderOnPage.yRatio, y, settings});
 
     const style = {
       left: `${left}px`,
@@ -259,11 +260,10 @@ export class VerdocsSign {
       style.width = `${field.settings.width}px`;
     }
 
-    console.log('rendering field', field.type, field);
-
     const id = `field-${field.name}`;
     switch (field.type) {
       case 'signature':
+        console.log('Computed signature style', field.settings, style);
         return <verdocs-field-signature style={style} value={base64} required={required} id={id} />;
       case 'initial':
         return <verdocs-field-initial style={style} required={required} id={id} />;
@@ -355,6 +355,20 @@ export class VerdocsSign {
     }
   }
 
+  getWrapperStyle(field) {
+    const {x = 0, y = 0, width = 150, height = 50, page = 1} = field.settings;
+    const renderOnPage = this.pdfPageInfo.pages.find(p => p.pageNumber === page);
+    return {
+      bottom: `${rescale(renderOnPage.yRatio, y)}px`,
+      left: `${rescale(renderOnPage.xRatio, x)}px`,
+      height: `${height}px`,
+      width: `${width}px`,
+      position: 'absolute',
+      backgroundColor: field['rgba'] || getRGBA(this.recipientIndex),
+      transform: `scale(${renderOnPage.xRatio}, ${renderOnPage.yRatio})`,
+    };
+  }
+
   render() {
     const menuOptions = [
       {id: 'later', label: 'Finish Later'}, //
@@ -392,8 +406,9 @@ export class VerdocsSign {
 
         <div class="document">
           {this.pdfUrl ? <verdocs-view source={this.pdfUrl} endpoint={this.endpoint} onDocumentRendered={e => this.handleDocumentRendered(e)} /> : <verdocs-loader />}
+
           {(this.pdfPageInfo?.pages || []).map(page => (
-            <div class="page-controls" style={{height: `${page.height}px`, width: `${page.width}px`, top: `${page.canvasTop}px`, margin: '0 auto'}}>
+            <div class="page-controls">
               {this.pdfPageInfo?.numRendered > 0 ? (
                 this.fields.filter(field => field.page === page.pageNumber).map((field, index) => this.renderField(field, index))
               ) : (

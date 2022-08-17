@@ -17,6 +17,9 @@ export default {
     // source: 'https://stage-api.verdocs.com/envelopes/9f514766-e86e-46d0-9c31-a95eacc40c2e/envelope_documents/e2dea8fa-8a86-4d52-9aa9-28c263120190?file=true',
   },
   argTypes: {},
+  parameters: {
+    layout: 'fullscreen',
+  },
 } as Meta;
 
 // const listener = {

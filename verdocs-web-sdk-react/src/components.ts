@@ -10,6 +10,7 @@ import { defineCustomElements } from '@verdocs/web-sdk/loader';
 defineCustomElements();
 export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HTMLVerdocsAuthElement>('verdocs-auth');
 export const VerdocsButton = /*@__PURE__*/createReactComponent<JSX.VerdocsButton, HTMLVerdocsButtonElement>('verdocs-button');
+export const VerdocsDocumentPage = /*@__PURE__*/createReactComponent<JSX.VerdocsDocumentPage, HTMLVerdocsDocumentPageElement>('verdocs-document-page');
 export const VerdocsDropdown = /*@__PURE__*/createReactComponent<JSX.VerdocsDropdown, HTMLVerdocsDropdownElement>('verdocs-dropdown');
 export const VerdocsFieldAttachment = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldAttachment, HTMLVerdocsFieldAttachmentElement>('verdocs-field-attachment');
 export const VerdocsFieldCheckbox = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldCheckbox, HTMLVerdocsFieldCheckboxElement>('verdocs-field-checkbox');

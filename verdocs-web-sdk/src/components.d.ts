@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
+import { IDocumentPageInfo, IPageLayer } from "./components/elements/verdocs-document-page/verdocs-document-page";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocument, IDocumentField, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
@@ -64,6 +65,24 @@ export namespace Components {
           * The display variant of the button.
          */
         "variant": 'standard' | 'text' | 'outline';
+    }
+    interface VerdocsDocumentPage {
+        /**
+          * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-document-page-ker2fr1p9">       <div id="verdocs-document-page-ker2fr1p9-page"></div>       <div id="verdocs-document-page-ker2fr1p9-fields"></div>     </div> ```
+         */
+        "layers": IPageLayer[];
+        /**
+          * The page number being rendered. Not used internally but included in callbacks/events beacuse page numbers are used everywhere in document handling.
+         */
+        "pageNumber": number;
+        /**
+          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall.
+         */
+        "virtualHeight": number;
+        /**
+          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide.
+         */
+        "virtualWidth": number;
     }
     interface VerdocsDropdown {
         /**
@@ -516,6 +535,10 @@ export interface VerdocsButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsButtonElement;
 }
+export interface VerdocsDocumentPageCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsDocumentPageElement;
+}
 export interface VerdocsDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDropdownElement;
@@ -612,6 +635,12 @@ declare global {
     var HTMLVerdocsButtonElement: {
         prototype: HTMLVerdocsButtonElement;
         new (): HTMLVerdocsButtonElement;
+    };
+    interface HTMLVerdocsDocumentPageElement extends Components.VerdocsDocumentPage, HTMLStencilElement {
+    }
+    var HTMLVerdocsDocumentPageElement: {
+        prototype: HTMLVerdocsDocumentPageElement;
+        new (): HTMLVerdocsDocumentPageElement;
     };
     interface HTMLVerdocsDropdownElement extends Components.VerdocsDropdown, HTMLStencilElement {
     }
@@ -796,6 +825,7 @@ declare global {
     interface HTMLElementTagNameMap {
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-button": HTMLVerdocsButtonElement;
+        "verdocs-document-page": HTMLVerdocsDocumentPageElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-field-attachment": HTMLVerdocsFieldAttachmentElement;
         "verdocs-field-checkbox": HTMLVerdocsFieldCheckboxElement;
@@ -884,6 +914,28 @@ declare namespace LocalJSX {
           * The display variant of the button.
          */
         "variant"?: 'standard' | 'text' | 'outline';
+    }
+    interface VerdocsDocumentPage {
+        /**
+          * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-document-page-ker2fr1p9">       <div id="verdocs-document-page-ker2fr1p9-page"></div>       <div id="verdocs-document-page-ker2fr1p9-fields"></div>     </div> ```
+         */
+        "layers"?: IPageLayer[];
+        /**
+          * Fired when a page has been rendered. This is also fired when the page is resized.
+         */
+        "onPageRendered"?: (event: VerdocsDocumentPageCustomEvent<IDocumentPageInfo>) => void;
+        /**
+          * The page number being rendered. Not used internally but included in callbacks/events beacuse page numbers are used everywhere in document handling.
+         */
+        "pageNumber"?: number;
+        /**
+          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall.
+         */
+        "virtualHeight"?: number;
+        /**
+          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide.
+         */
+        "virtualWidth"?: number;
     }
     interface VerdocsDropdown {
         /**
@@ -1513,6 +1565,7 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "verdocs-auth": VerdocsAuth;
         "verdocs-button": VerdocsButton;
+        "verdocs-document-page": VerdocsDocumentPage;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-field-attachment": VerdocsFieldAttachment;
         "verdocs-field-checkbox": VerdocsFieldCheckbox;
@@ -1551,6 +1604,7 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
+            "verdocs-document-page": LocalJSX.VerdocsDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsDocumentPageElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
             "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
             "verdocs-field-checkbox": LocalJSX.VerdocsFieldCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;
