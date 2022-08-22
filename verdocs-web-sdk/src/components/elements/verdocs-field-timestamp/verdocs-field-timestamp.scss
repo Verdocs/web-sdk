@@ -1,6 +1,6 @@
 @import '../../../theme.scss';
 
-verdocs-field-textarea {
+verdocs-field-timestamp {
   font-family: $verdocs-primary-font;
   width: 150px;
   height: 15px;
@@ -10,7 +10,7 @@ verdocs-field-textarea {
   background-color: transparent;
   transform-origin: bottom left;
 
-  textarea {
+  input {
     box-sizing: border-box;
     color: rgba(0, 0, 0, 0.87);
     font-weight: 500;

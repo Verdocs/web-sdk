@@ -2,14 +2,14 @@ import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@ste
 import {IDocumentField} from '@verdocs/js-sdk/Documents/Documents';
 
 /**
- * Display a text input field.
+ * Display a timestamp field.
  */
 @Component({
-  tag: 'verdocs-field-textbox',
-  styleUrl: 'verdocs-field-textbox.scss',
+  tag: 'verdocs-field-timestamp',
+  styleUrl: 'verdocs-field-timestamp.scss',
   shadow: false,
 })
-export class VerdocsFieldTextbox {
+export class VerdocsFieldTimestamp {
   private el: HTMLInputElement;
 
   /**
@@ -72,7 +72,7 @@ export class VerdocsFieldTextbox {
           type="text"
           placeholder={this.field?.settings?.placeholder}
           tabIndex={this.field?.settings?.order}
-          value={this.field?.settings?.value}
+          value={this.field?.settings?.value || new Date().toLocaleDateString()}
           disabled={this.field?.settings?.disabled}
           required={this.field?.required}
           ref={el => (this.el = el)}

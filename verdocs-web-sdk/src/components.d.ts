@@ -278,26 +278,17 @@ export namespace Components {
     }
     interface VerdocsFieldTextbox {
         /**
-          * Sets the disabled attribute of the input element.
+          * A placeholder to assist the user in completing the field.
          */
-        "disabled": boolean;
+        "field": IDocumentField;
         "focusField": () => Promise<void>;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order": number;
+    }
+    interface VerdocsFieldTimestamp {
         /**
           * A placeholder to assist the user in completing the field.
          */
-        "placeholder": string;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required": boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value": string;
+        "field": IDocumentField;
+        "focusField": () => Promise<void>;
     }
     interface VerdocsInitialDialog {
         /**
@@ -417,7 +408,7 @@ export namespace Components {
         /**
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
-        "documentid": string | null;
+        "documentId": string | null;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
@@ -425,11 +416,11 @@ export namespace Components {
         /**
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
-        "invitecode": string | null;
+        "inviteCode": string | null;
         /**
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
-        "roleid": string | null;
+        "roleId": string | null;
     }
     interface VerdocsSignatureDialog {
         /**
@@ -588,6 +579,10 @@ export interface VerdocsFieldTextboxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldTextboxElement;
 }
+export interface VerdocsFieldTimestampCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldTimestampElement;
+}
 export interface VerdocsInitialDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsInitialDialogElement;
@@ -712,6 +707,12 @@ declare global {
     var HTMLVerdocsFieldTextboxElement: {
         prototype: HTMLVerdocsFieldTextboxElement;
         new (): HTMLVerdocsFieldTextboxElement;
+    };
+    interface HTMLVerdocsFieldTimestampElement extends Components.VerdocsFieldTimestamp, HTMLStencilElement {
+    }
+    var HTMLVerdocsFieldTimestampElement: {
+        prototype: HTMLVerdocsFieldTimestampElement;
+        new (): HTMLVerdocsFieldTimestampElement;
     };
     interface HTMLVerdocsInitialDialogElement extends Components.VerdocsInitialDialog, HTMLStencilElement {
     }
@@ -842,6 +843,7 @@ declare global {
         "verdocs-field-signature": HTMLVerdocsFieldSignatureElement;
         "verdocs-field-textarea": HTMLVerdocsFieldTextareaElement;
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
+        "verdocs-field-timestamp": HTMLVerdocsFieldTimestampElement;
         "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
         "verdocs-kba-dialog": HTMLVerdocsKbaDialogElement;
         "verdocs-loader": HTMLVerdocsLoaderElement;
@@ -1203,9 +1205,9 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldTextbox {
         /**
-          * Sets the disabled attribute of the input element.
+          * A placeholder to assist the user in completing the field.
          */
-        "disabled"?: boolean;
+        "field"?: IDocumentField;
         /**
           * Event fired when the input field gains focus.
          */
@@ -1222,22 +1224,28 @@ declare namespace LocalJSX {
           * Event fired on every character entered into / deleted from the field.
          */
         "onFieldInput"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order"?: number;
+    }
+    interface VerdocsFieldTimestamp {
         /**
           * A placeholder to assist the user in completing the field.
          */
-        "placeholder"?: string;
+        "field"?: IDocumentField;
         /**
-          * If true, the field will be marked required.
+          * Event fired when the input field gains focus.
          */
-        "required"?: boolean;
+        "onFieldBlur"?: (event: VerdocsFieldTimestampCustomEvent<boolean>) => void;
         /**
-          * Sets the value of the input element.
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "value"?: string;
+        "onFieldChange"?: (event: VerdocsFieldTimestampCustomEvent<string>) => void;
+        /**
+          * Event fired when the input field loses focus.
+         */
+        "onFieldFocus"?: (event: VerdocsFieldTimestampCustomEvent<boolean>) => void;
+        /**
+          * Event fired on every character entered into / deleted from the field.
+         */
+        "onFieldInput"?: (event: VerdocsFieldTimestampCustomEvent<string>) => void;
     }
     interface VerdocsInitialDialog {
         /**
@@ -1401,7 +1409,7 @@ declare namespace LocalJSX {
         /**
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
-        "documentid"?: string | null;
+        "documentId"?: string | null;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
@@ -1409,11 +1417,11 @@ declare namespace LocalJSX {
         /**
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
-        "invitecode"?: string | null;
+        "inviteCode"?: string | null;
         /**
           * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
          */
-        "roleid"?: string | null;
+        "roleId"?: string | null;
     }
     interface VerdocsSignatureDialog {
         /**
@@ -1578,6 +1586,7 @@ declare namespace LocalJSX {
         "verdocs-field-signature": VerdocsFieldSignature;
         "verdocs-field-textarea": VerdocsFieldTextarea;
         "verdocs-field-textbox": VerdocsFieldTextbox;
+        "verdocs-field-timestamp": VerdocsFieldTimestamp;
         "verdocs-initial-dialog": VerdocsInitialDialog;
         "verdocs-kba-dialog": VerdocsKbaDialog;
         "verdocs-loader": VerdocsLoader;
@@ -1617,6 +1626,7 @@ declare module "@stencil/core" {
             "verdocs-field-signature": LocalJSX.VerdocsFieldSignature & JSXBase.HTMLAttributes<HTMLVerdocsFieldSignatureElement>;
             "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
             "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
+            "verdocs-field-timestamp": LocalJSX.VerdocsFieldTimestamp & JSXBase.HTMLAttributes<HTMLVerdocsFieldTimestampElement>;
             "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
             "verdocs-kba-dialog": LocalJSX.VerdocsKbaDialog & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;

@@ -455,16 +455,59 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'order', 'placeholder', 'required', 'value'],
+  inputs: ['field'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-textbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'order', 'placeholder', 'required', 'value']
+  inputs: ['field']
 })
 export class VerdocsFieldTextbox {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput']);
+  }
+}
+
+
+export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {
+  /**
+   * Event fired when the input field loses focus. 
+   */
+  fieldFocus: EventEmitter<CustomEvent<boolean>>;
+  /**
+   * Event fired when the input field gains focus. 
+   */
+  fieldBlur: EventEmitter<CustomEvent<boolean>>;
+  /**
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
+   */
+  fieldChange: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired on every character entered into / deleted from the field. 
+   */
+  fieldInput: EventEmitter<CustomEvent<string>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['field'],
+  methods: ['focusField']
+})
+@Component({
+  selector: 'verdocs-field-timestamp',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['field']
+})
+export class VerdocsFieldTimestamp {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -747,13 +790,13 @@ export declare interface VerdocsSign extends Components.VerdocsSign {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['documentid', 'endpoint', 'invitecode', 'roleid']
+  inputs: ['documentId', 'endpoint', 'inviteCode', 'roleId']
 })
 @Component({
   selector: 'verdocs-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['documentid', 'endpoint', 'invitecode', 'roleid']
+  inputs: ['documentId', 'endpoint', 'inviteCode', 'roleId']
 })
 export class VerdocsSign {
   protected el: HTMLElement;

@@ -34,7 +34,7 @@ verdocs-field-initial {
   }
 
   &.required {
-    border: 1px solid var(--verdocs-required-color);
+    border: 1px solid $verdocs-red-1;
   }
 
   &.focused {

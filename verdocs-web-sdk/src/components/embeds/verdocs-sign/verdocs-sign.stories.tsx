@@ -5,22 +5,30 @@ export default {
   title: 'Embeds/Sign',
   component: 'verdocs-sign',
   args: {
-    documentid: 'bd8ecb8f-6eb9-4998-802a-b8d8b7f14d63',
-    roleid: 'Recipient 1',
-    invitecode: '9c5284cd58e6e7a86c0a94522b58d433',
+    // documentId: '96ccc2e9-1bb8-4be8-9dbd-7113107383ee',
+    // roleId: 'Recipient 2',
+    // inviteCode: 'e21cdf86dcc502f9f460f8ddb7c3f2e1',
+    documentId: '96ccc2e9-1bb8-4be8-9dbd-7113107383ee',
+    roleId: 'Recipient 1',
+    inviteCode: '11f1253a186864b1871a48efed8ff9c1',
   },
   argTypes: {
-    authenticated: {
-      action: 'authenticated',
-      table: {
-        disable: true,
-      },
-    },
+    documentId: {control: {type: 'string'}},
+    roleId: {control: {type: 'string'}},
+    inviteCode: {control: {type: 'string'}},
+    // documentId: {defaultValue: '', control: {type: 'string'}},
+    // roleId: {defaultValue: '', control: {type: 'string'}},
+    // inviteCode: {defaultValue: '', control: {type: 'string'}},
+    // authenticated: {
+    //   action: 'authenticated',
+    //   table: {
+    //     disable: true,
+    //   },
+    // },
   },
   parameters: {
     layout: 'fullscreen',
   },
 } as Meta;
 
-export const Sign = ({documentid, roleid, invitecode, authenticated}) =>
-  html`<verdocs-sign .documentid=${documentid} .roleid=${roleid} .invitecode=${invitecode} @authenticated=${authenticated} />`;
+export const Sign = ({documentId, roleId, inviteCode}) => html`<verdocs-sign .documentId=${documentId} .roleId=${roleId} .inviteCode=${inviteCode} />`;

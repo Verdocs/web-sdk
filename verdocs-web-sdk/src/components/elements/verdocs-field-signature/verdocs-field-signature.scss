@@ -35,7 +35,7 @@ verdocs-field-signature {
   }
 
   &.required {
-    border: 1px solid var(--verdocs-required-color);
+    border: 1px solid rgb(204, 0, 0);
   }
 
   &.focused {

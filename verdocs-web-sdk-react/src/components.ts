@@ -22,6 +22,7 @@ export const VerdocsFieldRadioButton = /*@__PURE__*/createReactComponent<JSX.Ver
 export const VerdocsFieldSignature = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldSignature, HTMLVerdocsFieldSignatureElement>('verdocs-field-signature');
 export const VerdocsFieldTextarea = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldTextarea, HTMLVerdocsFieldTextareaElement>('verdocs-field-textarea');
 export const VerdocsFieldTextbox = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldTextbox, HTMLVerdocsFieldTextboxElement>('verdocs-field-textbox');
+export const VerdocsFieldTimestamp = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldTimestamp, HTMLVerdocsFieldTimestampElement>('verdocs-field-timestamp');
 export const VerdocsInitialDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsInitialDialog, HTMLVerdocsInitialDialogElement>('verdocs-initial-dialog');
 export const VerdocsKbaDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsKbaDialog, HTMLVerdocsKbaDialogElement>('verdocs-kba-dialog');
 export const VerdocsLoader = /*@__PURE__*/createReactComponent<JSX.VerdocsLoader, HTMLVerdocsLoaderElement>('verdocs-loader');
