@@ -265,6 +265,16 @@ export class VerdocsSign {
     }
   }
 
+  // (async () => {
+  //   await customElements.whenDefined('verdocs-field-signature');
+  //   const els = document.getElementById('verdocs-field-signature');
+  //   await els.focusField();
+  // })();
+
+  getFieldId(field: IDocumentField) {
+    return `verdocs-doc-fld-${field.name}`;
+  }
+
   handleNext() {
     // Find and focus the next incomplete required field
     const requiredFields = this.fields.filter(field => field.required);
@@ -279,10 +289,12 @@ export class VerdocsSign {
     }
 
     const nextRequiredField = requiredFields[nextFocusedIndex];
-    console.log('next required fielod', nextRequiredField);
+    console.log('next required field', nextRequiredField);
 
     if (nextRequiredField) {
-      const el = document.getElementById(`field-${nextRequiredField.name}`) as any;
+      const id = this.getFieldId(nextRequiredField);
+      const el = document.getElementById(id) as any;
+      console.log('focusing', id, el);
       el?.focusField();
       this.focusedField = nextRequiredField.name;
     }
@@ -301,16 +313,12 @@ export class VerdocsSign {
   }
 
   renderField(field: IDocumentField, docPage: IDocumentPageInfo /*, index: number*/) {
-    const {required = false, settings = {} as any, page} = field;
-    const {x = 0, y = 0, base64 = '', placeholder = '', options = [], value = '', result = ''} = settings;
-    console.log('[SIGN] Rendering field', {field, settings, docPage, x, y, base64, placeholder, options, value, result, required, page});
-
     const controlsDiv = document.getElementById(docPage.containerId + '-controls');
     if (!controlsDiv) {
       return;
     }
 
-    const id = `verdocs-document-field-${field.name}`;
+    const id = this.getFieldId(field);
 
     const existingField = document.getElementById(id);
 
@@ -383,7 +391,7 @@ export class VerdocsSign {
       el.field = field;
       el.recipient = this.recipient;
       el.setAttribute('id', id);
-      el.setAttribute('required', required);
+      // el.setAttribute('required', required);
       el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
       this.setControlStyles(el, field, docPage);
       controlsDiv.appendChild(el);

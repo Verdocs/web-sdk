@@ -29,6 +29,7 @@ export class VerdocsFieldSignature {
 
   @Method() async focusField() {
     this.handleShow();
+    console.log('focused', this);
   }
 
   @State()
