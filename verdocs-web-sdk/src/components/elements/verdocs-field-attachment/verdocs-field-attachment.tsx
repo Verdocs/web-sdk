@@ -1,3 +1,4 @@
+import {IDocumentField} from '@verdocs/js-sdk/Documents/Documents';
 import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/core';
 import Paperclip from './paperclip.svg';
 
@@ -11,6 +12,11 @@ import Paperclip from './paperclip.svg';
   shadow: false,
 })
 export class VerdocsFieldAttachment {
+  /**
+   * Sets the field source.
+   */
+  @Prop() field: IDocumentField;
+
   /**
    * Sets the tabIndex of the input element.
    */

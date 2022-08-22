@@ -14,7 +14,7 @@ export class VerdocsSignatureDialog {
   /**
    * Initial signature text
    */
-  @Prop() fullname: string = '';
+  @Prop() fullName: string = '';
 
   /**
    * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
@@ -22,7 +22,7 @@ export class VerdocsSignatureDialog {
   @Prop() open: boolean = false;
 
   /**
-   * Event fired when the initials are adopted.
+   * Event fired when a signature is adopted.
    */
   @Event({composed: true}) adopt: EventEmitter<string>;
 
@@ -38,7 +38,7 @@ export class VerdocsSignatureDialog {
   @State() mode: string = 'type';
 
   componentWillLoad() {
-    this.enteredName = this.fullname;
+    this.enteredName = this.fullName;
 
     const ds = new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v19/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup6hNX6plRP.woff)');
     ds.load().then(font => {
@@ -77,27 +77,21 @@ export class VerdocsSignatureDialog {
     context.fillText(this.enteredName, this.canvasElement.width / 2, this.canvasElement.height / 2);
   }
 
-  // We need a separate event handler for clicking the background because it can receive events "through" other child components
-  handleDismiss(e: any) {
-    if (e.target.className === 'background-overlay') {
-      e.preventDefault();
-      this.handleCancel();
-    }
+  handleCancel(e: any) {
+    console.log('handleCancel', e.target);
+    e.stopPropagation();
+    this.cancel.emit();
   }
 
-  handleNameChange(e) {
+  handleNameChange(e: any) {
     this.enteredName = e.detail;
   }
 
-  handleAdopt() {
+  handleAdopt(e: any) {
+    e.stopPropagation();
+    e.preventDefault();
     const data = this.canvasElement.toDataURL('image/png');
     this.adopt.emit(data);
-    this.open = false;
-  }
-
-  handleCancel() {
-    this.cancel.emit();
-    this.open = false;
   }
 
   /*
@@ -260,35 +254,33 @@ export class VerdocsSignatureDialog {
 
   render() {
     return (
-      <Host class={{open: this.open}}>
-        <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
-          <div class="dialog">
-            <div class="heading">Create Your Signature</div>
+      <Host class={{open: this.open}} onClick={e => this.handleCancel(e)}>
+        <div class="dialog">
+          <div class="heading">Create Your Signature</div>
 
-            <div class="content">
-              <verdocs-text-input placeholder="Full Name..." label="Full Name" value={this.enteredName} onFieldInput={e => this.handleNameChange(e)} />
-              <div class="as-shown">As shown on driver's license or govt. ID card.</div>
+          <div class="content">
+            <verdocs-text-input placeholder="Full Name..." label="Full Name" value={this.enteredName} onFieldInput={e => this.handleNameChange(e)} />
+            <div class="as-shown">As shown on driver's license or govt. ID card.</div>
 
-              <div class="tabs">
-                <div class={{tab: true, active: this.mode === 'type'}} onClick={() => (this.mode = 'type')}>
-                  Type
-                </div>
-                <div class={{tab: true, active: this.mode === 'draw'}} onClick={() => (this.mode = 'draw')}>
-                  Draw
-                </div>
+            <div class="tabs">
+              <div class={{tab: true, active: this.mode === 'type'}} onClick={() => (this.mode = 'type')}>
+                Type
               </div>
-
-              {this.fontLoaded ? <canvas ref={el => (this.canvasElement = el as HTMLCanvasElement)} /> : <div style={{display: 'none'}} />}
-
-              <div class="disclaimer">
-                By clicking Adopt, I agree that the signature will be the electronic representation of my signature for all purposes when I (or my agent) use them on documents,
-                including legally binding contracts &mdash; just the same as a pen-and-paper signature or initial.
+              <div class={{tab: true, active: this.mode === 'draw'}} onClick={() => (this.mode = 'draw')}>
+                Draw
               </div>
+            </div>
 
-              <div class="buttons">
-                <verdocs-button label="CANCEL" size="normal" variant="outline" onPress={() => this.handleCancel()} />
-                <verdocs-button label="Adopt & Sign" size="normal" onPress={() => this.handleAdopt()} />
-              </div>
+            {this.fontLoaded ? <canvas ref={el => (this.canvasElement = el as HTMLCanvasElement)} /> : <div style={{display: 'none'}} />}
+
+            <div class="disclaimer">
+              By clicking Adopt, I agree that the signature will be the electronic representation of my signature for all purposes when I (or my agent) use them on documents,
+              including legally binding contracts &mdash; just the same as a pen-and-paper signature or initial.
+            </div>
+
+            <div class="buttons">
+              <verdocs-button label="CANCEL" size="normal" variant="outline" onPress={e => this.handleCancel(e)} />
+              <verdocs-button label="Adopt & Sign" size="normal" onPress={e => this.handleAdopt(e)} />
             </div>
           </div>
         </div>

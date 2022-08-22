@@ -133,14 +133,14 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'order', 'required', 'value'],
+  inputs: ['disabled', 'field', 'order', 'required', 'value'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-attachment',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'order', 'required', 'value']
+  inputs: ['disabled', 'field', 'order', 'required', 'value']
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLElement;
@@ -361,33 +361,29 @@ export class VerdocsFieldRadioButton {
 
 export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSignature {
   /**
-   * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image. 
+   * Event emitted when the field has changed. 
    */
-  adopt: EventEmitter<CustomEvent<string>>;
-  /**
-   * Event emitted when the user cancels the process. 
-   */
-  cancel: EventEmitter<CustomEvent<any>>;
+  fieldChange: EventEmitter<CustomEvent<string>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['fullName', 'required', 'value'],
+  inputs: ['field', 'recipient'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-signature',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['fullName', 'required', 'value']
+  inputs: ['field', 'recipient']
 })
 export class VerdocsFieldSignature {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['adopt', 'cancel']);
+    proxyOutputs(this, this.el, ['fieldChange']);
   }
 }
 
@@ -770,7 +766,7 @@ export class VerdocsSign {
 
 export declare interface VerdocsSignatureDialog extends Components.VerdocsSignatureDialog {
   /**
-   * Event fired when the initials are adopted. 
+   * Event fired when a signature is adopted. 
    */
   adopt: EventEmitter<CustomEvent<string>>;
   /**
@@ -782,13 +778,13 @@ export declare interface VerdocsSignatureDialog extends Components.VerdocsSignat
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['fullname', 'open']
+  inputs: ['fullName', 'open']
 })
 @Component({
   selector: 'verdocs-signature-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['fullname', 'open']
+  inputs: ['fullName', 'open']
 })
 export class VerdocsSignatureDialog {
   protected el: HTMLElement;

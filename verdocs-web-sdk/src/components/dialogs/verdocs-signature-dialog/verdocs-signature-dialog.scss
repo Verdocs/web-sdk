@@ -3,24 +3,16 @@
 verdocs-signature-dialog {
   font-family: $primary-font;
   box-sizing: border-box;
-  display: none;
-
-  &.open {
-    display: block;
-  }
-
-  .background-overlay {
-    position: absolute;
-    z-index: 10000;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0000007f;
-  }
+  position: absolute;
+  z-index: 10000;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0000007f;
 
   .dialog {
     width: 100%;

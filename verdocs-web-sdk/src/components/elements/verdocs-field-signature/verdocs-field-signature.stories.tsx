@@ -6,8 +6,9 @@ export default {
   component: 'verdocs-field-signature',
   args: {
     required: false,
+    field: {},
   },
   argTypes: {},
 } as Meta;
 
-export const Signature = ({required}) => html`<verdocs-field-signature .required=${required} />`;
+export const Signature = ({required, field}) => html`<verdocs-field-signature .field=${field} .required=${required} />`;

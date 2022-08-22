@@ -1,4 +1,6 @@
-import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/core';
+import {IFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Documents';
+import {Component, h, Host, Prop, Event, EventEmitter, Method, State} from '@stencil/core';
 
 /**
  * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
@@ -11,56 +13,70 @@ import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/co
 })
 export class VerdocsFieldSignature {
   /**
-   * Whether the field is required.
+   * Sets the field source.
    */
-  @Prop() required: boolean = false;
+  @Prop() field: IDocumentField;
 
   /**
-   * The user's full name.
+   * Sets the recipient (signer).
    */
-  @Prop() fullName: string = '';
+  @Prop() recipient: IRecipient;
 
   /**
-   * The base64 signature value.
+   * Event emitted when the field has changed.
    */
-  @Prop() value: string = '';
-
-  /**
-   * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
-   */
-  @Event({composed: true}) adopt: EventEmitter<string>;
-
-  /**
-   * Event emitted when the user cancels the process.
-   */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) fieldChange: EventEmitter<string>;
 
   @Method() async focusField() {
     this.handleShow();
   }
 
+  @State()
+  tempSignature: string = '';
+
   private dialog?: any;
+  private settings: IFieldSetting = {x: 0, y: 0};
+  private fullName: string = '';
+
+  componentWillLoad() {
+    if (this.field?.settings) {
+      this.settings = this.field.settings;
+    }
+
+    if (this.recipient?.full_name) {
+      this.fullName = this.recipient.full_name;
+    }
+
+    console.log({settings: this.settings, fullName: this.fullName});
+  }
+
+  hideDialog() {
+    this.dialog?.remove();
+    this.dialog = null;
+  }
+
+  handleAdopt(e: any) {
+    console.log('[SIGNATURE] Adopted signature');
+    this.tempSignature = e.detail;
+    this.hideDialog();
+  }
 
   handleShow() {
     this.dialog = document.createElement('verdocs-signature-dialog');
     this.dialog.open = true;
     this.dialog.fullName = this.fullName;
-    this.dialog.addEventListener('cancel', () => {
-      console.log('cancel');
-      this.dialog?.remove();
-    });
-    document.addEventListener('adopt', e => {
-      console.log('adopt', e);
-      this.dialog?.remove();
-    });
+    this.dialog.addEventListener('cancel', () => this.hideDialog());
+    this.dialog.addEventListener('adopt', e => this.handleAdopt(e));
     document.body.append(this.dialog);
   }
 
   render() {
+    const {required, base64 = ''} = this.settings;
+
     return (
-      <Host class={{required: this.required}}>
-        {this.value !== '' ? (
-          <img src={this.value} alt="Signature" />
+      <Host class={{required}}>
+        {this.tempSignature !== '' || base64 !== '' ? (
+          <img src={this.tempSignature || base64} alt="Signature" />
         ) : (
           <button class={{}} onClick={() => this.handleShow()}>
             Signature

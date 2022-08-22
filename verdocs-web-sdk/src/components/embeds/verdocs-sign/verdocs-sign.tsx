@@ -230,68 +230,6 @@ export class VerdocsSign {
     );
   }
 
-  // renderField(field: IDocumentField, index: number) {
-  //   const {required = false, settings = {} as any} = field;
-  //   const {x = 0, y = 0, base64 = '', placeholder = '', options = [], value = '', result = ''} = settings;
-  //
-  //   const renderOnPage = this.pdfPageInfo.pages.find(page => page.pageNumber === field.page);
-  //   if (!renderOnPage) {
-  //     console.log('Unable to render invalid field', field);
-  //     return <div class="invalid-field">Invalid field.</div>;
-  //   }
-  //
-  //   const left = rescale(renderOnPage.xScale, x);
-  //   const bottom = rescale(renderOnPage.yScale, y);
-  //   console.log('[SIGN] Computed field position', {type: field.type, xScale: renderOnPage.xScale, x, yScale: renderOnPage.yScale, y, settings});
-  //
-  //   const style = {
-  //     left: `${left}px`,
-  //     bottom: `${bottom}px`,
-  //     position: 'absolute',
-  //     transform: `scale(${renderOnPage.xScale}, ${renderOnPage.yScale})`,
-  //     backgroundColor: field.settings.rgba || getRGBA(this.recipientIndex),
-  //   } as any;
-  //
-  //   if (field.settings.height) {
-  //     style.height = `${field.settings.height}px`;
-  //   }
-  //
-  //   if (field.settings.width) {
-  //     style.width = `${field.settings.width}px`;
-  //   }
-  //
-  //   const id = `verdocs-document-field-${field.name}`;
-  //   switch (field.type) {
-  //     case 'signature':
-  //       console.log('Computed signature style', field.settings, style);
-  //       return <verdocs-field-signature style={style} value={base64} required={required} id={id} />;
-  //     case 'initial':
-  //       return <verdocs-field-initial style={style} required={required} id={id} />;
-  //     case 'textbox':
-  //       return <verdocs-field-textbox style={style} order={index} value={result || ''} placeholder={placeholder} id={id} onFieldChange={e => this.handleFieldChange(field, e)} />;
-  //     case 'textarea':
-  //       return <verdocs-field-textarea style={style} placeholder={placeholder || ''} id={id} />;
-  //     case 'date':
-  //       return <verdocs-field-date style={style} order={index} value={result || ''} placeholder={placeholder} required={required} id={id} />;
-  //     case 'dropdown':
-  //       return <verdocs-field-dropdown style={style} options={options} value={value} required={required} id={id} onFieldChange={e => this.handleFieldChange(field, e)} />;
-  //     case 'checkbox':
-  //       return <verdocs-field-checkbox style={style} value={result || ''} id={id} />;
-  //     case 'checkbox_group':
-  //       return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
-  //     case 'radio_button_group':
-  //       return field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index));
-  //     case 'attachment':
-  //       return <verdocs-field-attachment style={style} value={result || ''} id={id} />;
-  //     case 'payment':
-  //       return <verdocs-field-payment style={style} field={field} id={id} />;
-  //     default:
-  //       console.log('[SIGN] Skipping unsupported field type', field);
-  //   }
-  //
-  //   return <div style={{display: 'none'}}>Unsupported field type "{field.type}"</div>;
-  // }
-
   isFieldValid(field: IDocumentField) {
     switch (field.type) {
       case 'textbox':
@@ -350,23 +288,7 @@ export class VerdocsSign {
     }
   }
 
-  // getWrapperStyle(field) {
-  //   console.log('getWrapperStyle', field);
-  // const {x = 0, y = 0, width = 150, height = 50, page = 1} = field.settings;
-  // const renderOnPage = this.pdfPageInfo.pages.find(p => p.pageNumber === page);
-  // return {
-  //   bottom: `${rescale(renderOnPage.yScale, y)}px`,
-  //   left: `${rescale(renderOnPage.xScale, x)}px`,
-  //   height: `${height}px`,
-  //   width: `${width}px`,
-  //   position: 'absolute',
-  //   backgroundColor: field['rgba'] || getRGBA(this.recipientIndex),
-  //   transform: `scale(${renderOnPage.xScale}, ${renderOnPage.yScale})`,
-  // };
-  // }
-
-  setControlStyles(el: HTMLElement, field, docPage: IDocumentPageInfo) {
-    console.log('setControlStyles', el, field, docPage);
+  setControlStyles(el: HTMLElement, field: IDocumentField, docPage: IDocumentPageInfo) {
     const {x = 0, y = 0, width = 150, height = 50} = field.settings;
 
     el.style.width = `${width}px`;
@@ -391,75 +313,78 @@ export class VerdocsSign {
     const id = `verdocs-document-field-${field.name}`;
 
     const existingField = document.getElementById(id);
-    console.log('[SIGN] Existing field', existingField);
 
     if (existingField) {
       this.setControlStyles(existingField, field, docPage);
       return;
     }
 
-    console.log('[SIGN] Creating field', field, docPage);
-
     let el;
     switch (field.type) {
-      case 'signature':
-        el = document.createElement('verdocs-field-signature');
-        el.setAttribute('value', base64);
-        break;
-      case 'initial':
-        el = document.createElement('verdocs-field-initial');
-        el.setAttribute('value', base64);
-        break;
-      case 'textbox':
-        el = document.createElement('verdocs-field-textbox');
-        el.setAttribute('value', result || '');
-        el.setAttribute('placeholder', placeholder || '');
-        el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
-        break;
-      case 'textarea':
-        el = document.createElement('verdocs-field-textarea');
-        el.setAttribute('value', result || '');
-        el.setAttribute('placeholder', placeholder || '');
-        break;
-      case 'date':
-        el = document.createElement('verdocs-field-date');
-        el.setAttribute('value', result || '');
-        el.setAttribute('placeholder', placeholder || '');
-        break;
-      case 'dropdown':
-        el = document.createElement('verdocs-field-dropdown');
-        el.setAttribute('options', options);
-        el.setAttribute('value', value);
-        break;
-      case 'checkbox':
-        el = document.createElement('verdocs-field-checkbox');
-        el.setAttribute('value', result || '');
-        break;
-      // case 'checkbox_group':
-      //   el = document.createElement('verdocs-field-signature');
-      //   el.setAttribute('value', base64);
-      //   break;
-      //   return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
-      // case 'radio_button_group':
-      //   el = document.createElement('verdocs-field-signature');
-      //   el.setAttribute('value', base64);
-      //   break;
-      //   return field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index));
       case 'attachment':
-        el = document.createElement('verdocs-field-attachment');
-        el.setAttribute('value', result || '');
-        break;
+      case 'checkbox':
+      case 'date':
+      case 'dropdown':
+      case 'initial':
       case 'payment':
-        el = document.createElement('verdocs-field-payment');
-        el.setAttribute('field', field);
+      case 'signature':
+      case 'textarea':
+      case 'textbox':
+        el = document.createElement(`verdocs-field-${field.type}`);
         break;
+      // case 'textbox':
+      //   el = document.createElement('verdocs-field-textbox');
+      //   el.setAttribute('field', field);
+      //   // el.setAttribute('value', result || '');
+      //   // el.setAttribute('placeholder', placeholder || '');
+      //   el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
+      //   break;
+      // case 'textarea':
+      //   el = document.createElement('verdocs-field-textarea');
+      //   el.setAttribute('value', result || '');
+      //   el.setAttribute('placeholder', placeholder || '');
+      //   break;
+      // case 'date':
+      //   el = document.createElement('verdocs-field-date');
+      //   el.setAttribute('value', result || '');
+      //   el.setAttribute('placeholder', placeholder || '');
+      //   break;
+      // case 'dropdown':
+      //   el = document.createElement('verdocs-field-dropdown');
+      //   el.setAttribute('options', options);
+      //   el.setAttribute('value', value);
+      //   break;
+      // case 'checkbox':
+      //   el = document.createElement('verdocs-field-checkbox');
+      //   el.setAttribute('value', result || '');
+      //   break;
+      case 'checkbox_group':
+        //   el = document.createElement('verdocs-field-signature');
+        //   el.setAttribute('value', base64);
+        break;
+      //   return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
+      case 'radio_button_group':
+        //   el = document.createElement('verdocs-field-signature');
+        //   el.setAttribute('value', base64);
+        break;
+      //   return field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index));
+      // case 'attachment':
+      //   el = document.createElement('verdocs-field-attachment');
+      //   el.setAttribute('value', result || '');
+      //   break;
+      // case 'payment':
+      //   el = document.createElement('verdocs-field-payment');
+      //   break;
       default:
         console.log('[SIGN] Skipping unsupported field type', field);
     }
 
     if (el) {
+      el.field = field;
+      el.recipient = this.recipient;
       el.setAttribute('id', id);
       el.setAttribute('required', required);
+      el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
       this.setControlStyles(el, field, docPage);
       controlsDiv.appendChild(el);
     }

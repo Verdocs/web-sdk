@@ -9,7 +9,7 @@ import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { IDocumentPageInfo, IPageLayer } from "./components/elements/verdocs-document-page/verdocs-document-page";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
-import { IDocument, IDocumentField, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Documents";
+import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Documents";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
@@ -100,6 +100,10 @@ export namespace Components {
           * Sets the disabled attribute of the input element.
          */
         "disabled": boolean;
+        /**
+          * Sets the field source.
+         */
+        "field": IDocumentField;
         "focusField": () => Promise<void>;
         /**
           * Sets the tabIndex of the input element.
@@ -239,19 +243,15 @@ export namespace Components {
         "value": string;
     }
     interface VerdocsFieldSignature {
+        /**
+          * Sets the field source.
+         */
+        "field": IDocumentField;
         "focusField": () => Promise<void>;
         /**
-          * The user's full name.
+          * Sets the recipient (signer).
          */
-        "fullName": string;
-        /**
-          * Whether the field is required.
-         */
-        "required": boolean;
-        /**
-          * The base64 signature value.
-         */
-        "value": string;
+        "recipient": IRecipient;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -435,7 +435,7 @@ export namespace Components {
         /**
           * Initial signature text
          */
-        "fullname": string;
+        "fullName": string;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -962,6 +962,10 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * Sets the field source.
+         */
+        "field"?: IDocumentField;
+        /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldAttachmentCustomEvent<string>) => void;
@@ -1147,25 +1151,17 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldSignature {
         /**
-          * The user's full name.
+          * Sets the field source.
          */
-        "fullName"?: string;
+        "field"?: IDocumentField;
         /**
-          * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
+          * Event emitted when the field has changed.
          */
-        "onAdopt"?: (event: VerdocsFieldSignatureCustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldSignatureCustomEvent<string>) => void;
         /**
-          * Event emitted when the user cancels the process.
+          * Sets the recipient (signer).
          */
-        "onCancel"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
-        /**
-          * Whether the field is required.
-         */
-        "required"?: boolean;
-        /**
-          * The base64 signature value.
-         */
-        "value"?: string;
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -1423,9 +1419,9 @@ declare namespace LocalJSX {
         /**
           * Initial signature text
          */
-        "fullname"?: string;
+        "fullName"?: string;
         /**
-          * Event fired when the initials are adopted.
+          * Event fired when a signature is adopted.
          */
         "onAdopt"?: (event: VerdocsSignatureDialogCustomEvent<string>) => void;
         /**
