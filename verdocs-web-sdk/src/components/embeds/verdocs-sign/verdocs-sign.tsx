@@ -160,7 +160,12 @@ export class VerdocsSign {
       case 'textbox':
         Documents.updateDocumentField(this.endpoint, this.documentId, field.name, {prepared: false, value: e.detail})
           .then(r => console.log('Update result', r))
-          .catch(e => console.log('Error updating', e));
+          .catch(e => {
+            if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
+              console.log('jwt expired');
+            }
+            console.log('Error updating', e);
+          });
         break;
 
       case 'checkbox_group':

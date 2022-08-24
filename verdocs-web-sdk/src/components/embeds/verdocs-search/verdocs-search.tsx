@@ -21,7 +21,7 @@ export class VerdocsSearch {
           <verdocs-search-activity type="recent" endpoint={this.endpoint} />
           <verdocs-search-activity type="saved" endpoint={this.endpoint} />
           <verdocs-search-activity type="starred" endpoint={this.endpoint} />
-          <search-quick-functions endpoint={this.endpoint} />
+          <verdocs-quick-functions endpoint={this.endpoint} />
         </div>
       </div>
     );
