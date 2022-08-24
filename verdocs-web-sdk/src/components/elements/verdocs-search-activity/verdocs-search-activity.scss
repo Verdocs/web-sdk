@@ -6,11 +6,11 @@ verdocs-search-activity {
   .container {
     display: flex;
     width: 240px;
-    color: #ffffff;
+    color: $verdocs-grey-4;
     flex-direction: column;
     text-transform: uppercase;
     padding: 10px 10px 20px 10px;
-    background-color: var(--verdocs-background-dark);
+    background-color: $verdocs-bg-5;
   }
 
   .title {
@@ -44,7 +44,7 @@ verdocs-search-activity {
   }
 
   .icon svg {
-    fill: #707ae5;
+    fill: $verdocs-light-blue;
     width: 22px;
     height: 22px;
   }
@@ -58,7 +58,7 @@ verdocs-search-activity {
   .item-title {
     font-size: 16px;
     font-weight: 400;
-    color: #ffffff;
+    color: $verdocs-grey-4;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -68,12 +68,12 @@ verdocs-search-activity {
     font-size: 14px;
     font-weight: 500;
     line-height: 23px;
-    color: #aeb4bf;
+    color: $verdocs-grey-2;
   }
 
   .empty {
     text-transform: none;
     line-height: 22px;
-    color: #ccc;
+    color: $verdocs-bg-1;
   }
 }

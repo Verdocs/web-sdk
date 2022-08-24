@@ -8,7 +8,7 @@ verdocs-quick-functions {
     flex-direction: column;
     flex-wrap: nowrap;
     width: 240px;
-    background-color: var(--verdocs-background-dark);
+    background-color: $verdocs-bg-5;
     text-transform: uppercase;
     padding: 10px 10px 20px 10px;
     font-family: sans-serif;
@@ -27,7 +27,7 @@ verdocs-quick-functions {
     height: 40px;
     border: none;
     display: flex;
-    color: #ffffff;
+    color: $verdocs-grey-4;
     cursor: pointer;
     font-size: 14px;
     font-weight: 700;
@@ -37,10 +37,10 @@ verdocs-quick-functions {
     border-radius: 5px;
     text-transform: uppercase;
     justify-content: space-evenly;
-    background-color: #50be50;
+    background-color: $verdocs-green;
   }
 
   button svg {
-    fill: #ffffff;
+    fill: $verdocs-grey-4;
   }
 }

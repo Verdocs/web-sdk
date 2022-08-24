@@ -23,7 +23,6 @@ export const config: Config = {
   devServer: {
     openBrowser: false,
   },
-  // globalStyle: 'src/variables.css',
   testing: {
     transform: {
       '^.+\\.svg$': 'jest-svg-transformer',

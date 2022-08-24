@@ -72,10 +72,10 @@ export class VerdocsFieldSignature {
   }
 
   render() {
-    const {required, base64 = ''} = this.settings;
+    const {base64 = ''} = this.settings;
 
     return (
-      <Host class={{required}}>
+      <Host class={{required: this.field?.required}}>
         {this.tempSignature !== '' || base64 !== '' ? (
           <img src={this.tempSignature || base64} alt="Signature" />
         ) : (
