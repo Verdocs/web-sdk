@@ -10,7 +10,7 @@ export default {
     logo: 'https://verdocs.com/assets/blue-logo.svg',
   },
   argTypes: {
-    error: {
+    sdkError: {
       action: 'error',
       table: {
         disable: true,
@@ -25,5 +25,5 @@ export default {
   },
 } as Meta;
 
-export const Auth = ({visible, logo, debug, authenticated, error}) =>
-  html`<verdocs-auth .visible=${visible} .logo=${logo} .debug=${debug} @authenticated=${authenticated} @error=${error} />`;
+export const Auth = ({visible, logo, debug, authenticated, sdkError}) =>
+  html`<verdocs-auth .visible=${visible} .logo=${logo} .debug=${debug} @authenticated=${authenticated} @sdkError=${sdkError} />`;

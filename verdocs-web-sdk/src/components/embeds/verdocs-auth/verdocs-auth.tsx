@@ -76,7 +76,7 @@ export class VerdocsAuth {
   /**
    * Event fired when session authentication process has completed. Check the event contents for completion status.
    */
-  @Event({composed: true}) error: EventEmitter<SDKError>;
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() isAuthenticated: boolean = false;
   @State() displayMode: string = 'login';
@@ -92,16 +92,11 @@ export class VerdocsAuth {
     if (this.endpoint.session) {
       this.isAuthenticated = true;
       this.activeSession = this.endpoint.session;
-      this.authenticated.emit({authenticated: true, session: this.endpoint.session});
+      this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
     } else {
-      this.authenticated.emit({authenticated: false, session: null});
+      this.authenticated?.emit({authenticated: false, session: null});
     }
   }
-
-  // handleSelectOption(option: IMenuOption) {
-  //   this.isAuthenticated = false;
-  //   this.authenticated.emit(option);
-  // }
 
   handleLogin() {
     this.loggingIn = true;
@@ -111,14 +106,14 @@ export class VerdocsAuth {
         this.endpoint.setToken(r.accessToken);
         this.activeSession = this.endpoint.session;
         this.isAuthenticated = true;
-        this.authenticated.emit({authenticated: true, session: this.endpoint.session});
+        this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
       })
       .catch(e => {
         console.log('[VERDOCS] Login error', e.response, JSON.stringify(e));
         this.loggingIn = false;
         this.activeSession = null;
-        this.authenticated.emit({authenticated: false, session: null});
-        this.error.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+        this.authenticated?.emit({authenticated: false, session: null});
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
 
         if (e?.response?.status === 403) {
           this.loginError = 'Please check your username and password and try again.';
