@@ -72,7 +72,7 @@ export class VerdocsFieldTextbox {
           type="text"
           placeholder={this.field?.settings?.placeholder}
           tabIndex={this.field?.settings?.order}
-          value={this.field?.settings?.value}
+          value={this.field?.settings?.result}
           disabled={this.field?.settings?.disabled}
           required={this.field?.required}
           ref={el => (this.el = el)}

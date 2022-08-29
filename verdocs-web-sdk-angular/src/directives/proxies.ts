@@ -8,11 +8,16 @@ import { Components } from '@verdocs/web-sdk';
 
 
 import type { IAuthStatus as IVerdocsAuthIAuthStatus } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsAuthSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsAuth extends Components.VerdocsAuth {
   /**
    * Event fired when session authentication process has completed. Check the event contents for completion status. 
    */
   authenticated: EventEmitter<CustomEvent<IVerdocsAuthIAuthStatus>>;
+  /**
+   * Event fired when session authentication process has completed. Check the event contents for completion status. 
+   */
+  error: EventEmitter<CustomEvent<IVerdocsAuthSDKError>>;
 
 }
 
@@ -31,7 +36,7 @@ export class VerdocsAuth {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['authenticated']);
+    proxyOutputs(this, this.el, ['authenticated', 'error']);
   }
 }
 

@@ -12,6 +12,9 @@ import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
 
 /**
  * Display a document signing experience.
+ *
+ * *NOTE: This sample document will reset every 10 minutes.*
+ * ***NOTE: This sample document will reset every 10 minutes...***
  */
 @Component({
   tag: 'verdocs-sign',

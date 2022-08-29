@@ -1,6 +1,7 @@
 import {Auth} from '@verdocs/js-sdk/Users';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsEndpoint, TSession} from '@verdocs/js-sdk';
+import {SDKError} from '../../../utils/errors';
 
 export interface IAuthStatus {
   authenticated: boolean;
@@ -44,7 +45,7 @@ export class VerdocsAuth {
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
-  @Prop() endpoint: VerdocsEndpoint= VerdocsEndpoint.getDefault();
+  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
    * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display
@@ -71,6 +72,11 @@ export class VerdocsAuth {
    * Event fired when session authentication process has completed. Check the event contents for completion status.
    */
   @Event({composed: true}) authenticated: EventEmitter<IAuthStatus>;
+
+  /**
+   * Event fired when session authentication process has completed. Check the event contents for completion status.
+   */
+  @Event({composed: true}) error: EventEmitter<SDKError>;
 
   @State() isAuthenticated: boolean = false;
   @State() displayMode: string = 'login';
@@ -112,6 +118,7 @@ export class VerdocsAuth {
         this.loggingIn = false;
         this.activeSession = null;
         this.authenticated.emit({authenticated: false, session: null});
+        this.error.emit(new SDKError(e.message, e.response?.status, e.response?.data));
 
         if (e?.response?.status === 403) {
           this.loginError = 'Please check your username and password and try again.';

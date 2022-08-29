@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
+import { SDKError } from "./utils/errors";
 import { IDocumentPageInfo, IPageLayer } from "./components/elements/verdocs-document-page/verdocs-document-page";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Documents";
@@ -883,6 +884,10 @@ declare namespace LocalJSX {
           * Event fired when session authentication process has completed. Check the event contents for completion status.
          */
         "onAuthenticated"?: (event: VerdocsAuthCustomEvent<IAuthStatus>) => void;
+        /**
+          * Event fired when session authentication process has completed. Check the event contents for completion status.
+         */
+        "onError"?: (event: VerdocsAuthCustomEvent<SDKError>) => void;
         /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
          */
