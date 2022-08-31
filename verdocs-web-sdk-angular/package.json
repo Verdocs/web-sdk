@@ -1,6 +1,6 @@
 {
   "name": "verdocs-web-sdk-angular",
-  "version": "0.0.1",
+  "version": "1.7.4",
   "description": "",
   "license": "MIT",
   "scripts": {
@@ -24,7 +24,7 @@
     "dist/"
   ],
   "dependencies": {
-    "@verdocs/web-sdk": "^1.4.0",
+    "@verdocs/web-sdk": "^1.7.4",
     "tslib": "^1.9.3"
   },
   "peerDependencies": {
@@ -61,7 +61,7 @@
     "tsickle": "^0.34.0",
     "tslint": "^5.12.1",
     "tslint-ionic-rules": "0.0.21",
-    "typescript": "3.2.4",
+    "typescript": "^4.7.4",
     "zone.js": "^0.8.28"
   }
 }

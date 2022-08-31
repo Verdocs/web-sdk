@@ -754,13 +754,14 @@ export declare interface VerdocsSearchBox extends Components.VerdocsSearchBox {
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['endpoint', 'placeholder', 'query', 'type']
+  inputs: ['endpoint', 'grabsFocus', 'placeholder', 'query', 'type'],
+  methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-search-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['endpoint', 'placeholder', 'query', 'type']
+  inputs: ['endpoint', 'grabsFocus', 'placeholder', 'query', 'type']
 })
 export class VerdocsSearchBox {
   protected el: HTMLElement;

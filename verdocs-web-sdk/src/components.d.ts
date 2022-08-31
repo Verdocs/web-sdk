@@ -390,6 +390,11 @@ export namespace Components {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
+        "focusField": () => Promise<void>;
+        /**
+          * If set, the input field will attempt to "grab" focus after being rendered.
+         */
+        "grabsFocus": boolean;
         /**
           * The placeholder to display in the input field.
          */
@@ -1383,6 +1388,10 @@ declare namespace LocalJSX {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
+        /**
+          * If set, the input field will attempt to "grab" focus after being rendered.
+         */
+        "grabsFocus"?: boolean;
         /**
           * Event fired when the user changes the query string.
          */

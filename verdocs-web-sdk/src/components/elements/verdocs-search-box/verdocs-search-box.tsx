@@ -1,5 +1,5 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Event, EventEmitter, Prop} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Prop, Method} from '@stencil/core';
 import SearchIcon from './search.svg';
 import CloseIcon from './close.svg';
 
@@ -22,6 +22,8 @@ export interface ISearchEvent {
   shadow: false,
 })
 export class VerdocsSearchBox {
+  private inputEl: HTMLInputElement;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -43,6 +45,11 @@ export class VerdocsSearchBox {
   @Prop() query = '';
 
   /**
+   * If set, the input field will attempt to "grab" focus after being rendered.
+   */
+  @Prop() grabsFocus = false;
+
+  /**
    * Event fired when the user changes the type.
    */
   @Event({composed: true}) searchClicked: EventEmitter<ISearchEvent>;
@@ -56,6 +63,16 @@ export class VerdocsSearchBox {
    * Event fired when the user changes the query string.
    */
   @Event({composed: true}) queryChanged: EventEmitter<string>;
+
+  @Method() async focusField() {
+    this.inputEl.focus();
+  }
+
+  componentDidRender() {
+    if (this.grabsFocus) {
+      this.inputEl.focus();
+    }
+  }
 
   handleSearch(e) {
     this.searchClicked.emit({type: this.type, query: this.query});
@@ -85,7 +102,14 @@ export class VerdocsSearchBox {
             {this.type}s <button class="remove" innerHTML={CloseIcon} onClick={() => this.handleClearFilter()} />
           </span>
         )}
-        <input type="text" placeholder={this.placeholder} value={this.query} onInput={e => this.handleChange(e)} onKeyUp={e => this.handleKeyUp(e)} />
+        <input
+          type="text"
+          value={this.query}
+          placeholder={this.placeholder}
+          onInput={e => this.handleChange(e)}
+          onKeyUp={e => this.handleKeyUp(e)}
+          ref={el => (this.inputEl = el)}
+        />
         <button onClick={e => this.handleSearch(e)} class="search">
           <span innerHTML={SearchIcon} />
           Search
