@@ -70,6 +70,8 @@ export class VerdocsStatusIndicator {
 
   @State() recipientStatusIcons = [];
 
+  @State() containerId = `verdocs-status-indicator-${Math.random().toString(36).substring(2, 11)}`;
+
   componentDidLoad() {
     this.popper = createPopper(this.summaryComponent, this.detailPanel, {placement: 'bottom-start', modifiers: [{name: 'offset', options: {offset: [0, 10]}}]});
 
@@ -144,7 +146,7 @@ export class VerdocsStatusIndicator {
       this.recipientStatusIcons = statusIcons;
 
       const diagram = RecipientFlow();
-      diagram.initalize('#verdocs-recipient-status-diagram', canvasWidth, canvasHeight);
+      diagram.initalize(`#${this.containerId}`, canvasWidth, canvasHeight);
       diagram.update({entities, lines});
     }
   }
@@ -293,7 +295,7 @@ export class VerdocsStatusIndicator {
         <span class="content">{statusMessage}</span>
 
         <div class="detail-panel" ref={el => (this.detailPanel = el as HTMLDivElement)}>
-          <div id="verdocs-recipient-status-diagram" />
+          <div id={`${this.containerId}`} />
           {this.recipientStatusIcons.map(icon => (
             <span innerHTML={icon.icon} style={{position: 'absolute', top: `${icon.y}px`, left: `${icon.x}px`}} />
           ))}
