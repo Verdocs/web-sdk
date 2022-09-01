@@ -14,27 +14,51 @@ verdocs-sign {
   }
 
   .header {
-    flex: 0 0 115px;
+    flex: 0;
+    display: flex;
     z-index: 1000;
+    align-items: center;
+    transition: all 0.25s;
+    justify-content: center;
     background-color: $medium-bg;
     box-shadow: 0 4px 4px 0 rgb(0 0 0 / 24%), 0 0 4px 0 rgb(0 0 0 / 12%);
-    transition: all 0.25s;
+
+    .inner {
+      width: 100%;
+      max-width: 1028px;
+    }
   }
 
   .intro {
-    background-color: #ffffff;
     width: 100%;
-    margin: 0 auto;
-    padding: 20px;
-    max-width: 1028px;
-    color: rgba(0, 0, 0, 0.87);
+    height: 60px;
+    display: flex;
+    background: #ffffff;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    .inner {
+      width: 100%;
+      color: #111111;
+      padding: 0 14px;
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 28px;
+      max-width: 1024px;
+    }
+  }
+
+  &.agreed {
+    .intro {
+      //display: none;
+    }
   }
 
   .toolbar {
     width: 100%;
     margin: 0 auto;
     padding: 0 14px;
-    max-width: 1028px;
     position: relative;
   }
 
@@ -42,7 +66,6 @@ verdocs-sign {
     width: 100%;
     color: #fff;
     height: 56px;
-    padding: 4px;
     display: flex;
     font-size: 12px;
     align-items: center;
@@ -63,8 +86,17 @@ verdocs-sign {
   .document {
     flex: 1;
     height: 100%;
+    display: flex;
     position: relative;
     overflow-y: scroll;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+    .inner {
+      width: 100%;
+      max-width: 1028px;
+    }
   }
 
   .agree {

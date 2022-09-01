@@ -349,32 +349,6 @@ export class VerdocsSign {
       case 'textbox':
         el = document.createElement(`verdocs-field-${field.type}`);
         break;
-      // case 'textbox':
-      //   el = document.createElement('verdocs-field-textbox');
-      //   el.setAttribute('field', field);
-      //   // el.setAttribute('value', result || '');
-      //   // el.setAttribute('placeholder', placeholder || '');
-      //   el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
-      //   break;
-      // case 'textarea':
-      //   el = document.createElement('verdocs-field-textarea');
-      //   el.setAttribute('value', result || '');
-      //   el.setAttribute('placeholder', placeholder || '');
-      //   break;
-      // case 'date':
-      //   el = document.createElement('verdocs-field-date');
-      //   el.setAttribute('value', result || '');
-      //   el.setAttribute('placeholder', placeholder || '');
-      //   break;
-      // case 'dropdown':
-      //   el = document.createElement('verdocs-field-dropdown');
-      //   el.setAttribute('options', options);
-      //   el.setAttribute('value', value);
-      //   break;
-      // case 'checkbox':
-      //   el = document.createElement('verdocs-field-checkbox');
-      //   el.setAttribute('value', result || '');
-      //   break;
       case 'checkbox_group':
         //   el = document.createElement('verdocs-field-signature');
         //   el.setAttribute('value', base64);
@@ -429,24 +403,29 @@ export class VerdocsSign {
 
     return (
       <Host class={{storybook: !!window?.['STORYBOOK_ENV'], agreed: this.recipient?.agreed}}>
-        <div class="header">
-          <div class="intro">Please review and act on these documents.</div>
-          <div class="toolbar">
-            <div class="tools">
-              <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+        <div class="intro">
+          <div class="inner">Please review and act on these documents.</div>
+        </div>
 
-              {!this.recipient?.agreed ? (
-                <div class="agree">
-                  <div class="agree-checkbox">
-                    <input type="checkbox" value="None" id="agree-checkbox-element" name="agree" onChange={() => this.handleClickAgree()} />
-                    <label htmlFor="agree-checkbox-element" />
+        <div class="header">
+          <div class="inner">
+            <div class="toolbar">
+              <div class="tools">
+                <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+
+                {!this.recipient?.agreed ? (
+                  <div class="agree">
+                    <div class="agree-checkbox">
+                      <input type="checkbox" value="None" id="agree-checkbox-element" name="agree" onChange={() => this.handleClickAgree()} />
+                      <label htmlFor="agree-checkbox-element" />
+                    </div>
+                    <span>I agree to use electronic records and signatures.</span>
                   </div>
-                  <span>I agree to use electronic records and signatures.</span>
-                </div>
-              ) : (
-                <div style={{flex: '1'}} />
-              )}
-              <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />
+                ) : (
+                  <div style={{flex: '1'}} />
+                )}
+                <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />
+              </div>
             </div>
           </div>
         </div>
@@ -455,28 +434,20 @@ export class VerdocsSign {
 
         <div class="document">
           {this.pdfUrl ? (
-            <verdocs-view
-              source={this.pdfUrl}
-              endpoint={this.endpoint}
-              onPageRendered={e => this.handlePageRendered(e)}
-              pageLayers={[
-                {name: 'page', type: 'canvas'},
-                {name: 'controls', type: 'div'},
-              ]}
-            />
+            <div class="inner">
+              <verdocs-view
+                source={this.pdfUrl}
+                endpoint={this.endpoint}
+                onPageRendered={e => this.handlePageRendered(e)}
+                pageLayers={[
+                  {name: 'page', type: 'canvas'},
+                  {name: 'controls', type: 'div'},
+                ]}
+              />
+            </div>
           ) : (
             <verdocs-loader />
           )}
-
-          {/*{(this.pdfPageInfo?.pages || []).map(page => (*/}
-          {/*  <div class="page-controls">*/}
-          {/*    {this.pdfPageInfo?.numRendered > 0 ? (*/}
-          {/*      this.fields.filter(field => field.page === page.pageNumber).map((field, index) => this.renderField(field, index))*/}
-          {/*    ) : (*/}
-          {/*      <div style={{display: 'none'}}>Waiting for PDF to render...</div>*/}
-          {/*    )}*/}
-          {/*  </div>*/}
-          {/*))}*/}
         </div>
       </Host>
     );
