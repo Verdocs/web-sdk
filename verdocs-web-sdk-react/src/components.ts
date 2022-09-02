@@ -33,6 +33,7 @@ export const VerdocsSearch = /*@__PURE__*/createReactComponent<JSX.VerdocsSearch
 export const VerdocsSearchActivity = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchActivity, HTMLVerdocsSearchActivityElement>('verdocs-search-activity');
 export const VerdocsSearchBox = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchBox, HTMLVerdocsSearchBoxElement>('verdocs-search-box');
 export const VerdocsSearchTabs = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchTabs, HTMLVerdocsSearchTabsElement>('verdocs-search-tabs');
+export const VerdocsSend = /*@__PURE__*/createReactComponent<JSX.VerdocsSend, HTMLVerdocsSendElement>('verdocs-send');
 export const VerdocsSign = /*@__PURE__*/createReactComponent<JSX.VerdocsSign, HTMLVerdocsSignElement>('verdocs-sign');
 export const VerdocsSignatureDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsSignatureDialog, HTMLVerdocsSignatureDialogElement>('verdocs-signature-dialog');
 export const VerdocsStatusIndicator = /*@__PURE__*/createReactComponent<JSX.VerdocsStatusIndicator, HTMLVerdocsStatusIndicatorElement>('verdocs-status-indicator');

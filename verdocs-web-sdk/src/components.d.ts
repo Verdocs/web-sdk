@@ -10,11 +10,11 @@ import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { IDocumentPageInfo, IPageLayer } from "./components/elements/verdocs-document-page/verdocs-document-page";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
-import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Documents";
+import { IDocument, IDocumentField, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Types";
+import { ITemplate, ITemplateField } from "@verdocs/js-sdk/Templates/Types";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
-import { ITemplate } from "@verdocs/js-sdk/Templates/Types";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 import { IPageLayer as IPageLayer1 } from "./components/elements/verdocs-document-page/verdocs-document-page";
@@ -98,105 +98,41 @@ export namespace Components {
     }
     interface VerdocsFieldAttachment {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled": boolean;
-        /**
-          * Sets the field source.
-         */
-        "field": IDocumentField;
+        "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order": number;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required": boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value": string;
     }
     interface VerdocsFieldCheckbox {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled": boolean;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order": number;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required": boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value": boolean;
+        "field": IDocumentField | ITemplateField | null;
     }
     interface VerdocsFieldDate {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled": boolean;
+        "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order": number;
-        /**
-          * A placeholder to assist the user in completing the field.
-         */
-        "placeholder": string;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required": boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value": string;
     }
     interface VerdocsFieldDropdown {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled": boolean;
+        "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
-        /**
-          * The optoins to choose from.
-         */
-        "options": any[];
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order": number;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required": boolean;
-        /**
-          * The currently selected value.
-         */
-        "value": string;
     }
     interface VerdocsFieldInitial {
+        /**
+          * The document or template field to display.
+         */
+        "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
         /**
-          * The user's full name.
+          * The document or template field to display.
          */
-        "fullName": string;
-        /**
-          * Whether the field is required.
-         */
-        "required": boolean;
-        /**
-          * The base64 signature value.
-         */
-        "value": string;
+        "initials": string;
     }
     interface VerdocsFieldPayment {
         "currentInitial": string;
@@ -204,9 +140,9 @@ export namespace Components {
         "currentSignature": string;
         "currentSignatureId": string;
         /**
-          * The field to display.
+          * The document or template field to display.
          */
-        "field": IDocumentField;
+        "field": IDocumentField | ITemplateField | null;
         "fieldId": string;
         "fields": any[];
         "focused": boolean;
@@ -219,83 +155,47 @@ export namespace Components {
     }
     interface VerdocsFieldRadioButton {
         /**
-          * Sets the value of the input element.
+          * The document or template field to display.
          */
-        "checked": boolean;
-        /**
-          * Sets the disabled attribute of the input element.
-         */
-        "disabled": boolean;
-        /**
-          * Sets the name of the input element.
-         */
-        "name": string;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order": number;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required": boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value": string;
+        "field": IDocumentField | ITemplateField | null;
     }
     interface VerdocsFieldSignature {
         /**
-          * Sets the field source.
+          * The document or template field to display.
          */
-        "field": IDocumentField;
+        "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
         /**
-          * Sets the recipient (signer).
+          * If set, the signature creation dialog will be initialized with this text.
          */
-        "recipient": IRecipient;
+        "name"?: string;
     }
     interface VerdocsFieldTextarea {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled": boolean;
+        "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order": number;
-        /**
-          * A placeholder to assist the user in completing the field.
-         */
-        "placeholder": string;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required": boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value": string;
     }
     interface VerdocsFieldTextbox {
         /**
-          * A placeholder to assist the user in completing the field.
+          * The document or template field to display.
          */
-        "field": IDocumentField;
+        "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
     }
     interface VerdocsFieldTimestamp {
         /**
-          * A placeholder to assist the user in completing the field.
+          * The document or template field to display.
          */
-        "field": IDocumentField;
+        "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
     }
     interface VerdocsInitialDialog {
         /**
           * Initial signature text
          */
-        "fullname": string;
+        "initials": string;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -410,9 +310,19 @@ export namespace Components {
     }
     interface VerdocsSearchTabs {
     }
+    interface VerdocsSend {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The ID of the template to create the document from.
+         */
+        "templateId": string | null;
+    }
     interface VerdocsSign {
         /**
-          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+          * The ID of the document to sign.
          */
         "documentId": string | null;
         /**
@@ -420,11 +330,11 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+          * The invite code for the signer.
          */
         "inviteCode": string | null;
         /**
-          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+          * The name of the role that will be signing.
          */
         "roleId": string | null;
     }
@@ -432,7 +342,7 @@ export namespace Components {
         /**
           * Initial signature text
          */
-        "fullName": string;
+        "name": string;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -780,6 +690,12 @@ declare global {
         prototype: HTMLVerdocsSearchTabsElement;
         new (): HTMLVerdocsSearchTabsElement;
     };
+    interface HTMLVerdocsSendElement extends Components.VerdocsSend, HTMLStencilElement {
+    }
+    var HTMLVerdocsSendElement: {
+        prototype: HTMLVerdocsSendElement;
+        new (): HTMLVerdocsSendElement;
+    };
     interface HTMLVerdocsSignElement extends Components.VerdocsSign, HTMLStencilElement {
     }
     var HTMLVerdocsSignElement: {
@@ -860,6 +776,7 @@ declare global {
         "verdocs-search-activity": HTMLVerdocsSearchActivityElement;
         "verdocs-search-box": HTMLVerdocsSearchBoxElement;
         "verdocs-search-tabs": HTMLVerdocsSearchTabsElement;
+        "verdocs-send": HTMLVerdocsSendElement;
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
@@ -970,57 +887,29 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldAttachment {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled"?: boolean;
-        /**
-          * Sets the field source.
-         */
-        "field"?: IDocumentField;
+        "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldAttachmentCustomEvent<string>) => void;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order"?: number;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required"?: boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value"?: string;
     }
     interface VerdocsFieldCheckbox {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled"?: boolean;
+        "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldCheckboxCustomEvent<string>) => void;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order"?: number;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required"?: boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value"?: boolean;
     }
     interface VerdocsFieldDate {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled"?: boolean;
+        "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field gains focus.
          */
@@ -1037,28 +926,12 @@ declare namespace LocalJSX {
           * Event fired on every character entered into / deleted from the field.
          */
         "onFieldInput"?: (event: VerdocsFieldDateCustomEvent<string>) => void;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order"?: number;
-        /**
-          * A placeholder to assist the user in completing the field.
-         */
-        "placeholder"?: string;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required"?: boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value"?: string;
     }
     interface VerdocsFieldDropdown {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled"?: boolean;
+        "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field gains focus.
          */
@@ -1071,28 +944,16 @@ declare namespace LocalJSX {
           * Event fired when the input field loses focus.
          */
         "onFieldFocus"?: (event: VerdocsFieldDropdownCustomEvent<boolean>) => void;
-        /**
-          * The optoins to choose from.
-         */
-        "options"?: any[];
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order"?: number;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required"?: boolean;
-        /**
-          * The currently selected value.
-         */
-        "value"?: string;
     }
     interface VerdocsFieldInitial {
         /**
-          * The user's full name.
+          * The document or template field to display.
          */
-        "fullName"?: string;
+        "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * The document or template field to display.
+         */
+        "initials"?: string;
         /**
           * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
          */
@@ -1101,14 +962,6 @@ declare namespace LocalJSX {
           * Event emitted when the user cancels the process.
          */
         "onCancel"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
-        /**
-          * Whether the field is required.
-         */
-        "required"?: boolean;
-        /**
-          * The base64 signature value.
-         */
-        "value"?: string;
     }
     interface VerdocsFieldPayment {
         "currentInitial"?: string;
@@ -1116,9 +969,9 @@ declare namespace LocalJSX {
         "currentSignature"?: string;
         "currentSignatureId"?: string;
         /**
-          * The field to display.
+          * The document or template field to display.
          */
-        "field"?: IDocumentField;
+        "field"?: IDocumentField | ITemplateField | null;
         "fieldId"?: string;
         "fields"?: any[];
         "focused"?: boolean;
@@ -1133,53 +986,33 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldRadioButton {
         /**
-          * Sets the value of the input element.
+          * The document or template field to display.
          */
-        "checked"?: boolean;
-        /**
-          * Sets the disabled attribute of the input element.
-         */
-        "disabled"?: boolean;
-        /**
-          * Sets the name of the input element.
-         */
-        "name"?: string;
+        "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldRadioButtonCustomEvent<string>) => void;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order"?: number;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required"?: boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value"?: string;
     }
     interface VerdocsFieldSignature {
         /**
-          * Sets the field source.
+          * The document or template field to display.
          */
-        "field"?: IDocumentField;
+        "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * If set, the signature creation dialog will be initialized with this text.
+         */
+        "name"?: string;
         /**
           * Event emitted when the field has changed.
          */
         "onFieldChange"?: (event: VerdocsFieldSignatureCustomEvent<string>) => void;
-        /**
-          * Sets the recipient (signer).
-         */
-        "recipient"?: IRecipient;
     }
     interface VerdocsFieldTextarea {
         /**
-          * Sets the disabled attribute of the input element.
+          * The document or template field to display.
          */
-        "disabled"?: boolean;
+        "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field gains focus.
          */
@@ -1196,28 +1029,12 @@ declare namespace LocalJSX {
           * Event fired on every character entered into / deleted from the field.
          */
         "onFieldInput"?: (event: VerdocsFieldTextareaCustomEvent<string>) => void;
-        /**
-          * Sets the tabIndex of the input element.
-         */
-        "order"?: number;
-        /**
-          * A placeholder to assist the user in completing the field.
-         */
-        "placeholder"?: string;
-        /**
-          * If true, the field will be marked required.
-         */
-        "required"?: boolean;
-        /**
-          * Sets the value of the input element.
-         */
-        "value"?: string;
     }
     interface VerdocsFieldTextbox {
         /**
-          * A placeholder to assist the user in completing the field.
+          * The document or template field to display.
          */
-        "field"?: IDocumentField;
+        "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field gains focus.
          */
@@ -1237,9 +1054,9 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldTimestamp {
         /**
-          * A placeholder to assist the user in completing the field.
+          * The document or template field to display.
          */
-        "field"?: IDocumentField;
+        "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field gains focus.
          */
@@ -1261,7 +1078,7 @@ declare namespace LocalJSX {
         /**
           * Initial signature text
          */
-        "fullname"?: string;
+        "initials"?: string;
         /**
           * Event fired when the initials are adopted.
          */
@@ -1419,9 +1236,19 @@ declare namespace LocalJSX {
     }
     interface VerdocsSearchTabs {
     }
+    interface VerdocsSend {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The ID of the template to create the document from.
+         */
+        "templateId"?: string | null;
+    }
     interface VerdocsSign {
         /**
-          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+          * The ID of the document to sign.
          */
         "documentId"?: string | null;
         /**
@@ -1429,11 +1256,11 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+          * The invite code for the signer.
          */
         "inviteCode"?: string | null;
         /**
-          * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a signing session.
+          * The name of the role that will be signing.
          */
         "roleId"?: string | null;
     }
@@ -1441,7 +1268,7 @@ declare namespace LocalJSX {
         /**
           * Initial signature text
          */
-        "fullName"?: string;
+        "name"?: string;
         /**
           * Event fired when a signature is adopted.
          */
@@ -1611,6 +1438,7 @@ declare namespace LocalJSX {
         "verdocs-search-activity": VerdocsSearchActivity;
         "verdocs-search-box": VerdocsSearchBox;
         "verdocs-search-tabs": VerdocsSearchTabs;
+        "verdocs-send": VerdocsSend;
         "verdocs-sign": VerdocsSign;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-status-indicator": VerdocsStatusIndicator;
@@ -1651,6 +1479,7 @@ declare module "@stencil/core" {
             "verdocs-search-activity": LocalJSX.VerdocsSearchActivity & JSXBase.HTMLAttributes<HTMLVerdocsSearchActivityElement>;
             "verdocs-search-box": LocalJSX.VerdocsSearchBox & JSXBase.HTMLAttributes<HTMLVerdocsSearchBoxElement>;
             "verdocs-search-tabs": LocalJSX.VerdocsSearchTabs & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
+            "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
             "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;

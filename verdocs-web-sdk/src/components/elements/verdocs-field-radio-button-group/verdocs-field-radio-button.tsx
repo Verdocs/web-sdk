@@ -1,4 +1,6 @@
 import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
+import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 
 /**
  * Displays a radio button.
@@ -10,34 +12,9 @@ import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
 })
 export class VerdocsFieldRadioButton {
   /**
-   * Sets the tabIndex of the input element.
+   * The document or template field to display.
    */
-  @Prop() order: number = 1;
-
-  /**
-   * Sets the value of the input element.
-   */
-  @Prop() checked: boolean = false;
-
-  /**
-   * Sets the value of the input element.
-   */
-  @Prop() value: string = '';
-
-  /**
-   * Sets the name of the input element.
-   */
-  @Prop() name: string = '';
-
-  /**
-   * If true, the field will be marked required.
-   */
-  @Prop() required: boolean = false;
-
-  /**
-   * Sets the disabled attribute of the input element.
-   */
-  @Prop() disabled: boolean = false;
+  @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
@@ -52,20 +29,27 @@ export class VerdocsFieldRadioButton {
   }
 
   render() {
+    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
+    if ('settings' in this.field && this.field?.settings) {
+      settings = this.field.settings;
+    } else if ('setting' in this.field && this.field?.setting) {
+      settings = this.field.setting;
+    }
+
     return (
-      <Host class={{required: this.required, storybook: !!window?.['STORYBOOK_ENV']}}>
+      <Host class={{required: settings.required, storybook: !!window?.['STORYBOOK_ENV']}}>
         <input
           type="radio"
-          tabIndex={this.order}
-          value={this.value}
-          name={this.name}
-          id={`${this.name}=${this.value}`}
-          checked={this.checked}
-          disabled={this.disabled}
-          required={this.required}
+          tabIndex={settings.order}
+          value={settings.value}
+          name={settings.name}
+          id={`${settings.name}=${settings.value}`}
+          checked={settings.checked}
+          disabled={settings.disabled}
+          required={settings.required}
           onChange={e => this.handleChange(e)}
         />
-        <label htmlFor={`${this.name}=${this.value}`} />
+        <label htmlFor={`${settings.name}=${settings.value}`} />
       </Host>
     );
   }

@@ -13,6 +13,9 @@ export default {
     queryChanged: {action: 'queryChanged'},
     type: {type: 'string', control: 'radio', options: ['all', 'document', 'template', 'organization']},
   },
+  parameters: {
+    layout: 'fullscreen',
+  },
 } as Meta;
 
 export const SearchBox = ({type, searchClicked, typeChanged, queryChanged}) =>

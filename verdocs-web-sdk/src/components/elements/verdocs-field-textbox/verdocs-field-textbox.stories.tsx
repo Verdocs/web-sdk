@@ -5,14 +5,14 @@ export default {
   title: 'Document Fields/Textbox',
   component: 'verdocs-field-textbox',
   args: {
-    placeholder: 'Email address...',
-    order: 1,
-    value: '',
-    disabled: false,
-    required: false,
+    field: {
+      settings: {
+        x: 0,
+        y: 0,
+      },
+    },
   },
   argTypes: {},
 } as Meta;
 
-export const Textbox = ({placeholder, order, value, required, disabled}) =>
-  html`<verdocs-field-textbox .placeholder="${placeholder}" .order="${order}" .required="${required}" .value="${value}" .disabled="${disabled}" />`;
+export const Textbox = ({field}) => html`<verdocs-field-textbox .field="${field}" />`;

@@ -5,31 +5,14 @@ export default {
   title: 'Document Fields/Date',
   component: 'verdocs-field-date',
   args: {
-    placeholder: 'Select Date',
-    order: 1,
-    value: '',
-    disabled: false,
-    required: false,
-  },
-  argTypes: {
-    fieldFocus: {
-      action: 'fieldFocus',
-      table: {disable: true},
-    },
-    fieldBlur: {
-      action: 'fieldBlur',
-      table: {disable: true},
-    },
-    fieldChange: {
-      action: 'fieldChange',
-      table: {disable: true},
-    },
-    fieldInput: {
-      action: 'fieldInput',
-      table: {disable: true},
+    field: {
+      settings: {
+        x: 0,
+        y: 0,
+      },
     },
   },
+  argTypes: {},
 } as Meta;
 
-export const Date = ({placeholder, order, value, required, disabled}) =>
-  html`<verdocs-field-textbox .placeholder="${placeholder}" .order="${order}" .required="${required}" .value="${value}" .disabled="${disabled}" />`;
+export const Date = ({field}) => html`<verdocs-field-textbox .field="${field}" />`;

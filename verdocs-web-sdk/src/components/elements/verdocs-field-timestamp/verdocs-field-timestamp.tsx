@@ -1,5 +1,6 @@
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
-import {IDocumentField} from '@verdocs/js-sdk/Documents/Documents';
 
 /**
  * Display a timestamp field.
@@ -13,9 +14,9 @@ export class VerdocsFieldTimestamp {
   private el: HTMLInputElement;
 
   /**
-   * A placeholder to assist the user in completing the field.
+   * The document or template field to display.
    */
-  @Prop() field: IDocumentField = null;
+  @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
    * Event fired when the input field loses focus.
@@ -66,14 +67,21 @@ export class VerdocsFieldTimestamp {
   }
 
   render() {
+    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
+    if ('settings' in this.field && this.field?.settings) {
+      settings = this.field.settings;
+    } else if ('setting' in this.field && this.field?.setting) {
+      settings = this.field.setting;
+    }
+
     return (
       <Host class={{focused: this.focused, required: this.field?.required}}>
         <input
           type="text"
-          placeholder={this.field?.settings?.placeholder}
-          tabIndex={this.field?.settings?.order}
-          value={this.field?.settings?.value || new Date().toLocaleDateString()}
-          disabled={this.field?.settings?.disabled}
+          placeholder={settings?.placeholder}
+          tabIndex={settings?.order}
+          value={settings?.value || new Date().toLocaleDateString()}
+          disabled={settings?.disabled}
           required={this.field?.required}
           ref={el => (this.el = el)}
           onBlur={() => this.handleBlur()}

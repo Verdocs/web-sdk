@@ -6,7 +6,7 @@ export default {
   component: 'verdocs-initial-dialog',
   args: {
     open: true,
-    fullname: 'Paige Turner',
+    initials: 'PT',
   },
   argTypes: {
     closed: {
@@ -18,4 +18,4 @@ export default {
   },
 } as Meta;
 
-export const InitialDialog = ({fullname, open, closed}) => html`<verdocs-initial-dialog .fullname=${fullname} .open=${open} @closed=${closed} />`;
+export const InitialDialog = ({initials, open, closed}) => html`<verdocs-initial-dialog .initials=${initials} .open=${open} @closed=${closed} />`;

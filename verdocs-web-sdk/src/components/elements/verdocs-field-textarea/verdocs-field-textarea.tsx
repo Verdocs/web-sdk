@@ -1,4 +1,6 @@
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
+import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 
 /**
  * Display a multi-line text input field.
@@ -12,29 +14,9 @@ export class VerdocsFieldTextarea {
   private el: HTMLTextAreaElement;
 
   /**
-   * A placeholder to assist the user in completing the field.
+   * The document or template field to display.
    */
-  @Prop() placeholder: string = '';
-
-  /**
-   * Sets the tabIndex of the input element.
-   */
-  @Prop() order: number = 1;
-
-  /**
-   * Sets the value of the input element.
-   */
-  @Prop() value: string = '';
-
-  /**
-   * If true, the field will be marked required.
-   */
-  @Prop() required: boolean = false;
-
-  /**
-   * Sets the disabled attribute of the input element.
-   */
-  @Prop() disabled: boolean = false;
+  @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
    * Event fired when the input field loses focus.
@@ -85,14 +67,21 @@ export class VerdocsFieldTextarea {
   }
 
   render() {
+    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
+    if ('settings' in this.field && this.field?.settings) {
+      settings = this.field.settings;
+    } else if ('setting' in this.field && this.field?.setting) {
+      settings = this.field.setting;
+    }
+
     return (
-      <Host class={{focused: this.focused, required: this.required, storybook: !!window?.['STORYBOOK_ENV']}}>
+      <Host class={{focused: this.focused, required: settings.required, storybook: !!window?.['STORYBOOK_ENV']}}>
         <textarea
-          placeholder={this.placeholder || ''}
-          tabIndex={this.order}
-          value={this.value}
-          disabled={this.disabled}
-          required={this.required}
+          placeholder={settings.placeholder || ''}
+          tabIndex={settings.order}
+          value={settings.value}
+          disabled={settings.disabled}
+          required={settings.required}
           ref={el => (this.el = el)}
           onBlur={() => this.handleBlur()}
           onFocus={() => this.handleFocus()}

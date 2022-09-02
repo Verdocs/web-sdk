@@ -1,5 +1,6 @@
-import {IFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Documents';
+import {IDocumentField} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, State} from '@stencil/core';
 
 /**
@@ -13,14 +14,14 @@ import {Component, h, Host, Prop, Event, EventEmitter, Method, State} from '@ste
 })
 export class VerdocsFieldSignature {
   /**
-   * Sets the field source.
+   * The document or template field to display.
    */
-  @Prop() field: IDocumentField;
+  @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
-   * Sets the recipient (signer).
+   * If set, the signature creation dialog will be initialized with this text.
    */
-  @Prop() recipient: IRecipient;
+  @Prop() name?: string = '';
 
   /**
    * Event emitted when the field has changed.
@@ -36,20 +37,6 @@ export class VerdocsFieldSignature {
   tempSignature: string = '';
 
   private dialog?: any;
-  private settings: IFieldSetting = {x: 0, y: 0};
-  private fullName: string = '';
-
-  componentWillLoad() {
-    if (this.field?.settings) {
-      this.settings = this.field.settings;
-    }
-
-    if (this.recipient?.full_name) {
-      this.fullName = this.recipient.full_name;
-    }
-
-    console.log({settings: this.settings, fullName: this.fullName});
-  }
 
   hideDialog() {
     this.dialog?.remove();
@@ -65,19 +52,24 @@ export class VerdocsFieldSignature {
   handleShow() {
     this.dialog = document.createElement('verdocs-signature-dialog');
     this.dialog.open = true;
-    this.dialog.fullName = this.fullName;
+    this.dialog.fullName = this.name;
     this.dialog.addEventListener('cancel', () => this.hideDialog());
     this.dialog.addEventListener('adopt', e => this.handleAdopt(e));
     document.body.append(this.dialog);
   }
 
   render() {
-    const {base64 = ''} = this.settings;
+    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
+    if ('settings' in this.field && this.field?.settings) {
+      settings = this.field.settings;
+    } else if ('setting' in this.field && this.field?.setting) {
+      settings = this.field.setting;
+    }
 
     return (
       <Host class={{required: this.field?.required}}>
-        {this.tempSignature !== '' || base64 !== '' ? (
-          <img src={this.tempSignature || base64} alt="Signature" />
+        {this.tempSignature !== '' || settings.base64 !== '' ? (
+          <img src={this.tempSignature || settings.base64} alt="Signature" />
         ) : (
           <button class={{}} onClick={() => this.handleShow()}>
             Signature

@@ -6,14 +6,13 @@ import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {Component, Prop, State, h} from '@stencil/core';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Documents/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
-import {IDocument, IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Documents';
+import {IDocument, IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
 import {IDocumentPageInfo} from '../../elements/verdocs-document-page/verdocs-document-page';
 import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
 
 /**
  * Display a document signing experience.
  *
- * *NOTE: This sample document will reset every 10 minutes.*
  * ***NOTE: This sample document will reset every 10 minutes...***
  */
 @Component({
@@ -28,20 +27,17 @@ export class VerdocsSign {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a
-   * signing session.
+   * The ID of the document to sign.
    */
   @Prop() documentId: string | null = null;
 
   /**
-   * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a
-   * signing session.
+   * The name of the role that will be signing.
    */
   @Prop() roleId: string | null = null;
 
   /**
-   * If `source` is set to `verdocs-sign`, this should be set to a valid invitation code to activate a
-   * signing session.
+   * The invite code for the signer.
    */
   @Prop() inviteCode: string | null = null;
 
@@ -200,7 +196,7 @@ export class VerdocsSign {
     }
   }
 
-  renderCheckboxGroupOption(page: IDocumentPageInfo, field: IDocumentField, option: any, index: number) {
+  renderCheckboxGroupOption(page: IDocumentPageInfo, field: IDocumentField, option: any) {
     const left = rescale(page.xScale, option.x);
     const bottom = rescale(page.yScale, option.y);
 
@@ -212,10 +208,10 @@ export class VerdocsSign {
       backgroundColor: getRGBA(this.recipientIndex),
     } as any;
 
-    return <verdocs-field-checkbox style={style} order={index} value={option.checked} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
+    return <verdocs-field-checkbox style={style} field={field} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
   }
 
-  renderRadioGroupOption(page: IDocumentPageInfo, field: IDocumentField, option: any, index: number) {
+  renderRadioGroupOption(page: IDocumentPageInfo, field: IDocumentField, option: any) {
     const left = rescale(page.xScale, option.x);
     const bottom = rescale(page.yScale, option.y);
 
@@ -227,16 +223,7 @@ export class VerdocsSign {
       backgroundColor: getRGBA(this.recipientIndex),
     } as any;
 
-    return (
-      <verdocs-field-radio-button
-        style={style}
-        order={index}
-        value={option.id}
-        name={field.name}
-        checked={option.selected}
-        onFieldChange={e => this.handleFieldChange(field, e, option.id)}
-      />
-    );
+    return <verdocs-field-radio-button style={style} field={field} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
   }
 
   isFieldValid(field: IDocumentField) {
@@ -255,6 +242,7 @@ export class VerdocsSign {
       case 'initial':
       case 'textarea':
       case 'date':
+      case 'timestamp':
       case 'attachment':
         return !!field.settings?.result;
       case 'dropdown':
@@ -345,6 +333,7 @@ export class VerdocsSign {
       case 'initial':
       case 'payment':
       case 'signature':
+      case 'timestamp':
       case 'textarea':
       case 'textbox':
         el = document.createElement(`verdocs-field-${field.type}`);

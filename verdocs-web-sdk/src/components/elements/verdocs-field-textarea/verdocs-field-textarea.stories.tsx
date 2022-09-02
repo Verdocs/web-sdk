@@ -5,14 +5,15 @@ export default {
   title: 'Document Fields/Textarea',
   component: 'verdocs-field-textarea',
   args: {
-    placeholder: 'Email address...',
-    order: 1,
-    value: '',
-    disabled: false,
-    required: false,
+    field: {
+      settings: {
+        placeholder: 'Email address...',
+        x: 0,
+        y: 0,
+      },
+    },
   },
   argTypes: {},
 } as Meta;
 
-export const Textarea = ({placeholder, order, value, required, disabled}) =>
-  html`<verdocs-field-textarea .placeholder="${placeholder}" .order="${order}" .required="${required}" .value="${value}" .disabled="${disabled}" />`;
+export const Textarea = ({field}) => html`<verdocs-field-textarea .field="${field}" />`;

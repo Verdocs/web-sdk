@@ -6,7 +6,7 @@ export default {
   component: 'verdocs-signature-dialog',
   args: {
     open: true,
-    fullname: 'Paige Turner',
+    name: 'Paige Turner',
   },
   argTypes: {
     closed: {
@@ -18,4 +18,4 @@ export default {
   },
 } as Meta;
 
-export const SignatureDialog = ({fullname, open, closed}) => html`<verdocs-signature-dialog .fullname=${fullname} .open=${open} @closed=${closed} />`;
+export const SignatureDialog = ({name, open, closed}) => html`<verdocs-signature-dialog .name=${name} .open=${open} @closed=${closed} />`;

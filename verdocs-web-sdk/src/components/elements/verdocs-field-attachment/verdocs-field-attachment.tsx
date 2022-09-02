@@ -1,5 +1,6 @@
-import {IDocumentField} from '@verdocs/js-sdk/Documents/Documents';
 import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/core';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
 import Paperclip from './paperclip.svg';
 
 /**
@@ -13,29 +14,9 @@ import Paperclip from './paperclip.svg';
 })
 export class VerdocsFieldAttachment {
   /**
-   * Sets the field source.
+   * The document or template field to display.
    */
-  @Prop() field: IDocumentField;
-
-  /**
-   * Sets the tabIndex of the input element.
-   */
-  @Prop() order: number = 1;
-
-  /**
-   * Sets the value of the input element.
-   */
-  @Prop() value: string = '';
-
-  /**
-   * If true, the field will be marked required.
-   */
-  @Prop() required: boolean = false;
-
-  /**
-   * Sets the disabled attribute of the input element.
-   */
-  @Prop() disabled: boolean = false;
+  @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
@@ -65,8 +46,15 @@ export class VerdocsFieldAttachment {
   }
 
   render() {
+    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
+    if ('settings' in this.field && this.field?.settings) {
+      settings = this.field.settings;
+    } else if ('setting' in this.field && this.field?.setting) {
+      settings = this.field.setting;
+    }
+
     return (
-      <Host class={{required: this.required}}>
+      <Host class={{required: settings.required}}>
         <span innerHTML={Paperclip} onClick={() => this.handleShow()} />
       </Host>
     );

@@ -1,4 +1,6 @@
 import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
 
 /**
  * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
@@ -11,24 +13,9 @@ import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
 })
 export class VerdocsFieldCheckbox {
   /**
-   * Sets the tabIndex of the input element.
+   * The document or template field to display.
    */
-  @Prop() order: number = 1;
-
-  /**
-   * Sets the value of the input element.
-   */
-  @Prop() value: boolean = false;
-
-  /**
-   * If true, the field will be marked required.
-   */
-  @Prop() required: boolean = false;
-
-  /**
-   * Sets the disabled attribute of the input element.
-   */
-  @Prop() disabled: boolean = false;
+  @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
@@ -42,10 +29,24 @@ export class VerdocsFieldCheckbox {
   }
 
   render() {
+    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
+    if ('settings' in this.field && this.field?.settings) {
+      settings = this.field.settings;
+    } else if ('setting' in this.field && this.field?.setting) {
+      settings = this.field.setting;
+    }
+
     return (
-      <Host class={{required: this.required}}>
+      <Host class={{required: settings.required}}>
         <label>
-          <input type="checkbox" tabIndex={this.order} checked={this.value} disabled={this.disabled} required={this.required} onChange={e => this.handleChange(e)} />
+          <input
+            type="checkbox"
+            tabIndex={settings.order}
+            checked={settings.value}
+            disabled={settings.disabled}
+            required={settings.required}
+            onChange={e => this.handleChange(e)}
+          />
           <span />
         </label>
       </Host>

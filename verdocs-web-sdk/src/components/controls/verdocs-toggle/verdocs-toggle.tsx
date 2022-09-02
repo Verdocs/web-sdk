@@ -1,4 +1,4 @@
-import {Component, Prop, h, Listen} from '@stencil/core';
+import {Component, Prop, h, State} from '@stencil/core';
 
 export interface IButtons {
   id: string;
@@ -33,28 +33,34 @@ export class VerdocsToggle {
    */
   @Prop() theme: 'light' | 'dark';
 
-  @Listen('click', {
-    target: 'document',
-    capture: true,
-    passive: false,
-  })
-  handleClick(event) {
-    event.preventDefault();
-    let container = event.target;
-    if (container.matches('toggle-icon-buttons')) {
-      container = event.target.shadowRoot;
-      const element = container.activeElement;
-      const siblings = Array.from(element.parentElement.children).filter(child => {
-        return child !== element;
-      });
-      siblings.map((sibling: any) => {
-        return sibling.classList.remove('selected');
-      });
-      if (!element.classList.contains('selected')) {
-        element.classList.add('selected');
-      }
-    }
+  @State() selectedOption: number = 0;
+
+  componentWillLoad() {
+    this.selectedOption = this.options?.defaultSelection || 0;
   }
+
+  // @Listen('click', {
+  //   target: 'document',
+  //   capture: true,
+  //   passive: false,
+  // })
+  // handleClick(event) {
+  //   event.preventDefault();
+  //   let container = event.target;
+  //   if (container.matches('toggle-icon-buttons')) {
+  //     container = event.target.shadowRoot;
+  //     const element = container.activeElement;
+  //     const siblings = Array.from(element.parentElement.children).filter(child => {
+  //       return child !== element;
+  //     });
+  //     siblings.map((sibling: any) => {
+  //       return sibling.classList.remove('selected');
+  //     });
+  //     if (!element.classList.contains('selected')) {
+  //       element.classList.add('selected');
+  //     }
+  //   }
+  // }
 
   render() {
     return (
@@ -62,7 +68,16 @@ export class VerdocsToggle {
         <span class="label">{`${this.options.label}:`}</span>
         <div class="buttons">
           {this.options.buttons.map((button: IButtons, index: number) => (
-            <button id={button.id} key={button.id} innerHTML={button.icon} class={index === this.options.defaultSelection ? 'selected' : ''} />
+            <button
+              id={button.id}
+              key={button.id}
+              innerHTML={button.icon}
+              class={index === this.selectedOption ? 'selected' : ''}
+              onClick={() => {
+                console.log('clicked', index);
+                this.selectedOption = index;
+              }}
+            />
           ))}
         </div>
       </div>

@@ -4,8 +4,13 @@ import {Meta} from '@storybook/web-components';
 export default {
   title: 'Document Fields/Attachment',
   component: 'verdocs-field-attachment',
-  args: {},
+  args: {
+    field: {
+      x: 0,
+      y: 0,
+    },
+  },
   argTypes: {},
 } as Meta;
 
-export const Attachment = ({}) => html`<verdocs-field-attachment />`;
+export const Attachment = ({field}) => html`<verdocs-field-attachment .field="${field}" />`;

@@ -14,7 +14,7 @@ export class VerdocsSignatureDialog {
   /**
    * Initial signature text
    */
-  @Prop() fullName: string = '';
+  @Prop() name: string = '';
 
   /**
    * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
@@ -38,7 +38,7 @@ export class VerdocsSignatureDialog {
   @State() mode: string = 'type';
 
   componentWillLoad() {
-    this.enteredName = this.fullName;
+    this.enteredName = this.name;
 
     const ds = new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v19/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup6hNX6plRP.woff)');
     ds.load().then(font => {

@@ -4,8 +4,15 @@ import {Meta} from '@storybook/web-components';
 export default {
   title: 'Document Fields/Payment',
   component: 'verdocs-field-payment',
-  args: {},
+  args: {
+    field: {
+      settings: {
+        x: 0,
+        y: 0,
+      },
+    },
+  },
   argTypes: {},
 } as Meta;
 
-export const Payment = ({}) => html`<verdocs-field-payment />`;
+export const Payment = ({field}) => html`<verdocs-field-payment .field="${field}" />`;

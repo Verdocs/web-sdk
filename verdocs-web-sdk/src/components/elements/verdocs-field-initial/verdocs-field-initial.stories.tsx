@@ -5,9 +5,15 @@ export default {
   title: 'Document Fields/Initial',
   component: 'verdocs-field-initial',
   args: {
-    required: false,
+    initials: 'PT',
+    field: {
+      settings: {
+        x: 0,
+        y: 0,
+      },
+    },
   },
   argTypes: {},
 } as Meta;
 
-export const Initial = ({required}) => html`<verdocs-field-initial .required=${required} />`;
+export const Initial = ({initials, field}) => html`<verdocs-field-initial .field="${field}" .initials="${initials}" />`;

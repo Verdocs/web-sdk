@@ -1,5 +1,7 @@
 import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/core';
-import {IDocumentField} from '@verdocs/js-sdk/Documents/Documents';
+import {IDocumentField} from '@verdocs/js-sdk/Documents/Types';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
 
 /**
  * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
@@ -12,9 +14,9 @@ import {IDocumentField} from '@verdocs/js-sdk/Documents/Documents';
 })
 export class VerdocsFieldPayment {
   /**
-   * The field to display.
+   * The document or template field to display.
    */
-  @Prop() field: IDocumentField;
+  @Prop() field: IDocumentField | ITemplateField | null = null;
 
   @Prop() fields: any[];
   @Prop() pageNum: number;
@@ -112,6 +114,15 @@ export class VerdocsFieldPayment {
   //     opacity: 1;
 
   render() {
+    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
+    if ('settings' in this.field && this.field?.settings) {
+      settings = this.field.settings;
+    } else if ('setting' in this.field && this.field?.setting) {
+      settings = this.field.setting;
+    }
+
+    console.log('Payment field', settings);
+
     return (
       <Host class={{focused: this.focused, storybook: !!window?.['STORYBOOK_ENV']}}>
         <button class={{hide: this.signed}}>Payment</button>

@@ -1,4 +1,6 @@
 import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/core';
+import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 
 /**
  * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
@@ -11,19 +13,14 @@ import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/co
 })
 export class VerdocsFieldInitial {
   /**
-   * Whether the field is required.
+   * The document or template field to display.
    */
-  @Prop() required: boolean = false;
+  @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
-   * The user's full name.
+   * The document or template field to display.
    */
-  @Prop() fullName: string = '';
-
-  /**
-   * The base64 signature value.
-   */
-  @Prop() value: string = '';
+  @Prop() initials: string = '';
 
   /**
    * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
@@ -44,7 +41,7 @@ export class VerdocsFieldInitial {
   handleShow() {
     this.dialog = document.createElement('verdocs-initial-dialog');
     this.dialog.open = true;
-    this.dialog.fullName = this.fullName;
+    this.dialog.initials = this.initials;
     this.dialog.addEventListener('cancel', () => {
       console.log('cancel');
       this.dialog?.remove();
@@ -57,10 +54,17 @@ export class VerdocsFieldInitial {
   }
 
   render() {
+    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
+    if ('settings' in this.field && this.field?.settings) {
+      settings = this.field.settings;
+    } else if ('setting' in this.field && this.field?.setting) {
+      settings = this.field.setting;
+    }
+
     return (
-      <Host class={{required: this.required}}>
-        {this.value !== '' ? (
-          <img src={this.value} alt="Initials" />
+      <Host class={{required: settings.required}}>
+        {settings.value !== '' ? (
+          <img src={settings.value} alt="Initials" />
         ) : (
           <button class={{}} onClick={() => this.handleShow()}>
             Initial

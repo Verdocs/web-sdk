@@ -1,7 +1,7 @@
 import {RecipientFlow} from './recipient-flow';
 import {createPopper, Instance} from '@popperjs/core';
 import {Component, Prop, Host, h, State} from '@stencil/core';
-import {IDocument, TDocumentStatus, TRecipientStatus} from '@verdocs/js-sdk/Documents/Documents';
+import {IDocument, TDocumentStatus, TRecipientStatus} from '@verdocs/js-sdk/Documents/Types';
 import AcceptedLight from './accepted-light.svg';
 import AcceptedDark from './accepted-dark.svg';
 import CanceledLight from './canceled-light.svg';
@@ -288,7 +288,11 @@ export class VerdocsStatusIndicator {
         ref={el => (this.summaryComponent = el as HTMLButtonElement)}
         class={`${this.theme} ${this.size} ${this.document ? 'has-document' : ''}`}
         aria-label="Click to View Details"
-        onClick={() => this.document && this.toggleDropdown()}
+        onClick={e => {
+          e.stopPropagation();
+          e.preventDefault();
+          this.document && this.toggleDropdown();
+        }}
         onBlur={e => this.document && this.handleHideDropdown(e)}
       >
         <span class="icon" innerHTML={icon} />

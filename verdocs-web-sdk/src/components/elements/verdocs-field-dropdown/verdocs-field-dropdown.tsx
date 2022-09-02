@@ -1,3 +1,5 @@
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, State} from '@stencil/core';
 
 /**
@@ -13,29 +15,9 @@ export class VerdocsFieldDropdown {
   private el: HTMLSelectElement;
 
   /**
-   * The optoins to choose from.
+   * The document or template field to display.
    */
-  @Prop() options: any[] = [];
-
-  /**
-   * If true, the field will be marked required.
-   */
-  @Prop() required: boolean = false;
-
-  /**
-   * Sets the tabIndex of the input element.
-   */
-  @Prop() order: number = 1;
-
-  /**
-   * Sets the disabled attribute of the input element.
-   */
-  @Prop() disabled: boolean = false;
-
-  /**
-   * The currently selected value.
-   */
-  @Prop() value: string = '';
+  @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
    * Event fired when the input field loses focus.
@@ -77,19 +59,26 @@ export class VerdocsFieldDropdown {
   }
 
   render() {
+    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
+    if ('settings' in this.field && this.field?.settings) {
+      settings = this.field.settings;
+    } else if ('setting' in this.field && this.field?.setting) {
+      settings = this.field.setting;
+    }
+
     return (
-      <Host class={{focused: this.focused, required: this.required}}>
+      <Host class={{focused: this.focused, required: settings.required}}>
         <select
-          tabIndex={this.order}
-          disabled={this.disabled}
+          tabIndex={settings.order}
+          disabled={settings.disabled}
           ref={el => (this.el = el)}
           onChange={e => this.handleChange(e)}
           onBlur={() => this.handleBlur()}
           onFocus={() => this.handleFocus()}
         >
           <option value="">Select...</option>
-          {this.options.map(option => (
-            <option value={option.id} selected={option.value === this.value}>
+          {(settings.options || []).map(option => (
+            <option value={option.id} selected={option.value === settings.value}>
               {option.value}
             </option>
           ))}

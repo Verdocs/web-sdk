@@ -5,14 +5,15 @@ export default {
   title: 'Document Fields/Dropdown',
   component: 'verdocs-field-dropdown',
   args: {
-    order: 1,
-    value: '',
-    disabled: false,
-    required: false,
-    options: [{id: 'id1', value: 'Option 1'}],
+    field: {
+      settings: {
+        x: 0,
+        y: 0,
+        options: [{id: 'id1', value: 'Option 1'}],
+      },
+    },
   },
   argTypes: {},
 } as Meta;
 
-export const Dropdown = ({order, value, required, disabled, options}) =>
-  html`<verdocs-field-dropdown .order="${order}" .required="${required}" .value="${value}" .disabled="${disabled}" .options="${options}" />`;
+export const Dropdown = ({field}) => html`<verdocs-field-dropdown .field="${field}" />`;
