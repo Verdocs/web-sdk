@@ -16,4 +16,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Dropdown = ({field}) => html`<verdocs-field-dropdown .field="${field}" />`;
+export const Dropdown = ({field}) => html`<verdocs-field-dropdown .field=${field} />`;

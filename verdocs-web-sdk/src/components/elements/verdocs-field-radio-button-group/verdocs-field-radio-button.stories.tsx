@@ -17,4 +17,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const RadioButton = ({field}) => html`<verdocs-field-radio-button .field="${field}" />`;
+export const RadioButton = ({field}) => html`<verdocs-field-radio-button .field=${field} />`;

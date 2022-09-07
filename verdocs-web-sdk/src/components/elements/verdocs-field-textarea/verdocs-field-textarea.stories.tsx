@@ -16,4 +16,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Textarea = ({field}) => html`<verdocs-field-textarea .field="${field}" />`;
+export const Textarea = ({field}) => html`<verdocs-field-textarea .field=${field} />`;

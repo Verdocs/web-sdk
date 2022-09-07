@@ -15,4 +15,4 @@ export default {
   },
 } as Meta;
 
-export const Send = ({templateId}) => html`<verdocs-send .templateId=${templateId} />`;
+export const Send = ({templateId, zoomLevel}) => html`<verdocs-send .templateId=${templateId} />`;

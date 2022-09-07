@@ -1,7 +1,7 @@
 // @ts-ignore
 import {Datepicker} from 'vanillajs-datepicker';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Documents/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, State} from '@stencil/core';
 
 /**
@@ -19,6 +19,11 @@ export class VerdocsFieldDate {
    * The document or template field to display.
    */
   @Prop() field: IDocumentField | ITemplateField | null = null;
+
+  /**
+   * The recipient completing the form, if known.
+   */
+  @Prop() recipient?: IRecipient;
 
   /**
    * Event fired when the input field loses focus.

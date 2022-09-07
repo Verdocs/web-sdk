@@ -15,4 +15,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Payment = ({field}) => html`<verdocs-field-payment .field="${field}" />`;
+export const Payment = ({field}) => html`<verdocs-field-payment .field=${field} />`;

@@ -13,4 +13,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Attachment = ({field}) => html`<verdocs-field-attachment .field="${field}" />`;
+export const Attachment = ({field}) => html`<verdocs-field-attachment .field=${field} />`;

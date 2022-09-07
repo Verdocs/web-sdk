@@ -27,4 +27,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Timestamp = ({field}) => html`<verdocs-field-timestamp .field="${field}" />`;
+export const Timestamp = ({field}) => html`<verdocs-field-timestamp .field=${field} />`;

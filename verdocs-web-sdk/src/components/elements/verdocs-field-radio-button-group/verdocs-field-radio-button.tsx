@@ -1,5 +1,5 @@
 import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
-import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Documents/Types';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 
 /**
@@ -15,6 +15,11 @@ export class VerdocsFieldRadioButton {
    * The document or template field to display.
    */
   @Prop() field: IDocumentField | ITemplateField | null = null;
+
+  /**
+   * The recipient completing the form, if known.
+   */
+  @Prop() recipient?: IRecipient;
 
   /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.

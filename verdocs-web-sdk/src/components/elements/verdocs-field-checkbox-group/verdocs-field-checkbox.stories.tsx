@@ -15,4 +15,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Checkbox = ({field}) => html`<verdocs-field-checkbox .field="${field}" />`;
+export const Checkbox = ({field}) => html`<verdocs-field-checkbox .field=${field} />`;

@@ -1,6 +1,6 @@
 import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/core';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Documents/Types';
 import Paperclip from './paperclip.svg';
 
 /**
@@ -17,6 +17,11 @@ export class VerdocsFieldAttachment {
    * The document or template field to display.
    */
   @Prop() field: IDocumentField | ITemplateField | null = null;
+
+  /**
+   * The recipient completing the form, if known.
+   */
+  @Prop() recipient?: IRecipient;
 
   /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.

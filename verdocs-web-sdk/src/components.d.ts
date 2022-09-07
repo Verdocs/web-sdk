@@ -10,7 +10,7 @@ import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { IDocumentPageInfo, IPageLayer } from "./components/elements/verdocs-document-page/verdocs-document-page";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
-import { IDocument, IDocumentField, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Types";
+import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Types";
 import { ITemplate, ITemplateField } from "@verdocs/js-sdk/Templates/Types";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
@@ -102,12 +102,20 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldCheckbox {
         /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldDate {
         /**
@@ -115,6 +123,10 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -122,6 +134,10 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldInitial {
         /**
@@ -133,6 +149,10 @@ export namespace Components {
           * The document or template field to display.
          */
         "initials": string;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldPayment {
         "currentInitial": string;
@@ -148,6 +168,10 @@ export namespace Components {
         "focused": boolean;
         "pageNum": number;
         "pdfPages": any[];
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
         "recipients": any;
         "roleName": string;
         "selectedRoleName": string;
@@ -158,6 +182,10 @@ export namespace Components {
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldSignature {
         /**
@@ -169,6 +197,10 @@ export namespace Components {
           * If set, the signature creation dialog will be initialized with this text.
          */
         "name"?: string;
+        /**
+          * If set, the signature creation dialog will be initialized from this object.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -176,6 +208,10 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -183,6 +219,10 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -894,6 +934,10 @@ declare namespace LocalJSX {
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldAttachmentCustomEvent<string>) => void;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldCheckbox {
         /**
@@ -904,6 +948,10 @@ declare namespace LocalJSX {
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldCheckboxCustomEvent<string>) => void;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldDate {
         /**
@@ -926,6 +974,10 @@ declare namespace LocalJSX {
           * Event fired on every character entered into / deleted from the field.
          */
         "onFieldInput"?: (event: VerdocsFieldDateCustomEvent<string>) => void;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -944,6 +996,10 @@ declare namespace LocalJSX {
           * Event fired when the input field loses focus.
          */
         "onFieldFocus"?: (event: VerdocsFieldDropdownCustomEvent<boolean>) => void;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldInitial {
         /**
@@ -962,6 +1018,10 @@ declare namespace LocalJSX {
           * Event emitted when the user cancels the process.
          */
         "onCancel"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldPayment {
         "currentInitial"?: string;
@@ -979,6 +1039,10 @@ declare namespace LocalJSX {
         "onSignatureComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
         "pageNum"?: number;
         "pdfPages"?: any[];
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
         "recipients"?: any;
         "roleName"?: string;
         "selectedRoleName"?: string;
@@ -993,6 +1057,10 @@ declare namespace LocalJSX {
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldRadioButtonCustomEvent<string>) => void;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldSignature {
         /**
@@ -1007,6 +1075,10 @@ declare namespace LocalJSX {
           * Event emitted when the field has changed.
          */
         "onFieldChange"?: (event: VerdocsFieldSignatureCustomEvent<string>) => void;
+        /**
+          * If set, the signature creation dialog will be initialized from this object.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -1029,6 +1101,10 @@ declare namespace LocalJSX {
           * Event fired on every character entered into / deleted from the field.
          */
         "onFieldInput"?: (event: VerdocsFieldTextareaCustomEvent<string>) => void;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -1051,6 +1127,10 @@ declare namespace LocalJSX {
           * Event fired on every character entered into / deleted from the field.
          */
         "onFieldInput"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsFieldTimestamp {
         /**

@@ -1,4 +1,4 @@
-import {IDocumentField} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
 import {IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, State} from '@stencil/core';
@@ -22,6 +22,11 @@ export class VerdocsFieldSignature {
    * If set, the signature creation dialog will be initialized with this text.
    */
   @Prop() name?: string = '';
+
+  /**
+   * If set, the signature creation dialog will be initialized from this object.
+   */
+  @Prop() recipient?: IRecipient;
 
   /**
    * Event emitted when the field has changed.
@@ -52,7 +57,7 @@ export class VerdocsFieldSignature {
   handleShow() {
     this.dialog = document.createElement('verdocs-signature-dialog');
     this.dialog.open = true;
-    this.dialog.fullName = this.name;
+    this.dialog.fullName = this.recipient?.full_name || this.name;
     this.dialog.addEventListener('cancel', () => this.hideDialog());
     this.dialog.addEventListener('adopt', e => this.handleAdopt(e));
     document.body.append(this.dialog);
@@ -66,9 +71,10 @@ export class VerdocsFieldSignature {
       settings = this.field.setting;
     }
 
+    const value = this.tempSignature || settings.base64;
     return (
       <Host class={{required: this.field?.required}}>
-        {this.tempSignature !== '' || settings.base64 !== '' ? (
+        {value ? (
           <img src={this.tempSignature || settings.base64} alt="Signature" />
         ) : (
           <button class={{}} onClick={() => this.handleShow()}>

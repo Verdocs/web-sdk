@@ -15,4 +15,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Date = ({field}) => html`<verdocs-field-textbox .field="${field}" />`;
+export const Date = ({field}) => html`<verdocs-field-textbox .field=${field} />`;

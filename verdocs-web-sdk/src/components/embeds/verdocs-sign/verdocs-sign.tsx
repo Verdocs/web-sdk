@@ -298,7 +298,12 @@ export class VerdocsSign {
   }
 
   setControlStyles(el: HTMLElement, field: IDocumentField, docPage: IDocumentPageInfo) {
-    const {x = 0, y = 0, width = 150, height = 50} = field.settings;
+    let {x = 0, y = 0, width = 150, height = 50} = field.settings;
+
+    if (field.type === 'initial' || field.type === 'signature') {
+      width = 82;
+      height = 41;
+    }
 
     el.style.width = `${width}px`;
     el.style.height = `${height}px`;

@@ -1,6 +1,7 @@
-import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/core';
-import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, State} from '@stencil/core';
+import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Documents/Types';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {fullNameToInitials} from '../../../utils/utils';
 
 /**
  * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
@@ -16,6 +17,11 @@ export class VerdocsFieldInitial {
    * The document or template field to display.
    */
   @Prop() field: IDocumentField | ITemplateField | null = null;
+
+  /**
+   * The recipient completing the form, if known.
+   */
+  @Prop() recipient?: IRecipient;
 
   /**
    * The document or template field to display.
@@ -36,12 +42,15 @@ export class VerdocsFieldInitial {
     this.handleShow();
   }
 
+  @State()
+  tempSignature: string = '';
+
   private dialog?: any;
 
   handleShow() {
     this.dialog = document.createElement('verdocs-initial-dialog');
     this.dialog.open = true;
-    this.dialog.initials = this.initials;
+    this.dialog.initials = this.recipient ? fullNameToInitials(this.recipient.full_name) : this.initials;
     this.dialog.addEventListener('cancel', () => {
       console.log('cancel');
       this.dialog?.remove();
@@ -61,9 +70,10 @@ export class VerdocsFieldInitial {
       settings = this.field.setting;
     }
 
+    const value = this.tempSignature || settings.base64;
     return (
       <Host class={{required: settings.required}}>
-        {settings.value !== '' ? (
+        {value ? (
           <img src={settings.value} alt="Initials" />
         ) : (
           <button class={{}} onClick={() => this.handleShow()}>

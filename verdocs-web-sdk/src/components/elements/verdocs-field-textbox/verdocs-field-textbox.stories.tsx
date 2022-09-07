@@ -15,4 +15,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Textbox = ({field}) => html`<verdocs-field-textbox .field="${field}" />`;
+export const Textbox = ({field}) => html`<verdocs-field-textbox .field=${field} />`;

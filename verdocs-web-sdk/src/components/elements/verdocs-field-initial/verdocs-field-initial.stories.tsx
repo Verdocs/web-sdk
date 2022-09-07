@@ -16,4 +16,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Initial = ({initials, field}) => html`<verdocs-field-initial .field="${field}" .initials="${initials}" />`;
+export const Initial = ({initials, field}) => html`<verdocs-field-initial .field=${field} .initials=${initials} />`;
