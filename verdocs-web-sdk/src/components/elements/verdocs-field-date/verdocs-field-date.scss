@@ -1,17 +1,20 @@
 @import '../../../theme.scss';
-
-@import 'node_modules/vanillajs-datepicker/sass/datepicker';
+@import '../../../../node_modules/flatpickr/dist/themes/light.css';
 
 verdocs-field-date {
   font-family: $verdocs-primary-font;
   width: 64px;
-  height: 15px;
+  height: 20px;
   display: block;
   font-size: 11px;
   position: relative;
   letter-spacing: 0.3px;
   background-color: transparent;
   transform-origin: bottom left;
+
+  &.disabled {
+    opacity: 0.5;
+  }
 
   input {
     box-sizing: border-box;
@@ -22,7 +25,7 @@ verdocs-field-date {
     width: 100%;
     background: none;
     font-size: 11px;
-    border: 1px solid #ccc;
+    border: 1px solid $light-border-color;
     appearance: none;
 
     &.hide {

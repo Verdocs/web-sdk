@@ -9,8 +9,9 @@ export default {
       x: 0,
       y: 0,
     },
+    disabled: false,
   },
   argTypes: {},
 } as Meta;
 
-export const Attachment = ({field}) => html`<verdocs-field-attachment .field=${field} />`;
+export const Attachment = ({field, disabled}) => html`<verdocs-field-attachment .field=${field} .disabled=${disabled} />`;

@@ -1,7 +1,7 @@
-import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/core';
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/core';
+import {getFieldSettings} from '../../../utils/utils';
 
 /**
  * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
@@ -22,6 +22,11 @@ export class VerdocsFieldPayment {
    * The recipient completing the form, if known.
    */
   @Prop() recipient?: IRecipient;
+
+  /**
+   * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+   */
+  @Prop() disabled?: boolean = false;
 
   @Prop() fields: any[];
   @Prop() pageNum: number;
@@ -119,18 +124,12 @@ export class VerdocsFieldPayment {
   //     opacity: 1;
 
   render() {
-    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
-    if ('settings' in this.field && this.field?.settings) {
-      settings = this.field.settings;
-    } else if ('setting' in this.field && this.field?.setting) {
-      settings = this.field.setting;
-    }
-
+    const settings = getFieldSettings(this.field);
+    const disabled = this.disabled ?? settings.disabled ?? false;
     console.log('Payment field', settings);
-
     return (
-      <Host class={{focused: this.focused, storybook: !!window?.['STORYBOOK_ENV']}}>
-        <button class={{hide: this.signed}}>Payment</button>
+      <Host class={{focused: this.focused, disabled}}>
+        <button class={{hide: this.signed}}>$</button>
         {this.signed ? <div class="frame" /> : <div style={{display: 'none'}} />}
         <img width="100%" height="100%" src={this.signatureUrl} />
       </Host>

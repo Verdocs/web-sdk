@@ -8,7 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
-import { IDocumentPageInfo, IPageLayer } from "./components/elements/verdocs-document-page/verdocs-document-page";
+import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Types";
 import { ITemplate, ITemplateField } from "@verdocs/js-sdk/Templates/Types";
@@ -17,7 +17,6 @@ import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
-import { IPageLayer as IPageLayer1 } from "./components/elements/verdocs-document-page/verdocs-document-page";
 import { IPageRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
 export namespace Components {
     interface VerdocsAuth {
@@ -37,6 +36,16 @@ export namespace Components {
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
          */
         "visible": boolean;
+    }
+    interface VerdocsBuild {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The ID of the template to create the document from.
+         */
+        "templateId": string | null;
     }
     interface VerdocsButton {
         /**
@@ -98,6 +107,10 @@ export namespace Components {
     }
     interface VerdocsFieldAttachment {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
@@ -109,15 +122,27 @@ export namespace Components {
     }
     interface VerdocsFieldCheckbox {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
+        /**
+          * The index of the settings option this particular checkbox is for
+         */
+        "option": number;
         /**
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
     }
     interface VerdocsFieldDate {
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
         /**
           * The document or template field to display.
          */
@@ -130,6 +155,10 @@ export namespace Components {
     }
     interface VerdocsFieldDropdown {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
@@ -140,6 +169,10 @@ export namespace Components {
         "recipient"?: IRecipient;
     }
     interface VerdocsFieldInitial {
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
         /**
           * The document or template field to display.
          */
@@ -160,6 +193,10 @@ export namespace Components {
         "currentSignature": string;
         "currentSignatureId": string;
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
@@ -179,15 +216,27 @@ export namespace Components {
     }
     interface VerdocsFieldRadioButton {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
+        /**
+          * The index of the settings option this particular checkbox is for
+         */
+        "option": number;
         /**
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
     }
     interface VerdocsFieldSignature {
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
         /**
           * The document or template field to display.
          */
@@ -204,6 +253,10 @@ export namespace Components {
     }
     interface VerdocsFieldTextarea {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
@@ -214,6 +267,10 @@ export namespace Components {
         "recipient"?: IRecipient;
     }
     interface VerdocsFieldTextbox {
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
         /**
           * The document or template field to display.
          */
@@ -226,10 +283,18 @@ export namespace Components {
     }
     interface VerdocsFieldTimestamp {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsInitialDialog {
         /**
@@ -304,6 +369,16 @@ export namespace Components {
           * The organization to display
          */
         "organization": IOrganization;
+    }
+    interface VerdocsPreview {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The ID of the template to create the document from.
+         */
+        "templateId": string | null;
     }
     interface VerdocsQuickFunctions {
         /**
@@ -468,7 +543,7 @@ export namespace Components {
         /**
           * Layers will be passed through to the individual pages inside this component.
          */
-        "pageLayers": IPageLayer1[];
+        "pageLayers": IPageLayer[];
         /**
           * Rotate the PDF in degrees
          */
@@ -586,6 +661,12 @@ declare global {
         prototype: HTMLVerdocsAuthElement;
         new (): HTMLVerdocsAuthElement;
     };
+    interface HTMLVerdocsBuildElement extends Components.VerdocsBuild, HTMLStencilElement {
+    }
+    var HTMLVerdocsBuildElement: {
+        prototype: HTMLVerdocsBuildElement;
+        new (): HTMLVerdocsBuildElement;
+    };
     interface HTMLVerdocsButtonElement extends Components.VerdocsButton, HTMLStencilElement {
     }
     var HTMLVerdocsButtonElement: {
@@ -700,6 +781,12 @@ declare global {
         prototype: HTMLVerdocsOrganizationCardElement;
         new (): HTMLVerdocsOrganizationCardElement;
     };
+    interface HTMLVerdocsPreviewElement extends Components.VerdocsPreview, HTMLStencilElement {
+    }
+    var HTMLVerdocsPreviewElement: {
+        prototype: HTMLVerdocsPreviewElement;
+        new (): HTMLVerdocsPreviewElement;
+    };
     interface HTMLVerdocsQuickFunctionsElement extends Components.VerdocsQuickFunctions, HTMLStencilElement {
     }
     var HTMLVerdocsQuickFunctionsElement: {
@@ -792,6 +879,7 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "verdocs-auth": HTMLVerdocsAuthElement;
+        "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-button": HTMLVerdocsButtonElement;
         "verdocs-document-page": HTMLVerdocsDocumentPageElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
@@ -811,6 +899,7 @@ declare global {
         "verdocs-loader": HTMLVerdocsLoaderElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
+        "verdocs-preview": HTMLVerdocsPreviewElement;
         "verdocs-quick-functions": HTMLVerdocsQuickFunctionsElement;
         "verdocs-search": HTMLVerdocsSearchElement;
         "verdocs-search-activity": HTMLVerdocsSearchActivityElement;
@@ -854,6 +943,16 @@ declare namespace LocalJSX {
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
          */
         "visible"?: boolean;
+    }
+    interface VerdocsBuild {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The ID of the template to create the document from.
+         */
+        "templateId"?: string | null;
     }
     interface VerdocsButton {
         /**
@@ -927,6 +1026,10 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldAttachment {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
@@ -941,19 +1044,31 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldCheckbox {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onFieldChange"?: (event: VerdocsFieldCheckboxCustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldCheckboxCustomEvent<{option: number; value: boolean}>) => void;
+        /**
+          * The index of the settings option this particular checkbox is for
+         */
+        "option"?: number;
         /**
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
     }
     interface VerdocsFieldDate {
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
         /**
           * The document or template field to display.
          */
@@ -981,6 +1096,10 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldDropdown {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
@@ -1003,6 +1122,10 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldInitial {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
@@ -1019,6 +1142,10 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onFieldChange"?: (event: VerdocsFieldInitialCustomEvent<string>) => void;
+        /**
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
@@ -1028,6 +1155,10 @@ declare namespace LocalJSX {
         "currentInitialId"?: string;
         "currentSignature"?: string;
         "currentSignatureId"?: string;
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
         /**
           * The document or template field to display.
          */
@@ -1050,19 +1181,31 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldRadioButton {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onFieldChange"?: (event: VerdocsFieldRadioButtonCustomEvent<string>) => void;
+        "onFieldChange"?: (event: VerdocsFieldRadioButtonCustomEvent<{option: number; value: boolean}>) => void;
+        /**
+          * The index of the settings option this particular checkbox is for
+         */
+        "option"?: number;
         /**
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
     }
     interface VerdocsFieldSignature {
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
         /**
           * The document or template field to display.
          */
@@ -1081,6 +1224,10 @@ declare namespace LocalJSX {
         "recipient"?: IRecipient;
     }
     interface VerdocsFieldTextarea {
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
         /**
           * The document or template field to display.
          */
@@ -1108,6 +1255,10 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldTextbox {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
@@ -1134,6 +1285,10 @@ declare namespace LocalJSX {
     }
     interface VerdocsFieldTimestamp {
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
@@ -1153,6 +1308,10 @@ declare namespace LocalJSX {
           * Event fired on every character entered into / deleted from the field.
          */
         "onFieldInput"?: (event: VerdocsFieldTimestampCustomEvent<string>) => void;
+        /**
+          * The recipient completing the form, if known.
+         */
+        "recipient"?: IRecipient;
     }
     interface VerdocsInitialDialog {
         /**
@@ -1247,6 +1406,16 @@ declare namespace LocalJSX {
           * The organization to display
          */
         "organization"?: IOrganization;
+    }
+    interface VerdocsPreview {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The ID of the template to create the document from.
+         */
+        "templateId"?: string | null;
     }
     interface VerdocsQuickFunctions {
         /**
@@ -1482,7 +1651,7 @@ declare namespace LocalJSX {
         /**
           * Layers will be passed through to the individual pages inside this component.
          */
-        "pageLayers"?: IPageLayer1[];
+        "pageLayers"?: IPageLayer[];
         /**
           * Rotate the PDF in degrees
          */
@@ -1494,6 +1663,7 @@ declare namespace LocalJSX {
     }
     interface IntrinsicElements {
         "verdocs-auth": VerdocsAuth;
+        "verdocs-build": VerdocsBuild;
         "verdocs-button": VerdocsButton;
         "verdocs-document-page": VerdocsDocumentPage;
         "verdocs-dropdown": VerdocsDropdown;
@@ -1513,6 +1683,7 @@ declare namespace LocalJSX {
         "verdocs-loader": VerdocsLoader;
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
+        "verdocs-preview": VerdocsPreview;
         "verdocs-quick-functions": VerdocsQuickFunctions;
         "verdocs-search": VerdocsSearch;
         "verdocs-search-activity": VerdocsSearchActivity;
@@ -1535,6 +1706,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
+            "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
             "verdocs-document-page": LocalJSX.VerdocsDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsDocumentPageElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
@@ -1554,6 +1726,7 @@ declare module "@stencil/core" {
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
+            "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
             "verdocs-quick-functions": LocalJSX.VerdocsQuickFunctions & JSXBase.HTMLAttributes<HTMLVerdocsQuickFunctionsElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
             "verdocs-search-activity": LocalJSX.VerdocsSearchActivity & JSXBase.HTMLAttributes<HTMLVerdocsSearchActivityElement>;

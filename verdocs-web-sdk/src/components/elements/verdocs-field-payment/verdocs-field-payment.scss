@@ -11,6 +11,10 @@ verdocs-field-payment {
   background-color: transparent;
   transform-origin: bottom left;
 
+  &.disabled {
+    opacity: 0.5;
+  }
+
   button,
   div {
     box-sizing: border-box;

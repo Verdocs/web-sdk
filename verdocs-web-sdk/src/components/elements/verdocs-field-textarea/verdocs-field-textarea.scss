@@ -10,6 +10,10 @@ verdocs-field-textarea {
   background-color: transparent;
   transform-origin: bottom left;
 
+  &.disabled {
+    opacity: 0.5;
+  }
+
   textarea {
     box-sizing: border-box;
     color: rgba(0, 0, 0, 0.87);

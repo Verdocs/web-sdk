@@ -1,8 +1,8 @@
-// @ts-ignore
-import {Datepicker} from 'vanillajs-datepicker';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Documents/Types';
+import flatpickr from 'flatpickr';
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, State} from '@stencil/core';
+import {getFieldSettings} from '../../../utils/utils';
 
 /**
  * Displays a date field. When tapped or clicked, the input element will display a date picker component.
@@ -24,6 +24,11 @@ export class VerdocsFieldDate {
    * The recipient completing the form, if known.
    */
   @Prop() recipient?: IRecipient;
+
+  /**
+   * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+   */
+  @Prop() disabled?: boolean = false;
 
   /**
    * Event fired when the input field loses focus.
@@ -48,6 +53,7 @@ export class VerdocsFieldDate {
   @Event({composed: true}) fieldInput: EventEmitter<string>;
 
   @State() focused = false;
+  @State() containerId = `verdocs-date-picker-${Math.random().toString(36).substring(2, 11)}`;
 
   @Method() async focusField() {
     this.focused = true;
@@ -56,14 +62,16 @@ export class VerdocsFieldDate {
   }
 
   componentDidLoad() {
-    new Datepicker(this.el, {
-      autohide: true,
-      todayHighlight: true,
+    flatpickr('#' + this.containerId, {
+      positionElement: this.el,
+      onChange: (selectedDate, dateStr, instance) => {
+        console.log('Selected', selectedDate, dateStr, instance);
+      },
     });
 
-    this.el.addEventListener('changeDate', (e: any) => {
-      console.log('changeDate', e.detail.date.toISOString());
-    });
+    // this.el.addEventListener('changeDate', (e: any) => {
+    //   console.log('changeDate', e.detail.date.toISOString());
+    // });
   }
 
   handleBlur() {
@@ -86,18 +94,15 @@ export class VerdocsFieldDate {
 
   // NOTE: We don't use a "date" field here because browsers vary widely in their formatting of it.
   render() {
-    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
-    if ('settings' in this.field && this.field?.settings) {
-      settings = this.field.settings;
-    } else if ('setting' in this.field && this.field?.setting) {
-      settings = this.field.setting;
-    }
-
+    const settings = getFieldSettings(this.field);
+    const disabled = this.disabled ?? settings.disabled ?? false;
     return (
-      <Host class={{focused: this.focused, required: settings.required, storybook: !!window?.['STORYBOOK_ENV']}}>
+      <Host class={{focused: this.focused, required: settings.required, disabled}}>
         <input
           type="text"
           value=""
+          id={this.containerId}
+          disabled={disabled}
           placeholder={settings.placeholder}
           required={settings.required}
           ref={el => (this.el = el)}

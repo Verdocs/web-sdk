@@ -1,19 +1,11 @@
-import {format} from './utils';
+import {fullNameToInitials, integerSequence} from './utils';
 
-describe('format', () => {
-  it('returns empty string for no names defined', () => {
-    expect(format(undefined, undefined, undefined)).toEqual('');
+describe('utils', () => {
+  it('integerSequence returns a sequence of integers', () => {
+    expect(integerSequence(1, 3)).toEqual([1, 2, 3]);
   });
 
-  it('formats just first names', () => {
-    expect(format('Joseph', undefined, undefined)).toEqual('Joseph');
-  });
-
-  it('formats first and last names', () => {
-    expect(format('Joseph', undefined, 'Publique')).toEqual('Joseph Publique');
-  });
-
-  it('formats first, middle and last names', () => {
-    expect(format('Joseph', 'Quincy', 'Publique')).toEqual('Joseph Quincy Publique');
+  it('fullNameToInitials returns a set of initials', () => {
+    expect(fullNameToInitials('Paige Turner')).toEqual('PT');
   });
 });

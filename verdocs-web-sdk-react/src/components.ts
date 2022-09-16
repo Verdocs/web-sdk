@@ -9,6 +9,7 @@ import { defineCustomElements } from '@verdocs/web-sdk/loader';
 
 defineCustomElements();
 export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HTMLVerdocsAuthElement>('verdocs-auth');
+export const VerdocsBuild = /*@__PURE__*/createReactComponent<JSX.VerdocsBuild, HTMLVerdocsBuildElement>('verdocs-build');
 export const VerdocsButton = /*@__PURE__*/createReactComponent<JSX.VerdocsButton, HTMLVerdocsButtonElement>('verdocs-button');
 export const VerdocsDocumentPage = /*@__PURE__*/createReactComponent<JSX.VerdocsDocumentPage, HTMLVerdocsDocumentPageElement>('verdocs-document-page');
 export const VerdocsDropdown = /*@__PURE__*/createReactComponent<JSX.VerdocsDropdown, HTMLVerdocsDropdownElement>('verdocs-dropdown');
@@ -28,6 +29,7 @@ export const VerdocsKbaDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsKba
 export const VerdocsLoader = /*@__PURE__*/createReactComponent<JSX.VerdocsLoader, HTMLVerdocsLoaderElement>('verdocs-loader');
 export const VerdocsOkDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsOkDialog, HTMLVerdocsOkDialogElement>('verdocs-ok-dialog');
 export const VerdocsOrganizationCard = /*@__PURE__*/createReactComponent<JSX.VerdocsOrganizationCard, HTMLVerdocsOrganizationCardElement>('verdocs-organization-card');
+export const VerdocsPreview = /*@__PURE__*/createReactComponent<JSX.VerdocsPreview, HTMLVerdocsPreviewElement>('verdocs-preview');
 export const VerdocsQuickFunctions = /*@__PURE__*/createReactComponent<JSX.VerdocsQuickFunctions, HTMLVerdocsQuickFunctionsElement>('verdocs-quick-functions');
 export const VerdocsSearch = /*@__PURE__*/createReactComponent<JSX.VerdocsSearch, HTMLVerdocsSearchElement>('verdocs-search');
 export const VerdocsSearchActivity = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchActivity, HTMLVerdocsSearchActivityElement>('verdocs-search-activity');

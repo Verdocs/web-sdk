@@ -1,6 +1,7 @@
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
-import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Documents/Types';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {getFieldSettings} from '../../../utils/utils';
 
 /**
  * Display a multi-line text input field.
@@ -22,6 +23,11 @@ export class VerdocsFieldTextarea {
    * The recipient completing the form, if known.
    */
   @Prop() recipient?: IRecipient;
+
+  /**
+   * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+   */
+  @Prop() disabled?: boolean = false;
 
   /**
    * Event fired when the input field loses focus.
@@ -72,20 +78,15 @@ export class VerdocsFieldTextarea {
   }
 
   render() {
-    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
-    if ('settings' in this.field && this.field?.settings) {
-      settings = this.field.settings;
-    } else if ('setting' in this.field && this.field?.setting) {
-      settings = this.field.setting;
-    }
-
+    const settings = getFieldSettings(this.field);
+    const disabled = this.disabled ?? settings.disabled ?? false;
     return (
-      <Host class={{focused: this.focused, required: settings.required, storybook: !!window?.['STORYBOOK_ENV']}}>
+      <Host class={{focused: this.focused, required: settings.required, disabled}}>
         <textarea
           placeholder={settings.placeholder || ''}
           tabIndex={settings.order}
           value={settings.value}
-          disabled={settings.disabled}
+          disabled={disabled}
           required={settings.required}
           ref={el => (this.el = el)}
           onBlur={() => this.handleBlur()}

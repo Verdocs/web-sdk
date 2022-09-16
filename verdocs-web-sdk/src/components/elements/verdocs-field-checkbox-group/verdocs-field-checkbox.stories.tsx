@@ -11,8 +11,10 @@ export default {
         y: 0,
       },
     },
+    option: 0,
+    disabled: false,
   },
   argTypes: {},
 } as Meta;
 
-export const Checkbox = ({field}) => html`<verdocs-field-checkbox .field=${field} />`;
+export const Checkbox = ({field, option, disabled}) => html`<verdocs-field-checkbox .field=${field} .option=${option} .disabled=${disabled} />`;

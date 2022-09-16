@@ -9,6 +9,14 @@ verdocs-field-attachment {
   background-color: transparent;
   transform-origin: bottom left;
 
+  &.disabled {
+    opacity: 0.5;
+
+    span {
+      cursor: inherit;
+    }
+  }
+
   span {
     width: 20px;
     cursor: pointer;

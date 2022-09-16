@@ -4,8 +4,13 @@
 verdocs-field-checkbox {
   font-family: $verdocs-primary-font;
   font-size: 11px;
+  position: relative;
   background-color: transparent;
   transform-origin: bottom left;
+
+  &.disabled {
+    opacity: 0.5;
+  }
 
   label > input[type='checkbox'] {
     display: none;
@@ -13,13 +18,15 @@ verdocs-field-checkbox {
 
   label > input[type='checkbox'] + *::before {
     content: '';
+    position: absolute;
     display: block;
-    vertical-align: bottom;
-    width: 14px;
-    height: 14px;
+    top: 1px;
+    left: 1px;
+    width: 10px;
+    height: 10px;
     border-radius: 2px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    flex-shrink: 0;
+    background: $verdocs-grey-3;
+    border: 1px solid rgba(0, 0, 0, 0.7);
   }
 
   label > input[type='checkbox']:checked + * {

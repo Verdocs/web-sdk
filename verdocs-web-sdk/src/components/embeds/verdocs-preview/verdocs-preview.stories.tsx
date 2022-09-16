@@ -2,8 +2,8 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Embeds/Send',
-  component: 'verdocs-send',
+  title: 'Embeds/Preview',
+  component: 'verdocs-preview',
   args: {
     templateId: 'd2338742-f3a1-465b-8592-806587413cc1',
   },
@@ -15,4 +15,4 @@ export default {
   },
 } as Meta;
 
-export const Send = ({templateId}) => html`<verdocs-send .templateId=${templateId} />`;
+export const Preview = ({templateId}) => html`<verdocs-preview .templateId=${templateId} />`;

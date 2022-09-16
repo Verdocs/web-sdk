@@ -10,6 +10,10 @@ verdocs-field-dropdown {
   background-color: transparent;
   transform-origin: bottom left;
 
+  &.disabled {
+    opacity: 0.5;
+  }
+
   select {
     position: absolute;
     background: linear-gradient(55deg, transparent 50%, #333 50%), linear-gradient(125deg, #333 50%, transparent 50%), linear-gradient(to right, transparent, transparent);

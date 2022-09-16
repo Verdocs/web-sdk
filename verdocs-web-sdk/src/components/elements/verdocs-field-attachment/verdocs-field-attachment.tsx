@@ -24,6 +24,11 @@ export class VerdocsFieldAttachment {
   @Prop() recipient?: IRecipient;
 
   /**
+   * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+   */
+  @Prop() disabled?: boolean = false;
+
+  /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
    * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
    * keypress.
@@ -39,14 +44,8 @@ export class VerdocsFieldAttachment {
   handleShow() {
     this.dialog = document.createElement('verdocs-upload-dialog');
     this.dialog.open = true;
-    this.dialog.addEventListener('cancel', () => {
-      console.log('cancel');
-      this.dialog?.remove();
-    });
-    document.addEventListener('done', e => {
-      console.log('done', e);
-      this.dialog?.remove();
-    });
+    this.dialog.addEventListener('cancel', () => this.dialog?.remove());
+    document.addEventListener('done', () => this.dialog?.remove());
     document.body.append(this.dialog);
   }
 
@@ -58,9 +57,10 @@ export class VerdocsFieldAttachment {
       settings = this.field.setting;
     }
 
+    const disabled = this.disabled ?? settings.disabled ?? false;
     return (
-      <Host class={{required: settings.required}}>
-        <span innerHTML={Paperclip} onClick={() => this.handleShow()} />
+      <Host class={{required: settings.required, disabled}}>
+        <span innerHTML={Paperclip} onClick={() => !disabled && this.handleShow()} />
       </Host>
     );
   }

@@ -1,6 +1,7 @@
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
+import {getFieldSettings} from '../../../utils/utils';
 
 /**
  * Display a timestamp field.
@@ -17,6 +18,16 @@ export class VerdocsFieldTimestamp {
    * The document or template field to display.
    */
   @Prop() field: IDocumentField | ITemplateField | null = null;
+
+  /**
+   * The recipient completing the form, if known.
+   */
+  @Prop() recipient?: IRecipient;
+
+  /**
+   * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+   */
+  @Prop() disabled?: boolean = false;
 
   /**
    * Event fired when the input field loses focus.
@@ -67,21 +78,16 @@ export class VerdocsFieldTimestamp {
   }
 
   render() {
-    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
-    if ('settings' in this.field && this.field?.settings) {
-      settings = this.field.settings;
-    } else if ('setting' in this.field && this.field?.setting) {
-      settings = this.field.setting;
-    }
-
+    const settings = getFieldSettings(this.field);
+    const disabled = this.disabled ?? settings.disabled ?? false;
     return (
-      <Host class={{focused: this.focused, required: this.field?.required}}>
+      <Host class={{focused: this.focused, required: this.field?.required, disabled}}>
         <input
           type="text"
           placeholder={settings?.placeholder}
           tabIndex={settings?.order}
           value={settings?.value || new Date().toLocaleDateString()}
-          disabled={settings?.disabled}
+          disabled={disabled}
           required={this.field?.required}
           ref={el => (this.el = el)}
           onBlur={() => this.handleBlur()}

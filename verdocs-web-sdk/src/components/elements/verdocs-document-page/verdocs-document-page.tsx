@@ -1,23 +1,7 @@
 // NOTE: This component does not have a story because it's not intended for external use.
 
 import {Component, h, Host, Prop, Event, EventEmitter, State, Element} from '@stencil/core';
-
-export interface IDocumentPageInfo {
-  container: HTMLElement;
-  containerId: string;
-  pageNumber: number;
-  virtualWidth: number;
-  virtualHeight: number;
-  renderedWidth: number;
-  renderedHeight: number;
-  xScale: number;
-  yScale: number;
-}
-
-export interface IPageLayer {
-  name: string;
-  type: 'div' | 'canvas';
-}
+import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
 
 /**
  * Represents one document page. This is primarily a layout container used to coordinate positions of

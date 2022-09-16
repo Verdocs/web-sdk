@@ -7,8 +7,9 @@ import {Component, Prop, State, h} from '@stencil/core';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Documents/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {IDocument, IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
-import {IDocumentPageInfo} from '../../elements/verdocs-document-page/verdocs-document-page';
 import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
+import {getFieldId, setControlStyles} from '../../../utils/utils';
+import {IDocumentPageInfo} from '../../../utils/Types';
 
 /**
  * Display a document signing experience.
@@ -268,10 +269,6 @@ export class VerdocsSign {
   //   await els.focusField();
   // })();
 
-  getFieldId(field: IDocumentField) {
-    return `verdocs-doc-fld-${field.name}`;
-  }
-
   handleNext() {
     // Find and focus the next incomplete required field
     const requiredFields = this.fields.filter(field => field.required);
@@ -289,29 +286,12 @@ export class VerdocsSign {
     console.log('next required field', nextRequiredField);
 
     if (nextRequiredField) {
-      const id = this.getFieldId(nextRequiredField);
+      const id = getFieldId(nextRequiredField);
       const el = document.getElementById(id) as any;
       console.log('focusing', id, el);
       el?.focusField();
       this.focusedField = nextRequiredField.name;
     }
-  }
-
-  setControlStyles(el: HTMLElement, field: IDocumentField, docPage: IDocumentPageInfo) {
-    let {x = 0, y = 0, width = 150, height = 50} = field.settings;
-
-    if (field.type === 'initial' || field.type === 'signature') {
-      width = 82;
-      height = 41;
-    }
-
-    el.style.width = `${width}px`;
-    el.style.height = `${height}px`;
-    el.style.position = 'absolute';
-    el.style.left = `${rescale(docPage.xScale, x)}px`;
-    el.style.bottom = `${rescale(docPage.yScale, y)}px`;
-    el.style.transform = `scale(${docPage.xScale}, ${docPage.yScale})`;
-    el.style.backgroundColor = field['rgba'] || getRGBA(this.recipientIndex);
   }
 
   renderField(field: IDocumentField, docPage: IDocumentPageInfo /*, index: number*/) {
@@ -320,19 +300,17 @@ export class VerdocsSign {
       return;
     }
 
-    const id = this.getFieldId(field);
-
+    const id = getFieldId(field);
     const existingField = document.getElementById(id);
-
     if (existingField) {
-      this.setControlStyles(existingField, field, docPage);
+      setControlStyles(existingField, field, docPage.xScale, docPage.yScale, this.recipientIndex);
       return;
     }
 
     let el;
     switch (field.type) {
       case 'attachment':
-      case 'checkbox':
+      case 'checkbox_group':
       case 'date':
       case 'dropdown':
       case 'initial':
@@ -342,10 +320,6 @@ export class VerdocsSign {
       case 'textarea':
       case 'textbox':
         el = document.createElement(`verdocs-field-${field.type}`);
-        break;
-      case 'checkbox_group':
-        //   el = document.createElement('verdocs-field-signature');
-        //   el.setAttribute('value', base64);
         break;
       //   return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
       case 'radio_button_group':
@@ -370,7 +344,7 @@ export class VerdocsSign {
       el.setAttribute('id', id);
       // el.setAttribute('required', required);
       el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
-      this.setControlStyles(el, field, docPage);
+      setControlStyles(existingField, field, docPage.xScale, docPage.yScale, this.recipientIndex);
       controlsDiv.appendChild(el);
     }
   }

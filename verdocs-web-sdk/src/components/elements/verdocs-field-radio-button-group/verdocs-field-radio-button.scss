@@ -12,6 +12,10 @@ verdocs-field-radio-button {
   transform-origin: bottom left;
   border-radius: 100%;
 
+  &.disabled {
+    opacity: 0.5;
+  }
+
   input[type='radio'] {
     position: absolute;
     opacity: 0;
@@ -21,15 +25,13 @@ verdocs-field-radio-button {
         content: '';
         background: $verdocs-grey-3;
         border-radius: 100%;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        //border: 1px solid rgb(204, 0, 0);
+        border: 1px solid rgba(0, 0, 0, 0.6);
         display: inline-block;
-        width: 13px;
-        height: 13px;
-        position: relative;
-        top: 2px;
-        margin-right: 2px;
-        vertical-align: top;
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        left: 1px;
+        top: 1px;
         cursor: pointer;
         text-align: center;
         transition: all 250ms ease;

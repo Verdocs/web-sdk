@@ -4,8 +4,8 @@ import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import PDFJSWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry';
 import {DocumentInitParameters, OnProgressParameters} from 'pdfjs-dist/types/src/display/api';
 import {Component, h, Element, Event, Host, Prop, Watch, EventEmitter, State} from '@stencil/core';
-import {IDocumentPageInfo, IPageLayer} from '../../elements/verdocs-document-page/verdocs-document-page';
 import {integerSequence} from '../../../utils/utils';
+import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
 
 const CMAPS_URL = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/cmaps/`;
 

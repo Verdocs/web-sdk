@@ -11,6 +11,10 @@ verdocs-field-initial {
   transform-origin: bottom left;
   border: 1px solid rgba(0, 0, 0, 0.2);
 
+  &.disabled {
+    opacity: 0.5;
+  }
+
   img {
     display: block;
     max-width: 100%;

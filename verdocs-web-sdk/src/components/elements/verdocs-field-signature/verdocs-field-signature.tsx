@@ -1,7 +1,7 @@
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
-import {IDocumentFieldSettings} from '@verdocs/js-sdk/Documents/Types';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, State} from '@stencil/core';
+import {getFieldSettings} from '../../../utils/utils';
 
 /**
  * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
@@ -29,6 +29,11 @@ export class VerdocsFieldSignature {
   @Prop() recipient?: IRecipient;
 
   /**
+   * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+   */
+  @Prop() disabled?: boolean = false;
+
+  /**
    * Event emitted when the field has changed.
    */
   @Event({composed: true}) fieldChange: EventEmitter<string>;
@@ -51,6 +56,7 @@ export class VerdocsFieldSignature {
   handleAdopt(e: any) {
     console.log('[SIGNATURE] Adopted signature');
     this.tempSignature = e.detail;
+    this.fieldChange?.emit(this.tempSignature);
     this.hideDialog();
   }
 
@@ -64,23 +70,12 @@ export class VerdocsFieldSignature {
   }
 
   render() {
-    let settings: IDocumentFieldSettings | ITemplateFieldSetting = {x: 0, y: 0};
-    if ('settings' in this.field && this.field?.settings) {
-      settings = this.field.settings;
-    } else if ('setting' in this.field && this.field?.setting) {
-      settings = this.field.setting;
-    }
-
+    const settings = getFieldSettings(this.field);
     const value = this.tempSignature || settings.base64;
+    const disabled = this.disabled ?? settings.disabled ?? false;
     return (
-      <Host class={{required: this.field?.required}}>
-        {value ? (
-          <img src={this.tempSignature || settings.base64} alt="Signature" />
-        ) : (
-          <button class={{}} onClick={() => this.handleShow()}>
-            Signature
-          </button>
-        )}
+      <Host class={{required: this.field?.required, disabled}}>
+        {value ? <img src={this.tempSignature || settings.base64} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
       </Host>
     );
   }
