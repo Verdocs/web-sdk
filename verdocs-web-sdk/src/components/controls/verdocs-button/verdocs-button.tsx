@@ -58,11 +58,11 @@ export class VerdocsButton {
   /**
    * Event fired when the button is pressed.
    */
-  @Event({composed: true}) press!: EventEmitter;
+  @Event({composed: true, bubbles: false}) press!: EventEmitter;
 
   handleClick(e: any) {
-    e.preventDefault();
-    this.press.emit();
+    e.stopPropagation();
+    this.press?.emit();
   }
 
   render() {

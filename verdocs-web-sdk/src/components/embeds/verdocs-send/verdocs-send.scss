@@ -23,7 +23,7 @@ verdocs-send {
 
   .level {
     display: flex;
-    column-gap: 20px;
+    column-gap: 10px;
     margin-left: 50px;
     position: relative;
     flex-direction: row;
@@ -55,18 +55,20 @@ verdocs-send {
       border-radius: 30px;
       flex-direction: row;
       background: #dddddd;
+      white-space: nowrap;
       padding: 2px 10px 2px 14px;
 
       .icon {
         width: 22px;
         height: 22px;
-        margin: 0 0 0 10px;
         flex: 0 0 22px;
+        margin: 0 0 0 10px;
 
         svg {
           width: 22px;
           height: 22px;
           fill: #333333;
+          outline: none;
         }
       }
     }

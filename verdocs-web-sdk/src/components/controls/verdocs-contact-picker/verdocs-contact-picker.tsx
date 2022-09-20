@@ -17,7 +17,7 @@ export interface IContactSearchEvent {
 }
 
 export interface IContactSelectEvent {
-  name: string;
+  full_name: string;
   email: string;
   phone: string;
   message: string;
@@ -121,7 +121,16 @@ export class VerdocsContactPicker {
   @State() showMessage: boolean = false;
   @State() delegator: boolean = false;
 
-  // componentDidRender() {}
+  componentWillLoad() {
+    if (this.templateRole) {
+      this.name = this.templateRole.full_name || '';
+      this.email = this.templateRole.email || '';
+      this.phone = this.templateRole.phone || '';
+      this.delegator = this.templateRole.delegator || false;
+      this.message = this.templateRole.message || '';
+      this.showMessage = this.message !== '';
+    }
+  }
 
   handleNameChange(e: any) {
     this.name = e.target.value;
@@ -140,10 +149,18 @@ export class VerdocsContactPicker {
     this.message = e.target.value;
   }
 
-  handleSubmit() {
+  handleCancel(e) {
+    e.stopPropagation();
+    this.showSuggestions = false;
+    this.cancel?.emit();
+  }
+
+  handleSubmit(e) {
+    e.stopPropagation();
+
     this.showSuggestions = false;
     this.contactSelected?.emit({
-      name: this.name,
+      full_name: this.name,
       email: this.email,
       phone: this.phone,
       message: this.message,
@@ -151,11 +168,18 @@ export class VerdocsContactPicker {
     });
   }
 
+  handleSelectSuggestion(e: any, suggestion: IEmailContact | IPhoneContact) {
+    e.stopPropagation();
+
+    this.name = suggestion.name;
+    this.email = suggestion.email;
+    this.phone = suggestion.phone;
+    this.showSuggestions = false;
+  }
+
   render() {
     return (
-      <form onSubmit={e => e.preventDefault()}
-            // onClick={() => (this.showSuggestions = false)}
-      >
+      <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()}>
         <div class="row">
           <label htmlFor="verdocs-contact-picker-name">Name:</label>
           <input
@@ -172,20 +196,8 @@ export class VerdocsContactPicker {
           {this.showSuggestions && (
             <div class="dropdown">
               {this.contactSuggestions.map(suggestion => (
-                <div
-                  key={suggestion.id ?? suggestion.name}
-                  class="suggestion"
-                  onClick={e => {
-                    e.preventDefault();
-
-                    console.log('clicked suggestion', suggestion);
-                    this.name = suggestion.name;
-                    this.email = suggestion.email;
-                    this.phone = suggestion.phone;
-                    this.showSuggestions = false;
-                  }}
-                >
-                  {suggestion.avatar ? <img class="avatar" src={suggestion.avatar} /> : <div class="avatar" innerHTML={placeholderIcon} />}
+                <div key={suggestion.id ?? suggestion.name} class="suggestion" onClick={e => this.handleSelectSuggestion(e, suggestion)}>
+                  {suggestion.avatar ? <img alt="Avatar" class="avatar" src={suggestion.avatar} /> : <div class="avatar" innerHTML={placeholderIcon} />}
                   <div class="details">
                     <div class="name">{suggestion.name}</div>
                     {suggestion.email && <div class="destination">{suggestion.email}</div>}
@@ -260,16 +272,8 @@ export class VerdocsContactPicker {
 
           <div class="flex-fill" />
 
-          <verdocs-button
-            variant="outline"
-            label="Cancel"
-            size="small"
-            onPress={() => {
-              this.showSuggestions = false;
-              this.cancel?.emit();
-            }}
-          />
-          <verdocs-button label="OK" size="small" onPress={() => this.handleSubmit()} />
+          <verdocs-button variant="outline" label="Cancel" size="small" onPress={e => this.handleCancel(e)} />
+          <verdocs-button label="OK" size="small" onPress={e => this.handleSubmit(e)} />
         </div>
       </form>
     );

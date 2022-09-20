@@ -36,7 +36,9 @@ export class VerdocsToggleButton {
     this._active = this.active;
   }
 
-  handleToggle() {
+  handleToggle(e: any) {
+    e.stopPropagation();
+
     const newState = !this._active;
     this._active = newState;
     this.toggle?.emit({active: newState});
@@ -46,9 +48,9 @@ export class VerdocsToggleButton {
     return (
       <Host class={`size-${this.size}`}>
         {this.icon ? (
-          <button innerHTML={this.icon} class={{active: this._active}} onClick={() => this.handleToggle()} />
+          <button innerHTML={this.icon} class={{active: this._active}} onClick={e => this.handleToggle(e)} />
         ) : (
-          <button class={{active: this._active}} onClick={() => this.handleToggle()}>
+          <button class={{active: this._active}} onClick={e => this.handleToggle(e)}>
             {this.label}
           </button>
         )}
