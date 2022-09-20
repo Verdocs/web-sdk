@@ -69,7 +69,6 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IDocum
   el.style.bottom = `${rescale(yScale, y)}px`;
   el.style.transform = `scale(${xScale}, ${yScale})`;
   el.style.backgroundColor = field['rgba'] || getRGBA(roleIndex);
-  console.log('bg', el.style.backgroundColor);
 };
 
 export const getFieldId = (field: ITemplateField | IDocumentField) => {

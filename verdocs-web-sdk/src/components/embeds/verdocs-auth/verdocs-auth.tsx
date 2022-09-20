@@ -86,14 +86,15 @@ export class VerdocsAuth {
   @State() activeSession: TSession = null;
   @State() loginError: string | null = null;
 
-  componentDidLoad() {
-    console.log('loaded', this);
+  componentWillLoad() {
     this.endpoint.loadSession();
     if (this.endpoint.session) {
+      console.log('[AUTH] Authenticated');
       this.isAuthenticated = true;
       this.activeSession = this.endpoint.session;
       this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
     } else {
+      console.log('[AUTH] Anonymous');
       this.authenticated?.emit({authenticated: false, session: null});
     }
   }
@@ -109,7 +110,7 @@ export class VerdocsAuth {
         this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
       })
       .catch(e => {
-        console.log('[VERDOCS] Login error', e.response, JSON.stringify(e));
+        console.log('[AUTH] Authentication error', e.response, JSON.stringify(e));
         this.loggingIn = false;
         this.activeSession = null;
         this.authenticated?.emit({authenticated: false, session: null});
@@ -124,7 +125,7 @@ export class VerdocsAuth {
   handleLogout() {
     this.endpoint.clearSession();
     this.isAuthenticated = false;
-    this.authenticated.emit({authenticated: false, session: null});
+    this.authenticated?.emit({authenticated: false, session: null});
   }
 
   handleClearError() {

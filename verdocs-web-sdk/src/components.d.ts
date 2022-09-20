@@ -8,10 +8,11 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
+import { IRole, ITemplate, ITemplateField } from "@verdocs/js-sdk/Templates/Types";
+import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/controls/verdocs-contact-picker/verdocs-contact-picker";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Types";
-import { ITemplate, ITemplateField } from "@verdocs/js-sdk/Templates/Types";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
@@ -76,6 +77,20 @@ export namespace Components {
           * The display variant of the button.
          */
         "variant": 'standard' | 'text' | 'outline';
+    }
+    interface VerdocsContactPicker {
+        /**
+          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+         */
+        "contactSuggestions": (IEmailContact | IPhoneContact)[];
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "templateRole": IRole | null;
     }
     interface VerdocsDocumentPage {
         /**
@@ -529,6 +544,21 @@ export namespace Components {
          */
         "theme": 'light' | 'dark';
     }
+    interface VerdocsToggleButton {
+        "active": boolean;
+        /**
+          * If set, should be an SVG object. This will be rendered as the button's visible element. If icon is supplied, label is ignored.
+         */
+        "icon"?: string | null;
+        /**
+          * If set, should be an SVG object. This will be rendered as the button's visible element. If icon is supplied, label is ignored.
+         */
+        "label"?: string | null;
+        /**
+          * How large the button should be. Small buttons are intended for dialog boxes and other smaller scale UI regions.
+         */
+        "size"?: 'small' | 'normal';
+    }
     interface VerdocsUploadDialog {
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
@@ -561,6 +591,10 @@ export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsButtonElement;
+}
+export interface VerdocsContactPickerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsContactPickerElement;
 }
 export interface VerdocsDocumentPageCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -646,6 +680,10 @@ export interface VerdocsTextInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTextInputElement;
 }
+export interface VerdocsToggleButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsToggleButtonElement;
+}
 export interface VerdocsUploadDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsUploadDialogElement;
@@ -672,6 +710,12 @@ declare global {
     var HTMLVerdocsButtonElement: {
         prototype: HTMLVerdocsButtonElement;
         new (): HTMLVerdocsButtonElement;
+    };
+    interface HTMLVerdocsContactPickerElement extends Components.VerdocsContactPicker, HTMLStencilElement {
+    }
+    var HTMLVerdocsContactPickerElement: {
+        prototype: HTMLVerdocsContactPickerElement;
+        new (): HTMLVerdocsContactPickerElement;
     };
     interface HTMLVerdocsDocumentPageElement extends Components.VerdocsDocumentPage, HTMLStencilElement {
     }
@@ -865,6 +909,12 @@ declare global {
         prototype: HTMLVerdocsToggleElement;
         new (): HTMLVerdocsToggleElement;
     };
+    interface HTMLVerdocsToggleButtonElement extends Components.VerdocsToggleButton, HTMLStencilElement {
+    }
+    var HTMLVerdocsToggleButtonElement: {
+        prototype: HTMLVerdocsToggleButtonElement;
+        new (): HTMLVerdocsToggleButtonElement;
+    };
     interface HTMLVerdocsUploadDialogElement extends Components.VerdocsUploadDialog, HTMLStencilElement {
     }
     var HTMLVerdocsUploadDialogElement: {
@@ -881,6 +931,7 @@ declare global {
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-button": HTMLVerdocsButtonElement;
+        "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
         "verdocs-document-page": HTMLVerdocsDocumentPageElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-field-attachment": HTMLVerdocsFieldAttachmentElement;
@@ -913,6 +964,7 @@ declare global {
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
         "verdocs-toggle": HTMLVerdocsToggleElement;
+        "verdocs-toggle-button": HTMLVerdocsToggleButtonElement;
         "verdocs-upload-dialog": HTMLVerdocsUploadDialogElement;
         "verdocs-view": HTMLVerdocsViewElement;
     }
@@ -987,6 +1039,32 @@ declare namespace LocalJSX {
           * The display variant of the button.
          */
         "variant"?: 'standard' | 'text' | 'outline';
+    }
+    interface VerdocsContactPicker {
+        /**
+          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+         */
+        "contactSuggestions"?: (IEmailContact | IPhoneContact)[];
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user cancels the dialog.
+         */
+        "onCancel"?: (event: VerdocsContactPickerCustomEvent<any>) => void;
+        /**
+          * Event fired when the user changes the type.
+         */
+        "onContactSelected"?: (event: VerdocsContactPickerCustomEvent<IContactSelectEvent>) => void;
+        /**
+          * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
+         */
+        "onSearchContacts"?: (event: VerdocsContactPickerCustomEvent<IContactSearchEvent>) => void;
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "templateRole"?: IRole | null;
     }
     interface VerdocsDocumentPage {
         /**
@@ -1609,6 +1687,25 @@ declare namespace LocalJSX {
          */
         "theme"?: 'light' | 'dark';
     }
+    interface VerdocsToggleButton {
+        "active"?: boolean;
+        /**
+          * If set, should be an SVG object. This will be rendered as the button's visible element. If icon is supplied, label is ignored.
+         */
+        "icon"?: string | null;
+        /**
+          * If set, should be an SVG object. This will be rendered as the button's visible element. If icon is supplied, label is ignored.
+         */
+        "label"?: string | null;
+        /**
+          * Event fired when the button is pressed.
+         */
+        "onToggle"?: (event: VerdocsToggleButtonCustomEvent<{active: boolean}>) => void;
+        /**
+          * How large the button should be. Small buttons are intended for dialog boxes and other smaller scale UI regions.
+         */
+        "size"?: 'small' | 'normal';
+    }
     interface VerdocsUploadDialog {
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
@@ -1665,6 +1762,7 @@ declare namespace LocalJSX {
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
         "verdocs-button": VerdocsButton;
+        "verdocs-contact-picker": VerdocsContactPicker;
         "verdocs-document-page": VerdocsDocumentPage;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-field-attachment": VerdocsFieldAttachment;
@@ -1697,6 +1795,7 @@ declare namespace LocalJSX {
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-text-input": VerdocsTextInput;
         "verdocs-toggle": VerdocsToggle;
+        "verdocs-toggle-button": VerdocsToggleButton;
         "verdocs-upload-dialog": VerdocsUploadDialog;
         "verdocs-view": VerdocsView;
     }
@@ -1708,6 +1807,7 @@ declare module "@stencil/core" {
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
+            "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
             "verdocs-document-page": LocalJSX.VerdocsDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsDocumentPageElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
             "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
@@ -1740,6 +1840,7 @@ declare module "@stencil/core" {
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
             "verdocs-toggle": LocalJSX.VerdocsToggle & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;
+            "verdocs-toggle-button": LocalJSX.VerdocsToggleButton & JSXBase.HTMLAttributes<HTMLVerdocsToggleButtonElement>;
             "verdocs-upload-dialog": LocalJSX.VerdocsUploadDialog & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
             "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
         }

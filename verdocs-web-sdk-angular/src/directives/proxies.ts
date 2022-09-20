@@ -89,6 +89,44 @@ export class VerdocsButton {
   }
 }
 
+import type { IContactSearchEvent as IVerdocsContactPickerIContactSearchEvent } from '@verdocs/web-sdk';
+import type { IContactSelectEvent as IVerdocsContactPickerIContactSelectEvent } from '@verdocs/web-sdk';
+export declare interface VerdocsContactPicker extends Components.VerdocsContactPicker {
+  /**
+   * Event fired when the user enters text in the search field. The calling application may use this to update
+the `contactSuggestions` property. 
+   */
+  searchContacts: EventEmitter<CustomEvent<IVerdocsContactPickerIContactSearchEvent>>;
+  /**
+   * Event fired when the user cancels the dialog. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user changes the type. 
+   */
+  contactSelected: EventEmitter<CustomEvent<IVerdocsContactPickerIContactSelectEvent>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+})
+@Component({
+  selector: 'verdocs-contact-picker',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+})
+export class VerdocsContactPicker {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'contactSelected']);
+  }
+}
+
 import type { IDocumentPageInfo as IVerdocsDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk';
 export declare interface VerdocsDocumentPage extends Components.VerdocsDocumentPage {
   /**
@@ -1030,6 +1068,34 @@ export class VerdocsToggle {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsToggleButton extends Components.VerdocsToggleButton {
+  /**
+   * Event fired when the button is pressed. 
+   */
+  toggle: EventEmitter<CustomEvent<{active: boolean}>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['active', 'icon', 'label', 'size']
+})
+@Component({
+  selector: 'verdocs-toggle-button',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['active', 'icon', 'label', 'size']
+})
+export class VerdocsToggleButton {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['toggle']);
   }
 }
 

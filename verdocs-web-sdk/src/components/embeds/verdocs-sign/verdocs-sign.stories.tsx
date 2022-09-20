@@ -9,6 +9,11 @@ export default {
     roleId: 'Seller',
     inviteCode: '06cecc76ad9b3d02a8fadab5b0aad065',
   },
+  argTypes: {
+    documentId: {control: {type: 'string'}},
+    roleId: {control: {type: 'string'}},
+    inviteCode: {control: {type: 'string'}},
+  },
   parameters: {
     layout: 'fullscreen',
   },

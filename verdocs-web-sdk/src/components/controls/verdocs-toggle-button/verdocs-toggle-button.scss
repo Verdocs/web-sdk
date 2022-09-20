@@ -1,0 +1,44 @@
+@import '../../../theme.scss';
+
+verdocs-toggle-button {
+  font-family: $primary-font;
+
+  button {
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    background: $verdocs-bg-1;
+    color: $verdocs-dark-blue;
+
+    svg {
+      max-width: 100%;
+      max-height: 100%;
+      fill: $verdocs-dark-blue;
+    }
+
+    &.active {
+      background: $verdocs-green;
+      color: $verdocs-grey-3;
+
+      svg {
+        fill: $verdocs-grey-3;
+      }
+    }
+  }
+
+  &.size-normal button {
+    width: 40px;
+    height: 40px;
+    padding: 6px;
+    border-radius: 4px;
+  }
+
+  &.size-small button {
+    width: 34px;
+    height: 34px;
+    padding: 4px;
+    border-radius: 2px;
+  }
+}
