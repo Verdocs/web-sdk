@@ -90,7 +90,10 @@ verdocs-send {
   }
 
   .buttons {
+    display: flex;
     margin-top: 10px;
+    column-gap: 15px;
+    flex-direction: row;
   }
 
   verdocs-contact-picker {

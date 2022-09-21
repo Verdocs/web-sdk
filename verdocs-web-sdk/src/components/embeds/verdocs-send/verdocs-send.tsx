@@ -1,11 +1,11 @@
-import { Event, EventEmitter, Host } from '@stencil/core';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {Component, Prop, State, h} from '@stencil/core';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
+import {Component, Prop, State, h, Event, EventEmitter, Host} from '@stencil/core';
 import {getRoleIndex} from '../../../utils/utils';
-import { SDKError } from '../../../utils/errors';
+import {SDKError} from '../../../utils/errors';
 
 // TODO: Evaluating this pattern for simple icons vs. importing external SVG files. Try to standardize on an approach soon.
 const editIcon =
@@ -41,6 +41,16 @@ export class VerdocsSend {
    * The ID of the template to create the document from.
    */
   @Prop() templateId: string | null = null;
+
+  /**
+   * The user completed the form and clicked send.
+   */
+  @Event({composed: true}) send: EventEmitter<{recipientsAssigned: IRole[]}>;
+
+  /**
+   * The user canceled the process.
+   */
+  @Event({composed: true}) cancel: EventEmitter;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -133,8 +143,25 @@ export class VerdocsSend {
     this.showPickerForId = role.id;
   }
 
+  handleSend(e) {
+    e.stopPropagation();
+    this.send?.emit({recipientsAssigned: Object.values(this.recipientsAssigned)});
+  }
+
+  handleCancel(e) {
+    e.stopPropagation();
+    this.cancel?.emit();
+  }
+
   render() {
     const roleNames = this.template?.roles?.map(role => role.name) || [];
+    const allRecipientsAssigned =
+      Object.values(this.recipientsAssigned).filter(recipient => {
+        console.log('valid email', isValidEmail(recipient.email), recipient.email);
+        console.log('valid phone', isValidPhone(recipient.phone), recipient.phone);
+        return isValidEmail(recipient.email) || isValidPhone(recipient.phone);
+      }).length >= this.template?.roles.length;
+    console.log('assigned', allRecipientsAssigned);
 
     return (
       <Host class={{}}>
@@ -174,8 +201,8 @@ export class VerdocsSend {
         </div>
 
         <div class="buttons">
-          <verdocs-button label="Cancel" size="small" variant="outline" onPress={() => {}} />
-          <verdocs-button label="Send" size="small" onPress={() => {}} />
+          <verdocs-button label="Cancel" size="small" variant="outline" onPress={e => this.handleCancel(e)} />
+          <verdocs-button label="Send" size="small" disabled={!allRecipientsAssigned} onPress={e => this.handleSend(e)} />
         </div>
       </Host>
     );

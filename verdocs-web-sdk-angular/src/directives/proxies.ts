@@ -15,7 +15,8 @@ export declare interface VerdocsAuth extends Components.VerdocsAuth {
    */
   authenticated: EventEmitter<CustomEvent<IVerdocsAuthIAuthStatus>>;
   /**
-   * Event fired when session authentication process has completed. Check the event contents for completion status. 
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsAuthSDKError>>;
 
@@ -40,8 +41,15 @@ export class VerdocsAuth {
   }
 }
 
+import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk';
+export declare interface VerdocsBuild extends Components.VerdocsBuild {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsBuildSDKError>>;
 
-export declare interface VerdocsBuild extends Components.VerdocsBuild {}
+}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -58,6 +66,7 @@ export class VerdocsBuild {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError']);
   }
 }
 
@@ -718,8 +727,15 @@ export class VerdocsOrganizationCard {
   }
 }
 
+import type { SDKError as IVerdocsPreviewSDKError } from '@verdocs/web-sdk';
+export declare interface VerdocsPreview extends Components.VerdocsPreview {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsPreviewSDKError>>;
 
-export declare interface VerdocsPreview extends Components.VerdocsPreview {}
+}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -736,6 +752,7 @@ export class VerdocsPreview {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError']);
   }
 }
 
@@ -877,8 +894,15 @@ export class VerdocsSearchTabs {
   }
 }
 
+import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
+export declare interface VerdocsSend extends Components.VerdocsSend {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsSendSDKError>>;
 
-export declare interface VerdocsSend extends Components.VerdocsSend {}
+}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -895,11 +919,19 @@ export class VerdocsSend {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError']);
   }
 }
 
+import type { SDKError as IVerdocsSignSDKError } from '@verdocs/web-sdk';
+export declare interface VerdocsSign extends Components.VerdocsSign {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsSignSDKError>>;
 
-export declare interface VerdocsSign extends Components.VerdocsSign {}
+}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -916,6 +948,7 @@ export class VerdocsSign {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError']);
   }
 }
 
@@ -1132,6 +1165,7 @@ export class VerdocsUploadDialog {
 }
 
 import type { IPageRenderEvent as IVerdocsViewIPageRenderEvent } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsViewSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsView extends Components.VerdocsView {
   /**
    * Fired when a page has been rendered 
@@ -1153,6 +1187,11 @@ export declare interface VerdocsView extends Components.VerdocsView {
    * Fired when a page has been scaled 
    */
   scaleChange: EventEmitter<CustomEvent<number>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsViewSDKError>>;
 
 }
 
@@ -1171,6 +1210,6 @@ export class VerdocsView {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['pageRendered', 'pageLoaded', 'pageChange', 'pageInit', 'scaleChange']);
+    proxyOutputs(this, this.el, ['pageRendered', 'pageLoaded', 'pageChange', 'pageInit', 'scaleChange', 'sdkError']);
   }
 }

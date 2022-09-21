@@ -588,6 +588,10 @@ export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsAuthElement;
 }
+export interface VerdocsBuildCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsBuildElement;
+}
 export interface VerdocsButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsButtonElement;
@@ -660,6 +664,10 @@ export interface VerdocsOkDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsOkDialogElement;
 }
+export interface VerdocsPreviewCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsPreviewElement;
+}
 export interface VerdocsQuickFunctionsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsQuickFunctionsElement;
@@ -671,6 +679,14 @@ export interface VerdocsSearchActivityCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsSearchBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSearchBoxElement;
+}
+export interface VerdocsSendCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSendElement;
+}
+export interface VerdocsSignCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSignElement;
 }
 export interface VerdocsSignatureDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -988,7 +1004,7 @@ declare namespace LocalJSX {
          */
         "onAuthenticated"?: (event: VerdocsAuthCustomEvent<IAuthStatus>) => void;
         /**
-          * Event fired when session authentication process has completed. Check the event contents for completion status.
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsAuthCustomEvent<SDKError>) => void;
         /**
@@ -1001,6 +1017,10 @@ declare namespace LocalJSX {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsBuildCustomEvent<SDKError>) => void;
         /**
           * The ID of the template to create the document from.
          */
@@ -1491,6 +1511,10 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsPreviewCustomEvent<SDKError>) => void;
+        /**
           * The ID of the template to create the document from.
          */
         "templateId"?: string | null;
@@ -1569,6 +1593,10 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsSendCustomEvent<SDKError>) => void;
+        /**
           * The ID of the template to create the document from.
          */
         "templateId"?: string | null;
@@ -1586,6 +1614,10 @@ declare namespace LocalJSX {
           * The invite code for the signer.
          */
         "inviteCode"?: string | null;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsSignCustomEvent<SDKError>) => void;
         /**
           * The name of the role that will be signing.
          */
@@ -1745,6 +1777,10 @@ declare namespace LocalJSX {
           * Fired when a page has been scaled
          */
         "onScaleChange"?: (event: VerdocsViewCustomEvent<number>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsViewCustomEvent<SDKError>) => void;
         /**
           * Layers will be passed through to the individual pages inside this component.
          */

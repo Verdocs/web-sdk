@@ -1,6 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 import {IRole} from '@verdocs/js-sdk/Templates/Types';
+import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 
 const messageIcon =
   '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-1om0hkc" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path></svg>';
@@ -179,13 +179,15 @@ export class VerdocsContactPicker {
 
   render() {
     return (
-      <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()}>
+      <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <div class="row">
           <label htmlFor="verdocs-contact-picker-name">Name:</label>
           <input
             id="verdocs-contact-picker-name"
             name="verdocs-contact-picker-name"
             type="text"
+            data-lpignore="true"
+            autocomplete="off"
             value={this.name}
             placeholder="Recipient Name..."
             onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
@@ -215,6 +217,8 @@ export class VerdocsContactPicker {
             id="verdocs-contact-picker-email"
             name="verdocs-contact-picker-email"
             type="text"
+            data-lpignore="true"
+            autocomplete="off"
             value={this.email}
             placeholder="Email Address..."
             onFocus={() => (this.showSuggestions = false)}
@@ -228,6 +232,8 @@ export class VerdocsContactPicker {
             id="verdocs-contact-picker-phone"
             name="verdocs-contact-picker-phone"
             type="text"
+            data-lpignore="true"
+            autocomplete="off"
             value={this.phone}
             placeholder="Phone Number..."
             onFocus={() => (this.showSuggestions = false)}
@@ -242,6 +248,8 @@ export class VerdocsContactPicker {
               id="verdocs-contact-picker-message"
               name="verdocs-contact-picker-message"
               type="text"
+              data-lpignore="true"
+              autocomplete="off"
               value={this.message}
               placeholder="Invitation Message..."
               onFocus={() => (this.showSuggestions = false)}
