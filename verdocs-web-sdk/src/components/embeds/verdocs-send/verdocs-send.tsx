@@ -1,11 +1,13 @@
-import {Host} from '@stencil/core';
+import { Event, EventEmitter, Host } from '@stencil/core';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {Component, Prop, State, h} from '@stencil/core';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {getRoleIndex} from '../../../utils/utils';
+import { SDKError } from '../../../utils/errors';
 
+// TODO: Evaluating this pattern for simple icons vs. importing external SVG files. Try to standardize on an approach soon.
 const editIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>';
 
@@ -21,7 +23,8 @@ const doneIcon =
 type TAnnotatedRole = IRole & {id: string};
 
 /**
- * Display a document sending experience.
+ * Display a form to collect recipient information for a new Document. If used anonymously, the specified `templateId` must be public.
+ * If the user is authenticated
  */
 @Component({
   tag: 'verdocs-send',
@@ -38,6 +41,12 @@ export class VerdocsSend {
    * The ID of the template to create the document from.
    */
   @Prop() templateId: string | null = null;
+
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() template: ITemplate | null = null;
 
@@ -129,38 +138,44 @@ export class VerdocsSend {
 
     return (
       <Host class={{}}>
-        <div class="left-line" />
+        <div class="recipients">
+          <div class="left-line" />
+          <div class={`level level-start`}>
+            {this.getLevelIcon(-1)}
+            <div class="complete">Send Document</div>
+          </div>
 
-        <div class={`level level-start`}>
-          {this.getLevelIcon(-1)}
-          <div class="complete">Send Document</div>
+          {this.levels.map(level => (
+            <div class={`level level-${level}}`}>
+              {this.getLevelIcon(level)}
+
+              {this.rolesAtLevel[level].map(role => (
+                <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)}>
+                  {this.recipientsAssigned[role.id]?.full_name ?? role.name}
+                  <div class="icon" innerHTML={editIcon} />
+                  {this.showPickerForId === role.id && (
+                    <verdocs-contact-picker
+                      onCancel={() => (this.showPickerForId = '')}
+                      contactSuggestions={this.sessionContacts}
+                      templateRole={this.recipientsAssigned[role.id] ?? role}
+                      onSearchContacts={e => console.log('Search', e.detail)}
+                      onContactSelected={e => this.handleSelectContact(e, role)}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+
+          <div class={`level level-done`}>
+            {this.getLevelIcon(this.levels.length)}
+            <div class="complete">Document Complete</div>
+          </div>
         </div>
 
-        {this.levels.map(level => (
-          <div class={`level level-${level}}`}>
-            {this.getLevelIcon(level)}
-
-            {this.rolesAtLevel[level].map(role => (
-              <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)}>
-                {this.recipientsAssigned[role.id]?.full_name ?? role.name}
-                <div class="icon" innerHTML={editIcon} />
-                {this.showPickerForId === role.id && (
-                  <verdocs-contact-picker
-                    onCancel={() => (this.showPickerForId = '')}
-                    contactSuggestions={this.sessionContacts}
-                    templateRole={this.recipientsAssigned[role.id] ?? role}
-                    onSearchContacts={e => console.log('Search', e.detail)}
-                    onContactSelected={e => this.handleSelectContact(e, role)}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
-
-        <div class={`level level-done`}>
-          {this.getLevelIcon(this.levels.length)}
-          <div class="complete">Document Complete</div>
+        <div class="buttons">
+          <verdocs-button label="Cancel" size="small" variant="outline" onPress={() => {}} />
+          <verdocs-button label="Send" size="small" onPress={() => {}} />
         </div>
       </Host>
     );

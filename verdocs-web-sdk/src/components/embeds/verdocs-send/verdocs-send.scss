@@ -8,14 +8,18 @@ verdocs-send {
   flex-direction: column;
   font-family: $verdocs-primary-font;
 
+  .recipients {
+    position: relative;
+  }
+
   // To avoid the need to compute things like heights, this layer is simply displayed "on top" of all the level rows. Its
   // background obscures the horizontal lines.
   .left-line {
     top: 32px;
-    left: 32px;
+    left: 20px;
     z-index: 1;
     width: 12px;
-    bottom: 34px;
+    bottom: 30px;
     position: absolute;
     background: #ffffff;
     border-left: 3px dotted #9b9b9b;
@@ -83,6 +87,10 @@ verdocs-send {
       flex-direction: row;
       padding: 3px 10px 3px 2px;
     }
+  }
+
+  .buttons {
+    margin-top: 10px;
   }
 
   verdocs-contact-picker {

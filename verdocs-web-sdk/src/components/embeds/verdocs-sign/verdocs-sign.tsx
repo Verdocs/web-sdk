@@ -1,4 +1,4 @@
-import {Host} from '@stencil/core';
+import {Event, EventEmitter, Host} from '@stencil/core';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Documents} from '@verdocs/js-sdk/Documents';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
@@ -10,6 +10,7 @@ import {IDocument, IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/T
 import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
 import {getFieldId, setControlStyles} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
+import {SDKError} from '../../../utils/errors';
 
 /**
  * Display a document signing experience.
@@ -41,6 +42,12 @@ export class VerdocsSign {
    * The invite code for the signer.
    */
   @Prop() inviteCode: string | null = null;
+
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() recipient: IRecipient | null = null;
 
@@ -94,6 +101,7 @@ export class VerdocsSign {
       // console.log('sigs', sigs);
     } catch (e) {
       console.log('Error with signing session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
@@ -107,6 +115,7 @@ export class VerdocsSign {
       })
       .catch(e => {
         console.log('update failure', e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
   }
 
@@ -161,6 +170,7 @@ export class VerdocsSign {
         Documents.updateDocumentField(this.endpoint, this.documentId, field.name, {prepared: false, value: e.detail})
           .then(r => console.log('Update result', r))
           .catch(e => {
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
             if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
               console.log('jwt expired');
             }
@@ -171,20 +181,29 @@ export class VerdocsSign {
       case 'checkbox_group':
         Documents.updateDocumentField(this.endpoint, this.documentId, field.name, {prepared: false, value: {options: [{id: optionId, checked: e.detail}]}})
           .then(r => console.log('Update result', r))
-          .catch(e => console.log('Error updating', e));
+          .catch(e => {
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+            console.log('Error updating', e)
+          });
         break;
 
       case 'radio_button_group':
         const options = field.settings.options.map(option => ({id: option.id, selected: optionId === option.id}));
         Documents.updateDocumentField(this.endpoint, this.documentId, field.name, {prepared: false, value: {options}})
           .then(r => console.log('Update result', r))
-          .catch(e => console.log('Error updating', e));
+          .catch(e => {
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+            console.log('Error updating', e)
+          });
         break;
 
       case 'dropdown':
         Documents.updateDocumentField(this.endpoint, this.documentId, field.name, {prepared: false, value: e.detail})
           .then(r => console.log('Update result', r))
-          .catch(e => console.log('Error updating', e));
+          .catch(e => {
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+            console.log('Error updating', e)
+          });
         break;
 
       case 'initial':

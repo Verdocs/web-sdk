@@ -1,10 +1,11 @@
-import {Host} from '@stencil/core';
+import {Event, EventEmitter, Host} from '@stencil/core';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, State, h} from '@stencil/core';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
 import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
+import {SDKError} from '../../../utils/errors';
 
 /**
  * Display a template preview experience.
@@ -24,6 +25,12 @@ export class VerdocsPreview {
    * The ID of the template to create the document from.
    */
   @Prop() templateId: string | null = null;
+
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() pdfUrl = null;
   @State() template: ITemplate | null = null;
@@ -50,7 +57,8 @@ export class VerdocsPreview {
       });
       console.log('[PREVIEW] Loaded fields', this.fields);
     } catch (e) {
-      console.log('[PREVIEW] Error with signing session', e);
+      console.log('[PREVIEW] Error with preview session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 

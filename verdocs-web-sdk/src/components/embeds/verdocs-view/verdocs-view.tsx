@@ -6,6 +6,7 @@ import {DocumentInitParameters, OnProgressParameters} from 'pdfjs-dist/types/src
 import {Component, h, Element, Event, Host, Prop, Watch, EventEmitter, State} from '@stencil/core';
 import {integerSequence} from '../../../utils/utils';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
+import {SDKError} from '../../../utils/errors';
 
 const CMAPS_URL = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/cmaps/`;
 
@@ -92,6 +93,12 @@ export class VerdocsView {
    */
   @Event() scaleChange: EventEmitter<number>;
 
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
+
   @State() loadProgress = 0;
 
   @State()
@@ -112,9 +119,9 @@ export class VerdocsView {
   }
 
   // Determine whether a page is "rotated" (in either direction)
-  isRotated(rotation) {
-    return rotation !== 0 && rotation % 180 !== 0;
-  }
+  // isRotated(rotation) {
+  //   return rotation !== 0 && rotation % 180 !== 0;
+  // }
 
   // Render one document page. Note that pageNumber is 1-based.
   async renderPage(pageNumber: number): Promise<void> {
@@ -152,20 +159,22 @@ export class VerdocsView {
         pages: this.domPages,
       });
     } catch (e) {
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       console.warn('[VIEW] Error rendering page', e);
     }
   }
 
-  async renderPages(): Promise<void> {
-    const pageNumbersToRender = integerSequence(1, this.numPages);
-    for await (let pageNumber of pageNumbersToRender) {
-      try {
-        await this.renderPage(pageNumber);
-      } catch (e) {
-        console.warn('[VIEW] Error rendering pages', e);
-      }
-    }
-  }
+  // async renderPages(): Promise<void> {
+  //   const pageNumbersToRender = integerSequence(1, this.numPages);
+  //   for await (let pageNumber of pageNumbersToRender) {
+  //     try {
+  //       await this.renderPage(pageNumber);
+  //     } catch (e) {
+  //       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+  //       console.warn('[VIEW] Error rendering pages', e);
+  //     }
+  //   }
+  // }
 
   onProgress(progress: OnProgressParameters) {
     console.log(`[VIEW] Progress ${Math.floor((progress.loaded / progress.total) * 100)} (${progress.loaded} / ${progress.total})`);
@@ -219,6 +228,7 @@ export class VerdocsView {
         this.loadProgress = 100;
       })
       .catch(e => {
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         console.log('[VIEW] Loading error', e);
       });
   }

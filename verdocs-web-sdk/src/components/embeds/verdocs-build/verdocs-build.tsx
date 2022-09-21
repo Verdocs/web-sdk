@@ -1,4 +1,4 @@
-import {Host} from '@stencil/core';
+import {Event, EventEmitter, Host} from '@stencil/core';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
@@ -7,6 +7,7 @@ import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
 import {IDocumentPageInfo} from '../../../utils/Types';
+import {SDKError} from '../../../utils/errors';
 
 /**
  * Display a template building experience.
@@ -28,6 +29,12 @@ export class VerdocsBuild {
    * The ID of the template to create the document from.
    */
   @Prop() templateId: string | null = null;
+
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() pdfUrl = null;
   @State() template: ITemplate | null = null;
@@ -54,14 +61,15 @@ export class VerdocsBuild {
       });
       console.log('[BUILD] Loaded fields', this.fields);
     } catch (e) {
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       console.log('[BUILD] Error with signing session', e);
     }
   }
 
-  async handleOptionSelected(e: any) {
-    console.log('[BUILD] handleOptionSelected', e);
-    // e.detail.id
-  }
+  // async handleOptionSelected(e: any) {
+  //   console.log('[BUILD] handleOptionSelected', e);
+  //   // e.detail.id
+  // }
 
   async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
     console.log('[BUILD] handleFieldChange', field, e, optionId);
@@ -86,20 +94,20 @@ export class VerdocsBuild {
   //   return <verdocs-field-checkbox style={style} order={index} value={option.checked} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
   // }
 
-  renderRadioGroupOption(page: IDocumentPageInfo, field: ITemplateField, option: any) {
-    const left = rescale(page.xScale, option.x);
-    const bottom = rescale(page.yScale, option.y);
-
-    const style = {
-      left: `${left}px`,
-      bottom: `${bottom}px`,
-      position: 'absolute',
-      transform: `scale(${page.xScale}, ${page.yScale})`,
-      backgroundColor: getRGBA(this.getRoleIndex(field.role_name)),
-    } as any;
-
-    return <verdocs-field-radio-button style={style} field={field} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
-  }
+  // renderRadioGroupOption(page: IDocumentPageInfo, field: ITemplateField, option: any) {
+  //   const left = rescale(page.xScale, option.x);
+  //   const bottom = rescale(page.yScale, option.y);
+  //
+  //   const style = {
+  //     left: `${left}px`,
+  //     bottom: `${bottom}px`,
+  //     position: 'absolute',
+  //     transform: `scale(${page.xScale}, ${page.yScale})`,
+  //     backgroundColor: getRGBA(this.getRoleIndex(field.role_name)),
+  //   } as any;
+  //
+  //   return <verdocs-field-radio-button style={style} field={field} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
+  // }
 
   getFieldId(field: ITemplateField) {
     return `verdocs-doc-fld-${field.name}`;

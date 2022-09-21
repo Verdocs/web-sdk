@@ -74,7 +74,8 @@ export class VerdocsAuth {
   @Event({composed: true}) authenticated: EventEmitter<IAuthStatus>;
 
   /**
-   * Event fired when session authentication process has completed. Check the event contents for completion status.
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
