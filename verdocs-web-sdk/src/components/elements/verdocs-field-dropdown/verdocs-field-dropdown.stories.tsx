@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Document Fields/Dropdown',
+  title: 'Fields/Dropdown',
   component: 'verdocs-field-dropdown',
   args: {
     field: {

@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Document Fields/Payment',
+  title: 'Fields/Payment',
   component: 'verdocs-field-payment',
   args: {
     field: {

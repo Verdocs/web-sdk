@@ -894,8 +894,17 @@ export class VerdocsSearchTabs {
   }
 }
 
+import type { IRole as IVerdocsSendIRole } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsSend extends Components.VerdocsSend {
+  /**
+   * The user completed the form and clicked send. 
+   */
+  send: EventEmitter<CustomEvent<{recipientsAssigned: IVerdocsSendIRole[]}>>;
+  /**
+   * The user canceled the process. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component. 
@@ -919,7 +928,7 @@ export class VerdocsSend {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError']);
+    proxyOutputs(this, this.el, ['send', 'cancel', 'sdkError']);
   }
 }
 
@@ -1023,6 +1032,152 @@ export class VerdocsTemplateCard {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplateCreate {
+  /**
+   * Event fired when the user cancels the dialog. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user changes the type. 
+   */
+  fileUploaded: EventEmitter<CustomEvent<{filePath: string}>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['endpoint']
+})
+@Component({
+  selector: 'verdocs-template-create',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['endpoint']
+})
+export class VerdocsTemplateCreate {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['cancel', 'fileUploaded']);
+  }
+}
+
+import type { IContactSearchEvent as IVerdocsTemplateFieldsIContactSearchEvent } from '@verdocs/web-sdk';
+import type { IContactSelectEvent as IVerdocsTemplateFieldsIContactSelectEvent } from '@verdocs/web-sdk';
+export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
+  /**
+   * Event fired when the user enters text in the search field. The calling application may use this to update
+the `contactSuggestions` property. 
+   */
+  searchContacts: EventEmitter<CustomEvent<IVerdocsTemplateFieldsIContactSearchEvent>>;
+  /**
+   * Event fired when the user cancels the dialog. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user changes the type. 
+   */
+  contactSelected: EventEmitter<CustomEvent<IVerdocsTemplateFieldsIContactSelectEvent>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+})
+@Component({
+  selector: 'verdocs-template-fields',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+})
+export class VerdocsTemplateFields {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'contactSelected']);
+  }
+}
+
+import type { IContactSearchEvent as IVerdocsTemplatePropertiesIContactSearchEvent } from '@verdocs/web-sdk';
+import type { IContactSelectEvent as IVerdocsTemplatePropertiesIContactSelectEvent } from '@verdocs/web-sdk';
+export declare interface VerdocsTemplateProperties extends Components.VerdocsTemplateProperties {
+  /**
+   * Event fired when the user enters text in the search field. The calling application may use this to update
+the `contactSuggestions` property. 
+   */
+  searchContacts: EventEmitter<CustomEvent<IVerdocsTemplatePropertiesIContactSearchEvent>>;
+  /**
+   * Event fired when the user cancels the dialog. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user changes the type. 
+   */
+  contactSelected: EventEmitter<CustomEvent<IVerdocsTemplatePropertiesIContactSelectEvent>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+})
+@Component({
+  selector: 'verdocs-template-properties',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+})
+export class VerdocsTemplateProperties {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'contactSelected']);
+  }
+}
+
+import type { IContactSearchEvent as IVerdocsTemplateRecipientsIContactSearchEvent } from '@verdocs/web-sdk';
+import type { IContactSelectEvent as IVerdocsTemplateRecipientsIContactSelectEvent } from '@verdocs/web-sdk';
+export declare interface VerdocsTemplateRecipients extends Components.VerdocsTemplateRecipients {
+  /**
+   * Event fired when the user enters text in the search field. The calling application may use this to update
+the `contactSuggestions` property. 
+   */
+  searchContacts: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsIContactSearchEvent>>;
+  /**
+   * Event fired when the user cancels the dialog. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user changes the type. 
+   */
+  contactSelected: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsIContactSelectEvent>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+})
+@Component({
+  selector: 'verdocs-template-recipients',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+})
+export class VerdocsTemplateRecipients {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'contactSelected']);
   }
 }
 

@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Document Fields/Signature',
+  title: 'Fields/Signature',
   component: 'verdocs-field-signature',
   args: {
     name: 'Paige Turner',

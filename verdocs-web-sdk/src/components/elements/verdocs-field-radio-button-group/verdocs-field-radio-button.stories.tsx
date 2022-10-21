@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Document Fields/Radio Button',
+  title: 'Fields/Radio Button',
   component: 'verdocs-field-radio-button',
   args: {
     field: {

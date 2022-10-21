@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Document Fields/Date',
+  title: 'Fields/Date',
   component: 'verdocs-field-date',
   args: {
     field: {

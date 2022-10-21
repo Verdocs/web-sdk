@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Document Fields/Initial',
+  title: 'Fields/Initial',
   component: 'verdocs-field-initial',
   args: {
     initials: 'PT',

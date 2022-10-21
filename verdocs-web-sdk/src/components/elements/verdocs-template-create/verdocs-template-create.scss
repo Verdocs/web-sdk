@@ -1,0 +1,42 @@
+@import '../../../theme.scss';
+
+verdocs-template-create {
+  font-family: $verdocs-primary-font;
+
+  form {
+    background-color: $verdocs-grey-3;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+
+    .upload-box {
+      max-width: 320px;
+      text-align: center;
+      padding: 44px 18px 66px;
+      border: 2px dashed #979797;
+      color: rgba(0, 0, 0, 0.54);
+
+      svg {
+        width: 64px;
+        fill: #5c6575;
+      }
+    }
+  }
+
+  .buttons {
+    display: flex;
+    column-gap: 8px;
+    margin-top: 16px;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    .flex-fill {
+      flex: 1;
+    }
+  }
+
+  ::placeholder {
+    color: $verdocs-bg-2;
+  }
+}

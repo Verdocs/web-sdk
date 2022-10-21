@@ -173,7 +173,7 @@ export class VerdocsSend {
           </div>
 
           {this.levels.map(level => (
-            <div class={`level level-${level}}`}>
+            <div class={`level level-${level}`}>
               {this.getLevelIcon(level)}
 
               {this.rolesAtLevel[level].map(role => (

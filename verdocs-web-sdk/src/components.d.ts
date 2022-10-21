@@ -9,13 +9,16 @@ import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { IRole, ITemplate, ITemplateField } from "@verdocs/js-sdk/Templates/Types";
-import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/controls/verdocs-contact-picker/verdocs-contact-picker";
+import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Types";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
+import { IContactSearchEvent as IContactSearchEvent1, IContactSelectEvent as IContactSelectEvent1, IEmailContact as IEmailContact1, IPhoneContact as IPhoneContact1 } from "./components/elements/verdocs-template-fields/verdocs-template-fields";
+import { IContactSearchEvent as IContactSearchEvent2, IContactSelectEvent as IContactSelectEvent2, IEmailContact as IEmailContact2, IPhoneContact as IPhoneContact2 } from "./components/elements/verdocs-template-properties/verdocs-template-properties";
+import { IContactSearchEvent as IContactSearchEvent3, IContactSelectEvent as IContactSelectEvent3, IEmailContact as IEmailContact3, IPhoneContact as IPhoneContact3 } from "./components/elements/verdocs-template-recipients/verdocs-template-recipients";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 import { IPageRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
@@ -502,6 +505,54 @@ export namespace Components {
          */
         "template": ITemplate;
     }
+    interface VerdocsTemplateCreate {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+    }
+    interface VerdocsTemplateFields {
+        /**
+          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+         */
+        "contactSuggestions": (IEmailContact | IPhoneContact)[];
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "templateRole": IRole | null;
+    }
+    interface VerdocsTemplateProperties {
+        /**
+          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+         */
+        "contactSuggestions": (IEmailContact | IPhoneContact)[];
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "templateRole": IRole | null;
+    }
+    interface VerdocsTemplateRecipients {
+        /**
+          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+         */
+        "contactSuggestions": (IEmailContact | IPhoneContact)[];
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "templateRole": IRole | null;
+    }
     interface VerdocsTemplateTags {
         /**
           * The tags to display
@@ -691,6 +742,22 @@ export interface VerdocsSignCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsSignatureDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSignatureDialogElement;
+}
+export interface VerdocsTemplateCreateCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateCreateElement;
+}
+export interface VerdocsTemplateFieldsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateFieldsElement;
+}
+export interface VerdocsTemplatePropertiesCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplatePropertiesElement;
+}
+export interface VerdocsTemplateRecipientsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateRecipientsElement;
 }
 export interface VerdocsTextInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -907,6 +974,30 @@ declare global {
         prototype: HTMLVerdocsTemplateCardElement;
         new (): HTMLVerdocsTemplateCardElement;
     };
+    interface HTMLVerdocsTemplateCreateElement extends Components.VerdocsTemplateCreate, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateCreateElement: {
+        prototype: HTMLVerdocsTemplateCreateElement;
+        new (): HTMLVerdocsTemplateCreateElement;
+    };
+    interface HTMLVerdocsTemplateFieldsElement extends Components.VerdocsTemplateFields, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateFieldsElement: {
+        prototype: HTMLVerdocsTemplateFieldsElement;
+        new (): HTMLVerdocsTemplateFieldsElement;
+    };
+    interface HTMLVerdocsTemplatePropertiesElement extends Components.VerdocsTemplateProperties, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplatePropertiesElement: {
+        prototype: HTMLVerdocsTemplatePropertiesElement;
+        new (): HTMLVerdocsTemplatePropertiesElement;
+    };
+    interface HTMLVerdocsTemplateRecipientsElement extends Components.VerdocsTemplateRecipients, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateRecipientsElement: {
+        prototype: HTMLVerdocsTemplateRecipientsElement;
+        new (): HTMLVerdocsTemplateRecipientsElement;
+    };
     interface HTMLVerdocsTemplateTagsElement extends Components.VerdocsTemplateTags, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateTagsElement: {
@@ -977,6 +1068,10 @@ declare global {
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
+        "verdocs-template-create": HTMLVerdocsTemplateCreateElement;
+        "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
+        "verdocs-template-properties": HTMLVerdocsTemplatePropertiesElement;
+        "verdocs-template-recipients": HTMLVerdocsTemplateRecipientsElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
         "verdocs-toggle": HTMLVerdocsToggleElement;
@@ -1593,9 +1688,17 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
+          * The user canceled the process.
+         */
+        "onCancel"?: (event: VerdocsSendCustomEvent<any>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsSendCustomEvent<SDKError>) => void;
+        /**
+          * The user completed the form and clicked send.
+         */
+        "onSend"?: (event: VerdocsSendCustomEvent<{recipientsAssigned: IRole[]}>) => void;
         /**
           * The ID of the template to create the document from.
          */
@@ -1664,6 +1767,98 @@ declare namespace LocalJSX {
           * The template for which the card will be rendered.
          */
         "template"?: ITemplate;
+    }
+    interface VerdocsTemplateCreate {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user cancels the dialog.
+         */
+        "onCancel"?: (event: VerdocsTemplateCreateCustomEvent<any>) => void;
+        /**
+          * Event fired when the user changes the type.
+         */
+        "onFileUploaded"?: (event: VerdocsTemplateCreateCustomEvent<{filePath: string}>) => void;
+    }
+    interface VerdocsTemplateFields {
+        /**
+          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+         */
+        "contactSuggestions"?: (IEmailContact | IPhoneContact)[];
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user cancels the dialog.
+         */
+        "onCancel"?: (event: VerdocsTemplateFieldsCustomEvent<any>) => void;
+        /**
+          * Event fired when the user changes the type.
+         */
+        "onContactSelected"?: (event: VerdocsTemplateFieldsCustomEvent<IContactSelectEvent>) => void;
+        /**
+          * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
+         */
+        "onSearchContacts"?: (event: VerdocsTemplateFieldsCustomEvent<IContactSearchEvent>) => void;
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "templateRole"?: IRole | null;
+    }
+    interface VerdocsTemplateProperties {
+        /**
+          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+         */
+        "contactSuggestions"?: (IEmailContact | IPhoneContact)[];
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user cancels the dialog.
+         */
+        "onCancel"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
+        /**
+          * Event fired when the user changes the type.
+         */
+        "onContactSelected"?: (event: VerdocsTemplatePropertiesCustomEvent<IContactSelectEvent>) => void;
+        /**
+          * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
+         */
+        "onSearchContacts"?: (event: VerdocsTemplatePropertiesCustomEvent<IContactSearchEvent>) => void;
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "templateRole"?: IRole | null;
+    }
+    interface VerdocsTemplateRecipients {
+        /**
+          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+         */
+        "contactSuggestions"?: (IEmailContact | IPhoneContact)[];
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user cancels the dialog.
+         */
+        "onCancel"?: (event: VerdocsTemplateRecipientsCustomEvent<any>) => void;
+        /**
+          * Event fired when the user changes the type.
+         */
+        "onContactSelected"?: (event: VerdocsTemplateRecipientsCustomEvent<IContactSelectEvent>) => void;
+        /**
+          * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
+         */
+        "onSearchContacts"?: (event: VerdocsTemplateRecipientsCustomEvent<IContactSearchEvent>) => void;
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "templateRole"?: IRole | null;
     }
     interface VerdocsTemplateTags {
         /**
@@ -1828,6 +2023,10 @@ declare namespace LocalJSX {
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-status-indicator": VerdocsStatusIndicator;
         "verdocs-template-card": VerdocsTemplateCard;
+        "verdocs-template-create": VerdocsTemplateCreate;
+        "verdocs-template-fields": VerdocsTemplateFields;
+        "verdocs-template-properties": VerdocsTemplateProperties;
+        "verdocs-template-recipients": VerdocsTemplateRecipients;
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-text-input": VerdocsTextInput;
         "verdocs-toggle": VerdocsToggle;
@@ -1873,6 +2072,10 @@ declare module "@stencil/core" {
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
             "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
+            "verdocs-template-create": LocalJSX.VerdocsTemplateCreate & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;
+            "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
+            "verdocs-template-properties": LocalJSX.VerdocsTemplateProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplatePropertiesElement>;
+            "verdocs-template-recipients": LocalJSX.VerdocsTemplateRecipients & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRecipientsElement>;
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
             "verdocs-toggle": LocalJSX.VerdocsToggle & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;

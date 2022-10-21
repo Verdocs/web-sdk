@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Document Fields/Textbox',
+  title: 'Fields/Textbox',
   component: 'verdocs-field-textbox',
   args: {
     field: {

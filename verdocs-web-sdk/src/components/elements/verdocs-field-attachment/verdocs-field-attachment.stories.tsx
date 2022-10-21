@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Document Fields/Attachment',
+  title: 'Fields/Attachment',
   component: 'verdocs-field-attachment',
   args: {
     field: {
