@@ -4,17 +4,40 @@ verdocs-template-recipients {
   font-family: $verdocs-primary-font;
 
   form {
-    background-color: $verdocs-grey-3;
+    background-color: $verdocs-grey-4;
     padding: 12px;
     display: flex;
     flex-direction: column;
 
+    h5 {
+      font-size: 16px;
+      font-weight: bold;
+      color: $verdocs-deep-blue;
+      margin: 0 0 10px 0;
+    }
+
     .row {
-      width: 300px;
       display: flex;
+      column-gap: 10px;
+      margin-left: 50px;
       position: relative;
-      margin: 0 0 20px 0;
-      flex-direction: column;
+      flex-direction: row;
+      padding: 8px 0 4px 0;
+      border-bottom: 1px solid #97979744;
+
+      .icon {
+        top: 14px;
+        z-index: 2;
+        left: -40px;
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        background: #ffffff;
+
+        svg {
+          fill: #00000089;
+        }
+      }
     }
 
     label {

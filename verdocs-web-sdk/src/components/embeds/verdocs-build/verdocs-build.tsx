@@ -29,6 +29,7 @@ export class VerdocsBuild {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
+  @State() step = 'create';
   @State() pdfUrl = null;
   @State() template: ITemplate | null = null;
 
@@ -36,10 +37,21 @@ export class VerdocsBuild {
 
   async componentDidLoad() {}
 
+  handleCancel(e: any) {
+    console.log('Cancel', e.detail);
+    this.step = '';
+  }
+
+  handleFileUpload(e: any) {
+    console.log('Uploaded', e.detail);
+    this.step = 'recipients';
+  }
+
   render() {
     return (
       <Host>
-        <verdocs-template-create />
+        {this.step === 'create' && <verdocs-template-create onCancel={e => this.handleCancel(e)} onFileUploaded={e => this.handleFileUpload(e)} />}
+        {this.step === 'recipients' && <verdocs-template-recipients onCancel={e => this.handleCancel(e)} />}
       </Host>
     );
   }

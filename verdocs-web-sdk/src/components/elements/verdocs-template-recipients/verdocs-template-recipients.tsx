@@ -2,14 +2,23 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IRole} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 
-const messageIcon =
-  '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-1om0hkc" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path></svg>';
+// const messageIcon =
+//   '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-1om0hkc" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path></svg>';
+//
+// const delegateIcon =
+//   '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AssignmentIndIcon" tabindex="-1" title="AssignmentInd"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z"></path></svg>';
+//
+// const placeholderIcon =
+//   '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AccountCircleIcon" tabindex="-1" title="AccountCircle"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"></path></svg>';
 
-const delegateIcon =
-  '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AssignmentIndIcon" tabindex="-1" title="AssignmentInd"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z"></path></svg>';
+const startIcon =
+  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12zm10 6c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6z"></path></svg>';
 
-const placeholderIcon =
-  '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AccountCircleIcon" tabindex="-1" title="AccountCircle"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"></path></svg>';
+const stepIcon =
+  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>';
+
+const doneIcon =
+  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path></svg>';
 
 export interface IContactSearchEvent {
   // The text the user has entered in the search field
@@ -180,104 +189,25 @@ export class VerdocsTemplateRecipients {
   render() {
     return (
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
-        <div class="row">
-          <label htmlFor="verdocs-contact-picker-name">Name:</label>
-          <input
-            id="verdocs-contact-picker-name"
-            name="verdocs-contact-picker-name"
-            type="text"
-            data-lpignore="true"
-            autocomplete="off"
-            value={this.name}
-            placeholder="Recipient Name..."
-            onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
-            // onBlur={() => (this.showSuggestions = false)}
-            onInput={e => this.handleNameChange(e)}
-          />
+        <h5>Participant Order</h5>
 
-          {this.showSuggestions && (
-            <div class="dropdown">
-              {this.contactSuggestions.map(suggestion => (
-                <div key={suggestion.id ?? suggestion.name} class="suggestion" onClick={e => this.handleSelectSuggestion(e, suggestion)}>
-                  {suggestion.avatar ? <img alt="Avatar" class="avatar" src={suggestion.avatar} /> : <div class="avatar" innerHTML={placeholderIcon} />}
-                  <div class="details">
-                    <div class="name">{suggestion.name}</div>
-                    {suggestion.email && <div class="destination">{suggestion.email}</div>}
-                    {suggestion.phone && <div class="destination">{suggestion.phone}</div>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+        <div class="row">
+          <div class="icon" innerHTML={startIcon} />
         </div>
 
         <div class="row">
-          <label htmlFor="verdocs-contact-picker-email">Email:</label>
-          <input
-            id="verdocs-contact-picker-email"
-            name="verdocs-contact-picker-email"
-            type="text"
-            data-lpignore="true"
-            autocomplete="off"
-            value={this.email}
-            placeholder="Email Address..."
-            onFocus={() => (this.showSuggestions = false)}
-            onInput={e => this.handleEmailChange(e)}
-          />
+          <div class="icon" innerHTML={stepIcon} />
         </div>
 
         <div class="row">
-          <label htmlFor="verdocs-contact-picker-phone">Phone:</label>
-          <input
-            id="verdocs-contact-picker-phone"
-            name="verdocs-contact-picker-phone"
-            type="text"
-            data-lpignore="true"
-            autocomplete="off"
-            value={this.phone}
-            placeholder="Phone Number..."
-            onFocus={() => (this.showSuggestions = false)}
-            onInput={e => this.handlePhoneChange(e)}
-          />
+          <div class="icon" innerHTML={stepIcon} />
         </div>
 
-        {this.showMessage && (
-          <div class="row">
-            <label htmlFor="verdocs-contact-picker-message">Message:</label>
-            <input
-              id="verdocs-contact-picker-message"
-              name="verdocs-contact-picker-message"
-              type="text"
-              data-lpignore="true"
-              autocomplete="off"
-              value={this.message}
-              placeholder="Invitation Message..."
-              onFocus={() => (this.showSuggestions = false)}
-              onInput={e => this.handleMessageChange(e)}
-            />
-          </div>
-        )}
+        <div class="row">
+          <div class="icon" innerHTML={doneIcon} />
+        </div>
 
         <div class="buttons">
-          <verdocs-toggle-button
-            icon={messageIcon}
-            size="small"
-            active={this.showMessage}
-            onToggle={e => {
-              this.showMessage = e.detail.active;
-              this.showSuggestions = false;
-            }}
-          />
-          <verdocs-toggle-button
-            icon={delegateIcon}
-            size="small"
-            active={this.delegator}
-            onToggle={e => {
-              this.delegator = e.detail.active;
-              this.showSuggestions = false;
-            }}
-          />
-
           <div class="flex-fill" />
 
           <verdocs-button variant="outline" label="Cancel" size="small" onPress={e => this.handleCancel(e)} />

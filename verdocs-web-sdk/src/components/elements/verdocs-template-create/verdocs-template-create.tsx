@@ -28,12 +28,19 @@ export class VerdocsTemplateCreate {
    */
   @Event({composed: true}) fileUploaded: EventEmitter<{filePath: string}>;
 
-  @State() filePath: string;
+  @State() filePath: string = '';
 
   componentWillLoad() {}
 
   handleFileChanged(e: any) {
-    console.log(e);
+    console.log('files', e.target.files);
+    this.filePath = e.target.files?.[0]?.name;
+  }
+
+  handleUpload(e) {
+    e.stopPropagation();
+    const fileElem = document.getElementById('verdocs-template-create-file');
+    fileElem.click();
   }
 
   handleCancel(e) {
@@ -49,18 +56,20 @@ export class VerdocsTemplateCreate {
   render() {
     return (
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
+        <input type="file" id="verdocs-template-create-file" multiple accept="application/pdf" style={{display: 'none'}} onChange={e => this.handleFileChanged(e)} />
+
         <div class="upload-box">
           <div>
             <span innerHTML={FileIcon} />
           </div>
           <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold'}}>Drag a file here</div>
           <div style={{marginTop: '20px', marginBottom: '20px', fontSize: '16px'}}>Or, if you prefer...</div>
-          <verdocs-button label="Select a file from your computer" size="small" onPress={e => this.handleCancel(e)} />
+          <verdocs-button label="Select a file from your computer" size="small" onPress={e => this.handleUpload(e)} />
         </div>
 
         <div class="buttons">
           <verdocs-button variant="outline" label="Cancel" size="small" onPress={e => this.handleCancel(e)} />
-          <verdocs-button label="Next" size="small" onPress={e => this.handleSubmit(e)} disabled={true} />
+          <verdocs-button label="Next" size="small" onPress={e => this.handleSubmit(e)} disabled={!this.filePath} />
         </div>
       </form>
     );
