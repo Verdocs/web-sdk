@@ -4,9 +4,7 @@ import Paperclip from './paperclip.svg';
 import Trash from './trash.svg';
 
 /**
- * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
- * box with a message and optional header/title. An OK button is shown that will dismiss the message.
- * It can also be dismissed by clicking the background overlay.
+ * Display a file upload experience.
  */
 @Component({
   tag: 'verdocs-upload-dialog',

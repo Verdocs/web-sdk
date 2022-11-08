@@ -1,0 +1,112 @@
+@import '../../../theme.scss';
+
+verdocs-template-sender-dialog {
+  font-family: $primary-font;
+  box-sizing: border-box;
+
+  div {
+    box-sizing: border-box;
+  }
+
+  .background-overlay {
+    position: absolute;
+    z-index: 10000;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0000007f;
+  }
+
+  .dialog {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    overflow: hidden;
+    background: $verdocs-grey-4;
+    padding: 16px;
+    box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: row;
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .buttons {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    verdocs-button {
+      margin-left: 16px;
+    }
+  }
+
+  .options {
+    row-gap: 10px;
+
+    .option {
+      display: flex;
+      //align-items: center;
+      flex-direction: row;
+
+      .description {
+        margin-left: 20px;
+
+        .help {
+          font-size: 13px;
+          font-style: italic;
+        }
+      }
+    }
+  }
+
+  .help-bubble {
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  .help-tip {
+    box-shadow: 0 0 10px 1px #999999;
+    display: none;
+    //display: inline-block;
+    background: #ffffff;
+    color: $label-color;
+    max-width: 240px;
+    font-weight: bold;
+    padding: 5px 10px;
+    font-size: 13px;
+    border-radius: 4px;
+
+    &[data-show] {
+      display: block;
+    }
+
+    #arrow,
+    #arrow::before {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: inherit;
+    }
+
+    #arrow {
+      visibility: hidden;
+      top: -4px;
+    }
+
+    #arrow::before {
+      visibility: visible;
+      content: '';
+      transform: rotate(45deg);
+    }
+  }
+}

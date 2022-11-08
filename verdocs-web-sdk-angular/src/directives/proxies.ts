@@ -789,6 +789,36 @@ export class VerdocsQuickFunctions {
 }
 
 
+export declare interface VerdocsRadioButton extends Components.VerdocsRadioButton {
+  /**
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
+   */
+  select: EventEmitter<CustomEvent<{value: string}>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['checked', 'disabled', 'name', 'value']
+})
+@Component({
+  selector: 'verdocs-radio-button',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['checked', 'disabled', 'name', 'value']
+})
+export class VerdocsRadioButton {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['select']);
+  }
+}
+
+
 export declare interface VerdocsSearch extends Components.VerdocsSearch {}
 
 @ProxyCmp({
@@ -1178,6 +1208,38 @@ export class VerdocsTemplateRecipients {
     c.detach();
     this.el = r.nativeElement;
     proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'contactSelected']);
+  }
+}
+
+import type { FileWithData as IVerdocsTemplateSenderDialogFileWithData } from '@verdocs/web-sdk';
+export declare interface VerdocsTemplateSenderDialog extends Components.VerdocsTemplateSenderDialog {
+  /**
+   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   */
+  done: EventEmitter<CustomEvent<FileWithData[]>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['open']
+})
+@Component({
+  selector: 'verdocs-template-sender-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['open']
+})
+export class VerdocsTemplateSenderDialog {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['cancel', 'done']);
   }
 }
 

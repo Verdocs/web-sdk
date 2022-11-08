@@ -1,5 +1,6 @@
+import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IRole} from '@verdocs/js-sdk/Templates/Types';
+import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 
 // const messageIcon =
@@ -129,6 +130,7 @@ export class VerdocsTemplateRecipients {
   @State() showSuggestions: boolean = false;
   @State() showMessage: boolean = false;
   @State() delegator: boolean = false;
+  @State() sender: TemplateSenderTypes = TemplateSenderTypes.CREATOR;
 
   componentWillLoad() {
     if (this.templateRole) {
@@ -139,6 +141,36 @@ export class VerdocsTemplateRecipients {
       this.message = this.templateRole.message || '';
       this.showMessage = this.message !== '';
     }
+  }
+
+  componentDidRender() {
+    console.log('Did render');
+    const position = {x: 0, y: 0};
+
+    interact.dynamicDrop(true);
+    interact('.draggable').draggable({
+      listeners: {
+        start(event) {
+          console.log(event.type, event.target);
+        },
+        move(event) {
+          position.x += event.dx;
+          position.y += event.dy;
+
+          event.target.style.transform = `translate(${position.x}px, ${position.y}px)`;
+        },
+      },
+    });
+
+    interact('.dropzone')
+      .dropzone({
+        ondrop: function (event) {
+          console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id);
+        },
+      })
+      .on('dropactivate', function (event) {
+        event.target.classList.add('drop-activated');
+      });
   }
 
   handleNameChange(e: any) {
@@ -197,14 +229,18 @@ export class VerdocsTemplateRecipients {
 
         <div class="row">
           <div class="icon" innerHTML={stepIcon} />
+          <div class="dropzone" style={{border: '1px solid #aaa', backgroundColor: '#eee', borderRadius: '10px', width: '120px', height: '30px'}} />
         </div>
 
         <div class="row">
           <div class="icon" innerHTML={stepIcon} />
+          <div class="dropzone" style={{border: '1px solid #aaa', backgroundColor: '#eee', borderRadius: '10px', width: '120px', height: '30px'}} />
         </div>
 
         <div class="row">
           <div class="icon" innerHTML={doneIcon} />
+          <div class="draggable" style={{border: '1px solid #aaa', backgroundColor: '#ef00ee', borderRadius: '10px', width: '120px', height: '30px'}} />
+          <div class="draggable" style={{border: '1px solid #aaa', backgroundColor: '#ff3399', borderRadius: '10px', width: '120px', height: '30px'}} />
         </div>
 
         <div class="buttons">

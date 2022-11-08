@@ -32,6 +32,10 @@ Work on this project requires an up-to-date (LTS is recommended) NodeJS installa
 Note that the downstream projects do not "pull" from the main library. Instead, when a build is run, the StencilJS compiler is configured
 to push changes into the downstream projects. Therefore, a build must be run in the parent project before the child projects are published.
 
+If building on a Mac you will need Cairo and Pango installed:
+
+    brew install cairo pango
+
 ### External dependencies
 
 To minimize external dependencies, license conflicts, and related issues, third-party libraries and other dependencies should be avoided.

@@ -1,0 +1,95 @@
+@import '../../../theme.scss';
+
+// See https://www.sliderrevolution.com/resources/styling-radio-buttons/
+verdocs-radio-button {
+  font-family: $verdocs-primary-font;
+  width: 20px;
+  height: 20px;
+  display: block;
+  font-size: 11px;
+  position: relative;
+  background-color: transparent;
+  transform-origin: bottom left;
+  border-radius: 100%;
+
+  &.disabled {
+    opacity: 0.5;
+  }
+
+  input[type='radio'] {
+    position: absolute;
+    opacity: 0;
+
+    + label {
+      &:before {
+        content: '';
+        background: $verdocs-grey-3;
+        border-radius: 100%;
+        border: 1px solid rgba(0, 0, 0, 0.6);
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        left: 1px;
+        top: 1px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 250ms ease;
+      }
+    }
+
+    &:checked {
+      + label {
+        &:before {
+          background-color: $verdocs-green;
+          box-shadow: inset 0 0 0 2px $verdocs-grey-3;
+        }
+      }
+    }
+
+    &:focus {
+      + label {
+        &:before {
+          outline: none;
+          border-color: $verdocs-green;
+        }
+      }
+    }
+
+    &:disabled {
+      + label {
+        &:before {
+          box-shadow: inset 0 0 0 4px $verdocs-grey-3;
+          border-color: darken($verdocs-grey-3, 25%);
+          background: darken($verdocs-grey-3, 25%);
+        }
+      }
+    }
+
+    + label {
+      &:empty {
+        &:before {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  &.required {
+    input[type='radio'] {
+      + label {
+        &:before {
+          border: 1px solid $verdocs-red-1;
+        }
+      }
+    }
+  }
+
+  &.hide {
+    display: none;
+  }
+
+  &.focused {
+    animation: verdocs-field-pulse 0.75s 2;
+  }
+}

@@ -19,8 +19,8 @@ import { ISearchEvent, TContentType } from "./components/elements/verdocs-search
 import { IContactSearchEvent as IContactSearchEvent1, IContactSelectEvent as IContactSelectEvent1, IEmailContact as IEmailContact1, IPhoneContact as IPhoneContact1 } from "./components/elements/verdocs-template-fields/verdocs-template-fields";
 import { IContactSearchEvent as IContactSearchEvent2, IContactSelectEvent as IContactSelectEvent2, IEmailContact as IEmailContact2, IPhoneContact as IPhoneContact2 } from "./components/elements/verdocs-template-properties/verdocs-template-properties";
 import { IContactSearchEvent as IContactSearchEvent3, IContactSelectEvent as IContactSelectEvent3, IEmailContact as IEmailContact3, IPhoneContact as IPhoneContact3 } from "./components/elements/verdocs-template-recipients/verdocs-template-recipients";
-import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
+import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { IPageRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
 export namespace Components {
     interface VerdocsAuth {
@@ -404,6 +404,24 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
     }
+    interface VerdocsRadioButton {
+        /**
+          * Whether the radio button is currently selected.
+         */
+        "checked": boolean;
+        /**
+          * If set, the button will still be displayed but not selectable.
+         */
+        "disabled"?: boolean;
+        /**
+          * HTML form field name for the input.
+         */
+        "name": string;
+        /**
+          * Value to track with the input.
+         */
+        "value": string;
+    }
     interface VerdocsSearch {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -552,6 +570,12 @@ export namespace Components {
           * The role that this contact will be assigned to.
          */
         "templateRole": IRole | null;
+    }
+    interface VerdocsTemplateSenderDialog {
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open": boolean;
     }
     interface VerdocsTemplateTags {
         /**
@@ -723,6 +747,10 @@ export interface VerdocsQuickFunctionsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsQuickFunctionsElement;
 }
+export interface VerdocsRadioButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsRadioButtonElement;
+}
 export interface VerdocsSearchActivityCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSearchActivityElement;
@@ -758,6 +786,10 @@ export interface VerdocsTemplatePropertiesCustomEvent<T> extends CustomEvent<T> 
 export interface VerdocsTemplateRecipientsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateRecipientsElement;
+}
+export interface VerdocsTemplateSenderDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateSenderDialogElement;
 }
 export interface VerdocsTextInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -920,6 +952,12 @@ declare global {
         prototype: HTMLVerdocsQuickFunctionsElement;
         new (): HTMLVerdocsQuickFunctionsElement;
     };
+    interface HTMLVerdocsRadioButtonElement extends Components.VerdocsRadioButton, HTMLStencilElement {
+    }
+    var HTMLVerdocsRadioButtonElement: {
+        prototype: HTMLVerdocsRadioButtonElement;
+        new (): HTMLVerdocsRadioButtonElement;
+    };
     interface HTMLVerdocsSearchElement extends Components.VerdocsSearch, HTMLStencilElement {
     }
     var HTMLVerdocsSearchElement: {
@@ -998,6 +1036,12 @@ declare global {
         prototype: HTMLVerdocsTemplateRecipientsElement;
         new (): HTMLVerdocsTemplateRecipientsElement;
     };
+    interface HTMLVerdocsTemplateSenderDialogElement extends Components.VerdocsTemplateSenderDialog, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateSenderDialogElement: {
+        prototype: HTMLVerdocsTemplateSenderDialogElement;
+        new (): HTMLVerdocsTemplateSenderDialogElement;
+    };
     interface HTMLVerdocsTemplateTagsElement extends Components.VerdocsTemplateTags, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateTagsElement: {
@@ -1059,6 +1103,7 @@ declare global {
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
         "verdocs-preview": HTMLVerdocsPreviewElement;
         "verdocs-quick-functions": HTMLVerdocsQuickFunctionsElement;
+        "verdocs-radio-button": HTMLVerdocsRadioButtonElement;
         "verdocs-search": HTMLVerdocsSearchElement;
         "verdocs-search-activity": HTMLVerdocsSearchActivityElement;
         "verdocs-search-box": HTMLVerdocsSearchBoxElement;
@@ -1072,6 +1117,7 @@ declare global {
         "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
         "verdocs-template-properties": HTMLVerdocsTemplatePropertiesElement;
         "verdocs-template-recipients": HTMLVerdocsTemplateRecipientsElement;
+        "verdocs-template-sender-dialog": HTMLVerdocsTemplateSenderDialogElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
         "verdocs-toggle": HTMLVerdocsToggleElement;
@@ -1628,6 +1674,28 @@ declare namespace LocalJSX {
          */
         "onCreateTemplate"?: (event: VerdocsQuickFunctionsCustomEvent<any>) => void;
     }
+    interface VerdocsRadioButton {
+        /**
+          * Whether the radio button is currently selected.
+         */
+        "checked"?: boolean;
+        /**
+          * If set, the button will still be displayed but not selectable.
+         */
+        "disabled"?: boolean;
+        /**
+          * HTML form field name for the input.
+         */
+        "name"?: string;
+        /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onSelect"?: (event: VerdocsRadioButtonCustomEvent<{value: string}>) => void;
+        /**
+          * Value to track with the input.
+         */
+        "value"?: string;
+    }
     interface VerdocsSearch {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1860,6 +1928,20 @@ declare namespace LocalJSX {
          */
         "templateRole"?: IRole | null;
     }
+    interface VerdocsTemplateSenderDialog {
+        /**
+          * Event fired when the dialog is closed. The event data will contain the closure reason.
+         */
+        "onCancel"?: (event: VerdocsTemplateSenderDialogCustomEvent<any>) => void;
+        /**
+          * Event fired when the dialog is closed. The event data will contain the closure reason.
+         */
+        "onDone"?: (event: VerdocsTemplateSenderDialogCustomEvent<FileWithData[]>) => void;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "open"?: boolean;
+    }
     interface VerdocsTemplateTags {
         /**
           * The tags to display
@@ -2014,6 +2096,7 @@ declare namespace LocalJSX {
         "verdocs-organization-card": VerdocsOrganizationCard;
         "verdocs-preview": VerdocsPreview;
         "verdocs-quick-functions": VerdocsQuickFunctions;
+        "verdocs-radio-button": VerdocsRadioButton;
         "verdocs-search": VerdocsSearch;
         "verdocs-search-activity": VerdocsSearchActivity;
         "verdocs-search-box": VerdocsSearchBox;
@@ -2027,6 +2110,7 @@ declare namespace LocalJSX {
         "verdocs-template-fields": VerdocsTemplateFields;
         "verdocs-template-properties": VerdocsTemplateProperties;
         "verdocs-template-recipients": VerdocsTemplateRecipients;
+        "verdocs-template-sender-dialog": VerdocsTemplateSenderDialog;
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-text-input": VerdocsTextInput;
         "verdocs-toggle": VerdocsToggle;
@@ -2063,6 +2147,7 @@ declare module "@stencil/core" {
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
             "verdocs-quick-functions": LocalJSX.VerdocsQuickFunctions & JSXBase.HTMLAttributes<HTMLVerdocsQuickFunctionsElement>;
+            "verdocs-radio-button": LocalJSX.VerdocsRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsRadioButtonElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
             "verdocs-search-activity": LocalJSX.VerdocsSearchActivity & JSXBase.HTMLAttributes<HTMLVerdocsSearchActivityElement>;
             "verdocs-search-box": LocalJSX.VerdocsSearchBox & JSXBase.HTMLAttributes<HTMLVerdocsSearchBoxElement>;
@@ -2076,6 +2161,7 @@ declare module "@stencil/core" {
             "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
             "verdocs-template-properties": LocalJSX.VerdocsTemplateProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplatePropertiesElement>;
             "verdocs-template-recipients": LocalJSX.VerdocsTemplateRecipients & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRecipientsElement>;
+            "verdocs-template-sender-dialog": LocalJSX.VerdocsTemplateSenderDialog & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSenderDialogElement>;
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
             "verdocs-toggle": LocalJSX.VerdocsToggle & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;
