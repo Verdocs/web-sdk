@@ -3,6 +3,14 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 
+const senderLabels: Record<TemplateSenderTypes, string> = {
+  [TemplateSenderTypes.EVERYONE]: 'Everyone',
+  [TemplateSenderTypes.EVERYONE_AS_CREATOR]: 'Everyone as Me',
+  [TemplateSenderTypes.ORGANIZATION_MEMBER]: 'Organization member',
+  [TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR]: 'Organization Member as Me',
+  [TemplateSenderTypes.CREATOR]: 'Me',
+};
+
 // const messageIcon =
 //   '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-1om0hkc" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path></svg>';
 //
@@ -11,6 +19,12 @@ import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 //
 // const placeholderIcon =
 //   '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AccountCircleIcon" tabindex="-1" title="AccountCircle"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"></path></svg>';
+
+const settingsIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="m8.021 17.917-.313-2.5q-.27-.125-.625-.334-.354-.208-.625-.395l-2.312.979-1.979-3.438 1.979-1.5q-.021-.167-.031-.364-.011-.198-.011-.365 0-.146.011-.344.01-.198.031-.385l-1.979-1.5 1.979-3.417 2.312.958q.271-.187.615-.385t.635-.344l.313-2.5h3.958l.313 2.5q.312.167.625.344.312.177.604.385l2.333-.958 1.979 3.417-1.979 1.521q.021.187.021.364V10q0 .146-.01.333-.011.188-.011.396l1.958 1.5-1.979 3.438-2.312-.979q-.292.208-.615.395-.323.188-.614.334l-.313 2.5Zm1.937-5.355q1.063 0 1.813-.75t.75-1.812q0-1.062-.75-1.812t-1.813-.75q-1.041 0-1.802.75-.76.75-.76 1.812t.76 1.812q.761.75 1.802.75Zm0-1.333q-.5 0-.864-.364-.365-.365-.365-.865t.365-.865q.364-.364.864-.364t.865.364q.365.365.365.865t-.365.865q-.365.364-.865.364ZM10.021 10Zm-.854 6.583h1.666l.25-2.187q.605-.167 1.136-.49.531-.323 1.031-.802l2.021.875.854-1.375-1.792-1.354q.105-.333.136-.635.031-.303.031-.615 0-.292-.031-.573-.031-.281-.115-.635l1.792-1.396-.834-1.375-2.062.875q-.438-.438-1.021-.781-.583-.344-1.125-.49l-.271-2.208H9.167l-.271 2.208q-.584.146-1.125.458-.542.313-1.042.792l-2.021-.854-.833 1.375 1.75 1.354q-.083.333-.125.646-.042.312-.042.604t.042.594q.042.302.125.635l-1.75 1.375.833 1.375 2.021-.854q.479.458 1.021.771.542.312 1.146.479Z"/></svg>';
+
+const adjustIcon =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M12 14.5q1.05 0 1.775-.725.725-.725.725-1.775 0-1.05-.725-1.775Q13.05 9.5 12 9.5q-1.05 0-1.775.725Q9.5 10.95 9.5 12q0 1.05.725 1.775.725.725 1.775.725Zm0 7q-1.975 0-3.712-.75Q6.55 20 5.275 18.725T3.25 15.712Q2.5 13.975 2.5 12t.75-3.713Q4 6.55 5.275 5.275T8.288 3.25Q10.025 2.5 12 2.5t3.713.75q1.737.75 3.012 2.025t2.025 3.012q.75 1.738.75 3.713t-.75 3.712q-.75 1.738-2.025 3.013t-3.012 2.025q-1.738.75-3.713.75Zm0-1.5q3.35 0 5.675-2.325Q20 15.35 20 12q0-3.35-2.325-5.675Q15.35 4 12 4 8.65 4 6.325 6.325 4 8.65 4 12q0 3.35 2.325 5.675Q8.65 20 12 20Zm0-8Z"/></svg>';
 
 const startIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12zm10 6c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6z"></path></svg>';
@@ -131,6 +145,7 @@ export class VerdocsTemplateRecipients {
   @State() showMessage: boolean = false;
   @State() delegator: boolean = false;
   @State() sender: TemplateSenderTypes = TemplateSenderTypes.CREATOR;
+  @State() showingSenderDialog = false;
 
   componentWillLoad() {
     if (this.templateRole) {
@@ -144,50 +159,36 @@ export class VerdocsTemplateRecipients {
   }
 
   componentDidRender() {
-    console.log('Did render');
-    const position = {x: 0, y: 0};
-
     interact.dynamicDrop(true);
     interact('.draggable').draggable({
       listeners: {
         start(event) {
-          console.log(event.type, event.target);
+          console.log('drag start', event.type, event.target);
         },
         move(event) {
-          position.x += event.dx;
-          position.y += event.dy;
-
-          event.target.style.transform = `translate(${position.x}px, ${position.y}px)`;
+          const oldX = +(event.target.getAttribute('posX') || 0);
+          const oldY = +(event.target.getAttribute('posY') || 0);
+          const newX = event.dx + oldX;
+          const newY = event.dy + oldY;
+          event.target.setAttribute('posX', newX);
+          event.target.setAttribute('posy', newY);
+          event.target.style.transform = `translate(${newX}px, ${newY}px)`;
         },
       },
     });
 
-    interact('.dropzone')
-      .dropzone({
-        ondrop: function (event) {
-          console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id);
-        },
-      })
-      .on('dropactivate', function (event) {
-        event.target.classList.add('drop-activated');
-      });
-  }
-
-  handleNameChange(e: any) {
-    this.name = e.target.value;
-    this.searchContacts?.emit({query: this.name});
-  }
-
-  handleEmailChange(e: any) {
-    this.email = e.target.value;
-  }
-
-  handlePhoneChange(e: any) {
-    this.phone = e.target.value;
-  }
-
-  handleMessageChange(e: any) {
-    this.message = e.target.value;
+    interact('.dropzone').dropzone({
+      ondrop: event => {
+        console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id);
+      },
+      ondropactivate: e => {
+        console.log('drop activated');
+        e.target.classList.add('drop-activated');
+      },
+      ondropdeactivate: e => {
+        e.target.classList.remove('drop-activated');
+      },
+    });
   }
 
   handleCancel(e) {
@@ -223,24 +224,39 @@ export class VerdocsTemplateRecipients {
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <h5>Participant Order</h5>
 
-        <div class="row">
-          <div class="icon" innerHTML={startIcon} />
-        </div>
+        <div class="participants">
+          <div class="left-line" />
+          <div class="row">
+            <div class="icon" innerHTML={startIcon} />
+            <div class="sender">
+              <span class="label">Sender:</span> {senderLabels[this.sender]}{' '}
+              <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
+            </div>
+          </div>
 
-        <div class="row">
-          <div class="icon" innerHTML={stepIcon} />
-          <div class="dropzone" style={{border: '1px solid #aaa', backgroundColor: '#eee', borderRadius: '10px', width: '120px', height: '30px'}} />
-        </div>
+          <div class="row">
+            <div class="icon" innerHTML={stepIcon} />
+            <div class="dropzone" innerHTML={adjustIcon} />
+            <div style={{border: '1px solid #aaa', backgroundColor: '#ef00ee', borderRadius: '10px', width: '120px', height: '30px'}} />
+            <div class="dropzone" innerHTML={adjustIcon} />
+            <div style={{border: '1px solid #aaa', backgroundColor: '#ef00ee', borderRadius: '10px', width: '120px', height: '30px'}} />
+            <div class="dropzone" innerHTML={adjustIcon} />
+          </div>
 
-        <div class="row">
-          <div class="icon" innerHTML={stepIcon} />
-          <div class="dropzone" style={{border: '1px solid #aaa', backgroundColor: '#eee', borderRadius: '10px', width: '120px', height: '30px'}} />
-        </div>
+          <div class="row">
+            <div class="icon" innerHTML={stepIcon} />
+            <div class="dropzone" innerHTML={adjustIcon} />
+            <div style={{border: '1px solid #aaa', backgroundColor: '#ef00ee', borderRadius: '10px', width: '120px', height: '30px'}} />
+            <div class="dropzone" innerHTML={adjustIcon} />
+            <div style={{border: '1px solid #aaa', backgroundColor: '#ef00ee', borderRadius: '10px', width: '120px', height: '30px'}} />
+            <div class="dropzone" innerHTML={adjustIcon} />
+          </div>
 
-        <div class="row">
-          <div class="icon" innerHTML={doneIcon} />
-          <div class="draggable" style={{border: '1px solid #aaa', backgroundColor: '#ef00ee', borderRadius: '10px', width: '120px', height: '30px'}} />
-          <div class="draggable" style={{border: '1px solid #aaa', backgroundColor: '#ff3399', borderRadius: '10px', width: '120px', height: '30px'}} />
+          <div class="row">
+            <div class="icon" innerHTML={doneIcon} />
+            <div class="draggable" style={{border: '1px solid #aaa', backgroundColor: '#ef00ee', borderRadius: '10px', width: '120px', height: '30px'}}/>
+            Verdoc Complete
+          </div>
         </div>
 
         <div class="buttons">
@@ -249,6 +265,19 @@ export class VerdocsTemplateRecipients {
           <verdocs-button variant="outline" label="Cancel" size="small" onPress={e => this.handleCancel(e)} />
           <verdocs-button label="OK" size="small" onPress={e => this.handleSubmit(e)} />
         </div>
+
+        {/* We do it this way instead of setting open so the widget resets each time it's displayed, in case the user opens/changes/cancels */}
+        {this.showingSenderDialog && (
+          <verdocs-template-sender-dialog
+            open={true}
+            value={this.sender}
+            onCancel={() => (this.showingSenderDialog = false)}
+            onDone={e => {
+              this.showingSenderDialog = false;
+              this.sender = e.detail.sender;
+            }}
+          />
+        )}
       </form>
     );
   }

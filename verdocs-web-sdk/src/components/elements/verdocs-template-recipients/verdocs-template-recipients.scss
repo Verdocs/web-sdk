@@ -16,14 +16,31 @@ verdocs-template-recipients {
       margin: 0 0 10px 0;
     }
 
+    .participants {
+      position: relative;
+    }
+
+    // To avoid the need to compute things like heights, this layer is simply displayed "on top" of all the level rows. Its
+    // background obscures the horizontal lines.
+    .left-line {
+      top: 32px;
+      left: 20px;
+      z-index: 1;
+      width: 12px;
+      bottom: 30px;
+      position: absolute;
+      background: #ffffff;
+      border-left: 3px dotted #9b9b9b;
+    }
+
     .row {
       display: flex;
       column-gap: 10px;
       margin-left: 50px;
       position: relative;
       flex-direction: row;
-      padding: 8px 0 4px 0;
-      border-bottom: 1px solid #97979744;
+      padding: 6px 0 4px 0;
+      //border-bottom: 1px solid #97979744;
 
       .icon {
         top: 14px;
@@ -36,6 +53,42 @@ verdocs-template-recipients {
 
         svg {
           fill: #00000089;
+        }
+      }
+
+      .sender {
+        height: 30px;
+        display: flex;
+        font-size: 14px;
+        padding: 0 5px 0 15px;
+        line-height: 30px;
+        flex-direction: row;
+        border-radius: 30px;
+        background-color: $verdocs-grey-3;
+        border: 1px solid $verdocs-grey-0;
+      }
+
+      .label {
+        font-weight: bold;
+        margin-right: 6px;
+        color: $verdocs-grey-1;
+      }
+
+      .settings-button {
+        margin: 4px 0 0 9px;
+        cursor: pointer;
+      }
+
+      .dropzone {
+        border: 1px solid #aaa;
+        background-color: #cccccc;
+        height: 30px;
+        width: 20px;
+        visibility: hidden;
+        border-radius: 10px;
+
+        &.drop-activated {
+          visibility: visible;
         }
       }
     }
@@ -57,58 +110,6 @@ verdocs-template-recipients {
 
       &:focus {
         outline: none;
-      }
-    }
-
-    .dropdown {
-      left: 0;
-      right: 0;
-      top: 49px;
-      z-index: 100;
-      position: absolute;
-      background: #ffffff;
-      box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);
-
-      .suggestion {
-        display: flex;
-        padding: 6px 12px;
-        align-items: center;
-        flex-direction: row;
-
-        svg {
-          fill: #666666;
-        }
-
-        .avatar {
-          width: 48px;
-          height: 48px;
-          flex: 0 0 48px;
-          margin-right: 8px;
-          border-radius: 100%;
-        }
-
-        .details {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .name {
-          font-size: 16px;
-          font-weight: 500;
-          margin-bottom: 3px;
-          color: $verdocs-grey-0;
-        }
-
-        .destination {
-          font-size: 14px;
-          margin-bottom: 3px;
-          color: $verdocs-grey-1;
-        }
-
-        &:hover {
-          background: #eee;
-          cursor: pointer;
-        }
       }
     }
   }

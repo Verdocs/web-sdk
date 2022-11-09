@@ -8,7 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
-import { IRole, ITemplate, ITemplateField } from "@verdocs/js-sdk/Templates/Types";
+import { IRole, ITemplate, ITemplateField, TemplateSenderTypes } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
@@ -19,8 +19,8 @@ import { ISearchEvent, TContentType } from "./components/elements/verdocs-search
 import { IContactSearchEvent as IContactSearchEvent1, IContactSelectEvent as IContactSelectEvent1, IEmailContact as IEmailContact1, IPhoneContact as IPhoneContact1 } from "./components/elements/verdocs-template-fields/verdocs-template-fields";
 import { IContactSearchEvent as IContactSearchEvent2, IContactSelectEvent as IContactSelectEvent2, IEmailContact as IEmailContact2, IPhoneContact as IPhoneContact2 } from "./components/elements/verdocs-template-properties/verdocs-template-properties";
 import { IContactSearchEvent as IContactSearchEvent3, IContactSelectEvent as IContactSelectEvent3, IEmailContact as IEmailContact3, IPhoneContact as IPhoneContact3 } from "./components/elements/verdocs-template-recipients/verdocs-template-recipients";
-import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
+import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 import { IPageRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
 export namespace Components {
     interface VerdocsAuth {
@@ -582,6 +582,10 @@ export namespace Components {
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
         "open": boolean;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "value": TemplateSenderTypes;
     }
     interface VerdocsTemplateTags {
         /**
@@ -1955,11 +1959,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
          */
-        "onDone"?: (event: VerdocsTemplateSenderDialogCustomEvent<FileWithData[]>) => void;
+        "onDone"?: (event: VerdocsTemplateSenderDialogCustomEvent<{sender: TemplateSenderTypes}>) => void;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
         "open"?: boolean;
+        /**
+          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+         */
+        "value"?: TemplateSenderTypes;
     }
     interface VerdocsTemplateTags {
         /**
