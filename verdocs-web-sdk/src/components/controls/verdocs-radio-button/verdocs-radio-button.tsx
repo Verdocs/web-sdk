@@ -36,11 +36,11 @@ export class VerdocsRadioButton {
    * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
    * keypress.
    */
-  @Event({composed: true}) select: EventEmitter<{value: string}>;
+  @Event({composed: true}) selected: EventEmitter<{value: string}>;
 
   handleChange(e: any) {
     console.log('changed', e.target.checked);
-    this.select.emit({value: this.value});
+    this.selected.emit({value: this.value});
   }
 
   render() {

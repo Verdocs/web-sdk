@@ -1,0 +1,66 @@
+@import '../../../theme.scss';
+
+verdocs-help-icon {
+  font-family: $verdocs-primary-font;
+  display: inline-block;
+
+  .icon {
+    display: inline-block;
+
+    svg {
+      fill: $choice-available-color;
+    }
+  }
+
+  .tooltip {
+    display: none;
+    box-shadow: 0 0 10px 1px #999999;
+    background: #ffffff;
+    color: $label-color;
+    max-width: 240px;
+    font-weight: bold;
+    padding: 5px 10px;
+    font-size: 13px;
+    border-radius: 4px;
+    z-index: 10000;
+
+    .arrow,
+    .arrow::before {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: inherit;
+    }
+
+    .arrow {
+      visibility: hidden;
+      top: -4px;
+    }
+
+    .arrow::before {
+      visibility: visible;
+      content: '';
+      transform: rotate(45deg);
+    }
+
+    &[data-show] {
+      display: block;
+    }
+
+    &[data-popper-placement^='top'] > .arrow {
+      bottom: -4px;
+    }
+
+    &[data-popper-placement^='bottom'] > .arrow {
+      top: -4px;
+    }
+
+    &[data-popper-placement^='left'] > .arrow {
+      right: -4px;
+    }
+
+    &[data-popper-placement^='right'] > .arrow {
+      left: -4px;
+    }
+  }
+}

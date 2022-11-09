@@ -596,6 +596,27 @@ export class VerdocsFieldTimestamp {
 }
 
 
+export declare interface VerdocsHelpIcon extends Components.VerdocsHelpIcon {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['text']
+})
+@Component({
+  selector: 'verdocs-help-icon',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['text']
+})
+export class VerdocsHelpIcon {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
 export declare interface VerdocsInitialDialog extends Components.VerdocsInitialDialog {
   /**
    * Event fired when the initials are adopted. 
@@ -795,7 +816,7 @@ export declare interface VerdocsRadioButton extends Components.VerdocsRadioButto
 It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
 keypress. 
    */
-  select: EventEmitter<CustomEvent<{value: string}>>;
+  selected: EventEmitter<CustomEvent<{value: string}>>;
 
 }
 
@@ -814,7 +835,7 @@ export class VerdocsRadioButton {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['select']);
+    proxyOutputs(this, this.el, ['selected']);
   }
 }
 

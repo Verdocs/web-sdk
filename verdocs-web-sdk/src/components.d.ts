@@ -314,6 +314,12 @@ export namespace Components {
          */
         "recipient"?: IRecipient;
     }
+    interface VerdocsHelpIcon {
+        /**
+          * Help text to display on hover/focus
+         */
+        "text": string;
+    }
     interface VerdocsInitialDialog {
         /**
           * Initial signature text
@@ -910,6 +916,12 @@ declare global {
         prototype: HTMLVerdocsFieldTimestampElement;
         new (): HTMLVerdocsFieldTimestampElement;
     };
+    interface HTMLVerdocsHelpIconElement extends Components.VerdocsHelpIcon, HTMLStencilElement {
+    }
+    var HTMLVerdocsHelpIconElement: {
+        prototype: HTMLVerdocsHelpIconElement;
+        new (): HTMLVerdocsHelpIconElement;
+    };
     interface HTMLVerdocsInitialDialogElement extends Components.VerdocsInitialDialog, HTMLStencilElement {
     }
     var HTMLVerdocsInitialDialogElement: {
@@ -1096,6 +1108,7 @@ declare global {
         "verdocs-field-textarea": HTMLVerdocsFieldTextareaElement;
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
         "verdocs-field-timestamp": HTMLVerdocsFieldTimestampElement;
+        "verdocs-help-icon": HTMLVerdocsHelpIconElement;
         "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
         "verdocs-kba-dialog": HTMLVerdocsKbaDialogElement;
         "verdocs-loader": HTMLVerdocsLoaderElement;
@@ -1552,6 +1565,12 @@ declare namespace LocalJSX {
          */
         "recipient"?: IRecipient;
     }
+    interface VerdocsHelpIcon {
+        /**
+          * Help text to display on hover/focus
+         */
+        "text"?: string;
+    }
     interface VerdocsInitialDialog {
         /**
           * Initial signature text
@@ -1690,7 +1709,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
-        "onSelect"?: (event: VerdocsRadioButtonCustomEvent<{value: string}>) => void;
+        "onSelected"?: (event: VerdocsRadioButtonCustomEvent<{value: string}>) => void;
         /**
           * Value to track with the input.
          */
@@ -2089,6 +2108,7 @@ declare namespace LocalJSX {
         "verdocs-field-textarea": VerdocsFieldTextarea;
         "verdocs-field-textbox": VerdocsFieldTextbox;
         "verdocs-field-timestamp": VerdocsFieldTimestamp;
+        "verdocs-help-icon": VerdocsHelpIcon;
         "verdocs-initial-dialog": VerdocsInitialDialog;
         "verdocs-kba-dialog": VerdocsKbaDialog;
         "verdocs-loader": VerdocsLoader;
@@ -2140,6 +2160,7 @@ declare module "@stencil/core" {
             "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
             "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
             "verdocs-field-timestamp": LocalJSX.VerdocsFieldTimestamp & JSXBase.HTMLAttributes<HTMLVerdocsFieldTimestampElement>;
+            "verdocs-help-icon": LocalJSX.VerdocsHelpIcon & JSXBase.HTMLAttributes<HTMLVerdocsHelpIconElement>;
             "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
             "verdocs-kba-dialog": LocalJSX.VerdocsKbaDialog & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
