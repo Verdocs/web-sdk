@@ -25,8 +25,6 @@ export class VerdocsHelpIcon {
   @State() containerId = `verdocs-help-icon-${Math.random().toString(36).substring(2, 11)}`;
 
   componentDidLoad() {
-    console.log('icon', this.icon);
-    console.log('tooltip', this.tooltip);
     this.popperInstance = createPopper(this.icon, this.tooltip, {
       // placement: 'top-end',
       // modifiers: [{name: 'offset', options: {offset: [0, 10]}}],

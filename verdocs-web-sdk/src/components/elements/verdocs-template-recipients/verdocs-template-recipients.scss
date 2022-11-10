@@ -35,12 +35,11 @@ verdocs-template-recipients {
 
     .row {
       display: flex;
-      column-gap: 10px;
+      column-gap: 0;
       margin-left: 50px;
       position: relative;
       flex-direction: row;
       padding: 6px 0 4px 0;
-      //border-bottom: 1px solid #97979744;
 
       .icon {
         top: 14px;
@@ -64,8 +63,22 @@ verdocs-template-recipients {
         line-height: 30px;
         flex-direction: row;
         border-radius: 30px;
+        margin: 0 0 0 14px;
         background-color: $verdocs-grey-3;
-        border: 1px solid $verdocs-grey-0;
+        border: 1px solid $verdocs-grey-2;
+      }
+
+      .complete {
+        height: 30px;
+        display: flex;
+        font-size: 14px;
+        padding: 0 15px;
+        line-height: 30px;
+        flex-direction: row;
+        border-radius: 30px;
+        margin: 0 0 0 14px;
+        background-color: $verdocs-grey-3;
+        border: 1px solid $verdocs-grey-2;
       }
 
       .label {
@@ -79,16 +92,39 @@ verdocs-template-recipients {
         cursor: pointer;
       }
 
-      .dropzone {
-        border: 1px solid #aaa;
-        background-color: #cccccc;
+      .recipient {
         height: 30px;
-        width: 20px;
-        visibility: hidden;
-        border-radius: 10px;
+        display: flex;
+        font-size: 14px;
+        line-height: 30px;
+        border-radius: 30px;
+        flex-direction: row;
+        padding: 0 5px 0 15px;
+        border: 1px solid $verdocs-grey-2;
+      }
 
-        &.drop-activated {
-          visibility: visible;
+      .dropzone {
+        width: 14px;
+        height: 30px;
+        //visibility: hidden;
+
+        svg {
+          fill: #cccccc;
+        }
+
+        &.visible {
+          margin: 0 7px;
+          //visibility: visible;
+        }
+
+        &.active {
+          width: 100px;
+          border-radius: 30px;
+          background: #654dcb7f;
+          border: 1px dashed #654dcb;
+
+          svg {
+          }
         }
       }
     }
