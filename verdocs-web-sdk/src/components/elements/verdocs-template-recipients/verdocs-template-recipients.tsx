@@ -1,8 +1,17 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
-import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
+import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
+import {Component, h, Event, EventEmitter, Fragment, Prop, State} from '@stencil/core';
+import {getRoleIndex} from '../../../utils/utils';
+
+const arrayMove = (arr: any[], fromIndex: number, toIndex: number) => {
+  const newArr = [...arr];
+  newArr.splice(toIndex, 0, newArr.splice(fromIndex, 1)[0]);
+  return newArr;
+};
+
+type TAnnotatedRole = IRole & {order: number};
 
 const senderLabels: Record<TemplateSenderTypes, string> = {
   [TemplateSenderTypes.EVERYONE]: 'Everyone',
@@ -147,6 +156,10 @@ export class VerdocsTemplateRecipients {
   @State() delegator: boolean = false;
   @State() sender: TemplateSenderTypes = TemplateSenderTypes.CREATOR;
   @State() showingSenderDialog = false;
+  @State() orderedRoles: TAnnotatedRole[] = [];
+
+  sequences: number[] = [];
+  rolesAtSequence: Record<number, TAnnotatedRole[]> = {};
 
   componentWillLoad() {
     if (this.templateRole) {
@@ -157,6 +170,59 @@ export class VerdocsTemplateRecipients {
       this.message = this.templateRole.message || '';
       this.showMessage = this.message !== '';
     }
+
+    this.orderedRoles = [
+      {
+        order: 0,
+        template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+        name: 'Seller 1',
+        full_name: '',
+        email: '',
+        type: 'signer',
+        sequence: 1,
+        fields: [],
+        delegator: false,
+        phone: '',
+      },
+      {
+        order: 1,
+        template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+        name: 'Seller 2',
+        full_name: '',
+        email: '',
+        type: 'signer',
+        sequence: 1,
+        fields: [],
+        delegator: false,
+        phone: '',
+      },
+      {
+        order: 2,
+        template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+        name: 'Buyer 1',
+        full_name: '',
+        email: '',
+        type: 'signer',
+        sequence: 2,
+        fields: [],
+        delegator: false,
+        phone: '',
+      },
+      {
+        order: 3,
+        template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+        name: 'Buyer 2',
+        full_name: '',
+        email: '',
+        type: 'signer',
+        sequence: 2,
+        fields: [],
+        delegator: false,
+        phone: '',
+      },
+    ];
+
+    this.computeRolesBySequence();
   }
 
   componentDidRender() {
@@ -187,24 +253,61 @@ export class VerdocsTemplateRecipients {
     interact('.dropzone').dropzone({
       overlap: 0.05,
       ondrop: event => {
+        event.target.classList.remove('active');
+
         console.log(event.relatedTarget.id + ' was dropped into ' + event.target.id);
+
+        const roleName = event.relatedTarget.dataset.rolename;
+        const targetOrder = +event.target.dataset.order;
+        const targetSequence = +event.target.dataset.sequence;
+        // const roleIndex = this.orderedRoles.findIndex(role => role.name === roleToMove);
+
+        const roleIndex = this.orderedRoles.findIndex(role => role.name === roleName);
+        if (roleIndex !== -1) {
+          console.log('Will move', {roleName, targetOrder, targetSequence, roleIndex});
+          const role = this.orderedRoles[roleIndex];
+          role.sequence = targetSequence;
+
+          console.log('before', JSON.parse(JSON.stringify(this.orderedRoles)));
+          this.orderedRoles = arrayMove(this.orderedRoles, roleIndex, targetOrder);
+          this.orderedRoles.forEach((role, index) => {
+            role.order = index;
+          });
+          console.log('after', JSON.parse(JSON.stringify(this.orderedRoles)));
+          this.computeRolesBySequence();
+        }
       },
       ondropactivate: e => {
-        console.log('drop activated');
+        // console.log('drop activated');
         e.target.classList.add('visible');
       },
       ondropdeactivate: e => {
         e.target.classList.remove('visible');
       },
       ondragenter: e => {
-        console.log('drag enter', e);
+        // console.log('drag enter', e);
         e.target.classList.add('active');
       },
       ondragleave: e => {
-        console.log('drag leave', e);
+        // console.log('drag leave', e);
         e.target.classList.remove('active');
       },
     });
+  }
+
+  computeRolesBySequence() {
+    const rolesAtSequence: Record<number, TAnnotatedRole[]> = {};
+
+    this.orderedRoles.forEach(role => {
+      rolesAtSequence[role.sequence] ||= [];
+      rolesAtSequence[role.sequence].push(role);
+    });
+
+    this.rolesAtSequence = rolesAtSequence;
+
+    console.log('ras', this.rolesAtSequence);
+    this.sequences = Object.keys(rolesAtSequence).map(levelStr => +levelStr);
+    this.sequences.sort((a, b) => a - b);
   }
 
   handleCancel(e) {
@@ -226,16 +329,11 @@ export class VerdocsTemplateRecipients {
     });
   }
 
-  handleSelectSuggestion(e: any, suggestion: IEmailContact | IPhoneContact) {
-    e.stopPropagation();
-
-    this.name = suggestion.name;
-    this.email = suggestion.email;
-    this.phone = suggestion.phone;
-    this.showSuggestions = false;
-  }
-
   render() {
+    console.log('ordered roles', JSON.parse(JSON.stringify(this.orderedRoles)));
+    const roleNames = this.orderedRoles.map(role => role.name) || [];
+    let beforeOrder = 0;
+
     return (
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <h5>Participant Order</h5>
@@ -250,35 +348,27 @@ export class VerdocsTemplateRecipients {
             </div>
           </div>
 
-          <div class="row">
-            <div class="icon" innerHTML={stepIcon} />
-            <div class="dropzone" />
-            <div class="recipient recipient-1" style={{backgroundColor: getRGBA(0)}}>
-              Recipient 1 <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
+          {this.sequences.map(sequence => (
+            <div class="row">
+              <div class="icon" innerHTML={stepIcon} />
+              <div class="dropzone" data-order={beforeOrder} data-sequence={sequence} />
+              {this.rolesAtSequence[sequence].map(role => {
+                beforeOrder = role.order;
+                return (
+                  <Fragment>
+                    <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} data-rolename={role.name}>
+                      {role.name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
+                    </div>
+                    <div class="dropzone" data-order={beforeOrder} data-sequence={sequence} />
+                  </Fragment>
+                );
+              })}
             </div>
-            <div class="dropzone" />
-            <div class="recipient recipient-2" style={{backgroundColor: getRGBA(1)}}>
-              Recipient 2 <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
-            </div>
-            <div class="dropzone" />
-          </div>
-
-          <div class="row">
-            <div class="icon" innerHTML={stepIcon} />
-            <div class="dropzone" />
-            <div class="recipient recipient-3" style={{backgroundColor: getRGBA(2)}}>
-              Recipient 2 <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
-            </div>
-            <div class="dropzone" />
-            <div class="recipient recipient-4" style={{backgroundColor: getRGBA(3)}}>
-              Recipient 2 <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
-            </div>
-            <div class="dropzone" />
-          </div>
+          ))}
 
           <div class="row">
             <div class="icon" innerHTML={doneIcon} />
-            <div class="complete">Verdoc Complete</div>
+            <div class="complete">Document Complete</div>
           </div>
         </div>
 
