@@ -1,79 +1,57 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IRole} from '@verdocs/js-sdk/Templates/Types';
-import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
+import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
+import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
+import {IPageRenderEvent} from '../../embeds/verdocs-view/verdocs-view';
+import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
+import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
+import {SDKError} from '../../../utils/errors';
 
-// const messageIcon =
-//   '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiBox-root css-1om0hkc" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path></svg>';
-//
-// const delegateIcon =
-//   '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AssignmentIndIcon" tabindex="-1" title="AssignmentInd"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z"></path></svg>';
-//
-// const placeholderIcon =
-//   '<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-zjt8k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="AccountCircleIcon" tabindex="-1" title="AccountCircle"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"></path></svg>';
+const iconSingleline = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
-export interface IContactSearchEvent {
-  // The text the user has entered in the search field
-  query: string;
-}
+const iconMultiline =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M3.225 20.725v-3.15h11.55v3.15Zm0-4.775V12.8h17.55v3.15Zm0-4.75V8.05h17.55v3.15Zm0-4.775v-3.15h17.55v3.15Z"/></svg>';
 
-export interface IContactSelectEvent {
-  full_name: string;
-  email: string;
-  phone: string;
-  message: string;
-  delegator: boolean;
-}
+const iconCheck =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="40" width="40"><path d="m17.417 27.625 12.458-12.5L27 12.208l-9.583 9.542-4.459-4.458-2.916 2.916Zm-9.209 8.542q-1.833 0-3.104-1.271-1.271-1.271-1.271-3.104V8.208q0-1.833 1.271-3.125 1.271-1.291 3.104-1.291h23.584q1.833 0 3.125 1.291 1.291 1.292 1.291 3.125v23.584q0 1.833-1.291 3.104-1.292 1.271-3.125 1.271Zm0-4.375h23.584V8.208H8.208v23.584Zm0-23.584v23.584V8.208Z"/></svg>';
 
-export interface IEmailContact {
-  // Optional but recommended. An internal identifier used to identify the contact in the calling system.
-  id?: any;
+const iconRadio =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M12 17q2.075 0 3.538-1.463Q17 14.075 17 12t-1.462-3.538Q14.075 7 12 7 9.925 7 8.463 8.462 7 9.925 7 12q0 2.075 1.463 3.537Q9.925 17 12 17Zm0 5.85q-2.275 0-4.25-.85t-3.438-2.312Q2.85 18.225 2 16.25q-.85-1.975-.85-4.25T2 7.75q.85-1.975 2.312-3.438Q5.775 2.85 7.75 2q1.975-.85 4.25-.85t4.25.85q1.975.85 3.438 2.312Q21.15 5.775 22 7.75q.85 1.975.85 4.25T22 16.25q-.85 1.975-2.312 3.438Q18.225 21.15 16.25 22q-1.975.85-4.25.85Zm0-3.15q3.25 0 5.475-2.225Q19.7 15.25 19.7 12q0-3.25-2.225-5.475Q15.25 4.3 12 4.3q-3.25 0-5.475 2.225Q4.3 8.75 4.3 12q0 3.25 2.225 5.475Q8.75 19.7 12 19.7Zm0-7.7Z"/></svg>';
 
-  // The user's avatar. If not set, a placeholder will be shown. To hide avatars entirely, use CSS to set
-  // `verdocs-contact-picker .avatar { display: none; }`
-  avatar?: string;
+const iconDatepicker =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M7.6 13.925q-.55 0-.925-.375t-.375-.925q0-.55.375-.937.375-.388.925-.388t.925.388q.375.387.375.937t-.375.925q-.375.375-.925.375Zm4.4 0q-.55 0-.925-.375t-.375-.925q0-.55.375-.937.375-.388.925-.388t.925.388q.375.387.375.937t-.375.925q-.375.375-.925.375Zm4.4 0q-.55 0-.925-.375t-.375-.925q0-.55.375-.937.375-.388.925-.388t.925.388q.375.387.375.937t-.375.925q-.375.375-.925.375ZM5.3 22.85q-1.325 0-2.238-.912-.912-.913-.912-2.238V6.3q0-1.325.912-2.238.913-.912 2.238-.912H6v-2h2.575v2h6.85v-2H18v2h.7q1.325 0 2.238.912.912.913.912 2.238v13.4q0 1.325-.912 2.238-.913.912-2.238.912Zm0-3.15h13.4V10H5.3v9.7ZM5.3 8h13.4V6.3H5.3Zm0 0V6.3 8Z"/></svg>';
 
-  // The recipient's name, as it should be displayed to the user.
-  name: string;
+const iconSignature =
+  '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"  fit="" preserveAspectRatio="xMidYMid meet" focusable="false">' +
+  '      <defs></defs>' +
+  '      <g id="Material-Design-Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">' +
+  '          <g id="signer-signature">' +
+  '              <g id="ic_gesture_black_24px">' +
+  '                  <polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon>' +
+  '                  <polygon id="Shape" fill="#000000" fill-rule="nonzero" points="4 17 20 17 20 19 4 19"></polygon>' +
+  '                  <path d="M6,13.6367319 L6,16 L8.36326806,16 L15.3333333,9.02993473 L12.9700653,6.66666667 L6,13.6367319 Z M17.8007663,6.75351213 C18.0664112,6.48786718 18.0664112,6.0587484 17.8007663,5.79310345 L16.2068966,4.19923372 C15.9412516,3.93358876 15.5121328,3.93358876 15.2464879,4.19923372 L14,5.44572158 L16.5542784,8 L17.8007663,6.75351213 Z" id="Shape" fill="#000000" fill-rule="nonzero"></path>' +
+  '              </g>' +
+  '          </g>' +
+  '      </g>' +
+  '    </svg>';
 
-  // The email address for the contact.
-  email: string;
-
-  // An optional phone number for the contact. This number must be able SMS messages. If both email and phone are provided,
-  // notifications will be sent to both locations.
-  phone?: string;
-
-  [key: string]: any;
-}
-
-export interface IPhoneContact {
-  // Optional but recommended. An internal identifier used to identify the contact in the calling system.
-  id?: any;
-
-  // The user's avatar. If not set, a placeholder will be shown. To hide avatars entirely, use CSS to set
-  // `verdocs-contact-picker .avatar { display: none; }`
-  avatar?: string;
-
-  // The recipient's name, as it should be displayed to the user.
-  name: string;
-
-  // The email address for the contact.
-  email?: string;
-
-  // An optional phone number for the contact. This number must be able SMS messages. If both email and phone are provided,
-  // notifications will be sent to both locations.
-  phone: string;
-
-  [key: string]: any;
-}
+const iconInitial =
+  '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fit="" preserveAspectRatio="xMidYMid meet" focusable="false">' +
+  '      <defs></defs>' +
+  '      <g id="Material-Design-Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">' +
+  '          <g id="signer-intial">' +
+  '              <g id="ic_gesture_black_24px">' +
+  '                  <polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon>' +
+  '                  <polygon id="Shape" fill="#000000" fill-rule="nonzero" points="4 17 20 17 20 19 4 19"></polygon>' +
+  '                  <path d="M5,12.3087071 L7.27440633,12.1662269 C7.323659,12.5356219 7.42392185,12.8170615 7.57519789,13.0105541 C7.82146121,13.3236603 8.17326069,13.4802111 8.63060686,13.4802111 C8.97185747,13.4802111 9.23482757,13.4001767 9.41952507,13.2401055 C9.60422256,13.0800344 9.69656992,12.8944602 9.69656992,12.6833773 C9.69656992,12.4828486 9.60862005,12.3034309 9.43271768,12.1451187 C9.2568153,11.9868066 8.84872792,11.8372918 8.20844327,11.6965699 C7.16006512,11.4608607 6.41249124,11.1477592 5.96569921,10.7572559 C5.51538913,10.3667527 5.29023747,9.86895641 5.29023747,9.26385224 C5.29023747,8.86631288 5.40545179,8.49076694 5.63588391,8.13720317 C5.86631602,7.78363939 6.2128385,7.50571781 6.67546174,7.30343008 C7.13808499,7.10114235 7.77220354,7 8.57783641,7 C9.56640776,7 10.3201381,7.18381522 10.8390501,7.55145119 C11.3579621,7.91908715 11.6666662,8.50395377 11.7651715,9.3060686 L9.51187335,9.43799472 C9.45206654,9.08970802 9.32629823,8.8364124 9.13456464,8.67810026 C8.94283106,8.51978813 8.67810195,8.44063325 8.34036939,8.44063325 C8.06244364,8.44063325 7.85312296,8.49955966 7.71240106,8.61741425 C7.57167916,8.73526884 7.50131926,8.87862712 7.50131926,9.0474934 C7.50131926,9.17062507 7.55936617,9.2814419 7.67546174,9.37994723 C7.78803926,9.48197061 8.05540686,9.57695646 8.47757256,9.66490765 C9.52243266,9.89006269 10.270886,10.1178528 10.7229551,10.348285 C11.1750242,10.5787171 11.5039568,10.8645541 11.7097625,11.2058047 C11.9155683,11.5470554 12.0184697,11.9287578 12.0184697,12.3509235 C12.0184697,12.8469682 11.8812679,13.3043075 11.6068602,13.7229551 C11.3324525,14.1416028 10.948991,14.4591018 10.4564644,14.6754617 C9.96393773,14.8918217 9.34301166,15 8.59366755,15 C7.27791778,15 6.36675715,14.7467044 5.86015831,14.2401055 C5.35355947,13.7335067 5.0668429,13.0897137 5,12.3087071 Z M13.364493,7.13192612 L15.7549943,7.13192612 L15.7549943,12.9630607 L19.4858651,12.9630607 L19.4858651,14.8680739 L13.364493,14.8680739 L13.364493,7.13192612 Z" id="SL" fill="#000000"></path>' +
+  '              </g>' +
+  '          </g>' +
+  '      </g>' +
+  '    </svg>';
 
 /**
- * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
- *
- * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
- * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
- * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
- * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
- * to always display the user's own contact record.
+ * Displays a builder experience for laying out fields in a template. Note that this experience requires a large display area to
+ * present all of the required controls, so it is primarily intended to be used in desktop environments.
  */
 @Component({
   tag: 'verdocs-template-fields',
@@ -87,21 +65,14 @@ export class VerdocsTemplateFields {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The role that this contact will be assigned to.
+   * The ID of the template to create the document from.
    */
-  @Prop() templateRole: IRole | null = null;
+  @Prop() templateId: string | null = null;
 
   /**
-   * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number
-   * of suggestions be limited to the 5 best matching records.
+   * Event fired when the fields are saved.
    */
-  @Prop() contactSuggestions: (IEmailContact | IPhoneContact)[] = [];
-
-  /**
-   * Event fired when the user enters text in the search field. The calling application may use this to update
-   * the `contactSuggestions` property.
-   */
-  @Event({composed: true}) searchContacts: EventEmitter<IContactSearchEvent>;
+  @Event({composed: true}) save: EventEmitter;
 
   /**
    * Event fired when the user cancels the dialog.
@@ -109,78 +80,111 @@ export class VerdocsTemplateFields {
   @Event({composed: true}) cancel: EventEmitter;
 
   /**
-   * Event fired when the user changes the type.
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
    */
-  @Event({composed: true}) contactSelected: EventEmitter<IContactSelectEvent>;
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() name: string;
-  @State() email: string;
-  @State() phone: string;
-  @State() message: string;
-  @State() showSuggestions: boolean = false;
-  @State() showMessage: boolean = false;
-  @State() delegator: boolean = false;
+  @State() pdfUrl = null;
+  @State() template: ITemplate | null = null;
 
-  componentWillLoad() {
-    if (this.templateRole) {
-      this.name = this.templateRole.full_name || '';
-      this.email = this.templateRole.email || '';
-      this.phone = this.templateRole.phone || '';
-      this.delegator = this.templateRole.delegator || false;
-      this.message = this.templateRole.message || '';
-      this.showMessage = this.message !== '';
+  roles: string[] = [];
+  fields: ITemplateField[] = [];
+
+  async componentWillLoad() {
+    try {
+      console.log(`[PREVIEW] Loading template ${this.templateId}`);
+      const template = await getTemplate(this.endpoint, this.templateId);
+
+      console.log('[PREVIEW] Got template', this.template);
+      this.template = template;
+
+      this.pdfUrl = `${this.endpoint.getBaseURL()}/templates/${this.templateId}/documents/${template.template_document?.id}?file=true`;
+
+      this.roles = template.roles.map(role => role.name);
+      console.log('[PREVIEW] Loaded roles', this.roles);
+
+      this.fields = [];
+      template.roles.forEach(role => {
+        this.fields.push(...role.fields);
+      });
+      console.log('[PREVIEW] Loaded fields', this.fields);
+    } catch (e) {
+      console.log('[PREVIEW] Error with preview session', e);
+      // this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  handleNameChange(e: any) {
-    this.name = e.target.value;
-    this.searchContacts?.emit({query: this.name});
+  async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
+    console.log('[PREVIEW] handleFieldChange', field, e, optionId);
   }
 
-  handleEmailChange(e: any) {
-    this.email = e.target.value;
-  }
+  handlePageRendered(e) {
+    const pageInfo = e.detail as IPageRenderEvent;
+    console.log('[PREVIEW] Page rendered', pageInfo);
 
-  handlePhoneChange(e: any) {
-    this.phone = e.target.value;
-  }
-
-  handleMessageChange(e: any) {
-    this.message = e.target.value;
-  }
-
-  handleCancel(e) {
-    e.stopPropagation();
-    this.showSuggestions = false;
-    this.cancel?.emit();
-  }
-
-  handleSubmit(e) {
-    e.stopPropagation();
-
-    this.showSuggestions = false;
-    this.contactSelected?.emit({
-      full_name: this.name,
-      email: this.email,
-      phone: this.phone,
-      message: this.message,
-      delegator: this.delegator,
-    });
-  }
-
-  handleSelectSuggestion(e: any, suggestion: IEmailContact | IPhoneContact) {
-    e.stopPropagation();
-
-    this.name = suggestion.name;
-    this.email = suggestion.email;
-    this.phone = suggestion.phone;
-    this.showSuggestions = false;
+    const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+    console.log('[PREVIEW] Fields on page', fields);
+    fields.forEach(field => renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true));
   }
 
   render() {
+    const testField: ITemplateField = {
+      template_id: '',
+      name: 'test',
+      role_name: 'Recipient 1',
+      type: 'textbox',
+      required: true,
+      setting: {
+        x: 0,
+        y: 0,
+      },
+      page_sequence: 0,
+    };
+
     return (
-      <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
-      </form>
+      <Host class={{storybook: !!window?.['STORYBOOK_ENV']}}>
+        <div class="document">
+          {this.pdfUrl ? (
+            <div class="inner">
+              <div class="fields-bar">
+                <div class="label">Drag to Add Field:</div>
+                <div class="icon" innerHTML={iconSingleline} title="Single-line Text" />
+                <div class="icon" innerHTML={iconMultiline} title="Multi-line Text" />
+                <div class="icon" innerHTML={iconCheck} title="Checkbox" />
+                <div class="icon" innerHTML={iconRadio} title="Radio Button" />
+                <div class="icon" innerHTML={iconDatepicker} title="Date Picker" />
+                <div class="icon" innerHTML={iconSignature} title="Signature" />
+                <div class="icon" innerHTML={iconInitial} title="Initials" />
+              </div>
+
+              <div class="page-0">
+                <div class="user-placed-fields">
+                  <div class="title">User-Placed Fields</div>
+                  <verdocs-field-signature
+                    field={testField}
+                    style={{width: '82px', height: '41px', left: '20px', top: '40px', transform: 'scale(1,1)', backgroundColor: getRGBA(0)}}
+                  />
+                </div>
+              </div>
+
+              <verdocs-view
+                source={this.pdfUrl}
+                endpoint={this.endpoint}
+                onPageRendered={e => this.handlePageRendered(e)}
+                pageLayers={[
+                  {name: 'page', type: 'canvas'},
+                  {name: 'controls', type: 'div'},
+                ]}
+              />
+
+              <verdocs-dropdown options={[{label: 'Option 1'}, {label: 'Disabled Option', disabled: true}, {label: 'Option 2'}]} />
+            </div>
+          ) : (
+            <verdocs-loader />
+          )}
+        </div>
+      </Host>
     );
   }
 }

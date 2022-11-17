@@ -16,9 +16,8 @@ import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatu
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
-import { IContactSearchEvent as IContactSearchEvent1, IContactSelectEvent as IContactSelectEvent1, IEmailContact as IEmailContact1, IPhoneContact as IPhoneContact1 } from "./components/elements/verdocs-template-fields/verdocs-template-fields";
-import { IContactSearchEvent as IContactSearchEvent2, IContactSelectEvent as IContactSelectEvent2, IEmailContact as IEmailContact2, IPhoneContact as IPhoneContact2 } from "./components/elements/verdocs-template-properties/verdocs-template-properties";
-import { IContactSearchEvent as IContactSearchEvent3, IContactSelectEvent as IContactSelectEvent3, IEmailContact as IEmailContact3, IPhoneContact as IPhoneContact3 } from "./components/elements/verdocs-template-recipients/verdocs-template-recipients";
+import { IContactSearchEvent as IContactSearchEvent1, IContactSelectEvent as IContactSelectEvent1, IEmailContact as IEmailContact1, IPhoneContact as IPhoneContact1 } from "./components/elements/verdocs-template-properties/verdocs-template-properties";
+import { IContactSearchEvent as IContactSearchEvent2, IContactSelectEvent as IContactSelectEvent2, IEmailContact as IEmailContact2, IPhoneContact as IPhoneContact2 } from "./components/elements/verdocs-template-recipients/verdocs-template-recipients";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 import { IPageRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
@@ -537,17 +536,13 @@ export namespace Components {
     }
     interface VerdocsTemplateFields {
         /**
-          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
-         */
-        "contactSuggestions": (IEmailContact | IPhoneContact)[];
-        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The role that this contact will be assigned to.
+          * The ID of the template to create the document from.
          */
-        "templateRole": IRole | null;
+        "templateId": string | null;
     }
     interface VerdocsTemplateProperties {
         /**
@@ -1875,10 +1870,6 @@ declare namespace LocalJSX {
     }
     interface VerdocsTemplateFields {
         /**
-          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
-         */
-        "contactSuggestions"?: (IEmailContact | IPhoneContact)[];
-        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
@@ -1887,17 +1878,17 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplateFieldsCustomEvent<any>) => void;
         /**
-          * Event fired when the user changes the type.
+          * Event fired when the fields are saved.
          */
-        "onContactSelected"?: (event: VerdocsTemplateFieldsCustomEvent<IContactSelectEvent>) => void;
+        "onSave"?: (event: VerdocsTemplateFieldsCustomEvent<any>) => void;
         /**
-          * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
-        "onSearchContacts"?: (event: VerdocsTemplateFieldsCustomEvent<IContactSearchEvent>) => void;
+        "onSdkError"?: (event: VerdocsTemplateFieldsCustomEvent<SDKError>) => void;
         /**
-          * The role that this contact will be assigned to.
+          * The ID of the template to create the document from.
          */
-        "templateRole"?: IRole | null;
+        "templateId"?: string | null;
     }
     interface VerdocsTemplateProperties {
         /**

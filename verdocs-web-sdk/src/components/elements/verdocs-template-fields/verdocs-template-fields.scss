@@ -1,107 +1,58 @@
 @import '../../../theme.scss';
 
-verdocs-template-recipients {
+verdocs-template-fields {
+  position: relative;
   font-family: $verdocs-primary-font;
 
-  form {
-    background-color: $verdocs-grey-4;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
+  .page-0 {
+    padding: 55px 15px 0 15px;
 
-    .row {
-      width: 300px;
-      display: flex;
+    .user-placed-fields {
+      height: 100px;
       position: relative;
-      margin: 0 0 20px 0;
-      flex-direction: column;
-    }
-
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: 500;
-      margin: 0 0 4px 0;
-      color: $verdocs-bg-4;
-    }
-
-    input {
-      border: none;
-      font-size: 18px;
-      padding: 3px 6px 3px 0;
-      background: transparent;
-      border-bottom: 1px solid $verdocs-dark-blue;
-
-      &:focus {
-        outline: none;
-      }
-    }
-
-    .dropdown {
-      left: 0;
-      right: 0;
-      top: 49px;
-      z-index: 100;
-      position: absolute;
       background: #ffffff;
-      box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 10px 5px #0000000f;
 
-      .suggestion {
-        display: flex;
-        padding: 6px 12px;
-        align-items: center;
-        flex-direction: row;
-
-        svg {
-          fill: #666666;
-        }
-
-        .avatar {
-          width: 48px;
-          height: 48px;
-          flex: 0 0 48px;
-          margin-right: 8px;
-          border-radius: 100%;
-        }
-
-        .details {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .name {
-          font-size: 16px;
-          font-weight: 500;
-          margin-bottom: 3px;
-          color: $verdocs-grey-0;
-        }
-
-        .destination {
-          font-size: 14px;
-          margin-bottom: 3px;
-          color: $verdocs-grey-1;
-        }
-
-        &:hover {
-          background: #eee;
-          cursor: pointer;
-        }
+      .title {
+        top: 0;
+        left: 0;
+        color: #ffffff;
+        font-size: 12px;
+        padding: 3px 6px;
+        font-weight: bold;
+        position: absolute;
+        background: $verdocs-grey-blue;
       }
     }
   }
 
-  .buttons {
+  .fields-bar {
+    width: 91%;
+    height: 30px;
     display: flex;
-    column-gap: 8px;
-    margin-top: 16px;
+    z-index: 10000;
+    position: fixed;
+    padding: 5px 20px;
+    line-height: 28px;
+    align-items: center;
     flex-direction: row;
+    background: $verdocs-grey-blue;
 
-    .flex-fill {
-      flex: 1;
+    .label {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+      margin-right: 8px;
     }
-  }
 
-  ::placeholder {
-    color: $verdocs-bg-2;
+    .icon {
+      margin: 0 4px;
+      display: flex;
+      transform: scale(0.8, 0.8);
+
+      svg {
+        fill: #ffffff;
+      }
+    }
   }
 }

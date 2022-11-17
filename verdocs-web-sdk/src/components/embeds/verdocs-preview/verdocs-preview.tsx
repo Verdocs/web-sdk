@@ -77,24 +77,22 @@ export class VerdocsPreview {
 
   render() {
     return (
-      <Host class={{storybook: !!window?.['STORYBOOK_ENV']}}>
-        <div class="document">
-          {this.pdfUrl ? (
-            <div class="inner">
-              <verdocs-view
-                source={this.pdfUrl}
-                endpoint={this.endpoint}
-                onPageRendered={e => this.handlePageRendered(e)}
-                pageLayers={[
-                  {name: 'page', type: 'canvas'},
-                  {name: 'controls', type: 'div'},
-                ]}
-              />
-            </div>
-          ) : (
-            <verdocs-loader />
-          )}
-        </div>
+      <Host>
+        {this.pdfUrl ? (
+          <div class="inner">
+            <verdocs-view
+              source={this.pdfUrl}
+              endpoint={this.endpoint}
+              onPageRendered={e => this.handlePageRendered(e)}
+              pageLayers={[
+                {name: 'page', type: 'canvas'},
+                {name: 'controls', type: 'div'},
+              ]}
+            />
+          </div>
+        ) : (
+          <verdocs-loader />
+        )}
       </Host>
     );
   }

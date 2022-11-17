@@ -1118,41 +1118,40 @@ export class VerdocsTemplateCreate {
   }
 }
 
-import type { IContactSearchEvent as IVerdocsTemplateFieldsIContactSearchEvent } from '@verdocs/web-sdk';
-import type { IContactSelectEvent as IVerdocsTemplateFieldsIContactSelectEvent } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
   /**
-   * Event fired when the user enters text in the search field. The calling application may use this to update
-the `contactSuggestions` property. 
+   * Event fired when the fields are saved. 
    */
-  searchContacts: EventEmitter<CustomEvent<IVerdocsTemplateFieldsIContactSearchEvent>>;
+  save: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the user cancels the dialog. 
    */
   cancel: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the user changes the type. 
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
    */
-  contactSelected: EventEmitter<CustomEvent<IVerdocsTemplateFieldsIContactSelectEvent>>;
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateFieldsSDKError>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+  inputs: ['endpoint', 'templateId']
 })
 @Component({
   selector: 'verdocs-template-fields',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+  inputs: ['endpoint', 'templateId']
 })
 export class VerdocsTemplateFields {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'contactSelected']);
+    proxyOutputs(this, this.el, ['save', 'cancel', 'sdkError']);
   }
 }
 
