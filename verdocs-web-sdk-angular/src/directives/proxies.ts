@@ -274,6 +274,10 @@ keypress.
    * Event fired on every character entered into / deleted from the field. 
    */
   fieldInput: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired on every character entered into / deleted from the field. 
+   */
+  settingsPress: EventEmitter<CustomEvent<any>>;
 
 }
 
@@ -293,7 +297,7 @@ export class VerdocsFieldDate {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput']);
+    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput', 'settingsPress']);
   }
 }
 
@@ -352,6 +356,10 @@ It is generally the best event to subscribe to than `input` for most cases EXCEP
 keypress. 
    */
   fieldChange: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired on every character entered into / deleted from the field. 
+   */
+  settingsPress: EventEmitter<CustomEvent<any>>;
 
 }
 
@@ -371,7 +379,7 @@ export class VerdocsFieldInitial {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['adopt', 'cancel', 'fieldChange']);
+    proxyOutputs(this, this.el, ['adopt', 'cancel', 'fieldChange', 'settingsPress']);
   }
 }
 
@@ -443,6 +451,10 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
    * Event emitted when the field has changed. 
    */
   fieldChange: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired on every character entered into / deleted from the field. 
+   */
+  settingsPress: EventEmitter<CustomEvent<any>>;
 
 }
 
@@ -462,7 +474,7 @@ export class VerdocsFieldSignature {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange']);
+    proxyOutputs(this, this.el, ['fieldChange', 'settingsPress']);
   }
 }
 
@@ -534,14 +546,14 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'recipient'],
+  inputs: ['disabled', 'field', 'recipient', 'showSettings'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-textbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'recipient']
+  inputs: ['disabled', 'field', 'recipient', 'showSettings']
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLElement;
@@ -572,6 +584,10 @@ keypress.
    * Event fired on every character entered into / deleted from the field. 
    */
   fieldInput: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired on every character entered into / deleted from the field. 
+   */
+  settingsPress: EventEmitter<CustomEvent<any>>;
 
 }
 
@@ -591,7 +607,7 @@ export class VerdocsFieldTimestamp {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput']);
+    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput', 'settingsPress']);
   }
 }
 
@@ -1366,6 +1382,34 @@ export class VerdocsToggleButton {
     c.detach();
     this.el = r.nativeElement;
     proxyOutputs(this, this.el, ['toggle']);
+  }
+}
+
+
+export declare interface VerdocsToolbarIcon extends Components.VerdocsToolbarIcon {
+  /**
+   * Triggered when the icon is pressed 
+   */
+  press: EventEmitter<CustomEvent<any>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['icon', 'text']
+})
+@Component({
+  selector: 'verdocs-toolbar-icon',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['icon', 'text']
+})
+export class VerdocsToolbarIcon {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['press']);
   }
 }
 

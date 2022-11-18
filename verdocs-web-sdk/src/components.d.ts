@@ -297,6 +297,10 @@ export namespace Components {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, a settings icon will be displayed on hover.
+         */
+        "showSettings"?: boolean;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -639,6 +643,16 @@ export namespace Components {
          */
         "size"?: 'small' | 'normal';
     }
+    interface VerdocsToolbarIcon {
+        /**
+          * SVG icon to display
+         */
+        "icon": string;
+        /**
+          * Help text to display on hover/focus
+         */
+        "text": string;
+    }
     interface VerdocsUploadDialog {
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
@@ -803,6 +817,10 @@ export interface VerdocsTextInputCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsToggleButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsToggleButtonElement;
+}
+export interface VerdocsToolbarIconCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsToolbarIconElement;
 }
 export interface VerdocsUploadDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1077,6 +1095,12 @@ declare global {
         prototype: HTMLVerdocsToggleButtonElement;
         new (): HTMLVerdocsToggleButtonElement;
     };
+    interface HTMLVerdocsToolbarIconElement extends Components.VerdocsToolbarIcon, HTMLStencilElement {
+    }
+    var HTMLVerdocsToolbarIconElement: {
+        prototype: HTMLVerdocsToolbarIconElement;
+        new (): HTMLVerdocsToolbarIconElement;
+    };
     interface HTMLVerdocsUploadDialogElement extends Components.VerdocsUploadDialog, HTMLStencilElement {
     }
     var HTMLVerdocsUploadDialogElement: {
@@ -1134,6 +1158,7 @@ declare global {
         "verdocs-text-input": HTMLVerdocsTextInputElement;
         "verdocs-toggle": HTMLVerdocsToggleElement;
         "verdocs-toggle-button": HTMLVerdocsToggleButtonElement;
+        "verdocs-toolbar-icon": HTMLVerdocsToolbarIconElement;
         "verdocs-upload-dialog": HTMLVerdocsUploadDialogElement;
         "verdocs-view": HTMLVerdocsViewElement;
     }
@@ -1341,6 +1366,10 @@ declare namespace LocalJSX {
          */
         "onFieldInput"?: (event: VerdocsFieldDateCustomEvent<string>) => void;
         /**
+          * Event fired on every character entered into / deleted from the field.
+         */
+        "onSettingsPress"?: (event: VerdocsFieldDateCustomEvent<any>) => void;
+        /**
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
@@ -1396,6 +1425,10 @@ declare namespace LocalJSX {
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldInitialCustomEvent<string>) => void;
+        /**
+          * Event fired on every character entered into / deleted from the field.
+         */
+        "onSettingsPress"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
           * The recipient completing the form, if known.
          */
@@ -1470,6 +1503,10 @@ declare namespace LocalJSX {
          */
         "onFieldChange"?: (event: VerdocsFieldSignatureCustomEvent<string>) => void;
         /**
+          * Event fired on every character entered into / deleted from the field.
+         */
+        "onSettingsPress"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
+        /**
           * If set, the signature creation dialog will be initialized from this object.
          */
         "recipient"?: IRecipient;
@@ -1533,6 +1570,10 @@ declare namespace LocalJSX {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, a settings icon will be displayed on hover.
+         */
+        "showSettings"?: boolean;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -1559,6 +1600,10 @@ declare namespace LocalJSX {
           * Event fired on every character entered into / deleted from the field.
          */
         "onFieldInput"?: (event: VerdocsFieldTimestampCustomEvent<string>) => void;
+        /**
+          * Event fired on every character entered into / deleted from the field.
+         */
+        "onSettingsPress"?: (event: VerdocsFieldTimestampCustomEvent<any>) => void;
         /**
           * The recipient completing the form, if known.
          */
@@ -2033,6 +2078,20 @@ declare namespace LocalJSX {
          */
         "size"?: 'small' | 'normal';
     }
+    interface VerdocsToolbarIcon {
+        /**
+          * SVG icon to display
+         */
+        "icon"?: string;
+        /**
+          * Triggered when the icon is pressed
+         */
+        "onPress"?: (event: VerdocsToolbarIconCustomEvent<any>) => void;
+        /**
+          * Help text to display on hover/focus
+         */
+        "text"?: string;
+    }
     interface VerdocsUploadDialog {
         /**
           * Event fired when the dialog is closed. The event data will contain the closure reason.
@@ -2134,6 +2193,7 @@ declare namespace LocalJSX {
         "verdocs-text-input": VerdocsTextInput;
         "verdocs-toggle": VerdocsToggle;
         "verdocs-toggle-button": VerdocsToggleButton;
+        "verdocs-toolbar-icon": VerdocsToolbarIcon;
         "verdocs-upload-dialog": VerdocsUploadDialog;
         "verdocs-view": VerdocsView;
     }
@@ -2186,6 +2246,7 @@ declare module "@stencil/core" {
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
             "verdocs-toggle": LocalJSX.VerdocsToggle & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;
             "verdocs-toggle-button": LocalJSX.VerdocsToggleButton & JSXBase.HTMLAttributes<HTMLVerdocsToggleButtonElement>;
+            "verdocs-toolbar-icon": LocalJSX.VerdocsToolbarIcon & JSXBase.HTMLAttributes<HTMLVerdocsToolbarIconElement>;
             "verdocs-upload-dialog": LocalJSX.VerdocsUploadDialog & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
             "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
         }

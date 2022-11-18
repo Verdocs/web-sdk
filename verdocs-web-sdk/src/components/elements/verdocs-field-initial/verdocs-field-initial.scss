@@ -44,4 +44,18 @@ verdocs-field-initial {
   &.focused {
     animation: verdocs-field-pulse 0.75s 2;
   }
+
+  .settings {
+    top: -3px;
+    right: -2px;
+    opacity: 0.5;
+    z-index: 1000;
+    cursor: pointer;
+    position: absolute;
+    transform: scale(0.6);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }

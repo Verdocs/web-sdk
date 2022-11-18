@@ -122,7 +122,7 @@ export const renderDocumentField = (
       break;
 
     case 'checkbox_group':
-      field.setting.options.forEach((option, checkboxIndex) => {
+      field.setting.options.forEach((_, checkboxIndex) => {
         const id = getFieldOptionId(field, checkboxIndex);
         const existingField = document.getElementById(id);
         if (existingField) {
@@ -130,7 +130,6 @@ export const renderDocumentField = (
           return;
         }
 
-        console.log('Adding checkbox', option);
         const cbEl: any = document.createElement(`verdocs-field-checkbox`);
         cbEl.field = field;
         cbEl.setAttribute('id', id);
@@ -146,7 +145,7 @@ export const renderDocumentField = (
       break;
 
     case 'radio_button_group':
-      field.setting.options.forEach((option, buttonIndex) => {
+      field.setting.options.forEach((_, buttonIndex) => {
         const id = getFieldOptionId(field, buttonIndex);
         const existingField = document.getElementById(id);
         if (existingField) {
@@ -154,7 +153,6 @@ export const renderDocumentField = (
           return;
         }
 
-        console.log('Adding radio button', option);
         const cbEl: any = document.createElement(`verdocs-field-radio-button`);
         cbEl.field = field;
         cbEl.setAttribute('id', id);

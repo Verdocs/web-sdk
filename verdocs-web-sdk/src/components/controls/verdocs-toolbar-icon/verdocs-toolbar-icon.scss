@@ -1,11 +1,12 @@
 @import '../../../theme.scss';
 
-verdocs-help-icon {
+verdocs-toolbar-icon {
   font-family: $verdocs-primary-font;
   display: inline-block;
 
   .icon {
     display: inline-block;
+    cursor: pointer;
 
     svg {
       fill: $choice-available-color;
@@ -19,9 +20,9 @@ verdocs-help-icon {
     color: $label-color;
     max-width: 240px;
     font-weight: bold;
-    position: relative;
     padding: 5px 10px;
     font-size: 13px;
+    position: relative;
     border-radius: 4px;
     z-index: 10000;
 

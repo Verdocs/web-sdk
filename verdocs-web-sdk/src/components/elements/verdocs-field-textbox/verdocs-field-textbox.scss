@@ -15,14 +15,14 @@ verdocs-field-textbox {
   }
 
   input {
-    box-sizing: border-box;
-    color: rgba(0, 0, 0, 0.87);
+    width: 100%;
+    height: 100%;
+    font-size: 11px;
+    background: none;
     font-weight: 500;
     transform-origin: 0 0;
-    height: 100%;
-    width: 100%;
-    background: none;
-    font-size: 11px;
+    box-sizing: border-box;
+    color: rgba(0, 0, 0, 0.87);
     border: 1px solid rgba(0, 0, 0, 0.2);
 
     &.hide {
@@ -36,5 +36,98 @@ verdocs-field-textbox {
 
   &.focused {
     animation: verdocs-field-pulse 0.75s 2;
+  }
+
+  .settings {
+    top: -3px;
+    left: -2px;
+    opacity: 0.5;
+    z-index: 1000;
+    cursor: pointer;
+    position: absolute;
+    transform: scale(0.6);
+
+    &[data-active],
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.verdocs-field-textbox-tooltip {
+  display: none;
+  box-shadow: 0 0 10px 1px #999999;
+  background: #ffffff;
+  color: $label-color;
+  max-width: 240px;
+  position: relative;
+  font-weight: bold;
+  padding: 5px 10px;
+  font-size: 13px;
+  border-radius: 4px;
+  width: 240px;
+  z-index: 10000;
+
+  .arrow,
+  .arrow::before {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: inherit;
+  }
+
+  .arrow {
+    visibility: hidden;
+    top: -4px;
+    left: 4px;
+  }
+
+  .arrow::before {
+    visibility: visible;
+    content: '';
+    transform: rotate(45deg);
+  }
+
+  &[data-show] {
+    display: block;
+  }
+
+  &[data-popper-placement^='top'] > .arrow {
+    bottom: -4px;
+  }
+
+  &[data-popper-placement^='bottom'] > .arrow {
+    top: -4px;
+  }
+
+  &[data-popper-placement^='left'] > .arrow {
+    right: -4px;
+  }
+
+  &[data-popper-placement^='right'] > .arrow {
+    left: -4px;
+  }
+
+  h6 {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+  }
+
+  form {
+    margin: 0;
+    padding: 0;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 0 3px 0;
+    color: $verdocs-grey-1;
+  }
+
+  input {
+    font-size: 12px;
+    margin: 0 0 10px 0;
   }
 }

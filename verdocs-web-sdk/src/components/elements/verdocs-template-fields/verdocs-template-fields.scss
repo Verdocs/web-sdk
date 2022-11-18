@@ -6,6 +6,7 @@ verdocs-template-fields {
 
   .page-0 {
     padding: 55px 15px 0 15px;
+    box-sizing: border-box;
 
     .user-placed-fields {
       height: 100px;
@@ -27,8 +28,7 @@ verdocs-template-fields {
   }
 
   .fields-bar {
-    width: 91%;
-    height: 30px;
+    height: 50px;
     display: flex;
     z-index: 10000;
     position: fixed;
@@ -36,6 +36,7 @@ verdocs-template-fields {
     line-height: 28px;
     align-items: center;
     flex-direction: row;
+    box-sizing: border-box;
     background: $verdocs-grey-blue;
 
     .label {
