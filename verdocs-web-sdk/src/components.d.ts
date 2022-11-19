@@ -80,6 +80,12 @@ export namespace Components {
          */
         "variant": 'standard' | 'text' | 'outline';
     }
+    interface VerdocsButtonPanel {
+        /**
+          * SVG icon to display
+         */
+        "icon": string;
+    }
     interface VerdocsContactPicker {
         /**
           * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
@@ -470,6 +476,24 @@ export namespace Components {
     }
     interface VerdocsSearchTabs {
     }
+    interface VerdocsSelectInput {
+        /**
+          * Should the field be disabled?
+         */
+        "disabled": boolean;
+        /**
+          * The label for the field.
+         */
+        "label": string;
+        /**
+          * The options to list.
+         */
+        "options": {label: string; value: string}[];
+        /**
+          * The initial value for the input field.
+         */
+        "value": string;
+    }
     interface VerdocsSend {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -614,7 +638,7 @@ export namespace Components {
          */
         "type": 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url';
         /**
-          * The value for the input field.
+          * The initial value for the input field.
          */
         "value": string;
     }
@@ -810,10 +834,6 @@ export interface VerdocsTemplateSenderDialogCustomEvent<T> extends CustomEvent<T
     detail: T;
     target: HTMLVerdocsTemplateSenderDialogElement;
 }
-export interface VerdocsTextInputCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsTextInputElement;
-}
 export interface VerdocsToggleButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsToggleButtonElement;
@@ -848,6 +868,12 @@ declare global {
     var HTMLVerdocsButtonElement: {
         prototype: HTMLVerdocsButtonElement;
         new (): HTMLVerdocsButtonElement;
+    };
+    interface HTMLVerdocsButtonPanelElement extends Components.VerdocsButtonPanel, HTMLStencilElement {
+    }
+    var HTMLVerdocsButtonPanelElement: {
+        prototype: HTMLVerdocsButtonPanelElement;
+        new (): HTMLVerdocsButtonPanelElement;
     };
     interface HTMLVerdocsContactPickerElement extends Components.VerdocsContactPicker, HTMLStencilElement {
     }
@@ -1011,6 +1037,12 @@ declare global {
         prototype: HTMLVerdocsSearchTabsElement;
         new (): HTMLVerdocsSearchTabsElement;
     };
+    interface HTMLVerdocsSelectInputElement extends Components.VerdocsSelectInput, HTMLStencilElement {
+    }
+    var HTMLVerdocsSelectInputElement: {
+        prototype: HTMLVerdocsSelectInputElement;
+        new (): HTMLVerdocsSelectInputElement;
+    };
     interface HTMLVerdocsSendElement extends Components.VerdocsSend, HTMLStencilElement {
     }
     var HTMLVerdocsSendElement: {
@@ -1117,6 +1149,7 @@ declare global {
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-button": HTMLVerdocsButtonElement;
+        "verdocs-button-panel": HTMLVerdocsButtonPanelElement;
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
         "verdocs-document-page": HTMLVerdocsDocumentPageElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
@@ -1144,6 +1177,7 @@ declare global {
         "verdocs-search-activity": HTMLVerdocsSearchActivityElement;
         "verdocs-search-box": HTMLVerdocsSearchBoxElement;
         "verdocs-search-tabs": HTMLVerdocsSearchTabsElement;
+        "verdocs-select-input": HTMLVerdocsSelectInputElement;
         "verdocs-send": HTMLVerdocsSendElement;
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
@@ -1237,6 +1271,12 @@ declare namespace LocalJSX {
           * The display variant of the button.
          */
         "variant"?: 'standard' | 'text' | 'outline';
+    }
+    interface VerdocsButtonPanel {
+        /**
+          * SVG icon to display
+         */
+        "icon"?: string;
     }
     interface VerdocsContactPicker {
         /**
@@ -1813,6 +1853,24 @@ declare namespace LocalJSX {
     }
     interface VerdocsSearchTabs {
     }
+    interface VerdocsSelectInput {
+        /**
+          * Should the field be disabled?
+         */
+        "disabled"?: boolean;
+        /**
+          * The label for the field.
+         */
+        "label"?: string;
+        /**
+          * The options to list.
+         */
+        "options"?: {label: string; value: string}[];
+        /**
+          * The initial value for the input field.
+         */
+        "value"?: string;
+    }
     interface VerdocsSend {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2025,18 +2083,6 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Event fired when the field loses focus.
-         */
-        "onFieldBlur"?: (event: VerdocsTextInputCustomEvent<any>) => void;
-        /**
-          * Event fired when the field receives focus.
-         */
-        "onFieldFocus"?: (event: VerdocsTextInputCustomEvent<any>) => void;
-        /**
-          * Event fired when the input value changes.
-         */
-        "onFieldInput"?: (event: VerdocsTextInputCustomEvent<string>) => void;
-        /**
           * The placeholder for the field.
          */
         "placeholder"?: string;
@@ -2045,7 +2091,7 @@ declare namespace LocalJSX {
          */
         "type"?: 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url';
         /**
-          * The value for the input field.
+          * The initial value for the input field.
          */
         "value"?: string;
     }
@@ -2152,6 +2198,7 @@ declare namespace LocalJSX {
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
         "verdocs-button": VerdocsButton;
+        "verdocs-button-panel": VerdocsButtonPanel;
         "verdocs-contact-picker": VerdocsContactPicker;
         "verdocs-document-page": VerdocsDocumentPage;
         "verdocs-dropdown": VerdocsDropdown;
@@ -2179,6 +2226,7 @@ declare namespace LocalJSX {
         "verdocs-search-activity": VerdocsSearchActivity;
         "verdocs-search-box": VerdocsSearchBox;
         "verdocs-search-tabs": VerdocsSearchTabs;
+        "verdocs-select-input": VerdocsSelectInput;
         "verdocs-send": VerdocsSend;
         "verdocs-sign": VerdocsSign;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
@@ -2205,6 +2253,7 @@ declare module "@stencil/core" {
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
+            "verdocs-button-panel": LocalJSX.VerdocsButtonPanel & JSXBase.HTMLAttributes<HTMLVerdocsButtonPanelElement>;
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
             "verdocs-document-page": LocalJSX.VerdocsDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsDocumentPageElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
@@ -2232,6 +2281,7 @@ declare module "@stencil/core" {
             "verdocs-search-activity": LocalJSX.VerdocsSearchActivity & JSXBase.HTMLAttributes<HTMLVerdocsSearchActivityElement>;
             "verdocs-search-box": LocalJSX.VerdocsSearchBox & JSXBase.HTMLAttributes<HTMLVerdocsSearchBoxElement>;
             "verdocs-search-tabs": LocalJSX.VerdocsSearchTabs & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
+            "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;
             "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;

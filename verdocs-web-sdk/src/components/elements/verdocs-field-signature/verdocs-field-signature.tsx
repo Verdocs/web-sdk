@@ -84,7 +84,22 @@ export class VerdocsFieldSignature {
     return (
       <Host class={{required: this.field?.required, disabled}}>
         {value ? <img src={this.tempSignature || settings.base64} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
-        <div class="settings" innerHTML={settingsIcon} onClick={() => this.settingsPress?.emit()} />
+
+        <verdocs-button-panel icon={settingsIcon}>
+          <h6>Field Settings</h6>
+          <form>
+            <verdocs-select-input
+              label="Recipient"
+              options={[
+                {label: 'Buyer', value: 'Buyer'},
+                {label: 'Seller', value: 'Seller'},
+              ]}
+            />
+
+            <verdocs-text-input label="Field Name" value="" placeholder="Stored field name..." onInput={e => console.log('ipt', e)} />
+            <verdocs-text-input label="Placeholder" value="" placeholder="Placeholder text..." onInput={e => console.log('ipt', e)} />
+          </form>
+        </verdocs-button-panel>
       </Host>
     );
   }

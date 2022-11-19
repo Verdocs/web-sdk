@@ -6,10 +6,10 @@ import {Component, Prop, State, Host, h} from '@stencil/core';
  * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
  */
 @Component({
-  tag: 'verdocs-text-input',
-  styleUrl: 'verdocs-text-input.scss',
+  tag: 'verdocs-select-input',
+  styleUrl: 'verdocs-select-input.scss',
 })
-export class VerdocsTextInput {
+export class VerdocsSelectInput {
   /**
    * The initial value for the input field.
    */
@@ -21,20 +21,9 @@ export class VerdocsTextInput {
   @Prop() label: string = '';
 
   /**
-   * The placeholder for the field.
+   * The options to list.
    */
-  @Prop() placeholder: string = '';
-
-  /**
-   * If desired, the autocomplete attribute to set.
-   */
-  @Prop() autocomplete: string = '';
-
-  /**
-   * The type of field to render. Only text-type fields are allowed here for the current styling. Additional types
-   * (e.g. a date picker) will be supported by other controls in the future.
-   */
-  @Prop() type: 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url' = 'text';
+  @Prop() options: {label: string; value: string}[];
 
   /**
    * Should the field be disabled?
@@ -58,15 +47,13 @@ export class VerdocsTextInput {
       <Host class="input-field">
         <label>
           {this.label ? <div class="input-label">{this.label + ':'}</div> : <div />}
-          <input
-            type={this.type}
-            value={this._value}
-            class="input-element"
-            disabled={this.disabled}
-            placeholder={this.placeholder}
-            autoComplete={this.autocomplete}
-            onInput={e => this.handleInput(e)}
-          />
+          <select class="input-element" disabled={this.disabled} onInput={e => this.handleInput(e)}>
+            {this.options.map(option => (
+              <option value={option.value} selected={option.value === this.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </label>
       </Host>
     );

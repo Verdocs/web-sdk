@@ -98,6 +98,27 @@ export class VerdocsButton {
   }
 }
 
+
+export declare interface VerdocsButtonPanel extends Components.VerdocsButtonPanel {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['icon']
+})
+@Component({
+  selector: 'verdocs-button-panel',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['icon']
+})
+export class VerdocsButtonPanel {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
 import type { IContactSearchEvent as IVerdocsContactPickerIContactSearchEvent } from '@verdocs/web-sdk';
 import type { IContactSelectEvent as IVerdocsContactPickerIContactSelectEvent } from '@verdocs/web-sdk';
 export declare interface VerdocsContactPicker extends Components.VerdocsContactPicker {
@@ -961,6 +982,27 @@ export class VerdocsSearchTabs {
   }
 }
 
+
+export declare interface VerdocsSelectInput extends Components.VerdocsSelectInput {}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['disabled', 'label', 'options', 'value']
+})
+@Component({
+  selector: 'verdocs-select-input',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['disabled', 'label', 'options', 'value']
+})
+export class VerdocsSelectInput {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
 import type { IRole as IVerdocsSendIRole } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsSend extends Components.VerdocsSend {
@@ -1301,21 +1343,7 @@ export class VerdocsTemplateTags {
 }
 
 
-export declare interface VerdocsTextInput extends Components.VerdocsTextInput {
-  /**
-   * Event fired when the input value changes. 
-   */
-  fieldInput: EventEmitter<CustomEvent<string>>;
-  /**
-   * Event fired when the field receives focus. 
-   */
-  fieldFocus: EventEmitter<CustomEvent<any>>;
-  /**
-   * Event fired when the field loses focus. 
-   */
-  fieldBlur: EventEmitter<CustomEvent<any>>;
-
-}
+export declare interface VerdocsTextInput extends Components.VerdocsTextInput {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -1332,7 +1360,6 @@ export class VerdocsTextInput {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldInput', 'fieldFocus', 'fieldBlur']);
   }
 }
 

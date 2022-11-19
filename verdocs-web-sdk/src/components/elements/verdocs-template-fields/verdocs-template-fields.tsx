@@ -134,7 +134,7 @@ export class VerdocsTemplateFields {
         {this.pdfUrl ? (
           <Fragment>
             <div class="fields-bar" ref={el => (this.toolbarEl = el as HTMLDivElement)}>
-              <div class="label">Drag to Add Field:</div>
+              <div class="label">Add Field:</div>
               <verdocs-toolbar-icon icon={iconSingleline} text="Single-line Text Box" onPress={() => console.log('single press')} />
               <verdocs-toolbar-icon icon={iconMultiline} text="Multi-line Text Box" onPress={() => console.log('multi press')} />
               <verdocs-toolbar-icon icon={iconCheck} text="Checkbox" onPress={() => console.log('check press')} />
@@ -143,6 +143,12 @@ export class VerdocsTemplateFields {
               <verdocs-toolbar-icon icon={iconSignature} text="Signature" onPress={() => console.log('signature press')} />
               <verdocs-toolbar-icon icon={iconInitial} text="Initials" onPress={() => console.log('initial press')} />
               <div style={{flex: '1'}} />
+              <button onClick={() => console.log('save')} disabled={true} class="operation">
+                Save
+              </button>
+              <button onClick={() => console.log('close')} class="operation">
+                Close
+              </button>
             </div>
 
             <div class="page-0" ref={el => (this.page0El = el as HTMLDivElement)}>

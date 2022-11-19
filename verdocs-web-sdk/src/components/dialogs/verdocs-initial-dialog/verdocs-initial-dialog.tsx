@@ -79,14 +79,14 @@ export class VerdocsInitialDialog {
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
   handleDismiss(e: any) {
+    e.stopPropagation();
     if (e.target.className === 'background-overlay') {
-      e.preventDefault();
       this.handleCancel();
     }
   }
 
-  handleNameChange(e) {
-    this.enteredInitials = e.detail;
+  handleNameChange(e: any) {
+    this.enteredInitials = e.target.value;
   }
 
   handleAdopt() {
@@ -266,7 +266,7 @@ export class VerdocsInitialDialog {
             <div class="heading">Create Your Initial</div>
 
             <div class="content">
-              <verdocs-text-input placeholder="Initials..." label="Initials" value={this.enteredInitials} onFieldInput={e => this.handleNameChange(e)} />
+              <verdocs-text-input placeholder="Initials..." label="Initials" value={this.enteredInitials} onInput={e => this.handleNameChange(e)} />
               <div class="as-shown">As shown on driver's license or govt. ID card.</div>
 
               <div class="tabs">

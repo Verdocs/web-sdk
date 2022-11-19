@@ -162,13 +162,13 @@ export class VerdocsAuth {
           </h4>
 
           <form onSubmit={() => this.handleLogin()}>
-            <verdocs-text-input label="Email" autocomplete="username" value={this.username} onFieldInput={e => (this.username = e.detail)} disabled={this.loggingIn} />
+            <verdocs-text-input label="Email" autocomplete="username" value={this.username} onInput={(e: any) => (this.username = e.target.value)} disabled={this.loggingIn} />
             <verdocs-text-input
               label="Password"
               type="password"
               autocomplete="current-password"
               value={this.password}
-              onFieldInput={e => (this.password = e.detail)}
+              onInput={(e: any) => (this.password = e.target.value)}
               disabled={this.loggingIn}
             />
 
@@ -194,13 +194,13 @@ export class VerdocsAuth {
         </h4>
 
         <form onSubmit={() => this.handleLogin()}>
-          <verdocs-text-input label="Email" autocomplete="username" value={this.username} onFieldInput={e => (this.username = e.detail)} disabled={this.loggingIn} />
+          <verdocs-text-input label="Email" autocomplete="username" value={this.username} onInput={(e: any) => (this.username = e.target.value)} disabled={this.loggingIn} />
           <verdocs-text-input
             label="Password"
             type="password"
             autocomplete="current-password"
             value={this.password}
-            onFieldInput={e => (this.password = e.detail)}
+            onInput={(e: any) => (this.password = e.target.value)}
             disabled={this.loggingIn}
           />
 

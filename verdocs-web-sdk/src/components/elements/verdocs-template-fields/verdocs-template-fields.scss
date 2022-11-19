@@ -55,5 +55,16 @@ verdocs-template-fields {
         fill: #ffffff;
       }
     }
+
+    .operation {
+      border: none;
+      outline: none;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 16px;
+      margin-left: 10px;
+      background: transparent;
+      text-transform: uppercase;
+    }
   }
 }

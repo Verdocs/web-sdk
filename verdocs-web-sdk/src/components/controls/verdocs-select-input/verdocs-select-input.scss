@@ -1,6 +1,6 @@
 @import '../../../theme.scss';
 
-verdocs-text-input {
+verdocs-select-input {
   font-family: $primary-font;
   box-sizing: border-box;
   margin: 0 0 10px 0;
@@ -16,7 +16,6 @@ verdocs-text-input {
     font-size: 16px;
     height: 28px;
     padding: 4px 12px;
-    outline: none;
 
     &::placeholder {
       color: $light-disabled-color;
@@ -24,7 +23,7 @@ verdocs-text-input {
     }
 
     &:focus {
-      outline: 1px solid $border-color-highlight;
+      border: 1px solid $border-color-highlight;
     }
   }
 

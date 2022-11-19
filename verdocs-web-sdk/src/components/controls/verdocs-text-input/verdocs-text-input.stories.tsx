@@ -10,20 +10,8 @@ export default {
     placeholder: 'Enter your name...',
   },
   argTypes: {
-    tinput: {
-      action: 'tinput',
-      table: {
-        disable: true,
-      },
-    },
-    tfocus: {
-      action: 'tfocus',
-      table: {
-        disable: true,
-      },
-    },
-    tblur: {
-      action: 'tblur',
+    input: {
+      action: 'input',
       table: {
         disable: true,
       },
@@ -31,5 +19,5 @@ export default {
   },
 } as Meta;
 
-export const TextInput = ({type, label, value, placeholder, disabled, tinput, tfocus, tblur}) =>
-  html`<verdocs-text-input .type=${type} .label=${label} .placeholder=${placeholder} .value=${value} .disabled=${disabled} @tinput=${tinput} @tfocus=${tfocus} @tblur=${tblur} />`;
+export const TextInput = ({type, label, value, placeholder, disabled, input}) =>
+  html`<verdocs-text-input .type=${type} .label=${label} .placeholder=${placeholder} .value=${value} .disabled=${disabled} @input=${input} />`;

@@ -38,17 +38,30 @@ verdocs-field-timestamp {
     animation: verdocs-field-pulse 0.75s 2;
   }
 
-  .settings {
+  verdocs-button-panel {
     top: -3px;
-    right: -2px;
+    left: -2px;
     opacity: 0.5;
     z-index: 1000;
     cursor: pointer;
     position: absolute;
     transform: scale(0.6);
 
+    &[data-active],
     &:hover {
       opacity: 1;
+    }
+
+    .icon {
+      svg {
+        fill: #333333;
+      }
+
+      &:hover {
+        svg {
+          fill: #000000;
+        }
+      }
     }
   }
 }

@@ -78,13 +78,12 @@ export class VerdocsSignatureDialog {
   }
 
   handleCancel(e: any) {
-    console.log('handleCancel', e.target);
     e.stopPropagation();
     this.cancel.emit();
   }
 
   handleNameChange(e: any) {
-    this.enteredName = e.detail;
+    this.enteredName = e.target.value;
   }
 
   handleAdopt(e: any) {
@@ -259,7 +258,7 @@ export class VerdocsSignatureDialog {
           <div class="heading">Create Your Signature</div>
 
           <div class="content">
-            <verdocs-text-input placeholder="Full Name..." label="Full Name" value={this.enteredName} onFieldInput={e => this.handleNameChange(e)} />
+            <verdocs-text-input placeholder="Full Name..." label="Full Name" value={this.enteredName} onInput={e => this.handleNameChange(e)} onClick={e => e.stopPropagation()} />
             <div class="as-shown">As shown on driver's license or govt. ID card.</div>
 
             <div class="tabs">

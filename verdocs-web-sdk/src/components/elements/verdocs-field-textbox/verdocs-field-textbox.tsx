@@ -162,17 +162,22 @@ export class VerdocsFieldTextbox {
           onChange={e => this.handleChange(e)}
           onInput={e => this.handleInput(e)}
         />
-        <div class="settings" innerHTML={settingsIcon} onClick={() => this.toggleSettings()} ref={el => (this.iconEl = el)} />
-        <div id={this.containerId} role="tooltip" class="tooltip" data-popper-placement="bottom left">
+
+        <verdocs-button-panel icon={settingsIcon}>
           <h6>Field Settings</h6>
           <form>
-            <label>Field Name</label>
-            <input type="text" placeholder="Field name..." />
-            <label>Placeholder</label>
-            <input type="text" placeholder="Placeholder..." />
+            <verdocs-select-input
+              label="Recipient"
+              options={[
+                {label: 'Buyer', value: 'Buyer'},
+                {label: 'Seller', value: 'Seller'},
+              ]}
+            />
+
+            <verdocs-text-input label="Field Name" value="" placeholder="Stored field name..." onInput={e => console.log('ipt', e)} />
+            <verdocs-text-input label="Placeholder" value="" placeholder="Placeholder text..." onInput={e => console.log('ipt', e)} />
           </form>
-          <div data-popper-arrow="true" class="arrow" />
-        </div>
+        </verdocs-button-panel>
       </Host>
     );
   }

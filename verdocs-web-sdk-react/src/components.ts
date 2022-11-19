@@ -11,6 +11,7 @@ defineCustomElements();
 export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HTMLVerdocsAuthElement>('verdocs-auth');
 export const VerdocsBuild = /*@__PURE__*/createReactComponent<JSX.VerdocsBuild, HTMLVerdocsBuildElement>('verdocs-build');
 export const VerdocsButton = /*@__PURE__*/createReactComponent<JSX.VerdocsButton, HTMLVerdocsButtonElement>('verdocs-button');
+export const VerdocsButtonPanel = /*@__PURE__*/createReactComponent<JSX.VerdocsButtonPanel, HTMLVerdocsButtonPanelElement>('verdocs-button-panel');
 export const VerdocsContactPicker = /*@__PURE__*/createReactComponent<JSX.VerdocsContactPicker, HTMLVerdocsContactPickerElement>('verdocs-contact-picker');
 export const VerdocsDocumentPage = /*@__PURE__*/createReactComponent<JSX.VerdocsDocumentPage, HTMLVerdocsDocumentPageElement>('verdocs-document-page');
 export const VerdocsDropdown = /*@__PURE__*/createReactComponent<JSX.VerdocsDropdown, HTMLVerdocsDropdownElement>('verdocs-dropdown');
@@ -38,6 +39,7 @@ export const VerdocsSearch = /*@__PURE__*/createReactComponent<JSX.VerdocsSearch
 export const VerdocsSearchActivity = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchActivity, HTMLVerdocsSearchActivityElement>('verdocs-search-activity');
 export const VerdocsSearchBox = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchBox, HTMLVerdocsSearchBoxElement>('verdocs-search-box');
 export const VerdocsSearchTabs = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchTabs, HTMLVerdocsSearchTabsElement>('verdocs-search-tabs');
+export const VerdocsSelectInput = /*@__PURE__*/createReactComponent<JSX.VerdocsSelectInput, HTMLVerdocsSelectInputElement>('verdocs-select-input');
 export const VerdocsSend = /*@__PURE__*/createReactComponent<JSX.VerdocsSend, HTMLVerdocsSendElement>('verdocs-send');
 export const VerdocsSign = /*@__PURE__*/createReactComponent<JSX.VerdocsSign, HTMLVerdocsSignElement>('verdocs-sign');
 export const VerdocsSignatureDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsSignatureDialog, HTMLVerdocsSignatureDialogElement>('verdocs-signature-dialog');
