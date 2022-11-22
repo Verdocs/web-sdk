@@ -37,6 +37,17 @@ export class VerdocsFieldSignature {
   @Prop() disabled?: boolean = false;
 
   /**
+   * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be
+   * changed, so it should typically only be enabled in the Builder.
+   */
+  @Prop() editable?: boolean = false;
+
+  /**
+   * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+   */
+  @Prop() moveable?: boolean = false;
+
+  /**
    * Event emitted when the field has changed.
    */
   @Event({composed: true}) fieldChange: EventEmitter<string>;
@@ -85,21 +96,23 @@ export class VerdocsFieldSignature {
       <Host class={{required: this.field?.required, disabled}}>
         {value ? <img src={this.tempSignature || settings.base64} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
 
-        <verdocs-button-panel icon={settingsIcon}>
-          <h6>Field Settings</h6>
-          <form>
-            <verdocs-select-input
-              label="Recipient"
-              options={[
-                {label: 'Buyer', value: 'Buyer'},
-                {label: 'Seller', value: 'Seller'},
-              ]}
-            />
+        {this.editable && (
+          <verdocs-button-panel icon={settingsIcon}>
+            <h6>Field Settings</h6>
+            <form>
+              <verdocs-select-input
+                label="Recipient"
+                options={[
+                  {label: 'Buyer', value: 'Buyer'},
+                  {label: 'Seller', value: 'Seller'},
+                ]}
+              />
 
-            <verdocs-text-input label="Field Name" value="" placeholder="Stored field name..." onInput={e => console.log('ipt', e)} />
-            <verdocs-text-input label="Placeholder" value="" placeholder="Placeholder text..." onInput={e => console.log('ipt', e)} />
-          </form>
-        </verdocs-button-panel>
+              <verdocs-text-input label="Field Name" value="" placeholder="Stored field name..." onInput={e => console.log('ipt', e)} />
+              <verdocs-text-input label="Placeholder" value="" placeholder="Placeholder text..." onInput={e => console.log('ipt', e)} />
+            </form>
+          </verdocs-button-panel>
+        )}
       </Host>
     );
   }

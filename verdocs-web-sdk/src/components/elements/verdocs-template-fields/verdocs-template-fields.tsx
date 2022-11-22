@@ -6,6 +6,7 @@ import {IPageRenderEvent} from '../../embeds/verdocs-view/verdocs-view';
 import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {SDKError} from '../../../utils/errors';
+import interact from 'interactjs';
 
 const iconSingleline = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
@@ -99,6 +100,7 @@ export class VerdocsTemplateFields {
     // console.log('rendered', this.page0El, this.toolbarEl);
     // console.log('w', this.page0El.clientWidth);
     // console.log('t', this.toolbarEl.clientWidth);
+    interact.dynamicDrop(true);
     this.toolbarEl.style.width = `${this.page0El.clientWidth}px`;
   }
 
@@ -112,7 +114,33 @@ export class VerdocsTemplateFields {
 
     const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[PREVIEW] Fields on page', fields);
-    fields.forEach(field => renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true));
+    fields.forEach(field => {
+      const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
+
+      interact(el).draggable({
+        listeners: {
+          start(event) {
+            console.log('drag started', event.type, event.target);
+          },
+          move(event) {
+            console.log('moved');
+            const oldX = +(event.target.getAttribute('posX') || 0);
+            const oldY = +(event.target.getAttribute('posY') || 0);
+            const newX = event.dx + oldX;
+            const newY = event.dy + oldY;
+            event.target.setAttribute('posX', newX);
+            event.target.setAttribute('posy', newY);
+            event.target.style.transform = `translate(${newX}px, ${newY}px)`;
+          },
+          end(event) {
+            console.log('ended', event);
+            event.target.setAttribute('posX', 0);
+            event.target.setAttribute('posy', 0);
+            event.target.style.transform = `translate(0px, 0px)`;
+          },
+        },
+      });
+    });
   }
 
   render() {

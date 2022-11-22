@@ -304,14 +304,14 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'recipient'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-date',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'recipient']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient']
 })
 export class VerdocsFieldDate {
   protected el: HTMLElement;
@@ -386,14 +386,14 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'initials', 'recipient'],
+  inputs: ['disabled', 'editable', 'field', 'initials', 'moveable', 'recipient'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-initial',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'initials', 'recipient']
+  inputs: ['disabled', 'editable', 'field', 'initials', 'moveable', 'recipient']
 })
 export class VerdocsFieldInitial {
   protected el: HTMLElement;
@@ -481,14 +481,14 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'name', 'recipient'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'name', 'recipient'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-signature',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'name', 'recipient']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'name', 'recipient']
 })
 export class VerdocsFieldSignature {
   protected el: HTMLElement;
@@ -524,14 +524,14 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'recipient'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-textarea',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'recipient']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient']
 })
 export class VerdocsFieldTextarea {
   protected el: HTMLElement;
@@ -567,14 +567,14 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'recipient', 'showSettings'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-textbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'recipient', 'showSettings']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient']
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLElement;
@@ -614,14 +614,14 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'recipient'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-timestamp',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'recipient']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient']
 })
 export class VerdocsFieldTimestamp {
   protected el: HTMLElement;

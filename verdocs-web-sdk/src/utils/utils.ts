@@ -85,6 +85,8 @@ export const renderDocumentField = (
   roleIndex: number,
   handleFieldChange: (field: ITemplateField, e: any, optionId?: string) => void,
   disabled: boolean,
+  editable: boolean = false,
+  draggable: boolean = false,
 ) => {
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
   if (!controlsDiv) {
@@ -115,11 +117,18 @@ export const renderDocumentField = (
         if (disabled) {
           el.setAttribute('disabled', true);
         }
+        if (editable) {
+          el.setAttribute('editable', true);
+        }
+        if (draggable) {
+          el.setAttribute('draggable', true);
+        }
         el.addEventListener('fieldChange', e => handleFieldChange(field, e));
         setControlStyles(el, field, docPage.xScale, docPage.yScale, roleIndex);
         controlsDiv.appendChild(el);
+
+        return el;
       }
-      break;
 
     case 'checkbox_group':
       field.setting.options.forEach((_, checkboxIndex) => {
@@ -140,6 +149,8 @@ export const renderDocumentField = (
         cbEl.addEventListener('fieldChange', e => handleFieldChange(field, e));
         setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, roleIndex, checkboxIndex);
         controlsDiv.appendChild(cbEl);
+
+        return cbEl;
       });
 
       break;
@@ -163,6 +174,8 @@ export const renderDocumentField = (
         cbEl.addEventListener('fieldChange', e => handleFieldChange(field, e));
         setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, roleIndex, buttonIndex);
         controlsDiv.appendChild(cbEl);
+
+        return cbEl;
       });
 
       break;
@@ -176,6 +189,7 @@ export const renderDocumentField = (
     //   break;
     default:
       console.log('[PREVIEW] Skipping unsupported field type', field);
+      return null;
   }
 };
 

@@ -167,10 +167,18 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * The recipient completing the form, if known.
          */
@@ -197,6 +205,10 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
@@ -205,6 +217,10 @@ export namespace Components {
           * The document or template field to display.
          */
         "initials": string;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * The recipient completing the form, if known.
          */
@@ -261,10 +277,18 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * If set, the signature creation dialog will be initialized with this text.
          */
@@ -280,10 +304,18 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * The recipient completing the form, if known.
          */
@@ -295,18 +327,22 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
         /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
+        /**
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
-        /**
-          * If set, a settings icon will be displayed on hover.
-         */
-        "showSettings"?: boolean;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -314,10 +350,18 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * The recipient completing the form, if known.
          */
@@ -1386,9 +1430,17 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * Event fired when the input field gains focus.
          */
@@ -1446,6 +1498,10 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
@@ -1453,6 +1509,10 @@ declare namespace LocalJSX {
           * The document or template field to display.
          */
         "initials"?: string;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
          */
@@ -1531,9 +1591,17 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * If set, the signature creation dialog will be initialized with this text.
          */
@@ -1557,9 +1625,17 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * Event fired when the input field gains focus.
          */
@@ -1587,9 +1663,17 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * Event fired when the input field gains focus.
          */
@@ -1610,10 +1694,6 @@ declare namespace LocalJSX {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
-        /**
-          * If set, a settings icon will be displayed on hover.
-         */
-        "showSettings"?: boolean;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -1621,9 +1701,17 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * Event fired when the input field gains focus.
          */
