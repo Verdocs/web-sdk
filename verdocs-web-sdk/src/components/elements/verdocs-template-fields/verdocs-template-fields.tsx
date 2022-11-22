@@ -8,12 +8,24 @@ import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {SDKError} from '../../../utils/errors';
 import interact from 'interactjs';
 
+/**
+ * Helper function to safely set/update components in a CSS transform attribute. Transform is normally set as a string of
+ * `operation1(param) operation2(param) ...` components, which makes updating them a bit of a pain. This will remove the
+ * specified component if it's already set and replace it with the new value, without touching the other components that
+ * may already be set. Note that this operation moves the component to the end of the transform chain so it's not meant
+ * to be used for order-sensitive components e.g. translate-then-rotate.
+ */
 const updateCssTransform = (el: HTMLElement, key: string, value: string) => {
   // e.g. 'scale(1.87908, 1.87908) translate(0px, 0px);'
   const currentTransform = el.style.transform;
   // e.g. ['scale(1.87908, 1.87908)', 'scale', '1.87908, 1.87908', ...], [ 'translate(0px, 0px)', 'translate', '0px, 0px']]
   const components = [...currentTransform.matchAll(/(\w+)\(([^)]*)\)/gi)];
-  return components.map(component => (component[1] === key ? `${key}(${value})` : component[0])).join(' ');
+  el.style.transform = [
+    components //
+      .filter(component => component[1] !== key) // Remove the entry if it's already set
+      .map(component => component[0]), // Convert back the remaining entries
+    `${key}(${value})`,
+  ].join(' ');
 };
 
 const iconSingleline = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
@@ -144,7 +156,7 @@ export class VerdocsTemplateFields {
             console.log('ended', event);
             event.target.setAttribute('posX', 0);
             event.target.setAttribute('posy', 0);
-            updateCssTransform(event.target, 'translate', `${0}px, ${0}px`);
+            // updateCssTransform(event.target, 'translate', `${0}px, ${0}px`);
           },
         },
       });

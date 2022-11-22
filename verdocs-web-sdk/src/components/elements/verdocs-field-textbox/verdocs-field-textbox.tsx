@@ -151,8 +151,6 @@ export class VerdocsFieldTextbox {
   render() {
     const settings = getFieldSettings(this.field);
     let disabled = this.disabled ?? settings.disabled ?? false;
-    // TODO
-    disabled = false;
     return (
       <Host class={{focused: this.focused, required: this.field?.required, disabled}}>
         <input
