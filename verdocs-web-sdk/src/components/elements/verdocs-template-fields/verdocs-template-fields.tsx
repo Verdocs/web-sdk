@@ -8,6 +8,14 @@ import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {SDKError} from '../../../utils/errors';
 import interact from 'interactjs';
 
+const updateCssTransform = (el: HTMLElement, key: string, value: string) => {
+  // e.g. 'scale(1.87908, 1.87908) translate(0px, 0px);'
+  const currentTransform = el.style.transform;
+  // e.g. ['scale(1.87908, 1.87908)', 'scale', '1.87908, 1.87908', ...], [ 'translate(0px, 0px)', 'translate', '0px, 0px']]
+  const components = [...currentTransform.matchAll(/(\w+)\(([^)]*)\)/gi)];
+  return components.map(component => (component[1] === key ? `${key}(${value})` : component[0])).join(' ');
+};
+
 const iconSingleline = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
 const iconMultiline =
@@ -130,13 +138,13 @@ export class VerdocsTemplateFields {
             const newY = event.dy + oldY;
             event.target.setAttribute('posX', newX);
             event.target.setAttribute('posy', newY);
-            event.target.style.transform = `translate(${newX}px, ${newY}px)`;
+            updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
           },
           end(event) {
             console.log('ended', event);
             event.target.setAttribute('posX', 0);
             event.target.setAttribute('posy', 0);
-            event.target.style.transform = `translate(0px, 0px)`;
+            updateCssTransform(event.target, 'translate', `${0}px, ${0}px`);
           },
         },
       });
