@@ -12,6 +12,7 @@ export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HT
 export const VerdocsBuild = /*@__PURE__*/createReactComponent<JSX.VerdocsBuild, HTMLVerdocsBuildElement>('verdocs-build');
 export const VerdocsButton = /*@__PURE__*/createReactComponent<JSX.VerdocsButton, HTMLVerdocsButtonElement>('verdocs-button');
 export const VerdocsButtonPanel = /*@__PURE__*/createReactComponent<JSX.VerdocsButtonPanel, HTMLVerdocsButtonPanelElement>('verdocs-button-panel');
+export const VerdocsCheckbox = /*@__PURE__*/createReactComponent<JSX.VerdocsCheckbox, HTMLVerdocsCheckboxElement>('verdocs-checkbox');
 export const VerdocsContactPicker = /*@__PURE__*/createReactComponent<JSX.VerdocsContactPicker, HTMLVerdocsContactPickerElement>('verdocs-contact-picker');
 export const VerdocsDocumentPage = /*@__PURE__*/createReactComponent<JSX.VerdocsDocumentPage, HTMLVerdocsDocumentPageElement>('verdocs-document-page');
 export const VerdocsDropdown = /*@__PURE__*/createReactComponent<JSX.VerdocsDropdown, HTMLVerdocsDropdownElement>('verdocs-dropdown');

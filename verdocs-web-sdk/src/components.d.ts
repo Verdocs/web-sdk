@@ -16,8 +16,7 @@ import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatu
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
-import { IContactSearchEvent as IContactSearchEvent1, IContactSelectEvent as IContactSelectEvent1, IEmailContact as IEmailContact1, IPhoneContact as IPhoneContact1 } from "./components/elements/verdocs-template-properties/verdocs-template-properties";
-import { IContactSearchEvent as IContactSearchEvent2, IContactSelectEvent as IContactSelectEvent2, IEmailContact as IEmailContact2, IPhoneContact as IPhoneContact2 } from "./components/elements/verdocs-template-recipients/verdocs-template-recipients";
+import { IContactSearchEvent as IContactSearchEvent1, IContactSelectEvent as IContactSelectEvent1, IEmailContact as IEmailContact1, IPhoneContact as IPhoneContact1 } from "./components/elements/verdocs-template-recipients/verdocs-template-recipients";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 import { IPageRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
@@ -85,6 +84,24 @@ export namespace Components {
           * SVG icon to display
          */
         "icon": string;
+    }
+    interface VerdocsCheckbox {
+        /**
+          * Whether the radio button is currently selected.
+         */
+        "checked": boolean;
+        /**
+          * If set, the button will still be displayed but not selectable.
+         */
+        "disabled"?: boolean;
+        /**
+          * HTML form field name for the input.
+         */
+        "name": string;
+        /**
+          * Value to track with the input.
+         */
+        "value": string;
     }
     interface VerdocsContactPicker {
         /**
@@ -618,10 +635,6 @@ export namespace Components {
     }
     interface VerdocsTemplateProperties {
         /**
-          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
-         */
-        "contactSuggestions": (IEmailContact | IPhoneContact)[];
-        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
@@ -757,6 +770,10 @@ export interface VerdocsBuildCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsButtonElement;
+}
+export interface VerdocsCheckboxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsCheckboxElement;
 }
 export interface VerdocsContactPickerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -918,6 +935,12 @@ declare global {
     var HTMLVerdocsButtonPanelElement: {
         prototype: HTMLVerdocsButtonPanelElement;
         new (): HTMLVerdocsButtonPanelElement;
+    };
+    interface HTMLVerdocsCheckboxElement extends Components.VerdocsCheckbox, HTMLStencilElement {
+    }
+    var HTMLVerdocsCheckboxElement: {
+        prototype: HTMLVerdocsCheckboxElement;
+        new (): HTMLVerdocsCheckboxElement;
     };
     interface HTMLVerdocsContactPickerElement extends Components.VerdocsContactPicker, HTMLStencilElement {
     }
@@ -1194,6 +1217,7 @@ declare global {
         "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-button": HTMLVerdocsButtonElement;
         "verdocs-button-panel": HTMLVerdocsButtonPanelElement;
+        "verdocs-checkbox": HTMLVerdocsCheckboxElement;
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
         "verdocs-document-page": HTMLVerdocsDocumentPageElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
@@ -1321,6 +1345,28 @@ declare namespace LocalJSX {
           * SVG icon to display
          */
         "icon"?: string;
+    }
+    interface VerdocsCheckbox {
+        /**
+          * Whether the radio button is currently selected.
+         */
+        "checked"?: boolean;
+        /**
+          * If set, the button will still be displayed but not selectable.
+         */
+        "disabled"?: boolean;
+        /**
+          * HTML form field name for the input.
+         */
+        "name"?: string;
+        /**
+          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
+         */
+        "onSelected"?: (event: VerdocsCheckboxCustomEvent<{value: string}>) => void;
+        /**
+          * Value to track with the input.
+         */
+        "value"?: string;
     }
     interface VerdocsContactPicker {
         /**
@@ -2083,10 +2129,6 @@ declare namespace LocalJSX {
     }
     interface VerdocsTemplateProperties {
         /**
-          * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
-         */
-        "contactSuggestions"?: (IEmailContact | IPhoneContact)[];
-        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
@@ -2094,14 +2136,6 @@ declare namespace LocalJSX {
           * Event fired when the user cancels the dialog.
          */
         "onCancel"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
-        /**
-          * Event fired when the user changes the type.
-         */
-        "onContactSelected"?: (event: VerdocsTemplatePropertiesCustomEvent<IContactSelectEvent>) => void;
-        /**
-          * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
-         */
-        "onSearchContacts"?: (event: VerdocsTemplatePropertiesCustomEvent<IContactSearchEvent>) => void;
         /**
           * The role that this contact will be assigned to.
          */
@@ -2287,6 +2321,7 @@ declare namespace LocalJSX {
         "verdocs-build": VerdocsBuild;
         "verdocs-button": VerdocsButton;
         "verdocs-button-panel": VerdocsButtonPanel;
+        "verdocs-checkbox": VerdocsCheckbox;
         "verdocs-contact-picker": VerdocsContactPicker;
         "verdocs-document-page": VerdocsDocumentPage;
         "verdocs-dropdown": VerdocsDropdown;
@@ -2342,6 +2377,7 @@ declare module "@stencil/core" {
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
             "verdocs-button-panel": LocalJSX.VerdocsButtonPanel & JSXBase.HTMLAttributes<HTMLVerdocsButtonPanelElement>;
+            "verdocs-checkbox": LocalJSX.VerdocsCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsCheckboxElement>;
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
             "verdocs-document-page": LocalJSX.VerdocsDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsDocumentPageElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;

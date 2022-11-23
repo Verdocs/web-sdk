@@ -6,11 +6,11 @@ import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
  * button for UI displays e.g. dialogs and .
  */
 @Component({
-  tag: 'verdocs-radio-button',
-  styleUrl: 'verdocs-radio-button.scss',
+  tag: 'verdocs-checkbox',
+  styleUrl: 'verdocs-checkbox.scss',
   shadow: false,
 })
-export class VerdocsRadioButton {
+export class VerdocsCheckbox {
   /**
    * Whether the radio button is currently selected.
    */
@@ -47,15 +47,14 @@ export class VerdocsRadioButton {
     return (
       <Host class={{disabled: this.disabled}}>
         <input
-          type="radio"
+          type="checkbox"
           value={this.value}
           name={this.name}
-          id={`verdocs-radio-button-${this.name}-${this.value}`}
+          id={`verdocs-checkbox-${this.name}-${this.value}`}
           checked={this.checked}
           disabled={this.disabled}
           onChange={e => this.handleChange(e)}
         />
-        <label htmlFor={`verdocs-radio-button-${this.name}-${this.value}`} />
       </Host>
     );
   }

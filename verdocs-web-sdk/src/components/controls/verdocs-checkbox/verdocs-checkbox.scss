@@ -1,0 +1,31 @@
+@import '../../../theme.scss';
+
+// See https://www.sliderrevolution.com/resources/styling-radio-buttons/
+verdocs-checkbox {
+  font-family: $verdocs-primary-font;
+  width: 20px;
+  height: 20px;
+  display: block;
+  font-size: 11px;
+  position: relative;
+  background-color: transparent;
+  transform-origin: bottom left;
+  border-radius: 100%;
+
+  &.disabled {
+    opacity: 0.5;
+  }
+
+  &.hide {
+    display: none;
+  }
+
+  &.focused {
+    animation: verdocs-field-pulse 0.75s 2;
+  }
+
+  input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+  }
+}

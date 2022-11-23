@@ -62,6 +62,7 @@ export class VerdocsTextInput {
             type={this.type}
             value={this._value}
             class="input-element"
+            data-lpignore="true"
             disabled={this.disabled}
             placeholder={this.placeholder}
             autoComplete={this.autocomplete}

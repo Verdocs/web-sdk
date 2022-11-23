@@ -119,6 +119,36 @@ export class VerdocsButtonPanel {
   }
 }
 
+
+export declare interface VerdocsCheckbox extends Components.VerdocsCheckbox {
+  /**
+   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
+It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
+keypress. 
+   */
+  selected: EventEmitter<CustomEvent<{value: string}>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['checked', 'disabled', 'name', 'value']
+})
+@Component({
+  selector: 'verdocs-checkbox',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['checked', 'disabled', 'name', 'value']
+})
+export class VerdocsCheckbox {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['selected']);
+  }
+}
+
 import type { IContactSearchEvent as IVerdocsContactPickerIContactSearchEvent } from '@verdocs/web-sdk';
 import type { IContactSelectEvent as IVerdocsContactPickerIContactSelectEvent } from '@verdocs/web-sdk';
 export declare interface VerdocsContactPicker extends Components.VerdocsContactPicker {
@@ -1213,41 +1243,31 @@ export class VerdocsTemplateFields {
   }
 }
 
-import type { IContactSearchEvent as IVerdocsTemplatePropertiesIContactSearchEvent } from '@verdocs/web-sdk';
-import type { IContactSelectEvent as IVerdocsTemplatePropertiesIContactSelectEvent } from '@verdocs/web-sdk';
+
 export declare interface VerdocsTemplateProperties extends Components.VerdocsTemplateProperties {
-  /**
-   * Event fired when the user enters text in the search field. The calling application may use this to update
-the `contactSuggestions` property. 
-   */
-  searchContacts: EventEmitter<CustomEvent<IVerdocsTemplatePropertiesIContactSearchEvent>>;
   /**
    * Event fired when the user cancels the dialog. 
    */
   cancel: EventEmitter<CustomEvent<any>>;
-  /**
-   * Event fired when the user changes the type. 
-   */
-  contactSelected: EventEmitter<CustomEvent<IVerdocsTemplatePropertiesIContactSelectEvent>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+  inputs: ['endpoint', 'templateRole']
 })
 @Component({
   selector: 'verdocs-template-properties',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+  inputs: ['endpoint', 'templateRole']
 })
 export class VerdocsTemplateProperties {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'contactSelected']);
+    proxyOutputs(this, this.el, ['cancel']);
   }
 }
 

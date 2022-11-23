@@ -136,6 +136,8 @@ export class VerdocsTemplateFields {
     console.log('[PREVIEW] Fields on page', fields);
     fields.forEach(field => {
       const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
+      el.setAttribute('xScale', pageInfo.renderedPage.xScale);
+      el.setAttribute('yScale', pageInfo.renderedPage.yScale);
 
       interact(el).draggable({
         listeners: {
@@ -146,16 +148,18 @@ export class VerdocsTemplateFields {
             console.log('moved');
             const oldX = +(event.target.getAttribute('posX') || 0);
             const oldY = +(event.target.getAttribute('posY') || 0);
-            const newX = event.dx + oldX;
-            const newY = event.dy + oldY;
+            const xScale = +(event.target.getAttribute('xScale') || 1);
+            const yScale = +(event.target.getAttribute('yScale') || 1);
+            const newX = event.dx / xScale + oldX;
+            const newY = event.dy / yScale + oldY;
             event.target.setAttribute('posX', newX);
             event.target.setAttribute('posy', newY);
             updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
           },
           end(event) {
             console.log('ended', event);
-            event.target.setAttribute('posX', 0);
-            event.target.setAttribute('posy', 0);
+            // event.target.setAttribute('posX', 0);
+            // event.target.setAttribute('posy', 0);
             // updateCssTransform(event.target, 'translate', `${0}px, ${0}px`);
           },
         },
