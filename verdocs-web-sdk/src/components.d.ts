@@ -200,6 +200,10 @@ export namespace Components {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -242,6 +246,10 @@ export namespace Components {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldPayment {
         "currentInitial": string;
@@ -314,6 +322,10 @@ export namespace Components {
           * If set, the signature creation dialog will be initialized from this object.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -337,6 +349,10 @@ export namespace Components {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -360,6 +376,10 @@ export namespace Components {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -383,6 +403,10 @@ export namespace Components {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsHelpIcon {
         /**
@@ -862,6 +886,10 @@ export interface VerdocsSearchActivityCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsSearchBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSearchBoxElement;
+}
+export interface VerdocsSelectInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSelectInputElement;
 }
 export interface VerdocsSendCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1511,6 +1539,10 @@ declare namespace LocalJSX {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -1579,6 +1611,10 @@ declare namespace LocalJSX {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldPayment {
         "currentInitial"?: string;
@@ -1664,6 +1700,10 @@ declare namespace LocalJSX {
           * If set, the signature creation dialog will be initialized from this object.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -1702,6 +1742,10 @@ declare namespace LocalJSX {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -1737,9 +1781,17 @@ declare namespace LocalJSX {
          */
         "onFieldInput"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
         /**
+          * Event fired if the field is configurable when the recipient has changed.
+         */
+        "onRecipientChanged"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
+        /**
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -1782,6 +1834,10 @@ declare namespace LocalJSX {
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsHelpIcon {
         /**
@@ -1996,6 +2052,10 @@ declare namespace LocalJSX {
           * The label for the field.
          */
         "label"?: string;
+        /**
+          * Event fired when the selection has changed
+         */
+        "onFieldChange"?: (event: VerdocsSelectInputCustomEvent<string>) => void;
         /**
           * The options to list.
          */

@@ -1,4 +1,4 @@
-import {Component, Prop, State, Host, h} from '@stencil/core';
+import {Component, Prop, State, Host, h, Event, EventEmitter} from '@stencil/core';
 
 /**
  * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
@@ -32,6 +32,11 @@ export class VerdocsSelectInput {
 
   @State() _value: string = '';
 
+  /**
+   * Event fired when the selection has changed
+   */
+  @Event({composed: true}) fieldChange: EventEmitter<string>;
+
   componentWillLoad() {
     this._value = this.value;
   }
@@ -40,6 +45,7 @@ export class VerdocsSelectInput {
 
   handleInput(e: any) {
     this._value = e.target.value;
+    this.fieldChange?.emit(e.target.value);
   }
 
   render() {

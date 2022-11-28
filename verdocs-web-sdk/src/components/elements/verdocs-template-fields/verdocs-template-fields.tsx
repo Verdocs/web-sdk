@@ -1,3 +1,4 @@
+import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
@@ -5,8 +6,8 @@ import {Component, h, Event, EventEmitter, Fragment, Prop, State, Host} from '@s
 import {IPageRenderEvent} from '../../embeds/verdocs-view/verdocs-view';
 import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
+import builderStore from '../../../utils/builderStore';
 import {SDKError} from '../../../utils/errors';
-import interact from 'interactjs';
 
 /**
  * Helper function to safely set/update components in a CSS transform attribute. Transform is normally set as a string of
@@ -89,27 +90,32 @@ export class VerdocsTemplateFields {
   @State() pdfUrl = null;
   @State() template: ITemplate | null = null;
 
-  roles: string[] = [];
-  fields: ITemplateField[] = [];
-
   async componentWillLoad() {
     try {
       console.log(`[PREVIEW] Loading template ${this.templateId}`);
+      builderStore.templateId = this.templateId;
       const template = await getTemplate(this.endpoint, this.templateId);
 
       console.log('[PREVIEW] Got template', this.template);
       this.template = template;
+      builderStore.template = this.template;
 
       this.pdfUrl = `${this.endpoint.getBaseURL()}/templates/${this.templateId}/documents/${template.template_document?.id}?file=true`;
 
-      this.roles = template.roles.map(role => role.name);
-      console.log('[PREVIEW] Loaded roles', this.roles);
+      builderStore.roleNames = template.roles.map(role => role.name);
+      // this.roles = template.roles.map(role => role.name);
+      console.log('[PREVIEW] Loaded roles', builderStore.roleNames);
 
-      this.fields = [];
+      builderStore.fields = [];
       template.roles.forEach(role => {
-        this.fields.push(...role.fields);
+        builderStore.fields.push(...role.fields);
       });
-      console.log('[PREVIEW] Loaded fields', this.fields);
+      console.log('[PREVIEW] Loaded fields', builderStore.fields);
+      // this.fields = [];
+      // template.roles.forEach(role => {
+      //   this.fields.push(...role.fields);
+      // });
+      // console.log('[PREVIEW] Loaded fields', this.fields);
     } catch (e) {
       console.log('[PREVIEW] Error with preview session', e);
       // this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -132,10 +138,22 @@ export class VerdocsTemplateFields {
     const pageInfo = e.detail as IPageRenderEvent;
     console.log('[PREVIEW] Page rendered', pageInfo);
 
-    const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+    const fields = builderStore.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+    // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[PREVIEW] Fields on page', fields);
     fields.forEach(field => {
-      const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
+      const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(builderStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
+      // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
+      if (!el) {
+        console.log('Skipping partially rendered field', field);
+        return;
+      }
+
+      el.addEventListener('recipientChanged', e => {
+        el.setAttribute('roleindex', getRoleIndex(builderStore.roleNames, e.detail));
+        // el.setAttribute('roleindex', getRoleIndex(this.roles, e.detail));
+      });
+
       el.setAttribute('xScale', pageInfo.renderedPage.xScale);
       el.setAttribute('yScale', pageInfo.renderedPage.yScale);
 
@@ -209,6 +227,8 @@ export class VerdocsTemplateFields {
                 <verdocs-field-signature
                   field={testField}
                   style={{width: '82px', height: '41px', left: '20px', top: '40px', transform: 'scale(1,1)', backgroundColor: getRGBA(0)}}
+                  moveable={true}
+                  editable={true}
                 />
               </div>
             </div>

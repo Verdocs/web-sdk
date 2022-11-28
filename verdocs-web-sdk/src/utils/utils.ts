@@ -1,6 +1,6 @@
 // These should probably all move to JS-SDK
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
+// import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Documents/Types';
 import {IDocumentPageInfo} from './Types';
@@ -50,7 +50,7 @@ export const defaultHeight = (field: ITemplateField | IDocumentField) => {
   return 50;
 };
 
-export const setControlStyles = (el: HTMLElement, field: ITemplateField | IDocumentField, xScale: number, yScale: number, roleIndex: number, option?: number) => {
+export const setControlStyles = (el: HTMLElement, field: ITemplateField | IDocumentField, xScale: number, yScale: number, option?: number) => {
   const settings = (field as ITemplateField).setting || (field as IDocumentField).settings;
   let {x = 0, y = 0, width = defaultWidth(field), height = defaultHeight(field)} = settings;
 
@@ -68,7 +68,7 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IDocum
   el.style.left = `${rescale(xScale, x)}px`;
   el.style.bottom = `${rescale(yScale, y)}px`;
   el.style.transform = `scale(${xScale}, ${yScale})`;
-  el.style.backgroundColor = field['rgba'] || getRGBA(roleIndex);
+  // el.style.backgroundColor = field['rgba'] || getRGBA(roleIndex);
 };
 
 export const getFieldId = (field: ITemplateField | IDocumentField) => {
@@ -102,52 +102,53 @@ export const renderDocumentField = (
     case 'signature':
     case 'timestamp':
     case 'textarea':
-    case 'textbox':
-      {
-        const id = getFieldId(field);
-        const existingField = document.getElementById(id);
-        if (existingField) {
-          setControlStyles(existingField, field, docPage.xScale, docPage.yScale, roleIndex);
-          return;
-        }
-
-        const el: any = document.createElement(`verdocs-field-${field.type}`);
-        el.field = field;
-        el.setAttribute('id', id);
-        if (disabled) {
-          el.setAttribute('disabled', true);
-        }
-        if (editable) {
-          el.setAttribute('editable', true);
-        }
-        if (draggable) {
-          el.setAttribute('draggable', true);
-        }
-        el.addEventListener('fieldChange', e => handleFieldChange(field, e));
-        setControlStyles(el, field, docPage.xScale, docPage.yScale, roleIndex);
-        controlsDiv.appendChild(el);
-
-        return el;
+    case 'textbox': {
+      const id = getFieldId(field);
+      const existingField = document.getElementById(id);
+      if (existingField) {
+        setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
+        return;
       }
+
+      const el: any = document.createElement(`verdocs-field-${field.type}`);
+      el.field = field;
+      el.setAttribute('id', id);
+      el.setAttribute('roleindex', roleIndex);
+      if (disabled) {
+        el.setAttribute('disabled', true);
+      }
+      if (editable) {
+        el.setAttribute('editable', true);
+      }
+      if (draggable) {
+        el.setAttribute('draggable', true);
+      }
+      el.addEventListener('fieldChange', e => handleFieldChange(field, e));
+      setControlStyles(el, field, docPage.xScale, docPage.yScale);
+      controlsDiv.appendChild(el);
+
+      return el;
+    }
 
     case 'checkbox_group':
       field.setting.options.forEach((_, checkboxIndex) => {
         const id = getFieldOptionId(field, checkboxIndex);
         const existingField = document.getElementById(id);
         if (existingField) {
-          setControlStyles(existingField, field, docPage.xScale, docPage.yScale, roleIndex, checkboxIndex);
+          setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
           return;
         }
 
         const cbEl: any = document.createElement(`verdocs-field-checkbox`);
         cbEl.field = field;
         cbEl.setAttribute('id', id);
+        cbEl.setAttribute('roleindex', roleIndex);
         cbEl.setAttribute('option', checkboxIndex);
         if (disabled) {
           cbEl.setAttribute('disabled', true);
         }
         cbEl.addEventListener('fieldChange', e => handleFieldChange(field, e));
-        setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, roleIndex, checkboxIndex);
+        setControlStyles(cbEl, field, docPage.xScale, docPage.yScale);
         controlsDiv.appendChild(cbEl);
 
         return cbEl;
@@ -160,19 +161,20 @@ export const renderDocumentField = (
         const id = getFieldOptionId(field, buttonIndex);
         const existingField = document.getElementById(id);
         if (existingField) {
-          setControlStyles(existingField, field, docPage.xScale, docPage.yScale, roleIndex, buttonIndex);
+          setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
           return;
         }
 
         const cbEl: any = document.createElement(`verdocs-field-radio-button`);
         cbEl.field = field;
         cbEl.setAttribute('id', id);
+        cbEl.setAttribute('roleindex', roleIndex);
         cbEl.setAttribute('option', buttonIndex);
         if (disabled) {
           cbEl.setAttribute('disabled', true);
         }
         cbEl.addEventListener('fieldChange', e => handleFieldChange(field, e));
-        setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, roleIndex, buttonIndex);
+        setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, buttonIndex);
         controlsDiv.appendChild(cbEl);
 
         return cbEl;

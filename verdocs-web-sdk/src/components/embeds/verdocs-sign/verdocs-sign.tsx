@@ -183,7 +183,7 @@ export class VerdocsSign {
           .then(r => console.log('Update result', r))
           .catch(e => {
             this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-            console.log('Error updating', e)
+            console.log('Error updating', e);
           });
         break;
 
@@ -193,7 +193,7 @@ export class VerdocsSign {
           .then(r => console.log('Update result', r))
           .catch(e => {
             this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-            console.log('Error updating', e)
+            console.log('Error updating', e);
           });
         break;
 
@@ -202,7 +202,7 @@ export class VerdocsSign {
           .then(r => console.log('Update result', r))
           .catch(e => {
             this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-            console.log('Error updating', e)
+            console.log('Error updating', e);
           });
         break;
 
@@ -361,7 +361,7 @@ export class VerdocsSign {
       el.field = field;
       el.recipient = this.recipient;
       el.setAttribute('id', id);
-      // el.setAttribute('required', required);
+      el.setAttribute('roleindex', this.recipientIndex);
       el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
       setControlStyles(existingField, field, docPage.xScale, docPage.yScale, this.recipientIndex);
       controlsDiv.appendChild(el);
