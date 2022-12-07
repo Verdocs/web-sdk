@@ -1,4 +1,4 @@
-  import {html} from 'lit-html';
+import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
@@ -16,4 +16,7 @@ export default {
   },
 } as Meta;
 
-export const TemplateFields = ({templateId, cancel, save}) => html`<verdocs-template-fields .templateId=${templateId} @cancel=${cancel} @save=${save} />`;
+//export const TemplateFields = ({templateId, cancel, save}) => html`<div style="height: 600px; transform: translateZ(0);">
+export const TemplateFields = ({templateId, cancel, save}) => html`<div style="height: 600px">
+  <verdocs-template-fields .templateId=${templateId} @cancel=${cancel} @save=${save} />
+</div>`;

@@ -2,7 +2,7 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
-import {getFieldSettings} from '../../../utils/utils';
+import {getFieldSettings, getRoleIndex} from '../../../utils/utils';
 import builderStore from '../../../utils/builderStore';
 
 const settingsIcon =
@@ -111,7 +111,8 @@ export class VerdocsFieldTextbox {
   render() {
     const settings = getFieldSettings(this.field);
     let disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
+    // this.roleindex
+    const backgroundColor = this.field['rgba'] || getRGBA(getRoleIndex(builderStore.roleNames, ''));
 
     return (
       <Host class={{focused: this.focused, required: this.field?.required, disabled}} style={{backgroundColor}}>

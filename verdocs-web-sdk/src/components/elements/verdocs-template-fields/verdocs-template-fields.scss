@@ -5,7 +5,7 @@ verdocs-template-fields {
   font-family: $verdocs-primary-font;
 
   .page-0 {
-    padding: 55px 15px 0 15px;
+    padding: 65px 15px 0 15px;
     box-sizing: border-box;
 
     .user-placed-fields {
@@ -65,6 +65,12 @@ verdocs-template-fields {
       margin-left: 10px;
       background: transparent;
       text-transform: uppercase;
+
+      &:disabled {
+        color: #cccccc;
+        cursor: inherit;
+        pointer-events: none;
+      }
     }
   }
 }
