@@ -17,12 +17,12 @@
     "rollup": "rollup -c"
   },
   "devDependencies": {
-    "@types/jest": "23.3.9",
-    "@types/node": "^16.11.7",
+    "@types/jest": "29.2.4",
+    "@types/node": "^18.11.11",
     "@types/react": "^18.0.17",
-    "@types/react-dom": "18.0.6",
-    "jest": "^23.0.0",
-    "jest-dom": "^3.0.2",
+    "@types/react-dom": "18.0.9",
+    "jest": "^29.3.1",
+    "jest-dom": "^4.0.0",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
