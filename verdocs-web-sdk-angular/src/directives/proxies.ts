@@ -1261,7 +1261,7 @@ export class VerdocsTemplateFields {
   }
 }
 
-
+import type { SDKError as IVerdocsTemplatePropertiesSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsTemplateProperties extends Components.VerdocsTemplateProperties {
   /**
    * Event fired when the user cancels the dialog. 
@@ -1271,25 +1271,30 @@ export declare interface VerdocsTemplateProperties extends Components.VerdocsTem
    * Event fired when the user completes the step. 
    */
   settingsUpdated: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplatePropertiesSDKError>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['endpoint', 'templateRole']
+  inputs: ['endpoint', 'templateId']
 })
 @Component({
   selector: 'verdocs-template-properties',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['endpoint', 'templateRole']
+  inputs: ['endpoint', 'templateId']
 })
 export class VerdocsTemplateProperties {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'settingsUpdated']);
+    proxyOutputs(this, this.el, ['cancel', 'settingsUpdated', 'sdkError']);
   }
 }
 

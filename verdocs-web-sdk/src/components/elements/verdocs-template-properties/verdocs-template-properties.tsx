@@ -1,6 +1,9 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IRole} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
+import builderStore from '../../../utils/builderStore';
+import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
+import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {SDKError} from '../../../utils/errors';
 
 /**
  * Displays a collection of settings boxes that allow a user to configure a template's behavior.
@@ -17,9 +20,9 @@ export class VerdocsTemplateProperties {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The role that this contact will be assigned to.
+   * The template ID to edit.
    */
-  @Prop() templateRole: IRole | null = null;
+  @Prop() templateId: string = '';
 
   /**
    * Event fired when the user cancels the dialog.
@@ -31,18 +34,34 @@ export class VerdocsTemplateProperties {
    */
   @Event({composed: true}) settingsUpdated: EventEmitter;
 
-  @State() sendReminders: boolean = false;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  componentWillLoad() {
-    if (this.templateRole) {
-      // this.showMessage = this.message !== '';
+  @State() template: ITemplate | null = null;
+  @State() name: string = '';
+  @State() sendReminders = false;
+  @State() firstReminderDays = '1';
+  @State() reminderDays = '1';
+
+  async componentWillLoad() {
+    try {
+      this.endpoint.loadSession();
+
+      console.log(`[PROPERTIES] Loading template ${this.templateId}`);
+      builderStore.templateId = this.templateId;
+      const template = await getTemplate(this.endpoint, this.templateId);
+
+      console.log('[PROPERTIES] Got template', template);
+      this.template = template;
+      this.name = template.name;
+      this.sendReminders = template.reminder_id !== null;
+    } catch (e) {
+      console.log('[PROPERTIES] Error loading template', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
-  }
-
-  handleNameChange(e: any) {
-    console.log(e);
-    // this.name = e.target.value;
-    // this.searchContacts?.emit({query: this.name});
   }
 
   handleMessageChange(e: any) {
@@ -66,27 +85,44 @@ export class VerdocsTemplateProperties {
   }
 
   render() {
+    console.log('vals', {firstReminderDays: this.firstReminderDays, reminderDays: this.reminderDays, name: this.name});
     return (
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <h5>Template Name</h5>
         <fieldset>
-          <verdocs-text-input value="Motor Vehicle Bill of Sale" autocomplete="off" />
+          <verdocs-text-input
+            value={this.name}
+            autocomplete="off"
+            onInput={(e: any) => {
+              this.name = e.target.value;
+            }}
+          />
         </fieldset>
 
         <h5>Reminders</h5>
         <fieldset>
           <div class="input-row">
             <label>Send Automatic Reminders</label>
-            <verdocs-checkbox name="automatic-reminders" checked={true} />
+            <verdocs-checkbox name="automatic-reminders" checked={this.sendReminders} value="on" onSelected={e => (this.sendReminders = e.detail.value === 'on')} />
           </div>
 
           <div class="input-row">
             <label>Days Before First Reminder</label>
-            <verdocs-text-input value="1" />
+            <verdocs-text-input
+              value={this.firstReminderDays}
+              onInput={(e: any) => {
+                this.firstReminderDays = e.target.value;
+              }}
+            />
           </div>
           <div class="input-row">
             <label>Days Between Reminders</label>
-            <verdocs-text-input value="1" />
+            <verdocs-text-input
+              value={this.reminderDays}
+              onInput={(e: any) => {
+                this.firstReminderDays = e.target.value;
+              }}
+            />
           </div>
         </fieldset>
 

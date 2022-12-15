@@ -663,9 +663,9 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The role that this contact will be assigned to.
+          * The template ID to edit.
          */
-        "templateRole": IRole | null;
+        "templateId": string;
     }
     interface VerdocsTemplateRecipients {
         /**
@@ -2201,13 +2201,17 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
         /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplatePropertiesCustomEvent<SDKError>) => void;
+        /**
           * Event fired when the user completes the step.
          */
         "onSettingsUpdated"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
         /**
-          * The role that this contact will be assigned to.
+          * The template ID to edit.
          */
-        "templateRole"?: IRole | null;
+        "templateId"?: string;
     }
     interface VerdocsTemplateRecipients {
         /**

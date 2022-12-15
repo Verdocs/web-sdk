@@ -44,14 +44,14 @@ export class VerdocsTextInput {
   @State() _value: string = '';
 
   componentWillLoad() {
-    this._value = this.value;
+    // this._value = this.value;
   }
 
   componentDidLoad() {}
 
-  handleInput(e: any) {
-    this._value = e.target.value;
-  }
+  // handleInput(e: any) {
+  //   this._value = e.target.value;
+  // }
 
   render() {
     return (
@@ -60,13 +60,13 @@ export class VerdocsTextInput {
           {this.label ? <div class="input-label">{this.label + ':'}</div> : <div />}
           <input
             type={this.type}
-            value={this._value}
+            value={this.value}
             class="input-element"
             data-lpignore="true"
             disabled={this.disabled}
             placeholder={this.placeholder}
             autoComplete={this.autocomplete}
-            onInput={e => this.handleInput(e)}
+            // onInput={e => this.handleInput(e)}
           />
         </label>
       </Host>

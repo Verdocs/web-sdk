@@ -92,6 +92,8 @@ export class VerdocsTemplateFields {
 
   async componentWillLoad() {
     try {
+      this.endpoint.loadSession();
+
       console.log(`[PREVIEW] Loading template ${this.templateId}`);
       builderStore.templateId = this.templateId;
       const template = await getTemplate(this.endpoint, this.templateId);
@@ -118,7 +120,7 @@ export class VerdocsTemplateFields {
       // console.log('[PREVIEW] Loaded fields', this.fields);
     } catch (e) {
       console.log('[PREVIEW] Error with preview session', e);
-      // this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 

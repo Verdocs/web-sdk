@@ -76,7 +76,7 @@ export class VerdocsTemplateCreate {
       const template_document = await createTemplateDocument(this.endpoint, template.id, this.file);
       console.log('created document', template_document);
 
-      for await (let pageNumber of Array.from(Array(3).keys(), n => n + 1)) {
+      for await (let pageNumber of Array.from(Array(template_document.page_numbers).keys(), n => n + 1)) {
         console.log('Updating page', pageNumber);
         const page = await createPage(this.endpoint, template.id, {sequence: pageNumber, page_number: pageNumber, document_id: template_document.id});
         console.log('Created page', page);

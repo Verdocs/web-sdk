@@ -52,7 +52,8 @@ export class VerdocsDropdown {
     this.popper = createPopper(this.dropdownButton, this.dropdownMenu, {placement: 'bottom-start', modifiers: [{name: 'offset', options: {offset: [0, 6]}}]});
   }
 
-  handleSelectOption(option: IMenuOption) {
+  handleSelectOption(e: any, option: IMenuOption) {
+    e.stopPropagation();
     this.isOpen = false;
     this.optionSelected.emit(option);
     this.hide();
@@ -82,7 +83,9 @@ export class VerdocsDropdown {
     this.hide();
   }
 
-  toggleDropdown() {
+  toggleDropdown(e: any) {
+    e.stopPropagation();
+
     if (this.isOpen) {
       this.hide();
     } else {
@@ -107,14 +110,14 @@ export class VerdocsDropdown {
           class="arrow"
           innerHTML={SortDown}
           aria-label="Open Menu"
-          onClick={() => this.toggleDropdown()}
+          onClick={e => this.toggleDropdown(e)}
           onBlur={e => this.handleHideDropdown(e)}
           ref={el => (this.dropdownButton = el as HTMLButtonElement)}
         />
 
         <div class="items" aria-hidden={!this.open} ref={el => (this.dropdownMenu = el as HTMLDivElement)}>
           {this.options?.map(option => (
-            <button onClick={() => this.handleSelectOption(option)} class="option" disabled={option.disabled}>
+            <button onClick={e => this.handleSelectOption(e, option)} class="option" disabled={option.disabled}>
               {option.label}
             </button>
           ))}
