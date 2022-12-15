@@ -1185,7 +1185,9 @@ export class VerdocsTemplateCard {
   }
 }
 
-
+import type { ITemplate as IVerdocsTemplateCreateITemplate } from '@verdocs/web-sdk';
+import type { ITemplateDocument as IVerdocsTemplateCreateITemplateDocument } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateCreateSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplateCreate {
   /**
    * Event fired when the user cancels the dialog. 
@@ -1194,7 +1196,12 @@ export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplat
   /**
    * Event fired when the user changes the type. 
    */
-  fileUploaded: EventEmitter<CustomEvent<{filePath: string}>>;
+  templateCreated: EventEmitter<CustomEvent<{template: IVerdocsTemplateCreateITemplate; template_document: IVerdocsTemplateCreateITemplateDocument}>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateCreateSDKError>>;
 
 }
 
@@ -1213,16 +1220,16 @@ export class VerdocsTemplateCreate {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'fileUploaded']);
+    proxyOutputs(this, this.el, ['cancel', 'templateCreated', 'sdkError']);
   }
 }
 
 import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
   /**
-   * Event fired when the fields are saved. 
+   * Event fired when the user completes the step. 
    */
-  save: EventEmitter<CustomEvent<any>>;
+  settingsUpdated: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the user cancels the dialog. 
    */
@@ -1250,7 +1257,7 @@ export class VerdocsTemplateFields {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['save', 'cancel', 'sdkError']);
+    proxyOutputs(this, this.el, ['settingsUpdated', 'cancel', 'sdkError']);
   }
 }
 
@@ -1260,6 +1267,10 @@ export declare interface VerdocsTemplateProperties extends Components.VerdocsTem
    * Event fired when the user cancels the dialog. 
    */
   cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user completes the step. 
+   */
+  settingsUpdated: EventEmitter<CustomEvent<any>>;
 
 }
 
@@ -1278,7 +1289,7 @@ export class VerdocsTemplateProperties {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel']);
+    proxyOutputs(this, this.el, ['cancel', 'settingsUpdated']);
   }
 }
 
@@ -1294,6 +1305,10 @@ the `contactSuggestions` property.
    * Event fired when the user cancels the dialog. 
    */
   cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user completes the step. 
+   */
+  settingsUpdated: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the user changes the type. 
    */
@@ -1316,7 +1331,7 @@ export class VerdocsTemplateRecipients {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'contactSelected']);
+    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'settingsUpdated', 'contactSelected']);
   }
 }
 

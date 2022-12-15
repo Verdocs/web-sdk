@@ -72,9 +72,9 @@ export class VerdocsTemplateFields {
   @Prop() templateId: string | null = null;
 
   /**
-   * Event fired when the fields are saved.
+   * Event fired when the user completes the step.
    */
-  @Event({composed: true}) save: EventEmitter;
+  @Event({composed: true}) settingsUpdated: EventEmitter;
 
   /**
    * Event fired when the user cancels the dialog.

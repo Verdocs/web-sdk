@@ -8,7 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
-import { IRole, ITemplate, ITemplateField, TemplateSenderTypes } from "@verdocs/js-sdk/Templates/Types";
+import { IRole, ITemplate, ITemplateDocument, ITemplateField, TemplateSenderTypes } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
@@ -2161,9 +2161,13 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplateCreateCustomEvent<any>) => void;
         /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplateCreateCustomEvent<SDKError>) => void;
+        /**
           * Event fired when the user changes the type.
          */
-        "onFileUploaded"?: (event: VerdocsTemplateCreateCustomEvent<{filePath: string}>) => void;
+        "onTemplateCreated"?: (event: VerdocsTemplateCreateCustomEvent<{template: ITemplate; template_document: ITemplateDocument}>) => void;
     }
     interface VerdocsTemplateFields {
         /**
@@ -2175,13 +2179,13 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplateFieldsCustomEvent<any>) => void;
         /**
-          * Event fired when the fields are saved.
-         */
-        "onSave"?: (event: VerdocsTemplateFieldsCustomEvent<any>) => void;
-        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateFieldsCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user completes the step.
+         */
+        "onSettingsUpdated"?: (event: VerdocsTemplateFieldsCustomEvent<any>) => void;
         /**
           * The ID of the template to create the document from.
          */
@@ -2196,6 +2200,10 @@ declare namespace LocalJSX {
           * Event fired when the user cancels the dialog.
          */
         "onCancel"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
+        /**
+          * Event fired when the user completes the step.
+         */
+        "onSettingsUpdated"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
         /**
           * The role that this contact will be assigned to.
          */
@@ -2222,6 +2230,10 @@ declare namespace LocalJSX {
           * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
          */
         "onSearchContacts"?: (event: VerdocsTemplateRecipientsCustomEvent<IContactSearchEvent>) => void;
+        /**
+          * Event fired when the user completes the step.
+         */
+        "onSettingsUpdated"?: (event: VerdocsTemplateRecipientsCustomEvent<any>) => void;
         /**
           * The role that this contact will be assigned to.
          */

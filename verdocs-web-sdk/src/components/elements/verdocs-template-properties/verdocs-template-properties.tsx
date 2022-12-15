@@ -26,6 +26,11 @@ export class VerdocsTemplateProperties {
    */
   @Event({composed: true}) cancel: EventEmitter;
 
+  /**
+   * Event fired when the user completes the step.
+   */
+  @Event({composed: true}) settingsUpdated: EventEmitter;
+
   @State() sendReminders: boolean = false;
 
   componentWillLoad() {
@@ -52,6 +57,8 @@ export class VerdocsTemplateProperties {
 
   handleSubmit(e) {
     e.stopPropagation();
+
+    this.settingsUpdated?.emit();
 
     // this.contactSelected?.emit({
     //   delegator: this.delegator,

@@ -131,6 +131,11 @@ export class VerdocsTemplateRecipients {
   @Event({composed: true}) cancel: EventEmitter;
 
   /**
+   * Event fired when the user completes the step.
+   */
+  @Event({composed: true}) settingsUpdated: EventEmitter;
+
+  /**
    * Event fired when the user changes the type.
    */
   @Event({composed: true}) contactSelected: EventEmitter<IContactSelectEvent>;
@@ -315,6 +320,8 @@ export class VerdocsTemplateRecipients {
       message: this.message,
       delegator: this.delegator,
     });
+
+    this.settingsUpdated?.emit({});
   }
 
   render() {

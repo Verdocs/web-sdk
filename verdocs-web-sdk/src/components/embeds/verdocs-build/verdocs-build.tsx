@@ -42,16 +42,28 @@ export class VerdocsBuild {
     this.step = '';
   }
 
-  handleFileUpload(e: any) {
-    console.log('Uploaded', e.detail);
+  handleTemplateCreated(e: any) {
+    console.log('Created', e.detail);
+    this.step = 'properties';
+  }
+
+  handlePropertiesUpdated(e: any) {
+    console.log('updated', e.detail);
     this.step = 'recipients';
+  }
+
+  handleRecipientsUpdated(e: any) {
+    console.log('updated', e.detail);
+    this.step = 'fields';
   }
 
   render() {
     return (
       <Host>
-        {this.step === 'create' && <verdocs-template-create onCancel={e => this.handleCancel(e)} onFileUploaded={e => this.handleFileUpload(e)} />}
-        {this.step === 'recipients' && <verdocs-template-recipients onCancel={e => this.handleCancel(e)} />}
+        {this.step === 'create' && <verdocs-template-create onCancel={e => this.handleCancel(e)} onTemplateCreated={e => this.handleTemplateCreated(e)} />}
+        {this.step === 'properties' && <verdocs-template-properties onCancel={e => this.handleCancel(e)} onSettingsUpdated={e => this.handlePropertiesUpdated(e)} />}
+        {this.step === 'recipients' && <verdocs-template-recipients onCancel={e => this.handleCancel(e)} onSettingsUpdated={e => this.handleRecipientsUpdated(e)} />}
+        {this.step === 'fields' && <verdocs-template-fields onCancel={e => this.handleCancel(e)} onSettingsUpdated={e => this.handleCancel(e)} />}
       </Host>
     );
   }
