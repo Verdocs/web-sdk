@@ -17,6 +17,11 @@ export class VerdocsDocumentPage {
   private resizeObserver: ResizeObserver;
 
   /**
+   * The URL of the image to render as the page background.
+   */
+  @Prop() pageImageUri: string = '';
+
+  /**
    * The page number being rendered. Not used internally but included in callbacks/events beacuse page numbers
    * are used everywhere in document handling.
    */
@@ -115,7 +120,8 @@ export class VerdocsDocumentPage {
           layer.type === 'div' ? (
             <div class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
           ) : (
-            <canvas class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
+            <img class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} src={this.pageImageUri} alt={`Page ${this.pageNumber}`} />
+            // <canvas class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
           ),
         )}
       </Host>

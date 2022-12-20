@@ -198,13 +198,13 @@ export declare interface VerdocsDocumentPage extends Components.VerdocsDocumentP
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['layers', 'pageNumber', 'virtualHeight', 'virtualWidth']
+  inputs: ['layers', 'pageImageUri', 'pageNumber', 'virtualHeight', 'virtualWidth']
 })
 @Component({
   selector: 'verdocs-document-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['layers', 'pageNumber', 'virtualHeight', 'virtualWidth']
+  inputs: ['layers', 'pageImageUri', 'pageNumber', 'virtualHeight', 'virtualWidth']
 })
 export class VerdocsDocumentPage {
   protected el: HTMLElement;
@@ -1556,13 +1556,13 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['endpoint', 'pageLayers', 'rotation', 'source']
+  inputs: ['endpoint', 'pageLayers', 'rotation', 'source', 'templateId']
 })
 @Component({
   selector: 'verdocs-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['endpoint', 'pageLayers', 'rotation', 'source']
+  inputs: ['endpoint', 'pageLayers', 'rotation', 'source', 'templateId']
 })
 export class VerdocsView {
   protected el: HTMLElement;

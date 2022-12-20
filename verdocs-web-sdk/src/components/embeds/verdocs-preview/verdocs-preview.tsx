@@ -1,10 +1,11 @@
-import {Event, EventEmitter, Host} from '@stencil/core';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, Prop, State, h} from '@stencil/core';
-import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
-import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
+import {Component, Prop, h} from '@stencil/core';
+import {Event, EventEmitter, Host} from '@stencil/core';
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
+import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
+import TemplateStore from '../../../utils/templateStore';
+import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -32,32 +33,20 @@ export class VerdocsPreview {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() pdfUrl = null;
-  @State() template: ITemplate | null = null;
-
-  roles: string[] = [];
-  fields: ITemplateField[] = [];
-
+  // TODO: Move to state store so we can load this one time
   async componentDidLoad() {
+    this.endpoint.loadSession();
+
+    if (!this.templateId) {
+      console.log(`[PREVIEW] Missing required template ID ${this.templateId}`);
+      return;
+    }
+
     try {
       console.log(`[PREVIEW] Loading template ${this.templateId}`);
-      const template = await getTemplate(this.endpoint, this.templateId);
-
-      console.log('[PREVIEW] Got template', this.template);
-      this.template = template;
-
-      this.pdfUrl = `${this.endpoint.getBaseURL()}/templates/${this.templateId}/documents/${template.template_document?.id}?file=true`;
-
-      this.roles = template.roles.map(role => role.name);
-      console.log('[PREVIEW] Loaded roles', this.roles);
-
-      this.fields = [];
-      template.roles.forEach(role => {
-        this.fields.push(...role.fields);
-      });
-      console.log('[PREVIEW] Loaded fields', this.fields);
+      await loadTemplate(this.endpoint, this.templateId);
     } catch (e) {
-      console.log('[PREVIEW] Error with preview session', e);
+      console.log('[PREVIEW] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -70,18 +59,27 @@ export class VerdocsPreview {
     const pageInfo = e.detail as IPageRenderEvent;
     console.log('[PREVIEW] Page rendered', pageInfo);
 
-    const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+    const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[PREVIEW] Fields on page', fields);
-    fields.forEach(field => renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true));
+    fields.forEach(field => renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true));
   }
 
   render() {
+    if (TemplateStore.loading) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
+    // TODO: Render a better error
     return (
       <Host>
-        {this.pdfUrl ? (
+        {TemplateStore.template ? (
           <div class="inner">
             <verdocs-view
-              source={this.pdfUrl}
+              templateId={this.templateId}
               endpoint={this.endpoint}
               onPageRendered={e => this.handlePageRendered(e)}
               pageLayers={[
@@ -91,7 +89,7 @@ export class VerdocsPreview {
             />
           </div>
         ) : (
-          <verdocs-loader />
+          <div>Error loading Template. Please try again later.</div>
         )}
       </Host>
     );

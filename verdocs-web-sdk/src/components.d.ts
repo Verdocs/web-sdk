@@ -123,6 +123,10 @@ export namespace Components {
          */
         "layers": IPageLayer[];
         /**
+          * The URL of the image to render as the page background.
+         */
+        "pageImageUri": string;
+        /**
           * The page number being rendered. Not used internally but included in callbacks/events beacuse page numbers are used everywhere in document handling.
          */
         "pageNumber": number;
@@ -781,6 +785,10 @@ export namespace Components {
           * Src of the PDF to load and render
          */
         "source": string;
+        /**
+          * The template ID to render
+         */
+        "templateId": string;
     }
 }
 export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
@@ -1431,6 +1439,10 @@ declare namespace LocalJSX {
           * Fired when a page has been rendered. This is also fired when the page is resized.
          */
         "onPageRendered"?: (event: VerdocsDocumentPageCustomEvent<IDocumentPageInfo>) => void;
+        /**
+          * The URL of the image to render as the page background.
+         */
+        "pageImageUri"?: string;
         /**
           * The page number being rendered. Not used internally but included in callbacks/events beacuse page numbers are used everywhere in document handling.
          */
@@ -2391,6 +2403,10 @@ declare namespace LocalJSX {
           * Src of the PDF to load and render
          */
         "source"?: string;
+        /**
+          * The template ID to render
+         */
+        "templateId"?: string;
     }
     interface IntrinsicElements {
         "verdocs-auth": VerdocsAuth;

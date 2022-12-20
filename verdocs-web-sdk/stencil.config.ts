@@ -1,7 +1,7 @@
 import {sass} from '@stencil/sass';
 import {Config} from '@stencil/core';
 import {inlineSvg} from 'stencil-inline-svg';
-// import typescript from 'rollup-plugin-typescript';
+// import typescript from 'rollup-plugin-typescript2';
 // import nodePolyfills from 'rollup-plugin-node-polyfills';
 import {reactOutputTarget} from '@stencil/react-output-target';
 import {angularOutputTarget, ValueAccessorConfig} from '@stencil/angular-output-target';

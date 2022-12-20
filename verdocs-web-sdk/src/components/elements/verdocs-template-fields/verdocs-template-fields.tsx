@@ -1,12 +1,12 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {Component, h, Event, EventEmitter, Fragment, Prop, State, Host} from '@stencil/core';
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {Component, h, Event, EventEmitter, Fragment, Prop, Host} from '@stencil/core';
 import {IPageRenderEvent} from '../../embeds/verdocs-view/verdocs-view';
 import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
-import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
-import builderStore from '../../../utils/builderStore';
+import TemplateStore from '../../../utils/templateStore';
+import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -87,37 +87,22 @@ export class VerdocsTemplateFields {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() pdfUrl = null;
-  @State() template: ITemplate | null = null;
-
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
 
-      console.log(`[PREVIEW] Loading template ${this.templateId}`);
-      builderStore.templateId = this.templateId;
-      const template = await getTemplate(this.endpoint, this.templateId);
+      if (!this.templateId) {
+        console.log(`[FIELDS] Missing required template ID ${this.templateId}`);
+        return;
+      }
 
-      console.log('[PREVIEW] Got template', this.template);
-      this.template = template;
-      builderStore.template = this.template;
-
-      this.pdfUrl = `${this.endpoint.getBaseURL()}/templates/${this.templateId}/documents/${template.template_document?.id}?file=true`;
-
-      builderStore.roleNames = template.roles.map(role => role.name);
-      // this.roles = template.roles.map(role => role.name);
-      console.log('[PREVIEW] Loaded roles', builderStore.roleNames);
-
-      builderStore.fields = [];
-      template.roles.forEach(role => {
-        builderStore.fields.push(...role.fields);
-      });
-      console.log('[PREVIEW] Loaded fields', builderStore.fields);
-      // this.fields = [];
-      // template.roles.forEach(role => {
-      //   this.fields.push(...role.fields);
-      // });
-      // console.log('[PREVIEW] Loaded fields', this.fields);
+      try {
+        console.log(`[FIELDS] Loading template ${this.templateId}`);
+        await loadTemplate(this.endpoint, this.templateId);
+      } catch (e) {
+        console.log('[FIELDS] Error loading template', e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      }
     } catch (e) {
       console.log('[PREVIEW] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -140,11 +125,11 @@ export class VerdocsTemplateFields {
     const pageInfo = e.detail as IPageRenderEvent;
     console.log('[PREVIEW] Page rendered', pageInfo);
 
-    const fields = builderStore.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+    const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[PREVIEW] Fields on page', fields);
     fields.forEach(field => {
-      const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(builderStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
+      const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
       // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
       if (!el) {
         console.log('Skipping partially rendered field', field);
@@ -152,7 +137,7 @@ export class VerdocsTemplateFields {
       }
 
       el.addEventListener('recipientChanged', e => {
-        el.setAttribute('roleindex', getRoleIndex(builderStore.roleNames, e.detail));
+        el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, e.detail));
         // el.setAttribute('roleindex', getRoleIndex(this.roles, e.detail));
       });
 
@@ -201,9 +186,17 @@ export class VerdocsTemplateFields {
       page_sequence: 0,
     };
 
+    if (TemplateStore.loading) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
     return (
       <Host>
-        {this.pdfUrl ? (
+        {TemplateStore.template ? (
           <Fragment>
             <div class="fields-bar" ref={el => (this.toolbarEl = el as HTMLDivElement)}>
               <div class="label">Add Field:</div>
@@ -236,7 +229,7 @@ export class VerdocsTemplateFields {
             </div>
 
             <verdocs-view
-              source={this.pdfUrl}
+              templateId={this.templateId}
               endpoint={this.endpoint}
               onPageRendered={e => this.handlePageRendered(e)}
               pageLayers={[
@@ -246,7 +239,7 @@ export class VerdocsTemplateFields {
             />
           </Fragment>
         ) : (
-          <verdocs-loader />
+          <div>Error loading Template. Please try again later.</div>
         )}
       </Host>
     );

@@ -1,9 +1,9 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
-import builderStore from '../../../utils/builderStore';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {SDKError} from '../../../utils/errors';
+import TemplateStore from '../../../utils/templateStore';
 
 /**
  * Displays a collection of settings boxes that allow a user to configure a template's behavior.
@@ -51,11 +51,15 @@ export class VerdocsTemplateProperties {
       this.endpoint.loadSession();
 
       console.log(`[PROPERTIES] Loading template ${this.templateId}`);
-      builderStore.templateId = this.templateId;
       const template = await getTemplate(this.endpoint, this.templateId);
+      if (!template) {
+        console.log('[PREVIEW] Unable to load template');
+        return;
+      }
 
       console.log('[PROPERTIES] Got template', template);
       this.template = template;
+      TemplateStore.template = template;
       this.name = template.name;
       this.sendReminders = template.reminder_id !== null;
     } catch (e) {
