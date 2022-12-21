@@ -2,6 +2,7 @@
 
 verdocs-contact-picker {
   font-family: $verdocs-primary-font;
+  background-color: $verdocs-grey-4;
 
   form {
     background-color: $verdocs-grey-3;
@@ -103,5 +104,11 @@ verdocs-contact-picker {
 
   ::placeholder {
     color: $verdocs-bg-2;
+  }
+
+  // @see https://community.logmein.com/t5/LastPass-Support-Discussions/placeholder-text-overrides-data-lpignore-quot-true-quot/td-p/295135
+  // LastPass is ignoring the data-lpignore attribute in some cases
+  [data-lastpass-icon-root] {
+    display: none !important;
   }
 }

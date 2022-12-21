@@ -1,9 +1,9 @@
 import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
 
 /**
- * Displays a radio button. Note that this is different from the `verdocs-field-radio-button` component, which is designed
- * to be used in signing experiences and contains settings that connect to template fields. This is just a simple radio
- * button for UI displays e.g. dialogs and .
+ * Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
+ * to be used in signing experiences and contains settings that connect to template fields. This is just a simple check box
+ * for UI displays e.g. dialog boxes.
  */
 @Component({
   tag: 'verdocs-checkbox',

@@ -218,7 +218,7 @@ export class VerdocsContactPicker {
             name="verdocs-contact-picker-email"
             type="text"
             data-lpignore="true"
-            autocomplete="off"
+            autoComplete="off"
             value={this.email}
             placeholder="Email Address..."
             onFocus={() => (this.showSuggestions = false)}

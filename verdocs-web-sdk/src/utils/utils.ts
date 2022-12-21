@@ -2,7 +2,7 @@
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 // import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
 import {IDocumentPageInfo} from './Types';
 
 export const integerSequence = (start: number, count: number): number[] =>

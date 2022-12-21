@@ -70,5 +70,5 @@ export default {
   },
 } as Meta;
 
-export const StatusIndicator = ({theme, size, status, document}) =>
-  html`<verdocs-status-indicator .theme="${theme}" .size="${size}" .status="${status}" .document="${document}" />`;
+export const StatusIndicator = ({theme, size, status, envelope}) =>
+  html`<verdocs-status-indicator .theme="${theme}" .size="${size}" .status="${status}" .envelope="${envelope}" />`;

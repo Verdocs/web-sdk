@@ -3,8 +3,9 @@ import {html} from 'lit-html';
 import {IOrganization} from '@verdocs/js-sdk/Organizations/Types';
 
 const MockOrganization = {
-  id: '3',
-  name: 'ACME Widgets, LLC',
+  id: '21643fd6-4097-47c0-9780-62dc0c01ddce',
+  name: 'Verdocs, LLC',
+  url: 'https://verdocs.com/',
   address: null,
   phone: null,
   business_name: null,
@@ -13,6 +14,7 @@ const MockOrganization = {
   contact_email: null,
   timezone: null,
   envelope_responsible: false,
+  created_at: '2022-12-21 20:16:50.262113+00',
 } as IOrganization;
 
 export default {

@@ -5,6 +5,7 @@ verdocs-toggle-button {
 
   button {
     border: none;
+    outline: none;
     cursor: pointer;
     align-items: center;
     display: inline-flex;
@@ -25,6 +26,11 @@ verdocs-toggle-button {
       svg {
         fill: $verdocs-grey-3;
       }
+    }
+
+    &:focus {
+      border: none;
+      outline: none;
     }
   }
 

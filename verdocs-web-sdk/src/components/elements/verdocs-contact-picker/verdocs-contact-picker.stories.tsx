@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Controls/Contact Picker',
+  title: 'Elements/Contact Picker',
   component: 'verdocs-contact-picker',
   args: {
     templateRole: {

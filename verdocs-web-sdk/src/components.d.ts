@@ -12,7 +12,7 @@ import { IRole, ITemplate, ITemplateDocument, ITemplateField, TemplateSenderType
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
-import { IDocument, IDocumentField, IRecipient, TDocumentStatus, TRecipientStatus } from "@verdocs/js-sdk/Documents/Types";
+import { IDocumentField, IEnvelope, IRecipient, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
@@ -595,13 +595,13 @@ export namespace Components {
     }
     interface VerdocsSign {
         /**
-          * The ID of the document to sign.
-         */
-        "documentId": string | null;
-        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
+        /**
+          * The ID of the envelope to sign.
+         */
+        "envelopeId": string | null;
         /**
           * The invite code for the signer.
          */
@@ -625,7 +625,7 @@ export namespace Components {
         /**
           * The document to display status for. Ignored if `status` is set directly.
          */
-        "document"?: IDocument;
+        "envelope"?: IEnvelope;
         /**
           * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
          */
@@ -633,7 +633,7 @@ export namespace Components {
         /**
           * The status to display.
          */
-        "status"?: TDocumentStatus | TRecipientStatus | 'accepted';
+        "status"?: TEnvelopeStatus | TRecipientStatus | 'accepted';
         /**
           * The theme to use for diplay.
          */
@@ -2101,13 +2101,13 @@ declare namespace LocalJSX {
     }
     interface VerdocsSign {
         /**
-          * The ID of the document to sign.
-         */
-        "documentId"?: string | null;
-        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
+        /**
+          * The ID of the envelope to sign.
+         */
+        "envelopeId"?: string | null;
         /**
           * The invite code for the signer.
          */
@@ -2143,7 +2143,7 @@ declare namespace LocalJSX {
         /**
           * The document to display status for. Ignored if `status` is set directly.
          */
-        "document"?: IDocument;
+        "envelope"?: IEnvelope;
         /**
           * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
          */
@@ -2151,7 +2151,7 @@ declare namespace LocalJSX {
         /**
           * The status to display.
          */
-        "status"?: TDocumentStatus | TRecipientStatus | 'accepted';
+        "status"?: TEnvelopeStatus | TRecipientStatus | 'accepted';
         /**
           * The theme to use for diplay.
          */

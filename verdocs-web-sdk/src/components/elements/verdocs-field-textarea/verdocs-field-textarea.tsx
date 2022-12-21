@@ -1,5 +1,5 @@
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
-import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {getFieldSettings} from '../../../utils/utils';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';

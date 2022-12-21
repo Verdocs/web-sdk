@@ -1,12 +1,12 @@
 import {Event, EventEmitter, Host} from '@stencil/core';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Documents} from '@verdocs/js-sdk/Documents';
+import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {Component, Prop, State, h} from '@stencil/core';
-import {updateRecipientStatus} from '@verdocs/js-sdk/Documents/Recipients';
+import {updateRecipientStatus} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
-import {IDocument, IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
+import {IEnvelope, IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
 import {getFieldId, setControlStyles} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -29,9 +29,9 @@ export class VerdocsSign {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The ID of the document to sign.
+   * The ID of the envelope to sign.
    */
-  @Prop() documentId: string | null = null;
+  @Prop() envelopeId: string | null = null;
 
   /**
    * The name of the role that will be signing.
@@ -54,7 +54,7 @@ export class VerdocsSign {
   @State() signerToken = null;
   @State() pdfUrl = null;
   @State() recipientIndex: number = -1;
-  @State() document: IDocument | null = null;
+  @State() envelope: IEnvelope | null = null;
   @State() fields: IDocumentField[] = [];
 
   @State() hasSignature = false;
@@ -65,9 +65,9 @@ export class VerdocsSign {
 
   async componentDidLoad() {
     try {
-      console.log(`[SIGN] Processing invite code for ${this.documentId} / ${this.documentId}`);
-      const {session, recipient, signerToken} = await Documents.getSigningSession(this.endpoint, {
-        documentId: this.documentId,
+      console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.envelopeId}`);
+      const {session, recipient, signerToken} = await Envelopes.getSigningSession(this.endpoint, {
+        envelopeId: this.envelopeId,
         roleId: this.roleId,
         inviteCode: this.inviteCode,
       });
@@ -82,18 +82,18 @@ export class VerdocsSign {
         this.nextButtonLabel = 'Next';
       }
 
-      const document = await Documents.getDocument(this.endpoint, this.documentId);
-      this.document = document;
+      const envelope = await Envelopes.getEnvelope(this.endpoint, this.envelopeId);
+      this.envelope = envelope;
       console.log('[SIGN] Signing document', document);
 
-      this.pdfUrl = `${this.endpoint.getBaseURL()}/documents/${this.documentId}/envelope_documents/${document.envelope_document_id}?file=true`;
+      this.pdfUrl = `${this.endpoint.getBaseURL()}/documents/${this.envelopeId}/envelope_documents/${envelope.envelope_document_id}?file=true`;
 
-      this.recipientIndex = this.document.recipients.findIndex(recipient => recipient.role_name == this.roleId);
+      this.recipientIndex = this.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
       if (this.recipientIndex > -1) {
-        console.log('Found recipient', this.document.recipients[this.recipientIndex]);
+        console.log('Found recipient', this.envelope.recipients[this.recipientIndex]);
       }
 
-      this.fields = this.document.fields.filter(field => field.recipient_role === this.roleId);
+      this.fields = this.envelope.fields.filter(field => field.recipient_role === this.roleId);
       console.log('Loaded fields', this.fields);
 
       // TODO: Fix service to allow this?
@@ -107,7 +107,7 @@ export class VerdocsSign {
 
   handleClickAgree() {
     console.log('agree clicked');
-    updateRecipientStatus(this.endpoint, this.documentId, this.roleId, 'update', {agreed: true})
+    updateRecipientStatus(this.endpoint, this.envelopeId, this.roleId, 'update', {agreed: true})
       .then(r => {
         console.log('update result', r);
         this.nextButtonLabel = 'Next';
@@ -120,8 +120,8 @@ export class VerdocsSign {
   }
 
   async savePDF() {
-    const fileName = `${this.document.name} - ${this.document.updated_at.split('T')[0]}.pdf`;
-    const data = await Documents.getDocumentFile(this.endpoint, this.documentId, this.document.envelope_document_id);
+    const fileName = `${this.envelope.name} - ${this.envelope.updated_at.split('T')[0]}.pdf`;
+    const data = await Envelopes.getEnvelopeFile(this.endpoint, this.envelopeId, this.envelope.envelope_document_id);
 
     // This is better in React than doing window.href= or similar to trigger a download. For a description of the technique
     // see https://stackoverflow.com/questions/8126623/downloading-canvas-element-to-an-image
@@ -167,7 +167,7 @@ export class VerdocsSign {
     console.log('fieldChange', field, e.detail);
     switch (field.type) {
       case 'textbox':
-        Documents.updateDocumentField(this.endpoint, this.documentId, field.name, {prepared: false, value: e.detail})
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: e.detail})
           .then(r => console.log('Update result', r))
           .catch(e => {
             this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -179,7 +179,7 @@ export class VerdocsSign {
         break;
 
       case 'checkbox_group':
-        Documents.updateDocumentField(this.endpoint, this.documentId, field.name, {prepared: false, value: {options: [{id: optionId, checked: e.detail}]}})
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: {options: [{id: optionId, checked: e.detail}]}})
           .then(r => console.log('Update result', r))
           .catch(e => {
             this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -189,7 +189,7 @@ export class VerdocsSign {
 
       case 'radio_button_group':
         const options = field.settings.options.map(option => ({id: option.id, selected: optionId === option.id}));
-        Documents.updateDocumentField(this.endpoint, this.documentId, field.name, {prepared: false, value: {options}})
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: {options}})
           .then(r => console.log('Update result', r))
           .catch(e => {
             this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -198,7 +198,7 @@ export class VerdocsSign {
         break;
 
       case 'dropdown':
-        Documents.updateDocumentField(this.endpoint, this.documentId, field.name, {prepared: false, value: e.detail})
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: e.detail})
           .then(r => console.log('Update result', r))
           .catch(e => {
             this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));

@@ -1,7 +1,7 @@
 import {RecipientFlow} from './recipient-flow';
 import {createPopper, Instance} from '@popperjs/core';
 import {Component, Prop, Host, h, State} from '@stencil/core';
-import {IDocument, TDocumentStatus, TRecipientStatus} from '@verdocs/js-sdk/Documents/Types';
+import {IEnvelope, TEnvelopeStatus, TRecipientStatus} from '@verdocs/js-sdk/Envelopes/Types';
 import AcceptedLight from './accepted-light.svg';
 import AcceptedDark from './accepted-dark.svg';
 import CanceledLight from './canceled-light.svg';
@@ -59,12 +59,12 @@ export class VerdocsStatusIndicator {
    * The status to display.
    */
   // The accepted override is here because we don't actually have an official status for that yet, but we plan to add it
-  @Prop() status?: TDocumentStatus | TRecipientStatus | 'accepted';
+  @Prop() status?: TEnvelopeStatus | TRecipientStatus | 'accepted';
 
   /**
    * The document to display status for. Ignored if `status` is set directly.
    */
-  @Prop() document?: IDocument;
+  @Prop() envelope?: IEnvelope;
 
   @State() isOpen: boolean;
 
@@ -75,9 +75,9 @@ export class VerdocsStatusIndicator {
   componentDidLoad() {
     this.popper = createPopper(this.summaryComponent, this.detailPanel, {placement: 'bottom-start', modifiers: [{name: 'offset', options: {offset: [0, 10]}}]});
 
-    if (this.document?.recipients) {
+    if (this.envelope?.recipients) {
       const recipientsAtLevel = [];
-      this.document.recipients.forEach(recipient => {
+      this.envelope.recipients.forEach(recipient => {
         const level = recipient.sequence - 1;
         recipientsAtLevel[level] ||= [];
         const id = `r-${level}-${recipientsAtLevel[level].length}`;
@@ -272,10 +272,10 @@ export class VerdocsStatusIndicator {
 
   render() {
     // The extra fallback for accepted is to future proof for when we add that.
-    let status: string = this.status || this.document?.status || 'pending' || 'accepted';
-    if (!this.status && this.document?.recipients) {
-      const submittedRecipients = this.document.recipients.filter(r => r.status === 'submitted');
-      if (submittedRecipients.length > 0 && submittedRecipients.length !== this.document.recipients.length) {
+    let status: string = this.status || this.envelope?.status || 'pending' || 'accepted';
+    if (!this.status && this.envelope?.recipients) {
+      const submittedRecipients = this.envelope.recipients.filter(r => r.status === 'submitted');
+      if (submittedRecipients.length > 0 && submittedRecipients.length !== this.envelope.recipients.length) {
         status = 'some-signed';
       }
     }
@@ -286,14 +286,14 @@ export class VerdocsStatusIndicator {
     return (
       <Host
         ref={el => (this.summaryComponent = el as HTMLButtonElement)}
-        class={`${this.theme} ${this.size} ${this.document ? 'has-document' : ''}`}
+        class={`${this.theme} ${this.size} ${this.envelope ? 'has-document' : ''}`}
         aria-label="Click to View Details"
         onClick={e => {
           e.stopPropagation();
           e.preventDefault();
-          this.document && this.toggleDropdown();
+          this.envelope && this.toggleDropdown();
         }}
-        onBlur={e => this.document && this.handleHideDropdown(e)}
+        onBlur={e => this.envelope && this.handleHideDropdown(e)}
       >
         <span class="icon" innerHTML={icon} />
         <span class="content">{statusMessage}</span>

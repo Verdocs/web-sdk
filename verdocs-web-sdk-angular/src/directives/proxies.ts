@@ -1094,13 +1094,13 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['documentId', 'endpoint', 'inviteCode', 'roleId']
+  inputs: ['endpoint', 'envelopeId', 'inviteCode', 'roleId']
 })
 @Component({
   selector: 'verdocs-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['documentId', 'endpoint', 'inviteCode', 'roleId']
+  inputs: ['endpoint', 'envelopeId', 'inviteCode', 'roleId']
 })
 export class VerdocsSign {
   protected el: HTMLElement;
@@ -1148,13 +1148,13 @@ export declare interface VerdocsStatusIndicator extends Components.VerdocsStatus
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['document', 'size', 'status', 'theme']
+  inputs: ['envelope', 'size', 'status', 'theme']
 })
 @Component({
   selector: 'verdocs-status-indicator',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['document', 'size', 'status', 'theme']
+  inputs: ['envelope', 'size', 'status', 'theme']
 })
 export class VerdocsStatusIndicator {
   protected el: HTMLElement;

@@ -132,7 +132,6 @@ export class VerdocsTemplateFields {
       const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
       // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
       if (!el) {
-        console.log('Skipping partially rendered field', field);
         return;
       }
 

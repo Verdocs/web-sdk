@@ -1,6 +1,6 @@
 import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/core';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import Paperclip from './paperclip.svg';
 
 /**

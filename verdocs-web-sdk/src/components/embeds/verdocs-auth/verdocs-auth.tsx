@@ -1,6 +1,7 @@
 import {Auth} from '@verdocs/js-sdk/Users';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {TSession} from '@verdocs/js-sdk/Sessions/Types';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
-import {VerdocsEndpoint, TSession} from '@verdocs/js-sdk';
 import {SDKError} from '../../../utils/errors';
 
 export interface IAuthStatus {

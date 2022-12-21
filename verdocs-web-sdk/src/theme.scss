@@ -4,6 +4,11 @@ $verdocs-green: #55bc81;
 $verdocs-green-shade: #2b995b;
 $verdocs-green-highlight: #54d68c;
 
+// This is poorly documented but when a color is used as a control accent-color (e.g. for a checkbox) the lightness (in HSL)
+// will trigger the control contents (e.g. checkmark) to be white or black. This seems to be just inside the margin where it's
+// dark enough to trigger a white check mark, whereas the default brand green above triggers a black check mark.
+$verdocs-green-accent: #3f9d67;
+
 $verdocs-purple: #654dcb;
 $verdocs-purple-shade: #4c56cb;
 $verdocs-purple-highlight: #707ae5;
@@ -54,6 +59,7 @@ $choice-available-color: #5c6575;
 
 $label-color: #33364b;
 $label-color-light: #555570;
+$label-color-very-light: #7b7b9a;
 $icon-color: #aeb4bf;
 
 $required-color: rgb(204, 0, 0);

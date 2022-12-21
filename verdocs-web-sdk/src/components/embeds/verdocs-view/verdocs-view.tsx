@@ -1,21 +1,11 @@
-// import pdf from 'pdfjs-dist';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-// import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
-// import PDFJSWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry';
-// import {DocumentInitParameters, OnProgressParameters} from 'pdfjs-dist/types/src/display/api';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, State} from '@stencil/core';
-// import {Component, h, Element, Event, Host, Prop, Watch, EventEmitter, State} from '@stencil/core';
-// import {integerSequence} from '../../../utils/utils';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {getPageImage} from '@verdocs/js-sdk/Templates/Pages';
 import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {integerSequence} from '../../../utils/utils';
-
-// const CMAPS_URL = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/cmaps/`;
-
-// pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJSWorker;
 
 export interface ISourcePageMetrics {
   width: number;
@@ -35,9 +25,6 @@ export interface IPageRenderEvent {
 })
 export class VerdocsView {
   @Element() component: HTMLElement;
-
-  // private pdfDocument: pdfjsLib.PDFDocumentProxy;
-  // private fingerprints = [] as string[];
 
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -66,17 +53,6 @@ export class VerdocsView {
    * Src of the PDF to load and render
    */
   @Prop() source: string;
-
-  /**
-   * Listen for changes to src
-   */
-  // @Watch('source')
-  // doSrc(newValue: string | null, oldValue: string | null): void {
-  //   if (newValue === oldValue) {
-  //     return;
-  //   }
-  //   this.loadAndRender(newValue);
-  // }
 
   /**
    * Fired when a page has been rendered

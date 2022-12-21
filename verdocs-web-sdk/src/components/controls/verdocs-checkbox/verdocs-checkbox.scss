@@ -1,6 +1,5 @@
 @import '../../../theme.scss';
 
-// See https://www.sliderrevolution.com/resources/styling-radio-buttons/
 verdocs-checkbox {
   font-family: $verdocs-primary-font;
   width: 20px;
@@ -27,5 +26,6 @@ verdocs-checkbox {
   input[type='checkbox'] {
     width: 18px;
     height: 18px;
+    accent-color: $verdocs-green-accent;
   }
 }

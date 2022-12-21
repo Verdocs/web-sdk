@@ -68,4 +68,10 @@ verdocs-field-textbox {
       }
     }
   }
+
+  // @see https://community.logmein.com/t5/LastPass-Support-Discussions/placeholder-text-overrides-data-lpignore-quot-true-quot/td-p/295135
+  // LastPass is ignoring the data-lpignore attribute in some cases
+  [data-lastpass-icon-root] {
+    display: none !important;
+  }
 }

@@ -1,5 +1,5 @@
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
-import {IDocumentField} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
 
 export function getInputStyle(field: IDocumentField, mode, browserType: string) {
   const fontSize = 11;

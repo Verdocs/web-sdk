@@ -1,6 +1,6 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Documents/Types';
+import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
 import {getFieldSettings, getRoleIndex} from '../../../utils/utils';
 import TemplateStore from '../../../utils/templateStore';
