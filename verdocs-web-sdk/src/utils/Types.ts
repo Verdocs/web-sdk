@@ -6,6 +6,8 @@ export interface IDocumentPageInfo {
   virtualHeight: number;
   renderedWidth: number;
   renderedHeight: number;
+  naturalWidth: number;
+  naturalHeight: number;
   xScale: number;
   yScale: number;
 }

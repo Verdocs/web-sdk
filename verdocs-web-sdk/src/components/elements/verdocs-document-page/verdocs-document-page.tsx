@@ -5,7 +5,8 @@ import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
 
 /**
  * Represents one document page. This is primarily a layout container used to coordinate positions of
- * page-related layers such as the page itself, signature fields, etc.
+ * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
+ * on its own as an individual component.
  */
 @Component({
   tag: 'verdocs-document-page',
@@ -22,20 +23,20 @@ export class VerdocsDocumentPage {
   @Prop() pageImageUri: string = '';
 
   /**
-   * The page number being rendered. Not used internally but included in callbacks/events beacuse page numbers
-   * are used everywhere in document handling.
+   * The page number being rendered. Not used internally, but included in callbacks/events beacuse page numbers
+   * are used everywhere in document handling. (Reminder: page numbers are 1-based.)
    */
   @Prop() pageNumber: number = 1;
 
   /**
    * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute
-   * the aspect ratio of the final rendered element.
+   * the aspect ratio of the final rendered element when scaling up/down.
    */
   @Prop() virtualWidth: number = 612;
 
   /**
    * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute
-   * the aspect ratio of the final rendered element.
+   * the aspect ratio of the final rendered element when scaling up/down.
    */
   @Prop() virtualHeight: number = 792;
 
@@ -60,9 +61,11 @@ export class VerdocsDocumentPage {
 
   @State() containerId = `verdocs-document-page-${Math.random().toString(36).substring(2, 11)}`;
 
-  @State() renderedWidth: number = 612;
-
-  @State() renderedHeight: number = 792;
+  @State() renderedWidth: number = this.virtualWidth;
+  @State() renderedHeight: number = this.virtualHeight;
+  @State() naturalWidth: number = this.virtualWidth;
+  @State() naturalHeight: number = this.virtualHeight;
+  @State() aspectRatio: number = this.virtualWidth / this.virtualHeight;
 
   @State() skipFirstNotification = true;
 
@@ -106,13 +109,15 @@ export class VerdocsDocumentPage {
       virtualHeight: this.virtualHeight,
       renderedWidth: this.renderedWidth,
       renderedHeight: this.renderedHeight,
-      xScale: this.renderedWidth / this.virtualWidth,
-      yScale: this.renderedHeight / this.virtualHeight,
+      naturalWidth: this.naturalWidth,
+      naturalHeight: this.naturalHeight,
+      xScale: this.renderedWidth / this.naturalWidth,
+      yScale: this.renderedHeight / this.naturalHeight,
     });
   }
 
   render() {
-    const height = this.renderedHeight + 'px';
+    const height = `${this.renderedHeight}px`;
 
     return (
       <Host id={`${this.containerId}`} style={{height}}>
@@ -120,8 +125,20 @@ export class VerdocsDocumentPage {
           layer.type === 'div' ? (
             <div class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
           ) : (
-            <img class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} src={this.pageImageUri} alt={`Page ${this.pageNumber}`} />
-            // <canvas class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
+            <img
+              class="verdocs-document-page-layer img"
+              id={`${this.containerId}-${layer.name}`}
+              // style={{height}}
+              src={this.pageImageUri}
+              alt={`Page ${this.pageNumber}`}
+              aria-hidden={true}
+              onLoad={(e: any) => {
+                this.naturalWidth = e.target.naturalWidth;
+                this.naturalHeight = e.target.naturalHeight;
+                this.aspectRatio = this.naturalWidth / this.naturalHeight;
+                console.log('[DOCPAGE] Loaded dimensions', {width: this.naturalWidth, height: this.naturalHeight, aspectRatio: this.aspectRatio});
+              }}
+            />
           ),
         )}
       </Host>

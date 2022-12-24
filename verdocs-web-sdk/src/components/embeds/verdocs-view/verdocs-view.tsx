@@ -1,11 +1,11 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
+import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
+import {getEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, State} from '@stencil/core';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
-import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
-import {getPageImage} from '@verdocs/js-sdk/Templates/Pages';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {integerSequence} from '../../../utils/utils';
 
 export interface ISourcePageMetrics {
   width: number;
@@ -18,6 +18,11 @@ export interface IPageRenderEvent {
   pages: Record<number, IDocumentPageInfo>;
 }
 
+/**
+ * View all of the documents attached to a template or envelope. All documents are displayed, in order. This embed wraps
+ * verdocs-view-envelope-document or verdocs-view-template-document, as appropriate, and those controls may be used if
+ * fine-grained control over which documents are displayed (or their order) is required.
+ */
 @Component({
   tag: 'verdocs-view',
   styleUrl: 'verdocs-view.scss',
@@ -32,9 +37,14 @@ export class VerdocsView {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The template ID to render
+   * The template ID to render. Set ONE OF templateId or envelopeId.
    */
   @Prop() templateId: string = '';
+
+  /**
+   * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+   */
+  @Prop() envelopeId: string = '';
 
   /**
    * Rotate the PDF in degrees
@@ -48,11 +58,6 @@ export class VerdocsView {
     {name: 'page', type: 'canvas'},
     {name: 'controls', type: 'div'},
   ];
-
-  /**
-   * Src of the PDF to load and render
-   */
-  @Prop() source: string;
 
   /**
    * Fired when a page has been rendered
@@ -85,17 +90,8 @@ export class VerdocsView {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() loadProgress = 0;
-  @State() template: ITemplate | null = null;
-  @State() pageNumbers: number[] = [];
-  @State() pageUris: Record<number, string> = {};
-
-  @State()
-  numPages = 0;
-
-  domPages: Record<number, IDocumentPageInfo> = {};
-
-  sourcePageMetrics: Record<number, {width: number; height: number}> = {};
+  @State() template?: ITemplate = null;
+  @State() envelope?: IEnvelope = null;
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -104,45 +100,54 @@ export class VerdocsView {
   // TODO: Handling signing vs preview-as-user cases
   // TODO: Handle anonymous case and failure to load due to not being logged in
   async componentDidLoad() {
-    this.endpoint.loadSession();
-
-    if (!this.templateId) {
-      console.log(`[VIEW] Missing required template ID ${this.templateId}`);
+    if (!this.templateId && !this.envelopeId) {
+      console.error(`[VIEW] Must specify one of templateId or envelopeId`);
       return;
     }
 
+    if (this.templateId && this.envelopeId) {
+      console.warn(`[VIEW] Both templateId and envelopeId specified, using templateId`);
+    }
+
     try {
-      console.log(`[VIEW] Loading template ${this.templateId}`);
-      const template = await getTemplate(this.endpoint, this.templateId);
-
-      console.log('[VIEW] Got template', this.template);
-      this.template = template;
-      this.pageNumbers = integerSequence(1, template.pages.length);
-
-      const pageUris: Record<number, string> = {};
-      for await (let page of template.pages) {
-        console.log('[VIEW] Loading page', page);
-        // TODO: Make an endpoint to get all of the pages for a template
-        // TODO: When uploading a new template, pre-process its pages into images and comment that the individual page-loader is a utility,
-        //  not the primary mechanism.
-        const image = await getPageImage(this.endpoint, this.templateId, page.sequence);
-        // TODO: Make this uri to match the rest of the terminology?
-        pageUris[page.sequence] = image.url;
-        console.log('[VIEW] Got image Uri', image.url);
-        this.loadProgress = page.sequence / template.pages.length;
+      if (this.templateId) {
+        console.log('[VIEW] Loading template', this.templateId);
+        this.template = await getTemplate(this.endpoint, this.templateId);
+        console.log('[VIEW] Loaded template', this.template);
+      } else if (this.envelopeId) {
+        console.log('[VIEW] Loading envelope', this.envelopeId);
+        this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
+        console.log('[VIEW] Loaded envelope', this.envelope);
       }
 
-      this.pageUris = pageUris;
-      this.loadProgress = 100;
-
-      // this.pdfUrl = `${this.endpoint.getBaseURL()}/templates/${this.templateId}/documents/${template.template_document?.id}?file=true`;
+      // console.log(`[VIEW] Loading template ${this.templateId}`);
+      // const template = await getTemplate(this.endpoint, this.templateId);
+      //
+      // console.log('[VIEW] Got template', this.template);
+      // this.template = template;
+      // this.pageNumbers = integerSequence(1, template.pages.length);
+      //
+      // const pageUris: Record<number, string> = {};
+      // for await (let page of template.pages) {
+      //   console.log('[VIEW] Loading page', page);
+      //   // TODO: Make an endpoint to get all of the pages for a template
+      //   // TODO: When uploading a new template, pre-process its pages into images and comment that the individual page-loader is a utility,
+      //   //  not the primary mechanism.
+      //   const image = await getPageImage(this.endpoint, this.templateId, page.sequence);
+      //   // TODO: Make this uri to match the rest of the terminology?
+      //   pageUris[page.sequence] = image.url;
+      //   console.log('[VIEW] Got image Uri', image.url);
+      //   this.loadProgress = page.sequence / template.pages.length;
+      // }
+      //
+      // this.pageUris = pageUris;
+      // this.loadProgress = 100;
+      //
+      // // this.pdfUrl = `${this.endpoint.getBaseURL()}/templates/${this.templateId}/documents/${template.template_document?.id}?file=true`;
     } catch (e) {
-      console.log('[VIEW] Error loading template', e);
+      console.log('[VIEW] Error loading data', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
-    // if (this.source) {
-    //   this.loadAndRender(this.source);
-    // }
   }
 
   // Determine whether a page is "rotated" (in either direction)
@@ -151,45 +156,45 @@ export class VerdocsView {
   // }
 
   // Render one document page. Note that pageNumber is 1-based.
-  async renderPage(pageNumber: number): Promise<void> {
-    const domPage = this.domPages[pageNumber];
-
-    // Two async operations happen here, loading the PDF and rendering the DOM div/canvas placeholders to draw the pages on.
-    if (!domPage) {
-      console.log('[VIEW] Skipping rendering page not yet in DOM', {pageNumber});
-      return;
-    }
-
-    const pageMetrics = this.sourcePageMetrics[pageNumber];
-
-    console.log('[VIEW] Rendering page', {pageNumber, pageMetrics, domPage});
-    try {
-      // const pdfPage = await this.pdfDocument.getPage(pageNumber);
-      // const viewport = pdfPage.getViewport({scale: domPage.xScale});
-      // console.log('[VIEW] Page viewport', domPage.xScale, viewport);
-
-      // const canvas = document.getElementById(`${domPage.containerId}-page`) as HTMLCanvasElement | null;
-      // if (!canvas) {
-      //   console.log('[VIEW] Unable to find canvas element');
-      //   return;
-      // }
-      //
-      // canvas.width = domPage.renderedWidth;
-      // canvas.height = domPage.renderedHeight;
-      // const canvasContext = canvas.getContext('2d');
-      // canvasContext.clearRect(0, 0, domPage.renderedWidth, domPage.renderedHeight);
-      // await pdfPage.render({canvasContext, viewport});
-
-      this.pageRendered.emit({
-        renderedPage: domPage,
-        sourcePageMetrics: pageMetrics,
-        pages: this.domPages,
-      });
-    } catch (e) {
-      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      console.warn('[VIEW] Error rendering page', e);
-    }
-  }
+  // async renderPage(pageNumber: number): Promise<void> {
+  //   const domPage = this.domPages[pageNumber];
+  //
+  //   // Two async operations happen here, loading the PDF and rendering the DOM div/canvas placeholders to draw the pages on.
+  //   if (!domPage) {
+  //     console.log('[VIEW] Skipping rendering page not yet in DOM', {pageNumber});
+  //     return;
+  //   }
+  //
+  //   const pageMetrics = this.sourcePageMetrics[pageNumber];
+  //
+  //   console.log('[VIEW] Rendering page', {pageNumber, pageMetrics, domPage});
+  //   try {
+  //     // const pdfPage = await this.pdfDocument.getPage(pageNumber);
+  //     // const viewport = pdfPage.getViewport({scale: domPage.xScale});
+  //     // console.log('[VIEW] Page viewport', domPage.xScale, viewport);
+  //
+  //     // const canvas = document.getElementById(`${domPage.containerId}-page`) as HTMLCanvasElement | null;
+  //     // if (!canvas) {
+  //     //   console.log('[VIEW] Unable to find canvas element');
+  //     //   return;
+  //     // }
+  //     //
+  //     // canvas.width = domPage.renderedWidth;
+  //     // canvas.height = domPage.renderedHeight;
+  //     // const canvasContext = canvas.getContext('2d');
+  //     // canvasContext.clearRect(0, 0, domPage.renderedWidth, domPage.renderedHeight);
+  //     // await pdfPage.render({canvasContext, viewport});
+  //
+  //     this.pageRendered.emit({
+  //       renderedPage: domPage,
+  //       sourcePageMetrics: pageMetrics,
+  //       pages: this.domPages,
+  //     });
+  //   } catch (e) {
+  //     this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+  //     console.warn('[VIEW] Error rendering page', e);
+  //   }
+  // }
 
   // async renderPages(): Promise<void> {
   //   const pageNumbersToRender = integerSequence(1, this.numPages);
@@ -260,39 +265,36 @@ export class VerdocsView {
   //     });
   // }
 
-  async handlePageRendered(e: any) {
-    e.stopPropagation();
-
-    const domPage = e.detail as IDocumentPageInfo;
-    this.domPages[domPage.pageNumber] = domPage;
-    await this.renderPage(domPage.pageNumber);
-  }
+  // async handlePageRendered(e: any) {
+  //   e.stopPropagation();
+  //
+  //   const domPage = e.detail as IDocumentPageInfo;
+  //   this.domPages[domPage.pageNumber] = domPage;
+  //   await this.renderPage(domPage.pageNumber);
+  // }
 
   render() {
-    console.log('[VIEW] Loading...', this.loadProgress);
-    if (this.loadProgress < 100) {
-      return (
-        <Host>
-          <verdocs-loader />
-        </Host>
-      );
-    }
-
-    console.log('[VIEW] Rendering pages', this.pageNumbers, this.pageUris);
+    console.log('[VIEW] Rendering', this.templateId, this.envelopeId);
 
     // TODO: Error handling for missing pages. Is it better to skip the page or show a placeholder?
     return (
       <Host>
-        {this.pageNumbers.map(pageNumber => (
-          <verdocs-document-page
-            pageImageUri={this.pageUris[pageNumber]}
-            virtualWidth={this.sourcePageMetrics[pageNumber]?.width || 612}
-            virtualHeight={this.sourcePageMetrics[pageNumber]?.height || 792}
-            pageNumber={pageNumber}
-            layers={this.pageLayers}
-            onPageRendered={p => this.handlePageRendered(p)}
+        {this.template && (
+          <verdocs-view-template-document
+            endpoint={this.endpoint}
+            templateId={this.templateId}
+            documentId={this.template.template_document?.id}
+            onPageRendered={p => this.pageRendered?.emit(p.detail)}
           />
-        ))}
+        )}
+        {this.envelope && (
+          <verdocs-view-envelope-document
+            endpoint={this.endpoint}
+            envelopeId={this.envelopeId}
+            documentId={this.envelope.envelope_document_id}
+            onPageRendered={p => this.pageRendered?.emit(p.detail)}
+          />
+        )}
       </Host>
     );
   }

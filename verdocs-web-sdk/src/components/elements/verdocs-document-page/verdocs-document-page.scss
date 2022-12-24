@@ -10,12 +10,10 @@ verdocs-document-page {
     left: 0;
     right: 0;
     bottom: 0;
-    //background: #fff;
     box-shadow: 0 0 10px 5px #0000000f;
 
-    //&.background {
-    //  background: #fff;
-    //  box-shadow: 0 0 10px 5px #0000000f;
-    //}
+    &.img {
+      max-width: 100%;
+    }
   }
 }

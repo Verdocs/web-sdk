@@ -104,7 +104,7 @@ export class VerdocsTemplateFields {
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
     } catch (e) {
-      console.log('[PREVIEW] Error with preview session', e);
+      console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -118,16 +118,16 @@ export class VerdocsTemplateFields {
   }
 
   async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
-    console.log('[PREVIEW] handleFieldChange', field, e, optionId);
+    console.log('[FIELDS] handleFieldChange', field, e, optionId);
   }
 
   handlePageRendered(e) {
     const pageInfo = e.detail as IPageRenderEvent;
-    console.log('[PREVIEW] Page rendered', pageInfo);
+    console.log('[FIELDS] Page rendered', pageInfo);
 
     const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
-    console.log('[PREVIEW] Fields on page', fields);
+    console.log('[FIELDS] Fields on page', fields);
     fields.forEach(field => {
       const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
       // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
@@ -146,10 +146,9 @@ export class VerdocsTemplateFields {
       interact(el).draggable({
         listeners: {
           start(event) {
-            console.log('drag started', event.type, event.target);
+            console.log('[FIELDS] Drag started', event.type, event.target);
           },
           move(event) {
-            console.log('moved');
             const oldX = +(event.target.getAttribute('posX') || 0);
             const oldY = +(event.target.getAttribute('posY') || 0);
             const xScale = +(event.target.getAttribute('xScale') || 1);
@@ -161,7 +160,7 @@ export class VerdocsTemplateFields {
             updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
           },
           end(event) {
-            console.log('ended', event);
+            console.log('[FIELDS] Drag ended', event);
             // event.target.setAttribute('posX', 0);
             // event.target.setAttribute('posy', 0);
             // updateCssTransform(event.target, 'translate', `${0}px, ${0}px`);

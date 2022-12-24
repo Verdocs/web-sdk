@@ -20,6 +20,8 @@ import { IContactSearchEvent as IContactSearchEvent1, IContactSelectEvent as ICo
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 import { IPageRenderEvent } from "./components/embeds/verdocs-view/verdocs-view";
+import { IPageRenderEvent as IPageRenderEvent1 } from "./components/elements/verdocs-view-envelope-document/verdocs-view-envelope-document";
+import { IPageRenderEvent as IPageRenderEvent2 } from "./components/elements/verdocs-view-template-document/verdocs-view-template-document";
 export namespace Components {
     interface VerdocsAuth {
         /**
@@ -127,15 +129,15 @@ export namespace Components {
          */
         "pageImageUri": string;
         /**
-          * The page number being rendered. Not used internally but included in callbacks/events beacuse page numbers are used everywhere in document handling.
+          * The page number being rendered. Not used internally, but included in callbacks/events beacuse page numbers are used everywhere in document handling. (Reminder: page numbers are 1-based.)
          */
         "pageNumber": number;
         /**
-          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element.
+          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
          */
         "virtualHeight": number;
         /**
-          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element.
+          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
          */
         "virtualWidth": number;
     }
@@ -774,6 +776,10 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
+          * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+         */
+        "envelopeId": string;
+        /**
           * Layers will be passed through to the individual pages inside this component.
          */
         "pageLayers": IPageLayer[];
@@ -782,9 +788,49 @@ export namespace Components {
          */
         "rotation": 0 | 90 | 180 | 270;
         /**
-          * Src of the PDF to load and render
+          * The template ID to render. Set ONE OF templateId or envelopeId.
          */
-        "source": string;
+        "templateId": string;
+    }
+    interface VerdocsViewEnvelopeDocument {
+        /**
+          * The document ID to render
+         */
+        "documentId": string;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The envelope ID to render
+         */
+        "envelopeId": string;
+        /**
+          * Layers will be passed through to the individual pages inside this component.
+         */
+        "pageLayers": IPageLayer[];
+        /**
+          * Rotate the PDF in degrees
+         */
+        "rotation": 0 | 90 | 180 | 270;
+    }
+    interface VerdocsViewTemplateDocument {
+        /**
+          * The document ID to render within the template
+         */
+        "documentId": string;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * Layers will be passed through to the individual pages inside this component.
+         */
+        "pageLayers": IPageLayer[];
+        /**
+          * Rotate the PDF in degrees
+         */
+        "rotation": 0 | 90 | 180 | 270;
         /**
           * The template ID to render
          */
@@ -946,6 +992,14 @@ export interface VerdocsUploadDialogCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsViewElement;
+}
+export interface VerdocsViewEnvelopeDocumentCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsViewEnvelopeDocumentElement;
+}
+export interface VerdocsViewTemplateDocumentCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsViewTemplateDocumentElement;
 }
 declare global {
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
@@ -1248,6 +1302,18 @@ declare global {
         prototype: HTMLVerdocsViewElement;
         new (): HTMLVerdocsViewElement;
     };
+    interface HTMLVerdocsViewEnvelopeDocumentElement extends Components.VerdocsViewEnvelopeDocument, HTMLStencilElement {
+    }
+    var HTMLVerdocsViewEnvelopeDocumentElement: {
+        prototype: HTMLVerdocsViewEnvelopeDocumentElement;
+        new (): HTMLVerdocsViewEnvelopeDocumentElement;
+    };
+    interface HTMLVerdocsViewTemplateDocumentElement extends Components.VerdocsViewTemplateDocument, HTMLStencilElement {
+    }
+    var HTMLVerdocsViewTemplateDocumentElement: {
+        prototype: HTMLVerdocsViewTemplateDocumentElement;
+        new (): HTMLVerdocsViewTemplateDocumentElement;
+    };
     interface HTMLElementTagNameMap {
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
@@ -1299,6 +1365,8 @@ declare global {
         "verdocs-toolbar-icon": HTMLVerdocsToolbarIconElement;
         "verdocs-upload-dialog": HTMLVerdocsUploadDialogElement;
         "verdocs-view": HTMLVerdocsViewElement;
+        "verdocs-view-envelope-document": HTMLVerdocsViewEnvelopeDocumentElement;
+        "verdocs-view-template-document": HTMLVerdocsViewTemplateDocumentElement;
     }
 }
 declare namespace LocalJSX {
@@ -1444,15 +1512,15 @@ declare namespace LocalJSX {
          */
         "pageImageUri"?: string;
         /**
-          * The page number being rendered. Not used internally but included in callbacks/events beacuse page numbers are used everywhere in document handling.
+          * The page number being rendered. Not used internally, but included in callbacks/events beacuse page numbers are used everywhere in document handling. (Reminder: page numbers are 1-based.)
          */
         "pageNumber"?: number;
         /**
-          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element.
+          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
          */
         "virtualHeight"?: number;
         /**
-          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element.
+          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
          */
         "virtualWidth"?: number;
     }
@@ -2219,7 +2287,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user completes the step.
          */
-        "onSettingsUpdated"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
+        "onSettingsUpdated"?: (event: VerdocsTemplatePropertiesCustomEvent<{name: string; sendReminders: boolean; firstReminderDays: number; reminderDays: number}>) => void;
         /**
           * The template ID to edit.
          */
@@ -2368,6 +2436,10 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
+          * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+         */
+        "envelopeId"?: string;
+        /**
           * Fired when a page has been changed
          */
         "onPageChange"?: (event: VerdocsViewCustomEvent<number>) => void;
@@ -2400,9 +2472,97 @@ declare namespace LocalJSX {
          */
         "rotation"?: 0 | 90 | 180 | 270;
         /**
-          * Src of the PDF to load and render
+          * The template ID to render. Set ONE OF templateId or envelopeId.
          */
-        "source"?: string;
+        "templateId"?: string;
+    }
+    interface VerdocsViewEnvelopeDocument {
+        /**
+          * The document ID to render
+         */
+        "documentId"?: string;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The envelope ID to render
+         */
+        "envelopeId"?: string;
+        /**
+          * Fired when a page has been changed
+         */
+        "onPageChange"?: (event: VerdocsViewEnvelopeDocumentCustomEvent<number>) => void;
+        /**
+          * Fired when a page has been initialized
+         */
+        "onPageInit"?: (event: VerdocsViewEnvelopeDocumentCustomEvent<number>) => void;
+        /**
+          * Fired when a page has been changed
+         */
+        "onPageLoaded"?: (event: VerdocsViewEnvelopeDocumentCustomEvent<number>) => void;
+        /**
+          * Fired when a page has been rendered
+         */
+        "onPageRendered"?: (event: VerdocsViewEnvelopeDocumentCustomEvent<IPageRenderEvent>) => void;
+        /**
+          * Fired when a page has been scaled
+         */
+        "onScaleChange"?: (event: VerdocsViewEnvelopeDocumentCustomEvent<number>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsViewEnvelopeDocumentCustomEvent<SDKError>) => void;
+        /**
+          * Layers will be passed through to the individual pages inside this component.
+         */
+        "pageLayers"?: IPageLayer[];
+        /**
+          * Rotate the PDF in degrees
+         */
+        "rotation"?: 0 | 90 | 180 | 270;
+    }
+    interface VerdocsViewTemplateDocument {
+        /**
+          * The document ID to render within the template
+         */
+        "documentId"?: string;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Fired when a page has been changed
+         */
+        "onPageChange"?: (event: VerdocsViewTemplateDocumentCustomEvent<number>) => void;
+        /**
+          * Fired when a page has been initialized
+         */
+        "onPageInit"?: (event: VerdocsViewTemplateDocumentCustomEvent<number>) => void;
+        /**
+          * Fired when a page has been changed
+         */
+        "onPageLoaded"?: (event: VerdocsViewTemplateDocumentCustomEvent<number>) => void;
+        /**
+          * Fired when a page has been rendered
+         */
+        "onPageRendered"?: (event: VerdocsViewTemplateDocumentCustomEvent<IPageRenderEvent>) => void;
+        /**
+          * Fired when a page has been scaled
+         */
+        "onScaleChange"?: (event: VerdocsViewTemplateDocumentCustomEvent<number>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsViewTemplateDocumentCustomEvent<SDKError>) => void;
+        /**
+          * Layers will be passed through to the individual pages inside this component.
+         */
+        "pageLayers"?: IPageLayer[];
+        /**
+          * Rotate the PDF in degrees
+         */
+        "rotation"?: 0 | 90 | 180 | 270;
         /**
           * The template ID to render
          */
@@ -2459,6 +2619,8 @@ declare namespace LocalJSX {
         "verdocs-toolbar-icon": VerdocsToolbarIcon;
         "verdocs-upload-dialog": VerdocsUploadDialog;
         "verdocs-view": VerdocsView;
+        "verdocs-view-envelope-document": VerdocsViewEnvelopeDocument;
+        "verdocs-view-template-document": VerdocsViewTemplateDocument;
     }
 }
 export { LocalJSX as JSX };
@@ -2515,6 +2677,8 @@ declare module "@stencil/core" {
             "verdocs-toolbar-icon": LocalJSX.VerdocsToolbarIcon & JSXBase.HTMLAttributes<HTMLVerdocsToolbarIconElement>;
             "verdocs-upload-dialog": LocalJSX.VerdocsUploadDialog & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
             "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
+            "verdocs-view-envelope-document": LocalJSX.VerdocsViewEnvelopeDocument & JSXBase.HTMLAttributes<HTMLVerdocsViewEnvelopeDocumentElement>;
+            "verdocs-view-template-document": LocalJSX.VerdocsViewTemplateDocument & JSXBase.HTMLAttributes<HTMLVerdocsViewTemplateDocumentElement>;
         }
     }
 }

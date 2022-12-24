@@ -1270,7 +1270,7 @@ export declare interface VerdocsTemplateProperties extends Components.VerdocsTem
   /**
    * Event fired when the user completes the step. 
    */
-  settingsUpdated: EventEmitter<CustomEvent<any>>;
+  settingsUpdated: EventEmitter<CustomEvent<{name: string; sendReminders: boolean; firstReminderDays: number; reminderDays: number}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component. 
@@ -1556,15 +1556,115 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['endpoint', 'pageLayers', 'rotation', 'source', 'templateId']
+  inputs: ['endpoint', 'envelopeId', 'pageLayers', 'rotation', 'templateId']
 })
 @Component({
   selector: 'verdocs-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['endpoint', 'pageLayers', 'rotation', 'source', 'templateId']
+  inputs: ['endpoint', 'envelopeId', 'pageLayers', 'rotation', 'templateId']
 })
 export class VerdocsView {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['pageRendered', 'pageLoaded', 'pageChange', 'pageInit', 'scaleChange', 'sdkError']);
+  }
+}
+
+import type { IPageRenderEvent as IVerdocsViewEnvelopeDocumentIPageRenderEvent } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsViewEnvelopeDocumentSDKError } from '@verdocs/web-sdk';
+export declare interface VerdocsViewEnvelopeDocument extends Components.VerdocsViewEnvelopeDocument {
+  /**
+   * Fired when a page has been rendered 
+   */
+  pageRendered: EventEmitter<CustomEvent<IVerdocsViewEnvelopeDocumentIPageRenderEvent>>;
+  /**
+   * Fired when a page has been changed 
+   */
+  pageLoaded: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when a page has been changed 
+   */
+  pageChange: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when a page has been initialized 
+   */
+  pageInit: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when a page has been scaled 
+   */
+  scaleChange: EventEmitter<CustomEvent<number>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsViewEnvelopeDocumentSDKError>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['documentId', 'endpoint', 'envelopeId', 'pageLayers', 'rotation']
+})
+@Component({
+  selector: 'verdocs-view-envelope-document',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['documentId', 'endpoint', 'envelopeId', 'pageLayers', 'rotation']
+})
+export class VerdocsViewEnvelopeDocument {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['pageRendered', 'pageLoaded', 'pageChange', 'pageInit', 'scaleChange', 'sdkError']);
+  }
+}
+
+import type { IPageRenderEvent as IVerdocsViewTemplateDocumentIPageRenderEvent } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsViewTemplateDocumentSDKError } from '@verdocs/web-sdk';
+export declare interface VerdocsViewTemplateDocument extends Components.VerdocsViewTemplateDocument {
+  /**
+   * Fired when a page has been rendered 
+   */
+  pageRendered: EventEmitter<CustomEvent<IVerdocsViewTemplateDocumentIPageRenderEvent>>;
+  /**
+   * Fired when a page has been changed 
+   */
+  pageLoaded: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when a page has been changed 
+   */
+  pageChange: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when a page has been initialized 
+   */
+  pageInit: EventEmitter<CustomEvent<number>>;
+  /**
+   * Fired when a page has been scaled 
+   */
+  scaleChange: EventEmitter<CustomEvent<number>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component. 
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsViewTemplateDocumentSDKError>>;
+
+}
+
+@ProxyCmp({
+  defineCustomElementFn: undefined,
+  inputs: ['documentId', 'endpoint', 'pageLayers', 'rotation', 'templateId']
+})
+@Component({
+  selector: 'verdocs-view-template-document',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  inputs: ['documentId', 'endpoint', 'pageLayers', 'rotation', 'templateId']
+})
+export class VerdocsViewTemplateDocument {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();

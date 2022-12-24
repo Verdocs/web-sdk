@@ -1,0 +1,19 @@
+@import '../../../theme.scss';
+
+verdocs-view-template-document {
+  font-family: $verdocs-primary-font;
+  display: flex;
+  padding: 15px;
+  row-gap: 15px;
+  min-height: 200px;
+  position: relative;
+  align-items: center;
+  box-sizing: border-box;
+  flex-direction: column;
+  width: 100%;
+
+  div,
+  canvas {
+    box-sizing: border-box;
+  }
+}

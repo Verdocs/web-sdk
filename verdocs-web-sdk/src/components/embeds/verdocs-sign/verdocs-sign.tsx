@@ -423,7 +423,7 @@ export class VerdocsSign {
           {this.pdfUrl ? (
             <div class="inner">
               <verdocs-view
-                source={this.pdfUrl}
+                envelopeId={this.envelopeId}
                 endpoint={this.endpoint}
                 onPageRendered={e => this.handlePageRendered(e)}
                 pageLayers={[
