@@ -1,4 +1,4 @@
-import {Component, Prop, h, Event, EventEmitter} from '@stencil/core';
+import {Component, Prop, h} from '@stencil/core';
 
 /**
  * Display a simple button.
@@ -26,12 +26,12 @@ export class VerdocsButton {
   @Prop() label!: string;
 
   /**
-   * If desired, a prefix icon for the button
+   * If desired, a prefix icon for the button.
    */
   @Prop() startIcon: string | null = null;
 
   /**
-   * If desired, a suffix icon for the button
+   * If desired, a suffix icon for the button.
    */
   @Prop() endIcon: string | null = null;
 
@@ -55,19 +55,9 @@ export class VerdocsButton {
    */
   @Prop() disabled: boolean = false;
 
-  /**
-   * Event fired when the button is pressed.
-   */
-  @Event({composed: true, bubbles: false}) press!: EventEmitter;
-
-  handleClick(e: any) {
-    e.stopPropagation();
-    this.press?.emit();
-  }
-
   render() {
     return (
-      <button disabled={this.disabled} type={this.type} onClick={e => this.handleClick(e)} class={`${this.variant} ${this.size} ${this.type}`}>
+      <button disabled={this.disabled} type={this.type} class={`${this.variant} ${this.size} ${this.type}`}>
         {this.startIcon ? <span class="icon start" innerHTML={this.startIcon} /> : null}
         <span class="label">{this.label}</span>
         {this.endIcon ? <span class="icon end" innerHTML={this.endIcon} /> : null}

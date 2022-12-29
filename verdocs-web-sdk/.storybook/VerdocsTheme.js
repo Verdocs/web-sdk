@@ -1,7 +1,11 @@
 import { create } from '@storybook/theming';
 
 export default create({
-  base: 'dark',
+  // Reverted this, it broke the text in the Canvas tab
+  // base: 'dark',
+  // textColor: 'white',
+  // textInverseColor: 'rgba(255,255,255,0.9)',
+
   brandTitle: 'Verdocs Embeds',
   brandUrl: 'https://verdocs.com',
   brandImage: 'https://verdocs.com/en/wp-content/uploads/2020/05/wh-logo-1.svg',
@@ -12,8 +16,6 @@ export default create({
 
   appContentBg: 'white',
 
-  textColor: 'white',
-  textInverseColor: 'rgba(255,255,255,0.9)',
 
   barTextColor: '#55bc81',
   barSelectedColor: '#55bc81',

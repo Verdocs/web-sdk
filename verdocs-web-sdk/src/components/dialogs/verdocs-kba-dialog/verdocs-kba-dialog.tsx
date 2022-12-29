@@ -131,8 +131,8 @@ export class VerdocsKbaDialog {
             )}
 
             <div class="buttons">
-              <verdocs-button label="Cancel" variant="outline" onPress={() => this.handleCancel()} />
-              <verdocs-button label="Done" onPress={() => this.handleDone()} disabled={!this.response} />
+              <verdocs-button label="Cancel" variant="outline" onClick={() => this.handleCancel()} />
+              <verdocs-button label="Done" onClick={() => this.handleDone()} disabled={!this.response} />
             </div>
           </div>
         </div>

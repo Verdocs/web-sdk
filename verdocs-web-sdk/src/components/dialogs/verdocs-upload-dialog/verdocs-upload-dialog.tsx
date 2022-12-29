@@ -117,7 +117,7 @@ export class VerdocsUploadDialog {
                 <p>Drag and drop a file here...</p>
                 <p>- or -</p>
 
-                <verdocs-button label="Select a file..." onPress={() => this.handleSelectFile()} />
+                <verdocs-button label="Select a file..." onClick={() => this.handleSelectFile()} />
                 <input type="file" ref={el => (this.fileInput = el as HTMLInputElement)} style={{display: 'none'}} onChange={e => this.handleFileChange(e)} />
               </div>
             ) : (
@@ -133,8 +133,8 @@ export class VerdocsUploadDialog {
             )}
 
             <div class="buttons">
-              <verdocs-button label="Cancel" variant="outline" onPress={() => this.handleCancel()} />
-              <verdocs-button label="Done" onPress={() => this.handleDone()} disabled={this.decodedFiles.length < 1} />
+              <verdocs-button label="Cancel" variant="outline" onClick={() => this.handleCancel()} />
+              <verdocs-button label="Done" onClick={() => this.handleDone()} disabled={this.decodedFiles.length < 1} />
             </div>
           </div>
         </div>

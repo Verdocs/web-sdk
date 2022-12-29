@@ -1,4 +1,5 @@
-import {Component, Prop, State, Host, h, Event, EventEmitter} from '@stencil/core';
+import {Component, Prop, Host, h} from '@stencil/core';
+// import {Component, Prop, State, Host, h, Event, EventEmitter} from '@stencil/core';
 
 /**
  * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
@@ -30,30 +31,31 @@ export class VerdocsSelectInput {
    */
   @Prop() disabled: boolean = false;
 
-  @State() _value: string = '';
+  // @State() _value: string = '';
 
   /**
    * Event fired when the selection has changed
    */
-  @Event({composed: true}) fieldChange: EventEmitter<string>;
+  // @Event({composed: true}) fieldChange: EventEmitter<string>;
 
   componentWillLoad() {
-    this._value = this.value;
+    // this._value = this.value;
   }
 
   componentDidLoad() {}
 
-  handleInput(e: any) {
-    this._value = e.target.value;
-    this.fieldChange?.emit(e.target.value);
-  }
+  // handleInput(e: any) {
+  //   this._value = e.target.value;
+  //   this.fieldChange?.emit(e.target.value);
+  // }
 
   render() {
     return (
       <Host class="input-field">
         <label>
           {this.label ? <div class="input-label">{this.label + ':'}</div> : <div />}
-          <select class="input-element" disabled={this.disabled} onInput={e => this.handleInput(e)}>
+          <select class="input-element" disabled={this.disabled}>
+          {/*<select class="input-element" disabled={this.disabled} onInput={e => this.handleInput(e)}>*/}
             {this.options.map(option => (
               <option value={option.value} selected={option.value === this.value}>
                 {option.label}

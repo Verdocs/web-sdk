@@ -119,31 +119,6 @@ export class VerdocsView {
         this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
         console.log('[VIEW] Loaded envelope', this.envelope);
       }
-
-      // console.log(`[VIEW] Loading template ${this.templateId}`);
-      // const template = await getTemplate(this.endpoint, this.templateId);
-      //
-      // console.log('[VIEW] Got template', this.template);
-      // this.template = template;
-      // this.pageNumbers = integerSequence(1, template.pages.length);
-      //
-      // const pageUris: Record<number, string> = {};
-      // for await (let page of template.pages) {
-      //   console.log('[VIEW] Loading page', page);
-      //   // TODO: Make an endpoint to get all of the pages for a template
-      //   // TODO: When uploading a new template, pre-process its pages into images and comment that the individual page-loader is a utility,
-      //   //  not the primary mechanism.
-      //   const image = await getPageImage(this.endpoint, this.templateId, page.sequence);
-      //   // TODO: Make this uri to match the rest of the terminology?
-      //   pageUris[page.sequence] = image.url;
-      //   console.log('[VIEW] Got image Uri', image.url);
-      //   this.loadProgress = page.sequence / template.pages.length;
-      // }
-      //
-      // this.pageUris = pageUris;
-      // this.loadProgress = 100;
-      //
-      // // this.pdfUrl = `${this.endpoint.getBaseURL()}/templates/${this.templateId}/documents/${template.template_document?.id}?file=true`;
     } catch (e) {
       console.log('[VIEW] Error loading data', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));

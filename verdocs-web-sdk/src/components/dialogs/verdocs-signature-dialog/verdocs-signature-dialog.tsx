@@ -278,8 +278,8 @@ export class VerdocsSignatureDialog {
             </div>
 
             <div class="buttons">
-              <verdocs-button label="CANCEL" size="normal" variant="outline" onPress={e => this.handleCancel(e)} />
-              <verdocs-button label="Adopt & Sign" size="normal" onPress={e => this.handleAdopt(e)} />
+              <verdocs-button label="CANCEL" size="normal" variant="outline" onClick={e => this.handleCancel(e)} />
+              <verdocs-button label="Adopt & Sign" size="normal" onClick={e => this.handleAdopt(e)} />
             </div>
           </div>
         </div>

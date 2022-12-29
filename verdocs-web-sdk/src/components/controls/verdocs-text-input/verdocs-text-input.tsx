@@ -1,4 +1,4 @@
-import {Component, Prop, State, Host, h} from '@stencil/core';
+import {Component, Prop, Host, h} from '@stencil/core';
 
 /**
  * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
@@ -41,7 +41,7 @@ export class VerdocsTextInput {
    */
   @Prop() disabled: boolean = false;
 
-  @State() _value: string = '';
+  // @State() _value: string = '';
 
   componentWillLoad() {
     // this._value = this.value;

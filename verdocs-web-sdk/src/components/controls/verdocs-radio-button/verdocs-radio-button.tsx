@@ -1,4 +1,5 @@
-import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
+import {Component, h, Host, Prop} from '@stencil/core';
+// import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
 
 /**
  * Displays a radio button. Note that this is different from the `verdocs-field-radio-button` component, which is designed
@@ -36,12 +37,12 @@ export class VerdocsRadioButton {
    * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
    * keypress.
    */
-  @Event({composed: true}) selected: EventEmitter<{value: string}>;
+  // @Event({composed: true}) selected: EventEmitter<{value: string}>;
 
-  handleChange(e: any) {
-    console.log('changed', e.target.checked);
-    this.selected.emit({value: this.value});
-  }
+  // handleChange(e: any) {
+  //   console.log('changed', e.target.checked);
+  //   this.selected.emit({value: this.value});
+  // }
 
   render() {
     return (
@@ -53,7 +54,7 @@ export class VerdocsRadioButton {
           id={`verdocs-radio-button-${this.name}-${this.value}`}
           checked={this.checked}
           disabled={this.disabled}
-          onChange={e => this.handleChange(e)}
+          // onChange={e => this.handleChange(e)}
         />
         <label htmlFor={`verdocs-radio-button-${this.name}-${this.value}`} />
       </Host>

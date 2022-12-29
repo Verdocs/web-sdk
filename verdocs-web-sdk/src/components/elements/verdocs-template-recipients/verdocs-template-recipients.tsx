@@ -370,8 +370,8 @@ export class VerdocsTemplateRecipients {
         <div class="buttons">
           <div class="flex-fill" />
 
-          <verdocs-button variant="outline" label="Cancel" size="small" onPress={e => this.handleCancel(e)} />
-          <verdocs-button label="OK" size="small" onPress={e => this.handleSubmit(e)} />
+          <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} />
+          <verdocs-button label="OK" size="small" onClick={e => this.handleSubmit(e)} />
         </div>
 
         {/* We do it this way instead of setting open so the widget resets each time it's displayed, in case the user opens/changes/cancels */}

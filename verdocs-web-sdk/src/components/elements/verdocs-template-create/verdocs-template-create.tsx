@@ -101,12 +101,12 @@ export class VerdocsTemplateCreate {
           </div>
           <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold'}}>Drag a file here</div>
           <div style={{marginTop: '20px', marginBottom: '20px', fontSize: '16px'}}>Or, if you prefer...</div>
-          <verdocs-button label="Select a file from your computer" size="small" onPress={e => this.handleUpload(e)} />
+          <verdocs-button label="Select a file from your computer" size="small" onClick={e => this.handleUpload(e)} />
         </div>
 
         <div class="buttons">
-          <verdocs-button variant="outline" label="Cancel" size="small" onPress={e => this.handleCancel(e)} />
-          <verdocs-button label="Next" size="small" onPress={e => this.handleSubmit(e)} disabled={!this.file} />
+          <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} />
+          <verdocs-button label="Next" size="small" onClick={e => this.handleSubmit(e)} disabled={!this.file} />
         </div>
       </form>
     );

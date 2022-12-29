@@ -1,4 +1,5 @@
-import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
+import {Component, h, Host, Prop} from '@stencil/core';
+// import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
 
 /**
  * Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
@@ -36,12 +37,12 @@ export class VerdocsCheckbox {
    * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
    * keypress.
    */
-  @Event({composed: true}) selected: EventEmitter<{value: string}>;
+  // @Event({composed: true}) selected: EventEmitter<{value: string}>;
 
-  handleChange(e: any) {
-    console.log('changed', e.target.checked);
-    this.selected.emit({value: this.value});
-  }
+  // handleChange(e: any) {
+  //   console.log('changed', e.target.checked);
+  //   this.selected.emit({value: this.value});
+  // }
 
   render() {
     return (
@@ -53,7 +54,7 @@ export class VerdocsCheckbox {
           id={`verdocs-checkbox-${this.name}-${this.value}`}
           checked={this.checked}
           disabled={this.disabled}
-          onChange={e => this.handleChange(e)}
+          // onChange={e => this.handleChange(e)}
         />
       </Host>
     );

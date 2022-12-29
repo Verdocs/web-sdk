@@ -178,8 +178,8 @@ export class VerdocsTemplateProperties {
         <div class="buttons">
           <div class="flex-fill" />
 
-          <verdocs-button variant="outline" label="Cancel" size="small" onPress={e => this.handleCancel(e)} />
-          <verdocs-button label="OK" size="small" onPress={e => this.handleSubmit(e)} />
+          <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} />
+          <verdocs-button label="OK" size="small" onClick={e => this.handleSubmit(e)} />
         </div>
       </form>
     );

@@ -126,8 +126,8 @@ export class VerdocsTemplateSenderDialog {
             </div>
 
             <div class="buttons">
-              <verdocs-button label="Cancel" variant="outline" onPress={() => this.handleCancel()} />
-              <verdocs-button label="Done" onPress={() => this.handleDone()} />
+              <verdocs-button label="Cancel" variant="outline" onClick={() => this.handleCancel()} />
+              <verdocs-button label="Done" onClick={() => this.handleDone()} />
             </div>
           </div>
         </div>

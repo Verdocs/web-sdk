@@ -59,8 +59,8 @@ export class VerdocsOkDialog {
               {this.message}
 
               <div class="buttons">
-                {this.cancel ? <verdocs-button label="CANCEL" variant="outline" onPress={() => this.handleClose('cancel')} /> : <div style={{display: 'none'}} />}
-                <verdocs-button label="OK" onPress={() => this.handleClose('ok')} />
+                {this.cancel ? <verdocs-button label="CANCEL" variant="outline" onClick={() => this.handleClose('cancel')} /> : <div style={{display: 'none'}} />}
+                <verdocs-button label="OK" onClick={() => this.handleClose('ok')} />
               </div>
             </div>
           </div>

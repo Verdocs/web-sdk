@@ -71,13 +71,7 @@ export class VerdocsBuild {
 }
 
 
-export declare interface VerdocsButton extends Components.VerdocsButton {
-  /**
-   * Event fired when the button is pressed. 
-   */
-  press: EventEmitter<CustomEvent<any>>;
-
-}
+export declare interface VerdocsButton extends Components.VerdocsButton {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -94,7 +88,6 @@ export class VerdocsButton {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['press']);
   }
 }
 

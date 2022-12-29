@@ -1,5 +1,6 @@
 import {createPopper, Instance} from '@popperjs/core';
-import {Component, Event, EventEmitter, h, Host, Prop, State} from '@stencil/core';
+import {Component, h, Host, Prop, State} from '@stencil/core';
+// import {Component, Event, EventEmitter, h, Host, Prop, State} from '@stencil/core';
 
 /**
  * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
@@ -27,7 +28,7 @@ export class VerdocsToolbarIcon {
   /**
    * Triggered when the icon is pressed
    */
-  @Event({composed: true}) press: EventEmitter;
+  // @Event({composed: true}) press: EventEmitter;
 
   @State() containerId = `verdocs-toolbar-icon-${Math.random().toString(36).substring(2, 11)}`;
 
@@ -54,9 +55,9 @@ export class VerdocsToolbarIcon {
     this.tooltip?.removeAttribute('data-show');
   }
 
-  handlePress() {
-    this.press?.emit();
-  }
+  // handlePress() {
+  //   this.press?.emit();
+  // }
 
   render() {
     return (
@@ -69,7 +70,7 @@ export class VerdocsToolbarIcon {
           onFocus={() => this.show()}
           onMouseLeave={() => this.hide()}
           onBlur={() => this.hide()}
-          onClick={() => this.handlePress()}
+          // onClick={() => this.handlePress()}
           ref={el => (this.iconEl = el as HTMLDivElement)}
         />
         <div

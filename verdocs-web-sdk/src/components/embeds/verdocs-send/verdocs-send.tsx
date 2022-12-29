@@ -201,8 +201,8 @@ export class VerdocsSend {
         </div>
 
         <div class="buttons">
-          <verdocs-button label="Cancel" size="small" variant="outline" onPress={e => this.handleCancel(e)} />
-          <verdocs-button label="Send" size="small" disabled={!allRecipientsAssigned} onPress={e => this.handleSend(e)} />
+          <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} />
+          <verdocs-button label="Send" size="small" disabled={!allRecipientsAssigned} onClick={e => this.handleSend(e)} />
         </div>
       </Host>
     );

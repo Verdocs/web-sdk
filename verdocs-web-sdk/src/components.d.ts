@@ -57,7 +57,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * If desired, a suffix icon for the button
+          * If desired, a suffix icon for the button.
          */
         "endIcon": string | null;
         /**
@@ -69,7 +69,7 @@ export namespace Components {
          */
         "size": 'small' | 'normal' | 'medium' | 'large';
         /**
-          * If desired, a prefix icon for the button
+          * If desired, a prefix icon for the button.
          */
         "startIcon": string | null;
         /**
@@ -845,10 +845,6 @@ export interface VerdocsBuildCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsBuildElement;
 }
-export interface VerdocsButtonCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsButtonElement;
-}
 export interface VerdocsCheckboxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsCheckboxElement;
@@ -1416,7 +1412,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * If desired, a suffix icon for the button
+          * If desired, a suffix icon for the button.
          */
         "endIcon"?: string | null;
         /**
@@ -1424,15 +1420,11 @@ declare namespace LocalJSX {
          */
         "label": string;
         /**
-          * Event fired when the button is pressed.
-         */
-        "onPress"?: (event: VerdocsButtonCustomEvent<any>) => void;
-        /**
           * The size (height) of the button.
          */
         "size"?: 'small' | 'normal' | 'medium' | 'large';
         /**
-          * If desired, a prefix icon for the button
+          * If desired, a prefix icon for the button.
          */
         "startIcon"?: string | null;
         /**

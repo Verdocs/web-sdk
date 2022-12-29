@@ -44,8 +44,8 @@ export default {
   argTypes: {
     startIcon: {defaultValue: false, control: {type: 'boolean'}},
     endIcon: {defaultValue: false, control: {type: 'boolean'}},
-    press: {
-      action: 'press',
+    onClick: {
+      action: 'click',
       table: {
         disable: true,
       },
@@ -53,13 +53,13 @@ export default {
   },
 } as Meta;
 
-export const Button = ({label, size, variant, disabled, startIcon, endIcon, press}) =>
+export const Button = ({label, size, variant, disabled, startIcon, endIcon, onClick}) =>
   html`<verdocs-button
     .label=${label}
-    .startIcon=${startIcon ? CircleIcon : null}
-    .endIcon=${endIcon ? ArrowIcon : null}
     .size=${size}
     .variant=${variant}
     .disabled=${disabled}
-    @press=${press}
+    .startIcon=${startIcon ? CircleIcon : null}
+    .endIcon=${endIcon ? ArrowIcon : null}
+    @click=${onClick}
   />`;

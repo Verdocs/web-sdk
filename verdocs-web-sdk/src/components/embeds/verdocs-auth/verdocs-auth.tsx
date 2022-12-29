@@ -143,7 +143,7 @@ export class VerdocsAuth {
       if (this.debug) {
         return (
           <div class="status-result debug">
-            <verdocs-button label="Logout" disabled={this.loggingIn} onPress={() => this.handleLogout()} />
+            <verdocs-button label="Logout" disabled={this.loggingIn} onClick={() => this.handleLogout()} />
           </div>
         );
       }
@@ -176,7 +176,7 @@ export class VerdocsAuth {
             <verdocs-button
               label="Signup"
               disabled={this.loggingIn}
-              onPress={() => this.handleLogin()}
+              onClick={() => this.handleLogin()}
               style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
             />
           </form>
@@ -213,7 +213,7 @@ export class VerdocsAuth {
             style={{display: 'flex', justifyContent: 'center', margin: '10px auto 20px'}}
           />
 
-          <verdocs-button label="Login" disabled={this.loggingIn} onPress={() => this.handleLogin()} style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}} />
+          <verdocs-button label="Login" disabled={this.loggingIn} onClick={() => this.handleLogin()} style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}} />
         </form>
 
         {this.loginError ? <verdocs-ok-dialog open={true} heading="Login Error" message={this.loginError} onClosed={() => this.handleClearError()} /> : <div />}
