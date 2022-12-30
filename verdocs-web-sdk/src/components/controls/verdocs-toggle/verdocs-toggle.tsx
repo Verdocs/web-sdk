@@ -13,10 +13,6 @@ export interface IToggleIconButtons {
 
 /**
  * Displays a label and a set of buttons, also allowing a default selection of a button
- *
- * ```typescript
- *
- * ```
  */
 @Component({
   tag: 'verdocs-toggle',
@@ -38,29 +34,6 @@ export class VerdocsToggle {
   componentWillLoad() {
     this.selectedOption = this.options?.defaultSelection || 0;
   }
-
-  // @Listen('click', {
-  //   target: 'document',
-  //   capture: true,
-  //   passive: false,
-  // })
-  // handleClick(event) {
-  //   event.preventDefault();
-  //   let container = event.target;
-  //   if (container.matches('toggle-icon-buttons')) {
-  //     container = event.target.shadowRoot;
-  //     const element = container.activeElement;
-  //     const siblings = Array.from(element.parentElement.children).filter(child => {
-  //       return child !== element;
-  //     });
-  //     siblings.map((sibling: any) => {
-  //       return sibling.classList.remove('selected');
-  //     });
-  //     if (!element.classList.contains('selected')) {
-  //       element.classList.add('selected');
-  //     }
-  //   }
-  // }
 
   render() {
     return (

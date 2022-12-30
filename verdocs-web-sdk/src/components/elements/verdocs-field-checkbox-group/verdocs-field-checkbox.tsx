@@ -1,6 +1,6 @@
+import {Component, h, Host, Prop} from '@stencil/core';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
 
 /**
@@ -33,17 +33,6 @@ export class VerdocsFieldCheckbox {
    */
   @Prop() disabled?: boolean = false;
 
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-   * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-   * keypress.
-   */
-  @Event({composed: true}) fieldChange: EventEmitter<{option: number; value: boolean}>;
-
-  handleChange(e: any) {
-    this.fieldChange.emit({option: this.option, value: e.target.checked});
-  }
-
   render() {
     const settings = getFieldSettings(this.field);
     const option = settings.options?.[this.option] ?? {checked: false};
@@ -52,7 +41,7 @@ export class VerdocsFieldCheckbox {
     return (
       <Host class={{required: settings.required, disabled}}>
         <label>
-          <input type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} onChange={e => this.handleChange(e)} />
+          <input type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} />
           <span />
         </label>
       </Host>

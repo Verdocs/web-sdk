@@ -10,7 +10,13 @@ export default {
     value: '1',
     disabled: false,
   },
-  argTypes: {},
+  argTypes: {
+    onInput: {
+      action: 'input',
+      description: 'Fired when the checkbox is clicked. e.target.checked will indicate the current status (true if checked).',
+    },
+  },
 } as Meta;
 
-export const Checkbox = ({checked, name, value, disabled}) => html` <verdocs-checkbox .checked=${checked} .name=${name} .value=${value} .disabled=${disabled} /> `;
+export const Checkbox = ({checked, name, value, disabled, onInput}) =>
+  html` <verdocs-checkbox .checked=${checked} .name=${name} .value=${value} .disabled=${disabled} @input=${onInput} /> `;

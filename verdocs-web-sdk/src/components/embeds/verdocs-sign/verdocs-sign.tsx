@@ -164,7 +164,7 @@ export class VerdocsSign {
   }
 
   async handleFieldChange(field: IDocumentField, e: any, optionId?: string) {
-    console.log('fieldChange', field, e.detail);
+    console.log('fieldChange', field, e);
     switch (field.type) {
       case 'textbox':
         Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: e.detail})
@@ -228,7 +228,7 @@ export class VerdocsSign {
       backgroundColor: getRGBA(this.recipientIndex),
     } as any;
 
-    return <verdocs-field-checkbox style={style} field={field} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
+    return <verdocs-field-checkbox style={style} field={field} onChange={e => this.handleFieldChange(field, e, option.id)} />;
   }
 
   renderRadioGroupOption(page: IDocumentPageInfo, field: IDocumentField, option: any) {

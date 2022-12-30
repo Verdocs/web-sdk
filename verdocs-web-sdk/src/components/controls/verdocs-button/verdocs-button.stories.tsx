@@ -46,9 +46,8 @@ export default {
     endIcon: {defaultValue: false, control: {type: 'boolean'}},
     onClick: {
       action: 'click',
-      table: {
-        disable: true,
-      },
+      description: 'Fired when the user clicks the button.',
+      // table: {disable: true},
     },
   },
 } as Meta;

@@ -52,25 +52,19 @@ export class VerdocsKbaDialog {
   @Prop() choices: string[] = ['553 Arbor Dr', '18 Lacey Ln', '23A Ball Ct', '2375 Cavallo Blvd', '23-1 RR-7', '151 Boulder Rd'];
 
   /**
-   * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-   */
-  @Prop() open: boolean = false;
-
-  /**
    * Event fired when the dialog is closed. The event data will contain the closure reason.
    */
   @Event({composed: true}) cancel: EventEmitter;
 
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason.
+   * Event fired when the dialog is closed. The event data will contain the value selected.
    */
-  @Event({composed: true}) done: EventEmitter<string>;
+  @Event({composed: true}) next: EventEmitter<string>;
 
   @State() response = '';
 
   handleCancel() {
     this.cancel.emit();
-    this.open = false;
   }
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
@@ -82,13 +76,12 @@ export class VerdocsKbaDialog {
   }
 
   handleDone() {
-    this.done.emit(this.response);
-    this.open = false;
+    this.next.emit(this.response);
   }
 
   render() {
     return (
-      <Host style={{display: this.open ? 'block' : 'none'}}>
+      <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
             <div class="heading">

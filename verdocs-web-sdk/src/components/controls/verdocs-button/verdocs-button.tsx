@@ -14,6 +14,10 @@ import {Component, Prop, h} from '@stencil/core';
  * Icons may be placed either before ("start") or after ("end") the button label. Icons should be SVG objects passed as strings and will
  * be rendered as HTML inside the button label area. It is important that the root <SVG> tag contains a default `fill="#ffffff"` setting
  * for the base color, and that child elements below it do not. This allows the button color to carry into the icon properly.
+ *
+ * ```html
+ * <verdocs-button label="OK" onClick={() => (console.log('OK clicked'))} />
+ * ```
  */
 @Component({
   tag: 'verdocs-button',

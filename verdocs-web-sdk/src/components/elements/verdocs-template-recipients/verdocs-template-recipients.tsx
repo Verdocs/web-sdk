@@ -377,12 +377,11 @@ export class VerdocsTemplateRecipients {
         {/* We do it this way instead of setting open so the widget resets each time it's displayed, in case the user opens/changes/cancels */}
         {this.showingSenderDialog && (
           <verdocs-template-sender-dialog
-            open={true}
             value={this.sender}
             onCancel={() => (this.showingSenderDialog = false)}
-            onDone={e => {
+            onNext={e => {
               this.showingSenderDialog = false;
-              this.sender = e.detail.sender;
+              this.sender = e.detail;
             }}
           />
         )}

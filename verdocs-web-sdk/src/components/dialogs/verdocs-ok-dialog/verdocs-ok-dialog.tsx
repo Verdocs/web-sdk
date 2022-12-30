@@ -21,37 +21,40 @@ export class VerdocsOkDialog {
   @Prop() message: string = '';
 
   /**
-   * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-   */
-  @Prop() open: boolean = false;
-
-  /**
    * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background
    * overlay to dismiss it.
    */
-  @Prop() cancel: boolean = false;
+  @Prop() showCancel: boolean = false;
 
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason.
+   * Event fired when the user clicks the OK button.
    */
-  @Event({composed: true}) closed: EventEmitter<'cancel' | 'ok'>;
+  @Event({composed: true}) next: EventEmitter;
 
-  handleClose(reason: 'cancel' | 'ok') {
-    this.closed.emit(reason);
-    this.open = false;
+  /**
+   * Event fired when the user clicks the background overlay or Cancel button.
+   */
+  @Event({composed: true}) cancel: EventEmitter;
+
+  handleOk() {
+    this.next.emit();
+  }
+
+  handleCancel() {
+    this.cancel.emit();
   }
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
   handleDismiss(e: any) {
     if (e.target.className === 'background-overlay') {
       e.preventDefault();
-      this.handleClose('cancel');
+      this.cancel.emit();
     }
   }
 
   render() {
     return (
-      <Host style={{display: this.open ? 'block' : 'none'}}>
+      <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
             <div class="heading">{this.heading}</div>
@@ -59,8 +62,8 @@ export class VerdocsOkDialog {
               {this.message}
 
               <div class="buttons">
-                {this.cancel ? <verdocs-button label="CANCEL" variant="outline" onClick={() => this.handleClose('cancel')} /> : <div style={{display: 'none'}} />}
-                <verdocs-button label="OK" onClick={() => this.handleClose('ok')} />
+                {this.showCancel ? <verdocs-button label="CANCEL" variant="outline" onClick={() => this.handleCancel()} /> : <div style={{display: 'none'}} />}
+                <verdocs-button label="OK" onClick={() => this.handleOk()} />
               </div>
             </div>
           </div>

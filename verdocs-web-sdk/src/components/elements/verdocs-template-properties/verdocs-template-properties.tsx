@@ -69,11 +69,6 @@ export class VerdocsTemplateProperties {
     }
   }
 
-  handleMessageChange(e: any) {
-    console.log(e);
-    // this.message = e.target.value;
-  }
-
   handleCancel(e) {
     e.stopPropagation();
     this.cancel?.emit();
@@ -102,72 +97,55 @@ export class VerdocsTemplateProperties {
   }
 
   render() {
-    console.log('vals', {firstReminderDays: this.firstReminderDays, reminderDays: this.reminderDays, name: this.name});
     return (
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <h5>Template Name</h5>
         <fieldset>
-          <verdocs-text-input
-            value={this.name}
-            autocomplete="off"
-            onInput={(e: any) => {
-              this.name = e.target.value;
-            }}
-          />
+          <verdocs-text-input value={this.name} autocomplete="off" onInput={(e: any) => (this.name = e.target.value)} />
         </fieldset>
 
         <h5>Reminders</h5>
         <fieldset>
           <div class="input-row">
             <label>Send Automatic Reminders</label>
-            <verdocs-checkbox name="automatic-reminders" checked={this.sendReminders} value="on" onSelected={e => (this.sendReminders = e.detail.value === 'on')} />
+            <verdocs-checkbox name="automatic-reminders" checked={this.sendReminders} value="on" onInput={(e: any) => (this.sendReminders = e.target.checked)} />
           </div>
 
           <div class="input-row">
             <label>Days Before First Reminder</label>
-            <verdocs-text-input
-              value={this.firstReminderDays}
-              onInput={(e: any) => {
-                this.firstReminderDays = e.target.value;
-              }}
-            />
+            <verdocs-text-input value={this.firstReminderDays} onInput={(e: any) => (this.firstReminderDays = e.target.value)} />
           </div>
           <div class="input-row">
             <label>Days Between Reminders</label>
-            <verdocs-text-input
-              value={this.reminderDays}
-              onInput={(e: any) => {
-                this.firstReminderDays = e.target.value;
-              }}
-            />
+            <verdocs-text-input value={this.reminderDays} onInput={(e: any) => (this.reminderDays = e.target.value)} />
           </div>
         </fieldset>
 
         <h5>Template Visibility</h5>
         <fieldset>
           <div class="radio-row">
-            <verdocs-radio-button name="visibility" checked={true} value="private" />
+            <verdocs-radio-button name="visibility" checked={true} value="private" onChange={() => (this.visibility = 'private')} />
             <label htmlFor="verdocs-radio-button-visibility-private">
               <div class="title">Private</div>
               <div class="description">Only you can share and use this template</div>
             </label>
           </div>
           <div class="radio-row">
-            <verdocs-radio-button name="visibility" checked={true} value="shared" />
+            <verdocs-radio-button name="visibility" checked={true} value="shared" onChange={() => (this.visibility = 'shared')} />
             <label htmlFor="verdocs-radio-button-visibility-shared">
               <div class="title">Shared to your organization</div>
               <div class="description">Give access to your organization to share and use this template</div>
             </label>
           </div>
           <div class="radio-row">
-            <verdocs-radio-button name="visibility" checked={true} value="shared_public" />
+            <verdocs-radio-button name="visibility" checked={true} value="shared_public" onChange={() => (this.visibility = 'shared_public')} />
             <label htmlFor="verdocs-radio-button-visibility-shared_public">
               <div class="title">Shared to your organization and Public</div>
               <div class="description">Give access to your organization to share this template, and anyone on the Web can find and use this template</div>
             </label>
           </div>
           <div class="radio-row">
-            <verdocs-radio-button name="visibility" checked={true} value="public" />
+            <verdocs-radio-button name="visibility" checked={this.visibility === 'public'} value="public" onChange={() => (this.visibility = 'public')} />
             <label htmlFor="verdocs-radio-button-visibility-public">
               <div class="title">Public</div>
               <div class="description">Anyone on the Web can find and use this template</div>

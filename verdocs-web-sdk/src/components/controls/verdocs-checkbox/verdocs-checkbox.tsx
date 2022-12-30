@@ -1,10 +1,21 @@
 import {Component, h, Host, Prop} from '@stencil/core';
-// import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
 
 /**
  * Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
- * to be used in signing experiences and contains settings that connect to template fields. This is just a simple check box
- * for UI displays e.g. dialog boxes.
+ * to be used in signing experiences and contains settings that connect to template fields. This is just a simple check
+ * box for UI displays e.g. dialog boxes.
+ *
+ * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
+ * handler. Sample usage:
+ *
+ * ```html
+ * <verdocs-checkbox
+ *    value="on"
+ *    name="thingEnabled"
+ *    checked={this.thingEnabled}
+ *    onInput={(e: any) => (this.thingEnabled = e.target.checked)}
+ * />
+ * ```
  */
 @Component({
   tag: 'verdocs-checkbox',
@@ -32,30 +43,10 @@ export class VerdocsCheckbox {
    */
   @Prop() disabled?: boolean = false;
 
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-   * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-   * keypress.
-   */
-  // @Event({composed: true}) selected: EventEmitter<{value: string}>;
-
-  // handleChange(e: any) {
-  //   console.log('changed', e.target.checked);
-  //   this.selected.emit({value: this.value});
-  // }
-
   render() {
     return (
       <Host class={{disabled: this.disabled}}>
-        <input
-          type="checkbox"
-          value={this.value}
-          name={this.name}
-          id={`verdocs-checkbox-${this.name}-${this.value}`}
-          checked={this.checked}
-          disabled={this.disabled}
-          // onChange={e => this.handleChange(e)}
-        />
+        <input type="checkbox" value={this.value} name={this.name} checked={this.checked} disabled={this.disabled} id={`verdocs-checkbox-${this.name}-${this.value}`} />
       </Host>
     );
   }

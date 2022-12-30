@@ -2,7 +2,15 @@ import {createPopper, Instance} from '@popperjs/core';
 import {Component, h, Host, Prop} from '@stencil/core';
 
 /**
- * Displays a clickable icon. When clicked, a customizable drop-down panel will be displayed.
+ * Displays a clickable icon suitable for display in a toolbar. When clicked, a customizable drop-down panel will be
+ * displayed.
+ *
+ * *
+ * ```html
+ * <verdocs-button-panel icon="<svg.../>">
+ *   <form>...</form>
+ * </verdocs-button-panel>
+ * ```
  */
 @Component({
   tag: 'verdocs-button-panel',

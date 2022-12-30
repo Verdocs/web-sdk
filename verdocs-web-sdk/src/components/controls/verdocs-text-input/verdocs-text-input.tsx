@@ -41,18 +41,6 @@ export class VerdocsTextInput {
    */
   @Prop() disabled: boolean = false;
 
-  // @State() _value: string = '';
-
-  componentWillLoad() {
-    // this._value = this.value;
-  }
-
-  componentDidLoad() {}
-
-  // handleInput(e: any) {
-  //   this._value = e.target.value;
-  // }
-
   render() {
     return (
       <Host class="input-field">
@@ -66,7 +54,6 @@ export class VerdocsTextInput {
             disabled={this.disabled}
             placeholder={this.placeholder}
             autoComplete={this.autocomplete}
-            // onInput={e => this.handleInput(e)}
           />
         </label>
       </Host>

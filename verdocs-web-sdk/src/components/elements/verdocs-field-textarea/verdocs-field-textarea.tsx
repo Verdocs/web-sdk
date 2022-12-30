@@ -127,7 +127,7 @@ export class VerdocsFieldTextarea {
                   {label: 'Buyer', value: 'Buyer'},
                   {label: 'Seller', value: 'Seller'},
                 ]}
-                onFieldChange={e => {
+                onChange={e => {
                   console.log('select changed', e);
                 }}
               />

@@ -15,19 +15,14 @@ export class VerdocsTemplateSenderDialog {
   @Prop() value: TemplateSenderTypes = TemplateSenderTypes.EVERYONE;
 
   /**
-   * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-   */
-  @Prop() open: boolean = false;
-
-  /**
    * Event fired when the dialog is closed. The event data will contain the closure reason.
    */
   @Event({composed: true}) cancel: EventEmitter;
 
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason.
+   * Event fired when the dialog is closed. The event data will contain the selected value.
    */
-  @Event({composed: true}) done: EventEmitter<{sender: TemplateSenderTypes}>;
+  @Event({composed: true}) next: EventEmitter<TemplateSenderTypes>;
 
   @State() newValue: TemplateSenderTypes = TemplateSenderTypes.EVERYONE;
 
@@ -37,7 +32,6 @@ export class VerdocsTemplateSenderDialog {
 
   handleCancel() {
     this.cancel.emit();
-    this.open = false;
   }
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
@@ -49,8 +43,7 @@ export class VerdocsTemplateSenderDialog {
   }
 
   handleDone() {
-    this.done.emit({sender: this.newValue});
-    this.open = false;
+    this.next.emit(this.newValue);
   }
 
   handleSelectSetting(value: TemplateSenderTypes) {
@@ -59,16 +52,16 @@ export class VerdocsTemplateSenderDialog {
 
   render() {
     return (
-      <Host style={{display: this.open ? 'block' : 'none'}}>
+      <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
             <div class="options">
               <div class="option">
                 <verdocs-radio-button
-                  checked={this.value === TemplateSenderTypes.EVERYONE}
                   name="template-sender"
                   value={TemplateSenderTypes.EVERYONE}
-                  onSelected={() => this.handleSelectSetting(TemplateSenderTypes.EVERYONE)}
+                  checked={this.value === TemplateSenderTypes.EVERYONE}
+                  onInput={() => this.handleSelectSetting(TemplateSenderTypes.EVERYONE)}
                 />
                 <div class="description">
                   <div class="name">Anyone on the Web</div>
@@ -77,10 +70,10 @@ export class VerdocsTemplateSenderDialog {
               </div>
               <div class="option">
                 <verdocs-radio-button
-                  checked={this.value === TemplateSenderTypes.EVERYONE_AS_CREATOR}
                   name="template-sender"
                   value={TemplateSenderTypes.EVERYONE_AS_CREATOR}
-                  onSelected={() => this.handleSelectSetting(TemplateSenderTypes.EVERYONE_AS_CREATOR)}
+                  checked={this.value === TemplateSenderTypes.EVERYONE_AS_CREATOR}
+                  onInput={() => this.handleSelectSetting(TemplateSenderTypes.EVERYONE_AS_CREATOR)}
                 />
                 <div class="description">
                   <div class="name">Anyone on the Web as me</div>
@@ -89,10 +82,10 @@ export class VerdocsTemplateSenderDialog {
               </div>
               <div class="option">
                 <verdocs-radio-button
-                  checked={this.value === TemplateSenderTypes.ORGANIZATION_MEMBER}
                   name="template-sender"
                   value={TemplateSenderTypes.ORGANIZATION_MEMBER}
-                  onSelected={() => this.handleSelectSetting(TemplateSenderTypes.ORGANIZATION_MEMBER)}
+                  checked={this.value === TemplateSenderTypes.ORGANIZATION_MEMBER}
+                  onInput={() => this.handleSelectSetting(TemplateSenderTypes.ORGANIZATION_MEMBER)}
                 />
                 <div class="description">
                   <div class="name">Anyone in my organization</div>
@@ -101,10 +94,10 @@ export class VerdocsTemplateSenderDialog {
               </div>
               <div class="option">
                 <verdocs-radio-button
-                  checked={this.value === TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR}
                   name="template-sender"
                   value={TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR}
-                  onSelected={() => this.handleSelectSetting(TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR)}
+                  checked={this.value === TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR}
+                  onInput={() => this.handleSelectSetting(TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR)}
                 />
                 <div class="description">
                   <div class="name">Anyone in my organization as me</div>
@@ -113,10 +106,10 @@ export class VerdocsTemplateSenderDialog {
               </div>
               <div class="option">
                 <verdocs-radio-button
-                  checked={this.value === TemplateSenderTypes.CREATOR}
                   name="template-sender"
                   value={TemplateSenderTypes.CREATOR}
-                  onSelected={() => this.handleSelectSetting(TemplateSenderTypes.CREATOR)}
+                  checked={this.value === TemplateSenderTypes.CREATOR}
+                  onInput={() => this.handleSelectSetting(TemplateSenderTypes.CREATOR)}
                 />
                 <div class="description">
                   <div class="name">Me</div>

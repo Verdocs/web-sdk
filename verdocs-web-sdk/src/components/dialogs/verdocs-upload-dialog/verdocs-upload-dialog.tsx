@@ -1,10 +1,14 @@
-import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Host, State} from '@stencil/core';
 import {fileToDataUrl, FileWithData} from '@verdocs/js-sdk/Utils/Files';
-import Paperclip from './paperclip.svg';
-import Trash from './trash.svg';
+
+const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
+
+const PaperclipIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>`;
 
 /**
- * Display a file upload experience.
+ * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
+ * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
+ * caller via the onNext event handler.
  */
 @Component({
   tag: 'verdocs-upload-dialog',
@@ -14,19 +18,14 @@ export class VerdocsUploadDialog {
   private fileInput?: HTMLInputElement;
 
   /**
-   * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-   */
-  @Prop() open: boolean = false;
-
-  /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason.
+   * Event fired when the dialog is cancelled.
    */
   @Event({composed: true}) cancel: EventEmitter;
 
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason.
+   * Event fired when the dialog is closed. The event data will contain the file selected.
    */
-  @Event({composed: true}) done: EventEmitter<FileWithData[]>;
+  @Event({composed: true}) next: EventEmitter<FileWithData[]>;
 
   @State() draggingOver = false;
 
@@ -34,7 +33,6 @@ export class VerdocsUploadDialog {
 
   handleCancel() {
     this.cancel.emit();
-    this.open = false;
   }
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
@@ -46,8 +44,7 @@ export class VerdocsUploadDialog {
   }
 
   handleDone() {
-    this.done.emit(this.decodedFiles);
-    this.open = false;
+    this.next.emit(this.decodedFiles);
   }
 
   handleDragOver(e) {
@@ -90,9 +87,7 @@ export class VerdocsUploadDialog {
     this.fileInput?.click();
   }
 
-  async handleFileChange(e) {
-    console.log('fileChange', e);
-    console.log('files', this.fileInput?.files);
+  async handleFileChange() {
     let droppedFiles = [] as File[];
     for (let i = 0; i < this.fileInput?.files.length; i++) {
       droppedFiles.push(this.fileInput?.files[i]);
@@ -102,7 +97,7 @@ export class VerdocsUploadDialog {
 
   render() {
     return (
-      <Host style={{display: this.open ? 'block' : 'none'}}>
+      <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
             <div class="heading">Upload attachment</div>
@@ -118,15 +113,15 @@ export class VerdocsUploadDialog {
                 <p>- or -</p>
 
                 <verdocs-button label="Select a file..." onClick={() => this.handleSelectFile()} />
-                <input type="file" ref={el => (this.fileInput = el as HTMLInputElement)} style={{display: 'none'}} onChange={e => this.handleFileChange(e)} />
+                <input type="file" ref={el => (this.fileInput = el as HTMLInputElement)} style={{display: 'none'}} onChange={() => this.handleFileChange()} />
               </div>
             ) : (
               <div class="attachments">
                 {this.decodedFiles.map((file, index) => (
                   <div class="attachment">
-                    <div class="icon" innerHTML={Paperclip} />
+                    <div class="icon" innerHTML={PaperclipIcon} />
                     <div class="name">{file.name}</div>
-                    <div class="icon trash" innerHTML={Trash} onClick={() => this.handleRemoveAttachment(index)} />
+                    <div class="icon trash" innerHTML={TrashIcon} onClick={() => this.handleRemoveAttachment(index)} />
                   </div>
                 ))}
               </div>

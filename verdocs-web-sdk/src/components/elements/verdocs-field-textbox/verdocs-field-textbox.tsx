@@ -138,7 +138,7 @@ export class VerdocsFieldTextbox {
                 label="Recipient"
                 value={TemplateStore.roleNames[this.roleindex]}
                 options={TemplateStore.roleNames.map(role => ({label: role, value: role}))}
-                onFieldChange={e => this.handleChangeRecipient(e)}
+                onChange={e => this.handleChangeRecipient(e)}
               />
 
               <verdocs-text-input label="Field Name" value="" placeholder="Stored field name..." onInput={e => console.log('ipt', e)} />

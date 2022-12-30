@@ -14,14 +14,12 @@ export default {
     ],
   },
   argTypes: {
-    change: {
-      action: 'change',
-      table: {
-        disable: true,
-      },
+    onInput: {
+      action: 'input',
+      description: 'Fired when a new value is selected. e.target.value will contain the selected value.',
     },
   },
 } as Meta;
 
-export const SelectInput = ({type, label, value, placeholder, options, disabled, change}) =>
-  html`<verdocs-select-input .type=${type} .label=${label} .placeholder=${placeholder} .value=${value} .options=${options} .disabled=${disabled} @change=${change} />`;
+export const SelectInput = ({type, label, value, placeholder, options, disabled, onInput}) =>
+  html`<verdocs-select-input .type=${type} .label=${label} .placeholder=${placeholder} .value=${value} .options=${options} .disabled=${disabled} @input=${onInput} />`;

@@ -13,6 +13,16 @@ export interface IMenuOption {
 /**
  * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
  * when the button is pressed again, or an option is selected.
+ *
+ * ```html
+ * <verdocs-dropdown
+ *   options={[
+ *     {label: 'Option 1', disabled: true},
+ *     {label: 'Option 2', id: '2'}
+*    ]}
+ *   label="OK" onClick={() => (console.log('OK clicked'))}
+ * />
+ * ```
  */
 @Component({
   tag: 'verdocs-dropdown',
@@ -31,7 +41,7 @@ export class VerdocsDropdown {
   /**
    * If set, the component will be open by default. This is primarily intended to be used for testing.
    */
-  @Prop() open: boolean;
+  // @Prop() open: boolean;
 
   /**
    * If set, the component will be open by default.
@@ -45,7 +55,7 @@ export class VerdocsDropdown {
   @Event({composed: true}) optionSelected: EventEmitter<IMenuOption>;
 
   componentWillLoad() {
-    this.isOpen = !!this.open;
+    // this.isOpen = !!this.open;
   }
 
   componentDidLoad() {
@@ -54,7 +64,7 @@ export class VerdocsDropdown {
 
   handleSelectOption(e: any, option: IMenuOption) {
     e.stopPropagation();
-    this.isOpen = false;
+    // this.isOpen = false;
     this.optionSelected.emit(option);
     this.hide();
   }
@@ -62,7 +72,7 @@ export class VerdocsDropdown {
   // See https://popper.js.org/docs/v2/tutorial/
   // What we're doing here is clearing event listeners when they aren't needed, to increase performance in lists
   showDropdown() {
-    this.isOpen = true;
+    // this.isOpen = true;
     this.dropdownMenu.setAttribute('data-show', '');
     this.dropdownMenu.removeAttribute('aria-hidden');
 
@@ -115,7 +125,7 @@ export class VerdocsDropdown {
           ref={el => (this.dropdownButton = el as HTMLButtonElement)}
         />
 
-        <div class="items" aria-hidden={!this.open} ref={el => (this.dropdownMenu = el as HTMLDivElement)}>
+        <div class="items" aria-hidden={!this.isOpen} ref={el => (this.dropdownMenu = el as HTMLDivElement)}>
           {this.options?.map(option => (
             <button onClick={e => this.handleSelectOption(e, option)} class="option" disabled={option.disabled}>
               {option.label}

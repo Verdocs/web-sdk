@@ -5,7 +5,6 @@ export default {
   title: 'Dialogs/KBA Dialog',
   component: 'verdocs-kba-dialog',
   args: {
-    open: true,
     mode: 'choice',
     helptitle: 'One Time Code',
     helptext: 'Please check your text messages for a security code, and enter the code below.',
@@ -16,16 +15,18 @@ export default {
     choices: ['553 Arbor Dr', '18 Lacey Ln', '23A Ball Ct', '2375 Cavallo Blvd', '23-1 RR-7', '151 Boulder Rd'],
   },
   argTypes: {
-    closed: {
-      action: 'closed',
-      table: {
-        disable: true,
-      },
+    onNext: {
+      action: 'next',
+      table: {disable: true},
+    },
+    onCancel: {
+      action: 'cancel',
+      table: {disable: true},
     },
   },
 } as Meta;
 
-export const KBADialog = ({helptitle, helptext, label, placeholder, mode, step, steps, choices, open, closed}) =>
+export const KBADialog = ({helptitle, helptext, label, placeholder, mode, step, steps, choices, onNext, onCancel}) =>
   html`<verdocs-kba-dialog
     .mode=${mode}
     .helptitle=${helptitle}
@@ -35,6 +36,6 @@ export const KBADialog = ({helptitle, helptext, label, placeholder, mode, step, 
     .step=${step}
     .steps=${steps}
     .choices=${choices}
-    .open=${open}
-    @closed=${closed}
+    @next=${onNext}
+    @cancel=${onCancel}
   />`;

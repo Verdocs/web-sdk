@@ -113,15 +113,7 @@ export class VerdocsButtonPanel {
 }
 
 
-export declare interface VerdocsCheckbox extends Components.VerdocsCheckbox {
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-keypress. 
-   */
-  selected: EventEmitter<CustomEvent<{value: string}>>;
-
-}
+export declare interface VerdocsCheckbox extends Components.VerdocsCheckbox {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -138,7 +130,6 @@ export class VerdocsCheckbox {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['selected']);
   }
 }
 
@@ -220,13 +211,13 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['open', 'options']
+  inputs: ['options']
 })
 @Component({
   selector: 'verdocs-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['open', 'options']
+  inputs: ['options']
 })
 export class VerdocsDropdown {
   protected el: HTMLElement;
@@ -238,15 +229,7 @@ export class VerdocsDropdown {
 }
 
 
-export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-keypress. 
-   */
-  fieldChange: EventEmitter<CustomEvent<string>>;
-
-}
+export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -264,20 +247,11 @@ export class VerdocsFieldAttachment {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange']);
   }
 }
 
 
-export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-keypress. 
-   */
-  fieldChange: EventEmitter<CustomEvent<{option: number; value: boolean}>>;
-
-}
+export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -294,30 +268,11 @@ export class VerdocsFieldCheckbox {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange']);
   }
 }
 
 
 export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
-  /**
-   * Event fired when the input field loses focus. 
-   */
-  fieldFocus: EventEmitter<CustomEvent<boolean>>;
-  /**
-   * Event fired when the input field gains focus. 
-   */
-  fieldBlur: EventEmitter<CustomEvent<boolean>>;
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-keypress. 
-   */
-  fieldChange: EventEmitter<CustomEvent<string>>;
-  /**
-   * Event fired on every character entered into / deleted from the field. 
-   */
-  fieldInput: EventEmitter<CustomEvent<string>>;
   /**
    * Event fired on every character entered into / deleted from the field. 
    */
@@ -341,7 +296,7 @@ export class VerdocsFieldDate {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput', 'settingsPress']);
+    proxyOutputs(this, this.el, ['settingsPress']);
   }
 }
 
@@ -685,7 +640,7 @@ export declare interface VerdocsInitialDialog extends Components.VerdocsInitialD
   /**
    * Event fired when the initials are adopted. 
    */
-  adopt: EventEmitter<CustomEvent<string>>;
+  next: EventEmitter<CustomEvent<string>>;
   /**
    * Event fired when the step is cancelled. 
    */
@@ -695,20 +650,20 @@ export declare interface VerdocsInitialDialog extends Components.VerdocsInitialD
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['initials', 'open']
+  inputs: ['initials']
 })
 @Component({
   selector: 'verdocs-initial-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['initials', 'open']
+  inputs: ['initials']
 })
 export class VerdocsInitialDialog {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['adopt', 'cancel']);
+    proxyOutputs(this, this.el, ['next', 'cancel']);
   }
 }
 
@@ -719,28 +674,28 @@ export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
    */
   cancel: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   * Event fired when the dialog is closed. The event data will contain the value selected. 
    */
-  done: EventEmitter<CustomEvent<string>>;
+  next: EventEmitter<CustomEvent<string>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'open', 'placeholder', 'step', 'steps']
+  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'step', 'steps']
 })
 @Component({
   selector: 'verdocs-kba-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'open', 'placeholder', 'step', 'steps']
+  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'step', 'steps']
 })
 export class VerdocsKbaDialog {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'done']);
+    proxyOutputs(this, this.el, ['cancel', 'next']);
   }
 }
 
@@ -766,28 +721,32 @@ export class VerdocsLoader {
 
 export declare interface VerdocsOkDialog extends Components.VerdocsOkDialog {
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   * Event fired when the user clicks the OK button. 
    */
-  closed: EventEmitter<CustomEvent<'cancel' | 'ok'>>;
+  next: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user clicks the background overlay or Cancel button. 
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['cancel', 'heading', 'message', 'open']
+  inputs: ['heading', 'message', 'showCancel']
 })
 @Component({
   selector: 'verdocs-ok-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['cancel', 'heading', 'message', 'open']
+  inputs: ['heading', 'message', 'showCancel']
 })
 export class VerdocsOkDialog {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['closed']);
+    proxyOutputs(this, this.el, ['next', 'cancel']);
   }
 }
 
@@ -874,15 +833,7 @@ export class VerdocsQuickFunctions {
 }
 
 
-export declare interface VerdocsRadioButton extends Components.VerdocsRadioButton {
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-keypress. 
-   */
-  selected: EventEmitter<CustomEvent<{value: string}>>;
-
-}
+export declare interface VerdocsRadioButton extends Components.VerdocsRadioButton {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -899,7 +850,6 @@ export class VerdocsRadioButton {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['selected']);
   }
 }
 
@@ -1010,13 +960,7 @@ export class VerdocsSearchTabs {
 }
 
 
-export declare interface VerdocsSelectInput extends Components.VerdocsSelectInput {
-  /**
-   * Event fired when the selection has changed 
-   */
-  fieldChange: EventEmitter<CustomEvent<string>>;
-
-}
+export declare interface VerdocsSelectInput extends Components.VerdocsSelectInput {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -1033,7 +977,6 @@ export class VerdocsSelectInput {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange']);
   }
 }
 
@@ -1107,11 +1050,12 @@ export class VerdocsSign {
 
 export declare interface VerdocsSignatureDialog extends Components.VerdocsSignatureDialog {
   /**
-   * Event fired when a signature is adopted. 
+   * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string
+representation of the signature adopted. 
    */
-  adopt: EventEmitter<CustomEvent<string>>;
+  next: EventEmitter<CustomEvent<string>>;
   /**
-   * Event fired when the step is cancelled. 
+   * Fired if the user cancels the dialog. 
    */
   cancel: EventEmitter<CustomEvent<any>>;
 
@@ -1119,20 +1063,20 @@ export declare interface VerdocsSignatureDialog extends Components.VerdocsSignat
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['name', 'open']
+  inputs: ['name']
 })
 @Component({
   selector: 'verdocs-signature-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['name', 'open']
+  inputs: ['name']
 })
 export class VerdocsSignatureDialog {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['adopt', 'cancel']);
+    proxyOutputs(this, this.el, ['next', 'cancel']);
   }
 }
 
@@ -1340,28 +1284,28 @@ export declare interface VerdocsTemplateSenderDialog extends Components.VerdocsT
    */
   cancel: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   * Event fired when the dialog is closed. The event data will contain the selected value. 
    */
-  done: EventEmitter<CustomEvent<{sender: IVerdocsTemplateSenderDialogTemplateSenderTypes}>>;
+  next: EventEmitter<CustomEvent<IVerdocsTemplateSenderDialogTemplateSenderTypes>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['open', 'value']
+  inputs: ['value']
 })
 @Component({
   selector: 'verdocs-template-sender-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['open', 'value']
+  inputs: ['value']
 })
 export class VerdocsTemplateSenderDialog {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'done']);
+    proxyOutputs(this, this.el, ['cancel', 'next']);
   }
 }
 
@@ -1457,13 +1401,7 @@ export class VerdocsToggleButton {
 }
 
 
-export declare interface VerdocsToolbarIcon extends Components.VerdocsToolbarIcon {
-  /**
-   * Triggered when the icon is pressed 
-   */
-  press: EventEmitter<CustomEvent<any>>;
-
-}
+export declare interface VerdocsToolbarIcon extends Components.VerdocsToolbarIcon {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -1480,39 +1418,36 @@ export class VerdocsToolbarIcon {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['press']);
   }
 }
 
 import type { FileWithData as IVerdocsUploadDialogFileWithData } from '@verdocs/web-sdk';
 export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDialog {
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   * Event fired when the dialog is cancelled. 
    */
   cancel: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason. 
+   * Event fired when the dialog is closed. The event data will contain the file selected. 
    */
-  done: EventEmitter<CustomEvent<FileWithData[]>>;
+  next: EventEmitter<CustomEvent<FileWithData[]>>;
 
 }
 
 @ProxyCmp({
-  defineCustomElementFn: undefined,
-  inputs: ['open']
+  defineCustomElementFn: undefined
 })
 @Component({
   selector: 'verdocs-upload-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  inputs: ['open']
+  template: '<ng-content></ng-content>'
 })
 export class VerdocsUploadDialog {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'done']);
+    proxyOutputs(this, this.el, ['cancel', 'next']);
   }
 }
 

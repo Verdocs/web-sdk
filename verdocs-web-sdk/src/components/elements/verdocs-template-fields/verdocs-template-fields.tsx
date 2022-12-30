@@ -198,13 +198,13 @@ export class VerdocsTemplateFields {
           <Fragment>
             <div class="fields-bar" ref={el => (this.toolbarEl = el as HTMLDivElement)}>
               <div class="label">Add Field:</div>
-              <verdocs-toolbar-icon icon={iconSingleline} text="Single-line Text Box" onPress={() => console.log('single press')} />
-              <verdocs-toolbar-icon icon={iconMultiline} text="Multi-line Text Box" onPress={() => console.log('multi press')} />
-              <verdocs-toolbar-icon icon={iconCheck} text="Checkbox" onPress={() => console.log('check press')} />
-              <verdocs-toolbar-icon icon={iconRadio} text="Radio Button" onPress={() => console.log('radio press')} />
-              <verdocs-toolbar-icon icon={iconDatepicker} text="Date Picker" onPress={() => console.log('date press')} />
-              <verdocs-toolbar-icon icon={iconSignature} text="Signature" onPress={() => console.log('signature press')} />
-              <verdocs-toolbar-icon icon={iconInitial} text="Initials" onPress={() => console.log('initial press')} />
+              <verdocs-toolbar-icon icon={iconSingleline} text="Single-line Text Box" onClick={() => console.log('single press')} />
+              <verdocs-toolbar-icon icon={iconMultiline} text="Multi-line Text Box" onClick={() => console.log('multi press')} />
+              <verdocs-toolbar-icon icon={iconCheck} text="Checkbox" onClick={() => console.log('check press')} />
+              <verdocs-toolbar-icon icon={iconRadio} text="Radio Button" onClick={() => console.log('radio press')} />
+              <verdocs-toolbar-icon icon={iconDatepicker} text="Date Picker" onClick={() => console.log('date press')} />
+              <verdocs-toolbar-icon icon={iconSignature} text="Signature" onClick={() => console.log('signature press')} />
+              <verdocs-toolbar-icon icon={iconInitial} text="Initials" onClick={() => console.log('initial press')} />
               <div style={{flex: '1'}} />
               <button onClick={() => console.log('save')} disabled={true} class="operation">
                 Save

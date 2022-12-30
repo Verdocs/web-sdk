@@ -17,14 +17,9 @@ export class VerdocsInitialDialog {
   @Prop() initials: string = '';
 
   /**
-   * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-   */
-  @Prop() open: boolean = false;
-
-  /**
    * Event fired when the initials are adopted.
    */
-  @Event({composed: true}) adopt: EventEmitter<string>;
+  @Event({composed: true}) next: EventEmitter<string>;
 
   /**
    * Event fired when the step is cancelled.
@@ -91,13 +86,11 @@ export class VerdocsInitialDialog {
 
   handleAdopt() {
     const data = this.canvasElement.toDataURL('image/png');
-    this.adopt.emit(data);
-    this.open = false;
+    this.next.emit(data);
   }
 
   handleCancel() {
     this.cancel.emit();
-    this.open = false;
   }
 
   /*
@@ -260,7 +253,7 @@ export class VerdocsInitialDialog {
 
   render() {
     return (
-      <Host class={{open: this.open}}>
+      <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
             <div class="heading">Create Your Initial</div>
@@ -269,14 +262,14 @@ export class VerdocsInitialDialog {
               <verdocs-text-input placeholder="Initials..." label="Initials" value={this.enteredInitials} onInput={e => this.handleNameChange(e)} />
               <div class="as-shown">As shown on driver's license or govt. ID card.</div>
 
-              <div class="tabs">
-                <div class={{tab: true, active: this.mode === 'type'}} onClick={() => (this.mode = 'type')}>
-                  Type
-                </div>
-                <div class={{tab: true, active: this.mode === 'draw'}} onClick={() => (this.mode = 'draw')}>
-                  Draw
-                </div>
-              </div>
+              {/*<div class="tabs">*/}
+              {/*  <div class={{tab: true, active: this.mode === 'type'}} onClick={() => (this.mode = 'type')}>*/}
+              {/*    Type*/}
+              {/*  </div>*/}
+              {/*  <div class={{tab: true, active: this.mode === 'draw'}} onClick={() => (this.mode = 'draw')}>*/}
+              {/*    Draw*/}
+              {/*  </div>*/}
+              {/*</div>*/}
 
               {this.fontLoaded ? <canvas ref={el => (this.canvasElement = el as HTMLCanvasElement)} /> : <div style={{display: 'none'}} />}
 

@@ -1,10 +1,22 @@
 import {Component, h, Host, Prop} from '@stencil/core';
-// import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
 
 /**
- * Displays a radio button. Note that this is different from the `verdocs-field-radio-button` component, which is designed
- * to be used in signing experiences and contains settings that connect to template fields. This is just a simple radio
- * button for UI displays e.g. dialogs and .
+ * Displays a radio button. Note that this is different from the `verdocs-field-radio-button` component, which is
+ * designed to be used in signing experiences and contains settings that connect to template fields. This is just a
+ * simple radio button for UI displays e.g. dialog boxes.
+ *
+ * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
+ * handler. Sample usage:
+ *
+ * ```html
+ * <verdocs-radio-button
+ *    value="val1"
+ *    name="someProperty"
+ *    checked={this.someProperty === 'val1'}
+ *    onInput={(e: any) => { this.someProperty = 'val1' }}
+ *    disabled={false}
+ * />
+ * ```
  */
 @Component({
   tag: 'verdocs-radio-button',
@@ -31,18 +43,6 @@ export class VerdocsRadioButton {
    * If set, the button will still be displayed but not selectable.
    */
   @Prop() disabled?: boolean = false;
-
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-   * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-   * keypress.
-   */
-  // @Event({composed: true}) selected: EventEmitter<{value: string}>;
-
-  // handleChange(e: any) {
-  //   console.log('changed', e.target.checked);
-  //   this.selected.emit({value: this.value});
-  // }
 
   render() {
     return (

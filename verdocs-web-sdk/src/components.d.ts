@@ -143,10 +143,6 @@ export namespace Components {
     }
     interface VerdocsDropdown {
         /**
-          * If set, the component will be open by default. This is primarily intended to be used for testing.
-         */
-        "open": boolean;
-        /**
           * The menu options to display.
          */
         "options": IMenuOption[];
@@ -425,10 +421,6 @@ export namespace Components {
           * Initial signature text
          */
         "initials": string;
-        /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "open": boolean;
     }
     interface VerdocsKbaDialog {
         /**
@@ -452,10 +444,6 @@ export namespace Components {
          */
         "mode": 'text' | 'choice';
         /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "open": boolean;
-        /**
           * For text input challenges, the placeholder to display inside the input field.
          */
         "placeholder": string;
@@ -472,10 +460,6 @@ export namespace Components {
     }
     interface VerdocsOkDialog {
         /**
-          * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background overlay to dismiss it.
-         */
-        "cancel": boolean;
-        /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
          */
         "heading": string;
@@ -484,9 +468,9 @@ export namespace Components {
          */
         "message": string;
         /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+          * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background overlay to dismiss it.
          */
-        "open": boolean;
+        "showCancel": boolean;
     }
     interface VerdocsOrganizationCard {
         /**
@@ -618,10 +602,6 @@ export namespace Components {
           * Initial signature text
          */
         "name": string;
-        /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "open": boolean;
     }
     interface VerdocsStatusIndicator {
         /**
@@ -688,10 +668,6 @@ export namespace Components {
         "templateRole": IRole | null;
     }
     interface VerdocsTemplateSenderDialog {
-        /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "open": boolean;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -765,10 +741,6 @@ export namespace Components {
         "text": string;
     }
     interface VerdocsUploadDialog {
-        /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "open": boolean;
     }
     interface VerdocsView {
         /**
@@ -845,10 +817,6 @@ export interface VerdocsBuildCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsBuildElement;
 }
-export interface VerdocsCheckboxCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsCheckboxElement;
-}
 export interface VerdocsContactPickerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsContactPickerElement;
@@ -860,14 +828,6 @@ export interface VerdocsDocumentPageCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDropdownElement;
-}
-export interface VerdocsFieldAttachmentCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsFieldAttachmentElement;
-}
-export interface VerdocsFieldCheckboxCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsFieldCheckboxElement;
 }
 export interface VerdocsFieldDateCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -925,10 +885,6 @@ export interface VerdocsQuickFunctionsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsQuickFunctionsElement;
 }
-export interface VerdocsRadioButtonCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsRadioButtonElement;
-}
 export interface VerdocsSearchActivityCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSearchActivityElement;
@@ -936,10 +892,6 @@ export interface VerdocsSearchActivityCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsSearchBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSearchBoxElement;
-}
-export interface VerdocsSelectInputCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsSelectInputElement;
 }
 export interface VerdocsSendCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -976,10 +928,6 @@ export interface VerdocsTemplateSenderDialogCustomEvent<T> extends CustomEvent<T
 export interface VerdocsToggleButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsToggleButtonElement;
-}
-export interface VerdocsToolbarIconCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsToolbarIconElement;
 }
 export interface VerdocsUploadDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1456,10 +1404,6 @@ declare namespace LocalJSX {
          */
         "name"?: string;
         /**
-          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
-         */
-        "onSelected"?: (event: VerdocsCheckboxCustomEvent<{value: string}>) => void;
-        /**
           * Value to track with the input.
          */
         "value"?: string;
@@ -1522,10 +1466,6 @@ declare namespace LocalJSX {
          */
         "onOptionSelected"?: (event: VerdocsDropdownCustomEvent<IMenuOption>) => void;
         /**
-          * If set, the component will be open by default. This is primarily intended to be used for testing.
-         */
-        "open"?: boolean;
-        /**
           * The menu options to display.
          */
         "options"?: IMenuOption[];
@@ -1540,10 +1480,6 @@ declare namespace LocalJSX {
          */
         "field"?: IDocumentField | ITemplateField | null;
         /**
-          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
-         */
-        "onFieldChange"?: (event: VerdocsFieldAttachmentCustomEvent<string>) => void;
-        /**
           * The recipient completing the form, if known.
          */
         "recipient"?: IRecipient;
@@ -1557,10 +1493,6 @@ declare namespace LocalJSX {
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
-        /**
-          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
-         */
-        "onFieldChange"?: (event: VerdocsFieldCheckboxCustomEvent<{option: number; value: boolean}>) => void;
         /**
           * The index of the settings option this particular checkbox is for
          */
@@ -1587,22 +1519,6 @@ declare namespace LocalJSX {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
-        /**
-          * Event fired when the input field gains focus.
-         */
-        "onFieldBlur"?: (event: VerdocsFieldDateCustomEvent<boolean>) => void;
-        /**
-          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
-         */
-        "onFieldChange"?: (event: VerdocsFieldDateCustomEvent<string>) => void;
-        /**
-          * Event fired when the input field loses focus.
-         */
-        "onFieldFocus"?: (event: VerdocsFieldDateCustomEvent<boolean>) => void;
-        /**
-          * Event fired on every character entered into / deleted from the field.
-         */
-        "onFieldInput"?: (event: VerdocsFieldDateCustomEvent<string>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
@@ -1923,17 +1839,13 @@ declare namespace LocalJSX {
          */
         "initials"?: string;
         /**
-          * Event fired when the initials are adopted.
-         */
-        "onAdopt"?: (event: VerdocsInitialDialogCustomEvent<string>) => void;
-        /**
           * Event fired when the step is cancelled.
          */
         "onCancel"?: (event: VerdocsInitialDialogCustomEvent<any>) => void;
         /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+          * Event fired when the initials are adopted.
          */
-        "open"?: boolean;
+        "onNext"?: (event: VerdocsInitialDialogCustomEvent<string>) => void;
     }
     interface VerdocsKbaDialog {
         /**
@@ -1961,13 +1873,9 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsKbaDialogCustomEvent<any>) => void;
         /**
-          * Event fired when the dialog is closed. The event data will contain the closure reason.
+          * Event fired when the dialog is closed. The event data will contain the value selected.
          */
-        "onDone"?: (event: VerdocsKbaDialogCustomEvent<string>) => void;
-        /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "open"?: boolean;
+        "onNext"?: (event: VerdocsKbaDialogCustomEvent<string>) => void;
         /**
           * For text input challenges, the placeholder to display inside the input field.
          */
@@ -1985,10 +1893,6 @@ declare namespace LocalJSX {
     }
     interface VerdocsOkDialog {
         /**
-          * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background overlay to dismiss it.
-         */
-        "cancel"?: boolean;
-        /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
          */
         "heading"?: string;
@@ -1997,13 +1901,17 @@ declare namespace LocalJSX {
          */
         "message"?: string;
         /**
-          * Event fired when the dialog is closed. The event data will contain the closure reason.
+          * Event fired when the user clicks the background overlay or Cancel button.
          */
-        "onClosed"?: (event: VerdocsOkDialogCustomEvent<'cancel' | 'ok'>) => void;
+        "onCancel"?: (event: VerdocsOkDialogCustomEvent<any>) => void;
         /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+          * Event fired when the user clicks the OK button.
          */
-        "open"?: boolean;
+        "onNext"?: (event: VerdocsOkDialogCustomEvent<any>) => void;
+        /**
+          * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background overlay to dismiss it.
+         */
+        "showCancel"?: boolean;
     }
     interface VerdocsOrganizationCard {
         /**
@@ -2052,10 +1960,6 @@ declare namespace LocalJSX {
           * HTML form field name for the input.
          */
         "name"?: string;
-        /**
-          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
-         */
-        "onSelected"?: (event: VerdocsRadioButtonCustomEvent<{value: string}>) => void;
         /**
           * Value to track with the input.
          */
@@ -2125,10 +2029,6 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Event fired when the selection has changed
-         */
-        "onFieldChange"?: (event: VerdocsSelectInputCustomEvent<string>) => void;
-        /**
           * The options to list.
          */
         "options"?: {label: string; value: string}[];
@@ -2187,17 +2087,13 @@ declare namespace LocalJSX {
          */
         "name"?: string;
         /**
-          * Event fired when a signature is adopted.
-         */
-        "onAdopt"?: (event: VerdocsSignatureDialogCustomEvent<string>) => void;
-        /**
-          * Event fired when the step is cancelled.
+          * Fired if the user cancels the dialog.
          */
         "onCancel"?: (event: VerdocsSignatureDialogCustomEvent<any>) => void;
         /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+          * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string representation of the signature adopted.
          */
-        "open"?: boolean;
+        "onNext"?: (event: VerdocsSignatureDialogCustomEvent<string>) => void;
     }
     interface VerdocsStatusIndicator {
         /**
@@ -2321,13 +2217,9 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplateSenderDialogCustomEvent<any>) => void;
         /**
-          * Event fired when the dialog is closed. The event data will contain the closure reason.
+          * Event fired when the dialog is closed. The event data will contain the selected value.
          */
-        "onDone"?: (event: VerdocsTemplateSenderDialogCustomEvent<{sender: TemplateSenderTypes}>) => void;
-        /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "open"?: boolean;
+        "onNext"?: (event: VerdocsTemplateSenderDialogCustomEvent<TemplateSenderTypes>) => void;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
@@ -2400,27 +2292,19 @@ declare namespace LocalJSX {
          */
         "icon"?: string;
         /**
-          * Triggered when the icon is pressed
-         */
-        "onPress"?: (event: VerdocsToolbarIconCustomEvent<any>) => void;
-        /**
           * Help text to display on hover/focus
          */
         "text"?: string;
     }
     interface VerdocsUploadDialog {
         /**
-          * Event fired when the dialog is closed. The event data will contain the closure reason.
+          * Event fired when the dialog is cancelled.
          */
         "onCancel"?: (event: VerdocsUploadDialogCustomEvent<any>) => void;
         /**
-          * Event fired when the dialog is closed. The event data will contain the closure reason.
+          * Event fired when the dialog is closed. The event data will contain the file selected.
          */
-        "onDone"?: (event: VerdocsUploadDialogCustomEvent<FileWithData[]>) => void;
-        /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "open"?: boolean;
+        "onNext"?: (event: VerdocsUploadDialogCustomEvent<FileWithData[]>) => void;
     }
     interface VerdocsView {
         /**

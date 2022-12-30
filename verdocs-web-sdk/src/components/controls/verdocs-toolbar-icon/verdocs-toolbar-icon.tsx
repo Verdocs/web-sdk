@@ -70,17 +70,9 @@ export class VerdocsToolbarIcon {
           onFocus={() => this.show()}
           onMouseLeave={() => this.hide()}
           onBlur={() => this.hide()}
-          // onClick={() => this.handlePress()}
           ref={el => (this.iconEl = el as HTMLDivElement)}
         />
-        <div
-          id={this.containerId}
-          role="tooltip"
-          class="tooltip"
-          // style="display: none; visibility: visible; margin: 0px; position: absolute; inset: 0px auto auto 0px; transform: translate(951px, 5510px);"
-          data-popper-placement="bottom"
-          ref={el => (this.tooltip = el as HTMLDivElement)}
-        >
+        <div id={this.containerId} role="tooltip" class="tooltip" data-popper-placement="bottom" ref={el => (this.tooltip = el as HTMLDivElement)}>
           {this.text}
           <div data-popper-arrow="true" class="arrow" />
         </div>

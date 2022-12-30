@@ -1,4 +1,4 @@
-import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/core';
+import {Component, h, Host, Prop, Method} from '@stencil/core';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import Paperclip from './paperclip.svg';
@@ -27,13 +27,6 @@ export class VerdocsFieldAttachment {
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
    */
   @Prop() disabled?: boolean = false;
-
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-   * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-   * keypress.
-   */
-  @Event({composed: true}) fieldChange: EventEmitter<string>;
 
   @Method() async focusField() {
     this.handleShow();

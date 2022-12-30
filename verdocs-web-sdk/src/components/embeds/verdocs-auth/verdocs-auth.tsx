@@ -216,7 +216,7 @@ export class VerdocsAuth {
           <verdocs-button label="Login" disabled={this.loggingIn} onClick={() => this.handleLogin()} style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}} />
         </form>
 
-        {this.loginError ? <verdocs-ok-dialog open={true} heading="Login Error" message={this.loginError} onClosed={() => this.handleClearError()} /> : <div />}
+        {this.loginError ? <verdocs-ok-dialog heading="Login Error" message={this.loginError} onNext={() => this.handleClearError()} /> : <div />}
       </div>
     );
   }

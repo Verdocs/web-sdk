@@ -17,17 +17,13 @@ export class VerdocsSignatureDialog {
   @Prop() name: string = '';
 
   /**
-   * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+   * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string
+   * representation of the signature adopted.
    */
-  @Prop() open: boolean = false;
+  @Event({composed: true}) next: EventEmitter<string>;
 
   /**
-   * Event fired when a signature is adopted.
-   */
-  @Event({composed: true}) adopt: EventEmitter<string>;
-
-  /**
-   * Event fired when the step is cancelled.
+   * Fired if the user cancels the dialog.
    */
   @Event({composed: true}) cancel: EventEmitter;
 
@@ -79,6 +75,7 @@ export class VerdocsSignatureDialog {
 
   handleCancel(e: any) {
     e.stopPropagation();
+    e.preventDefault();
     this.cancel.emit();
   }
 
@@ -90,7 +87,7 @@ export class VerdocsSignatureDialog {
     e.stopPropagation();
     e.preventDefault();
     const data = this.canvasElement.toDataURL('image/png');
-    this.adopt.emit(data);
+    this.next.emit(data);
   }
 
   /*
@@ -253,7 +250,7 @@ export class VerdocsSignatureDialog {
 
   render() {
     return (
-      <Host class={{open: this.open}} onClick={e => this.handleCancel(e)}>
+      <Host onClick={e => this.handleCancel(e)}>
         <div class="dialog">
           <div class="heading">Create Your Signature</div>
 
@@ -261,14 +258,14 @@ export class VerdocsSignatureDialog {
             <verdocs-text-input placeholder="Full Name..." label="Full Name" value={this.enteredName} onInput={e => this.handleNameChange(e)} onClick={e => e.stopPropagation()} />
             <div class="as-shown">As shown on driver's license or govt. ID card.</div>
 
-            <div class="tabs">
-              <div class={{tab: true, active: this.mode === 'type'}} onClick={() => (this.mode = 'type')}>
-                Type
-              </div>
-              <div class={{tab: true, active: this.mode === 'draw'}} onClick={() => (this.mode = 'draw')}>
-                Draw
-              </div>
-            </div>
+            {/*<div class="tabs">*/}
+            {/*  <div class={{tab: true, active: this.mode === 'type'}} onClick={() => (this.mode = 'type')}>*/}
+            {/*    Type*/}
+            {/*  </div>*/}
+            {/*<div class={{tab: true, active: this.mode === 'draw'}} onClick={() => (this.mode = 'draw')}>*/}
+            {/*  Draw*/}
+            {/*</div>*/}
+            {/*</div>*/}
 
             {this.fontLoaded ? <canvas ref={el => (this.canvasElement = el as HTMLCanvasElement)} /> : <div style={{display: 'none'}} />}
 

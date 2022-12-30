@@ -5,17 +5,18 @@ export default {
   title: 'Dialogs/Signature Dialog',
   component: 'verdocs-signature-dialog',
   args: {
-    open: true,
     name: 'Paige Turner',
   },
   argTypes: {
-    closed: {
-      action: 'closed',
-      table: {
-        disable: true,
-      },
+    onNext: {
+      action: 'next',
+      table: {disable: true},
+    },
+    onCancel: {
+      action: 'cancel',
+      table: {disable: true},
     },
   },
 } as Meta;
 
-export const SignatureDialog = ({name, open, closed}) => html`<verdocs-signature-dialog .name=${name} .open=${open} @closed=${closed} />`;
+export const SignatureDialog = ({name, onCancel, onNext}) => html`<verdocs-signature-dialog .name=${name} @cancel=${onCancel} @next=${onNext} />`;
