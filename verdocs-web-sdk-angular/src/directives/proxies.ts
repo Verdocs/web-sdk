@@ -148,7 +148,7 @@ the `contactSuggestions` property.
   /**
    * Event fired when the user changes the type. 
    */
-  contactSelected: EventEmitter<CustomEvent<IVerdocsContactPickerIContactSelectEvent>>;
+  next: EventEmitter<CustomEvent<IVerdocsContactPickerIContactSelectEvent>>;
 
 }
 
@@ -167,7 +167,7 @@ export class VerdocsContactPicker {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'contactSelected']);
+    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'next']);
   }
 }
 
@@ -1019,31 +1019,37 @@ export class VerdocsSend {
 }
 
 import type { SDKError as IVerdocsSignSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsSignVerdocsEndpoint } from '@verdocs/web-sdk';
 export declare interface VerdocsSign extends Components.VerdocsSign {
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component. 
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsSignSDKError>>;
+  /**
+   * Event fired when any field is updated. Note that the current active endpoint is
+provided as a parameter as a convenience for callers when this coimponent 
+   */
+  fieldUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint}>>;
 
 }
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['endpoint', 'envelopeId', 'inviteCode', 'roleId']
+  inputs: ['envelopeId', 'inviteCode', 'roleId']
 })
 @Component({
   selector: 'verdocs-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['endpoint', 'envelopeId', 'inviteCode', 'roleId']
+  inputs: ['envelopeId', 'inviteCode', 'roleId']
 })
 export class VerdocsSign {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError']);
+    proxyOutputs(this, this.el, ['sdkError', 'fieldUpdated']);
   }
 }
 
@@ -1123,7 +1129,6 @@ export class VerdocsTemplateCard {
 }
 
 import type { ITemplate as IVerdocsTemplateCreateITemplate } from '@verdocs/web-sdk';
-import type { ITemplateDocument as IVerdocsTemplateCreateITemplateDocument } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsTemplateCreateSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplateCreate {
   /**
@@ -1133,7 +1138,7 @@ export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplat
   /**
    * Event fired when the user changes the type. 
    */
-  templateCreated: EventEmitter<CustomEvent<{template: IVerdocsTemplateCreateITemplate; template_document: IVerdocsTemplateCreateITemplateDocument}>>;
+  next: EventEmitter<CustomEvent<IVerdocsTemplateCreateITemplate>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component. 
@@ -1157,16 +1162,17 @@ export class VerdocsTemplateCreate {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'templateCreated', 'sdkError']);
+    proxyOutputs(this, this.el, ['cancel', 'next', 'sdkError']);
   }
 }
 
+import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk';
 export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
   /**
    * Event fired when the user completes the step. 
    */
-  settingsUpdated: EventEmitter<CustomEvent<any>>;
+  next: EventEmitter<CustomEvent<IVerdocsTemplateFieldsITemplate>>;
   /**
    * Event fired when the user cancels the dialog. 
    */
@@ -1194,7 +1200,7 @@ export class VerdocsTemplateFields {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsUpdated', 'cancel', 'sdkError']);
+    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError']);
   }
 }
 
@@ -1207,7 +1213,7 @@ export declare interface VerdocsTemplateProperties extends Components.VerdocsTem
   /**
    * Event fired when the user completes the step. 
    */
-  settingsUpdated: EventEmitter<CustomEvent<{name: string; sendReminders: boolean; firstReminderDays: number; reminderDays: number}>>;
+  next: EventEmitter<CustomEvent<{name: string; sendReminders: boolean; firstReminderDays: number; reminderDays: number}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component. 
@@ -1231,7 +1237,7 @@ export class VerdocsTemplateProperties {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'settingsUpdated', 'sdkError']);
+    proxyOutputs(this, this.el, ['cancel', 'next', 'sdkError']);
   }
 }
 
@@ -1248,13 +1254,9 @@ the `contactSuggestions` property.
    */
   cancel: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the user completes the step. 
+   * Event fired when the user selects a contact. 
    */
-  settingsUpdated: EventEmitter<CustomEvent<any>>;
-  /**
-   * Event fired when the user changes the type. 
-   */
-  contactSelected: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsIContactSelectEvent>>;
+  next: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsIContactSelectEvent>>;
 
 }
 
@@ -1273,7 +1275,7 @@ export class VerdocsTemplateRecipients {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'settingsUpdated', 'contactSelected']);
+    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'next']);
   }
 }
 
@@ -1534,13 +1536,13 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['documentId', 'endpoint', 'envelopeId', 'pageLayers', 'rotation']
+  inputs: ['documentId', 'endpoint', 'envelopeId', 'mode', 'pageLayers', 'rotation']
 })
 @Component({
   selector: 'verdocs-view-envelope-document',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['documentId', 'endpoint', 'envelopeId', 'pageLayers', 'rotation']
+  inputs: ['documentId', 'endpoint', 'envelopeId', 'mode', 'pageLayers', 'rotation']
 })
 export class VerdocsViewEnvelopeDocument {
   protected el: HTMLElement;

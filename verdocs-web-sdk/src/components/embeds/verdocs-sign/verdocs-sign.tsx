@@ -1,21 +1,35 @@
-import {Event, EventEmitter, Host} from '@stencil/core';
+// import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
-import {Component, Prop, State, h} from '@stencil/core';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
+import {Event, EventEmitter, Host, Component, Prop, State, h} from '@stencil/core';
 import {IEnvelope, IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
+import {getFieldId, getRoleIndex, renderDocumentField, setControlStyles} from '../../../utils/utils';
+// import {getFieldId, getRoleIndex, renderDocumentField, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
-import {getFieldId, setControlStyles} from '../../../utils/utils';
+import TemplateStore from '../../../utils/templateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
 /**
- * Display a document signing experience.
+ * Display an envelope signing experience. This will display the envelope's attached
+ * documents with signing fields overlaid on each page.
  *
- * ***NOTE: This sample document will reset every 10 minutes...***
+ * The component will attempt to initiate a signing session and load the specified
+ * envelope. If successful, the recipient's fields will be enabled and the user will
+ * be able to sign the envelope's attached documents. If not, an `sdkError` will be
+ * thrown and the component will be blank/empty. To provide the best user experience,
+ * applications should capture and handle this error to provide the user with
+ * instructions/options for next steps based on the application's design and workflow.
+ *
+ * Unlike other components, this will always create its own endpoint to manage the
+ * session session. This endpoint will be included in event callbacks for the
+ * convenience of host applications that may wish to make server calls using the
+ * signer's credentials once signing is complete (e.g. to obtain copies of
+ * the signed attachments.)
  */
 @Component({
   tag: 'verdocs-sign',
@@ -23,10 +37,7 @@ import {SDKError} from '../../../utils/errors';
   shadow: false,
 })
 export class VerdocsSign {
-  /**
-   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-   */
-  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+  endpoint: VerdocsEndpoint = null;
 
   /**
    * The ID of the envelope to sign.
@@ -34,7 +45,7 @@ export class VerdocsSign {
   @Prop() envelopeId: string | null = null;
 
   /**
-   * The name of the role that will be signing.
+   * The ID of the role that will be signing e.g. 'Recipient 1'
    */
   @Prop() roleId: string | null = null;
 
@@ -49,30 +60,48 @@ export class VerdocsSign {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() recipient: IRecipient | null = null;
+  /**
+   * Event fired when any field is updated. Note that the current active endpoint is
+   * provided as a parameter as a convenience for callers when this coimponent
+   */
+  @Event({composed: true}) fieldUpdated: EventEmitter<{endpoint: VerdocsEndpoint}>;
 
+  @State() recipient: IRecipient | null = null;
   @State() signerToken = null;
-  @State() pdfUrl = null;
   @State() recipientIndex: number = -1;
   @State() envelope: IEnvelope | null = null;
   @State() fields: IDocumentField[] = [];
-
   @State() hasSignature = false;
-
   @State() nextButtonLabel = 'Start';
-
   @State() focusedField = '';
 
   async componentDidLoad() {
+    if (!this.envelopeId) {
+      this.sdkError?.emit(new SDKError('[SIGN] Missing required envelopId', 500, ''));
+      return;
+    }
+
+    if (!this.roleId) {
+      this.sdkError?.emit(new SDKError('[SIGN] Missing required roleId', 500, ''));
+      return;
+    }
+
+    if (!this.inviteCode) {
+      this.sdkError?.emit(new SDKError('[SIGN] Missing required inviteCode', 500, ''));
+      return;
+    }
+
     try {
-      console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.envelopeId}`);
+      this.endpoint = new VerdocsEndpoint({sessionType: 'signing'});
+
+      console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
       const {session, recipient, signerToken} = await Envelopes.getSigningSession(this.endpoint, {
         envelopeId: this.envelopeId,
         roleId: this.roleId,
         inviteCode: this.inviteCode,
       });
 
-      console.log(`[SIGN] Got signing session ${session.email} / ${session.profile_id}`);
+      console.log(`[SIGN] Loaded signing session ${session.email} / ${session.profile_id}`);
 
       this.recipient = recipient;
       this.signerToken = signerToken;
@@ -84,9 +113,7 @@ export class VerdocsSign {
 
       const envelope = await Envelopes.getEnvelope(this.endpoint, this.envelopeId);
       this.envelope = envelope;
-      console.log('[SIGN] Signing document', document);
-
-      this.pdfUrl = `${this.endpoint.getBaseURL()}/documents/${this.envelopeId}/envelope_documents/${envelope.envelope_document_id}?file=true`;
+      console.log('[SIGN] Loaded envelope', envelope);
 
       this.recipientIndex = this.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
       if (this.recipientIndex > -1) {
@@ -321,8 +348,9 @@ export class VerdocsSign {
 
     const id = getFieldId(field);
     const existingField = document.getElementById(id);
+    console.log('field', id, existingField);
     if (existingField) {
-      setControlStyles(existingField, field, docPage.xScale, docPage.yScale, this.recipientIndex);
+      setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
       return;
     }
 
@@ -356,6 +384,7 @@ export class VerdocsSign {
       default:
         console.log('[SIGN] Skipping unsupported field type', field);
     }
+    console.log('created field', el);
 
     if (el) {
       el.field = field;
@@ -363,7 +392,7 @@ export class VerdocsSign {
       el.setAttribute('id', id);
       el.setAttribute('roleindex', this.recipientIndex);
       el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
-      setControlStyles(existingField, field, docPage.xScale, docPage.yScale, this.recipientIndex);
+      setControlStyles(el, field, docPage.xScale, docPage.yScale);
       controlsDiv.appendChild(el);
     }
   }
@@ -372,14 +401,67 @@ export class VerdocsSign {
     const pageInfo = e.detail as IPageRenderEvent;
     console.log('[SIGN] Page rendered', pageInfo);
 
-    const fields = this.fields.filter(field => field.page === pageInfo.renderedPage.pageNumber);
+    const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+    // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[SIGN] Fields on page', fields);
-    fields.forEach(field => this.renderField(field, pageInfo.renderedPage));
-    // .map((field, index) => this.renderField(field, index));
-    // this.pdfPageInfo = e.detail;
+    fields.forEach(field => {
+      const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
+      console.log('rendered element', el);
+      // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
+      if (!el) {
+        return;
+      }
+
+      el.addEventListener('recipientChanged', e => {
+        el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, e.detail));
+        // el.setAttribute('roleindex', getRoleIndex(this.roles, e.detail));
+      });
+
+      el.setAttribute('xScale', pageInfo.renderedPage.xScale);
+      el.setAttribute('yScale', pageInfo.renderedPage.yScale);
+
+      // interact(el).draggable({
+      //   listeners: {
+      //     start(event) {
+      //       console.log('[FIELDS] Drag started', event.type, event.target);
+      //     },
+      //     move(event) {
+      //       const oldX = +(event.target.getAttribute('posX') || 0);
+      //       const oldY = +(event.target.getAttribute('posY') || 0);
+      //       const xScale = +(event.target.getAttribute('xScale') || 1);
+      //       const yScale = +(event.target.getAttribute('yScale') || 1);
+      //       const newX = event.dx / xScale + oldX;
+      //       const newY = event.dy / yScale + oldY;
+      //       event.target.setAttribute('posX', newX);
+      //       event.target.setAttribute('posy', newY);
+      //       updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
+      //     },
+      //     end(event) {
+      //       console.log('[FIELDS] Drag ended', event);
+      //       // event.target.setAttribute('posX', 0);
+      //       // event.target.setAttribute('posy', 0);
+      //       // updateCssTransform(event.target, 'translate', `${0}px, ${0}px`);
+      //     },
+      //   },
+      // });
+    });
   }
+  // handlePageRendered(e) {
+  //   const pageInfo = e.detail as IPageRenderEvent;
+  //   console.log('[SIGN] Page rendered', pageInfo);
+  //
+  //   const fields = this.fields.filter(field => field.page === pageInfo.renderedPage.pageNumber);
+  //   console.log('[SIGN] Fields on page', fields);
+  //   fields.forEach(field => this.renderField(field, pageInfo.renderedPage));
+  //   // .map((field, index) => this.renderField(field, index));
+  //   // this.pdfPageInfo = e.detail;
+  // }
 
   render() {
+    if (!this.envelope) {
+      return <Host />;
+    }
+
     const menuOptions = [
       {id: 'later', label: 'Finish Later'}, //
       {id: 'claim', label: 'Claim the Document', disabled: true},
@@ -389,7 +471,7 @@ export class VerdocsSign {
     ];
 
     return (
-      <Host class={{storybook: !!window?.['STORYBOOK_ENV'], agreed: this.recipient?.agreed}}>
+      <Host class={{agreed: this.recipient?.agreed}}>
         <div class="intro">
           <div class="inner">Please review and act on these documents.</div>
         </div>
@@ -420,21 +502,17 @@ export class VerdocsSign {
         {!this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
         <div class="document">
-          {this.pdfUrl ? (
-            <div class="inner">
-              <verdocs-view
-                envelopeId={this.envelopeId}
-                endpoint={this.endpoint}
-                onPageRendered={e => this.handlePageRendered(e)}
-                pageLayers={[
-                  {name: 'page', type: 'canvas'},
-                  {name: 'controls', type: 'div'},
-                ]}
-              />
-            </div>
-          ) : (
-            <verdocs-loader />
-          )}
+          <div class="inner">
+            <verdocs-view
+              endpoint={this.endpoint}
+              envelopeId={this.envelopeId}
+              // onPageRendered={e => this.handlePageRendered(e)}
+              pageLayers={[
+                {name: 'page', type: 'canvas'},
+                {name: 'controls', type: 'div'},
+              ]}
+            />
+          </div>
         </div>
       </Host>
     );

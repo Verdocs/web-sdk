@@ -4,6 +4,9 @@ import {getEnvelopeDocument} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, State} from '@stencil/core';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
+// import TemplateStore from '../../../utils/templateStore';
+import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 
 export interface ISourcePageMetrics {
   width: number;
@@ -44,6 +47,12 @@ export class VerdocsViewEnvelopeDocument {
    * The document ID to render
    */
   @Prop() documentId: string = '';
+
+  /**
+   * The mode to render in. 'preview' will display the document fields in readonly mode.
+   * 'sign' will make them editable.
+   */
+  @Prop() mode: string = '';
 
   /**
    * Rotate the PDF in degrees
@@ -103,20 +112,20 @@ export class VerdocsViewEnvelopeDocument {
   // TODO: Handle anonymous case and failure to load due to not being logged in
   async componentDidLoad() {
     if (!this.envelopeId || !this.documentId) {
-      console.log(`[VIEW-ENVELOPE] Missing required envelope ID ${this.envelopeId}`);
+      console.log(`[ENVELOPE] Missing required envelope ID ${this.envelopeId}`);
       return;
     }
 
     try {
-      console.log(`[VIEW-ENVELOPE] Loading envelope ${this.envelopeId}`);
+      console.log(`[ENVELOPE] Loading envelope ${this.envelopeId}`);
       this.envelopeDocument = await getEnvelopeDocument(this.endpoint, this.envelopeId, this.documentId);
       if (!this.envelopeDocument) {
-        console.error('[VIEW-ENVELOPE] Unable to load envelope document', this.envelopeId, this.documentId);
+        console.error('[ENVELOPE] Unable to load envelope document', this.envelopeId, this.documentId);
       }
 
-      console.log('[VIEW-ENVELOPE] Got envelope document', this.envelopeDocument);
+      console.log('[ENVELOPE] Got envelope document', this.envelopeDocument);
     } catch (e) {
-      console.log('[VIEW-ENVELOPE] Error loading envelope', e);
+      console.log('[ENVELOPE] Error loading envelope', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -127,13 +136,13 @@ export class VerdocsViewEnvelopeDocument {
 
     // Two async operations happen here, loading the PDF and rendering the DOM div/canvas placeholders to draw the pages on.
     if (!domPage) {
-      console.log('[VIEW-ENVELOPE] Skipping rendering page not yet in DOM', {pageNumber});
+      console.log('[ENVELOPE] Skipping rendering page not yet in DOM', {pageNumber});
       return;
     }
 
     const pageMetrics = this.sourcePageMetrics[pageNumber];
 
-    console.log('[VIEW-ENVELOPE] Rendering page', {pageNumber, pageMetrics, domPage});
+    console.log('[ENVELOPE] Rendering page', {pageNumber, pageMetrics, domPage});
     try {
       // const pdfPage = await this.pdfDocument.getPage(pageNumber);
       // const viewport = pdfPage.getViewport({scale: domPage.xScale});
@@ -231,16 +240,30 @@ export class VerdocsViewEnvelopeDocument {
   //     });
   // }
 
-  async handlePageRendered(e: any) {
-    e.stopPropagation();
-
-    const domPage = e.detail as IDocumentPageInfo;
-    this.domPages[domPage.pageNumber] = domPage;
-    await this.renderPage(domPage.pageNumber);
+  async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
+    console.log('[ENVELOPE] handleFieldChange', field, e, optionId);
   }
 
+  handlePageRendered(e) {
+    const pageInfo = e.detail as IPageRenderEvent;
+    console.log('[ENVELOPE] Page rendered', pageInfo, this.envelopeDocument);
+    // console.log('[PREVIEW] Page rendered', pageInfo, TemplateStore.fields);
+
+    const fields = this.envelopeDocument.pages[pageInfo.renderedPage.pageNumber].fields;
+    console.log('[ENVELOPE] Fields on page', fields);
+    fields.forEach(field => renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true));
+  }
+
+  // async handlePageRendered(e: any) {
+  //   e.stopPropagation();
+  //
+  //   const domPage = e.detail as IDocumentPageInfo;
+  //   this.domPages[domPage.pageNumber] = domPage;
+  //   await this.renderPage(domPage.pageNumber);
+  // }
+
   render() {
-    console.log('[VIEW-ENVELOPE] Rendering pages', this.envelopeDocument?.pages);
+    console.log('[ENVELOPE] Rendering pages', this.envelopeDocument?.pages);
 
     // TODO: The API is supposed to always return these sorted...
     const pages = [...(this.envelopeDocument?.pages || [])];

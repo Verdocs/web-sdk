@@ -1,7 +1,7 @@
-import {Event, EventEmitter, Host} from '@stencil/core';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, Prop, State, h} from '@stencil/core';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {Component, Prop, State, h, Event, EventEmitter, Host} from '@stencil/core';
+import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -35,7 +35,28 @@ export class VerdocsBuild {
 
   fields: ITemplateField[] = [];
 
-  async componentDidLoad() {}
+  async componentWillLoad() {
+    this.endpoint.loadSession();
+    if (!this.endpoint.session) {
+      console.log('[BUILD] Unable to start builder session, must be authenticated');
+      return;
+    }
+
+    if (!this.templateId) {
+      console.log(`[BUILD] No template ID specified, showing upload option`);
+      this.step = 'create';
+      return;
+    }
+
+    try {
+      console.log(`[BUILD] Loading template ${this.templateId}`);
+      await loadTemplate(this.endpoint, this.templateId);
+      this.step = 'fields';
+    } catch (e) {
+      console.log('[BUILD] Error loading template', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+  }
 
   handleCancel(e: any) {
     console.log('Cancel', e.detail);
@@ -60,10 +81,10 @@ export class VerdocsBuild {
   render() {
     return (
       <Host>
-        {this.step === 'create' && <verdocs-template-create onCancel={e => this.handleCancel(e)} onTemplateCreated={e => this.handleTemplateCreated(e)} />}
-        {this.step === 'properties' && <verdocs-template-properties onCancel={e => this.handleCancel(e)} onSettingsUpdated={e => this.handlePropertiesUpdated(e)} />}
-        {this.step === 'recipients' && <verdocs-template-recipients onCancel={e => this.handleCancel(e)} onSettingsUpdated={e => this.handleRecipientsUpdated(e)} />}
-        {this.step === 'fields' && <verdocs-template-fields onCancel={e => this.handleCancel(e)} onSettingsUpdated={e => this.handleCancel(e)} />}
+        {this.step === 'create' && <verdocs-template-create onCancel={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />}
+        {this.step === 'properties' && <verdocs-template-properties onCancel={e => this.handleCancel(e)} onNext={e => this.handlePropertiesUpdated(e)} />}
+        {this.step === 'recipients' && <verdocs-template-recipients onCancel={e => this.handleCancel(e)} onNext={e => this.handleRecipientsUpdated(e)} />}
+        {this.step === 'fields' && <verdocs-template-fields onCancel={e => this.handleCancel(e)} onNext={e => this.handleCancel(e)} />}
       </Host>
     );
   }

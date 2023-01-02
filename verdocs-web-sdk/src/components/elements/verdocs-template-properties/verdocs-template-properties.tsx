@@ -32,7 +32,7 @@ export class VerdocsTemplateProperties {
   /**
    * Event fired when the user completes the step.
    */
-  @Event({composed: true}) settingsUpdated: EventEmitter<{name: string; sendReminders: boolean; firstReminderDays: number; reminderDays: number}>;
+  @Event({composed: true}) next: EventEmitter<{name: string; sendReminders: boolean; firstReminderDays: number; reminderDays: number}>;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -77,23 +77,12 @@ export class VerdocsTemplateProperties {
   handleSubmit(e) {
     e.stopPropagation();
 
-    console.log('new', {
-      name: this.name,
-      visibility: this.visibility,
-      firstReminderDays: +this.firstReminderDays,
-      reminderDays: +this.reminderDays,
-      sendReminders: this.sendReminders,
-    });
-    this.settingsUpdated?.emit({
+    this.next?.emit({
       name: this.name,
       firstReminderDays: +this.firstReminderDays,
       reminderDays: +this.reminderDays,
       sendReminders: this.sendReminders,
     });
-
-    // this.contactSelected?.emit({
-    //   delegator: this.delegator,
-    // });
   }
 
   render() {

@@ -1,33 +1,13 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Fragment, Prop, Host} from '@stencil/core';
+import {getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
 import {IPageRenderEvent} from '../../embeds/verdocs-view/verdocs-view';
-import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
 import TemplateStore from '../../../utils/templateStore';
 import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
-
-/**
- * Helper function to safely set/update components in a CSS transform attribute. Transform is normally set as a string of
- * `operation1(param) operation2(param) ...` components, which makes updating them a bit of a pain. This will remove the
- * specified component if it's already set and replace it with the new value, without touching the other components that
- * may already be set. Note that this operation moves the component to the end of the transform chain so it's not meant
- * to be used for order-sensitive components e.g. translate-then-rotate.
- */
-const updateCssTransform = (el: HTMLElement, key: string, value: string) => {
-  // e.g. 'scale(1.87908, 1.87908) translate(0px, 0px);'
-  const currentTransform = el.style.transform;
-  // e.g. ['scale(1.87908, 1.87908)', 'scale', '1.87908, 1.87908', ...], [ 'translate(0px, 0px)', 'translate', '0px, 0px']]
-  const components = [...currentTransform.matchAll(/(\w+)\(([^)]*)\)/gi)];
-  el.style.transform = [
-    components //
-      .filter(component => component[1] !== key) // Remove the entry if it's already set
-      .map(component => component[0]), // Convert back the remaining entries
-    `${key}(${value})`,
-  ].join(' ');
-};
 
 const iconSingleline = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
@@ -74,7 +54,7 @@ export class VerdocsTemplateFields {
   /**
    * Event fired when the user completes the step.
    */
-  @Event({composed: true}) settingsUpdated: EventEmitter;
+  @Event({composed: true}) next: EventEmitter<ITemplate>;
 
   /**
    * Event fired when the user cancels the dialog.
@@ -206,10 +186,10 @@ export class VerdocsTemplateFields {
               <verdocs-toolbar-icon icon={iconSignature} text="Signature" onClick={() => console.log('signature press')} />
               <verdocs-toolbar-icon icon={iconInitial} text="Initials" onClick={() => console.log('initial press')} />
               <div style={{flex: '1'}} />
-              <button onClick={() => console.log('save')} disabled={true} class="operation">
+              <button onClick={() => this.next?.emit(TemplateStore.template)} disabled={true} class="operation">
                 Save
               </button>
-              <button onClick={() => console.log('close')} class="operation">
+              <button onClick={() => this.cancel?.emit()} class="operation">
                 Close
               </button>
             </div>

@@ -4,8 +4,7 @@ import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {getFieldSettings} from '../../../utils/utils';
 
 /**
- * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
- * input types like text and checkbox.
+ * Displays a checkbox.
  */
 @Component({
   tag: 'verdocs-field-checkbox',

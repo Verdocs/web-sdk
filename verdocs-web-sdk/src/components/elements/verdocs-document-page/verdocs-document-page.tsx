@@ -128,7 +128,6 @@ export class VerdocsDocumentPage {
             <img
               class="verdocs-document-page-layer img"
               id={`${this.containerId}-${layer.name}`}
-              // style={{height}}
               src={this.pageImageUri}
               alt={`Page ${this.pageNumber}`}
               aria-hidden={true}
@@ -136,7 +135,6 @@ export class VerdocsDocumentPage {
                 this.naturalWidth = e.target.naturalWidth;
                 this.naturalHeight = e.target.naturalHeight;
                 this.aspectRatio = this.naturalWidth / this.naturalHeight;
-                console.log('[DOCPAGE] Loaded dimensions', {width: this.naturalWidth, height: this.naturalHeight, aspectRatio: this.aspectRatio});
               }}
             />
           ),

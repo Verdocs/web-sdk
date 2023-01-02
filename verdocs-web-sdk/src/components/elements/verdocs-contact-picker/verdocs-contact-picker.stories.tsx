@@ -24,16 +24,10 @@ export default {
   },
   argTypes: {
     searchContacts: {action: 'searchContacts'},
-    cancel: {action: 'cancel'},
-    contactSelected: {action: 'contactSelected'},
+    onCancel: {action: 'cancel'},
+    onNext: {action: 'next'},
   },
 } as Meta;
 
-export const ContactPicker = ({templateRole, contactSuggestions, searchContacts, cancel, contactSelected}) =>
-  html`<verdocs-contact-picker
-    .templateRole=${templateRole}
-    .contactSuggestions=${contactSuggestions}
-    @searchContacts=${searchContacts}
-    @cancel=${cancel}
-    @contactSelected=${contactSelected}
-  />`;
+export const ContactPicker = ({templateRole, contactSuggestions, searchContacts, onCancel, onNext}) =>
+  html`<verdocs-contact-picker .templateRole=${templateRole} .contactSuggestions=${contactSuggestions} @searchContacts=${searchContacts} @cancel=${onCancel} @next=${onNext} />`;

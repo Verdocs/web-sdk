@@ -111,7 +111,7 @@ export class VerdocsContactPicker {
   /**
    * Event fired when the user changes the type.
    */
-  @Event({composed: true}) contactSelected: EventEmitter<IContactSelectEvent>;
+  @Event({composed: true}) next: EventEmitter<IContactSelectEvent>;
 
   @State() name: string;
   @State() email: string;
@@ -159,7 +159,7 @@ export class VerdocsContactPicker {
     e.stopPropagation();
 
     this.showSuggestions = false;
-    this.contactSelected?.emit({
+    this.next?.emit({
       full_name: this.name,
       email: this.email,
       phone: this.phone,

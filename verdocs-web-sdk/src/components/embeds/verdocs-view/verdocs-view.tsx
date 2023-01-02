@@ -19,7 +19,7 @@ export interface IPageRenderEvent {
 }
 
 /**
- * View all of the documents attached to a template or envelope. All documents are displayed, in order. This embed wraps
+ * Render the documents attached to a template or envelope. All documents are displayed in order. This embed wraps
  * verdocs-view-envelope-document or verdocs-view-template-document, as appropriate, and those controls may be used if
  * fine-grained control over which documents are displayed (or their order) is required.
  */
@@ -262,14 +262,15 @@ export class VerdocsView {
             onPageRendered={p => this.pageRendered?.emit(p.detail)}
           />
         )}
-        {this.envelope && (
-          <verdocs-view-envelope-document
-            endpoint={this.endpoint}
-            envelopeId={this.envelopeId}
-            documentId={this.envelope.envelope_document_id}
-            onPageRendered={p => this.pageRendered?.emit(p.detail)}
-          />
-        )}
+        {this.envelope &&
+          (this.envelope.documents || []).map(document => (
+            <verdocs-view-envelope-document
+              endpoint={this.endpoint}
+              envelopeId={this.envelopeId}
+              documentId={document.id}
+              onPageRendered={p => this.pageRendered?.emit(p.detail)}
+            />
+          ))}
       </Host>
     );
   }

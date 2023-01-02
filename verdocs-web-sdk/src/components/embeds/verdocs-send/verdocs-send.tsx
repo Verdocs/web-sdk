@@ -183,10 +183,10 @@ export class VerdocsSend {
                   {this.showPickerForId === role.id && (
                     <verdocs-contact-picker
                       onCancel={() => (this.showPickerForId = '')}
+                      onNext={e => this.handleSelectContact(e, role)}
                       contactSuggestions={this.sessionContacts}
                       templateRole={this.recipientsAssigned[role.id] ?? role}
                       onSearchContacts={e => console.log('Search', e.detail)}
-                      onContactSelected={e => this.handleSelectContact(e, role)}
                     />
                   )}
                 </div>

@@ -9,7 +9,9 @@ import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 
 /**
- * Display a template preview experience.
+ * Display a template preview experience. This will display the template's attached
+ * documents with signing fields overlaid on each page. Fields will be color-coded
+ * by recipient, and will be read-only (cannot be filled, moved, or altered).
  */
 @Component({
   tag: 'verdocs-preview',

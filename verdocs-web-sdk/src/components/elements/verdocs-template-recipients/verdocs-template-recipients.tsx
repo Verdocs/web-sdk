@@ -131,14 +131,9 @@ export class VerdocsTemplateRecipients {
   @Event({composed: true}) cancel: EventEmitter;
 
   /**
-   * Event fired when the user completes the step.
+   * Event fired when the user selects a contact.
    */
-  @Event({composed: true}) settingsUpdated: EventEmitter;
-
-  /**
-   * Event fired when the user changes the type.
-   */
-  @Event({composed: true}) contactSelected: EventEmitter<IContactSelectEvent>;
+  @Event({composed: true}) next: EventEmitter<IContactSelectEvent>;
 
   @State() name: string;
   @State() email: string;
@@ -313,15 +308,13 @@ export class VerdocsTemplateRecipients {
     e.stopPropagation();
 
     this.showSuggestions = false;
-    this.contactSelected?.emit({
+    this.next?.emit({
       full_name: this.name,
       email: this.email,
       phone: this.phone,
       message: this.message,
       delegator: this.delegator,
     });
-
-    this.settingsUpdated?.emit({});
   }
 
   render() {

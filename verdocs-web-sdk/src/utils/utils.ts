@@ -78,12 +78,11 @@ export const getFieldId = (field: ITemplateField | IDocumentField) => {
 export const getFieldOptionId = (field: ITemplateField, index: number) => {
   return `verdocs-doc-fld-${field.name}-${index}`;
 };
-
 export const renderDocumentField = (
   field: ITemplateField,
   docPage: IDocumentPageInfo,
   roleIndex: number,
-  handleFieldChange: (field: ITemplateField, e: any, optionId?: string) => void,
+  handleFieldChange: (field: ITemplateField | IDocumentField, e: any, optionId?: string) => void,
   disabled: boolean,
   editable: boolean = false,
   draggable: boolean = false,
@@ -209,4 +208,24 @@ export const getFieldSettings = (field: ITemplateField | IDocumentField) => {
   }
 
   return {x: 0, y: 0, required: false, disabled: false, result: '', value: ''};
+};
+
+/**
+ * Helper function to safely set/update components in a CSS transform attribute. Transform is normally set as a string of
+ * `operation1(param) operation2(param) ...` components, which makes updating them a bit of a pain. This will remove the
+ * specified component if it's already set and replace it with the new value, without touching the other components that
+ * may already be set. Note that this operation moves the component to the end of the transform chain so it's not meant
+ * to be used for order-sensitive components e.g. translate-then-rotate.
+ */
+export const updateCssTransform = (el: HTMLElement, key: string, value: string) => {
+  // e.g. 'scale(1.87908, 1.87908) translate(0px, 0px);'
+  const currentTransform = el.style.transform;
+  // e.g. ['scale(1.87908, 1.87908)', 'scale', '1.87908, 1.87908', ...], [ 'translate(0px, 0px)', 'translate', '0px, 0px']]
+  const components = [...currentTransform.matchAll(/(\w+)\(([^)]*)\)/gi)];
+  el.style.transform = [
+    components //
+      .filter(component => component[1] !== key) // Remove the entry if it's already set
+      .map(component => component[0]), // Convert back the remaining entries
+    `${key}(${value})`,
+  ].join(' ');
 };

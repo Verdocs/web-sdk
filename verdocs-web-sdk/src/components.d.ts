@@ -8,7 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
-import { IRole, ITemplate, ITemplateDocument, ITemplateField, TemplateSenderTypes } from "@verdocs/js-sdk/Templates/Types";
+import { IRole, ITemplate, ITemplateField, TemplateSenderTypes } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
@@ -581,10 +581,6 @@ export namespace Components {
     }
     interface VerdocsSign {
         /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
           * The ID of the envelope to sign.
          */
         "envelopeId": string | null;
@@ -593,7 +589,7 @@ export namespace Components {
          */
         "inviteCode": string | null;
         /**
-          * The name of the role that will be signing.
+          * The ID of the role that will be signing e.g. 'Recipient 1'
          */
         "roleId": string | null;
     }
@@ -777,6 +773,10 @@ export namespace Components {
           * The envelope ID to render
          */
         "envelopeId": string;
+        /**
+          * The mode to render in. 'preview' will display the document fields in readonly mode. 'sign' will make them editable.
+         */
+        "mode": string;
         /**
           * Layers will be passed through to the individual pages inside this component.
          */
@@ -1424,7 +1424,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user changes the type.
          */
-        "onContactSelected"?: (event: VerdocsContactPickerCustomEvent<IContactSelectEvent>) => void;
+        "onNext"?: (event: VerdocsContactPickerCustomEvent<IContactSelectEvent>) => void;
         /**
           * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
          */
@@ -2061,10 +2061,6 @@ declare namespace LocalJSX {
     }
     interface VerdocsSign {
         /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
           * The ID of the envelope to sign.
          */
         "envelopeId"?: string | null;
@@ -2073,11 +2069,15 @@ declare namespace LocalJSX {
          */
         "inviteCode"?: string | null;
         /**
+          * Event fired when any field is updated. Note that the current active endpoint is provided as a parameter as a convenience for callers when this coimponent
+         */
+        "onFieldUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint}>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsSignCustomEvent<SDKError>) => void;
         /**
-          * The name of the role that will be signing.
+          * The ID of the role that will be signing e.g. 'Recipient 1'
          */
         "roleId"?: string | null;
     }
@@ -2129,13 +2129,13 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplateCreateCustomEvent<any>) => void;
         /**
+          * Event fired when the user changes the type.
+         */
+        "onNext"?: (event: VerdocsTemplateCreateCustomEvent<ITemplate>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateCreateCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the user changes the type.
-         */
-        "onTemplateCreated"?: (event: VerdocsTemplateCreateCustomEvent<{template: ITemplate; template_document: ITemplateDocument}>) => void;
     }
     interface VerdocsTemplateFields {
         /**
@@ -2147,13 +2147,13 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplateFieldsCustomEvent<any>) => void;
         /**
+          * Event fired when the user completes the step.
+         */
+        "onNext"?: (event: VerdocsTemplateFieldsCustomEvent<ITemplate>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateFieldsCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the user completes the step.
-         */
-        "onSettingsUpdated"?: (event: VerdocsTemplateFieldsCustomEvent<any>) => void;
         /**
           * The ID of the template to create the document from.
          */
@@ -2169,13 +2169,13 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
         /**
+          * Event fired when the user completes the step.
+         */
+        "onNext"?: (event: VerdocsTemplatePropertiesCustomEvent<{name: string; sendReminders: boolean; firstReminderDays: number; reminderDays: number}>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplatePropertiesCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the user completes the step.
-         */
-        "onSettingsUpdated"?: (event: VerdocsTemplatePropertiesCustomEvent<{name: string; sendReminders: boolean; firstReminderDays: number; reminderDays: number}>) => void;
         /**
           * The template ID to edit.
          */
@@ -2195,17 +2195,13 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplateRecipientsCustomEvent<any>) => void;
         /**
-          * Event fired when the user changes the type.
+          * Event fired when the user selects a contact.
          */
-        "onContactSelected"?: (event: VerdocsTemplateRecipientsCustomEvent<IContactSelectEvent>) => void;
+        "onNext"?: (event: VerdocsTemplateRecipientsCustomEvent<IContactSelectEvent>) => void;
         /**
           * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
          */
         "onSearchContacts"?: (event: VerdocsTemplateRecipientsCustomEvent<IContactSearchEvent>) => void;
-        /**
-          * Event fired when the user completes the step.
-         */
-        "onSettingsUpdated"?: (event: VerdocsTemplateRecipientsCustomEvent<any>) => void;
         /**
           * The role that this contact will be assigned to.
          */
@@ -2365,6 +2361,10 @@ declare namespace LocalJSX {
           * The envelope ID to render
          */
         "envelopeId"?: string;
+        /**
+          * The mode to render in. 'preview' will display the document fields in readonly mode. 'sign' will make them editable.
+         */
+        "mode"?: string;
         /**
           * Fired when a page has been changed
          */
