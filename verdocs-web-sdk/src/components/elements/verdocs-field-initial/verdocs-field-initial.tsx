@@ -93,9 +93,9 @@ export class VerdocsFieldInitial {
 
   handleShow() {
     this.dialog = document.createElement('verdocs-initial-dialog');
-    this.dialog.open = true;
+    this.dialog.setAttribute('initials', this.initials);
     this.dialog.addEventListener('cancel', () => this.hideDialog());
-    this.dialog.addEventListener('adopt', e => this.handleAdopt(e));
+    this.dialog.addEventListener('next', e => this.handleAdopt(e));
     document.body.append(this.dialog);
   }
 

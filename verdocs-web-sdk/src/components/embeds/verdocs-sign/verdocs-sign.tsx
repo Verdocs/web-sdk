@@ -1,18 +1,16 @@
-// import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {fullNameToInitials, getFieldId, getRoleIndex, renderDocumentField, setControlStyles} from '../../../utils/utils';
-// import {getFieldId, getRoleIndex, renderDocumentField, setControlStyles, updateCssTransform} from '../../../utils/utils';
+import {fullNameToInitials, getFieldId, getRoleIndex, renderDocumentField} from '../../../utils/utils';
 import EnvelopeStore from '../../../utils/envelopeStore';
 import {getEnvelopeById} from '../../../utils/Envelopes';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
+import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
+import {updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
 
 /**
  * Display an envelope signing experience. This will display the envelope's attached
@@ -245,6 +243,13 @@ export class VerdocsSign {
 
       case 'signature':
         console.log('Got signature', e.detail);
+
+        const newSignature = await createSignature(this.endpoint, 'signature', e.detail);
+        console.log('Created signature', newSignature);
+
+        //   --data-raw '{"ip_address":"ip_unavailable"}' \
+        const attachResult = await updateEnvelopeFieldSignature(this.endpoint, this.envelopeId, field.name, newSignature.id);
+        console.log('Attach result', attachResult);
         break;
 
       case 'date':
@@ -264,36 +269,6 @@ export class VerdocsSign {
         console.log('Unhandled field update', {value, checked}, field);
         break;
     }
-  }
-
-  renderCheckboxGroupOption(page: IDocumentPageInfo, field: IDocumentField, option: any) {
-    const left = rescale(page.xScale, option.x);
-    const bottom = rescale(page.yScale, option.y);
-
-    const style = {
-      left: `${left}px`,
-      bottom: `${bottom}px`,
-      position: 'absolute',
-      transform: `scale(${page.xScale}, ${page.yScale})`,
-      backgroundColor: getRGBA(this.recipientIndex),
-    } as any;
-
-    return <verdocs-field-checkbox style={style} field={field} onChange={e => this.handleFieldChange(field, e, option.id)} />;
-  }
-
-  renderRadioGroupOption(page: IDocumentPageInfo, field: IDocumentField, option: any) {
-    const left = rescale(page.xScale, option.x);
-    const bottom = rescale(page.yScale, option.y);
-
-    const style = {
-      left: `${left}px`,
-      bottom: `${bottom}px`,
-      position: 'absolute',
-      transform: `scale(${page.xScale}, ${page.yScale})`,
-      backgroundColor: getRGBA(this.recipientIndex),
-    } as any;
-
-    return <verdocs-field-radio-button style={style} field={field} onFieldChange={e => this.handleFieldChange(field, e, option.id)} />;
   }
 
   isFieldValid(field: IDocumentField) {
@@ -363,77 +338,25 @@ export class VerdocsSign {
     }
   }
 
-  renderField(field: IDocumentField, docPage: IDocumentPageInfo /*, index: number*/) {
-    const controlsDiv = document.getElementById(docPage.containerId + '-controls');
-    if (!controlsDiv) {
-      return;
-    }
-
-    const id = getFieldId(field);
-    const existingField = document.getElementById(id);
-    console.log('field', id, existingField);
-    if (existingField) {
-      setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
-      return;
-    }
-
-    let el;
-    switch (field.type) {
-      case 'attachment':
-      case 'checkbox_group':
-      case 'date':
-      case 'dropdown':
-      case 'initial':
-      case 'payment':
-      case 'signature':
-      case 'timestamp':
-      case 'textarea':
-      case 'textbox':
-        el = document.createElement(`verdocs-field-${field.type}`);
-        break;
-      //   return field.settings.options.map((option: any, index) => this.renderCheckboxGroupOption(renderOnPage, field, option, index));
-      case 'radio_button_group':
-        //   el = document.createElement('verdocs-field-signature');
-        //   el.setAttribute('value', base64);
-        break;
-      //   return field.settings.options.map((option: any, index) => this.renderRadioGroupOption(renderOnPage, field, option, index));
-      // case 'attachment':
-      //   el = document.createElement('verdocs-field-attachment');
-      //   el.setAttribute('value', result || '');
-      //   break;
-      // case 'payment':
-      //   el = document.createElement('verdocs-field-payment');
-      //   break;
-      default:
-        console.log('[SIGN] Skipping unsupported field type', field);
-    }
-    console.log('created field', el);
-
-    if (el) {
-      el.field = field;
-      el.recipient = this.recipient;
-      el.setAttribute('id', id);
-      el.setAttribute('roleindex', this.recipientIndex);
-      el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
-      setControlStyles(el, field, docPage.xScale, docPage.yScale);
-      controlsDiv.appendChild(el);
-    }
-  }
-
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
     console.log('[SIGN] Page rendered', pageInfo);
 
-    const fields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
+    console.log('rendering fields for recipient', getRoleIndex(EnvelopeStore.roleNames, this.recipient.role_name));
+    const recipientFields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
     // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
-    console.log('[SIGN] Fields on page', fields);
-    fields.forEach(field => {
+    console.log('[SIGN] Fields on page', recipientFields);
+    recipientFields.forEach(field => {
       const el = renderDocumentField(field, pageInfo, getRoleIndex(EnvelopeStore.roleNames, field.recipient_role), {disabled: false, editable: false, draggable: false});
       if (!el) {
         return;
       }
 
       el.addEventListener('input', e => {
+        this.handleFieldChange(field, e);
+      });
+
+      el.addEventListener('fieldChange', e => {
         this.handleFieldChange(field, e);
       });
 
@@ -467,17 +390,25 @@ export class VerdocsSign {
       //   },
       // });
     });
+
+    EnvelopeStore.envelope.recipients
+      .filter(recipient => recipient.role_name !== this.recipient.role_name)
+      .map(otherRecipient => {
+        console.log('Rendering fields for other recipient', getRoleIndex(EnvelopeStore.roleNames, otherRecipient.role_name), otherRecipient);
+        const recipientFields = otherRecipient.fields.filter(field => field.page === pageInfo.pageNumber);
+        // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+        console.log('[SIGN] Fields on page', recipientFields);
+        recipientFields.forEach(field => {
+          const el = renderDocumentField(field, pageInfo, getRoleIndex(EnvelopeStore.roleNames, otherRecipient.role_name), {disabled: true, editable: false, draggable: false});
+          if (!el) {
+            return;
+          }
+
+          el.setAttribute('xScale', pageInfo.xScale);
+          el.setAttribute('yScale', pageInfo.yScale);
+        });
+      });
   }
-  // handlePageRendered(e) {
-  //   const pageInfo = e.detail as IPageRenderEvent;
-  //   console.log('[SIGN] Page rendered', pageInfo);
-  //
-  //   const fields = this.fields.filter(field => field.page === pageInfo.renderedPage.pageNumber);
-  //   console.log('[SIGN] Fields on page', fields);
-  //   fields.forEach(field => this.renderField(field, pageInfo.renderedPage));
-  //   // .map((field, index) => this.renderField(field, index));
-  //   // this.pdfPageInfo = e.detail;
-  // }
 
   render() {
     if (EnvelopeStore.loading || !EnvelopeStore.envelope) {

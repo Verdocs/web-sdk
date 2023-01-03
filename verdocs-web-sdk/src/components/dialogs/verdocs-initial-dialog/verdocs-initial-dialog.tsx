@@ -72,25 +72,21 @@ export class VerdocsInitialDialog {
     context.fillText(this.enteredInitials, this.canvasElement.width / 2, this.canvasElement.height / 2);
   }
 
-  // We need a separate event handler for clicking the background because it can receive events "through" other child components
-  handleDismiss(e: any) {
-    e.stopPropagation();
-    if (e.target.className === 'background-overlay') {
-      this.handleCancel();
-    }
-  }
-
   handleNameChange(e: any) {
     this.enteredInitials = e.target.value;
   }
 
-  handleAdopt() {
-    const data = this.canvasElement.toDataURL('image/png');
-    this.next.emit(data);
+  handleCancel(e: any) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.cancel.emit();
   }
 
-  handleCancel() {
-    this.cancel.emit();
+  handleAdopt(e: any) {
+    e.stopPropagation();
+    e.preventDefault();
+    const data = this.canvasElement.toDataURL('image/png');
+    this.next.emit(data);
   }
 
   /*
@@ -253,35 +249,33 @@ export class VerdocsInitialDialog {
 
   render() {
     return (
-      <Host>
-        <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
-          <div class="dialog">
-            <div class="heading">Create Your Initial</div>
+      <Host onClick={e => this.handleCancel(e)}>
+        <div class="dialog">
+          <div class="heading">Create Your Initial</div>
 
-            <div class="content">
-              <verdocs-text-input placeholder="Initials..." label="Initials" value={this.enteredInitials} onInput={e => this.handleNameChange(e)} />
-              <div class="as-shown">As shown on driver's license or govt. ID card.</div>
+          <div class="content">
+            <verdocs-text-input placeholder="Initials..." label="Initials" value={this.enteredInitials} onInput={e => this.handleNameChange(e)} />
+            <div class="as-shown">As shown on driver's license or govt. ID card.</div>
 
-              {/*<div class="tabs">*/}
-              {/*  <div class={{tab: true, active: this.mode === 'type'}} onClick={() => (this.mode = 'type')}>*/}
-              {/*    Type*/}
-              {/*  </div>*/}
-              {/*  <div class={{tab: true, active: this.mode === 'draw'}} onClick={() => (this.mode = 'draw')}>*/}
-              {/*    Draw*/}
-              {/*  </div>*/}
-              {/*</div>*/}
+            {/*<div class="tabs">*/}
+            {/*  <div class={{tab: true, active: this.mode === 'type'}} onClick={() => (this.mode = 'type')}>*/}
+            {/*    Type*/}
+            {/*  </div>*/}
+            {/*  <div class={{tab: true, active: this.mode === 'draw'}} onClick={() => (this.mode = 'draw')}>*/}
+            {/*    Draw*/}
+            {/*  </div>*/}
+            {/*</div>*/}
 
-              {this.fontLoaded ? <canvas ref={el => (this.canvasElement = el as HTMLCanvasElement)} /> : <div style={{display: 'none'}} />}
+            {this.fontLoaded ? <canvas ref={el => (this.canvasElement = el as HTMLCanvasElement)} /> : <div style={{display: 'none'}} />}
 
-              <div class="disclaimer">
-                By clicking Adopt, I agree that the signature will be the electronic representation of my signature for all purposes when I (or my agent) use them on documents,
-                including legally binding contracts &mdash; just the same as a pen-and-paper signature or initial.
-              </div>
+            <div class="disclaimer">
+              By clicking Adopt, I agree that the signature will be the electronic representation of my signature for all purposes when I (or my agent) use them on documents,
+              including legally binding contracts &mdash; just the same as a pen-and-paper signature or initial.
+            </div>
 
-              <div class="buttons">
-                <verdocs-button label="CANCEL" variant="outline" onClick={() => this.handleCancel()} />
-                <verdocs-button label="Adopt & Sign" onClick={() => this.handleAdopt()} />
-              </div>
+            <div class="buttons">
+              <verdocs-button label="CANCEL" variant="outline" onClick={e => this.handleCancel(e)} />
+              <verdocs-button label="Adopt & Sign" onClick={e => this.handleAdopt(e)} />
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@
 verdocs-signature-dialog {
   font-family: $primary-font;
   box-sizing: border-box;
-  position: absolute;
+  position: fixed;
   z-index: 10000;
   top: 0;
   left: 0;
@@ -20,7 +20,7 @@ verdocs-signature-dialog {
     border-radius: 4px;
     overflow: hidden;
     box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
-    background: $verdocs-grey-3;
+    background: $dialog-bg;
   }
 
   .heading {

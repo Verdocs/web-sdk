@@ -82,9 +82,9 @@ export class VerdocsFieldSignature {
 
   handleShow() {
     this.dialog = document.createElement('verdocs-signature-dialog');
-    this.dialog.open = true;
+    this.dialog.setAttribute('name', this.name);
     this.dialog.addEventListener('cancel', () => this.hideDialog());
-    this.dialog.addEventListener('adopt', e => this.handleAdopt(e));
+    this.dialog.addEventListener('next', e => this.handleAdopt(e));
     document.body.append(this.dialog);
   }
 

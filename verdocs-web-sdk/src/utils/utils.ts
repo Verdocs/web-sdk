@@ -112,7 +112,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
       const el: any = document.createElement(`verdocs-field-${field.type}`);
       el.field = field;
       el.setAttribute('id', id);
-      el.setAttribute('roleindex', roleIndex);
+      el.setAttribute('roleIndex', roleIndex);
       if (disabled) {
         el.setAttribute('disabled', true);
       }
@@ -140,7 +140,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         const cbEl: any = document.createElement(`verdocs-field-checkbox`);
         cbEl.field = field;
         cbEl.setAttribute('id', id);
-        cbEl.setAttribute('roleindex', roleIndex);
+        cbEl.setAttribute('roleIndex', roleIndex);
         cbEl.setAttribute('option', checkboxIndex);
         if (disabled) {
           cbEl.setAttribute('disabled', true);
@@ -165,7 +165,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         const cbEl: any = document.createElement(`verdocs-field-radio-button`);
         cbEl.field = field;
         cbEl.setAttribute('id', id);
-        cbEl.setAttribute('roleindex', roleIndex);
+        cbEl.setAttribute('roleIndex', roleIndex);
         cbEl.setAttribute('option', buttonIndex);
         if (disabled) {
           cbEl.setAttribute('disabled', true);
