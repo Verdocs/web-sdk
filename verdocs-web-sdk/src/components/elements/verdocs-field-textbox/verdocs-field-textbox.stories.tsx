@@ -13,7 +13,12 @@ export default {
     },
     disabled: false,
   },
-  argTypes: {},
+  argTypes: {
+    input: {
+      action: 'input',
+      description: 'Fired for each character entered in the field. e.target.value will contain the current text value.',
+    },
+  },
 } as Meta;
 
-export const Textbox = ({field, disabled}) => html`<verdocs-field-textbox .field=${field} .disabled=${disabled} />`;
+export const Textbox = ({field, disabled, input}) => html`<verdocs-field-textbox .field=${field} .disabled=${disabled} @input=${input} />`;

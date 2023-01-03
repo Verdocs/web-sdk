@@ -8,17 +8,6 @@ import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
-export interface ISourcePageMetrics {
-  width: number;
-  height: number;
-}
-
-export interface IPageRenderEvent {
-  renderedPage: IDocumentPageInfo;
-  sourcePageMetrics: ISourcePageMetrics;
-  pages: Record<number, IDocumentPageInfo>;
-}
-
 /**
  * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
  */
@@ -250,16 +239,14 @@ export class VerdocsView {
       // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
       console.log('[SIGN] Fields on page', fields);
       fields.forEach(field => {
-        const el = renderDocumentField(field, pageInfo, getRoleIndex(EnvelopeStore.roleNames, field.recipient_role), this.handleFieldChange, true, false, false);
-        console.log('rendered element', el);
-        // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
+        const el = renderDocumentField(field, pageInfo, getRoleIndex(EnvelopeStore.roleNames, field.recipient_role), {disabled: true, editable: false, draggable: false});
         if (!el) {
           return;
         }
 
-        el.addEventListener('recipientChanged', e => {
-          el.setAttribute('roleindex', getRoleIndex(EnvelopeStore.roleNames, e.detail));
-          // el.setAttribute('roleindex', getRoleIndex(this.roles, e.detail));
+        el.addEventListener('input', e => {
+          console.log('Field input', e.target.value, e.target);
+          this.handleFieldChange(field, e);
         });
 
         el.setAttribute('xScale', pageInfo.xScale);

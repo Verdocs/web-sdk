@@ -5,18 +5,20 @@ export default {
   title: 'Controls/Checkbox',
   component: 'verdocs-checkbox',
   args: {
-    checked: false,
+    label: 'Sample checkbox',
     name: 'test',
-    value: '1',
+    theme: 'light',
+    checked: false,
     disabled: false,
+    value: '1',
   },
   argTypes: {
-    onInput: {
+    input: {
       action: 'input',
       description: 'Fired when the checkbox is clicked. e.target.checked will indicate the current status (true if checked).',
     },
   },
 } as Meta;
 
-export const Checkbox = ({checked, name, value, disabled, onInput}) =>
-  html` <verdocs-checkbox .checked=${checked} .name=${name} .value=${value} .disabled=${disabled} @input=${onInput} /> `;
+export const Checkbox = ({checked, label, name, value, disabled, theme, input}) =>
+  html` <verdocs-checkbox .checked=${checked} .label=${label} .name=${name} .value=${value} .disabled=${disabled} .theme=${theme} @input=${input} /> `;

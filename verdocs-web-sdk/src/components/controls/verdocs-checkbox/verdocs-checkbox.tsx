@@ -34,9 +34,22 @@ export class VerdocsCheckbox {
   @Prop() name: string = '';
 
   /**
-   * Value to track with the input.
+   * Label to display. Leave blank for no label. The label will be displayed to the right of the checkbox, but may be
+   * repositioned with CSS.
+   */
+  @Prop() label: string = '';
+
+  /**
+   * Value to track with the input. Value is not used internally by this component but is sometimes useful to set
+   * because it can be retrieved in event handlers via e.target.value. This can be used to identify which
+   * checkbox was clicked in a checkbox group.
    */
   @Prop() value: string = '';
+
+  /**
+   * Style of checkbox to render. Use 'dark' when rendering on a dark background.
+   */
+  @Prop() theme: 'light' | 'dark' = 'light';
 
   /**
    * If set, the button will still be displayed but not selectable.
@@ -45,8 +58,11 @@ export class VerdocsCheckbox {
 
   render() {
     return (
-      <Host class={{disabled: this.disabled}}>
-        <input type="checkbox" value={this.value} name={this.name} checked={this.checked} disabled={this.disabled} id={`verdocs-checkbox-${this.name}-${this.value}`} />
+      <Host class={{disabled: this.disabled, [this.theme]: true}}>
+        <label>
+          <input type="checkbox" value={this.value} name={this.name} checked={this.checked} disabled={this.disabled} />
+          <span>{this.label}</span>
+        </label>
       </Host>
     );
   }

@@ -11,7 +11,7 @@ export default {
     disabled: false,
   },
   argTypes: {
-    onInput: {
+    input: {
       action: 'input',
       description:
         'Fired when the radio button is clicked. e.target.checked will always be true, because radio button onChange events are fired only when the radio button is clicked to select it.',
@@ -19,5 +19,5 @@ export default {
   },
 } as Meta;
 
-export const RadioButton = ({checked, name, value, disabled, onInput}) =>
-  html` <verdocs-radio-button .checked=${checked} .name=${name} .value=${value} .disabled="${disabled}" @input=${onInput} /> `;
+export const RadioButton = ({checked, name, value, disabled, input}) =>
+  html` <verdocs-radio-button .checked=${checked} .name=${name} .value=${value} .disabled="${disabled}" @input=${input} /> `;

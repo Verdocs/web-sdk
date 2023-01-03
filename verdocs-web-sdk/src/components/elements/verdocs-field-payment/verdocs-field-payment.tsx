@@ -1,5 +1,6 @@
+import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
+import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
 
@@ -17,11 +18,6 @@ export class VerdocsFieldPayment {
    * The document or template field to display.
    */
   @Prop() field: IDocumentField | ITemplateField | null = null;
-
-  /**
-   * The recipient completing the form, if known.
-   */
-  @Prop() recipient?: IRecipient;
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -48,6 +44,11 @@ export class VerdocsFieldPayment {
 
   @State() preparedMessage: string;
   @State() signatureUrl: string = '';
+
+  /**
+   * If set, the field will be colored using this index value to select the background color.
+   */
+  @Prop() roleIndex?: number = 0;
 
   _fields: any[] = [];
   // envelopeFieldsFormGroup: FormGroup;
@@ -127,8 +128,10 @@ export class VerdocsFieldPayment {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
     console.log('Payment field', settings);
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleIndex);
+
     return (
-      <Host class={{focused: this.focused, disabled}}>
+      <Host class={{focused: this.focused, disabled}} style={{backgroundColor}}>
         <button class={{hide: this.signed}}>$</button>
         {this.signed ? <div class="frame" /> : <div style={{display: 'none'}} />}
         <img width="100%" height="100%" src={this.signatureUrl} />

@@ -1,6 +1,7 @@
+import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {Component, h, Host, Prop, Method} from '@stencil/core';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IDocumentFieldSettings, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
+import {IDocumentField, IDocumentFieldSettings} from '@verdocs/js-sdk/Envelopes/Types';
 
 const PaperclipIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>`;
 
@@ -20,14 +21,14 @@ export class VerdocsFieldAttachment {
   @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
-   * The recipient completing the form, if known.
-   */
-  @Prop() recipient?: IRecipient;
-
-  /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
    */
   @Prop() disabled?: boolean = false;
+
+  /**
+   * If set, the field will be colored using this index value to select the background color.
+   */
+  @Prop() roleIndex?: number = 0;
 
   @Method() async focusField() {
     this.handleShow();
@@ -52,8 +53,10 @@ export class VerdocsFieldAttachment {
     }
 
     const disabled = this.disabled ?? settings.disabled ?? false;
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleIndex);
+
     return (
-      <Host class={{required: settings.required, disabled}}>
+      <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
         <span innerHTML={PaperclipIcon} onClick={() => !disabled && this.handleShow()} />
       </Host>
     );

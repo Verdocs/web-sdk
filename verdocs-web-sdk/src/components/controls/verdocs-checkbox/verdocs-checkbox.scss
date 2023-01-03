@@ -1,31 +1,49 @@
 @import '../../../theme.scss';
 
+// Your periodic reminder that it's 2022 and you still can't style HTML checkboxes
 verdocs-checkbox {
   font-family: $verdocs-primary-font;
-  width: 20px;
-  height: 20px;
-  display: block;
-  font-size: 11px;
-  position: relative;
-  background-color: transparent;
-  transform-origin: bottom left;
-  border-radius: 100%;
+  line-height: 18px;
 
-  &.disabled {
-    opacity: 0.5;
-  }
-
-  &.hide {
+  label > input[type='checkbox'] {
     display: none;
   }
 
-  &.focused {
-    animation: verdocs-field-pulse 0.75s 2;
+  label > input[type='checkbox'] + *::before {
+    content: '';
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    line-height: 18px;
+    border-radius: 2px;
+    border-style: solid;
+    margin-right: 0.5rem;
+    border-width: 0.1rem;
+    display: inline-block;
+    vertical-align: bottom;
+    border-color: $verdocs-grey-2;
   }
 
-  input[type='checkbox'] {
-    width: 18px;
-    height: 18px;
-    accent-color: $verdocs-green-accent;
+  label > input[type='checkbox']:checked + * {
+    color: $verdocs-green;
+  }
+
+  label > input[type='checkbox']:checked + *::before {
+    content: '✓';
+    color: white;
+    text-align: center;
+    background: $verdocs-green;
+    border-color: $verdocs-green;
+  }
+
+  &.dark {
+    label > input[type='checkbox'] + *::before {
+      border-color: $verdocs-grey-4;
+    }
+
+    label > input[type='checkbox']:checked + *::before {
+      background: $verdocs-green;
+      border-color: $verdocs-green;
+    }
   }
 }

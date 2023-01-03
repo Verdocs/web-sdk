@@ -109,16 +109,13 @@ export class VerdocsTemplateFields {
     // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[FIELDS] Fields on page', fields);
     fields.forEach(field => {
-      const el = renderDocumentField(field, pageInfo, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
-      // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
+      const el = renderDocumentField(field, pageInfo, getRoleIndex(TemplateStore.roleNames, field.role_name), {disabled: true, editable: true, draggable: true});
       if (!el) {
         return;
       }
 
-      el.addEventListener('recipientChanged', e => {
-        el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, e.detail));
-        // el.setAttribute('roleindex', getRoleIndex(this.roles, e.detail));
-      });
+      el.addEventListener('input', e => this.handleFieldChange(field, e));
+      el.addEventListener('recipientChanged', e => el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, e.detail)));
 
       el.setAttribute('xScale', pageInfo.xScale);
       el.setAttribute('yScale', pageInfo.yScale);

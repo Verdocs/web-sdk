@@ -30,9 +30,9 @@ verdocs-ok-dialog {
     display: flex;
     font-size: 16px;
     flex-direction: row;
-    background: #444444;
     padding: 8px 16px;
     color: $verdocs-grey-4;
+    background: $verdocs-grey-blue;
   }
 
   .content {

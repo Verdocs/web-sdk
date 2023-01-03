@@ -1,7 +1,9 @@
+import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {Component, h, Host, Prop} from '@stencil/core';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
-import {getFieldSettings} from '../../../utils/utils';
+import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
+import {getFieldSettings, getRoleIndex} from '../../../utils/utils';
+import TemplateStore from '../../../utils/templateStore';
 
 /**
  * Displays a checkbox.
@@ -18,11 +20,6 @@ export class VerdocsFieldCheckbox {
   @Prop() field: IDocumentField | ITemplateField | null = null;
 
   /**
-   * The recipient completing the form, if known.
-   */
-  @Prop() recipient?: IRecipient;
-
-  /**
    * The index of the settings option this particular checkbox is for
    */
   @Prop() option: number = 0;
@@ -35,10 +32,11 @@ export class VerdocsFieldCheckbox {
   render() {
     const settings = getFieldSettings(this.field);
     const option = settings.options?.[this.option] ?? {checked: false};
-
     const disabled = this.disabled ?? settings.disabled ?? false;
+    const backgroundColor = this.field['rgba'] || getRGBA(getRoleIndex(TemplateStore.roleNames, ''));
+
     return (
-      <Host class={{required: settings.required, disabled}}>
+      <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
         <label>
           <input type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} />
           <span />

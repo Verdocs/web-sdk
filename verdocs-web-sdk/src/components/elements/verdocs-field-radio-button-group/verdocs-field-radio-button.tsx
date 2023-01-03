@@ -1,7 +1,9 @@
+import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
+import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
-import {getFieldSettings} from '../../../utils/utils';
+import {getFieldSettings, getRoleIndex} from '../../../utils/utils';
+import TemplateStore from '../../../utils/templateStore';
 
 /**
  * Displays a radio button.
@@ -16,11 +18,6 @@ export class VerdocsFieldRadioButton {
    * The document or template field to display.
    */
   @Prop() field: IDocumentField | ITemplateField | null = null;
-
-  /**
-   * The recipient completing the form, if known.
-   */
-  @Prop() recipient?: IRecipient;
 
   /**
    * The index of the settings option this particular checkbox is for
@@ -47,8 +44,10 @@ export class VerdocsFieldRadioButton {
   render() {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
+    const backgroundColor = this.field['rgba'] || getRGBA(getRoleIndex(TemplateStore.roleNames, ''));
+
     return (
-      <Host class={{required: settings.required, disabled}}>
+      <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
         <input
           type="radio"
           tabIndex={settings.order}

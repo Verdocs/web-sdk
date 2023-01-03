@@ -10,12 +10,12 @@ export default {
     placeholder: 'Enter your name...',
   },
   argTypes: {
-    onInput: {
+    input: {
       action: 'input',
       description: 'Fired for each character entered in the field. e.target.value will contain the current text value.',
     },
   },
 } as Meta;
 
-export const TextInput = ({type, label, value, placeholder, disabled, onInput}) =>
-  html`<verdocs-text-input .type=${type} .label=${label} .placeholder=${placeholder} .value=${value} .disabled=${disabled} @input=${onInput} />`;
+export const TextInput = ({type, label, value, placeholder, disabled, input}) =>
+  html`<verdocs-text-input .type=${type} .label=${label} .placeholder=${placeholder} .value=${value} .disabled=${disabled} @input=${input} />`;

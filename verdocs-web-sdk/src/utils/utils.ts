@@ -79,15 +79,14 @@ export const getFieldOptionId = (field: ITemplateField | IDocumentField, index: 
   return `verdocs-doc-fld-${field.name}-${index}`;
 };
 
-export const renderDocumentField = (
-  field: ITemplateField | IDocumentField,
-  docPage: IDocumentPageInfo,
-  roleIndex: number,
-  handleFieldChange: (field: ITemplateField | IDocumentField, e: any, optionId?: string) => void,
-  disabled: boolean,
-  editable: boolean = false,
-  draggable: boolean = false,
-) => {
+interface IFieldOptions {
+  disabled?: boolean;
+  editable?: boolean;
+  draggable?: boolean;
+}
+
+export const renderDocumentField = (field: ITemplateField | IDocumentField, docPage: IDocumentPageInfo, roleIndex: number, fieldOptions: IFieldOptions) => {
+  const {disabled = false, editable = false, draggable = false} = fieldOptions;
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
   if (!controlsDiv) {
     return;
@@ -123,7 +122,6 @@ export const renderDocumentField = (
       if (draggable) {
         el.setAttribute('draggable', true);
       }
-      el.addEventListener('fieldChange', e => handleFieldChange(field, e));
       setControlStyles(el, field, docPage.xScale, docPage.yScale);
       controlsDiv.appendChild(el);
 
@@ -147,8 +145,7 @@ export const renderDocumentField = (
         if (disabled) {
           cbEl.setAttribute('disabled', true);
         }
-        cbEl.addEventListener('fieldChange', e => handleFieldChange(field, e));
-        setControlStyles(cbEl, field, docPage.xScale, docPage.yScale);
+        setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, checkboxIndex);
         controlsDiv.appendChild(cbEl);
 
         return cbEl;
@@ -173,7 +170,6 @@ export const renderDocumentField = (
         if (disabled) {
           cbEl.setAttribute('disabled', true);
         }
-        cbEl.addEventListener('fieldChange', e => handleFieldChange(field, e));
         setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, buttonIndex);
         controlsDiv.appendChild(cbEl);
 

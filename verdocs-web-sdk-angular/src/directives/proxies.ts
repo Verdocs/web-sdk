@@ -117,13 +117,13 @@ export declare interface VerdocsCheckbox extends Components.VerdocsCheckbox {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['checked', 'disabled', 'name', 'value']
+  inputs: ['checked', 'disabled', 'label', 'name', 'theme', 'value']
 })
 @Component({
   selector: 'verdocs-checkbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['checked', 'disabled', 'name', 'value']
+  inputs: ['checked', 'disabled', 'label', 'name', 'theme', 'value']
 })
 export class VerdocsCheckbox {
   protected el: HTMLElement;
@@ -233,14 +233,14 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'recipient'],
+  inputs: ['disabled', 'field', 'roleIndex'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-attachment',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'recipient']
+  inputs: ['disabled', 'field', 'roleIndex']
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLElement;
@@ -255,13 +255,13 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'option', 'recipient']
+  inputs: ['disabled', 'field', 'option']
 })
 @Component({
   selector: 'verdocs-field-checkbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'option', 'recipient']
+  inputs: ['disabled', 'field', 'option']
 })
 export class VerdocsFieldCheckbox {
   protected el: HTMLElement;
@@ -282,14 +282,14 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient', 'roleindex'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'roleIndex'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-date',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient', 'roleindex']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'roleIndex']
 })
 export class VerdocsFieldDate {
   protected el: HTMLElement;
@@ -303,14 +303,6 @@ export class VerdocsFieldDate {
 
 export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
   /**
-   * Event fired when the input field loses focus. 
-   */
-  fieldFocus: EventEmitter<CustomEvent<boolean>>;
-  /**
-   * Event fired when the input field gains focus. 
-   */
-  fieldBlur: EventEmitter<CustomEvent<boolean>>;
-  /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
 It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
 keypress. 
@@ -321,21 +313,21 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'recipient'],
+  inputs: ['disabled', 'field', 'roleIndex'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'recipient']
+  inputs: ['disabled', 'field', 'roleIndex']
 })
 export class VerdocsFieldDropdown {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange']);
+    proxyOutputs(this, this.el, ['fieldChange']);
   }
 }
 
@@ -364,14 +356,14 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'editable', 'field', 'initials', 'moveable', 'recipient', 'roleindex'],
+  inputs: ['disabled', 'editable', 'field', 'initials', 'moveable', 'roleIndex'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-initial',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'editable', 'field', 'initials', 'moveable', 'recipient', 'roleindex']
+  inputs: ['disabled', 'editable', 'field', 'initials', 'moveable', 'roleIndex']
 })
 export class VerdocsFieldInitial {
   protected el: HTMLElement;
@@ -397,13 +389,13 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipient', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleIndex', 'roleName', 'selectedRoleName', 'signed']
 })
 @Component({
   selector: 'verdocs-field-payment',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipient', 'recipients', 'roleName', 'selectedRoleName', 'signed']
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleIndex', 'roleName', 'selectedRoleName', 'signed']
 })
 export class VerdocsFieldPayment {
   protected el: HTMLElement;
@@ -427,13 +419,13 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'field', 'option', 'recipient']
+  inputs: ['disabled', 'field', 'option']
 })
 @Component({
   selector: 'verdocs-field-radio-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'field', 'option', 'recipient']
+  inputs: ['disabled', 'field', 'option']
 })
 export class VerdocsFieldRadioButton {
   protected el: HTMLElement;
@@ -459,14 +451,14 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'name', 'recipient', 'roleindex'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'name', 'roleIndex'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-signature',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'name', 'recipient', 'roleindex']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'name', 'roleIndex']
 })
 export class VerdocsFieldSignature {
   protected el: HTMLElement;
@@ -478,68 +470,29 @@ export class VerdocsFieldSignature {
 }
 
 
-export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {
-  /**
-   * Event fired when the input field loses focus. 
-   */
-  fieldFocus: EventEmitter<CustomEvent<boolean>>;
-  /**
-   * Event fired when the input field gains focus. 
-   */
-  fieldBlur: EventEmitter<CustomEvent<boolean>>;
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-keypress. 
-   */
-  fieldChange: EventEmitter<CustomEvent<string>>;
-  /**
-   * Event fired on every character entered into / deleted from the field. 
-   */
-  fieldInput: EventEmitter<CustomEvent<string>>;
-
-}
+export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient', 'roleindex'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'roleIndex'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-textarea',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient', 'roleindex']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'roleIndex']
 })
 export class VerdocsFieldTextarea {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput']);
   }
 }
 
 
 export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
-  /**
-   * Event fired when the input field loses focus. 
-   */
-  fieldFocus: EventEmitter<CustomEvent<boolean>>;
-  /**
-   * Event fired when the input field gains focus. 
-   */
-  fieldBlur: EventEmitter<CustomEvent<boolean>>;
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-keypress. 
-   */
-  fieldChange: EventEmitter<CustomEvent<string>>;
-  /**
-   * Event fired on every character entered into / deleted from the field. 
-   */
-  fieldInput: EventEmitter<CustomEvent<string>>;
   /**
    * Event fired if the field is configurable when the recipient has changed. 
    */
@@ -549,68 +502,43 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient', 'roleindex'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'roleIndex'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-textbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient', 'roleindex']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'roleIndex']
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput', 'recipientChanged']);
+    proxyOutputs(this, this.el, ['recipientChanged']);
   }
 }
 
 
-export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {
-  /**
-   * Event fired when the input field loses focus. 
-   */
-  fieldFocus: EventEmitter<CustomEvent<boolean>>;
-  /**
-   * Event fired when the input field gains focus. 
-   */
-  fieldBlur: EventEmitter<CustomEvent<boolean>>;
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-keypress. 
-   */
-  fieldChange: EventEmitter<CustomEvent<string>>;
-  /**
-   * Event fired on every character entered into / deleted from the field. 
-   */
-  fieldInput: EventEmitter<CustomEvent<string>>;
-  /**
-   * Event fired on every character entered into / deleted from the field. 
-   */
-  settingsPress: EventEmitter<CustomEvent<any>>;
-
-}
+export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient', 'roleindex'],
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'roleIndex'],
   methods: ['focusField']
 })
 @Component({
   selector: 'verdocs-field-timestamp',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
-  inputs: ['disabled', 'editable', 'field', 'moveable', 'recipient', 'roleindex']
+  inputs: ['disabled', 'editable', 'field', 'moveable', 'roleIndex']
 })
 export class VerdocsFieldTimestamp {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldFocus', 'fieldBlur', 'fieldChange', 'fieldInput', 'settingsPress']);
   }
 }
 

@@ -1,6 +1,6 @@
 import {Host} from '@stencil/core';
 import {createPopper, Instance} from '@popperjs/core';
-import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
+import {Component, Prop, Element, State, h, Event, EventEmitter} from '@stencil/core';
 import SortDown from './down-arrow.svg';
 
 export interface IMenuOption {
@@ -19,7 +19,7 @@ export interface IMenuOption {
  *   options={[
  *     {label: 'Option 1', disabled: true},
  *     {label: 'Option 2', id: '2'}
-*    ]}
+ *    ]}
  *   label="OK" onClick={() => (console.log('OK clicked'))}
  * />
  * ```
@@ -29,6 +29,9 @@ export interface IMenuOption {
   styleUrl: 'verdocs-dropdown.scss',
 })
 export class VerdocsDropdown {
+  @Element()
+  el: HTMLElement;
+
   private dropdownButton?: HTMLButtonElement;
   private dropdownMenu?: HTMLDivElement;
   private popper?: Instance;
@@ -39,27 +42,30 @@ export class VerdocsDropdown {
   @Prop() options: IMenuOption[] = [];
 
   /**
-   * If set, the component will be open by default. This is primarily intended to be used for testing.
-   */
-  // @Prop() open: boolean;
-
-  /**
-   * If set, the component will be open by default.
-   */
-  @State() isOpen: boolean;
-
-  /**
    * Event fired when a menu option is clicked.
    * Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
    */
   @Event({composed: true}) optionSelected: EventEmitter<IMenuOption>;
 
-  componentWillLoad() {
-    // this.isOpen = !!this.open;
-  }
+  @State() open: boolean;
 
+  // We need to do this to reliably disconnect the click-away listener
+  clickListenerSymbol = new AbortController();
   componentDidLoad() {
     this.popper = createPopper(this.dropdownButton, this.dropdownMenu, {placement: 'bottom-start', modifiers: [{name: 'offset', options: {offset: [0, 6]}}]});
+
+    window.addEventListener('click', this.clickListener.bind(this), {signal: this.clickListenerSymbol.signal});
+  }
+
+  disconnectedCallback() {
+    this.clickListenerSymbol.abort();
+  }
+
+  clickListener(e: any) {
+    const outside = !(e.target == this.el || this.el.contains(e.target));
+    if (outside) {
+      this.hide();
+    }
   }
 
   handleSelectOption(e: any, option: IMenuOption) {
@@ -76,12 +82,14 @@ export class VerdocsDropdown {
     this.dropdownMenu.setAttribute('data-show', '');
     this.dropdownMenu.removeAttribute('aria-hidden');
 
-    this.popper?.setOptions(options => ({
-      ...options,
-      modifiers: [...options.modifiers, {name: 'eventListeners', enabled: true}],
-    }));
+    this.popper
+      ?.setOptions(options => ({
+        ...options,
+        modifiers: [...options.modifiers, {name: 'eventListeners', enabled: true}],
+      }))
+      .catch(() => {});
 
-    this.popper?.update();
+    this.popper?.update().catch(() => {});
   }
 
   handleHideDropdown(e: any) {
@@ -96,7 +104,7 @@ export class VerdocsDropdown {
   toggleDropdown(e: any) {
     e.stopPropagation();
 
-    if (this.isOpen) {
+    if (this.open) {
       this.hide();
     } else {
       this.showDropdown();
@@ -104,18 +112,20 @@ export class VerdocsDropdown {
   }
 
   hide() {
-    this.isOpen = false;
+    this.open = false;
     this.dropdownMenu.removeAttribute('data-show');
     this.dropdownMenu.setAttribute('aria-hidden', 'true');
-    this.popper?.setOptions(options => ({
-      ...options,
-      modifiers: [...options.modifiers, {name: 'eventListeners', enabled: false}],
-    }));
+    this.popper
+      ?.setOptions(options => ({
+        ...options,
+        modifiers: [...options.modifiers, {name: 'eventListeners', enabled: false}],
+      }))
+      .catch(() => {});
   }
 
   render() {
     return (
-      <Host class={{storybook: !!window?.['STORYBOOK_ENV'], open: !!this.isOpen}}>
+      <Host class={{open: !!this.open}}>
         <button
           class="arrow"
           innerHTML={SortDown}
@@ -125,7 +135,7 @@ export class VerdocsDropdown {
           ref={el => (this.dropdownButton = el as HTMLButtonElement)}
         />
 
-        <div class="items" aria-hidden={!this.isOpen} ref={el => (this.dropdownMenu = el as HTMLDivElement)}>
+        <div class="items" aria-hidden={!this.open} ref={el => (this.dropdownMenu = el as HTMLDivElement)}>
           {this.options?.map(option => (
             <button onClick={e => this.handleSelectOption(e, option)} class="option" disabled={option.disabled}>
               {option.label}

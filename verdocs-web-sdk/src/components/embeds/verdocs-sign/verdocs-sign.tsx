@@ -3,14 +3,14 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
+import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
-import {IEnvelope, IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {getFieldId, getRoleIndex, renderDocumentField, setControlStyles} from '../../../utils/utils';
+import {fullNameToInitials, getFieldId, getRoleIndex, renderDocumentField, setControlStyles} from '../../../utils/utils';
 // import {getFieldId, getRoleIndex, renderDocumentField, setControlStyles, updateCssTransform} from '../../../utils/utils';
-import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
-import TemplateStore from '../../../utils/templateStore';
+import EnvelopeStore from '../../../utils/envelopeStore';
+import {getEnvelopeById} from '../../../utils/Envelopes';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
@@ -68,12 +68,21 @@ export class VerdocsSign {
 
   @State() recipient: IRecipient | null = null;
   @State() signerToken = null;
-  @State() recipientIndex: number = -1;
-  @State() envelope: IEnvelope | null = null;
-  @State() fields: IDocumentField[] = [];
+  // @State() envelope: IEnvelope | null = null;
+  // @State() fields: IDocumentField[] = [];
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
   @State() focusedField = '';
+
+  @State() finishLater = false;
+  @State() showFinishLater = false;
+
+  recipientIndex: number = -1;
+  fields: IDocumentField[] = [];
+
+  componentWillLoad() {
+    this.endpoint = new VerdocsEndpoint({sessionType: 'signing'});
+  }
 
   async componentDidLoad() {
     if (!this.envelopeId) {
@@ -92,8 +101,6 @@ export class VerdocsSign {
     }
 
     try {
-      this.endpoint = new VerdocsEndpoint({sessionType: 'signing'});
-
       console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
       const {session, recipient, signerToken} = await Envelopes.getSigningSession(this.endpoint, {
         envelopeId: this.envelopeId,
@@ -111,17 +118,16 @@ export class VerdocsSign {
         this.nextButtonLabel = 'Next';
       }
 
-      const envelope = await Envelopes.getEnvelope(this.endpoint, this.envelopeId);
-      this.envelope = envelope;
-      console.log('[SIGN] Loaded envelope', envelope);
+      await getEnvelopeById(this.endpoint, this.envelopeId);
+      // const envelope = await Envelopes.getEnvelope(this.endpoint, this.envelopeId);
+      // this.envelope = envelope;
+      // console.log('[SIGN] Loaded envelope', envelope);
 
-      this.recipientIndex = this.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
+      this.recipientIndex = EnvelopeStore.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
       if (this.recipientIndex > -1) {
-        console.log('Found recipient', this.envelope.recipients[this.recipientIndex]);
+        this.recipient = EnvelopeStore.envelope.recipients[this.recipientIndex];
+        this.fields = this.recipient.fields;
       }
-
-      this.fields = this.envelope.fields.filter(field => field.recipient_role === this.roleId);
-      console.log('Loaded fields', this.fields);
 
       // TODO: Fix service to allow this?
       // const sigs = await getSignatures();
@@ -133,22 +139,20 @@ export class VerdocsSign {
   }
 
   handleClickAgree() {
-    console.log('agree clicked');
     updateRecipientStatus(this.endpoint, this.envelopeId, this.roleId, 'update', {agreed: true})
       .then(r => {
-        console.log('update result', r);
         this.nextButtonLabel = 'Next';
         this.recipient = r;
       })
       .catch(e => {
-        console.log('update failure', e);
+        console.log('Update failure', e);
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
   }
 
   async savePDF() {
-    const fileName = `${this.envelope.name} - ${this.envelope.updated_at.split('T')[0]}.pdf`;
-    const data = await Envelopes.getEnvelopeFile(this.endpoint, this.envelopeId, this.envelope.envelope_document_id);
+    const fileName = `${EnvelopeStore.envelope.name} - ${EnvelopeStore.envelope.updated_at.split('T')[0]}.pdf`;
+    const data = await Envelopes.getEnvelopeFile(this.endpoint, this.envelopeId, EnvelopeStore.envelope.envelope_document_id);
 
     // This is better in React than doing window.href= or similar to trigger a download. For a description of the technique
     // see https://stackoverflow.com/questions/8126623/downloading-canvas-element-to-an-image
@@ -164,8 +168,6 @@ export class VerdocsSign {
       a.remove();
     };
 
-    const url = `data:application/pdf;base64,${data}`;
-    console.log('url', url.length, url);
     xhr.open('GET', `data:application/pdf;base64,${data}`);
     xhr.send();
   }
@@ -173,10 +175,12 @@ export class VerdocsSign {
   async handleOptionSelected(e) {
     switch (e.detail.id) {
       case 'later':
+        this.finishLater = true;
+        this.showFinishLater = true;
         // this.router.navigate([`view/sign/${this.envelopeId}/role/${this.roleName}/saved`]);
-        if (!window?.['STORYBOOK_ENV']) {
-          window.alert('User intends to sign later.');
-        }
+        // if (!window?.['STORYBOOK_ENV']) {
+        //   window.alert('User intends to sign later.');
+        // }
         break;
       case 'claim':
         break;
@@ -192,9 +196,11 @@ export class VerdocsSign {
 
   async handleFieldChange(field: IDocumentField, e: any, optionId?: string) {
     console.log('fieldChange', field, e);
+    const {value, checked} = e.target;
+
     switch (field.type) {
       case 'textbox':
-        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: e.detail})
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value})
           .then(r => console.log('Update result', r))
           .catch(e => {
             this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -206,7 +212,7 @@ export class VerdocsSign {
         break;
 
       case 'checkbox_group':
-        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: {options: [{id: optionId, checked: e.detail}]}})
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: {options: [{id: optionId, checked}]}})
           .then(r => console.log('Update result', r))
           .catch(e => {
             this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -239,6 +245,23 @@ export class VerdocsSign {
 
       case 'signature':
         console.log('Got signature', e.detail);
+        break;
+
+      case 'date':
+        const iso = e.target.getAttribute('iso');
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: iso})
+          .then(r => console.log('Update result', r))
+          .catch(e => {
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+            if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
+              console.log('jwt expired');
+            }
+            console.log('Error updating', e);
+          });
+        break;
+
+      default:
+        console.log('Unhandled field update', {value, checked}, field);
         break;
     }
   }
@@ -398,27 +421,26 @@ export class VerdocsSign {
   }
 
   handlePageRendered(e) {
-    const pageInfo = e.detail as IPageRenderEvent;
+    const pageInfo = e.detail as IDocumentPageInfo;
     console.log('[SIGN] Page rendered', pageInfo);
 
-    const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+    const fields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
     // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[SIGN] Fields on page', fields);
     fields.forEach(field => {
-      const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
-      console.log('rendered element', el);
-      // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
+      const el = renderDocumentField(field, pageInfo, getRoleIndex(EnvelopeStore.roleNames, field.recipient_role), {disabled: false, editable: false, draggable: false});
       if (!el) {
         return;
       }
 
-      el.addEventListener('recipientChanged', e => {
-        el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, e.detail));
-        // el.setAttribute('roleindex', getRoleIndex(this.roles, e.detail));
+      el.addEventListener('input', e => {
+        this.handleFieldChange(field, e);
       });
 
-      el.setAttribute('xScale', pageInfo.renderedPage.xScale);
-      el.setAttribute('yScale', pageInfo.renderedPage.yScale);
+      el.setAttribute('xScale', pageInfo.xScale);
+      el.setAttribute('yScale', pageInfo.yScale);
+      el.setAttribute('initials', this.recipient ? fullNameToInitials(this.recipient.full_name) : '');
+      el.setAttribute('name', this.recipient?.full_name || '');
 
       // interact(el).draggable({
       //   listeners: {
@@ -458,8 +480,12 @@ export class VerdocsSign {
   // }
 
   render() {
-    if (!this.envelope) {
-      return <Host />;
+    if (EnvelopeStore.loading || !EnvelopeStore.envelope) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
     }
 
     const menuOptions = [
@@ -472,61 +498,67 @@ export class VerdocsSign {
 
     return (
       <Host class={{agreed: this.recipient?.agreed}}>
-        <div class="intro">
-          <div class="inner">Please review and act on these documents.</div>
-        </div>
+        {!this.finishLater && (
+          <div class="intro">
+            <div class="inner">Please review and act on these documents.</div>
+          </div>
+        )}
 
         <div class="header">
           <div class="inner">
-            <div class="toolbar">
-              <div class="tools">
-                <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+            {!this.finishLater && (
+              <div class="toolbar">
+                <div class="tools">
+                  <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
 
-                {!this.recipient?.agreed ? (
-                  <div class="agree">
-                    <div class="agree-checkbox">
-                      <input type="checkbox" value="None" id="agree-checkbox-element" name="agree" onChange={() => this.handleClickAgree()} />
-                      <label htmlFor="agree-checkbox-element" />
+                  {!this.recipient?.agreed ? (
+                    <div class="agree">
+                      <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
                     </div>
-                    <span>I agree to use electronic records and signatures.</span>
-                  </div>
-                ) : (
-                  <div style={{flex: '1'}} />
-                )}
-                <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />
+                  ) : (
+                    <div style={{flex: '1'}} />
+                  )}
+                  <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
         {!this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
         <div class="document">
-          <div class="inner">
-            {(this.envelope?.documents || []).map(envelopeDocument => {
-              const pages = [...(envelopeDocument?.pages || [])];
-              pages.sort((a, b) => a.sequence - b.sequence);
+          {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
+            const pages = [...(envelopeDocument?.pages || [])];
+            pages.sort((a, b) => a.sequence - b.sequence);
 
-              return (
-                <Fragment>
-                  {pages.map(page => (
-                    <verdocs-document-page
-                      pageImageUri={page.display_uri}
-                      virtualWidth={612}
-                      virtualHeight={792}
-                      pageNumber={page.sequence}
-                      onPageRendered={e => this.handlePageRendered(e)}
-                      layers={[
-                        {name: 'page', type: 'canvas'},
-                        {name: 'controls', type: 'div'},
-                      ]}
-                    />
-                  ))}
-                </Fragment>
-              );
-            })}
-          </div>
+            return (
+              <Fragment>
+                {pages.map(page => (
+                  <verdocs-document-page
+                    pageImageUri={page.display_uri}
+                    virtualWidth={612}
+                    virtualHeight={792}
+                    pageNumber={page.sequence}
+                    onPageRendered={e => this.handlePageRendered(e)}
+                    layers={[
+                      {name: 'page', type: 'canvas'},
+                      {name: 'controls', type: 'div'},
+                    ]}
+                  />
+                ))}
+              </Fragment>
+            );
+          })}
         </div>
+
+        {this.showFinishLater && (
+          <verdocs-ok-dialog
+            heading="You've saved your document to finish later."
+            message="To complete the document, use the link in the original email notification inviting you to review and finish the document."
+            onNext={() => (this.showFinishLater = false)}
+          />
+        )}
       </Host>
     );
   }

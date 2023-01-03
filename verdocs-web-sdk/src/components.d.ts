@@ -12,7 +12,7 @@ import { IRole, ITemplate, ITemplateField, TemplateSenderTypes } from "@verdocs/
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
-import { IDocumentField, IEnvelope, IRecipient, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
+import { IDocumentField, IEnvelope, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
@@ -94,11 +94,19 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * Label to display. Leave blank for no label. The label will be displayed to the right of the checkbox, but may be repositioned with CSS.
+         */
+        "label": string;
+        /**
           * HTML form field name for the input.
          */
         "name": string;
         /**
-          * Value to track with the input.
+          * Style of checkbox to render. Use 'dark' when rendering on a dark background.
+         */
+        "theme": 'light' | 'dark';
+        /**
+          * Value to track with the input. Value is not used internally by this component but is sometimes useful to set because it can be retrieved in event handlers via e.target.value. This can be used to identify which checkbox was clicked in a checkbox group.
          */
         "value": string;
     }
@@ -155,9 +163,9 @@ export namespace Components {
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
         /**
-          * The recipient completing the form, if known.
+          * If set, the field will be colored using this index value to select the background color.
          */
-        "recipient"?: IRecipient;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldCheckbox {
         /**
@@ -172,10 +180,6 @@ export namespace Components {
           * The index of the settings option this particular checkbox is for
          */
         "option": number;
-        /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
     }
     interface VerdocsFieldDate {
         /**
@@ -196,13 +200,9 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -215,9 +215,9 @@ export namespace Components {
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
         /**
-          * The recipient completing the form, if known.
+          * If set, the field will be colored using this index value to select the background color.
          */
-        "recipient"?: IRecipient;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldInitial {
         /**
@@ -242,13 +242,9 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldPayment {
         "currentInitial": string;
@@ -268,11 +264,11 @@ export namespace Components {
         "focused": boolean;
         "pageNum": number;
         "pdfPages": any[];
-        /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
         "recipients": any;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleIndex"?: number;
         "roleName": string;
         "selectedRoleName": string;
         "signed": boolean;
@@ -290,10 +286,6 @@ export namespace Components {
           * The index of the settings option this particular checkbox is for
          */
         "option": number;
-        /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
     }
     interface VerdocsFieldSignature {
         /**
@@ -318,13 +310,9 @@ export namespace Components {
          */
         "name"?: string;
         /**
-          * If set, the signature creation dialog will be initialized from this object.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -345,13 +333,9 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -372,13 +356,9 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -399,13 +379,9 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsHelpIcon {
         /**
@@ -790,17 +766,9 @@ export interface VerdocsFieldSignatureCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldSignatureElement;
 }
-export interface VerdocsFieldTextareaCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsFieldTextareaElement;
-}
 export interface VerdocsFieldTextboxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldTextboxElement;
-}
-export interface VerdocsFieldTimestampCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsFieldTimestampElement;
 }
 export interface VerdocsInitialDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1315,11 +1283,19 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * Label to display. Leave blank for no label. The label will be displayed to the right of the checkbox, but may be repositioned with CSS.
+         */
+        "label"?: string;
+        /**
           * HTML form field name for the input.
          */
         "name"?: string;
         /**
-          * Value to track with the input.
+          * Style of checkbox to render. Use 'dark' when rendering on a dark background.
+         */
+        "theme"?: 'light' | 'dark';
+        /**
+          * Value to track with the input. Value is not used internally by this component but is sometimes useful to set because it can be retrieved in event handlers via e.target.value. This can be used to identify which checkbox was clicked in a checkbox group.
          */
         "value"?: string;
     }
@@ -1395,9 +1371,9 @@ declare namespace LocalJSX {
          */
         "field"?: IDocumentField | ITemplateField | null;
         /**
-          * The recipient completing the form, if known.
+          * If set, the field will be colored using this index value to select the background color.
          */
-        "recipient"?: IRecipient;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldCheckbox {
         /**
@@ -1412,10 +1388,6 @@ declare namespace LocalJSX {
           * The index of the settings option this particular checkbox is for
          */
         "option"?: number;
-        /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
     }
     interface VerdocsFieldDate {
         /**
@@ -1439,13 +1411,9 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldDateCustomEvent<any>) => void;
         /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -1457,21 +1425,13 @@ declare namespace LocalJSX {
          */
         "field"?: IDocumentField | ITemplateField | null;
         /**
-          * Event fired when the input field gains focus.
-         */
-        "onFieldBlur"?: (event: VerdocsFieldDropdownCustomEvent<boolean>) => void;
-        /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldDropdownCustomEvent<string>) => void;
         /**
-          * Event fired when the input field loses focus.
+          * If set, the field will be colored using this index value to select the background color.
          */
-        "onFieldFocus"?: (event: VerdocsFieldDropdownCustomEvent<boolean>) => void;
-        /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldInitial {
         /**
@@ -1511,13 +1471,9 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldPayment {
         "currentInitial"?: string;
@@ -1539,11 +1495,11 @@ declare namespace LocalJSX {
         "onSignatureComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
         "pageNum"?: number;
         "pdfPages"?: any[];
-        /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
         "recipients"?: any;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleIndex"?: number;
         "roleName"?: string;
         "selectedRoleName"?: string;
         "signed"?: boolean;
@@ -1565,10 +1521,6 @@ declare namespace LocalJSX {
           * The index of the settings option this particular checkbox is for
          */
         "option"?: number;
-        /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
     }
     interface VerdocsFieldSignature {
         /**
@@ -1600,13 +1552,9 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
         /**
-          * If set, the signature creation dialog will be initialized from this object.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -1626,29 +1574,9 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
-          * Event fired when the input field gains focus.
-         */
-        "onFieldBlur"?: (event: VerdocsFieldTextareaCustomEvent<boolean>) => void;
-        /**
-          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
-         */
-        "onFieldChange"?: (event: VerdocsFieldTextareaCustomEvent<string>) => void;
-        /**
-          * Event fired when the input field loses focus.
-         */
-        "onFieldFocus"?: (event: VerdocsFieldTextareaCustomEvent<boolean>) => void;
-        /**
-          * Event fired on every character entered into / deleted from the field.
-         */
-        "onFieldInput"?: (event: VerdocsFieldTextareaCustomEvent<string>) => void;
-        /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -1668,33 +1596,13 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
-          * Event fired when the input field gains focus.
-         */
-        "onFieldBlur"?: (event: VerdocsFieldTextboxCustomEvent<boolean>) => void;
-        /**
-          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
-         */
-        "onFieldChange"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
-        /**
-          * Event fired when the input field loses focus.
-         */
-        "onFieldFocus"?: (event: VerdocsFieldTextboxCustomEvent<boolean>) => void;
-        /**
-          * Event fired on every character entered into / deleted from the field.
-         */
-        "onFieldInput"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
-        /**
           * Event fired if the field is configurable when the recipient has changed.
          */
         "onRecipientChanged"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
         /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -1714,33 +1622,9 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
-          * Event fired when the input field gains focus.
-         */
-        "onFieldBlur"?: (event: VerdocsFieldTimestampCustomEvent<boolean>) => void;
-        /**
-          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
-         */
-        "onFieldChange"?: (event: VerdocsFieldTimestampCustomEvent<string>) => void;
-        /**
-          * Event fired when the input field loses focus.
-         */
-        "onFieldFocus"?: (event: VerdocsFieldTimestampCustomEvent<boolean>) => void;
-        /**
-          * Event fired on every character entered into / deleted from the field.
-         */
-        "onFieldInput"?: (event: VerdocsFieldTimestampCustomEvent<string>) => void;
-        /**
-          * Event fired on every character entered into / deleted from the field.
-         */
-        "onSettingsPress"?: (event: VerdocsFieldTimestampCustomEvent<any>) => void;
-        /**
-          * The recipient completing the form, if known.
-         */
-        "recipient"?: IRecipient;
-        /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleindex"?: number;
+        "roleIndex"?: number;
     }
     interface VerdocsHelpIcon {
         /**
