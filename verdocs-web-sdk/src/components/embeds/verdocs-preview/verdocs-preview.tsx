@@ -67,7 +67,8 @@ export class VerdocsPreview {
   }
 
   render() {
-    if (TemplateStore.loading) {
+    // TODO: Render a better error
+    if (TemplateStore.loading || !TemplateStore.template) {
       return (
         <Host>
           <verdocs-loader />
@@ -75,24 +76,27 @@ export class VerdocsPreview {
       );
     }
 
-    // TODO: Render a better error
+    const pages = [...TemplateStore.template.pages];
+    pages.sort((a, b) => a.sequence - b.sequence);
+
     return (
       <Host>
-        {TemplateStore.template ? (
-          <div class="inner">
-            <verdocs-view
-              templateId={this.templateId}
-              endpoint={this.endpoint}
+        {pages.map(page => {
+          console.log('rendering page', page);
+          return (
+            <verdocs-document-page
+              pageImageUri={page.display_uri}
+              virtualWidth={612}
+              virtualHeight={792}
+              pageNumber={page.sequence}
               onPageRendered={e => this.handlePageRendered(e)}
-              pageLayers={[
+              layers={[
                 {name: 'page', type: 'canvas'},
                 {name: 'controls', type: 'div'},
               ]}
             />
-          </div>
-        ) : (
-          <div>Error loading Template. Please try again later.</div>
-        )}
+          );
+        })}
       </Host>
     );
   }

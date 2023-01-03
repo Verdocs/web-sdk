@@ -2,10 +2,10 @@ import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {Component, h, Event, EventEmitter, Fragment, Prop, Host} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Prop, Host} from '@stencil/core';
 import {getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
-import {IPageRenderEvent} from '../../embeds/verdocs-view/verdocs-view';
 import TemplateStore from '../../../utils/templateStore';
+import {IDocumentPageInfo} from '../../../utils/Types';
 import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 
@@ -102,14 +102,14 @@ export class VerdocsTemplateFields {
   }
 
   handlePageRendered(e) {
-    const pageInfo = e.detail as IPageRenderEvent;
+    const pageInfo = e.detail as IDocumentPageInfo;
     console.log('[FIELDS] Page rendered', pageInfo);
 
-    const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+    const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
     // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[FIELDS] Fields on page', fields);
     fields.forEach(field => {
-      const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
+      const el = renderDocumentField(field, pageInfo, getRoleIndex(TemplateStore.roleNames, field.role_name), this.handleFieldChange, true, true, true);
       // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
       if (!el) {
         return;
@@ -120,8 +120,8 @@ export class VerdocsTemplateFields {
         // el.setAttribute('roleindex', getRoleIndex(this.roles, e.detail));
       });
 
-      el.setAttribute('xScale', pageInfo.renderedPage.xScale);
-      el.setAttribute('yScale', pageInfo.renderedPage.yScale);
+      el.setAttribute('xScale', pageInfo.xScale);
+      el.setAttribute('yScale', pageInfo.yScale);
 
       interact(el).draggable({
         listeners: {
@@ -164,7 +164,8 @@ export class VerdocsTemplateFields {
       page_sequence: 0,
     };
 
-    if (TemplateStore.loading) {
+    // TODO: Render a better error
+    if (TemplateStore.loading || !TemplateStore.template) {
       return (
         <Host>
           <verdocs-loader />
@@ -172,53 +173,59 @@ export class VerdocsTemplateFields {
       );
     }
 
+    const pages = [...TemplateStore.template.pages];
+    pages.sort((a, b) => a.sequence - b.sequence);
+
     return (
       <Host>
-        {TemplateStore.template ? (
-          <Fragment>
-            <div class="fields-bar" ref={el => (this.toolbarEl = el as HTMLDivElement)}>
-              <div class="label">Add Field:</div>
-              <verdocs-toolbar-icon icon={iconSingleline} text="Single-line Text Box" onClick={() => console.log('single press')} />
-              <verdocs-toolbar-icon icon={iconMultiline} text="Multi-line Text Box" onClick={() => console.log('multi press')} />
-              <verdocs-toolbar-icon icon={iconCheck} text="Checkbox" onClick={() => console.log('check press')} />
-              <verdocs-toolbar-icon icon={iconRadio} text="Radio Button" onClick={() => console.log('radio press')} />
-              <verdocs-toolbar-icon icon={iconDatepicker} text="Date Picker" onClick={() => console.log('date press')} />
-              <verdocs-toolbar-icon icon={iconSignature} text="Signature" onClick={() => console.log('signature press')} />
-              <verdocs-toolbar-icon icon={iconInitial} text="Initials" onClick={() => console.log('initial press')} />
-              <div style={{flex: '1'}} />
-              <button onClick={() => this.next?.emit(TemplateStore.template)} disabled={true} class="operation">
-                Save
-              </button>
-              <button onClick={() => this.cancel?.emit()} class="operation">
-                Close
-              </button>
-            </div>
+        <div class="fields-bar" ref={el => (this.toolbarEl = el as HTMLDivElement)}>
+          <div class="label">Add Field:</div>
+          <verdocs-toolbar-icon icon={iconSingleline} text="Single-line Text Box" onClick={() => console.log('single press')} />
+          <verdocs-toolbar-icon icon={iconMultiline} text="Multi-line Text Box" onClick={() => console.log('multi press')} />
+          <verdocs-toolbar-icon icon={iconCheck} text="Checkbox" onClick={() => console.log('check press')} />
+          <verdocs-toolbar-icon icon={iconRadio} text="Radio Button" onClick={() => console.log('radio press')} />
+          <verdocs-toolbar-icon icon={iconDatepicker} text="Date Picker" onClick={() => console.log('date press')} />
+          <verdocs-toolbar-icon icon={iconSignature} text="Signature" onClick={() => console.log('signature press')} />
+          <verdocs-toolbar-icon icon={iconInitial} text="Initials" onClick={() => console.log('initial press')} />
+          <div style={{flex: '1'}} />
+          <button onClick={() => this.next?.emit(TemplateStore.template)} disabled={true} class="operation">
+            Save
+          </button>
+          <button onClick={() => this.cancel?.emit()} class="operation">
+            Close
+          </button>
+        </div>
 
-            <div class="page-0" ref={el => (this.page0El = el as HTMLDivElement)}>
-              <div class="user-placed-fields">
-                <div class="title">User-Placed Fields</div>
-                <verdocs-field-signature
-                  field={testField}
-                  style={{width: '82px', height: '41px', left: '20px', top: '40px', transform: 'scale(1,1)', backgroundColor: getRGBA(0)}}
-                  moveable={true}
-                  editable={true}
-                />
-              </div>
-            </div>
-
-            <verdocs-view
-              templateId={this.templateId}
-              endpoint={this.endpoint}
-              onPageRendered={e => this.handlePageRendered(e)}
-              pageLayers={[
-                {name: 'page', type: 'canvas'},
-                {name: 'controls', type: 'div'},
-              ]}
+        <div class="page-0" ref={el => (this.page0El = el as HTMLDivElement)}>
+          <div class="user-placed-fields">
+            <div class="title">User-Placed Fields</div>
+            <verdocs-field-signature
+              field={testField}
+              style={{width: '82px', height: '41px', left: '20px', top: '40px', transform: 'scale(1,1)', backgroundColor: getRGBA(0)}}
+              moveable={true}
+              editable={true}
             />
-          </Fragment>
-        ) : (
-          <div>Error loading Template. Please try again later.</div>
-        )}
+          </div>
+        </div>
+
+        <div class="pages">
+          {pages.map(page => {
+            console.log('rendering page', page);
+            return (
+              <verdocs-document-page
+                pageImageUri={page.display_uri}
+                virtualWidth={612}
+                virtualHeight={792}
+                pageNumber={page.sequence}
+                onPageRendered={e => this.handlePageRendered(e)}
+                layers={[
+                  {name: 'page', type: 'canvas'},
+                  {name: 'controls', type: 'div'},
+                ]}
+              />
+            );
+          })}
+        </div>
       </Host>
     );
   }

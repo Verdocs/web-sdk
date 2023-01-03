@@ -5,8 +5,7 @@ export default {
   title: 'Embeds/View',
   component: 'verdocs-view',
   args: {
-    templateId: '056b837f-b183-4039-b50a-d68acbf81b67',
-    envelopeId: '',
+    envelopeId: '516d0ddf-0cf6-4e37-99f6-2046bcd795d0',
   },
   argTypes: {},
   parameters: {
@@ -14,4 +13,4 @@ export default {
   },
 } as Meta;
 
-export const View = ({templateId, envelopeId}) => html`<verdocs-view .templateId=${templateId} .envelopeId=${envelopeId} />`;
+export const View = ({envelopeId}) => html`<verdocs-view .envelopeId=${envelopeId} />`;

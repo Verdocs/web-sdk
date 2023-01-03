@@ -1,7 +1,6 @@
 @import '../../../theme.scss';
 
 verdocs-template-fields {
-  position: relative;
   font-family: $verdocs-primary-font;
 
   .page-0 {
@@ -71,6 +70,22 @@ verdocs-template-fields {
         cursor: inherit;
         pointer-events: none;
       }
+    }
+  }
+
+  .pages {
+    display: flex;
+    padding: 15px;
+    row-gap: 15px;
+    min-height: 200px;
+    position: relative;
+    align-items: center;
+    box-sizing: border-box;
+    flex-direction: column;
+
+    div,
+    canvas {
+      box-sizing: border-box;
     }
   }
 }

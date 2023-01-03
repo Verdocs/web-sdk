@@ -58,5 +58,3 @@ export const VerdocsToggleButton = /*@__PURE__*/createReactComponent<JSX.Verdocs
 export const VerdocsToolbarIcon = /*@__PURE__*/createReactComponent<JSX.VerdocsToolbarIcon, HTMLVerdocsToolbarIconElement>('verdocs-toolbar-icon');
 export const VerdocsUploadDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsUploadDialog, HTMLVerdocsUploadDialogElement>('verdocs-upload-dialog');
 export const VerdocsView = /*@__PURE__*/createReactComponent<JSX.VerdocsView, HTMLVerdocsViewElement>('verdocs-view');
-export const VerdocsViewEnvelopeDocument = /*@__PURE__*/createReactComponent<JSX.VerdocsViewEnvelopeDocument, HTMLVerdocsViewEnvelopeDocumentElement>('verdocs-view-envelope-document');
-export const VerdocsViewTemplateDocument = /*@__PURE__*/createReactComponent<JSX.VerdocsViewTemplateDocument, HTMLVerdocsViewTemplateDocumentElement>('verdocs-view-template-document');

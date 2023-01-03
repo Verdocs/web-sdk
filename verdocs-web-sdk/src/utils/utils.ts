@@ -75,11 +75,12 @@ export const getFieldId = (field: ITemplateField | IDocumentField) => {
   return `verdocs-doc-fld-${field.name}`;
 };
 
-export const getFieldOptionId = (field: ITemplateField, index: number) => {
+export const getFieldOptionId = (field: ITemplateField | IDocumentField, index: number) => {
   return `verdocs-doc-fld-${field.name}-${index}`;
 };
+
 export const renderDocumentField = (
-  field: ITemplateField,
+  field: ITemplateField | IDocumentField,
   docPage: IDocumentPageInfo,
   roleIndex: number,
   handleFieldChange: (field: ITemplateField | IDocumentField, e: any, optionId?: string) => void,
@@ -130,7 +131,7 @@ export const renderDocumentField = (
     }
 
     case 'checkbox_group':
-      field.setting.options.forEach((_, checkboxIndex) => {
+      ((field as any).settings || (field as any).setting || {}).options.forEach((_, checkboxIndex) => {
         const id = getFieldOptionId(field, checkboxIndex);
         const existingField = document.getElementById(id);
         if (existingField) {
@@ -156,7 +157,7 @@ export const renderDocumentField = (
       break;
 
     case 'radio_button_group':
-      field.setting.options.forEach((_, buttonIndex) => {
+      ((field as any).settings || (field as any).setting || {}).options.forEach((_, buttonIndex) => {
         const id = getFieldOptionId(field, buttonIndex);
         const existingField = document.getElementById(id);
         if (existingField) {

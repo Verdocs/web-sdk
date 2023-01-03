@@ -5,8 +5,8 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
-import {Event, EventEmitter, Host, Component, Prop, State, h} from '@stencil/core';
 import {IEnvelope, IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
+import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {getFieldId, getRoleIndex, renderDocumentField, setControlStyles} from '../../../utils/utils';
 // import {getFieldId, getRoleIndex, renderDocumentField, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {IPageRenderEvent} from '../verdocs-view/verdocs-view';
@@ -503,15 +503,28 @@ export class VerdocsSign {
 
         <div class="document">
           <div class="inner">
-            <verdocs-view
-              endpoint={this.endpoint}
-              envelopeId={this.envelopeId}
-              // onPageRendered={e => this.handlePageRendered(e)}
-              pageLayers={[
-                {name: 'page', type: 'canvas'},
-                {name: 'controls', type: 'div'},
-              ]}
-            />
+            {(this.envelope?.documents || []).map(envelopeDocument => {
+              const pages = [...(envelopeDocument?.pages || [])];
+              pages.sort((a, b) => a.sequence - b.sequence);
+
+              return (
+                <Fragment>
+                  {pages.map(page => (
+                    <verdocs-document-page
+                      pageImageUri={page.display_uri}
+                      virtualWidth={612}
+                      virtualHeight={792}
+                      pageNumber={page.sequence}
+                      onPageRendered={e => this.handlePageRendered(e)}
+                      layers={[
+                        {name: 'page', type: 'canvas'},
+                        {name: 'controls', type: 'div'},
+                      ]}
+                    />
+                  ))}
+                </Fragment>
+              );
+            })}
           </div>
         </div>
       </Host>

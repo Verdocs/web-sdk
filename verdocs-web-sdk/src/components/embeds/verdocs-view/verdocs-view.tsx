@@ -1,10 +1,11 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
-import {getEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import {Component, h, Element, Event, Host, Prop, EventEmitter, State} from '@stencil/core';
-import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
+import {Envelopes} from '@verdocs/js-sdk/Envelopes';
+import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
+import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment} from '@stencil/core';
+import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
+import {getEnvelopeById} from '../../../utils/Envelopes';
+import EnvelopeStore from '../../../utils/envelopeStore';
+import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
 export interface ISourcePageMetrics {
@@ -19,9 +20,7 @@ export interface IPageRenderEvent {
 }
 
 /**
- * Render the documents attached to a template or envelope. All documents are displayed in order. This embed wraps
- * verdocs-view-envelope-document or verdocs-view-template-document, as appropriate, and those controls may be used if
- * fine-grained control over which documents are displayed (or their order) is required.
+ * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
  */
 @Component({
   tag: 'verdocs-view',
@@ -37,61 +36,15 @@ export class VerdocsView {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The template ID to render. Set ONE OF templateId or envelopeId.
-   */
-  @Prop() templateId: string = '';
-
-  /**
    * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
    */
   @Prop() envelopeId: string = '';
-
-  /**
-   * Rotate the PDF in degrees
-   */
-  @Prop() rotation: 0 | 90 | 180 | 270 = 0;
-
-  /**
-   * Layers will be passed through to the individual pages inside this component.
-   */
-  @Prop() pageLayers: IPageLayer[] = [
-    {name: 'page', type: 'canvas'},
-    {name: 'controls', type: 'div'},
-  ];
-
-  /**
-   * Fired when a page has been rendered
-   */
-  @Event() pageRendered: EventEmitter<IPageRenderEvent>;
-
-  /**
-   * Fired when a page has been changed
-   */
-  @Event() pageLoaded: EventEmitter<number>;
-
-  /**
-   * Fired when a page has been changed
-   */
-  @Event() pageChange: EventEmitter<number>;
-
-  /**
-   * Fired when a page has been initialized
-   */
-  @Event() pageInit: EventEmitter<number>;
-
-  /**
-   * Fired when a page has been scaled
-   */
-  @Event() scaleChange: EventEmitter<number>;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
-
-  @State() template?: ITemplate = null;
-  @State() envelope?: IEnvelope = null;
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -100,27 +53,14 @@ export class VerdocsView {
   // TODO: Handling signing vs preview-as-user cases
   // TODO: Handle anonymous case and failure to load due to not being logged in
   async componentDidLoad() {
-    if (!this.templateId && !this.envelopeId) {
-      console.error(`[VIEW] Must specify one of templateId or envelopeId`);
+    if (!this.envelopeId) {
+      console.error(`[VIEW] Missing reuqired envelopeId`);
       return;
     }
 
-    if (this.templateId && this.envelopeId) {
-      console.warn(`[VIEW] Both templateId and envelopeId specified, using templateId`);
-    }
-
     try {
-      if (this.templateId) {
-        console.log('[VIEW] Loading template', this.templateId);
-        this.template = await getTemplate(this.endpoint, this.templateId);
-        console.log('[VIEW] Loaded template', this.template);
-      } else if (this.envelopeId) {
-        console.log('[VIEW] Loading envelope', this.envelopeId);
-        this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
-        console.log('[VIEW] Loaded envelope', this.envelope);
-      }
+      await getEnvelopeById(this.endpoint, this.envelopeId);
     } catch (e) {
-      console.log('[VIEW] Error loading data', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -248,29 +188,153 @@ export class VerdocsView {
   //   await this.renderPage(domPage.pageNumber);
   // }
 
-  render() {
-    console.log('[VIEW] Rendering', this.templateId, this.envelopeId);
+  async handleFieldChange(field: IDocumentField, e: any, optionId?: string) {
+    console.log('fieldChange', field, e);
+    switch (field.type) {
+      case 'textbox':
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: e.detail})
+          .then(r => console.log('Update result', r))
+          .catch(e => {
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+            if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
+              console.log('jwt expired');
+            }
+            console.log('Error updating', e);
+          });
+        break;
 
-    // TODO: Error handling for missing pages. Is it better to skip the page or show a placeholder?
+      case 'checkbox_group':
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: {options: [{id: optionId, checked: e.detail}]}})
+          .then(r => console.log('Update result', r))
+          .catch(e => {
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+            console.log('Error updating', e);
+          });
+        break;
+
+      case 'radio_button_group':
+        const options = field.settings.options.map(option => ({id: option.id, selected: optionId === option.id}));
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: {options}})
+          .then(r => console.log('Update result', r))
+          .catch(e => {
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+            console.log('Error updating', e);
+          });
+        break;
+
+      case 'dropdown':
+        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: e.detail})
+          .then(r => console.log('Update result', r))
+          .catch(e => {
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+            console.log('Error updating', e);
+          });
+        break;
+
+      case 'initial':
+        console.log('Got initial', e.detail);
+        break;
+
+      case 'signature':
+        console.log('Got signature', e.detail);
+        break;
+    }
+  }
+
+  handlePageRendered(e) {
+    const pageInfo = e.detail as IDocumentPageInfo;
+    console.log('[SIGN] Page rendered', pageInfo);
+
+    EnvelopeStore.envelope.recipients.map(recipient => {
+      const fields = recipient.fields.filter(field => field.page === pageInfo.pageNumber);
+      // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+      console.log('[SIGN] Fields on page', fields);
+      fields.forEach(field => {
+        const el = renderDocumentField(field, pageInfo, getRoleIndex(EnvelopeStore.roleNames, field.recipient_role), this.handleFieldChange, true, false, false);
+        console.log('rendered element', el);
+        // const el = renderDocumentField(field, pageInfo.renderedPage, getRoleIndex(this.roles, field.role_name), this.handleFieldChange, true, true, true);
+        if (!el) {
+          return;
+        }
+
+        el.addEventListener('recipientChanged', e => {
+          el.setAttribute('roleindex', getRoleIndex(EnvelopeStore.roleNames, e.detail));
+          // el.setAttribute('roleindex', getRoleIndex(this.roles, e.detail));
+        });
+
+        el.setAttribute('xScale', pageInfo.xScale);
+        el.setAttribute('yScale', pageInfo.yScale);
+
+        // interact(el).draggable({
+        //   listeners: {
+        //     start(event) {
+        //       console.log('[FIELDS] Drag started', event.type, event.target);
+        //     },
+        //     move(event) {
+        //       const oldX = +(event.target.getAttribute('posX') || 0);
+        //       const oldY = +(event.target.getAttribute('posY') || 0);
+        //       const xScale = +(event.target.getAttribute('xScale') || 1);
+        //       const yScale = +(event.target.getAttribute('yScale') || 1);
+        //       const newX = event.dx / xScale + oldX;
+        //       const newY = event.dy / yScale + oldY;
+        //       event.target.setAttribute('posX', newX);
+        //       event.target.setAttribute('posy', newY);
+        //       updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
+        //     },
+        //     end(event) {
+        //       console.log('[FIELDS] Drag ended', event);
+        //       // event.target.setAttribute('posX', 0);
+        //       // event.target.setAttribute('posy', 0);
+        //       // updateCssTransform(event.target, 'translate', `${0}px, ${0}px`);
+        //     },
+        //   },
+        // });
+      });
+    });
+  }
+
+  render() {
+    console.log('[VIEW] Rendering', EnvelopeStore.error, EnvelopeStore.loading, EnvelopeStore.envelope);
+    if (EnvelopeStore.loading || !EnvelopeStore.envelope) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
+    if (EnvelopeStore.error) {
+      return (
+        <Host>
+          <div>{EnvelopeStore.error}</div>
+        </Host>
+      );
+    }
+
     return (
       <Host>
-        {this.template && (
-          <verdocs-view-template-document
-            endpoint={this.endpoint}
-            templateId={this.templateId}
-            documentId={this.template.template_document?.id}
-            onPageRendered={p => this.pageRendered?.emit(p.detail)}
-          />
-        )}
-        {this.envelope &&
-          (this.envelope.documents || []).map(document => (
-            <verdocs-view-envelope-document
-              endpoint={this.endpoint}
-              envelopeId={this.envelopeId}
-              documentId={document.id}
-              onPageRendered={p => this.pageRendered?.emit(p.detail)}
-            />
-          ))}
+        {(EnvelopeStore.envelope?.documents || []).map(envelopeDocument => {
+          const pages = [...(envelopeDocument?.pages || [])];
+          pages.sort((a, b) => a.sequence - b.sequence);
+
+          return (
+            <Fragment>
+              {pages.map(page => (
+                <verdocs-document-page
+                  pageImageUri={page.display_uri}
+                  virtualWidth={612}
+                  virtualHeight={792}
+                  pageNumber={page.sequence}
+                  onPageRendered={e => this.handlePageRendered(e)}
+                  layers={[
+                    {name: 'page', type: 'canvas'},
+                    {name: 'controls', type: 'div'},
+                  ]}
+                />
+              ))}
+            </Fragment>
+          );
+        })}
       </Host>
     );
   }
