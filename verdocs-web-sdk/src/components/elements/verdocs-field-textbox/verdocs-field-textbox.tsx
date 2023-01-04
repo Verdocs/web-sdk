@@ -43,7 +43,7 @@ export class VerdocsFieldTextbox {
   /**
    * If set, the field will be colored using this index value to select the background color.
    */
-  @Prop() roleIndex?: number = 0;
+  @Prop() roleindex?: number = 0;
 
   /**
    * Event fired if the field is configurable when the recipient has changed.
@@ -61,7 +61,7 @@ export class VerdocsFieldTextbox {
   render() {
     const settings = getFieldSettings(this.field);
     let disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleIndex);
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{required: this.field?.required, disabled}} style={{backgroundColor}}>
@@ -81,7 +81,7 @@ export class VerdocsFieldTextbox {
             <form>
               <verdocs-select-input
                 label="Recipient"
-                value={TemplateStore.roleNames[this.roleIndex]}
+                value={TemplateStore.roleNames[this.roleindex]}
                 options={TemplateStore.roleNames.map(role => ({label: role, value: role}))}
                 onChange={e => this.handleChangeRecipient(e)}
               />

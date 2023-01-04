@@ -2,8 +2,7 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {Component, h, Host, Prop} from '@stencil/core';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
-import {getFieldSettings, getRoleIndex} from '../../../utils/utils';
-import TemplateStore from '../../../utils/templateStore';
+import {getFieldSettings} from '../../../utils/utils';
 
 /**
  * Displays a checkbox.
@@ -29,11 +28,16 @@ export class VerdocsFieldCheckbox {
    */
   @Prop() disabled?: boolean = false;
 
+  /**
+   * If set, the field will be colored using this index value to select the background color.
+   */
+  @Prop() roleindex?: number = 0;
+
   render() {
     const settings = getFieldSettings(this.field);
     const option = settings.options?.[this.option] ?? {checked: false};
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(getRoleIndex(TemplateStore.roleNames, ''));
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>

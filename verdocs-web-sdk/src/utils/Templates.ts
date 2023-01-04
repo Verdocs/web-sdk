@@ -14,7 +14,7 @@ export const loadTemplate = async (endpoint: VerdocsEndpoint, templateId: string
 
   try {
     console.log(`[TEMPLATES] Loading template ${templateId}`);
-    const template = await getTemplate(endpoint, templateId);
+    const template = await getTemplate(endpoint, templateId, true);
     if (!template) {
       console.log('[TEMPLATES] Unable to load template');
       return;

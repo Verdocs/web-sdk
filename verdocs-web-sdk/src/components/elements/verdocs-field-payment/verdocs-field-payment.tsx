@@ -48,7 +48,7 @@ export class VerdocsFieldPayment {
   /**
    * If set, the field will be colored using this index value to select the background color.
    */
-  @Prop() roleIndex?: number = 0;
+  @Prop() roleindex?: number = 0;
 
   _fields: any[] = [];
   // envelopeFieldsFormGroup: FormGroup;
@@ -128,7 +128,7 @@ export class VerdocsFieldPayment {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
     console.log('Payment field', settings);
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleIndex);
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{focused: this.focused, disabled}} style={{backgroundColor}}>

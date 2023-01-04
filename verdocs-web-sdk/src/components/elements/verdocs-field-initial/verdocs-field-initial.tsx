@@ -46,7 +46,7 @@ export class VerdocsFieldInitial {
   /**
    * If set, the field will be colored using this index value to select the background color.
    */
-  @Prop() roleIndex?: number = 0;
+  @Prop() roleindex?: number = 0;
 
   /**
    * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
@@ -94,6 +94,7 @@ export class VerdocsFieldInitial {
   handleShow() {
     this.dialog = document.createElement('verdocs-initial-dialog');
     this.dialog.setAttribute('initials', this.initials);
+    this.dialog.setAttribute('roleindex', this.roleindex);
     this.dialog.addEventListener('cancel', () => this.hideDialog());
     this.dialog.addEventListener('next', e => this.handleAdopt(e));
     document.body.append(this.dialog);
@@ -103,7 +104,7 @@ export class VerdocsFieldInitial {
     const settings = getFieldSettings(this.field);
     const value = this.tempInitials || settings.base64;
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleIndex);
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>

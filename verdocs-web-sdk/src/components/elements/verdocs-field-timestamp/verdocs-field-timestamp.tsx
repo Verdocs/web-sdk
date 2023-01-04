@@ -42,7 +42,7 @@ export class VerdocsFieldTimestamp {
   /**
    * If set, the field will be colored using this index value to select the background color.
    */
-  @Prop() roleIndex?: number = 0;
+  @Prop() roleindex?: number = 0;
 
   @Method() async focusField() {
     this.el.focus();
@@ -51,7 +51,7 @@ export class VerdocsFieldTimestamp {
   render() {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleIndex);
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{required: this.field?.required, disabled}} style={{backgroundColor}}>

@@ -43,7 +43,7 @@ export class VerdocsFieldDate {
   /**
    * If set, the field will be colored using this index value to select the background color.
    */
-  @Prop() roleIndex?: number = 0;
+  @Prop() roleindex?: number = 0;
 
   /**
    * Event fired on every character entered into / deleted from the field.
@@ -80,7 +80,7 @@ export class VerdocsFieldDate {
   render() {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleIndex);
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>

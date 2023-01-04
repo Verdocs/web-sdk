@@ -73,14 +73,14 @@ export class VerdocsSignatureDialog {
     context.fillText(this.enteredName, this.canvasElement.width / 2, this.canvasElement.height / 2);
   }
 
+  handleNameChange(e: any) {
+    this.enteredName = e.target.value;
+  }
+
   handleCancel(e: any) {
     e.stopPropagation();
     e.preventDefault();
     this.cancel.emit();
-  }
-
-  handleNameChange(e: any) {
-    this.enteredName = e.target.value;
   }
 
   handleAdopt(e: any) {

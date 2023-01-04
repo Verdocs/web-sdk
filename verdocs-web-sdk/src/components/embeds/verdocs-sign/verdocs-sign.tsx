@@ -1,16 +1,17 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
+import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
+import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
 import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {updateRecipientStatus} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
+import {updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {fullNameToInitials, getFieldId, getRoleIndex, renderDocumentField} from '../../../utils/utils';
-import EnvelopeStore from '../../../utils/envelopeStore';
 import {getEnvelopeById} from '../../../utils/Envelopes';
+import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
-import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
-import {updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
 
 /**
  * Display an envelope signing experience. This will display the envelope's attached
@@ -70,6 +71,7 @@ export class VerdocsSign {
   // @State() fields: IDocumentField[] = [];
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
+  @State() errorMessage = '';
   @State() focusedField = '';
 
   @State() finishLater = false;
@@ -192,78 +194,58 @@ export class VerdocsSign {
     }
   }
 
+  saveFieldChange(fieldName: string, fields: Record<string, any>) {
+    Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, fieldName, fields) //
+      .catch(e => {
+        if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
+          // TODO: Do we want to improve the instructions here?
+          console.log('[SIGN] Signing session expired');
+          this.errorMessage = 'Signing session expired.';
+        } else {
+          console.log('[SIGN] Server error', e);
+        }
+
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      });
+  }
+
   async handleFieldChange(field: IDocumentField, e: any, optionId?: string) {
     console.log('fieldChange', field, e);
     const {value, checked} = e.target;
 
     switch (field.type) {
       case 'textbox':
-        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value})
-          .then(r => console.log('Update result', r))
-          .catch(e => {
-            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-            if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
-              console.log('jwt expired');
-            }
-            console.log('Error updating', e);
-          });
-        break;
+        return this.saveFieldChange(field.name, {prepared: false, value});
 
       case 'checkbox_group':
-        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: {options: [{id: optionId, checked}]}})
-          .then(r => console.log('Update result', r))
-          .catch(e => {
-            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-            console.log('Error updating', e);
-          });
-        break;
+        return this.saveFieldChange(field.name, {prepared: false, value: {options: [{id: optionId, checked}]}});
 
       case 'radio_button_group':
         const options = field.settings.options.map(option => ({id: option.id, selected: optionId === option.id}));
-        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: {options}})
-          .then(r => console.log('Update result', r))
-          .catch(e => {
-            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-            console.log('Error updating', e);
-          });
-        break;
+        return this.saveFieldChange(field.name, {prepared: false, value: {options}});
 
       case 'dropdown':
-        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: e.detail})
-          .then(r => console.log('Update result', r))
-          .catch(e => {
-            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-            console.log('Error updating', e);
-          });
-        break;
+        return this.saveFieldChange(field.name, {prepared: false, value: e.detail});
 
       case 'initial':
-        console.log('Got initial', e.detail);
-        break;
+        const initialsBlob = await (await fetch(e.detail)).blob();
+        return createInitials(this.endpoint, 'initial', initialsBlob) //
+          .then(newInitials => {
+            console.log('New initials', field.name, newInitials);
+            updateEnvelopeFieldInitials(this.endpoint, this.envelopeId, field.name, newInitials.id);
+          });
 
       case 'signature':
-        console.log('Got signature', e.detail);
-
-        const newSignature = await createSignature(this.endpoint, 'signature', e.detail);
-        console.log('Created signature', newSignature);
-
-        //   --data-raw '{"ip_address":"ip_unavailable"}' \
-        const attachResult = await updateEnvelopeFieldSignature(this.endpoint, this.envelopeId, field.name, newSignature.id);
-        console.log('Attach result', attachResult);
-        break;
+        const signatureBlob = await (await fetch(e.detail)).blob();
+        return createSignature(this.endpoint, 'signature', signatureBlob) //
+          .then(newSignature => {
+            console.log('New sign', field.name, newSignature);
+            updateEnvelopeFieldSignature(this.endpoint, this.envelopeId, field.name, newSignature.id);
+          });
 
       case 'date':
         const iso = e.target.getAttribute('iso');
-        Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, field.name, {prepared: false, value: iso})
-          .then(r => console.log('Update result', r))
-          .catch(e => {
-            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-            if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
-              console.log('jwt expired');
-            }
-            console.log('Error updating', e);
-          });
-        break;
+        return this.saveFieldChange(field.name, {prepared: false, value: iso});
 
       default:
         console.log('Unhandled field update', {value, checked}, field);
@@ -285,16 +267,21 @@ export class VerdocsSign {
 
       case 'signature':
       case 'initial':
+        return !!field.settings?.base64;
+
       case 'textarea':
       case 'date':
       case 'timestamp':
       case 'attachment':
         return !!field.settings?.result;
+
       case 'dropdown':
         return !!field.settings?.value;
+
       case 'checkbox_group':
         const checked = (field.settings?.options?.filter(option => option.checked) || []).length;
         return checked >= (field.settings?.minimum_checked || 0) && checked <= (field.settings?.maximum_checked || 999);
+
       case 'radio_button_group':
         return (field.settings?.options?.filter(option => option.selected) || []).length > 0;
       // TODO
@@ -307,32 +294,36 @@ export class VerdocsSign {
     }
   }
 
-  // (async () => {
-  //   await customElements.whenDefined('verdocs-field-signature');
-  //   const els = document.getElementById('verdocs-field-signature');
-  //   await els.focusField();
-  // })();
-
   handleNext() {
     // Find and focus the next incomplete required field
     const requiredFields = this.fields.filter(field => field.required);
-    console.log('required Fields', requiredFields);
-
     const focusedIndex = requiredFields.findIndex(field => field.name === this.focusedField);
-    console.log('focused Index', focusedIndex);
 
     let nextFocusedIndex = focusedIndex + 1;
     if (nextFocusedIndex >= requiredFields.length) {
       nextFocusedIndex = 0;
     }
 
-    const nextRequiredField = requiredFields[nextFocusedIndex];
-    console.log('next required field', nextRequiredField);
+    let nextRequiredField = requiredFields[nextFocusedIndex];
+
+    // Skip signature and initial fields that are already filled in. We have to count our "skips" just in case, to avoid infinite loops.
+    let skips = 0;
+    if (skips < requiredFields.length && ['signature', 'initial'].includes(nextRequiredField.type) && nextRequiredField.settings?.result === 'signed') {
+      skips++;
+      nextFocusedIndex++;
+      if (nextFocusedIndex >= requiredFields.length) {
+        nextFocusedIndex = 0;
+      }
+      nextRequiredField = requiredFields[nextFocusedIndex];
+    }
+
+    if (skips >= requiredFields.length) {
+      nextRequiredField = null;
+    }
 
     if (nextRequiredField) {
       const id = getFieldId(nextRequiredField);
       const el = document.getElementById(id) as any;
-      console.log('focusing', id, el);
       el?.focusField();
       this.focusedField = nextRequiredField.name;
     }
@@ -340,26 +331,25 @@ export class VerdocsSign {
 
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    console.log('[SIGN] Page rendered', pageInfo);
+    console.log('[SIGN] Page rendered, adding fields', pageInfo);
 
-    console.log('rendering fields for recipient', getRoleIndex(EnvelopeStore.roleNames, this.recipient.role_name));
+    const roleIndex = getRoleIndex(EnvelopeStore.roleNames, this.recipient.role_name);
     const recipientFields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
-    // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
-    console.log('[SIGN] Fields on page', recipientFields);
     recipientFields.forEach(field => {
-      const el = renderDocumentField(field, pageInfo, getRoleIndex(EnvelopeStore.roleNames, field.recipient_role), {disabled: false, editable: false, draggable: false});
+      const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: false, editable: false, draggable: false});
       if (!el) {
         return;
       }
 
       el.addEventListener('input', e => {
-        this.handleFieldChange(field, e);
+        this.handleFieldChange(field, e).catch(() => {});
       });
 
       el.addEventListener('fieldChange', e => {
-        this.handleFieldChange(field, e);
+        this.handleFieldChange(field, e).catch(() => {});
       });
 
+      el.setAttribute('roleindex', roleIndex);
       el.setAttribute('xScale', pageInfo.xScale);
       el.setAttribute('yScale', pageInfo.yScale);
       el.setAttribute('initials', this.recipient ? fullNameToInitials(this.recipient.full_name) : '');
@@ -394,16 +384,18 @@ export class VerdocsSign {
     EnvelopeStore.envelope.recipients
       .filter(recipient => recipient.role_name !== this.recipient.role_name)
       .map(otherRecipient => {
-        console.log('Rendering fields for other recipient', getRoleIndex(EnvelopeStore.roleNames, otherRecipient.role_name), otherRecipient);
+        const otherRoleIndex = getRoleIndex(EnvelopeStore.roleNames, otherRecipient.role_name);
+        console.log('Rendering fields for other recipient', otherRoleIndex, otherRecipient);
         const recipientFields = otherRecipient.fields.filter(field => field.page === pageInfo.pageNumber);
         // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
         console.log('[SIGN] Fields on page', recipientFields);
         recipientFields.forEach(field => {
-          const el = renderDocumentField(field, pageInfo, getRoleIndex(EnvelopeStore.roleNames, otherRecipient.role_name), {disabled: true, editable: false, draggable: false});
+          const el = renderDocumentField(field, pageInfo, otherRoleIndex, {disabled: true, editable: false, draggable: false});
           if (!el) {
             return;
           }
 
+          el.setAttribute('roleindex', otherRoleIndex);
           el.setAttribute('xScale', pageInfo.xScale);
           el.setAttribute('yScale', pageInfo.yScale);
         });
@@ -423,7 +415,7 @@ export class VerdocsSign {
       {id: 'later', label: 'Finish Later'}, //
       {id: 'claim', label: 'Claim the Document', disabled: true},
       {id: 'decline', label: 'Decline to Sign'},
-      {id: 'print', label: 'Print Without Signing'},
+      {id: 'print', label: 'Print Without Signing', disabled: true},
       {id: 'download', label: 'Download'},
     ];
 
@@ -462,6 +454,7 @@ export class VerdocsSign {
           {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
             const pages = [...(envelopeDocument?.pages || [])];
             pages.sort((a, b) => a.sequence - b.sequence);
+            console.log('p', envelopeDocument, pages);
 
             return (
               <Fragment>
@@ -490,6 +483,8 @@ export class VerdocsSign {
             onNext={() => (this.showFinishLater = false)}
           />
         )}
+
+        {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
       </Host>
     );
   }

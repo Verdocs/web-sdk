@@ -17,7 +17,7 @@ export const getEnvelopeById = async (endpoint: VerdocsEndpoint, envelopeId: str
 
   try {
     console.log(`[ENVELOPES] Loading envelope ${envelopeId}`);
-    const envelope = await getEnvelope(endpoint, envelopeId);
+    const envelope = await getEnvelope(endpoint, envelopeId, true);
     if (!envelope) {
       console.log('[ENVELOPES] Unable to load envelope');
       return;

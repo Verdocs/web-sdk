@@ -2,8 +2,7 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
-import {getFieldSettings, getRoleIndex} from '../../../utils/utils';
-import TemplateStore from '../../../utils/templateStore';
+import {getFieldSettings} from '../../../utils/utils';
 
 /**
  * Displays a radio button.
@@ -30,6 +29,11 @@ export class VerdocsFieldRadioButton {
   @Prop() disabled?: boolean = false;
 
   /**
+   * If set, the field will be colored using this index value to select the background color.
+   */
+  @Prop() roleindex?: number = 0;
+
+  /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
    * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
    * keypress.
@@ -44,7 +48,7 @@ export class VerdocsFieldRadioButton {
   render() {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(getRoleIndex(TemplateStore.roleNames, ''));
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>

@@ -46,7 +46,7 @@ export class VerdocsFieldSignature {
   /**
    * If set, the field will be colored using this index value to select the background color.
    */
-  @Prop() roleIndex?: number = 0;
+  @Prop() roleindex?: number = 0;
 
   /**
    * Event emitted when the field has changed.
@@ -83,6 +83,7 @@ export class VerdocsFieldSignature {
   handleShow() {
     this.dialog = document.createElement('verdocs-signature-dialog');
     this.dialog.setAttribute('name', this.name);
+    this.dialog.setAttribute('roleindex', this.roleindex);
     this.dialog.addEventListener('cancel', () => this.hideDialog());
     this.dialog.addEventListener('next', e => this.handleAdopt(e));
     document.body.append(this.dialog);
@@ -92,7 +93,7 @@ export class VerdocsFieldSignature {
     const settings = getFieldSettings(this.field);
     const value = this.tempSignature || settings.base64;
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleIndex);
+    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{required: this.field?.required, disabled}} style={{backgroundColor}}>

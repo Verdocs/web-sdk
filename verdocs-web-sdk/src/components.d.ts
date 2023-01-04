@@ -180,6 +180,10 @@ export namespace Components {
           * The index of the settings option this particular checkbox is for
          */
         "option": number;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldDate {
         /**
@@ -202,7 +206,7 @@ export namespace Components {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -217,7 +221,7 @@ export namespace Components {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldInitial {
         /**
@@ -244,7 +248,7 @@ export namespace Components {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldPayment {
         "currentInitial": string;
@@ -265,11 +269,11 @@ export namespace Components {
         "pageNum": number;
         "pdfPages": any[];
         "recipients": any;
+        "roleName": string;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
-        "roleName": string;
+        "roleindex"?: number;
         "selectedRoleName": string;
         "signed": boolean;
     }
@@ -286,6 +290,10 @@ export namespace Components {
           * The index of the settings option this particular checkbox is for
          */
         "option": number;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldSignature {
         /**
@@ -312,7 +320,7 @@ export namespace Components {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -335,7 +343,7 @@ export namespace Components {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -358,7 +366,7 @@ export namespace Components {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -381,7 +389,7 @@ export namespace Components {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsHelpIcon {
         /**
@@ -1388,6 +1396,10 @@ declare namespace LocalJSX {
           * The index of the settings option this particular checkbox is for
          */
         "option"?: number;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldDate {
         /**
@@ -1413,7 +1425,7 @@ declare namespace LocalJSX {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -1431,7 +1443,7 @@ declare namespace LocalJSX {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldInitial {
         /**
@@ -1473,7 +1485,7 @@ declare namespace LocalJSX {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldPayment {
         "currentInitial"?: string;
@@ -1496,11 +1508,11 @@ declare namespace LocalJSX {
         "pageNum"?: number;
         "pdfPages"?: any[];
         "recipients"?: any;
+        "roleName"?: string;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
-        "roleName"?: string;
+        "roleindex"?: number;
         "selectedRoleName"?: string;
         "signed"?: boolean;
     }
@@ -1521,6 +1533,10 @@ declare namespace LocalJSX {
           * The index of the settings option this particular checkbox is for
          */
         "option"?: number;
+        /**
+          * If set, the field will be colored using this index value to select the background color.
+         */
+        "roleindex"?: number;
     }
     interface VerdocsFieldSignature {
         /**
@@ -1554,7 +1570,7 @@ declare namespace LocalJSX {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -1576,7 +1592,7 @@ declare namespace LocalJSX {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -1602,7 +1618,7 @@ declare namespace LocalJSX {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -1624,7 +1640,7 @@ declare namespace LocalJSX {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
     }
     interface VerdocsHelpIcon {
         /**
