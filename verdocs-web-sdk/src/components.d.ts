@@ -766,10 +766,6 @@ export interface VerdocsFieldPaymentCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldPaymentElement;
 }
-export interface VerdocsFieldRadioButtonCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsFieldRadioButtonElement;
-}
 export interface VerdocsFieldSignatureCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldSignatureElement;
@@ -1525,10 +1521,6 @@ declare namespace LocalJSX {
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
-        /**
-          * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
-         */
-        "onFieldChange"?: (event: VerdocsFieldRadioButtonCustomEvent<{option: number; value: boolean}>) => void;
         /**
           * The index of the settings option this particular checkbox is for
          */

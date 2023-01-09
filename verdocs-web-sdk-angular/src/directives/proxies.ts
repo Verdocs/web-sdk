@@ -407,15 +407,7 @@ export class VerdocsFieldPayment {
 }
 
 
-export declare interface VerdocsFieldRadioButton extends Components.VerdocsFieldRadioButton {
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-keypress. 
-   */
-  fieldChange: EventEmitter<CustomEvent<{option: number; value: boolean}>>;
-
-}
+export declare interface VerdocsFieldRadioButton extends Components.VerdocsFieldRadioButton {}
 
 @ProxyCmp({
   defineCustomElementFn: undefined,
@@ -432,7 +424,6 @@ export class VerdocsFieldRadioButton {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange']);
   }
 }
 

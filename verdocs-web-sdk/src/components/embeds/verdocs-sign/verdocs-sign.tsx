@@ -209,20 +209,23 @@ export class VerdocsSign {
       });
   }
 
-  async handleFieldChange(field: IDocumentField, e: any, optionId?: string) {
-    console.log('fieldChange', field, e);
+  async handleFieldChange(field: IDocumentField, e: any) {
+    console.log('fieldChange', field, e, e.target.value);
     const {value, checked} = e.target;
 
     switch (field.type) {
       case 'textbox':
         return this.saveFieldChange(field.name, {prepared: false, value});
 
-      case 'checkbox_group':
-        return this.saveFieldChange(field.name, {prepared: false, value: {options: [{id: optionId, checked}]}});
-
-      case 'radio_button_group':
-        const options = field.settings.options.map(option => ({id: option.id, selected: optionId === option.id}));
+      case 'checkbox_group': {
+        const options = field.settings.options.map(option => ({id: option.id, checked: e.target.checked}));
         return this.saveFieldChange(field.name, {prepared: false, value: {options}});
+      }
+
+      case 'radio_button_group': {
+        const options = field.settings.options.map(option => ({id: option.id, selected: e.target.value === option.id}));
+        return this.saveFieldChange(field.name, {prepared: false, value: {options}});
+      }
 
       case 'dropdown':
         return this.saveFieldChange(field.name, {prepared: false, value: e.detail});
@@ -329,10 +332,22 @@ export class VerdocsSign {
     }
   }
 
+  attachFieldAttributes(pageInfo, field, roleIndex, el) {
+    el.addEventListener('input', e => this.handleFieldChange(field, e));
+    el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
+
+    el.setAttribute('roleindex', roleIndex);
+    el.setAttribute('xScale', pageInfo.xScale);
+    el.setAttribute('yScale', pageInfo.yScale);
+    el.setAttribute('initials', this.recipient ? fullNameToInitials(this.recipient.full_name) : '');
+    el.setAttribute('name', this.recipient?.full_name || '');
+  }
+
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
     console.log('[SIGN] Page rendered, adding fields', pageInfo);
 
+    console.log('recipient', this.recipient);
     const roleIndex = getRoleIndex(EnvelopeStore.roleNames, this.recipient.role_name);
     const recipientFields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
     recipientFields.forEach(field => {
@@ -341,19 +356,11 @@ export class VerdocsSign {
         return;
       }
 
-      el.addEventListener('input', e => {
-        this.handleFieldChange(field, e).catch(() => {});
-      });
-
-      el.addEventListener('fieldChange', e => {
-        this.handleFieldChange(field, e).catch(() => {});
-      });
-
-      el.setAttribute('roleindex', roleIndex);
-      el.setAttribute('xScale', pageInfo.xScale);
-      el.setAttribute('yScale', pageInfo.yScale);
-      el.setAttribute('initials', this.recipient ? fullNameToInitials(this.recipient.full_name) : '');
-      el.setAttribute('name', this.recipient?.full_name || '');
+      if (Array.isArray(el)) {
+        el.map(e => this.attachFieldAttributes(pageInfo, field, roleIndex, e));
+      } else {
+        this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+      }
 
       // interact(el).draggable({
       //   listeners: {
@@ -454,7 +461,6 @@ export class VerdocsSign {
           {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
             const pages = [...(envelopeDocument?.pages || [])];
             pages.sort((a, b) => a.sequence - b.sequence);
-            console.log('p', envelopeDocument, pages);
 
             return (
               <Fragment>

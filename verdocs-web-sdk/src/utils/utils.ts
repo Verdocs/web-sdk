@@ -113,12 +113,18 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
       el.field = field;
       el.setAttribute('id', id);
       el.setAttribute('roleIndex', roleIndex);
+
       if (disabled) {
+        el.setAttribute('tabindex', -1);
         el.setAttribute('disabled', true);
+      } else {
+        el.setAttribute('tabIndex', 1);
       }
+
       if (editable) {
         el.setAttribute('editable', true);
       }
+
       if (draggable) {
         el.setAttribute('draggable', true);
       }
@@ -129,7 +135,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
     }
 
     case 'checkbox_group':
-      ((field as any).settings || (field as any).setting || {}).options.forEach((_, checkboxIndex) => {
+      return ((field as any).settings || (field as any).setting || {}).options.map((_, checkboxIndex) => {
         const id = getFieldOptionId(field, checkboxIndex);
         const existingField = document.getElementById(id);
         if (existingField) {
@@ -151,10 +157,8 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         return cbEl;
       });
 
-      break;
-
     case 'radio_button_group':
-      ((field as any).settings || (field as any).setting || {}).options.forEach((_, buttonIndex) => {
+      return ((field as any).settings || (field as any).setting || {}).options.map((_, buttonIndex) => {
         const id = getFieldOptionId(field, buttonIndex);
         const existingField = document.getElementById(id);
         if (existingField) {
@@ -162,21 +166,19 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
           return;
         }
 
-        const cbEl: any = document.createElement(`verdocs-field-radio-button`);
-        cbEl.field = field;
-        cbEl.setAttribute('id', id);
-        cbEl.setAttribute('roleIndex', roleIndex);
-        cbEl.setAttribute('option', buttonIndex);
+        const radioEl: any = document.createElement(`verdocs-field-radio-button`);
+        radioEl.field = field;
+        radioEl.setAttribute('id', id);
+        radioEl.setAttribute('roleIndex', roleIndex);
+        radioEl.setAttribute('option', buttonIndex);
         if (disabled) {
-          cbEl.setAttribute('disabled', true);
+          radioEl.setAttribute('disabled', true);
         }
-        setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, buttonIndex);
-        controlsDiv.appendChild(cbEl);
+        setControlStyles(radioEl, field, docPage.xScale, docPage.yScale, buttonIndex);
+        controlsDiv.appendChild(radioEl);
 
-        return cbEl;
+        return radioEl;
       });
-
-      break;
 
     // case 'attachment':
     //   el = document.createElement('verdocs-field-attachment');

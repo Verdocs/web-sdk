@@ -8,12 +8,10 @@ export default {
     envelopeId: '92f3dd1e-9ff2-44c3-8c96-32a5b650ed6d',
     roleId: 'Seller',
     inviteCode: '67aad4b04fbb83c03d238f7404113b6b',
+    // roleId: 'Buyer',
+    // inviteCode: '3b6e2a7abcc35808c9fc946d64e91abe',
   },
-  argTypes: {
-    envelopeId: {control: {type: 'string'}},
-    roleId: {control: {type: 'string'}},
-    inviteCode: {control: {type: 'string'}},
-  },
+  argTypes: {},
   parameters: {
     layout: 'fullscreen',
   },

@@ -1,7 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
+import {Component, h, Host, Prop} from '@stencil/core';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, h, Host, Prop, Event, EventEmitter} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
 
 /**
@@ -33,37 +33,26 @@ export class VerdocsFieldRadioButton {
    */
   @Prop() roleindex?: number = 0;
 
-  /**
-   * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
-   * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
-   * keypress.
-   */
-  @Event({composed: true}) fieldChange: EventEmitter<{option: number; value: boolean}>;
-
-  handleChange(e: any) {
-    console.log('changed', e);
-    this.fieldChange.emit({option: this.option, value: e.target.checked});
-  }
-
   render() {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
+    const option = settings.options[this.option];
 
+    const id = `${this.field.name}-${option.id}`;
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
         <input
+          id={id}
           type="radio"
+          value={option.id}
           tabIndex={settings.order}
-          value={settings.value}
-          name={settings.name}
-          id={`${settings.name}=${settings.value}`}
-          checked={settings.checked}
+          name={this.field.name}
+          checked={!!option.selected}
           disabled={disabled}
           required={settings.required}
-          onChange={e => this.handleChange(e)}
         />
-        <label htmlFor={`${settings.name}=${settings.value}`} />
+        <label htmlFor={id} />
       </Host>
     );
   }

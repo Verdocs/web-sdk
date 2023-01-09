@@ -42,7 +42,7 @@ export class VerdocsFieldCheckbox {
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
         <label>
-          <input type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} />
+          <input type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} value={option.id} />
           <span />
         </label>
       </Host>
