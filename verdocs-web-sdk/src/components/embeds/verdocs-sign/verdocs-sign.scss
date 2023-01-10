@@ -71,6 +71,19 @@ verdocs-sign {
     align-items: center;
     flex-direction: row;
     background-color: $medium-bg;
+
+    .logo {
+      width: 77.5px;
+      margin: -6px 0 0 5px;
+    }
+
+    .title {
+      padding-left: 16px;
+      font-size: 18px;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
   .cover {
@@ -117,5 +130,11 @@ verdocs-sign {
     .header {
       flex: 0 0 56px;
     }
+  }
+}
+
+@media print {
+  verdocs-sign .header {
+    display: none;
   }
 }

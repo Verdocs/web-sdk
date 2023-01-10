@@ -59,7 +59,7 @@ export class VerdocsOkDialog {
           <div class="dialog">
             <div class="heading">{this.heading}</div>
             <div class="content">
-              {this.message}
+              <div class="message" innerHTML={this.message} />
 
               <div class="buttons">
                 {this.showCancel ? <verdocs-button label="CANCEL" variant="outline" onClick={() => this.handleCancel()} /> : <div style={{display: 'none'}} />}

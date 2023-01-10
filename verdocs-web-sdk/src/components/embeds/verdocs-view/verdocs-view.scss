@@ -1,18 +1,83 @@
 @import '../../../theme.scss';
 
 verdocs-view {
-  font-family: $verdocs-primary-font;
   display: flex;
-  padding: 15px;
-  row-gap: 15px;
-  min-height: 200px;
+  overflow: hidden;
   position: relative;
-  align-items: center;
-  box-sizing: border-box;
+  min-height: 600px;
   flex-direction: column;
+  box-sizing: border-box;
+  font-family: $verdocs-primary-font;
 
   div,
   canvas {
     box-sizing: border-box;
+  }
+
+  .header {
+    flex: 0;
+    display: flex;
+    z-index: 1000;
+    align-items: center;
+    transition: all 0.25s;
+    justify-content: center;
+    background-color: $medium-bg;
+    box-shadow: 0 4px 4px 0 rgb(0 0 0 / 24%), 0 0 4px 0 rgb(0 0 0 / 12%);
+
+    .inner {
+      width: 100%;
+      max-width: 1028px;
+    }
+  }
+
+  .toolbar {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 14px;
+    position: relative;
+  }
+
+  .tools {
+    width: 100%;
+    color: #fff;
+    height: 56px;
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+    flex-direction: row;
+    background-color: $medium-bg;
+
+    .logo {
+      width: 77.5px;
+      margin: -6px 0 0 5px;
+    }
+
+    .title {
+      padding-left: 16px;
+      font-size: 18px;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .document {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    padding: 15px;
+    row-gap: 15px;
+    min-height: 200px;
+    position: relative;
+    overflow-y: scroll;
+    align-items: center;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: center;
+
+    .inner {
+      width: 100%;
+      max-width: 1028px;
+    }
   }
 }

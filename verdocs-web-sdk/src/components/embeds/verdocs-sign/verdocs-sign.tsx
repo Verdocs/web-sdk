@@ -3,15 +3,19 @@ import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
 import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
 import {IDocumentField, IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
-import {envelopeRecipientAgree, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
+import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import {fullNameToInitials, getFieldId, getRoleIndex, renderDocumentField} from '../../../utils/utils';
+import {fullNameToInitials, getFieldId, getRoleIndex, renderDocumentField, savePDF} from '../../../utils/utils';
 import {getEnvelopeById} from '../../../utils/Envelopes';
 import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
+
+const PrintIcon = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"></path></svg>`;
+
+const DownloadIcon = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"></path></svg>`;
 
 /**
  * Display an envelope signing experience. This will display the envelope's attached
@@ -58,6 +62,11 @@ export class VerdocsSign {
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
+
+  /**
+   * Event fired when the envelope is updated in any way.
+   */
+  @Event({composed: true}) envelopeLoaded: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>;
 
   /**
    * Event fired when the envelope is updated in any way.
@@ -137,6 +146,8 @@ export class VerdocsSign {
       // TODO: Fix service to allow this?
       // const sigs = await getSignatures();
       // console.log('sigs', sigs);
+
+      this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope});
     } catch (e) {
       console.log('Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -156,28 +167,6 @@ export class VerdocsSign {
       });
   }
 
-  async savePDF() {
-    const fileName = `${EnvelopeStore.envelope.name} - ${EnvelopeStore.envelope.updated_at.split('T')[0]}.pdf`;
-    const data = await Envelopes.getEnvelopeFile(this.endpoint, this.envelopeId, EnvelopeStore.envelope.envelope_document_id);
-
-    // This is better in React than doing window.href= or similar to trigger a download. For a description of the technique
-    // see https://stackoverflow.com/questions/8126623/downloading-canvas-element-to-an-image
-    let xhr = new XMLHttpRequest();
-    xhr.responseType = 'blob';
-    xhr.onload = function () {
-      let a = document.createElement('a');
-      a.href = window.URL.createObjectURL(xhr.response);
-      a.download = fileName;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    };
-
-    xhr.open('GET', `data:application/pdf;base64,${data}`);
-    xhr.send();
-  }
-
   async handleOptionSelected(e) {
     switch (e.detail.id) {
       case 'later':
@@ -191,11 +180,17 @@ export class VerdocsSign {
       case 'claim':
         break;
       case 'decline':
+        {
+          const declineResult = await envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId);
+          console.log('Decline result', declineResult);
+          this.isDone = true;
+        }
         break;
       case 'print':
+        window.print();
         break;
       case 'download':
-        this.savePDF().catch(() => {});
+        savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(() => {});
         break;
     }
   }
@@ -315,9 +310,8 @@ export class VerdocsSign {
   async handleNext() {
     if (this.nextSubmits) {
       try {
-        console.log('Submitting');
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
-        console.log('Submitted', result);
+        console.log('[SIGN] Submitted successfully', result);
         this.showDone = true;
         this.isDone = true;
         // updateRecipientStatus()
@@ -468,7 +462,7 @@ export class VerdocsSign {
 
     const menuOptions = [
       {id: 'later', label: 'Finish Later'}, //
-      {id: 'claim', label: 'Claim the Document', disabled: true},
+      // {id: 'claim', label: 'Claim the Document', disabled: true},
       {id: 'decline', label: 'Decline to Sign'},
       {id: 'print', label: 'Print Without Signing', disabled: true},
       {id: 'download', label: 'Download'},
@@ -476,7 +470,7 @@ export class VerdocsSign {
 
     return (
       <Host class={{agreed: this.recipient?.agreed}}>
-        {!this.finishLater && (
+        {!this.isDone && !this.finishLater && (
           <div class="intro">
             <div class="inner">Please review and act on these documents.</div>
           </div>
@@ -484,22 +478,33 @@ export class VerdocsSign {
 
         <div class="header">
           <div class="inner">
-            {!this.isDone && !this.finishLater && (
-              <div class="toolbar">
-                <div class="tools">
-                  <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+            <div class="toolbar">
+              <div class="tools">
+                {!this.isDone && !this.finishLater && <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />}
 
-                  {!this.recipient?.agreed ? (
-                    <div class="agree">
-                      <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
-                    </div>
-                  ) : (
+                {!this.recipient?.agreed ? (
+                  <div class="agree">
+                    <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
+                  </div>
+                ) : (
+                  <Fragment>
+                    <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+                    <div class="title">{EnvelopeStore.envelope.name}</div>
                     <div style={{flex: '1'}} />
-                  )}
+                    <div innerHTML={PrintIcon} style={{width: '24px', height: '24px', fill: '#ffffff', cursor: 'pointer'}} onClick={() => window.print()} />
+                    <div
+                      innerHTML={DownloadIcon}
+                      style={{width: '24px', height: '24px', fill: '#ffffff', cursor: 'pointer', marginLeft: '16px', maginRight: '30px'}}
+                      onClick={() => savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(() => {})}
+                    />
+                  </Fragment>
+                )}
+
+                {!this.isDone && !this.finishLater && (
                   <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />
-                </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
 
@@ -541,9 +546,9 @@ export class VerdocsSign {
         {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
         {this.showDone && (
           <verdocs-ok-dialog
-            heading="You're Done"
-            message="You can access the Verdoc at any time by clicking on the link from invitation email.\n\nAfter all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.\n\nThank you for using Verdocs."
-            onNext={() => (this.errorMessage = '')}
+            heading="You're Done!"
+            message="You can access the Verdoc at any time by clicking on the link from the invitation email.<br /><br />After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached."
+            onNext={() => (this.showDone = false)}
           />
         )}
       </Host>

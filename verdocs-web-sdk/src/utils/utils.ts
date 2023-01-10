@@ -1,8 +1,9 @@
 // These should probably all move to JS-SDK
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
-// import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
+import {IDocumentField, IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
 import {IDocumentPageInfo} from './Types';
 
 export const integerSequence = (start: number, count: number): number[] =>
@@ -239,4 +240,26 @@ export const updateCssTransform = (el: HTMLElement, key: string, value: string) 
       .map(component => component[0]), // Convert back the remaining entries
     `${key}(${value})`,
   ].join(' ');
+};
+
+export const savePDF = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {
+  const fileName = `${envelope.name} - ${envelope.updated_at.split('T')[0]}.pdf`;
+  const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, documentId);
+
+  // This is better in React than doing window.href= or similar to trigger a download. For a description of the technique
+  // see https://stackoverflow.com/questions/8126623/downloading-canvas-element-to-an-image
+  let xhr = new XMLHttpRequest();
+  xhr.responseType = 'blob';
+  xhr.onload = function () {
+    let a = document.createElement('a');
+    a.href = window.URL.createObjectURL(xhr.response);
+    a.download = fileName;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  xhr.open('GET', `data:application/pdf;base64,${data}`);
+  xhr.send();
 };

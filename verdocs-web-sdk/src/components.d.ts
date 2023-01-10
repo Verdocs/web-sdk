@@ -1942,6 +1942,10 @@ declare namespace LocalJSX {
         /**
           * Event fired when the envelope is updated in any way.
          */
+        "onEnvelopeLoaded"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        /**
+          * Event fired when the envelope is updated in any way.
+         */
         "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.

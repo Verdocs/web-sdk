@@ -5,7 +5,7 @@ export default {
   title: 'Embeds/View',
   component: 'verdocs-view',
   args: {
-    envelopeId: '516d0ddf-0cf6-4e37-99f6-2046bcd795d0',
+    envelopeId: '92f3dd1e-9ff2-44c3-8c96-32a5b650ed6d',
   },
   argTypes: {},
   parameters: {
