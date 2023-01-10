@@ -12,6 +12,10 @@ export const getEnvelopeById = async (endpoint: VerdocsEndpoint, envelopeId: str
     return;
   }
 
+  if (EnvelopeStore.envelope?.id === envelopeId) {
+    return;
+  }
+
   EnvelopeStore.error = '';
   EnvelopeStore.loading = true;
 

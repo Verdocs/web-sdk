@@ -16,6 +16,11 @@ verdocs-field-signature {
     opacity: 0.5;
   }
 
+  &.done {
+    border: none;
+    opacity: 1;
+  }
+
   img {
     display: block;
     max-width: 100%;

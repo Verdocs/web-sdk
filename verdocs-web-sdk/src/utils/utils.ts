@@ -83,10 +83,11 @@ interface IFieldOptions {
   disabled?: boolean;
   editable?: boolean;
   draggable?: boolean;
+  done?: boolean;
 }
 
 export const renderDocumentField = (field: ITemplateField | IDocumentField, docPage: IDocumentPageInfo, roleIndex: number, fieldOptions: IFieldOptions) => {
-  const {disabled = false, editable = false, draggable = false} = fieldOptions;
+  const {disabled = false, editable = false, draggable = false, done = false} = fieldOptions;
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
   if (!controlsDiv) {
     return;
@@ -128,6 +129,11 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
       if (draggable) {
         el.setAttribute('draggable', true);
       }
+
+      if (done) {
+        el.setAttribute('done', true);
+      }
+
       setControlStyles(el, field, docPage.xScale, docPage.yScale);
       controlsDiv.appendChild(el);
 
@@ -151,6 +157,9 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         if (disabled) {
           cbEl.setAttribute('disabled', true);
         }
+        if (done) {
+          cbEl.setAttribute('done', true);
+        }
         setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, checkboxIndex);
         controlsDiv.appendChild(cbEl);
 
@@ -173,6 +182,9 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         radioEl.setAttribute('option', buttonIndex);
         if (disabled) {
           radioEl.setAttribute('disabled', true);
+        }
+        if (done) {
+          radioEl.setAttribute('done', true);
         }
         setControlStyles(radioEl, field, docPage.xScale, docPage.yScale, buttonIndex);
         controlsDiv.appendChild(radioEl);

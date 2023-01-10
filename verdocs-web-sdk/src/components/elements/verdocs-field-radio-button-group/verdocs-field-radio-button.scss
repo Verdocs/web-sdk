@@ -16,7 +16,18 @@ verdocs-field-radio-button {
     opacity: 0.5;
   }
 
-  input[type='radio'] {
+  &.disabled.done {
+    opacity: 1;
+  }
+
+  &.done input[type='radio'] {
+    margin: 0;
+    padding: 0;
+    width: 10px;
+    height: 10px;
+  }
+
+  &:not(.done) input[type='radio'] {
     position: absolute;
     opacity: 0;
 

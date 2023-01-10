@@ -40,6 +40,11 @@ export class VerdocsFieldTextarea {
   @Prop() moveable?: boolean = false;
 
   /**
+   * If set, the field is considered "done" and is drawn in a display-final-value state.
+   */
+  @Prop() done?: boolean = false;
+
+  /**
    * If set, the field will be colored using this index value to select the background color.
    */
   @Prop() roleindex?: number = 0;
@@ -52,6 +57,10 @@ export class VerdocsFieldTextarea {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
+
+    if (this.done) {
+      return <Host class={{done: this.done}}>{settings.value}</Host>;
+    }
 
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>

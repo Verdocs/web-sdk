@@ -173,6 +173,10 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
@@ -190,6 +194,10 @@ export namespace Components {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
@@ -228,6 +236,10 @@ export namespace Components {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
@@ -283,6 +295,10 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
@@ -300,6 +316,10 @@ export namespace Components {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
@@ -328,6 +348,10 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
@@ -351,6 +375,10 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
@@ -373,6 +401,10 @@ export namespace Components {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
@@ -1385,6 +1417,10 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
@@ -1402,6 +1438,10 @@ declare namespace LocalJSX {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
@@ -1446,6 +1486,10 @@ declare namespace LocalJSX {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
@@ -1518,6 +1562,10 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
@@ -1535,6 +1583,10 @@ declare namespace LocalJSX {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
@@ -1570,6 +1622,10 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
@@ -1591,6 +1647,10 @@ declare namespace LocalJSX {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
@@ -1617,6 +1677,10 @@ declare namespace LocalJSX {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
@@ -1876,9 +1940,9 @@ declare namespace LocalJSX {
          */
         "inviteCode"?: string | null;
         /**
-          * Event fired when any field is updated. Note that the current active endpoint is provided as a parameter as a convenience for callers when this coimponent
+          * Event fired when the envelope is updated in any way.
          */
-        "onFieldUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint}>) => void;
+        "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */

@@ -9,9 +9,10 @@ verdocs-field-timestamp {
   position: relative;
   background-color: transparent;
   transform-origin: bottom left;
+  opacity: 0.5;
 
-  &.disabled {
-    opacity: 0.5;
+  &.done {
+    opacity: 1;
   }
 
   input {
@@ -22,7 +23,7 @@ verdocs-field-timestamp {
     height: 100%;
     width: 100%;
     background: none;
-    font-size: 11px;
+    font-size: 10px;
     border: 1px solid rgba(0, 0, 0, 0.2);
 
     &.hide {

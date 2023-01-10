@@ -44,6 +44,11 @@ export class VerdocsFieldSignature {
   @Prop() moveable?: boolean = false;
 
   /**
+   * If set, the field is considered "done" and is drawn in a display-final-value state.
+   */
+  @Prop() done?: boolean = false;
+
+  /**
    * If set, the field will be colored using this index value to select the background color.
    */
   @Prop() roleindex?: number = 0;
@@ -94,6 +99,10 @@ export class VerdocsFieldSignature {
     const value = this.tempSignature || settings.base64;
     const disabled = this.disabled ?? settings.disabled ?? false;
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
+
+    if (this.done) {
+      return <Host class={{done: this.done}}>{value && <img src={this.tempSignature || settings.base64} alt="Signature" />}</Host>;
+    }
 
     return (
       <Host class={{required: this.field?.required, disabled}} style={{backgroundColor}}>

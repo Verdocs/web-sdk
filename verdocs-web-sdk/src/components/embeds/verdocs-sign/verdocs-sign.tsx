@@ -2,8 +2,8 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
 import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
-import {IDocumentField, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
-import {updateRecipientStatus} from '@verdocs/js-sdk/Envelopes/Recipients';
+import {IDocumentField, IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
+import {envelopeRecipientAgree, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
@@ -60,10 +60,9 @@ export class VerdocsSign {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   /**
-   * Event fired when any field is updated. Note that the current active endpoint is
-   * provided as a parameter as a convenience for callers when this coimponent
+   * Event fired when the envelope is updated in any way.
    */
-  @Event({composed: true}) fieldUpdated: EventEmitter<{endpoint: VerdocsEndpoint}>;
+  @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
   @State() recipient: IRecipient | null = null;
   @State() signerToken = null;
@@ -71,8 +70,11 @@ export class VerdocsSign {
   // @State() fields: IDocumentField[] = [];
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
+  @State() nextSubmits = false;
   @State() errorMessage = '';
   @State() focusedField = '';
+  @State() isDone = false;
+  @State() showDone = false;
 
   @State() finishLater = false;
   @State() showFinishLater = false;
@@ -129,6 +131,9 @@ export class VerdocsSign {
         this.fields = this.recipient.fields;
       }
 
+      this.isDone = ['submitted', 'canceled', 'declined'].includes(this.recipient.status);
+      console.log('Done', this.isDone);
+
       // TODO: Fix service to allow this?
       // const sigs = await getSignatures();
       // console.log('sigs', sigs);
@@ -139,10 +144,11 @@ export class VerdocsSign {
   }
 
   handleClickAgree() {
-    updateRecipientStatus(this.endpoint, this.envelopeId, this.roleId, 'update', {agreed: true})
+    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, true)
       .then(r => {
         this.nextButtonLabel = 'Next';
         this.recipient = r;
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'agreed'});
       })
       .catch(e => {
         console.log('Update failure', e);
@@ -250,6 +256,10 @@ export class VerdocsSign {
         const iso = e.target.getAttribute('iso');
         return this.saveFieldChange(field.name, {prepared: false, value: iso});
 
+      case 'timestamp':
+        console.log('Updating timestamp', {value, ts: e.target.getAttribute('timestamp')});
+        break;
+
       default:
         console.log('Unhandled field update', {value, checked}, field);
         break;
@@ -257,36 +267,41 @@ export class VerdocsSign {
   }
 
   isFieldValid(field: IDocumentField) {
+    const {required = false} = field;
+    const {result = '', value = '', base64 = ''} = field.settings || {};
     switch (field.type) {
       case 'textbox':
         switch (field.settings?.validator || '') {
           case 'email':
-            return isValidEmail(field.settings?.result || '');
+            return isValidEmail(result);
           case 'phone':
-            return isValidPhone(field.settings?.result || '');
+            return isValidPhone(result);
           default:
-            return !!field.settings?.result;
+            return !required || result !== '';
         }
 
       case 'signature':
       case 'initial':
-        return !!field.settings?.base64;
+        return !required || base64 !== '';
+
+      // Timestamp fields get automatically filled when the envelope is submitted.
+      case 'timestamp':
+        return true;
 
       case 'textarea':
       case 'date':
-      case 'timestamp':
       case 'attachment':
-        return !!field.settings?.result;
+        return !required || result !== '';
 
       case 'dropdown':
-        return !!field.settings?.value;
+        return !required || value !== '';
 
       case 'checkbox_group':
-        const checked = (field.settings?.options?.filter(option => option.checked) || []).length;
-        return checked >= (field.settings?.minimum_checked || 0) && checked <= (field.settings?.maximum_checked || 999);
+        const checkedCount = (field.settings?.options?.filter(option => option.checked) || []).length;
+        return !required || (checkedCount >= (field.settings?.minimum_checked || 0) && checkedCount <= (field.settings?.maximum_checked || 999));
 
       case 'radio_button_group':
-        return (field.settings?.options?.filter(option => option.selected) || []).length > 0;
+        return !required || (field.settings?.options?.filter(option => option.selected) || []).length > 0;
       // TODO
       // case 'checkbox':
       //   return <verdocs-field-checkbox style={style} value={result || ''} id={id} />;
@@ -297,7 +312,28 @@ export class VerdocsSign {
     }
   }
 
-  handleNext() {
+  async handleNext() {
+    if (this.nextSubmits) {
+      try {
+        console.log('Submitting');
+        const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
+        console.log('Submitted', result);
+        this.showDone = true;
+        this.isDone = true;
+        // updateRecipientStatus()
+      } catch (e) {
+        console.log('Error submitting', e);
+      }
+      return;
+      // You're done.
+      // You can access the Verdoc at any time by clicking on the link from invitation email.
+      //
+      // After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.
+      //
+      // Thank you for using Verdocs.
+      // Got it, thanks
+    }
+
     // Find and focus the next incomplete required field
     const requiredFields = this.fields.filter(field => field.required);
     const focusedIndex = requiredFields.findIndex(field => field.name === this.focusedField);
@@ -332,9 +368,21 @@ export class VerdocsSign {
     }
   }
 
+  // See if everything that "needs to be" filled in is, and all "fillable fields" are valid
+  checkRecipientFields() {
+    const someFieldsInvalid = this.recipient.fields.map(field => this.isFieldValid(field)).some(fieldValid => !fieldValid);
+    console.log({someFieldsInvalid});
+    if (!someFieldsInvalid) {
+      this.nextButtonLabel = 'Finish';
+      this.nextSubmits = true;
+    } else {
+      this.nextSubmits = false;
+    }
+  }
+
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
-    el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('fieldChange', e => this.handleFieldChange(field, e));
+    el.addEventListener('input', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
+    el.addEventListener('fieldChange', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
 
     el.setAttribute('roleindex', roleIndex);
     el.setAttribute('xScale', pageInfo.xScale);
@@ -345,13 +393,12 @@ export class VerdocsSign {
 
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    console.log('[SIGN] Page rendered, adding fields', pageInfo);
-
-    console.log('recipient', this.recipient);
     const roleIndex = getRoleIndex(EnvelopeStore.roleNames, this.recipient.role_name);
     const recipientFields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
+    console.log('[SIGN] Page rendered, adding fields', {pageInfo, roleIndex, recipientFields});
+
     recipientFields.forEach(field => {
-      const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: false, editable: false, draggable: false});
+      const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: false, editable: false, draggable: false, done: this.isDone});
       if (!el) {
         return;
       }
@@ -388,16 +435,15 @@ export class VerdocsSign {
       // });
     });
 
+    // Render fields for "the other" recipients
     EnvelopeStore.envelope.recipients
       .filter(recipient => recipient.role_name !== this.recipient.role_name)
       .map(otherRecipient => {
         const otherRoleIndex = getRoleIndex(EnvelopeStore.roleNames, otherRecipient.role_name);
-        console.log('Rendering fields for other recipient', otherRoleIndex, otherRecipient);
         const recipientFields = otherRecipient.fields.filter(field => field.page === pageInfo.pageNumber);
         // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
-        console.log('[SIGN] Fields on page', recipientFields);
         recipientFields.forEach(field => {
-          const el = renderDocumentField(field, pageInfo, otherRoleIndex, {disabled: true, editable: false, draggable: false});
+          const el = renderDocumentField(field, pageInfo, otherRoleIndex, {disabled: true, editable: false, draggable: false, done: this.isDone});
           if (!el) {
             return;
           }
@@ -407,6 +453,8 @@ export class VerdocsSign {
           el.setAttribute('yScale', pageInfo.yScale);
         });
       });
+
+    this.checkRecipientFields();
   }
 
   render() {
@@ -436,7 +484,7 @@ export class VerdocsSign {
 
         <div class="header">
           <div class="inner">
-            {!this.finishLater && (
+            {!this.isDone && !this.finishLater && (
               <div class="toolbar">
                 <div class="tools">
                   <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
@@ -455,7 +503,7 @@ export class VerdocsSign {
           </div>
         </div>
 
-        {!this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
+        {!this.isDone && !this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
         <div class="document">
           {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
@@ -491,6 +539,13 @@ export class VerdocsSign {
         )}
 
         {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
+        {this.showDone && (
+          <verdocs-ok-dialog
+            heading="You're Done"
+            message="You can access the Verdoc at any time by clicking on the link from invitation email.\n\nAfter all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.\n\nThank you for using Verdocs."
+            onNext={() => (this.errorMessage = '')}
+          />
+        )}
       </Host>
     );
   }
