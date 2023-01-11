@@ -393,6 +393,7 @@ export class VerdocsSign {
 
     recipientFields.forEach(field => {
       const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: false, editable: false, draggable: false, done: this.isDone});
+      console.log('rendered', el);
       if (!el) {
         return;
       }

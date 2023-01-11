@@ -108,7 +108,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
       const existingField = document.getElementById(id);
       if (existingField) {
         setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
-        return;
+        return existingField;
       }
 
       const el: any = document.createElement(`verdocs-field-${field.type}`);
@@ -147,7 +147,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         const existingField = document.getElementById(id);
         if (existingField) {
           setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
-          return;
+          return existingField;
         }
 
         const cbEl: any = document.createElement(`verdocs-field-checkbox`);
@@ -173,7 +173,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         const existingField = document.getElementById(id);
         if (existingField) {
           setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
-          return;
+          return existingField;
         }
 
         const radioEl: any = document.createElement(`verdocs-field-radio-button`);

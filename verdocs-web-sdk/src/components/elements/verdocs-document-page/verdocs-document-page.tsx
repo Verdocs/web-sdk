@@ -101,6 +101,7 @@ export class VerdocsDocumentPage {
       return;
     }
 
+    console.log('Notyfing new size');
     this.pageRendered.emit({
       container: this.container,
       containerId: this.containerId,
