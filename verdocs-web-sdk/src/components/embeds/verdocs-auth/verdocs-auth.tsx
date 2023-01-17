@@ -63,13 +63,6 @@ export class VerdocsAuth {
   @Prop() logo: string = 'https://verdocs.com/assets/blue-logo.svg';
 
   /**
-   * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary
-   * if the user's session details will be displayed instead. This may be useful while debugging authentication
-   * flows in new applications.
-   */
-  @Prop() debug: boolean = false;
-
-  /**
    * Event fired when session authentication process has completed. Check the event contents for completion status.
    */
   @Event({composed: true}) authenticated: EventEmitter<IAuthStatus>;
@@ -140,14 +133,6 @@ export class VerdocsAuth {
     }
 
     if (this.isAuthenticated) {
-      if (this.debug) {
-        return (
-          <div class="status-result debug">
-            <verdocs-button label="Logout" disabled={this.loggingIn} onClick={() => this.handleLogout()} />
-          </div>
-        );
-      }
-
       return <div class="status-result">Authenticated</div>;
     }
 

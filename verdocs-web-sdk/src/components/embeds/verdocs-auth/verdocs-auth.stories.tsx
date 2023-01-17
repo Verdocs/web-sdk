@@ -5,7 +5,6 @@ export default {
   title: 'Embeds/Auth',
   component: 'verdocs-auth',
   args: {
-    debug: true,
     visible: true,
     logo: 'https://verdocs.com/assets/blue-logo.svg',
   },
@@ -25,5 +24,4 @@ export default {
   },
 } as Meta;
 
-export const Auth = ({visible, logo, debug, authenticated, sdkError}) =>
-  html`<verdocs-auth .visible=${visible} .logo=${logo} .debug=${debug} @authenticated=${authenticated} @sdkError=${sdkError} />`;
+export const Auth = ({visible, logo, authenticated, sdkError}) => html`<verdocs-auth .visible=${visible} .logo=${logo} @authenticated=${authenticated} @sdkError=${sdkError} />`;

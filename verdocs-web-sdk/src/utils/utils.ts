@@ -91,6 +91,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
   const {disabled = false, editable = false, draggable = false, done = false} = fieldOptions;
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
   if (!controlsDiv) {
+    console.log('[renderDocumentField] No controls DIV found', docPage.containerId + '-controls', docPage);
     return;
   }
 
