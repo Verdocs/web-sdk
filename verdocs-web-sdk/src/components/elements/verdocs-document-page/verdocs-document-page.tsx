@@ -39,7 +39,7 @@ export class VerdocsDocumentPage {
    * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute
    * the aspect ratio of the final rendered element when scaling up/down.
    */
-  @Prop() virtualHeight: number = 792;
+  @Prop({mutable: true}) virtualHeight: number = 792;
 
   /**
    * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer.

@@ -107,18 +107,18 @@ export class VerdocsFieldInitial {
 
   render() {
     const settings = getFieldSettings(this.field);
-    const value = this.tempInitials || settings.base64;
+    const value = settings.base64 || this.tempInitials;
     const disabled = this.disabled ?? settings.disabled ?? false;
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
-      return <Host class={{done: this.done}}>{value && <img src={this.tempInitials || settings.base64} alt="Initials" />}</Host>;
+      return <Host class={{done: this.done}}>{value && <img src={value} alt="Initials" />}</Host>;
     }
 
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
         {value ? (
-          <img src={this.tempInitials || settings.base64} alt="Initials" />
+          <img src={value} alt="Initials" />
         ) : (
           <button class={{}} onClick={() => !disabled && this.handleShow()}>
             Initials

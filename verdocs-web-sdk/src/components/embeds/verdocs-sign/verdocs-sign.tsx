@@ -7,7 +7,7 @@ import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmi
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import {fullNameToInitials, getFieldId, getRoleIndex, renderDocumentField, savePDF} from '../../../utils/utils';
+import {fullNameToInitials, getFieldId, getRoleIndex, renderDocumentField, savePDF, updateDocumentFieldValue} from '../../../utils/utils';
 import {getEnvelopeById} from '../../../utils/Envelopes';
 import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -122,6 +122,7 @@ export class VerdocsSign {
       console.log(`[SIGN] Loaded signing session ${session.email} / ${session.profile_id}`);
 
       this.recipient = recipient;
+      console.log('[SIGN] We are recipient', this.recipient);
       this.signerToken = signerToken;
       this.endpoint.setToken(signerToken);
 
@@ -130,18 +131,17 @@ export class VerdocsSign {
       }
 
       await getEnvelopeById(this.endpoint, this.envelopeId);
-      // const envelope = await Envelopes.getEnvelope(this.endpoint, this.envelopeId);
-      // this.envelope = envelope;
-      // console.log('[SIGN] Loaded envelope', envelope);
 
       this.recipientIndex = EnvelopeStore.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
       if (this.recipientIndex > -1) {
         this.recipient = EnvelopeStore.envelope.recipients[this.recipientIndex];
         this.fields = this.recipient.fields;
+        console.log('[SIGN] Found our recipient in the envelope', this.recipientIndex, this.recipient, this.fields);
+      } else {
+        console.log('[SIGN] Could not find our recipient record', this.roleId, EnvelopeStore.envelope.recipients);
       }
 
       this.isDone = ['submitted', 'canceled', 'declined'].includes(this.recipient.status);
-      console.log('Done', this.isDone);
 
       // TODO: Fix service to allow this?
       // const sigs = await getSignatures();
@@ -195,8 +195,22 @@ export class VerdocsSign {
     }
   }
 
+  updateRecipientFieldValue(fieldName: string, updateResult: any) {
+    this.recipient.fields.forEach(oldField => {
+      if (oldField.name === fieldName) {
+        console.log('New settings', fieldName, updateResult.settings);
+        oldField.settings = updateResult.settings;
+        // TODO: When we break out other fields like value, update them here too
+        updateDocumentFieldValue(oldField);
+      }
+    });
+  }
+
   saveFieldChange(fieldName: string, fields: Record<string, any>) {
     Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, fieldName, fields) //
+      .then(updateResult => {
+        this.updateRecipientFieldValue(fieldName, updateResult);
+      })
       .catch(e => {
         if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
           // TODO: Do we want to improve the instructions here?
@@ -233,17 +247,17 @@ export class VerdocsSign {
       case 'initial':
         const initialsBlob = await (await fetch(e.detail)).blob();
         return createInitials(this.endpoint, 'initial', initialsBlob) //
-          .then(newInitials => {
-            console.log('New initials', field.name, newInitials);
-            updateEnvelopeFieldInitials(this.endpoint, this.envelopeId, field.name, newInitials.id);
+          .then(async newInitials => {
+            const updateResult = await updateEnvelopeFieldInitials(this.endpoint, this.envelopeId, field.name, newInitials.id);
+            this.updateRecipientFieldValue(field.name, updateResult);
           });
 
       case 'signature':
         const signatureBlob = await (await fetch(e.detail)).blob();
         return createSignature(this.endpoint, 'signature', signatureBlob) //
-          .then(newSignature => {
-            console.log('New sign', field.name, newSignature);
-            updateEnvelopeFieldSignature(this.endpoint, this.envelopeId, field.name, newSignature.id);
+          .then(async newSignature => {
+            const updateResult = await updateEnvelopeFieldSignature(this.endpoint, this.envelopeId, field.name, newSignature.id);
+            this.updateRecipientFieldValue(field.name, updateResult);
           });
 
       case 'date':
@@ -276,6 +290,7 @@ export class VerdocsSign {
 
       case 'signature':
       case 'initial':
+        console.log('Evaluating initial field', field);
         return !required || base64 !== '';
 
       // Timestamp fields get automatically filled when the envelope is submitted.
@@ -313,18 +328,11 @@ export class VerdocsSign {
         console.log('[SIGN] Submitted successfully', result);
         this.showDone = true;
         this.isDone = true;
-        // updateRecipientStatus()
       } catch (e) {
         console.log('Error submitting', e);
       }
+
       return;
-      // You're done.
-      // You can access the Verdoc at any time by clicking on the link from invitation email.
-      //
-      // After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.
-      //
-      // Thank you for using Verdocs.
-      // Got it, thanks
     }
 
     // Find and focus the next incomplete required field
@@ -369,12 +377,14 @@ export class VerdocsSign {
       this.nextSubmits = true;
     } else {
       console.log('[SIGN] Remaining invalid fields', invalidFields);
+      this.nextButtonLabel = 'Next';
       this.nextSubmits = false;
     }
   }
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
+    el.addEventListener('blur', () => this.checkRecipientFields());
     el.addEventListener('fieldChange', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
 
     el.setAttribute('roleindex', roleIndex);
@@ -431,20 +441,36 @@ export class VerdocsSign {
     // Render fields for "the other" recipients
     EnvelopeStore.envelope.recipients
       .filter(recipient => recipient.role_name !== this.recipient.role_name)
-      .map(otherRecipient => {
+      .forEach(otherRecipient => {
         const otherRoleIndex = getRoleIndex(EnvelopeStore.roleNames, otherRecipient.role_name);
         const recipientFields = otherRecipient.fields.filter(field => field.page === pageInfo.pageNumber);
-        // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
+
+        // We don't render other recipients' fields if they've already acted, because those values are now stamped into the document page.
+        // TODO: Do we want to render alternate treatments for recipients who have declined (red boxes?) and/or if the envelope is cancelled?
+        // TODO: When doing server-side rendering we probably want to "stamp" values into the rendered PDF only once the recipient is done
+        //  acting. Do this once vSign is in Production.
+        // TODO: Changed tacks here. During signing we show the template PDFs and everybody's fields, filled in or no. When done, we switch
+        //  to showing the envelope PDFs with stamped-in values. Confirm this is a good approach.
+        // if (!['submitted', 'signed'].includes(otherRecipient.status)) {
         recipientFields.forEach(field => {
-          const el = renderDocumentField(field, pageInfo, otherRoleIndex, {disabled: true, editable: false, draggable: false, done: this.isDone});
+          const el = renderDocumentField(field, pageInfo, otherRoleIndex, {
+            disabled: true,
+            editable: false,
+            draggable: false,
+            done: this.isDone,
+          });
           if (!el) {
             return;
           }
 
-          el.setAttribute('roleindex', otherRoleIndex);
-          el.setAttribute('xScale', pageInfo.xScale);
-          el.setAttribute('yScale', pageInfo.yScale);
+          // TODO: Research why this occurs. There are cases when we're getting "el.setAttribute is not a function"
+          if (el.setAttribute) {
+            el.setAttribute('roleindex', otherRoleIndex);
+            el.setAttribute('xScale', pageInfo.xScale);
+            el.setAttribute('yScale', pageInfo.yScale);
+          }
         });
+        // }
       });
 
     this.checkRecipientFields();
@@ -510,19 +536,29 @@ export class VerdocsSign {
 
               return (
                 <Fragment>
-                  {pages.map(page => (
-                    <verdocs-document-page
-                      pageImageUri={page.display_uri}
-                      virtualWidth={612}
-                      virtualHeight={792}
-                      pageNumber={page.sequence}
-                      onPageRendered={e => this.handlePageRendered(e)}
-                      layers={[
-                        {name: 'page', type: 'canvas'},
-                        {name: 'controls', type: 'div'},
-                      ]}
-                    />
-                  ))}
+                  {pages.map(page => {
+                    // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
+                    // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
+                    // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
+                    // field vales (so far) stamped into them.
+                    const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
+                    // TODO: Confirm that a pure page-number match is good enough to find the matching template page. We need to make sure
+                    //  we either don't reset our page numbers for additional attachments, or add match-on identifiers to work around that.
+                    // console.log('tp', templatePage, page);
+                    return (
+                      <verdocs-document-page
+                        pageImageUri={templatePage?.display_uri || page.display_uri}
+                        virtualWidth={612}
+                        virtualHeight={792}
+                        pageNumber={page.sequence}
+                        onPageRendered={e => this.handlePageRendered(e)}
+                        layers={[
+                          {name: 'page', type: 'canvas'},
+                          {name: 'controls', type: 'div'},
+                        ]}
+                      />
+                    );
+                  })}
                 </Fragment>
               );
             })}

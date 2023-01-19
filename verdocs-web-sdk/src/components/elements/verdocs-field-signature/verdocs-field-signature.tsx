@@ -96,17 +96,17 @@ export class VerdocsFieldSignature {
 
   render() {
     const settings = getFieldSettings(this.field);
-    const value = this.tempSignature || settings.base64;
+    const value = settings.base64 || this.tempSignature;
     const disabled = this.disabled ?? settings.disabled ?? false;
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
-      return <Host class={{done: this.done}}>{value && <img src={this.tempSignature || settings.base64} alt="Signature" />}</Host>;
+      return <Host class={{done: this.done}}>{value && <img src={value} alt="Signature" />}</Host>;
     }
 
     return (
       <Host class={{required: this.field?.required, disabled}} style={{backgroundColor}}>
-        {value ? <img src={this.tempSignature || settings.base64} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
+        {value ? <img src={value} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
 
         {this.editable && (
           <verdocs-button-panel icon={settingsIcon}>

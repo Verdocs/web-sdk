@@ -3,9 +3,11 @@
 
 import {createStore} from '@stencil/store';
 import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
+import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 
 const {state, onChange} = createStore({
   envelope: null as IEnvelope | null,
+  template: null as ITemplate | null,
   loadProgress: 0,
   loading: true,
   error: '',

@@ -87,6 +87,18 @@ interface IFieldOptions {
   done?: boolean;
 }
 
+export const updateDocumentFieldValue = (field: ITemplateField | IDocumentField) => {
+  const id = getFieldId(field);
+  const existingField = document.getElementById(id) as any;
+  if (existingField) {
+    console.log('Found existing field', existingField);
+    existingField.field = field;
+    existingField.setAttribute('id', id); // We need this to trigger a re-render
+    existingField.setAttribute('disabled', true); // We need this to trigger a re-render
+    existingField.setAttribute('disabled', false); // We need this to trigger a re-render
+  }
+};
+
 export const renderDocumentField = (field: ITemplateField | IDocumentField, docPage: IDocumentPageInfo, roleIndex: number, fieldOptions: IFieldOptions) => {
   const {disabled = false, editable = false, draggable = false, done = false} = fieldOptions;
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
