@@ -211,7 +211,6 @@ export class VerdocsSign {
   }
 
   async handleFieldChange(field: IDocumentField, e: any) {
-    console.log('fieldChange', field, e, e.target.value);
     const {value, checked} = e.target;
 
     switch (field.type) {
@@ -364,11 +363,12 @@ export class VerdocsSign {
 
   // See if everything that "needs to be" filled in is, and all "fillable fields" are valid
   checkRecipientFields() {
-    const someFieldsInvalid = this.recipient.fields.map(field => this.isFieldValid(field)).some(fieldValid => !fieldValid);
-    if (!someFieldsInvalid) {
+    const invalidFields = this.recipient.fields.filter(field => !this.isFieldValid(field));
+    if (invalidFields.length < 1) {
       this.nextButtonLabel = 'Finish';
       this.nextSubmits = true;
     } else {
+      console.log('[SIGN] Remaining invalid fields', invalidFields);
       this.nextSubmits = false;
     }
   }
@@ -469,11 +469,7 @@ export class VerdocsSign {
 
     return (
       <Host class={{agreed: this.recipient?.agreed}}>
-        {!this.isDone && !this.finishLater && (
-          <div class="intro">
-            <div class="inner">Please review and act on these documents.</div>
-          </div>
-        )}
+        {!this.isDone && !this.finishLater && <div class="intro">Please review and act on these documents.</div>}
 
         <div class="header">
           {!this.isDone && !this.finishLater && <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />}
