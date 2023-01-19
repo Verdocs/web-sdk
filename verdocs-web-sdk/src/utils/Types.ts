@@ -8,6 +8,7 @@ export interface IDocumentPageInfo {
   renderedHeight: number;
   naturalWidth: number;
   naturalHeight: number;
+  aspectRatio: number;
   xScale: number;
   yScale: number;
 }

@@ -22,10 +22,6 @@ import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 export namespace Components {
     interface VerdocsAuth {
         /**
-          * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
-         */
-        "debug": boolean;
-        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
@@ -1234,10 +1230,6 @@ declare global {
 }
 declare namespace LocalJSX {
     interface VerdocsAuth {
-        /**
-          * If the user is authenticated, this embed will normally render invisibly. If debug is set true, a summary if the user's session details will be displayed instead. This may be useful while debugging authentication flows in new applications.
-         */
-        "debug"?: boolean;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */

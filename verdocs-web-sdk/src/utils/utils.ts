@@ -264,3 +264,14 @@ export const savePDF = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, do
   xhr.open('GET', `data:application/pdf;base64,${data}`);
   xhr.send();
 };
+
+/**
+ * Throttle a given function by a delay value. Useful for things like resizeObserver.
+ */
+export const throttle = (f, delay) => {
+  let timer: any = 0;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => f.apply(this, args), delay);
+  };
+};

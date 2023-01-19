@@ -365,7 +365,6 @@ export class VerdocsSign {
   // See if everything that "needs to be" filled in is, and all "fillable fields" are valid
   checkRecipientFields() {
     const someFieldsInvalid = this.recipient.fields.map(field => this.isFieldValid(field)).some(fieldValid => !fieldValid);
-    console.log({someFieldsInvalid});
     if (!someFieldsInvalid) {
       this.nextButtonLabel = 'Finish';
       this.nextSubmits = true;
@@ -389,11 +388,10 @@ export class VerdocsSign {
     const pageInfo = e.detail as IDocumentPageInfo;
     const roleIndex = getRoleIndex(EnvelopeStore.roleNames, this.recipient.role_name);
     const recipientFields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
-    console.log('[SIGN] Page rendered, adding fields', {pageInfo, roleIndex, recipientFields});
+    console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
 
     recipientFields.forEach(field => {
       const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: false, editable: false, draggable: false, done: this.isDone});
-      console.log('rendered', el);
       if (!el) {
         return;
       }

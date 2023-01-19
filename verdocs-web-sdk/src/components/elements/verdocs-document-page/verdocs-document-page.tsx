@@ -2,6 +2,7 @@
 
 import {Component, h, Host, Prop, Event, EventEmitter, State, Element} from '@stencil/core';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
+import {throttle} from '../../../utils/utils';
 
 /**
  * Represents one document page. This is primarily a layout container used to coordinate positions of
@@ -70,15 +71,17 @@ export class VerdocsDocumentPage {
   @State() skipFirstNotification = true;
 
   componentDidLoad(): void {
-    this.resizeObserver = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        const renderedWidth = entry.contentRect.width;
-        this.renderedWidth = renderedWidth;
-        this.renderedHeight = this.virtualHeight * (renderedWidth / this.virtualWidth);
-      }
+    this.resizeObserver = new ResizeObserver(
+      throttle(entries => {
+        for (const entry of entries) {
+          const renderedWidth = entry.contentRect.width;
+          this.renderedWidth = renderedWidth;
+          this.renderedHeight = this.virtualHeight * (renderedWidth / this.virtualWidth);
+        }
 
-      this.notifyRenderedSize();
-    });
+        this.notifyRenderedSize();
+      }, 100),
+    );
 
     this.resizeObserver.observe(this.container);
   }
@@ -101,7 +104,6 @@ export class VerdocsDocumentPage {
       return;
     }
 
-    console.log('Notyfing new size');
     this.pageRendered.emit({
       container: this.container,
       containerId: this.containerId,
@@ -112,8 +114,9 @@ export class VerdocsDocumentPage {
       renderedHeight: this.renderedHeight,
       naturalWidth: this.naturalWidth,
       naturalHeight: this.naturalHeight,
-      xScale: this.renderedWidth / this.naturalWidth,
-      yScale: this.renderedHeight / this.naturalHeight,
+      aspectRatio: this.aspectRatio,
+      xScale: this.renderedWidth / this.virtualWidth,
+      yScale: this.renderedHeight / this.virtualHeight,
     });
   }
 
@@ -133,9 +136,17 @@ export class VerdocsDocumentPage {
               alt={`Page ${this.pageNumber}`}
               aria-hidden={true}
               onLoad={(e: any) => {
+                // Note that all we really care about is the aspect ratio. We track the natural Width and Height but they aren't really that
+                // useful as individual values. The image will already have been scaled down to fit a DIV for display (100%, auto height).
+                // Builder places fields offset into the rendered display area, not the original document's dimensions. So its X/Y values
+                // for a field are based on the responsive Web view the Template editor was seeing. The IMG was scaled down there in the
+                // exact same way, so we just honor it. We capture the natural width and height here more as information. Then we use the
+                // aspect ratio to adjust the "virtual" height in case the page is not 8.5"x11".
+                // TODO: Store this in the DB with each page.
                 this.naturalWidth = e.target.naturalWidth;
                 this.naturalHeight = e.target.naturalHeight;
                 this.aspectRatio = this.naturalWidth / this.naturalHeight;
+                this.virtualHeight = this.virtualWidth / this.aspectRatio;
               }}
             />
           ),

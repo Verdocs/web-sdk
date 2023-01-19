@@ -10,7 +10,12 @@ verdocs-sign {
   font-family: $verdocs-primary-font;
 
   div {
+    display: block;
     box-sizing: border-box;
+  }
+
+  input {
+    vertical-align: top;
   }
 
   .header {
