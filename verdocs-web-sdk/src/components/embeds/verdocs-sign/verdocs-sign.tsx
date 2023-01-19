@@ -476,35 +476,27 @@ export class VerdocsSign {
         )}
 
         <div class="header">
-          <div class="inner">
-            <div class="toolbar">
-              <div class="tools">
-                {!this.isDone && !this.finishLater && <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />}
+          {!this.isDone && !this.finishLater && <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />}
 
-                {!this.recipient?.agreed ? (
-                  <div class="agree">
-                    <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
-                  </div>
-                ) : (
-                  <Fragment>
-                    <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-                    <div class="title">{EnvelopeStore.envelope.name}</div>
-                    <div style={{flex: '1'}} />
-                    <div innerHTML={PrintIcon} style={{width: '24px', height: '24px', fill: '#ffffff', cursor: 'pointer'}} onClick={() => window.print()} />
-                    <div
-                      innerHTML={DownloadIcon}
-                      style={{width: '24px', height: '24px', fill: '#ffffff', cursor: 'pointer', marginLeft: '16px', maginRight: '30px'}}
-                      onClick={() => savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(() => {})}
-                    />
-                  </Fragment>
-                )}
-
-                {!this.isDone && !this.finishLater && (
-                  <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />
-                )}
-              </div>
+          {!this.recipient?.agreed ? (
+            <div class="agree">
+              <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
             </div>
-          </div>
+          ) : (
+            <Fragment>
+              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+              <div class="title">{EnvelopeStore.envelope.name}</div>
+              <div style={{flex: '1'}} />
+              <div innerHTML={PrintIcon} style={{width: '24px', height: '24px', fill: '#ffffff', cursor: 'pointer'}} onClick={() => window.print()} />
+              <div
+                innerHTML={DownloadIcon}
+                style={{width: '24px', height: '24px', fill: '#ffffff', cursor: 'pointer', margin: '0 16px', maginRight: '30px'}}
+                onClick={() => savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(() => {})}
+              />
+            </Fragment>
+          )}
+
+          {!this.isDone && !this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />}
         </div>
 
         {!this.isDone && !this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}

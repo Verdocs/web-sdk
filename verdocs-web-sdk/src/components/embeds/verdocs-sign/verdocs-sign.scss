@@ -19,18 +19,29 @@ verdocs-sign {
   }
 
   .header {
-    flex: 0;
+    color: #fff;
     display: flex;
     z-index: 1000;
+    flex: 0 0 56px;
+    padding: 0 15px;
+    font-size: 12px;
     align-items: center;
+    flex-direction: row;
     transition: all 0.25s;
-    justify-content: center;
     background-color: $medium-bg;
     box-shadow: 0 4px 4px 0 rgb(0 0 0 / 24%), 0 0 4px 0 rgb(0 0 0 / 12%);
 
-    .inner {
-      width: 100%;
-      max-width: 1028px;
+    .logo {
+      width: 80px;
+      margin: -6px 0 0 10px;
+    }
+
+    .title {
+      padding-left: 16px;
+      font-size: 18px;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 
@@ -51,43 +62,6 @@ verdocs-sign {
       font-weight: 500;
       line-height: 28px;
       max-width: 1024px;
-    }
-  }
-
-  &.agreed {
-    .intro {
-      //display: none;
-    }
-  }
-
-  .toolbar {
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 14px;
-    position: relative;
-  }
-
-  .tools {
-    width: 100%;
-    color: #fff;
-    height: 56px;
-    display: flex;
-    font-size: 12px;
-    align-items: center;
-    flex-direction: row;
-    background-color: $medium-bg;
-
-    .logo {
-      width: 77.5px;
-      margin: -6px 0 0 5px;
-    }
-
-    .title {
-      padding-left: 16px;
-      font-size: 18px;
-      font-weight: 500;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
   }
 
