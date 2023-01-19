@@ -471,56 +471,63 @@ export class VerdocsSign {
       <Host class={{agreed: this.recipient?.agreed}}>
         {!this.isDone && !this.finishLater && <div class="intro">Please review and act on these documents.</div>}
 
-        <div class="header">
-          {!this.isDone && !this.finishLater && <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />}
+        {!this.isDone && (
+          <div class="header">
+            {!this.isDone && !this.finishLater && <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />}
 
-          {!this.recipient?.agreed ? (
-            <div class="agree">
-              <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
-            </div>
-          ) : (
-            <Fragment>
-              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-              <div class="title">{EnvelopeStore.envelope.name}</div>
-              <div style={{flex: '1'}} />
-              <div innerHTML={PrintIcon} style={{width: '24px', height: '24px', fill: '#ffffff', cursor: 'pointer'}} onClick={() => window.print()} />
-              <div
-                innerHTML={DownloadIcon}
-                style={{width: '24px', height: '24px', fill: '#ffffff', cursor: 'pointer', margin: '0 16px', maginRight: '30px'}}
-                onClick={() => savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(() => {})}
-              />
-            </Fragment>
-          )}
+            {!this.recipient?.agreed ? (
+              <div class="agree">
+                <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
+              </div>
+            ) : (
+              <Fragment>
+                <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+                <div class="title">{EnvelopeStore.envelope.name}</div>
+                <div style={{flex: '1'}} />
+                <div innerHTML={PrintIcon} style={{width: '24px', height: '24px', fill: '#fff', cursor: 'pointer'}} onClick={() => window.print()} />
+                <div
+                  innerHTML={DownloadIcon}
+                  style={{width: '24px', height: '24px', fill: '#fff', cursor: 'pointer', margin: '0 16px', maginRight: '30px'}}
+                  onClick={() => savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(() => {})}
+                />
+              </Fragment>
+            )}
 
-          {!this.isDone && !this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />}
-        </div>
+            {!this.isDone && !this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />}
+          </div>
+        )}
 
         {!this.isDone && !this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
-        <div class="document">
-          {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
-            const pages = [...(envelopeDocument?.pages || [])];
-            pages.sort((a, b) => a.sequence - b.sequence);
+        {this.isDone ? (
+          // <div>test</div>
+          <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
+        ) : (
+          <div class="document">
+            {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
+              const pages = [...(envelopeDocument?.pages || [])];
+              pages.sort((a, b) => a.sequence - b.sequence);
 
-            return (
-              <Fragment>
-                {pages.map(page => (
-                  <verdocs-document-page
-                    pageImageUri={page.display_uri}
-                    virtualWidth={612}
-                    virtualHeight={792}
-                    pageNumber={page.sequence}
-                    onPageRendered={e => this.handlePageRendered(e)}
-                    layers={[
-                      {name: 'page', type: 'canvas'},
-                      {name: 'controls', type: 'div'},
-                    ]}
-                  />
-                ))}
-              </Fragment>
-            );
-          })}
-        </div>
+              return (
+                <Fragment>
+                  {pages.map(page => (
+                    <verdocs-document-page
+                      pageImageUri={page.display_uri}
+                      virtualWidth={612}
+                      virtualHeight={792}
+                      pageNumber={page.sequence}
+                      onPageRendered={e => this.handlePageRendered(e)}
+                      layers={[
+                        {name: 'page', type: 'canvas'},
+                        {name: 'controls', type: 'div'},
+                      ]}
+                    />
+                  ))}
+                </Fragment>
+              );
+            })}
+          </div>
+        )}
 
         {this.showFinishLater && (
           <verdocs-ok-dialog

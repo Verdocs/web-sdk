@@ -12,6 +12,10 @@ verdocs-field-radio-button {
   transform-origin: bottom left;
   border-radius: 100%;
 
+  svg {
+    margin-top: 4px;
+  }
+
   &.disabled {
     opacity: 0.5;
   }
