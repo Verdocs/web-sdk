@@ -75,8 +75,6 @@ export class VerdocsSign {
 
   @State() recipient: IRecipient | null = null;
   @State() signerToken = null;
-  // @State() envelope: IEnvelope | null = null;
-  // @State() fields: IDocumentField[] = [];
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
   @State() nextSubmits = false;
@@ -87,9 +85,9 @@ export class VerdocsSign {
 
   @State() finishLater = false;
   @State() showFinishLater = false;
+  @State() agreed = false;
 
   recipientIndex: number = -1;
-  fields: IDocumentField[] = [];
 
   componentWillLoad() {
     this.endpoint = new VerdocsEndpoint({sessionType: 'signing'});
@@ -126,7 +124,7 @@ export class VerdocsSign {
       this.signerToken = signerToken;
       this.endpoint.setToken(signerToken);
 
-      if (this.recipient.agreed) {
+      if (this.agreed) {
         this.nextButtonLabel = 'Next';
       }
 
@@ -135,8 +133,8 @@ export class VerdocsSign {
       this.recipientIndex = EnvelopeStore.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
       if (this.recipientIndex > -1) {
         this.recipient = EnvelopeStore.envelope.recipients[this.recipientIndex];
-        this.fields = this.recipient.fields;
-        console.log('[SIGN] Found our recipient in the envelope', this.recipientIndex, this.recipient, this.fields);
+        this.agreed = this.recipient.agreed;
+        console.log('[SIGN] Found our recipient in the envelope', this.recipientIndex, this.recipient);
       } else {
         console.log('[SIGN] Could not find our recipient record', this.roleId, EnvelopeStore.envelope.recipients);
       }
@@ -156,9 +154,9 @@ export class VerdocsSign {
 
   handleClickAgree() {
     envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, true)
-      .then(r => {
+      .then(() => {
         this.nextButtonLabel = 'Next';
-        this.recipient = r;
+        this.agreed = true; // The server returns a recipient object but it's not "deep" so we track this locally
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'agreed'});
       })
       .catch(e => {
@@ -173,11 +171,9 @@ export class VerdocsSign {
         this.finishLater = true;
         this.showFinishLater = true;
         // this.router.navigate([`view/sign/${this.envelopeId}/role/${this.roleName}/saved`]);
-        // if (!window?.['STORYBOOK_ENV']) {
-        //   window.alert('User intends to sign later.');
-        // }
         break;
       case 'claim':
+        window.alert('This feature will be available in an upcoming release.');
         break;
       case 'decline':
         {
@@ -198,7 +194,6 @@ export class VerdocsSign {
   updateRecipientFieldValue(fieldName: string, updateResult: any) {
     this.recipient.fields.forEach(oldField => {
       if (oldField.name === fieldName) {
-        console.log('New settings', fieldName, updateResult.settings);
         oldField.settings = updateResult.settings;
         // TODO: When we break out other fields like value, update them here too
         updateDocumentFieldValue(oldField);
@@ -290,7 +285,6 @@ export class VerdocsSign {
 
       case 'signature':
       case 'initial':
-        console.log('Evaluating initial field', field);
         return !required || base64 !== '';
 
       // Timestamp fields get automatically filled when the envelope is submitted.
@@ -336,7 +330,7 @@ export class VerdocsSign {
     }
 
     // Find and focus the next incomplete required field
-    const requiredFields = this.fields.filter(field => field.required);
+    const requiredFields = this.recipient.fields.filter(field => field.required);
     const focusedIndex = requiredFields.findIndex(field => field.name === this.focusedField);
 
     let nextFocusedIndex = focusedIndex + 1;
@@ -494,14 +488,14 @@ export class VerdocsSign {
     ];
 
     return (
-      <Host class={{agreed: this.recipient?.agreed}}>
+      <Host class={{agreed: this.agreed}}>
         {!this.isDone && !this.finishLater && <div class="intro">Please review and act on these documents.</div>}
 
         {!this.isDone && (
           <div class="header">
             {!this.isDone && !this.finishLater && <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />}
 
-            {!this.recipient?.agreed ? (
+            {!this.agreed ? (
               <div class="agree">
                 <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
               </div>
@@ -519,11 +513,11 @@ export class VerdocsSign {
               </Fragment>
             )}
 
-            {!this.isDone && !this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.recipient?.agreed} onClick={() => this.handleNext()} />}
+            {!this.isDone && !this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
           </div>
         )}
 
-        {!this.isDone && !this.recipient?.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
+        {!this.isDone && !this.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
         {this.isDone ? (
           // <div>test</div>

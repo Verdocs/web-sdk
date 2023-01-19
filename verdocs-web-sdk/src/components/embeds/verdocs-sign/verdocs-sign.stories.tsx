@@ -5,10 +5,9 @@ export default {
   title: 'Embeds/Sign',
   component: 'verdocs-sign',
   args: {
-    // https://verdocs.com/view/sign/42158c4b-8520-4e30-bbcc-65cd4590cdde/roleName/Seller/invitation/50d97f77ace9d8c87e2e9c40d2bd10fd
-    envelopeId: '42158c4b-8520-4e30-bbcc-65cd4590cdde',
+    envelopeId: 'b4a03f7e-8a2b-4752-ac65-621114a1f878',
     roleId: 'Seller',
-    inviteCode: '50d97f77ace9d8c87e2e9c40d2bd10fd',
+    inviteCode: 'e4bee24c3d2795f340ceeb53f6fefc1a',
   },
   argTypes: {},
   parameters: {

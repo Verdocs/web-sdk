@@ -91,7 +91,6 @@ export const updateDocumentFieldValue = (field: ITemplateField | IDocumentField)
   const id = getFieldId(field);
   const existingField = document.getElementById(id) as any;
   if (existingField) {
-    console.log('Found existing field', existingField);
     existingField.field = field;
     existingField.setAttribute('id', id); // We need this to trigger a re-render
     existingField.setAttribute('disabled', true); // We need this to trigger a re-render
