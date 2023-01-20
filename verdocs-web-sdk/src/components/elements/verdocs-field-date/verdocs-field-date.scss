@@ -859,3 +859,8 @@ span.flatpickr-weekday {
     transform: translate3d(0, 0, 0);
   }
 }
+
+// Overrides to fix things that don't always carry through other style resets
+.flatpickr-calendar div {
+  flex-direction: row;
+}

@@ -2,11 +2,8 @@
 // resolve. This needs to export a single default value of the store's state. Any helper functions should go in Templates.ts here.
 
 import {createStore} from '@stencil/store';
+import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-// import {VerdocsEndpoint} from '@verdocs/js-sdk';
-// import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
-import {integerSequence} from './utils';
-// import {getPageImage} from '@verdocs/js-sdk/Templates/Pages';
 
 const {state, onChange} = createStore({
   template: null as ITemplate | null,

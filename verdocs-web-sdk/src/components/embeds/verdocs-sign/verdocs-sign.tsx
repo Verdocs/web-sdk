@@ -2,20 +2,34 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
 import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
-import {IDocumentField, IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
-import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
+import {fullNameToInitials} from '@verdocs/js-sdk/Utils/Primitives';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
+import {IDocumentField, IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import {fullNameToInitials, getFieldId, getRoleIndex, renderDocumentField, savePDF, updateDocumentFieldValue} from '../../../utils/utils';
+import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
+import {getFieldId, getRoleIndex, renderDocumentField, savePDF, updateDocumentFieldValue} from '../../../utils/utils';
 import {getEnvelopeById} from '../../../utils/Envelopes';
 import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
-const PrintIcon = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"></path></svg>`;
+// const PrintIcon = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"></path></svg>`;
+//
+// const DownloadIcon = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"></path></svg>`;
 
-const DownloadIcon = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"></path></svg>`;
+const inProgressMenuOptions = [
+  {id: 'later', label: 'Finish Later'}, //
+  // {id: 'claim', label: 'Claim the Document', disabled: true},
+  {id: 'decline', label: 'Decline to Sign'},
+  {id: 'print', label: 'Print Without Signing'},
+  {id: 'download', label: 'Download'},
+];
+
+const doneMenuOptions = [
+  {id: 'print', label: 'Print'},
+  {id: 'download', label: 'Download'},
+];
 
 /**
  * Display an envelope signing experience. This will display the envelope's attached
@@ -186,7 +200,9 @@ export class VerdocsSign {
         window.print();
         break;
       case 'download':
-        savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(() => {});
+        savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(e => {
+          console.log('Error downloading PDF', e);
+        });
         break;
     }
   }
@@ -210,7 +226,7 @@ export class VerdocsSign {
         if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
           // TODO: Do we want to improve the instructions here?
           console.log('[SIGN] Signing session expired');
-          this.errorMessage = 'Signing session expired.';
+          this.errorMessage = 'Signing session expired. Please reload your browser to continue.';
         } else {
           console.log('[SIGN] Server error', e);
         }
@@ -377,8 +393,8 @@ export class VerdocsSign {
   }
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
-    el.addEventListener('input', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
-    el.addEventListener('blur', () => this.checkRecipientFields());
+    el.addEventListener('input', () => this.checkRecipientFields());
+    el.addEventListener('focusout', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
     el.addEventListener('fieldChange', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
 
     el.setAttribute('roleindex', roleIndex);
@@ -479,22 +495,12 @@ export class VerdocsSign {
       );
     }
 
-    const menuOptions = [
-      {id: 'later', label: 'Finish Later'}, //
-      // {id: 'claim', label: 'Claim the Document', disabled: true},
-      {id: 'decline', label: 'Decline to Sign'},
-      {id: 'print', label: 'Print Without Signing', disabled: true},
-      {id: 'download', label: 'Download'},
-    ];
-
     return (
       <Host class={{agreed: this.agreed}}>
         {!this.isDone && !this.finishLater && <div class="intro">Please review and act on these documents.</div>}
 
         {!this.isDone && (
           <div class="header">
-            {!this.isDone && !this.finishLater && <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />}
-
             {!this.agreed ? (
               <div class="agree">
                 <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
@@ -504,16 +510,13 @@ export class VerdocsSign {
                 <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
                 <div class="title">{EnvelopeStore.envelope.name}</div>
                 <div style={{flex: '1'}} />
-                <div innerHTML={PrintIcon} style={{width: '24px', height: '24px', fill: '#fff', cursor: 'pointer'}} onClick={() => window.print()} />
-                <div
-                  innerHTML={DownloadIcon}
-                  style={{width: '24px', height: '24px', fill: '#fff', cursor: 'pointer', margin: '0 16px', maginRight: '30px'}}
-                  onClick={() => savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(() => {})}
-                />
               </Fragment>
             )}
 
             {!this.isDone && !this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
+
+            <div style={{marginLeft: '10px'}} />
+            <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
           </div>
         )}
 
