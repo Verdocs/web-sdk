@@ -15,7 +15,7 @@
     "preserveConstEnums": true,
     "resolveJsonModule": true,
     "stripInternal": true,
-    "sourceMap": true
+    "sourceMap": false
   },
   "include": ["src", "./typings.d.ts"],
   "typeRoots": ["node_modules/@types", "./typings.d.ts"],

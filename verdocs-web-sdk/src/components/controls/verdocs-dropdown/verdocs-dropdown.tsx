@@ -1,7 +1,8 @@
 import {Host} from '@stencil/core';
 import {createPopper, Instance} from '@popperjs/core';
 import {Component, Prop, Element, State, h, Event, EventEmitter} from '@stencil/core';
-import SortDown from './down-arrow.svg';
+
+const DropdownArrow = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#50BE80"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M7 10l5 5 5-5H7z"/></svg>`;
 
 export interface IMenuOption {
   label: string;
@@ -128,7 +129,7 @@ export class VerdocsDropdown {
       <Host class={{open: !!this.open}}>
         <button
           class="arrow"
-          innerHTML={SortDown}
+          innerHTML={DropdownArrow}
           aria-label="Open Menu"
           onClick={e => this.toggleDropdown(e)}
           onBlur={e => this.handleHideDropdown(e)}

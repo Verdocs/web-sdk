@@ -14,10 +14,6 @@ import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
-// const PrintIcon = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"></path></svg>`;
-//
-// const DownloadIcon = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"></path></svg>`;
-
 const inProgressMenuOptions = [
   {id: 'later', label: 'Finish Later'}, //
   // {id: 'claim', label: 'Claim the Document', disabled: true},
@@ -100,6 +96,7 @@ export class VerdocsSign {
   @State() finishLater = false;
   @State() showFinishLater = false;
   @State() agreed = false;
+  @State() documentsSingularPlural = 'document';
 
   recipientIndex: number = -1;
 
@@ -143,6 +140,10 @@ export class VerdocsSign {
       }
 
       await getEnvelopeById(this.endpoint, this.envelopeId);
+
+      if (EnvelopeStore.envelope.documents.length > 0) {
+        this.documentsSingularPlural = 'document(s)';
+      }
 
       this.recipientIndex = EnvelopeStore.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
       if (this.recipientIndex > -1) {
@@ -565,7 +566,7 @@ export class VerdocsSign {
         {this.showFinishLater && (
           <verdocs-ok-dialog
             heading="You've saved your document to finish later."
-            message="To complete the document, use the link in the original email notification inviting you to review and finish the document."
+            message={`To complete the ${this.documentsSingularPlural}, use the link in the original email notification inviting you to review and finish the document.`}
             onNext={() => (this.showFinishLater = false)}
           />
         )}
@@ -574,7 +575,7 @@ export class VerdocsSign {
         {this.showDone && (
           <verdocs-ok-dialog
             heading="You're Done!"
-            message="You can access the Verdoc at any time by clicking on the link from the invitation email.<br /><br />After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached."
+            message={`You can access the ${this.documentsSingularPlural} at any time by clicking on the link from the invitation email.<br /><br />After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.`}
             onNext={() => (this.showDone = false)}
           />
         )}

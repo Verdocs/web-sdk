@@ -1,6 +1,5 @@
 import {sass} from '@stencil/sass';
 import {Config} from '@stencil/core';
-import {inlineSvg} from 'stencil-inline-svg';
 // import typescript from 'rollup-plugin-typescript2';
 // import nodePolyfills from 'rollup-plugin-node-polyfills';
 import {reactOutputTarget} from '@stencil/react-output-target';
@@ -19,15 +18,15 @@ export const config: Config = {
   namespace: 'verdocs-web-sdk',
   buildEs5: true,
   commonjs: {},
-  sourceMap: true,
+  sourceMap: false,
   devServer: {
     openBrowser: false,
   },
-  testing: {
-    transform: {
-      '^.+\\.svg$': 'jest-svg-transformer',
-    },
-  },
+  // testing: {
+  //   transform: {
+  //     '^.+\\.svg$': 'jest-svg-transformer',
+  //   },
+  // },
   rollupPlugins: {
     // before: [typescript()],
     // after: [nodePolyfills()],
@@ -76,5 +75,6 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  plugins: [inlineSvg(), sass()],
+  plugins: [sass()],
+  // plugins: [inlineSvg(), sass()],
 };

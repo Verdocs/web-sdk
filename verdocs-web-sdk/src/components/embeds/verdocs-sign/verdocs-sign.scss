@@ -33,6 +33,7 @@ verdocs-sign {
 
     .logo {
       width: 80px;
+      display: none;
       margin: -6px 0 0 10px;
     }
 
@@ -69,7 +70,7 @@ verdocs-sign {
     background: rgba(0, 0, 0, 0.5);
   }
 
-  .document {
+  > .document {
     flex: 1;
     height: 100%;
     display: flex;

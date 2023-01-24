@@ -15,41 +15,22 @@ verdocs-view {
   }
 
   .header {
-    flex: 0;
+    color: #fff;
     display: flex;
     z-index: 1000;
-    align-items: center;
-    transition: all 0.25s;
-    justify-content: center;
-    background-color: $medium-bg;
-    box-shadow: 0 4px 4px 0 rgb(0 0 0 / 24%), 0 0 4px 0 rgb(0 0 0 / 12%);
-
-    .inner {
-      width: 100%;
-      max-width: 1028px;
-    }
-  }
-
-  .toolbar {
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 14px;
-    position: relative;
-  }
-
-  .tools {
-    width: 100%;
-    color: #fff;
-    height: 56px;
-    display: flex;
+    flex: 0 0 56px;
+    padding: 0 15px;
     font-size: 12px;
     align-items: center;
     flex-direction: row;
+    transition: all 0.25s;
     background-color: $medium-bg;
+    box-shadow: 0 4px 4px 0 rgb(0 0 0 / 24%), 0 0 4px 0 rgb(0 0 0 / 12%);
 
     .logo {
-      width: 77.5px;
-      margin: -6px 0 0 5px;
+      width: 80px;
+      display: none;
+      margin: -6px 0 0 10px;
     }
 
     .title {

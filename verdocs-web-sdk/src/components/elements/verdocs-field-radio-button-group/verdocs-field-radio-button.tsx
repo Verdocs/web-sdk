@@ -46,6 +46,7 @@ export class VerdocsFieldRadioButton {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
+    const required = this.field.required;
     const option = settings.options[this.option];
     const id = `${this.field.name}-${option.id}`;
 
@@ -58,7 +59,7 @@ export class VerdocsFieldRadioButton {
     }
 
     return (
-      <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
+      <Host class={{required, disabled}} style={{backgroundColor}}>
         <input
           id={id}
           type="radio"

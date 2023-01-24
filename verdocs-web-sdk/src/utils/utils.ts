@@ -147,7 +147,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         const id = getFieldOptionId(field, checkboxIndex);
         const existingField = document.getElementById(id);
         if (existingField) {
-          setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
+          setControlStyles(existingField, field, docPage.xScale, docPage.yScale, checkboxIndex);
           return existingField;
         }
 
@@ -173,7 +173,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         const id = getFieldOptionId(field, buttonIndex);
         const existingField = document.getElementById(id);
         if (existingField) {
-          setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
+          setControlStyles(existingField, field, docPage.xScale, docPage.yScale, buttonIndex);
           return existingField;
         }
 
