@@ -17,7 +17,9 @@ export const defaultWidth = (field: ITemplateField | IDocumentField) => {
       return 14;
     case 'signature':
     case 'initial':
-      return 82;
+      // TODO: Review this. 71 seems to line up better with the final render.
+      return 71;
+      // return 82;
   }
 
   return 150;
@@ -34,7 +36,9 @@ export const defaultHeight = (field: ITemplateField | IDocumentField) => {
       return 14;
     case 'signature':
     case 'initial':
-      return 41;
+      // TODO: Review this. 71 seems to line up better with the final render.
+      return 36;
+      // return 41;
   }
 
   return 50;

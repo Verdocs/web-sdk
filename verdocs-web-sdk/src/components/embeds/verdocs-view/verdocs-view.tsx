@@ -59,7 +59,23 @@ export class VerdocsView {
 
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    console.log('[SIGN] Page rendered', pageInfo);
+    console.log('[VIEW] Page rendered', pageInfo);
+
+    // EnvelopeStore.envelope.recipients.forEach((recipient, roleIndex) => {
+    //   console.log('rendering fields for recipient', roleIndex, recipient);
+    //   recipient.fields.forEach(field => {
+    //     const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: false, draggable: false, done: true});
+    //     if (!el) {
+    //       return;
+    //     }
+    //
+    //     if (el.setAttribute) {
+    //       el.setAttribute('roleindex', roleIndex);
+    //       el.setAttribute('xScale', pageInfo.xScale);
+    //       el.setAttribute('yScale', pageInfo.yScale);
+    //     }
+    //   });
+    // });
   }
 
   async handleOptionSelected(e) {

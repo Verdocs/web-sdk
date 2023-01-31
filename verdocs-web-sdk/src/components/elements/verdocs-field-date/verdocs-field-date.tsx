@@ -89,8 +89,7 @@ export class VerdocsFieldDate {
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
-      const dt = new Date(settings?.result);
-      const formatted = format(dt, 'MMM d, y');
+      const formatted = settings?.result ? format(new Date(settings?.result), 'MMM d, y') : '';
 
       return <Host class={{done: this.done}}>{formatted}</Host>;
     }
