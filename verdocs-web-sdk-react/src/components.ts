@@ -16,6 +16,7 @@ export const VerdocsCheckbox = /*@__PURE__*/createReactComponent<JSX.VerdocsChec
 export const VerdocsContactPicker = /*@__PURE__*/createReactComponent<JSX.VerdocsContactPicker, HTMLVerdocsContactPickerElement>('verdocs-contact-picker');
 export const VerdocsDocumentPage = /*@__PURE__*/createReactComponent<JSX.VerdocsDocumentPage, HTMLVerdocsDocumentPageElement>('verdocs-document-page');
 export const VerdocsDropdown = /*@__PURE__*/createReactComponent<JSX.VerdocsDropdown, HTMLVerdocsDropdownElement>('verdocs-dropdown');
+export const VerdocsEnvelopeSidebar = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopeSidebar, HTMLVerdocsEnvelopeSidebarElement>('verdocs-envelope-sidebar');
 export const VerdocsFieldAttachment = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldAttachment, HTMLVerdocsFieldAttachmentElement>('verdocs-field-attachment');
 export const VerdocsFieldCheckbox = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldCheckbox, HTMLVerdocsFieldCheckboxElement>('verdocs-field-checkbox');
 export const VerdocsFieldDate = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldDate, HTMLVerdocsFieldDateElement>('verdocs-field-date');

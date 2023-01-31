@@ -148,6 +148,16 @@ export namespace Components {
          */
         "options": IMenuOption[];
     }
+    interface VerdocsEnvelopeSidebar {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+         */
+        "envelopeId": string;
+    }
     interface VerdocsFieldAttachment {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -778,6 +788,10 @@ export interface VerdocsDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDropdownElement;
 }
+export interface VerdocsEnvelopeSidebarCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsEnvelopeSidebarElement;
+}
 export interface VerdocsFieldDateCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldDateElement;
@@ -922,6 +936,12 @@ declare global {
     var HTMLVerdocsDropdownElement: {
         prototype: HTMLVerdocsDropdownElement;
         new (): HTMLVerdocsDropdownElement;
+    };
+    interface HTMLVerdocsEnvelopeSidebarElement extends Components.VerdocsEnvelopeSidebar, HTMLStencilElement {
+    }
+    var HTMLVerdocsEnvelopeSidebarElement: {
+        prototype: HTMLVerdocsEnvelopeSidebarElement;
+        new (): HTMLVerdocsEnvelopeSidebarElement;
     };
     interface HTMLVerdocsFieldAttachmentElement extends Components.VerdocsFieldAttachment, HTMLStencilElement {
     }
@@ -1184,6 +1204,7 @@ declare global {
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
         "verdocs-document-page": HTMLVerdocsDocumentPageElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
+        "verdocs-envelope-sidebar": HTMLVerdocsEnvelopeSidebarElement;
         "verdocs-field-attachment": HTMLVerdocsFieldAttachmentElement;
         "verdocs-field-checkbox": HTMLVerdocsFieldCheckboxElement;
         "verdocs-field-date": HTMLVerdocsFieldDateElement;
@@ -1388,6 +1409,20 @@ declare namespace LocalJSX {
           * The menu options to display.
          */
         "options"?: IMenuOption[];
+    }
+    interface VerdocsEnvelopeSidebar {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+         */
+        "envelopeId"?: string;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsEnvelopeSidebarCustomEvent<SDKError>) => void;
     }
     interface VerdocsFieldAttachment {
         /**
@@ -2192,6 +2227,7 @@ declare namespace LocalJSX {
         "verdocs-contact-picker": VerdocsContactPicker;
         "verdocs-document-page": VerdocsDocumentPage;
         "verdocs-dropdown": VerdocsDropdown;
+        "verdocs-envelope-sidebar": VerdocsEnvelopeSidebar;
         "verdocs-field-attachment": VerdocsFieldAttachment;
         "verdocs-field-checkbox": VerdocsFieldCheckbox;
         "verdocs-field-date": VerdocsFieldDate;
@@ -2248,6 +2284,7 @@ declare module "@stencil/core" {
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
             "verdocs-document-page": LocalJSX.VerdocsDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsDocumentPageElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
+            "verdocs-envelope-sidebar": LocalJSX.VerdocsEnvelopeSidebar & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeSidebarElement>;
             "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
             "verdocs-field-checkbox": LocalJSX.VerdocsFieldCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;
             "verdocs-field-date": LocalJSX.VerdocsFieldDate & JSXBase.HTMLAttributes<HTMLVerdocsFieldDateElement>;

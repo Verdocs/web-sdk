@@ -80,6 +80,7 @@ export class VerdocsDropdown {
   // What we're doing here is clearing event listeners when they aren't needed, to increase performance in lists
   showDropdown() {
     // this.isOpen = true;
+    this.open = true;
     this.dropdownMenu.setAttribute('data-show', '');
     this.dropdownMenu.removeAttribute('aria-hidden');
 

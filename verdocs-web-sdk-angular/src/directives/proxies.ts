@@ -242,6 +242,37 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
 
 
 @ProxyCmp({
+  inputs: ['endpoint', 'envelopeId']
+})
+@Component({
+  selector: 'verdocs-envelope-sidebar',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'envelopeId'],
+})
+export class VerdocsEnvelopeSidebar {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsEnvelopeSidebarSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsEnvelopeSidebar extends Components.VerdocsEnvelopeSidebar {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsEnvelopeSidebarSDKError>>;
+}
+
+
+@ProxyCmp({
   inputs: ['disabled', 'field', 'roleIndex'],
   methods: ['focusField']
 })
