@@ -151,4 +151,42 @@ verdocs-envelope-sidebar {
 
   .recipient-name {
   }
+
+  .history-entry {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    padding: 8px 0 0;
+    margin: 8px 0 0;
+    border-top: 1px solid #dddddd;
+
+    .activity-icon {
+      margin-right: 14px;
+
+      svg {
+        width: 24px;
+        height: 24px;
+        fill: #ffffff;
+      }
+    }
+
+    .activity-details {
+    }
+
+    .activity-text {
+      font-size: 14px;
+      line-height: 16px;
+      margin-bottom: 4px;
+    }
+
+    .activity-date {
+      font-size: 12px;
+      line-height: 16px;
+      color: rgba(255, 255, 255, 0.54);
+    }
+  }
+
+  .content .history-entry:first-of-type {
+    border-top: none;
+  }
 }
