@@ -13,11 +13,13 @@ import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact 
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentField, IEnvelope, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
+import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1, IContactSelectEvent as IContactSelectEvent1, IEmailContact as IEmailContact1, IPhoneContact as IPhoneContact1 } from "./components/elements/verdocs-template-recipients/verdocs-template-recipients";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
+import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 export namespace Components {
     interface VerdocsAuth {
@@ -105,6 +107,12 @@ export namespace Components {
           * Value to track with the input. Value is not used internally by this component but is sometimes useful to set because it can be retrieved in event handlers via e.target.value. This can be used to identify which checkbox was clicked in a checkbox group.
          */
         "value": string;
+    }
+    interface VerdocsComponentError {
+        /**
+          * The message to display.
+         */
+        "message": string;
     }
     interface VerdocsContactPicker {
         /**
@@ -429,6 +437,12 @@ export namespace Components {
          */
         "roleindex"?: number;
     }
+    interface VerdocsFloatingMenu {
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "options": IOption[];
+    }
     interface VerdocsHelpIcon {
         /**
           * Help text to display on hover/focus
@@ -751,6 +765,10 @@ export namespace Components {
          */
         "icon": string;
         /**
+          * Override the Popper "placement" setting
+         */
+        "placement": Placement;
+        /**
           * Help text to display on hover/focus
          */
         "text": string;
@@ -815,6 +833,10 @@ export interface VerdocsFieldSignatureCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsFieldTextboxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldTextboxElement;
+}
+export interface VerdocsFloatingMenuCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFloatingMenuElement;
 }
 export interface VerdocsInitialDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -919,6 +941,12 @@ declare global {
         prototype: HTMLVerdocsCheckboxElement;
         new (): HTMLVerdocsCheckboxElement;
     };
+    interface HTMLVerdocsComponentErrorElement extends Components.VerdocsComponentError, HTMLStencilElement {
+    }
+    var HTMLVerdocsComponentErrorElement: {
+        prototype: HTMLVerdocsComponentErrorElement;
+        new (): HTMLVerdocsComponentErrorElement;
+    };
     interface HTMLVerdocsContactPickerElement extends Components.VerdocsContactPicker, HTMLStencilElement {
     }
     var HTMLVerdocsContactPickerElement: {
@@ -1008,6 +1036,12 @@ declare global {
     var HTMLVerdocsFieldTimestampElement: {
         prototype: HTMLVerdocsFieldTimestampElement;
         new (): HTMLVerdocsFieldTimestampElement;
+    };
+    interface HTMLVerdocsFloatingMenuElement extends Components.VerdocsFloatingMenu, HTMLStencilElement {
+    }
+    var HTMLVerdocsFloatingMenuElement: {
+        prototype: HTMLVerdocsFloatingMenuElement;
+        new (): HTMLVerdocsFloatingMenuElement;
     };
     interface HTMLVerdocsHelpIconElement extends Components.VerdocsHelpIcon, HTMLStencilElement {
     }
@@ -1201,6 +1235,7 @@ declare global {
         "verdocs-button": HTMLVerdocsButtonElement;
         "verdocs-button-panel": HTMLVerdocsButtonPanelElement;
         "verdocs-checkbox": HTMLVerdocsCheckboxElement;
+        "verdocs-component-error": HTMLVerdocsComponentErrorElement;
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
         "verdocs-document-page": HTMLVerdocsDocumentPageElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
@@ -1216,6 +1251,7 @@ declare global {
         "verdocs-field-textarea": HTMLVerdocsFieldTextareaElement;
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
         "verdocs-field-timestamp": HTMLVerdocsFieldTimestampElement;
+        "verdocs-floating-menu": HTMLVerdocsFloatingMenuElement;
         "verdocs-help-icon": HTMLVerdocsHelpIconElement;
         "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
         "verdocs-kba-dialog": HTMLVerdocsKbaDialogElement;
@@ -1347,6 +1383,12 @@ declare namespace LocalJSX {
           * Value to track with the input. Value is not used internally by this component but is sometimes useful to set because it can be retrieved in event handlers via e.target.value. This can be used to identify which checkbox was clicked in a checkbox group.
          */
         "value"?: string;
+    }
+    interface VerdocsComponentError {
+        /**
+          * The message to display.
+         */
+        "message"?: string;
     }
     interface VerdocsContactPicker {
         /**
@@ -1724,6 +1766,16 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+    }
+    interface VerdocsFloatingMenu {
+        /**
+          * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
+         */
+        "onOptionSelected"?: (event: VerdocsFloatingMenuCustomEvent<IOption>) => void;
+        /**
+          * The role that this contact will be assigned to.
+         */
+        "options"?: IOption[];
     }
     interface VerdocsHelpIcon {
         /**
@@ -2190,6 +2242,10 @@ declare namespace LocalJSX {
          */
         "icon"?: string;
         /**
+          * Override the Popper "placement" setting
+         */
+        "placement"?: Placement;
+        /**
           * Help text to display on hover/focus
          */
         "text"?: string;
@@ -2224,6 +2280,7 @@ declare namespace LocalJSX {
         "verdocs-button": VerdocsButton;
         "verdocs-button-panel": VerdocsButtonPanel;
         "verdocs-checkbox": VerdocsCheckbox;
+        "verdocs-component-error": VerdocsComponentError;
         "verdocs-contact-picker": VerdocsContactPicker;
         "verdocs-document-page": VerdocsDocumentPage;
         "verdocs-dropdown": VerdocsDropdown;
@@ -2239,6 +2296,7 @@ declare namespace LocalJSX {
         "verdocs-field-textarea": VerdocsFieldTextarea;
         "verdocs-field-textbox": VerdocsFieldTextbox;
         "verdocs-field-timestamp": VerdocsFieldTimestamp;
+        "verdocs-floating-menu": VerdocsFloatingMenu;
         "verdocs-help-icon": VerdocsHelpIcon;
         "verdocs-initial-dialog": VerdocsInitialDialog;
         "verdocs-kba-dialog": VerdocsKbaDialog;
@@ -2281,6 +2339,7 @@ declare module "@stencil/core" {
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
             "verdocs-button-panel": LocalJSX.VerdocsButtonPanel & JSXBase.HTMLAttributes<HTMLVerdocsButtonPanelElement>;
             "verdocs-checkbox": LocalJSX.VerdocsCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsCheckboxElement>;
+            "verdocs-component-error": LocalJSX.VerdocsComponentError & JSXBase.HTMLAttributes<HTMLVerdocsComponentErrorElement>;
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
             "verdocs-document-page": LocalJSX.VerdocsDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsDocumentPageElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
@@ -2296,6 +2355,7 @@ declare module "@stencil/core" {
             "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
             "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
             "verdocs-field-timestamp": LocalJSX.VerdocsFieldTimestamp & JSXBase.HTMLAttributes<HTMLVerdocsFieldTimestampElement>;
+            "verdocs-floating-menu": LocalJSX.VerdocsFloatingMenu & JSXBase.HTMLAttributes<HTMLVerdocsFloatingMenuElement>;
             "verdocs-help-icon": LocalJSX.VerdocsHelpIcon & JSXBase.HTMLAttributes<HTMLVerdocsHelpIconElement>;
             "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
             "verdocs-kba-dialog": LocalJSX.VerdocsKbaDialog & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;

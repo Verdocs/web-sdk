@@ -1,5 +1,5 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {SDKError} from '../../../utils/errors';
@@ -86,6 +86,14 @@ export class VerdocsTemplateProperties {
   }
 
   render() {
+    if (!this.endpoint.session) {
+      return (
+        <Host>
+          <verdocs-component-error message="You must be authenticated to use this module." />
+        </Host>
+      );
+    }
+
     return (
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <h5>Template Name</h5>

@@ -8,6 +8,14 @@ import {downloadBlob} from '@verdocs/js-sdk/Utils/Files';
 
 export const defaultWidth = (field: ITemplateField | IDocumentField) => {
   switch (field.type) {
+    case 'textbox':
+      return 150;
+    case 'timestamp':
+      return 64;
+    case 'date':
+      return 64;
+    case 'dropdown':
+      return 64;
     case 'attachment':
     case 'payment':
       return 24;
@@ -19,7 +27,7 @@ export const defaultWidth = (field: ITemplateField | IDocumentField) => {
     case 'initial':
       // TODO: Review this. 71 seems to line up better with the final render.
       return 71;
-      // return 82;
+    // return 82;
   }
 
   return 150;
@@ -27,6 +35,14 @@ export const defaultWidth = (field: ITemplateField | IDocumentField) => {
 
 export const defaultHeight = (field: ITemplateField | IDocumentField) => {
   switch (field.type) {
+    case 'textbox':
+      return 15;
+    case 'timestamp':
+      return 15;
+    case 'date':
+      return 15;
+    case 'dropdown':
+      return 15;
     case 'attachment':
     case 'payment':
       return 24;
@@ -38,7 +54,7 @@ export const defaultHeight = (field: ITemplateField | IDocumentField) => {
     case 'initial':
       // TODO: Review this. 71 seems to line up better with the final render.
       return 36;
-      // return 41;
+    // return 41;
   }
 
   return 50;

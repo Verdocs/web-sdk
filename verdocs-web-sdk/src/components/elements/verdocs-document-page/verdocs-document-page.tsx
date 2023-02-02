@@ -105,7 +105,7 @@ export class VerdocsDocumentPage {
     }
 
     this.pageRendered.emit({
-      container: this.container,
+      // container: this.container,
       containerId: this.containerId,
       pageNumber: this.pageNumber,
       virtualWidth: this.virtualWidth,

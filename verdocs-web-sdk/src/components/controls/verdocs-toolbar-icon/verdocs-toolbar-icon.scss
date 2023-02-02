@@ -24,7 +24,8 @@ verdocs-toolbar-icon {
     font-size: 13px;
     position: relative;
     border-radius: 4px;
-    z-index: 10000;
+    z-index: 20000;
+    white-space: nowrap;
 
     .arrow,
     .arrow::before {
@@ -63,6 +64,16 @@ verdocs-toolbar-icon {
 
     &[data-popper-placement^='right'] > .arrow {
       left: -4px;
+    }
+
+    // For the floating menu
+    &[data-popper-placement^='left'] {
+      //margin-right: 22px !important;
+      padding: 3px 10px;
+
+      & > .arrow {
+        right: -1px;
+      }
     }
   }
 }

@@ -1,9 +1,9 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {Component, h, Event, EventEmitter, Prop, Host} from '@stencil/core';
-import {getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
+import {createField, editField} from '@verdocs/js-sdk/Templates/Fields';
+import {IPage, ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {Component, h, Event, EventEmitter, Prop, Host, State} from '@stencil/core';
+import {defaultHeight, defaultWidth, getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
 import TemplateStore from '../../../utils/templateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {loadTemplate} from '../../../utils/Templates';
@@ -28,6 +28,20 @@ const iconSignature =
 
 const iconInitial = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M6.225 20.775V7h-5V3.225H15V7h-5v13.775Zm9.775 0v-8h-3V9h9.775v3.775h-3v8Z"/></svg>';
 
+const menuOptions = [
+  {id: 'attachment', tooltip: 'Attachment', icon: 'A'},
+  {id: 'checkbox', tooltip: 'Check Box', icon: iconCheck},
+  {id: 'date', tooltip: 'Date', icon: iconDatepicker},
+  {id: 'dropdown', tooltip: 'Dropdown', icon: 'O'},
+  {id: 'initial', tooltip: 'Initials', icon: iconInitial},
+  {id: 'payment', tooltip: 'Payment', icon: 'P'},
+  {id: 'radio', tooltip: 'Radio Button', icon: iconRadio},
+  {id: 'signature', tooltip: 'Signature', icon: iconSignature},
+  {id: 'textarea', tooltip: 'Text Area', icon: iconMultiline},
+  {id: 'textbox', tooltip: 'Text Box', icon: iconSingleline},
+  {id: 'timestamp', tooltip: 'Timestamp', icon: 'X'},
+];
+
 /**
  * Displays a builder experience for laying out fields in a template. Note that this experience requires a large display area to
  * present all of the required controls, so it is primarily intended to be used in desktop environments.
@@ -38,8 +52,7 @@ const iconInitial = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="
   shadow: false,
 })
 export class VerdocsTemplateFields {
-  page0El: HTMLDivElement;
-  toolbarEl: HTMLDivElement;
+  // page0El: HTMLDivElement;
 
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -67,6 +80,11 @@ export class VerdocsTemplateFields {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
+  @State() placing = null;
+  @State() selectedRoleName = '';
+
+  pageHeights: Record<number, number> = {};
+
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
@@ -76,9 +94,17 @@ export class VerdocsTemplateFields {
         return;
       }
 
+      if (!this.endpoint.session) {
+        console.log('[BUILD] Unable to start builder session, must be authenticated');
+        return;
+      }
+
       try {
-        console.log(`[FIELDS] Loading template ${this.templateId}`);
+        console.log(`[FIELDS] Loading template ${this.templateId}`, this.endpoint.session);
         await loadTemplate(this.endpoint, this.templateId);
+
+        this.selectedRoleName = TemplateStore.roleNames[0];
+        console.log('Starting with role', this.selectedRoleName);
       } catch (e) {
         console.log('[FIELDS] Error loading template', e);
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -90,35 +116,47 @@ export class VerdocsTemplateFields {
   }
 
   componentDidRender() {
-    // console.log('rendered', this.page0El, this.toolbarEl);
-    // console.log('w', this.page0El.clientWidth);
-    // console.log('t', this.toolbarEl.clientWidth);
     interact.dynamicDrop(true);
-    this.toolbarEl.style.width = `${this.page0El.clientWidth}px`;
   }
 
   async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
     console.log('[FIELDS] handleFieldChange', field, e, optionId);
   }
 
+  attachFieldAttributes(pageInfo, field, roleIndex, el) {
+    el.addEventListener('input', e => this.handleFieldChange(field, e));
+
+    el.setAttribute('roleindex', roleIndex);
+    el.setAttribute('pageNumber', pageInfo.pageNumber);
+    el.setAttribute('xScale', pageInfo.xScale);
+    el.setAttribute('yScale', pageInfo.yScale);
+    el.setAttribute('name', field.name);
+  }
+
+  cachedPageInfo: Record<number, IDocumentPageInfo> = {};
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
     console.log('[FIELDS] Page rendered', pageInfo);
+    this.cachedPageInfo[pageInfo.pageNumber] = pageInfo;
 
+    this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
+
+    console.log('tsf', pageInfo.pageNumber, TemplateStore.fields);
     const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
     // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[FIELDS] Fields on page', fields);
     fields.forEach(field => {
-      const el = renderDocumentField(field, pageInfo, getRoleIndex(TemplateStore.roleNames, field.role_name), {disabled: true, editable: true, draggable: true});
+      const roleIndex = getRoleIndex(TemplateStore.roleNames, field.role_name);
+      const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
       if (!el) {
         return;
       }
 
-      el.addEventListener('input', e => this.handleFieldChange(field, e));
-      el.addEventListener('recipientChanged', e => el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, e.detail)));
-
-      el.setAttribute('xScale', pageInfo.xScale);
-      el.setAttribute('yScale', pageInfo.yScale);
+      if (Array.isArray(el)) {
+        el.map(e => this.attachFieldAttributes(pageInfo, field, roleIndex, e));
+      } else {
+        this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+      }
 
       interact(el).draggable({
         listeners: {
@@ -136,30 +174,97 @@ export class VerdocsTemplateFields {
             event.target.setAttribute('posy', newY);
             updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
           },
-          end(event) {
-            console.log('[FIELDS] Drag ended', event);
-            // event.target.setAttribute('posX', 0);
-            // event.target.setAttribute('posy', 0);
-            // updateCssTransform(event.target, 'translate', `${0}px, ${0}px`);
-          },
+          end: this.handleMoveField.bind(this),
         },
       });
     });
   }
 
+  async handleMoveField(e: any) {
+    const pageNumber = e.target.getAttribute('pageNumber');
+    const {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
+    console.log('[FIELDS] Drag ended', pageNumber, e.target);
+    const clientRect = e.target.getBoundingClientRect();
+    const parent = e.target.parentElement;
+    const parentRect = parent.getBoundingClientRect();
+    // These two being backwards is not a mistake. Left measures "over" from the left (positive displacement) while bottom measures
+    // "up" from the bottom (negative displacement).
+    const newX = Math.max(clientRect.left - parentRect.left, 0);
+    const newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
+    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - e.rect.width, naturalHeight - e.rect.height);
+
+    const name = e.target.getAttribute('name');
+    const field = TemplateStore.fields.find(field => field.name === name);
+    if (field) {
+      field.setting.x = x;
+      field.setting.y = y;
+      const edited = await editField(this.endpoint, this.templateId, name, field);
+      console.log('edited field', edited);
+      this.handlePageRendered({detail: this.cachedPageInfo[pageNumber]});
+    }
+  }
+
+  generateFieldName(type: string, pageNumber: number) {
+    const page = TemplateStore.template.pages?.[pageNumber - 1];
+    const fields = page?.fields || [];
+    return `${type}P${pageNumber}-${fields.length}`;
+  }
+
+  // Scale the X,Y clicks to the virtual page dimensions. Also ensure the field doesn't go off the page.
+  viewCoordinatesToPageCoordinates(viewX: number, viewY: number, pageNumber: number, xMax: number, yMax: number) {
+    const {xScale = 1, yScale = 1, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
+    const x = Math.floor(Math.min(viewX / xScale, xMax));
+    const y = Math.floor(Math.min(Math.max(renderedHeight - viewY, 0) / yScale, yMax));
+    return {x, y};
+  }
+
+  async handleClickPage(e: any, page: IPage) {
+    if (this.placing) {
+      const pageNumber = page.sequence;
+      const clickedX = e.offsetX;
+      const clickedY = e.offsetY;
+
+      const width = defaultWidth({type: this.placing} as ITemplateField);
+      const height = defaultHeight({type: this.placing} as ITemplateField);
+      const {naturalWidth = 612, naturalHeight = 792} = this.cachedPageInfo[pageNumber];
+
+      const {x, y} = this.viewCoordinatesToPageCoordinates(clickedX, clickedY, pageNumber, naturalWidth - width, naturalHeight - height);
+
+      const field: ITemplateField = {
+        name: this.generateFieldName(this.placing, pageNumber), //  'textboxP1-22',
+        role_name: this.selectedRoleName, // 'Buyer',
+        template_id: this.templateId,
+        type: this.placing,
+        required: true,
+        page_sequence: pageNumber,
+        validator: null,
+        setting: {
+          width,
+          height,
+          x,
+          y,
+          result: '',
+        },
+      };
+
+      const saved = await createField(this.endpoint, this.templateId, field);
+      console.log('Saved field', saved);
+
+      TemplateStore.fields.push(saved);
+      this.placing = null;
+
+      this.handlePageRendered({detail: this.cachedPageInfo[pageNumber]});
+    }
+  }
+
   render() {
-    const testField: ITemplateField = {
-      template_id: '',
-      name: 'test',
-      role_name: 'Recipient 1',
-      type: 'textbox',
-      required: true,
-      setting: {
-        x: 0,
-        y: 0,
-      },
-      page_sequence: 0,
-    };
+    if (!this.endpoint.session) {
+      return (
+        <Host>
+          <verdocs-component-error message="You must be authenticated to use this module." />
+        </Host>
+      );
+    }
 
     // TODO: Render a better error
     if (TemplateStore.loading || !TemplateStore.template) {
@@ -174,45 +279,28 @@ export class VerdocsTemplateFields {
     pages.sort((a, b) => a.sequence - b.sequence);
 
     return (
-      <Host>
-        <div class="fields-bar" ref={el => (this.toolbarEl = el as HTMLDivElement)}>
-          <div class="label">Add Field:</div>
-          <verdocs-toolbar-icon icon={iconSingleline} text="Single-line Text Box" onClick={() => console.log('single press')} />
-          <verdocs-toolbar-icon icon={iconMultiline} text="Multi-line Text Box" onClick={() => console.log('multi press')} />
-          <verdocs-toolbar-icon icon={iconCheck} text="Checkbox" onClick={() => console.log('check press')} />
-          <verdocs-toolbar-icon icon={iconRadio} text="Radio Button" onClick={() => console.log('radio press')} />
-          <verdocs-toolbar-icon icon={iconDatepicker} text="Date Picker" onClick={() => console.log('date press')} />
-          <verdocs-toolbar-icon icon={iconSignature} text="Signature" onClick={() => console.log('signature press')} />
-          <verdocs-toolbar-icon icon={iconInitial} text="Initials" onClick={() => console.log('initial press')} />
-          <div style={{flex: '1'}} />
-          <button onClick={() => this.next?.emit(TemplateStore.template)} disabled={true} class="operation">
-            Save
-          </button>
-          <button onClick={() => this.cancel?.emit()} class="operation">
-            Close
-          </button>
-        </div>
-
-        <div class="page-0" ref={el => (this.page0El = el as HTMLDivElement)}>
-          <div class="user-placed-fields">
-            <div class="title">User-Placed Fields</div>
-            <verdocs-field-signature
-              field={testField}
-              style={{width: '82px', height: '41px', left: '20px', top: '40px', transform: 'scale(1,1)', backgroundColor: getRGBA(0)}}
-              moveable={true}
-              editable={true}
-            />
-          </div>
-        </div>
+      <Host class={this.placing ? {[`placing-${this.placing}`]: true} : {}}>
+        {/* <div class="page-0" ref={el => (this.page0El = el as HTMLDivElement)}>*/}
+        {/*  <div class="user-placed-fields">*/}
+        {/*    <div class="title">User-Placed Fields</div>*/}
+        {/*    <verdocs-field-signature*/}
+        {/*      field={testField}*/}
+        {/*      style={{width: '82px', height: '41px', left: '20px', top: '40px', transform: 'scale(1,1)', backgroundColor: getRGBA(0)}}*/}
+        {/*      moveable={true}*/}
+        {/*      editable={true}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*</div>*/}
 
         <div class="pages">
           {pages.map(page => {
-            console.log('rendering page', page);
+            // console.log('rendering page', page);
             return (
               <verdocs-document-page
                 pageImageUri={page.display_uri}
                 virtualWidth={612}
                 virtualHeight={792}
+                onClick={(e: PointerEvent) => this.handleClickPage(e, page)}
                 pageNumber={page.sequence}
                 onPageRendered={e => this.handlePageRendered(e)}
                 layers={[
@@ -223,6 +311,13 @@ export class VerdocsTemplateFields {
             );
           })}
         </div>
+
+        <verdocs-floating-menu
+          options={menuOptions}
+          onOptionSelected={e => {
+            this.placing = e.detail.id;
+          }}
+        />
       </Host>
     );
   }

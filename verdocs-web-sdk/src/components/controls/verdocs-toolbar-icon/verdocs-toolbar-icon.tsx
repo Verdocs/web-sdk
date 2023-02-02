@@ -1,5 +1,6 @@
 import {createPopper, Instance} from '@popperjs/core';
 import {Component, h, Host, Prop, State} from '@stencil/core';
+import {Placement} from '@popperjs/core/lib/enums';
 // import {Component, Event, EventEmitter, h, Host, Prop, State} from '@stencil/core';
 
 /**
@@ -26,6 +27,11 @@ export class VerdocsToolbarIcon {
   @Prop() icon: string = '';
 
   /**
+   * Override the Popper "placement" setting
+   */
+  @Prop() placement: Placement = 'bottom';
+
+  /**
    * Triggered when the icon is pressed
    */
   // @Event({composed: true}) press: EventEmitter;
@@ -34,9 +40,12 @@ export class VerdocsToolbarIcon {
 
   componentDidLoad() {
     this.popperInstance = createPopper(this.iconEl, this.tooltip, {
-      // placement: 'top-end',
-      // modifiers: [{name: 'offset', options: {offset: [0, 10]}}],
+      placement: this.placement,
+      modifiers: this.placement === 'left' ? [{name: 'offset', options: {offset: [0, 20]}}] : [],
     });
+    // placement: 'top-end',
+    // modifiers: [{name: 'offset', options: {offset: [0, 10]}}],
+    // });
   }
 
   disconnectedCallback() {
@@ -72,7 +81,7 @@ export class VerdocsToolbarIcon {
           onBlur={() => this.hide()}
           ref={el => (this.iconEl = el as HTMLDivElement)}
         />
-        <div id={this.containerId} role="tooltip" class="tooltip" data-popper-placement="bottom" ref={el => (this.tooltip = el as HTMLDivElement)}>
+        <div id={this.containerId} role="tooltip" class="tooltip" data-popper-placement={this.placement} ref={el => (this.tooltip = el as HTMLDivElement)}>
           {this.text}
           <div data-popper-arrow="true" class="arrow" />
         </div>

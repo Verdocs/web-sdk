@@ -1,0 +1,19 @@
+@import '../../../theme.scss';
+
+verdocs-component-error {
+  font-family: $verdocs-primary-font;
+  display: flex;
+  padding: 15px;
+  align-items: center;
+  justify-content: center;
+
+  .inner {
+    flex: 1;
+    height: 300px;
+    display: flex;
+    font-size: 18px;
+    background: #ffffff;
+    align-items: center;
+    justify-content: center;
+  }
+}

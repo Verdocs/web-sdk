@@ -150,6 +150,8 @@ export class VerdocsTemplateRecipients {
   rolesAtSequence: Record<number, TAnnotatedRole[]> = {};
 
   componentWillLoad() {
+    this.endpoint.loadSession();
+
     if (this.templateRole) {
       this.name = this.templateRole.full_name || '';
       this.email = this.templateRole.email || '';

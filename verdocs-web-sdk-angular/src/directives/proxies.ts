@@ -141,6 +141,28 @@ export declare interface VerdocsCheckbox extends Components.VerdocsCheckbox {}
 
 
 @ProxyCmp({
+  inputs: ['message']
+})
+@Component({
+  selector: 'verdocs-component-error',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['message'],
+})
+export class VerdocsComponentError {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsComponentError extends Components.VerdocsComponentError {}
+
+
+@ProxyCmp({
   inputs: ['contactSuggestions', 'endpoint', 'templateRole']
 })
 @Component({
@@ -576,6 +598,37 @@ export class VerdocsFieldTimestamp {
 
 
 export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {}
+
+
+@ProxyCmp({
+  inputs: ['options']
+})
+@Component({
+  selector: 'verdocs-floating-menu',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['options'],
+})
+export class VerdocsFloatingMenu {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['optionSelected']);
+  }
+}
+
+
+import type { IOption as IVerdocsFloatingMenuIOption } from '@verdocs/web-sdk';
+
+export declare interface VerdocsFloatingMenu extends Components.VerdocsFloatingMenu {
+  /**
+   * Event fired when a menu option is clicked.
+Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
+   */
+  optionSelected: EventEmitter<CustomEvent<IVerdocsFloatingMenuIOption>>;
+}
 
 
 @ProxyCmp({
@@ -1405,14 +1458,14 @@ export declare interface VerdocsToggleButton extends Components.VerdocsToggleBut
 
 
 @ProxyCmp({
-  inputs: ['icon', 'text']
+  inputs: ['icon', 'placement', 'text']
 })
 @Component({
   selector: 'verdocs-toolbar-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['icon', 'text'],
+  inputs: ['icon', 'placement', 'text'],
 })
 export class VerdocsToolbarIcon {
   protected el: HTMLElement;

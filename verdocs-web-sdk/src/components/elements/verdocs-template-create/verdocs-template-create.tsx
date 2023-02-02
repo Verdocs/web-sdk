@@ -1,6 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {createTemplateDocument} from '@verdocs/js-sdk/Templates/TemplateDocuments';
 import {createTemplate, getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {SDKError} from '../../../utils/errors';
@@ -43,7 +43,9 @@ export class VerdocsTemplateCreate {
 
   @State() file: File | null;
 
-  componentWillLoad() {}
+  componentWillLoad() {
+    this.endpoint.loadSession();
+  }
 
   handleFileChanged(e: any) {
     console.log('files', e.target.files);
@@ -95,6 +97,14 @@ export class VerdocsTemplateCreate {
   }
 
   render() {
+    if (!this.endpoint.session) {
+      return (
+        <Host>
+          <verdocs-component-error message="You must be authenticated to use this module." />
+        </Host>
+      );
+    }
+
     return (
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <input type="file" id="verdocs-template-create-file" multiple accept="application/pdf" style={{display: 'none'}} onChange={e => this.handleFileChanged(e)} />

@@ -79,6 +79,14 @@ export class VerdocsBuild {
   }
 
   render() {
+    if (!this.endpoint.session) {
+      return (
+        <Host>
+          <verdocs-component-error message="You must be authenticated to use this module." />
+        </Host>
+      );
+    }
+
     return (
       <Host>
         {this.step === 'create' && <verdocs-template-create onCancel={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />}
