@@ -1254,6 +1254,41 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'templateId']
 })
 @Component({
+  selector: 'verdocs-template-name',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class VerdocsTemplateName {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['close', 'sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateNameSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateName extends Components.VerdocsTemplateName {
+  /**
+   * Event fired when the user cancels the dialog.
+   */
+  close: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateNameSDKError>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
   selector: 'verdocs-template-properties',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
@@ -1290,42 +1325,72 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+  inputs: ['endpoint', 'templateId']
 })
 @Component({
   selector: 'verdocs-template-recipients',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['contactSuggestions', 'endpoint', 'templateRole'],
+  inputs: ['endpoint', 'templateId'],
 })
 export class VerdocsTemplateRecipients {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'next']);
+    proxyOutputs(this, this.el, ['cancel', 'sdkError']);
   }
 }
 
 
-import type { IContactSearchEvent as IVerdocsTemplateRecipientsIContactSearchEvent } from '@verdocs/web-sdk';
-import type { IContactSelectEvent as IVerdocsTemplateRecipientsIContactSelectEvent } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateRecipientsSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateRecipients extends Components.VerdocsTemplateRecipients {
-  /**
-   * Event fired when the user enters text in the search field. The calling application may use this to update
-the `contactSuggestions` property.
-   */
-  searchContacts: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsIContactSearchEvent>>;
   /**
    * Event fired when the user cancels the dialog.
    */
   cancel: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the user selects a contact.
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
    */
-  next: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsIContactSelectEvent>>;
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsSDKError>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'verdocs-template-reminders',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class VerdocsTemplateReminders {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['close', 'sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateRemindersSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateReminders extends Components.VerdocsTemplateReminders {
+  /**
+   * Event fired when the user cancels the dialog.
+   */
+  close: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateRemindersSDKError>>;
 }
 
 
@@ -1383,6 +1448,41 @@ export class VerdocsTemplateTags {
 
 
 export declare interface VerdocsTemplateTags extends Components.VerdocsTemplateTags {}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'verdocs-template-visibility',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class VerdocsTemplateVisibility {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['close', 'sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateVisibilitySDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateVisibility extends Components.VerdocsTemplateVisibility {
+  /**
+   * Event fired when the user cancels the dialog.
+   */
+  close: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateVisibilitySDKError>>;
+}
 
 
 @ProxyCmp({

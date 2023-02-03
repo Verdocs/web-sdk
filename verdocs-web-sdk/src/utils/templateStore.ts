@@ -6,9 +6,10 @@ import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 
 const {state, onChange} = createStore({
+  templateId: '',
   template: null as ITemplate | null,
   loadProgress: 0,
-  loading: true,
+  loading: false,
 
   pageNumbers: [] as number[],
   pageUris: {} as Record<number, string>,

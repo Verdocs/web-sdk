@@ -4,6 +4,8 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Fragment, Prop, State} from '@stencil/core';
 import {getRoleIndex} from '../../../utils/utils';
+import {loadTemplate} from '../../../utils/Templates';
+import {SDKError} from '../../../utils/errors';
 
 const arrayMove = (arr: any[], fromIndex: number, toIndex: number) => {
   const newArr = [...arr];
@@ -33,61 +35,6 @@ const stepIcon =
 const doneIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path></svg>';
 
-export interface IContactSearchEvent {
-  // The text the user has entered in the search field
-  query: string;
-}
-
-export interface IContactSelectEvent {
-  full_name: string;
-  email: string;
-  phone: string;
-  message: string;
-  delegator: boolean;
-}
-
-export interface IEmailContact {
-  // Optional but recommended. An internal identifier used to identify the contact in the calling system.
-  id?: any;
-
-  // The user's avatar. If not set, a placeholder will be shown. To hide avatars entirely, use CSS to set
-  // `verdocs-contact-picker .avatar { display: none; }`
-  avatar?: string;
-
-  // The recipient's name, as it should be displayed to the user.
-  name: string;
-
-  // The email address for the contact.
-  email: string;
-
-  // An optional phone number for the contact. This number must be able SMS messages. If both email and phone are provided,
-  // notifications will be sent to both locations.
-  phone?: string;
-
-  [key: string]: any;
-}
-
-export interface IPhoneContact {
-  // Optional but recommended. An internal identifier used to identify the contact in the calling system.
-  id?: any;
-
-  // The user's avatar. If not set, a placeholder will be shown. To hide avatars entirely, use CSS to set
-  // `verdocs-contact-picker .avatar { display: none; }`
-  avatar?: string;
-
-  // The recipient's name, as it should be displayed to the user.
-  name: string;
-
-  // The email address for the contact.
-  email?: string;
-
-  // An optional phone number for the contact. This number must be able SMS messages. If both email and phone are provided,
-  // notifications will be sent to both locations.
-  phone: string;
-
-  [key: string]: any;
-}
-
 /**
  * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
  *
@@ -109,111 +56,108 @@ export class VerdocsTemplateRecipients {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The role that this contact will be assigned to.
+   * The template ID to edit.
    */
-  @Prop() templateRole: IRole | null = null;
-
-  /**
-   * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number
-   * of suggestions be limited to the 5 best matching records.
-   */
-  @Prop() contactSuggestions: (IEmailContact | IPhoneContact)[] = [];
-
-  /**
-   * Event fired when the user enters text in the search field. The calling application may use this to update
-   * the `contactSuggestions` property.
-   */
-  @Event({composed: true}) searchContacts: EventEmitter<IContactSearchEvent>;
+  @Prop() templateId: string = '';
 
   /**
    * Event fired when the user cancels the dialog.
    */
   @Event({composed: true}) cancel: EventEmitter;
 
-  /**
-   * Event fired when the user selects a contact.
-   */
-  @Event({composed: true}) next: EventEmitter<IContactSelectEvent>;
-
-  @State() name: string;
-  @State() email: string;
-  @State() phone: string;
-  @State() message: string;
-  @State() showSuggestions: boolean = false;
-  @State() showMessage: boolean = false;
-  @State() delegator: boolean = false;
-  @State() sender: TemplateSenderTypes = TemplateSenderTypes.CREATOR;
-  @State() showingSenderDialog = false;
-  @State() orderedRoles: TAnnotatedRole[] = [];
-
   sequences: number[] = [];
   rolesAtSequence: Record<number, TAnnotatedRole[]> = {};
 
-  componentWillLoad() {
-    this.endpoint.loadSession();
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-    if (this.templateRole) {
-      this.name = this.templateRole.full_name || '';
-      this.email = this.templateRole.email || '';
-      this.phone = this.templateRole.phone || '';
-      this.delegator = this.templateRole.delegator || false;
-      this.message = this.templateRole.message || '';
-      this.showMessage = this.message !== '';
+  @State() showingSenderDialog = false;
+  @State() sender = null;
+
+  orderedRoles: TAnnotatedRole[] = [];
+
+  async componentWillLoad() {
+    try {
+      this.endpoint.loadSession();
+
+      if (!this.templateId) {
+        console.log(`[RECIPIENTS] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      if (!this.endpoint.session) {
+        console.log('[RECIPIENTS] Unable to start builder session, must be authenticated');
+        return;
+      }
+
+      try {
+        console.log(`[RECIPIENTS] Loading template ${this.templateId}`, this.endpoint.session);
+        await loadTemplate(this.endpoint, this.templateId);
+      } catch (e) {
+        console.log('[RECIPIENTS] Error loading template', e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      }
+    } catch (e) {
+      console.log('[FIELDS] Error with preview session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
-
-    this.orderedRoles = [
-      {
-        order: 0,
-        template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
-        name: 'Seller 1',
-        full_name: '',
-        email: '',
-        type: 'signer',
-        sequence: 1,
-        fields: [],
-        delegator: false,
-        phone: '',
-      },
-      {
-        order: 1,
-        template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
-        name: 'Seller 2',
-        full_name: '',
-        email: '',
-        type: 'signer',
-        sequence: 1,
-        fields: [],
-        delegator: false,
-        phone: '',
-      },
-      {
-        order: 2,
-        template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
-        name: 'Buyer 1',
-        full_name: '',
-        email: '',
-        type: 'signer',
-        sequence: 2,
-        fields: [],
-        delegator: false,
-        phone: '',
-      },
-      {
-        order: 3,
-        template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
-        name: 'Buyer 2',
-        full_name: '',
-        email: '',
-        type: 'signer',
-        sequence: 2,
-        fields: [],
-        delegator: false,
-        phone: '',
-      },
-    ];
-
-    this.computeRolesBySequence();
   }
+
+  // this.orderedRoles = [
+  //   {
+  //     order: 0,
+  //     template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+  //     name: 'Seller 1',
+  //     full_name: '',
+  //     email: '',
+  //     type: 'signer',
+  //     sequence: 1,
+  //     fields: [],
+  //     delegator: false,
+  //     phone: '',
+  //   },
+  //   {
+  //     order: 1,
+  //     template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+  //     name: 'Seller 2',
+  //     full_name: '',
+  //     email: '',
+  //     type: 'signer',
+  //     sequence: 1,
+  //     fields: [],
+  //     delegator: false,
+  //     phone: '',
+  //   },
+  //   {
+  //     order: 2,
+  //     template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+  //     name: 'Buyer 1',
+  //     full_name: '',
+  //     email: '',
+  //     type: 'signer',
+  //     sequence: 2,
+  //     fields: [],
+  //     delegator: false,
+  //     phone: '',
+  //   },
+  //   {
+  //     order: 3,
+  //     template_id: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+  //     name: 'Buyer 2',
+  //     full_name: '',
+  //     email: '',
+  //     type: 'signer',
+  //     sequence: 2,
+  //     fields: [],
+  //     delegator: false,
+  //     phone: '',
+  //   },
+  // ];
+  //
+  // this.computeRolesBySequence();
 
   componentDidRender() {
     interact.dynamicDrop(true);
@@ -302,21 +246,11 @@ export class VerdocsTemplateRecipients {
 
   handleCancel(e) {
     e.stopPropagation();
-    this.showSuggestions = false;
     this.cancel?.emit();
   }
 
   handleSubmit(e) {
     e.stopPropagation();
-
-    this.showSuggestions = false;
-    this.next?.emit({
-      full_name: this.name,
-      email: this.email,
-      phone: this.phone,
-      message: this.message,
-      delegator: this.delegator,
-    });
   }
 
   render() {

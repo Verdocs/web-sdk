@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Elements/Template Create',
+  title: 'Templates/Template Create',
   component: 'verdocs-template-create',
   args: {
     templateRole: {

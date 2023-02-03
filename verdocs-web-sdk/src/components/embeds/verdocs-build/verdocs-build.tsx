@@ -65,7 +65,8 @@ export class VerdocsBuild {
 
   handleTemplateCreated(e: any) {
     console.log('Created', e.detail);
-    this.step = 'properties';
+    this.step = 'fields';
+    // this.step = 'properties';
   }
 
   handlePropertiesUpdated(e: any) {
@@ -90,8 +91,8 @@ export class VerdocsBuild {
     return (
       <Host>
         {this.step === 'create' && <verdocs-template-create onCancel={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />}
-        {this.step === 'properties' && <verdocs-template-properties onCancel={e => this.handleCancel(e)} onNext={e => this.handlePropertiesUpdated(e)} />}
-        {this.step === 'recipients' && <verdocs-template-recipients onCancel={e => this.handleCancel(e)} onNext={e => this.handleRecipientsUpdated(e)} />}
+        {/*{this.step === 'properties' && <verdocs-template-properties onCancel={e => this.handleCancel(e)} onNext={e => this.handlePropertiesUpdated(e)} />}*/}
+        {/*{this.step === 'recipients' && <verdocs-template-recipients onCancel={e => this.handleCancel(e)} onNext={e => this.handleRecipientsUpdated(e)} />}*/}
         {this.step === 'fields' && <verdocs-template-fields onCancel={e => this.handleCancel(e)} onNext={e => this.handleCancel(e)} />}
       </Host>
     );

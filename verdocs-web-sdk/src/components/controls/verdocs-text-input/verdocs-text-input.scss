@@ -18,6 +18,11 @@ verdocs-text-input {
     padding: 4px 12px;
     outline: none;
 
+    &:disabled {
+      border: 1px solid $verdocs-grey-2;
+      background: $verdocs-grey-3;
+    }
+
     &::placeholder {
       color: $light-disabled-color;
       opacity: 1;
