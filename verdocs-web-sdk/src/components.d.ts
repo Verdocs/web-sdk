@@ -8,7 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
-import { IRole, ITemplate, ITemplateField, TemplateSenderTypes } from "@verdocs/js-sdk/Templates/Types";
+import { IRole, ITemplate, ITemplateField, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
@@ -649,6 +649,16 @@ export namespace Components {
          */
         "theme"?: 'dark' | 'light';
     }
+    interface VerdocsTemplateAttachments {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
     interface VerdocsTemplateCard {
         /**
           * The template for which the card will be rendered.
@@ -711,11 +721,19 @@ export namespace Components {
          */
         "templateId": string;
     }
-    interface VerdocsTemplateSenderDialog {
+    interface VerdocsTemplateSender {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
-        "value": TemplateSenderTypes;
+        "sender": TTemplateSender;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
     }
     interface VerdocsTemplateTags {
         /**
@@ -903,6 +921,10 @@ export interface VerdocsSignatureDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSignatureDialogElement;
 }
+export interface VerdocsTemplateAttachmentsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateAttachmentsElement;
+}
 export interface VerdocsTemplateCreateCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateCreateElement;
@@ -927,9 +949,9 @@ export interface VerdocsTemplateRemindersCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateRemindersElement;
 }
-export interface VerdocsTemplateSenderDialogCustomEvent<T> extends CustomEvent<T> {
+export interface VerdocsTemplateSenderCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLVerdocsTemplateSenderDialogElement;
+    target: HTMLVerdocsTemplateSenderElement;
 }
 export interface VerdocsTemplateVisibilityCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1188,6 +1210,12 @@ declare global {
         prototype: HTMLVerdocsStatusIndicatorElement;
         new (): HTMLVerdocsStatusIndicatorElement;
     };
+    interface HTMLVerdocsTemplateAttachmentsElement extends Components.VerdocsTemplateAttachments, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateAttachmentsElement: {
+        prototype: HTMLVerdocsTemplateAttachmentsElement;
+        new (): HTMLVerdocsTemplateAttachmentsElement;
+    };
     interface HTMLVerdocsTemplateCardElement extends Components.VerdocsTemplateCard, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateCardElement: {
@@ -1230,11 +1258,11 @@ declare global {
         prototype: HTMLVerdocsTemplateRemindersElement;
         new (): HTMLVerdocsTemplateRemindersElement;
     };
-    interface HTMLVerdocsTemplateSenderDialogElement extends Components.VerdocsTemplateSenderDialog, HTMLStencilElement {
+    interface HTMLVerdocsTemplateSenderElement extends Components.VerdocsTemplateSender, HTMLStencilElement {
     }
-    var HTMLVerdocsTemplateSenderDialogElement: {
-        prototype: HTMLVerdocsTemplateSenderDialogElement;
-        new (): HTMLVerdocsTemplateSenderDialogElement;
+    var HTMLVerdocsTemplateSenderElement: {
+        prototype: HTMLVerdocsTemplateSenderElement;
+        new (): HTMLVerdocsTemplateSenderElement;
     };
     interface HTMLVerdocsTemplateTagsElement extends Components.VerdocsTemplateTags, HTMLStencilElement {
     }
@@ -1325,6 +1353,7 @@ declare global {
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
+        "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-create": HTMLVerdocsTemplateCreateElement;
         "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
@@ -1332,7 +1361,7 @@ declare global {
         "verdocs-template-properties": HTMLVerdocsTemplatePropertiesElement;
         "verdocs-template-recipients": HTMLVerdocsTemplateRecipientsElement;
         "verdocs-template-reminders": HTMLVerdocsTemplateRemindersElement;
-        "verdocs-template-sender-dialog": HTMLVerdocsTemplateSenderDialogElement;
+        "verdocs-template-sender": HTMLVerdocsTemplateSenderElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-template-visibility": HTMLVerdocsTemplateVisibilityElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
@@ -2125,6 +2154,24 @@ declare namespace LocalJSX {
          */
         "theme"?: 'dark' | 'light';
     }
+    interface VerdocsTemplateAttachments {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user cancels the dialog.
+         */
+        "onClose"?: (event: VerdocsTemplateAttachmentsCustomEvent<any>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplateAttachmentsCustomEvent<SDKError>) => void;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
     interface VerdocsTemplateCard {
         /**
           * The template for which the card will be rendered.
@@ -2247,19 +2294,27 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
-    interface VerdocsTemplateSenderDialog {
+    interface VerdocsTemplateSender {
         /**
-          * Event fired when the dialog is closed. The event data will contain the closure reason.
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
-        "onCancel"?: (event: VerdocsTemplateSenderDialogCustomEvent<any>) => void;
+        "endpoint"?: VerdocsEndpoint;
         /**
-          * Event fired when the dialog is closed. The event data will contain the selected value.
+          * Event fired when the user cancels the dialog.
          */
-        "onNext"?: (event: VerdocsTemplateSenderDialogCustomEvent<TemplateSenderTypes>) => void;
+        "onClose"?: (event: VerdocsTemplateSenderCustomEvent<any>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplateSenderCustomEvent<SDKError>) => void;
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
-        "value"?: TemplateSenderTypes;
+        "sender"?: TTemplateSender;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
     }
     interface VerdocsTemplateTags {
         /**
@@ -2419,6 +2474,7 @@ declare namespace LocalJSX {
         "verdocs-sign": VerdocsSign;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-status-indicator": VerdocsStatusIndicator;
+        "verdocs-template-attachments": VerdocsTemplateAttachments;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-create": VerdocsTemplateCreate;
         "verdocs-template-fields": VerdocsTemplateFields;
@@ -2426,7 +2482,7 @@ declare namespace LocalJSX {
         "verdocs-template-properties": VerdocsTemplateProperties;
         "verdocs-template-recipients": VerdocsTemplateRecipients;
         "verdocs-template-reminders": VerdocsTemplateReminders;
-        "verdocs-template-sender-dialog": VerdocsTemplateSenderDialog;
+        "verdocs-template-sender": VerdocsTemplateSender;
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-template-visibility": VerdocsTemplateVisibility;
         "verdocs-text-input": VerdocsTextInput;
@@ -2481,6 +2537,7 @@ declare module "@stencil/core" {
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
             "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
+            "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
             "verdocs-template-create": LocalJSX.VerdocsTemplateCreate & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;
             "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
@@ -2488,7 +2545,7 @@ declare module "@stencil/core" {
             "verdocs-template-properties": LocalJSX.VerdocsTemplateProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplatePropertiesElement>;
             "verdocs-template-recipients": LocalJSX.VerdocsTemplateRecipients & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRecipientsElement>;
             "verdocs-template-reminders": LocalJSX.VerdocsTemplateReminders & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRemindersElement>;
-            "verdocs-template-sender-dialog": LocalJSX.VerdocsTemplateSenderDialog & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSenderDialogElement>;
+            "verdocs-template-sender": LocalJSX.VerdocsTemplateSender & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSenderElement>;
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             "verdocs-template-visibility": LocalJSX.VerdocsTemplateVisibility & JSXBase.HTMLAttributes<HTMLVerdocsTemplateVisibilityElement>;
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;

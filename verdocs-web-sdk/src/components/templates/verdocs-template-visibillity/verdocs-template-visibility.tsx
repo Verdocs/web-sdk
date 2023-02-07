@@ -6,7 +6,7 @@ import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 
 /**
- * Displays a collection of settings boxes that allow a user to configure a template's behavior.
+ * Displays an edit form that allows the user to adjust a template's visibility.
  */
 @Component({
   tag: 'verdocs-template-visibility',
@@ -90,6 +90,8 @@ export class VerdocsTemplateVisibility {
     return (
       <Host>
         <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
+          <h5>Visibility</h5>
+
           <div class="input-row">
             <label htmlFor="verdocs-is-personal">Personal</label>
             <verdocs-checkbox

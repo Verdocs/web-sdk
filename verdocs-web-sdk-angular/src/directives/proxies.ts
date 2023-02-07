@@ -1149,6 +1149,41 @@ export declare interface VerdocsStatusIndicator extends Components.VerdocsStatus
 
 
 @ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'verdocs-template-attachments',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class VerdocsTemplateAttachments {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['close', 'sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateAttachmentsSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateAttachments extends Components.VerdocsTemplateAttachments {
+  /**
+   * Event fired when the user cancels the dialog.
+   */
+  close: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateAttachmentsSDKError>>;
+}
+
+
+@ProxyCmp({
   inputs: ['template']
 })
 @Component({
@@ -1395,36 +1430,37 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['value']
+  inputs: ['endpoint', 'sender', 'templateId']
 })
 @Component({
-  selector: 'verdocs-template-sender-dialog',
+  selector: 'verdocs-template-sender',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['value'],
+  inputs: ['endpoint', 'sender', 'templateId'],
 })
-export class VerdocsTemplateSenderDialog {
+export class VerdocsTemplateSender {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'next']);
+    proxyOutputs(this, this.el, ['close', 'sdkError']);
   }
 }
 
 
-import type { TemplateSenderTypes as IVerdocsTemplateSenderDialogTemplateSenderTypes } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateSenderSDKError } from '@verdocs/web-sdk';
 
-export declare interface VerdocsTemplateSenderDialog extends Components.VerdocsTemplateSenderDialog {
+export declare interface VerdocsTemplateSender extends Components.VerdocsTemplateSender {
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason.
+   * Event fired when the user cancels the dialog.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  close: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the dialog is closed. The event data will contain the selected value.
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
    */
-  next: EventEmitter<CustomEvent<IVerdocsTemplateSenderDialogTemplateSenderTypes>>;
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateSenderSDKError>>;
 }
 
 

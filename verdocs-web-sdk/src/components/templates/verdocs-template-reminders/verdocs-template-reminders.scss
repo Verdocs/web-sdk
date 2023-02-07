@@ -17,10 +17,18 @@ verdocs-template-reminders {
     display: flex;
     flex-direction: column;
 
+    h5 {
+      font-size: 16px;
+      font-weight: bold;
+      color: $verdocs-deep-blue;
+      margin: 0 0 20px 0;
+    }
+
     label {
       font-size: 16px;
       font-weight: 500;
       margin: 0 0 6px 0;
+      color: $label-color;
     }
 
     input {

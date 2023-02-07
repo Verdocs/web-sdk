@@ -1,53 +1,102 @@
-import {TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {updateTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
+import {TemplateSenderTypes, TTemplateSender} from '@verdocs/js-sdk/Templates/Types';
+import TemplateStore from '../../../utils/templateStore';
+import {loadTemplate} from '../../../utils/Templates';
+import {SDKError} from '../../../utils/errors';
 
 /**
  * Display a dialog that allows a template sender to be selected.
  */
 @Component({
-  tag: 'verdocs-template-sender-dialog',
-  styleUrl: 'verdocs-template-sender-dialog.scss',
+  tag: 'verdocs-template-sender',
+  styleUrl: 'verdocs-template-sender.scss',
 })
-export class VerdocsTemplateSenderDialog {
+export class VerdocsTemplateSender {
+  /**
+   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+   */
+  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+
+  /**
+   * The template ID to edit.
+   */
+  @Prop() templateId: string = '';
+
+  /**
+   * Event fired when the user cancels the dialog.
+   */
+  @Event({composed: true}) close: EventEmitter;
+
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
+
   /**
    * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
    */
-  @Prop() value: TemplateSenderTypes = TemplateSenderTypes.EVERYONE;
+  @Prop() sender: TTemplateSender = TemplateSenderTypes.EVERYONE;
 
-  /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason.
-   */
-  @Event({composed: true}) cancel: EventEmitter;
+  @State() saving = false;
 
-  /**
-   * Event fired when the dialog is closed. The event data will contain the selected value.
-   */
-  @Event({composed: true}) next: EventEmitter<TemplateSenderTypes>;
+  async componentWillLoad() {
+    try {
+      this.endpoint.loadSession();
 
-  @State() newValue: TemplateSenderTypes = TemplateSenderTypes.EVERYONE;
+      if (!this.templateId) {
+        console.log(`[TEMPLATE SENDER] Missing required template ID ${this.templateId}`);
+        return;
+      }
 
-  componentWillLoad() {
-    this.newValue = this.value;
+      if (!this.endpoint.session) {
+        console.log('[TEMPLATE SENDER] Unable to start builder session, must be authenticated');
+        return;
+      }
+
+      try {
+        console.log(`[TEMPLATE SENDER] Loading template ${this.templateId}`, this.endpoint.session);
+        await loadTemplate(this.endpoint, this.templateId);
+      } catch (e) {
+        console.log('[TEMPLATE SENDER] Error loading template', e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      }
+
+      this.sender = TemplateStore.template.sender;
+      console.log('s', this.sender);
+    } catch (e) {
+      console.log('[TEMPLATE SENDER] Error with preview session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
   }
 
-  handleCancel() {
-    this.cancel.emit();
+  handleClose() {
+    this.close.emit();
   }
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
   handleDismiss(e: any) {
     if (e.target.className === 'background-overlay') {
       e.preventDefault();
-      this.handleCancel();
+      this.handleClose();
     }
   }
 
-  handleDone() {
-    this.next.emit(this.newValue);
-  }
-
-  handleSelectSetting(value: TemplateSenderTypes) {
-    this.newValue = value;
+  async handleSelectSetting(value: TemplateSenderTypes) {
+    this.saving = true;
+    updateTemplate(this.endpoint, this.templateId, {sender: value})
+      .then(r => {
+        console.log('Update result', r);
+        TemplateStore.template.sender = value;
+        this.saving = false;
+        this.sender = value;
+      })
+      .catch(e => {
+        console.log('Error saving', e);
+        this.saving = false;
+      });
   }
 
   render() {
@@ -60,7 +109,7 @@ export class VerdocsTemplateSenderDialog {
                 <verdocs-radio-button
                   name="template-sender"
                   value={TemplateSenderTypes.EVERYONE}
-                  checked={this.value === TemplateSenderTypes.EVERYONE}
+                  checked={this.sender === TemplateSenderTypes.EVERYONE}
                   onInput={() => this.handleSelectSetting(TemplateSenderTypes.EVERYONE)}
                 />
                 <div class="description">
@@ -72,7 +121,7 @@ export class VerdocsTemplateSenderDialog {
                 <verdocs-radio-button
                   name="template-sender"
                   value={TemplateSenderTypes.EVERYONE_AS_CREATOR}
-                  checked={this.value === TemplateSenderTypes.EVERYONE_AS_CREATOR}
+                  checked={this.sender === TemplateSenderTypes.EVERYONE_AS_CREATOR}
                   onInput={() => this.handleSelectSetting(TemplateSenderTypes.EVERYONE_AS_CREATOR)}
                 />
                 <div class="description">
@@ -84,7 +133,7 @@ export class VerdocsTemplateSenderDialog {
                 <verdocs-radio-button
                   name="template-sender"
                   value={TemplateSenderTypes.ORGANIZATION_MEMBER}
-                  checked={this.value === TemplateSenderTypes.ORGANIZATION_MEMBER}
+                  checked={this.sender === TemplateSenderTypes.ORGANIZATION_MEMBER}
                   onInput={() => this.handleSelectSetting(TemplateSenderTypes.ORGANIZATION_MEMBER)}
                 />
                 <div class="description">
@@ -96,7 +145,7 @@ export class VerdocsTemplateSenderDialog {
                 <verdocs-radio-button
                   name="template-sender"
                   value={TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR}
-                  checked={this.value === TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR}
+                  checked={this.sender === TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR}
                   onInput={() => this.handleSelectSetting(TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR)}
                 />
                 <div class="description">
@@ -108,7 +157,7 @@ export class VerdocsTemplateSenderDialog {
                 <verdocs-radio-button
                   name="template-sender"
                   value={TemplateSenderTypes.CREATOR}
-                  checked={this.value === TemplateSenderTypes.CREATOR}
+                  checked={this.sender === TemplateSenderTypes.CREATOR}
                   onInput={() => this.handleSelectSetting(TemplateSenderTypes.CREATOR)}
                 />
                 <div class="description">
@@ -119,8 +168,7 @@ export class VerdocsTemplateSenderDialog {
             </div>
 
             <div class="buttons">
-              <verdocs-button label="Cancel" variant="outline" onClick={() => this.handleCancel()} />
-              <verdocs-button label="Done" onClick={() => this.handleDone()} />
+              <verdocs-button label="Close" onClick={() => this.handleClose()} />
             </div>
           </div>
         </div>

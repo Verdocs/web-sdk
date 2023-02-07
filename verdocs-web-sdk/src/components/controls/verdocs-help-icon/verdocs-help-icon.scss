@@ -3,6 +3,12 @@
 verdocs-help-icon {
   font-family: $verdocs-primary-font;
   display: inline-block;
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 1;
+    cursor: none;
+  }
 
   .icon {
     display: inline-block;
