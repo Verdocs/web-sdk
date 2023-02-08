@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Templates/Template Recipients',
+  title: 'Templates/Recipients',
   component: 'verdocs-template-recipients',
   args: {
     templateId: '056b837f-b183-4039-b50a-d68acbf81b67',
@@ -13,4 +13,4 @@ export default {
   },
 } as Meta;
 
-export const TemplateRecipients = ({templateId, cancel}) => html`<verdocs-template-recipients .templateId=${templateId} @cancel=${cancel} />`;
+export const Recipients = ({templateId, cancel}) => html`<verdocs-template-recipients .templateId=${templateId} @cancel=${cancel} />`;

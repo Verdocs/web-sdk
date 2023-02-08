@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Templates/Template Attachments',
+  title: 'Templates/Attachments',
   component: 'verdocs-template-attachments',
   args: {
     // templateId: '',
@@ -13,7 +13,7 @@ export default {
   },
 } as Meta;
 
-export const TemplateAttachments = ({onClose, templateId}) =>
+export const Attachments = ({onClose, templateId}) =>
   templateId
     ? html`
         <div style="width: 360px; background: #ffffff; padding: 20px; box-sizing: border-box">

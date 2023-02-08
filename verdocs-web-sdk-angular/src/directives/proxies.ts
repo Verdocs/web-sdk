@@ -1430,6 +1430,46 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  inputs: ['endpoint', 'roleName', 'sender', 'templateId']
+})
+@Component({
+  selector: 'verdocs-template-role-properties',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'roleName', 'sender', 'templateId'],
+})
+export class VerdocsTemplateRoleProperties {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['close', 'delete', 'sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateRolePropertiesSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateRoleProperties extends Components.VerdocsTemplateRoleProperties {
+  /**
+   * Event fired when the user cancels the dialog.
+   */
+  close: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user deletes the role. The parent should update its UI to reflect the removal. When this event is emitted,
+the role will have already been deleted server-side.
+   */
+  delete: EventEmitter<CustomEvent<{templateId: string; roleName: string}>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateRolePropertiesSDKError>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'sender', 'templateId']
 })
 @Component({
@@ -1522,14 +1562,14 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['autocomplete', 'disabled', 'label', 'placeholder', 'type', 'value']
+  inputs: ['autocomplete', 'disabled', 'helpText', 'label', 'placeholder', 'type', 'value']
 })
 @Component({
   selector: 'verdocs-text-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autocomplete', 'disabled', 'label', 'placeholder', 'type', 'value'],
+  inputs: ['autocomplete', 'disabled', 'helpText', 'label', 'placeholder', 'type', 'value'],
 })
 export class VerdocsTextInput {
   protected el: HTMLElement;

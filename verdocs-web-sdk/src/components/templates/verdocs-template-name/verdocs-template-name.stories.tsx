@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Templates/Template Name',
+  title: 'Templates/Name',
   component: 'verdocs-template-name',
   args: {
     // templateId: '',
@@ -13,7 +13,7 @@ export default {
   },
 } as Meta;
 
-export const TemplateName = ({onClose, templateId}) =>
+export const Name = ({onClose, templateId}) =>
   templateId
     ? html`
         <div style="width: 360px; background: #ffffff; padding: 20px; box-sizing: border-box">

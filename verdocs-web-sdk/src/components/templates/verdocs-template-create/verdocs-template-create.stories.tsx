@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Templates/Template Create',
+  title: 'Templates/Create',
   component: 'verdocs-template-create',
   args: {
     templateRole: {
@@ -29,7 +29,7 @@ export default {
   },
 } as Meta;
 
-export const TemplateCreate = ({templateRole, contactSuggestions, searchContacts, cancel, contactSelected}) =>
+export const Create = ({templateRole, contactSuggestions, searchContacts, cancel, contactSelected}) =>
   html`<verdocs-template-create
     .templateRole=${templateRole}
     .contactSuggestions=${contactSuggestions}

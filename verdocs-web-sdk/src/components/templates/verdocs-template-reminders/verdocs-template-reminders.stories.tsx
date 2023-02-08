@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Templates/Template Reminders',
+  title: 'Templates/Reminders',
   component: 'verdocs-template-reminders',
   args: {
     // templateId: '',
@@ -13,7 +13,7 @@ export default {
   },
 } as Meta;
 
-export const TemplateReminders = ({onClose, templateId}) =>
+export const Reminders = ({onClose, templateId}) =>
   templateId
     ? html`
         <div style="width: 360px; background: #ffffff; padding: 20px; box-sizing: border-box">

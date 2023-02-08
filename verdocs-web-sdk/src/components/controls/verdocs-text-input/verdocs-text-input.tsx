@@ -31,6 +31,11 @@ export class VerdocsTextInput {
   @Prop() autocomplete: string = '';
 
   /**
+   * If supplied, a help icon will be displayed to provide the user more information.
+   */
+  @Prop() helpText: string = '';
+
+  /**
    * The type of field to render. Only text-type fields are allowed here for the current styling. Additional types
    * (e.g. a date picker) will be supported by other controls in the future.
    */
@@ -55,6 +60,8 @@ export class VerdocsTextInput {
             placeholder={this.placeholder}
             autoComplete={this.autocomplete}
           />
+
+          {this.helpText && <verdocs-help-icon text={this.helpText} />}
         </label>
       </Host>
     );

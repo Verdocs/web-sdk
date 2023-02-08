@@ -2,8 +2,8 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Dialogs/Sender',
-  component: 'verdocs-template-sender',
+  title: 'Templates/Role Properties',
+  component: 'verdocs-template-role-properties',
   args: {
     templateId: '056b837f-b183-4039-b50a-d68acbf81b67',
     // templateId: 'd2338742-f3a1-465b-8592-806587413cc1',
@@ -13,4 +13,4 @@ export default {
   },
 } as Meta;
 
-export const Sender = ({value, onClose}) => html`<verdocs-template-sender-dialog .value=${value} @close=${onClose} />`;
+export const RoleProperties = ({value, onClose}) => html`<verdocs-template-role-properties .value=${value} @close=${onClose} />`;

@@ -1,0 +1,125 @@
+@import '../../../theme.scss';
+
+verdocs-template-role-properties {
+  font-family: $primary-font;
+  box-sizing: border-box;
+
+  div {
+    box-sizing: border-box;
+  }
+
+  .background-overlay {
+    position: absolute;
+    z-index: 10000;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0000007f;
+  }
+
+  .dialog {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    overflow: hidden;
+    background: $verdocs-grey-4;
+    padding: 16px;
+    box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
+  }
+
+  .heading {
+    display: flex;
+    font-size: 20px;
+    font-weight: 500;
+    flex-direction: row;
+  }
+
+  .buttons {
+    display: flex;
+    margin-top: 10px;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    verdocs-button {
+      margin-left: 16px;
+    }
+  }
+
+  form .row {
+    display: flex;
+    column-gap: 15px;
+    margin: 0 0 10px 0;
+    align-items: center;
+    flex-direction: row;
+
+    .input-label {
+      display: block;
+      color: $label-color-light;
+      font-weight: 700;
+      font-size: 14px;
+      margin: 0 0 4px 0;
+      flex: 0 0 100px;
+    }
+  }
+
+  verdocs-select-input {
+    flex: 1;
+    margin: 0;
+  }
+
+  verdocs-text-input {
+    margin: 0 0 10px 0;
+
+    label {
+      margin: 0;
+      display: flex;
+      column-gap: 15px;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .input-label {
+      flex: 0 0 100px;
+    }
+
+    input {
+      flex: 1;
+      display: flex;
+    }
+
+    verdocs-text-input {
+      margin: 0;
+    }
+  }
+
+  .checkbox-wrapper {
+    flex: 1;
+    display: flex;
+  }
+
+  .delete-button {
+    height: 34px;
+    display: flex;
+    cursor: pointer;
+    background: none;
+    border-radius: 4px;
+    align-items: center;
+    border: 1px solid #999;
+    justify-content: center;
+
+    &:active {
+      background: #f3f3f3;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
