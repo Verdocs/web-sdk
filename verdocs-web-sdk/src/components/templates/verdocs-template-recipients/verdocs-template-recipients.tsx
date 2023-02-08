@@ -1,8 +1,8 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {updateRole} from '@verdocs/js-sdk/Templates/Roles';
-import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
+import {createRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
+import {TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
 import TemplateStore from '../../../utils/templateStore';
 import {loadTemplate} from '../../../utils/Templates';
@@ -29,10 +29,7 @@ const stepIcon =
 const doneIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" fill="#00000089"><path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path></svg>';
 
-const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-</svg>
-`;
+const plusIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
 
 const iconSigner =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="m9.225 21.225 4.65-4.65h8.45v4.65Zm-5.35-2.2H5.05l8.5-8.5-1.175-1.175-8.5 8.5Zm14.25-9.95L13.8 4.8l1.325-1.325q.625-.65 1.525-.663.9-.012 1.6.663l1.225 1.175q.675.675.663 1.562-.013.888-.663 1.513ZM16.7 10.55 6 21.225H1.675V16.9L12.35 6.225Zm-3.725-.625-.6-.575 1.175 1.175Z"/></svg>';
@@ -251,25 +248,41 @@ export class VerdocsTemplateRecipients {
     this.extractSequenceNumbers();
   }
 
-  addRecipient() {
-    // createRole(this.endpoint,this.templateId, {
-    //     "template_id": "056b837f-b183-4039-b50a-d68acbf81b67",
-    //     "name": "Recipient 3",
-    //     "full_name": "",
-    //     "email": "",
-    //     "phone": "",
-    //     "sequence": 1,
-    //     "type": "signer",
-    //     "delegator": false
-    // })
-    // POST https://api.verdocs.com/templates/056b837f-b183-4039-b50a-d68acbf81b67/roles
-    // {
-    // }
-  }
+  handleAddRole(e, sequence: number) {
+    e.stopPropagation();
 
-  updateRole(role: string, fields: Partial<IRole>) {
-    console.log(role, fields);
-    // editRole(this.endpoint, this.templateId, role, fields);
+    // We don't need to look for a unique order number because we're already working with a sorted/renumbered set by now.
+    const order = TemplateStore.template.roles.filter(role => role.sequence === sequence).length + 1;
+
+    // We do need to look for name conflicts because they're UGC and can be anything, regardless of order.
+    let name = '';
+    let nextNumber = TemplateStore.template.roles.length;
+    do {
+      nextNumber++;
+      name = `Recipient ${nextNumber}`;
+    } while (!name || TemplateStore.template.roles.some(role => role.name === name));
+
+    console.log('Will create', name, sequence, order);
+    createRole(this.endpoint, this.templateId, {
+      template_id: this.templateId,
+      name,
+      full_name: '',
+      email: '',
+      phone: '',
+      sequence,
+      order,
+      type: 'signer',
+      delegator: false,
+    })
+      .then(r => {
+        console.log('Created role', r);
+        TemplateStore.template.roles.push(r);
+        this.renumberTemplateRoles();
+        this.forceRerender++;
+      })
+      .catch(e => {
+        console.log('Error creating role', e);
+      });
   }
 
   render() {
@@ -325,6 +338,8 @@ export class VerdocsTemplateRecipients {
                           </Fragment>
                         );
                       })}
+
+                    <button class="add-role" innerHTML={plusIcon} onClick={e => this.handleAddRole(e, sequence)} />
                   </div>
                 </div>
 

@@ -177,7 +177,29 @@ verdocs-template-recipients {
     display: none;
   }
 
+  .add-role {
+    margin: 0;
+    padding: 0;
+    border: none;
+    opacity: 0.5;
+    cursor: pointer;
+    background: none;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
   &.dragging {
+    .add-role {
+      display: none;
+    }
+
     form .row .recipient + .dropzone {
       display: flex;
     }
