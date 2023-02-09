@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "1.10.2",
+  "version": "1.10.3",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -17,6 +17,7 @@
     "loader/"
   ],
   "scripts": {
+    "push": "npm run build && npm publish",
     "build": "stencil build --docs",
     "serve": "stencil build --dev --watch --serve --es5",
     "start": "stencil build --dev --watch --docs --es5",
@@ -31,7 +32,7 @@
     "@stencil/core": "2.20.0",
     "@stencil/store": "^2.0.3",
     "@svgdotjs/svg.js": "^3.1.2",
-    "@verdocs/js-sdk": "^3.0.30",
+    "@verdocs/js-sdk": "^3.0.32",
     "date-fns": "^2.29.3",
     "flatpickr": "^4.6.13",
     "interactjs": "^1.10.17",

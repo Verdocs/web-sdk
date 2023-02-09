@@ -1,8 +1,9 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, h, Host, Prop, Event, EventEmitter, State} from '@stencil/core';
+import { Component, h, Host, Prop, Event, EventEmitter, State, Method } from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
+import TemplateStore from '../../../utils/templateStore';
 
 /**
  * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
@@ -76,6 +77,11 @@ export class VerdocsFieldPayment {
   averageFontWidth = 5;
   requiredFields: any[] = [];
 
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
+
   componentWillLoad() {
     // Load validators
     // Load fields
@@ -123,6 +129,23 @@ export class VerdocsFieldPayment {
   //     position: absolute;
   //     transform-origin: bottom left;
   //     opacity: 1;
+
+  @Method()
+  async showSettingsPanel() {
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    if (settingsPanel && settingsPanel.showPanel) {
+      settingsPanel.showPanel();
+    }
+  }
+
+  @Method()
+  async hideSettingsPanel() {
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    if (settingsPanel && settingsPanel.hidePanel) {
+      settingsPanel.hidePanel();
+    }
+    TemplateStore.updateCount++;
+  }
 
   render() {
     const settings = getFieldSettings(this.field);

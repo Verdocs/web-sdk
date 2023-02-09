@@ -1,5 +1,5 @@
 import {createPopper, Instance} from '@popperjs/core';
-import {Component, h, Host, Prop} from '@stencil/core';
+import {Component, h, Host, Method, Prop} from '@stencil/core';
 
 /**
  * Displays a clickable icon suitable for display in a toolbar. When clicked, a customizable drop-down panel will be
@@ -51,10 +51,25 @@ export class VerdocsButtonPanel {
     }
   }
 
+  // Not marked as @State because it's not the thing that controls our rendering
   showing = false;
-  toggle(e: any) {
-    e.stopPropagation();
 
+  @Method()
+  async showPanel() {
+    if (!this.showing) {
+      await this.toggle();
+    }
+  }
+
+  @Method()
+  async hidePanel() {
+    if (this.showing) {
+      await this.toggle();
+    }
+  }
+
+  @Method()
+  async toggle() {
     if (this.showing) {
       this.panelEl?.removeAttribute('data-show');
       this.hiderEl?.remove();
@@ -71,7 +86,10 @@ export class VerdocsButtonPanel {
       this.hiderEl.style.left = '0px';
       this.hiderEl.style.right = '0px';
       this.hiderEl.style.bottom = '0px';
-      this.hiderEl.onclick = (e: any) => this.toggle(e);
+      this.hiderEl.onclick = (e: any) => {
+        e.stopPropagation();
+        this.toggle();
+      };
       document.body.appendChild(this.hiderEl);
     }
   }
@@ -79,7 +97,15 @@ export class VerdocsButtonPanel {
   render() {
     return (
       <Host>
-        <div class="icon" innerHTML={this.icon} onClick={(e: any) => this.toggle(e)} ref={el => (this.iconEl = el)} />
+        <div
+          class="icon"
+          innerHTML={this.icon}
+          onClick={(e: any) => {
+            e.stopPropagation();
+            return this.toggle();
+          }}
+          ref={el => (this.iconEl = el)}
+        />
         <div role="tooltip" class="verdocs-button-panel-content" data-popper-placement="bottom" ref={el => (this.panelEl = el as HTMLDivElement)}>
           <div data-popper-arrow="true" class="arrow" />
           <slot />

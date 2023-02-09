@@ -93,19 +93,34 @@ export class VerdocsTemplateVisibility {
           <h5>Visibility</h5>
 
           <div class="input-row">
-            <label htmlFor="verdocs-is-personal">Personal</label>
+            <label htmlFor="verdocs-is-shared">Shared</label>
             <verdocs-checkbox
-              id="verdocs-is-personal"
-              name="is-personal"
-              checked={this.personal}
+              id="verdocs-is-shared"
+              name="is-shared"
+              checked={!this.personal}
               value="on"
               onInput={(e: any) => {
-                this.personal = e.target.checked;
+                this.personal = !e.target.checked;
                 this.dirty = true;
               }}
             />
           </div>
-          <div class="description">Personal templates are hidden from other members of your Organization (if any).</div>
+          <div class="description">Shared templates are visible to other members of your Organization (if any).</div>
+
+          {/*<div class="input-row">*/}
+          {/*  <label htmlFor="verdocs-is-personal">Personal</label>*/}
+          {/*  <verdocs-checkbox*/}
+          {/*    id="verdocs-is-personal"*/}
+          {/*    name="is-personal"*/}
+          {/*    checked={this.personal}*/}
+          {/*    value="on"*/}
+          {/*    onInput={(e: any) => {*/}
+          {/*      this.personal = e.target.checked;*/}
+          {/*      this.dirty = true;*/}
+          {/*    }}*/}
+          {/*  />*/}
+          {/*</div>*/}
+          {/*<div class="description">Personal templates are hidden from other members of your Organization (if any).</div>*/}
 
           <div class="input-row">
             <label htmlFor="verdocs-is-public">Public</label>

@@ -3,6 +3,7 @@ import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
+import TemplateStore from '../../../utils/templateStore';
 
 /**
  * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
@@ -38,12 +39,34 @@ export class VerdocsFieldDropdown {
    */
   @Event({composed: true}) fieldChange: EventEmitter<string>;
 
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
+
   @Method() async focusField() {
     this.el.focus();
   }
 
   handleChange(e: any) {
     this.fieldChange.emit(e.target.value);
+  }
+
+  @Method()
+  async showSettingsPanel() {
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    if (settingsPanel && settingsPanel.showPanel) {
+      settingsPanel.showPanel();
+    }
+  }
+
+  @Method()
+  async hideSettingsPanel() {
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    if (settingsPanel && settingsPanel.hidePanel) {
+      settingsPanel.hidePanel();
+    }
+    TemplateStore.updateCount++;
   }
 
   render() {

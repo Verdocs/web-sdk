@@ -1,0 +1,87 @@
+@import '../../../theme.scss';
+
+verdocs-template-field-properties {
+  font-family: $verdocs-primary-font;
+
+  .buttons {
+    display: flex;
+    margin-top: 30px;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    verdocs-button {
+      margin-left: 16px;
+    }
+  }
+
+  form .row {
+    display: flex;
+    column-gap: 15px;
+    margin: 0 0 10px 0;
+    align-items: center;
+    flex-direction: row;
+
+    .input-label {
+      display: block;
+      color: $label-color-light;
+      font-weight: 700;
+      font-size: 14px;
+      margin: 0 0 4px 0;
+      flex: 0 0 100px;
+    }
+  }
+
+  verdocs-select-input {
+    flex: 1;
+    margin: 0;
+  }
+
+  verdocs-text-input {
+    label {
+      margin: 0;
+      display: flex;
+      column-gap: 15px;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .input-label {
+      flex: 0 0 100px;
+    }
+
+    input {
+      flex: 1;
+      display: flex;
+    }
+
+    verdocs-text-input {
+      margin: 0;
+    }
+  }
+
+  .checkbox-wrapper {
+    flex: 1;
+    display: flex;
+  }
+
+  .delete-button {
+    height: 34px;
+    display: flex;
+    cursor: pointer;
+    background: none;
+    border-radius: 4px;
+    align-items: center;
+    border: 1px solid #999;
+    justify-content: center;
+
+    &:active {
+      background: #f3f3f3;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}

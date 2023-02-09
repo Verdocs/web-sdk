@@ -1,7 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, h, Host, Prop, Event, EventEmitter, Method} from '@stencil/core';
+import {Component, h, Host, Prop, Method, Event, EventEmitter} from '@stencil/core';
 import TemplateStore from '../../../utils/templateStore';
 import {getFieldSettings} from '../../../utils/utils';
 
@@ -51,16 +51,30 @@ export class VerdocsFieldTextbox {
   @Prop() roleindex?: number = 0;
 
   /**
-   * Event fired if the field is configurable when the recipient has changed.
+   * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) recipientChanged: EventEmitter<string>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
 
-  @Method() async focusField() {
+  @Method()
+  async focusField() {
     this.el.focus();
   }
 
-  handleChangeRecipient(e: any) {
-    this.recipientChanged?.emit(e.detail);
+  @Method()
+  async showSettingsPanel() {
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    if (settingsPanel && settingsPanel.showPanel) {
+      settingsPanel.showPanel();
+    }
+  }
+
+  @Method()
+  async hideSettingsPanel() {
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    if (settingsPanel && settingsPanel.hidePanel) {
+      settingsPanel.hidePanel();
+    }
+    TemplateStore.updateCount++;
   }
 
   render() {
@@ -85,35 +99,17 @@ export class VerdocsFieldTextbox {
           ref={el => (this.el = el)}
         />
         {this.editable && (
-          <verdocs-button-panel icon={settingsIcon}>
+          <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
             <h6>Field Settings</h6>
-            <form>
-              <verdocs-select-input
-                label="Recipient"
-                value={TemplateStore.roleNames[this.roleindex]}
-                options={TemplateStore.roleNames.map(role => ({label: role, value: role}))}
-                onChange={e => this.handleChangeRecipient(e)}
-              />
-
-              <verdocs-text-input
-                label="Field Name"
-                value=""
-                placeholder="Stored field name..."
-                onInput={e => {
-                  e.stopPropagation();
-                  console.log('ipt', e);
-                }}
-              />
-              <verdocs-text-input
-                label="Placeholder"
-                value=""
-                placeholder="Placeholder text..."
-                onInput={e => {
-                  e.stopPropagation();
-                  console.log('ipt', e);
-                }}
-              />
-            </form>
+            <verdocs-template-field-properties
+              templateId={TemplateStore.templateId}
+              fieldName={this.field.name}
+              onClose={() => this.hideSettingsPanel()}
+              onSettingsChanged={e => {
+                this.settingsChanged?.emit(e.detail);
+                return this.hideSettingsPanel();
+              }}
+            />
           </verdocs-button-panel>
         )}
       </Host>

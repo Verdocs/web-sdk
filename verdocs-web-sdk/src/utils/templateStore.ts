@@ -11,6 +11,10 @@ const {state, onChange} = createStore({
   loadProgress: 0,
   loading: false,
 
+  // This can be used as a data field on components that need to force re-rendering when the underlying data has changed. Stencil stores
+  // are handy but not very sophisticated. They don't re-render on "deep" changes.
+  updateCount: 1,
+
   pageNumbers: [] as number[],
   pageUris: {} as Record<number, string>,
   roleNames: [] as string[],
@@ -43,6 +47,7 @@ onChange('template', async newTemplate => {
   console.log('[TEMPLATESTORE] Loaded fields', state.fields);
 
   state.pageNumbers = integerSequence(1, newTemplate.pages.length);
+  state.updateCount++;
 });
 
 onChange('fields', newField => {

@@ -54,4 +54,10 @@ verdocs-field-checkbox {
   &.focused {
     animation: verdocs-field-pulse 0.75s 2;
   }
+
+  verdocs-button-panel {
+    margin-left: -20px;
+    margin-top: -4px;
+    transform: scale(0.7);
+  }
 }

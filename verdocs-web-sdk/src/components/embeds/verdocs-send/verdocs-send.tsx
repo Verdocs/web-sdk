@@ -168,7 +168,7 @@ export class VerdocsSend {
           <div class="left-line" />
           <div class={`level level-start`}>
             {this.getLevelIcon(-1)}
-            <div class="complete">Send Document</div>
+            <div class="complete">Send Envelope</div>
           </div>
 
           {this.levels.map(level => (
@@ -195,7 +195,7 @@ export class VerdocsSend {
 
           <div class={`level level-done`}>
             {this.getLevelIcon(this.levels.length)}
-            <div class="complete">Document Complete</div>
+            <div class="complete">Signing Complete</div>
           </div>
         </div>
 

@@ -1,13 +1,14 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
+import {IDocumentField, IEnvelope, TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {IDocumentPageInfo} from './Types';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {downloadBlob} from '@verdocs/js-sdk/Utils/Files';
 
-export const defaultWidth = (field: ITemplateField | IDocumentField) => {
-  switch (field.type) {
+export const defaultWidth = (type: TDocumentFieldType) => {
+  // checkbox was a legacy field type
+  switch (type as TDocumentFieldType | 'checkbox') {
     case 'textbox':
       return 150;
     case 'timestamp':
@@ -33,8 +34,8 @@ export const defaultWidth = (field: ITemplateField | IDocumentField) => {
   return 150;
 };
 
-export const defaultHeight = (field: ITemplateField | IDocumentField) => {
-  switch (field.type) {
+export const defaultHeight = (type: TDocumentFieldType) => {
+  switch (type as TDocumentFieldType | 'checkbox') {
     case 'textbox':
       return 15;
     case 'timestamp':
@@ -62,7 +63,7 @@ export const defaultHeight = (field: ITemplateField | IDocumentField) => {
 
 export const setControlStyles = (el: HTMLElement, field: ITemplateField | IDocumentField, xScale: number, yScale: number, option?: number) => {
   const settings = (field as ITemplateField).setting || (field as IDocumentField).settings;
-  let {x = 0, y = 0, width = defaultWidth(field), height = defaultHeight(field)} = settings;
+  let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = settings;
 
   const optionSettings = option !== undefined && settings.options[option] ? settings.options[option] : null;
   if (optionSettings) {
@@ -182,6 +183,12 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         if (done) {
           cbEl.setAttribute('done', true);
         }
+        if (editable) {
+          cbEl.setAttribute('editable', true);
+        }
+        if (draggable) {
+          cbEl.setAttribute('draggable', true);
+        }
         setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, checkboxIndex);
         controlsDiv.appendChild(cbEl);
 
@@ -208,6 +215,13 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
         if (done) {
           radioEl.setAttribute('done', true);
         }
+        if (editable) {
+          radioEl.setAttribute('editable', true);
+        }
+        if (draggable) {
+          radioEl.setAttribute('draggable', true);
+        }
+
         setControlStyles(radioEl, field, docPage.xScale, docPage.yScale, buttonIndex);
         controlsDiv.appendChild(radioEl);
 

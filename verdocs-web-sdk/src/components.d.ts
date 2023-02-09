@@ -76,10 +76,13 @@ export namespace Components {
         "variant": 'standard' | 'text' | 'outline';
     }
     interface VerdocsButtonPanel {
+        "hidePanel": () => Promise<void>;
         /**
           * SVG icon to display
          */
         "icon": string;
+        "showPanel": () => Promise<void>;
+        "toggle": () => Promise<void>;
     }
     interface VerdocsCheckbox {
         /**
@@ -175,10 +178,12 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleIndex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFieldCheckbox {
         /**
@@ -190,9 +195,18 @@ export namespace Components {
          */
         "done"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
+        "hideSettingsPanel": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * The index of the settings option this particular checkbox is for
          */
@@ -201,6 +215,7 @@ export namespace Components {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFieldDate {
         /**
@@ -220,6 +235,7 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -228,6 +244,7 @@ export namespace Components {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -239,10 +256,12 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFieldInitial {
         /**
@@ -262,6 +281,7 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        "hideSettingsPanel": () => Promise<void>;
         /**
           * The document or template field to display.
          */
@@ -274,6 +294,7 @@ export namespace Components {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFieldPayment {
         "currentInitial": string;
@@ -291,6 +312,7 @@ export namespace Components {
         "fieldId": string;
         "fields": any[];
         "focused": boolean;
+        "hideSettingsPanel": () => Promise<void>;
         "pageNum": number;
         "pdfPages": any[];
         "recipients": any;
@@ -300,6 +322,7 @@ export namespace Components {
          */
         "roleindex"?: number;
         "selectedRoleName": string;
+        "showSettingsPanel": () => Promise<void>;
         "signed": boolean;
     }
     interface VerdocsFieldRadioButton {
@@ -312,9 +335,18 @@ export namespace Components {
          */
         "done"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
+        "hideSettingsPanel": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * The index of the settings option this particular checkbox is for
          */
@@ -323,6 +355,7 @@ export namespace Components {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFieldSignature {
         /**
@@ -342,6 +375,7 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -354,6 +388,7 @@ export namespace Components {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -373,6 +408,7 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -381,6 +417,7 @@ export namespace Components {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -400,6 +437,7 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -408,6 +446,7 @@ export namespace Components {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -427,6 +466,7 @@ export namespace Components {
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
+        "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -435,6 +475,7 @@ export namespace Components {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        "showSettingsPanel": () => Promise<void>;
     }
     interface VerdocsFloatingMenu {
         /**
@@ -671,6 +712,20 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
     }
+    interface VerdocsTemplateFieldProperties {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The field to configure.
+         */
+        "fieldName": string;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
     interface VerdocsTemplateFields {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -875,6 +930,14 @@ export interface VerdocsEnvelopeSidebarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsEnvelopeSidebarElement;
 }
+export interface VerdocsFieldAttachmentCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldAttachmentElement;
+}
+export interface VerdocsFieldCheckboxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldCheckboxElement;
+}
 export interface VerdocsFieldDateCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldDateElement;
@@ -891,13 +954,25 @@ export interface VerdocsFieldPaymentCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldPaymentElement;
 }
+export interface VerdocsFieldRadioButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldRadioButtonElement;
+}
 export interface VerdocsFieldSignatureCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldSignatureElement;
 }
+export interface VerdocsFieldTextareaCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldTextareaElement;
+}
 export interface VerdocsFieldTextboxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldTextboxElement;
+}
+export interface VerdocsFieldTimestampCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldTimestampElement;
 }
 export interface VerdocsFloatingMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -950,6 +1025,10 @@ export interface VerdocsTemplateAttachmentsCustomEvent<T> extends CustomEvent<T>
 export interface VerdocsTemplateCreateCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateCreateElement;
+}
+export interface VerdocsTemplateFieldPropertiesCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateFieldPropertiesElement;
 }
 export interface VerdocsTemplateFieldsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1254,6 +1333,12 @@ declare global {
         prototype: HTMLVerdocsTemplateCreateElement;
         new (): HTMLVerdocsTemplateCreateElement;
     };
+    interface HTMLVerdocsTemplateFieldPropertiesElement extends Components.VerdocsTemplateFieldProperties, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateFieldPropertiesElement: {
+        prototype: HTMLVerdocsTemplateFieldPropertiesElement;
+        new (): HTMLVerdocsTemplateFieldPropertiesElement;
+    };
     interface HTMLVerdocsTemplateFieldsElement extends Components.VerdocsTemplateFields, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateFieldsElement: {
@@ -1388,6 +1473,7 @@ declare global {
         "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-create": HTMLVerdocsTemplateCreateElement;
+        "verdocs-template-field-properties": HTMLVerdocsTemplateFieldPropertiesElement;
         "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
         "verdocs-template-name": HTMLVerdocsTemplateNameElement;
         "verdocs-template-properties": HTMLVerdocsTemplatePropertiesElement;
@@ -1596,6 +1682,10 @@ declare namespace LocalJSX {
          */
         "field"?: IDocumentField | ITemplateField | null;
         /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string}>) => void;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleIndex"?: number;
@@ -1610,9 +1700,21 @@ declare namespace LocalJSX {
          */
         "done"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
+        /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldCheckboxCustomEvent<{fieldName: string}>) => void;
         /**
           * The index of the settings option this particular checkbox is for
          */
@@ -1644,6 +1746,10 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldDateCustomEvent<{fieldName: string}>) => void;
+        /**
           * Event fired on every character entered into / deleted from the field.
          */
         "onSettingsPress"?: (event: VerdocsFieldDateCustomEvent<any>) => void;
@@ -1665,6 +1771,10 @@ declare namespace LocalJSX {
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldDropdownCustomEvent<string>) => void;
+        /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string}>) => void;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -1708,6 +1818,10 @@ declare namespace LocalJSX {
          */
         "onFieldChange"?: (event: VerdocsFieldInitialCustomEvent<string>) => void;
         /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldInitialCustomEvent<{fieldName: string}>) => void;
+        /**
           * Event fired on every character entered into / deleted from the field.
          */
         "onSettingsPress"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
@@ -1733,6 +1847,10 @@ declare namespace LocalJSX {
         "fields"?: any[];
         "focused"?: boolean;
         "onInitialComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
+        /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldPaymentCustomEvent<{fieldName: string}>) => void;
         "onSignatureComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
         "pageNum"?: number;
         "pdfPages"?: any[];
@@ -1755,9 +1873,21 @@ declare namespace LocalJSX {
          */
         "done"?: boolean;
         /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
+        /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldRadioButtonCustomEvent<{fieldName: string}>) => void;
         /**
           * The index of the settings option this particular checkbox is for
          */
@@ -1797,6 +1927,10 @@ declare namespace LocalJSX {
          */
         "onFieldChange"?: (event: VerdocsFieldSignatureCustomEvent<string>) => void;
         /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldSignatureCustomEvent<{fieldName: string}>) => void;
+        /**
           * Event fired on every character entered into / deleted from the field.
          */
         "onSettingsPress"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
@@ -1827,6 +1961,10 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string}>) => void;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -1853,9 +1991,9 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
-          * Event fired if the field is configurable when the recipient has changed.
+          * Event fired when the field's settings are changed.
          */
-        "onRecipientChanged"?: (event: VerdocsFieldTextboxCustomEvent<string>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string}>) => void;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -1882,6 +2020,10 @@ declare namespace LocalJSX {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string}>) => void;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -2229,6 +2371,36 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsTemplateCreateCustomEvent<SDKError>) => void;
     }
+    interface VerdocsTemplateFieldProperties {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The field to configure.
+         */
+        "fieldName"?: string;
+        /**
+          * Event fired when the user cancels the dialog.
+         */
+        "onClose"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<any>) => void;
+        /**
+          * Event fired when the user deletes the role. The parent should update its UI to reflect the removal. When this event is emitted, the role will have already been deleted server-side.
+         */
+        "onDelete"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<{templateId: string; roleName: string}>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<{fieldName: string}>) => void;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
     interface VerdocsTemplateFields {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2544,6 +2716,7 @@ declare namespace LocalJSX {
         "verdocs-template-attachments": VerdocsTemplateAttachments;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-create": VerdocsTemplateCreate;
+        "verdocs-template-field-properties": VerdocsTemplateFieldProperties;
         "verdocs-template-fields": VerdocsTemplateFields;
         "verdocs-template-name": VerdocsTemplateName;
         "verdocs-template-properties": VerdocsTemplateProperties;
@@ -2608,6 +2781,7 @@ declare module "@stencil/core" {
             "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
             "verdocs-template-create": LocalJSX.VerdocsTemplateCreate & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;
+            "verdocs-template-field-properties": LocalJSX.VerdocsTemplateFieldProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldPropertiesElement>;
             "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
             "verdocs-template-name": LocalJSX.VerdocsTemplateName & JSXBase.HTMLAttributes<HTMLVerdocsTemplateNameElement>;
             "verdocs-template-properties": LocalJSX.VerdocsTemplateProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplatePropertiesElement>;

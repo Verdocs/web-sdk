@@ -7,15 +7,14 @@ verdocs-button-panel {
   .icon {
     display: inline-block;
     cursor: pointer;
+    opacity: 0.6;
 
     svg {
-      fill: $light-border-color;
+      fill: $border-color;
     }
 
     &:hover {
-      svg {
-        fill: $verdocs-grey-4;
-      }
+      opacity: 1;
     }
   }
 }
@@ -26,7 +25,7 @@ verdocs-button-panel {
   display: none;
   background: #ffffff;
   color: $label-color;
-  width: 280px;
+  width: 320px;
   font-weight: bold;
   padding: 15px;
   font-size: 14px;
@@ -78,28 +77,5 @@ verdocs-button-panel {
     font-size: 16px;
     font-weight: bold;
     margin: 0 0 8px 0;
-  }
-
-  form {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  label {
-    display: block;
-    font-size: 14px;
-    font-weight: bold;
-    margin: 0 0 3px 0;
-    color: $verdocs-grey-1;
-  }
-
-  input {
-    flex: 1;
-    height: 34px;
-    display: flex;
-    font-size: 14px;
-    margin: 0 0 10px 0;
   }
 }

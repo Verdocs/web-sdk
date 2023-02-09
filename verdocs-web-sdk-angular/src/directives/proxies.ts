@@ -97,7 +97,8 @@ export declare interface VerdocsButton extends Components.VerdocsButton {}
 
 
 @ProxyCmp({
-  inputs: ['icon']
+  inputs: ['icon'],
+  methods: ['showPanel', 'hidePanel', 'toggle']
 })
 @Component({
   selector: 'verdocs-button-panel',
@@ -296,7 +297,7 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   inputs: ['disabled', 'field', 'roleIndex'],
-  methods: ['focusField']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-attachment',
@@ -310,38 +311,51 @@ export class VerdocsFieldAttachment {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['settingsChanged']);
   }
 }
 
 
-export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {}
+export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+}
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'field', 'option', 'roleindex']
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'roleindex'],
+  methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-checkbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'field', 'option', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'roleindex'],
 })
 export class VerdocsFieldCheckbox {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['settingsChanged']);
   }
 }
 
 
-export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {}
+export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+}
 
 
 @ProxyCmp({
   inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'roleindex'],
-  methods: ['focusField']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-date',
@@ -355,7 +369,7 @@ export class VerdocsFieldDate {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsPress']);
+    proxyOutputs(this, this.el, ['settingsPress', 'settingsChanged']);
   }
 }
 
@@ -365,12 +379,16 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
    * Event fired on every character entered into / deleted from the field.
    */
   settingsPress: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
 @ProxyCmp({
   inputs: ['disabled', 'field', 'roleindex'],
-  methods: ['focusField']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-dropdown',
@@ -384,7 +402,7 @@ export class VerdocsFieldDropdown {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange']);
+    proxyOutputs(this, this.el, ['fieldChange', 'settingsChanged']);
   }
 }
 
@@ -396,12 +414,16 @@ It is generally the best event to subscribe to than `input` for most cases EXCEP
 keypress.
    */
   fieldChange: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
 @ProxyCmp({
   inputs: ['disabled', 'done', 'editable', 'field', 'initials', 'moveable', 'roleindex'],
-  methods: ['focusField']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-initial',
@@ -415,7 +437,7 @@ export class VerdocsFieldInitial {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['adopt', 'cancel', 'fieldChange', 'settingsPress']);
+    proxyOutputs(this, this.el, ['adopt', 'cancel', 'fieldChange', 'settingsChanged', 'settingsPress']);
   }
 }
 
@@ -436,6 +458,10 @@ keypress.
    */
   fieldChange: EventEmitter<CustomEvent<string>>;
   /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
    * Event fired on every character entered into / deleted from the field.
    */
   settingsPress: EventEmitter<CustomEvent<any>>;
@@ -443,7 +469,8 @@ keypress.
 
 
 @ProxyCmp({
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed']
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed'],
+  methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-payment',
@@ -457,7 +484,7 @@ export class VerdocsFieldPayment {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete']);
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete', 'settingsChanged']);
   }
 }
 
@@ -467,34 +494,45 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
   signatureComplete: EventEmitter<CustomEvent<string>>;
 
   initialComplete: EventEmitter<CustomEvent<string>>;
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'field', 'option', 'roleindex']
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'roleindex'],
+  methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-radio-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'field', 'option', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'roleindex'],
 })
 export class VerdocsFieldRadioButton {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['settingsChanged']);
   }
 }
 
 
-export declare interface VerdocsFieldRadioButton extends Components.VerdocsFieldRadioButton {}
+export declare interface VerdocsFieldRadioButton extends Components.VerdocsFieldRadioButton {
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+}
 
 
 @ProxyCmp({
   inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'name', 'roleindex'],
-  methods: ['focusField']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-signature',
@@ -508,7 +546,7 @@ export class VerdocsFieldSignature {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange', 'settingsPress']);
+    proxyOutputs(this, this.el, ['fieldChange', 'settingsPress', 'settingsChanged']);
   }
 }
 
@@ -522,12 +560,16 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
    * Event fired on every character entered into / deleted from the field.
    */
   settingsPress: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
 @ProxyCmp({
   inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'roleindex'],
-  methods: ['focusField']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-textarea',
@@ -541,16 +583,22 @@ export class VerdocsFieldTextarea {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['settingsChanged']);
   }
 }
 
 
-export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {}
+export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+}
 
 
 @ProxyCmp({
   inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'roleindex'],
-  methods: ['focusField']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-textbox',
@@ -564,22 +612,22 @@ export class VerdocsFieldTextbox {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['recipientChanged']);
+    proxyOutputs(this, this.el, ['settingsChanged']);
   }
 }
 
 
 export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
   /**
-   * Event fired if the field is configurable when the recipient has changed.
+   * Event fired when the field's settings are changed.
    */
-  recipientChanged: EventEmitter<CustomEvent<string>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
 @ProxyCmp({
   inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'roleindex'],
-  methods: ['focusField']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-timestamp',
@@ -593,11 +641,17 @@ export class VerdocsFieldTimestamp {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['settingsChanged']);
   }
 }
 
 
-export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {}
+export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+}
 
 
 @ProxyCmp({
@@ -1242,6 +1296,50 @@ export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplat
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateCreateSDKError>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'fieldName', 'templateId']
+})
+@Component({
+  selector: 'verdocs-template-field-properties',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'fieldName', 'templateId'],
+})
+export class VerdocsTemplateFieldProperties {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['close', 'delete', 'settingsChanged', 'sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateFieldPropertiesSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateFieldProperties extends Components.VerdocsTemplateFieldProperties {
+  /**
+   * Event fired when the user cancels the dialog.
+   */
+  close: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user deletes the role. The parent should update its UI to reflect the removal. When this event is emitted,
+the role will have already been deleted server-side.
+   */
+  delete: EventEmitter<CustomEvent<{templateId: string; roleName: string}>>;
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateFieldPropertiesSDKError>>;
 }
 
 

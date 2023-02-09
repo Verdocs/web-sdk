@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {createField, editField} from '@verdocs/js-sdk/Templates/Fields';
+import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {IPage, ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, Host, State} from '@stencil/core';
 import {defaultHeight, defaultWidth, getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
@@ -8,6 +8,7 @@ import TemplateStore from '../../../utils/templateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
+import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 
 const iconSingleline = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
@@ -80,7 +81,7 @@ export class VerdocsTemplateFields {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() placing = null;
+  @State() placing: TDocumentFieldType | null = null;
   @State() selectedRoleName = '';
 
   pageHeights: Record<number, number> = {};
@@ -125,6 +126,9 @@ export class VerdocsTemplateFields {
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
+    el.addEventListener('settingsChanged', () => {
+      el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, field.role_name));
+    });
 
     el.setAttribute('roleindex', roleIndex);
     el.setAttribute('pageNumber', pageInfo.pageNumber);
@@ -141,7 +145,6 @@ export class VerdocsTemplateFields {
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
-    console.log('tsf', pageInfo.pageNumber, TemplateStore.fields);
     const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
     // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
     console.log('[FIELDS] Fields on page', fields);
@@ -198,8 +201,7 @@ export class VerdocsTemplateFields {
     if (field) {
       field.setting.x = x;
       field.setting.y = y;
-      const edited = await editField(this.endpoint, this.templateId, name, field);
-      console.log('edited field', edited);
+      await updateField(this.endpoint, this.templateId, name, field);
       this.handlePageRendered({detail: this.cachedPageInfo[pageNumber]});
     }
   }
@@ -224,8 +226,8 @@ export class VerdocsTemplateFields {
       const clickedX = e.offsetX;
       const clickedY = e.offsetY;
 
-      const width = defaultWidth({type: this.placing} as ITemplateField);
-      const height = defaultHeight({type: this.placing} as ITemplateField);
+      const width = defaultWidth(this.placing);
+      const height = defaultHeight(this.placing);
       const {naturalWidth = 612, naturalHeight = 792} = this.cachedPageInfo[pageNumber];
 
       const {x, y} = this.viewCoordinatesToPageCoordinates(clickedX, clickedY, pageNumber, naturalWidth - width, naturalHeight - height);
@@ -258,6 +260,7 @@ export class VerdocsTemplateFields {
   }
 
   render() {
+    console.log('rendering', TemplateStore.updateCount);
     if (!this.endpoint.session) {
       return (
         <Host>
@@ -279,7 +282,13 @@ export class VerdocsTemplateFields {
     pages.sort((a, b) => a.sequence - b.sequence);
 
     return (
-      <Host class={this.placing ? {[`placing-${this.placing}`]: true} : {}}>
+      <Host
+        class={this.placing ? {[`placing-${this.placing}`]: true} : {}}
+        data-updated={TemplateStore.updateCount}
+        onSubmit={() => {
+          console.log('onSubmit');
+        }}
+      >
         {/* <div class="page-0" ref={el => (this.page0El = el as HTMLDivElement)}>*/}
         {/*  <div class="user-placed-fields">*/}
         {/*    <div class="title">User-Placed Fields</div>*/}
@@ -315,7 +324,7 @@ export class VerdocsTemplateFields {
         <verdocs-floating-menu
           options={menuOptions}
           onOptionSelected={e => {
-            this.placing = e.detail.id;
+            this.placing = e.detail.id as TDocumentFieldType;
           }}
         />
       </Host>

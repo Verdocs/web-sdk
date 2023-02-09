@@ -24,10 +24,6 @@ verdocs-button {
       padding: 0 12px;
     }
 
-    &:disabled {
-      cursor: none;
-    }
-
     // Small-sized button size adjustments
     &.small {
       height: 34px;
@@ -151,7 +147,6 @@ verdocs-button {
 
       &:disabled {
         color: $disabled-color;
-        cursor: none;
       }
 
       &:active:not([disabled]) {
@@ -176,7 +171,6 @@ verdocs-button {
 
       &:disabled {
         color: $disabled-color;
-        cursor: none;
         border: 1px solid $disabled-color;
       }
 
