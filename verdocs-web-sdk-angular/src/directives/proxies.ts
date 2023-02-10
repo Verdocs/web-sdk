@@ -1473,7 +1473,7 @@ export class VerdocsTemplateRecipients {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'sdkError']);
+    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError']);
   }
 }
 
@@ -1481,6 +1481,10 @@ export class VerdocsTemplateRecipients {
 import type { SDKError as IVerdocsTemplateRecipientsSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateRecipients extends Components.VerdocsTemplateRecipients {
+  /**
+   * Event fired when the user clicks to proceed.
+   */
+  next: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the user cancels the dialog.
    */

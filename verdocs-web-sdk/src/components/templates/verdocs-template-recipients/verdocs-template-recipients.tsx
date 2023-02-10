@@ -61,6 +61,11 @@ export class VerdocsTemplateRecipients {
   @Prop() templateId: string = '';
 
   /**
+   * Event fired when the user clicks to proceed.
+   */
+  @Event({composed: true}) next: EventEmitter;
+
+  /**
    * Event fired when the user cancels the dialog.
    */
   @Event({composed: true}) cancel: EventEmitter;
@@ -206,6 +211,7 @@ export class VerdocsTemplateRecipients {
 
   handleSubmit(e) {
     e.stopPropagation();
+    this.next?.emit();
   }
 
   sortTemplateRoles() {
@@ -286,7 +292,6 @@ export class VerdocsTemplateRecipients {
   }
 
   render() {
-    // console.log('Roles', JSON.parse(JSON.stringify(TemplateStore.template.roles)));
     const roleNames = TemplateStore.template.roles.map(role => role.name);
 
     return (
@@ -354,6 +359,17 @@ export class VerdocsTemplateRecipients {
               </Fragment>
             ))}
 
+            {this.sequences.length < 1 && (
+              <Fragment>
+                <div class="row">
+                  <div class="icon" innerHTML={stepIcon} />
+                  <div class="row-recipients">
+                    <button class="add-role" innerHTML={plusIcon} onClick={e => this.handleAddRole(e, 1)} />
+                  </div>
+                </div>
+              </Fragment>
+            )}
+
             <div class="row">
               <div class="icon" innerHTML={doneIcon} />
               <div class="row-recipients">
@@ -362,11 +378,17 @@ export class VerdocsTemplateRecipients {
             </div>
           </div>
 
+          {roleNames.length < 1 && (
+            <div class="empty">
+              You must add at least one Role before proceeding.<br/> Click the <span innerHTML={plusIcon} /> Add button above to get started.
+            </div>
+          )}
+
           <div class="buttons">
             <div class="flex-fill" />
 
             <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} />
-            <verdocs-button label="OK" size="small" onClick={e => this.handleSubmit(e)} />
+            <verdocs-button label="OK" size="small" onClick={e => this.handleSubmit(e)} disabled={roleNames.length < 1} />
           </div>
         </form>
 

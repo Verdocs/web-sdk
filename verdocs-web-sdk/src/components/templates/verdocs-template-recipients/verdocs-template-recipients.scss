@@ -230,6 +230,19 @@ verdocs-template-recipients {
     flex-direction: row;
   }
 
+  .empty {
+    font-size: 13px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      stroke: #666666;
+      margin-bottom: -5px;
+    }
+  }
+
   ::placeholder {
     color: $verdocs-bg-2;
   }

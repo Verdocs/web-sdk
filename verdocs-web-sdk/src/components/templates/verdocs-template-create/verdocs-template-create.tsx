@@ -7,6 +7,8 @@ import {SDKError} from '../../../utils/errors';
 // import {ITemplate, ITemplateDocument} from '@verdocs/js-sdk/Templates/Types';
 // import {createPage} from '@verdocs/js-sdk/Templates/Pages';
 
+const unicodeNBSP = ' ';
+
 const FileIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"></path></svg>';
 
@@ -43,7 +45,10 @@ export class VerdocsTemplateCreate {
 
   @State() file: File | null;
 
+  @State() creating = false;
+
   componentWillLoad() {
+    this.endpoint.setTimeout(30000);
     this.endpoint.loadSession();
   }
 
@@ -113,9 +118,9 @@ export class VerdocsTemplateCreate {
           <div>
             <span innerHTML={FileIcon} />
           </div>
-          <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold'}}>Drag a file here</div>
-          <div style={{marginTop: '20px', marginBottom: '20px', fontSize: '16px'}}>Or, if you prefer...</div>
-          <verdocs-button label="Select a file from your computer" size="small" onClick={e => this.handleUpload(e)} />
+          <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
+          <div style={{marginTop: '20px', marginBottom: '20px', fontSize: '16px', height: '20px'}}>{this.file ? unicodeNBSP : 'Or, if you prefer...'}</div>
+          <verdocs-button label={this.file ? 'Select a different file' : 'Select a file from your computer'} size="small" onClick={e => this.handleUpload(e)} />
         </div>
 
         <div class="buttons">

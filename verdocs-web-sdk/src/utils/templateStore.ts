@@ -50,6 +50,7 @@ onChange('template', async newTemplate => {
   state.updateCount++;
 });
 
+// TODO: Do not rely on this, it doesn't appear to be working
 onChange('fields', newField => {
   console.log('[TEMPLATESTORE] Field changed', newField);
   state.dirty = true;

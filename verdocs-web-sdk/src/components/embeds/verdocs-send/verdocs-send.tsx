@@ -70,7 +70,7 @@ export class VerdocsSend {
 
   @State() rolesCompleted: Record<string, TAnnotatedRole> = {};
 
-  @Method() reset() {
+  @Method() async reset() {
     this.rolesCompleted = {};
   }
 
@@ -155,7 +155,6 @@ export class VerdocsSend {
     const roleNames = TemplateStore.template.roles.map(role => role.name) || [];
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= roleNames.length;
-    console.log('r', this.rolesCompleted, allRolesAssigned, rolesAssigned);
 
     return (
       <Host class={{}}>

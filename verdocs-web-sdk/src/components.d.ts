@@ -2474,6 +2474,10 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsTemplateRecipientsCustomEvent<any>) => void;
         /**
+          * Event fired when the user clicks to proceed.
+         */
+        "onNext"?: (event: VerdocsTemplateRecipientsCustomEvent<any>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateRecipientsCustomEvent<SDKError>) => void;
