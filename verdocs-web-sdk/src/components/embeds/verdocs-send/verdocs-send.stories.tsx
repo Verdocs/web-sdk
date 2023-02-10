@@ -9,10 +9,11 @@ export default {
   },
   argTypes: {
     templateId: {control: {type: 'string'}},
+    onSend: {action: 'send'},
   },
   parameters: {
     layout: 'fullscreen',
   },
 } as Meta;
 
-export const Send = ({templateId}) => html`<verdocs-send .templateId=${templateId} />`;
+export const Send = ({templateId, onSend}) => html`<verdocs-send .templateId=${templateId} @send=${onSend} />`;

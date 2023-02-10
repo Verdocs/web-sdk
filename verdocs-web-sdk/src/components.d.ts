@@ -647,6 +647,7 @@ export namespace Components {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
+        "reset": () => Promise<void>;
         /**
           * The ID of the template to create the document from.
          */
@@ -2265,7 +2266,7 @@ declare namespace LocalJSX {
         /**
           * The user completed the form and clicked send.
          */
-        "onSend"?: (event: VerdocsSendCustomEvent<{recipientsAssigned: IRole[]}>) => void;
+        "onSend"?: (event: VerdocsSendCustomEvent<{roles: IRole[]; name: string; template_id: string}>) => void;
         /**
           * The ID of the template to create the document from.
          */

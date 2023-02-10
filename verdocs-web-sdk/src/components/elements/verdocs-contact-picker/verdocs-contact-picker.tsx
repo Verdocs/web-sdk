@@ -187,7 +187,7 @@ export class VerdocsContactPicker {
             name="verdocs-contact-picker-name"
             type="text"
             data-lpignore="true"
-            autocomplete="off"
+            autocomplete="blocked"
             value={this.name}
             placeholder="Recipient Name..."
             onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
@@ -218,7 +218,7 @@ export class VerdocsContactPicker {
             name="verdocs-contact-picker-email"
             type="text"
             data-lpignore="true"
-            autoComplete="off"
+            autocomplete="blocked"
             value={this.email}
             placeholder="Email Address..."
             onFocus={() => (this.showSuggestions = false)}
@@ -233,7 +233,7 @@ export class VerdocsContactPicker {
             name="verdocs-contact-picker-phone"
             type="text"
             data-lpignore="true"
-            autocomplete="off"
+            autocomplete="blocked"
             value={this.phone}
             placeholder="Phone Number..."
             onFocus={() => (this.showSuggestions = false)}
@@ -249,7 +249,7 @@ export class VerdocsContactPicker {
               name="verdocs-contact-picker-message"
               type="text"
               data-lpignore="true"
-              autocomplete="off"
+              autocomplete="blocked"
               value={this.message}
               placeholder="Invitation Message..."
               onFocus={() => (this.showSuggestions = false)}

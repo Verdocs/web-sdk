@@ -1067,7 +1067,8 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'templateId']
+  inputs: ['endpoint', 'templateId'],
+  methods: ['reset']
 })
 @Component({
   selector: 'verdocs-send',
@@ -1093,7 +1094,7 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
    * The user completed the form and clicked send.
    */
-  send: EventEmitter<CustomEvent<IVerdocsSend{recipientsAssigned: [object Object][]}>>;
+  send: EventEmitter<CustomEvent<IVerdocsSend{roles: [object Object][]; name: string; template_id: string}>>;
   /**
    * The user canceled the process.
    */

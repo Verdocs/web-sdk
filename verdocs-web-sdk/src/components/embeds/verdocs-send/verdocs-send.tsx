@@ -1,9 +1,10 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
-import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {IRole} from '@verdocs/js-sdk/Templates/Types';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
-import {Component, Prop, State, h, Event, EventEmitter, Host} from '@stencil/core';
+import {Component, Prop, State, h, Event, EventEmitter, Host, Method} from '@stencil/core';
+import TemplateStore from '../../../utils/templateStore';
+import {loadTemplate} from '../../../utils/Templates';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
 
@@ -22,8 +23,10 @@ const doneIcon =
 type TAnnotatedRole = IRole & {id: string};
 
 /**
- * Display a form to collect recipient information for a new Document. If used anonymously, the specified `templateId` must be public.
- * If the user is authenticated
+ * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
+ * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
+ * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
+ * directly to the `createEnvelope()` call in JS-SDK.
  */
 @Component({
   tag: 'verdocs-send',
@@ -44,7 +47,7 @@ export class VerdocsSend {
   /**
    * The user completed the form and clicked send.
    */
-  @Event({composed: true}) send: EventEmitter<{recipientsAssigned: IRole[]}>;
+  @Event({composed: true}) send: EventEmitter<{roles: IRole[]; name: string; template_id: string}>;
 
   /**
    * The user canceled the process.
@@ -57,10 +60,6 @@ export class VerdocsSend {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() template: ITemplate | null = null;
-
-  @State() pdfUrl = null;
-
   @State() containerId = `verdocs-send-${Math.random().toString(36).substring(2, 11)}`;
 
   @State() rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
@@ -69,42 +68,32 @@ export class VerdocsSend {
 
   @State() sessionContacts = [];
 
-  @State() recipientsAssigned: Record<string, TAnnotatedRole> = {};
+  @State() rolesCompleted: Record<string, TAnnotatedRole> = {};
+
+  @Method() reset() {
+    this.rolesCompleted = {};
+  }
 
   levels: number[] = [];
 
   async componentWillLoad() {
-    this.sessionContacts = [];
-    try {
-      const result = await this.endpoint.loadSession();
+    const loadSessionResult = this.endpoint.loadSession();
 
-      if (result.session?.profile) {
-        this.sessionContacts.push({
-          id: result.session.profile.id,
-          name: `${result.session.profile.first_name} ${result.session.profile.last_name}`,
-          email: result.session.profile.email,
-          phone: result.session.profile.phone,
-        });
-      }
-    } catch (e) {
-      console.log('Error loading session', e);
+    if (!this.templateId) {
+      console.log(`[SEND] Missing required template ID ${this.templateId}`);
+      return;
     }
-  }
-
-  async componentDidLoad() {
-    console.log('[SEND] Showing template', this.templateId);
 
     try {
       console.log(`[SEND] Loading template ${this.templateId}`);
-      const template = await getTemplate(this.endpoint, this.templateId);
+      await loadTemplate(this.endpoint, this.templateId);
 
-      console.log('[SEND] Got template', template);
-      this.template = template;
-
-      if (template?.roles) {
+      if (TemplateStore.template?.roles) {
         const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
 
-        template.roles.forEach(role => {
+        this.rolesCompleted = {};
+
+        TemplateStore.template.roles.forEach(role => {
           const level = role.sequence - 1;
           rolesAtLevel[level] ||= [];
           const id = `r-${level}-${rolesAtLevel[level].length}`;
@@ -116,7 +105,17 @@ export class VerdocsSend {
         this.levels.sort((a, b) => a - b);
       }
     } catch (e) {
-      console.log('[SEND] Error getting template', e);
+      console.log('[SEND] Error loading template', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+
+    if (loadSessionResult.session?.profile) {
+      this.sessionContacts.push({
+        id: loadSessionResult.session.profile.id,
+        name: `${loadSessionResult.session.profile.first_name} ${loadSessionResult.session.profile.last_name}`,
+        email: loadSessionResult.session.profile.email,
+        phone: loadSessionResult.session.profile.phone,
+      });
     }
   }
 
@@ -133,7 +132,7 @@ export class VerdocsSend {
   handleSelectContact(e: any, role: TAnnotatedRole) {
     e.preventDefault();
     e.detail; // IContactSelectEvent
-    this.recipientsAssigned[role.id] = {...role, ...e.detail};
+    this.rolesCompleted[role.id] = {...role, ...e.detail};
     this.showPickerForId = '';
   }
 
@@ -144,7 +143,7 @@ export class VerdocsSend {
 
   handleSend(e) {
     e.stopPropagation();
-    this.send?.emit({recipientsAssigned: Object.values(this.recipientsAssigned)});
+    this.send?.emit({roles: Object.values(this.rolesCompleted), name: TemplateStore.template.name, template_id: this.templateId});
   }
 
   handleCancel(e) {
@@ -153,14 +152,10 @@ export class VerdocsSend {
   }
 
   render() {
-    const roleNames = this.template?.roles?.map(role => role.name) || [];
-    const allRecipientsAssigned =
-      Object.values(this.recipientsAssigned).filter(recipient => {
-        console.log('valid email', isValidEmail(recipient.email), recipient.email);
-        console.log('valid phone', isValidPhone(recipient.phone), recipient.phone);
-        return isValidEmail(recipient.email) || isValidPhone(recipient.phone);
-      }).length >= this.template?.roles.length;
-    console.log('assigned', allRecipientsAssigned);
+    const roleNames = TemplateStore.template.roles.map(role => role.name) || [];
+    const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
+    const allRolesAssigned = rolesAssigned.length >= roleNames.length;
+    console.log('r', this.rolesCompleted, allRolesAssigned, rolesAssigned);
 
     return (
       <Host class={{}}>
@@ -177,14 +172,14 @@ export class VerdocsSend {
 
               {this.rolesAtLevel[level].map(role => (
                 <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)}>
-                  {this.recipientsAssigned[role.id]?.full_name ?? role.name}
+                  {this.rolesCompleted[role.id]?.full_name ?? role.name}
                   <div class="icon" innerHTML={editIcon} />
                   {this.showPickerForId === role.id && (
                     <verdocs-contact-picker
                       onCancel={() => (this.showPickerForId = '')}
                       onNext={e => this.handleSelectContact(e, role)}
                       contactSuggestions={this.sessionContacts}
-                      templateRole={this.recipientsAssigned[role.id] ?? role}
+                      templateRole={this.rolesCompleted[role.id] ?? role}
                       onSearchContacts={e => console.log('Search', e.detail)}
                     />
                   )}
@@ -201,7 +196,7 @@ export class VerdocsSend {
 
         <div class="buttons">
           <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} />
-          <verdocs-button label="Send" size="small" disabled={!allRecipientsAssigned} onClick={e => this.handleSend(e)} />
+          <verdocs-button label="Send" size="small" disabled={!allRolesAssigned} onClick={e => this.handleSend(e)} />
         </div>
       </Host>
     );
