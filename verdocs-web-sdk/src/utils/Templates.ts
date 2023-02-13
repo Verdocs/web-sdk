@@ -3,7 +3,7 @@ import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import TemplateStore from './templateStore';
 
 const pendingNotifications: {resolve: Function; reject: Function}[] = [];
-export const loadTemplate = async (endpoint: VerdocsEndpoint, templateId: string) => {
+export const loadTemplate = async (endpoint: VerdocsEndpoint, templateId: string, forceReload: boolean = false) => {
   if (!templateId) {
     console.log(`[TEMPLATES] Missing required template ID`);
     throw new Error('Missing required template ID');
@@ -19,7 +19,7 @@ export const loadTemplate = async (endpoint: VerdocsEndpoint, templateId: string
     });
   }
 
-  if (templateId === TemplateStore.templateId) {
+  if (templateId === TemplateStore.templateId && !forceReload) {
     return TemplateStore.template;
   }
 

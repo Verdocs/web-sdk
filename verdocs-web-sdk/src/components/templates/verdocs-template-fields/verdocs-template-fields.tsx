@@ -102,7 +102,7 @@ export class VerdocsTemplateFields {
 
       try {
         console.log(`[FIELDS] Loading template ${this.templateId}`, this.endpoint.session);
-        await loadTemplate(this.endpoint, this.templateId);
+        await loadTemplate(this.endpoint, this.templateId, true);
 
         this.selectedRoleName = TemplateStore.roleNames[0];
         console.log('Starting with role', this.selectedRoleName);

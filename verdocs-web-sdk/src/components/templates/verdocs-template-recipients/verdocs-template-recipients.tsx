@@ -100,7 +100,7 @@ export class VerdocsTemplateRecipients {
 
       try {
         console.log(`[RECIPIENTS] Loading template ${this.templateId}`, this.endpoint.session);
-        await loadTemplate(this.endpoint, this.templateId);
+        await loadTemplate(this.endpoint, this.templateId, true);
       } catch (e) {
         console.log('[RECIPIENTS] Error loading template', e);
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -380,7 +380,8 @@ export class VerdocsTemplateRecipients {
 
           {roleNames.length < 1 && (
             <div class="empty">
-              You must add at least one Role before proceeding.<br/> Click the <span innerHTML={plusIcon} /> Add button above to get started.
+              You must add at least one Role before proceeding.
+              <br /> Click the <span innerHTML={plusIcon} /> Add button above to get started.
             </div>
           )}
 
