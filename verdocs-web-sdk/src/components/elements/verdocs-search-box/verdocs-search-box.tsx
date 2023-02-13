@@ -34,7 +34,7 @@ export class VerdocsSearchBox {
   /**
    * The placeholder to display in the input field.
    */
-  @Prop() placeholder = 'search documents, templates, people...';
+  @Prop() placeholder = 'Search envelopes, templates, organizations...';
 
   /**
    * If set to a value other than 'all', a removeable filter indicator will be displayed.

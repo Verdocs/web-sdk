@@ -240,14 +240,49 @@ export class VerdocsTemplateFields {
         required: true,
         page_sequence: pageNumber,
         validator: null,
-        setting: {
-          width,
-          height,
-          x,
-          y,
-          result: '',
-        },
+        setting: {x, y}, // In the future, this is all we should send, see below
       };
+
+      // TODO: Fix how the server validates all this. It uses a JSON schema and is very particular about shapes for each field type.
+      //  That makes it harder for third party developers to create fields via API calls. It would be better to always set X/Y and
+      //  let the server normalize the rest, discarding properties that are invalid and back-filling defaults as needed.
+      switch (field.type) {
+        case 'attachment':
+        case 'payment':
+          field.setting = {x, y};
+          break;
+        case 'initial':
+        case 'signature':
+          field.setting = {x, y, result: ''};
+          break;
+        case 'checkbox_group':
+          field.setting = {x, y, minimum_checked: 0, maximum_checked: 1000};
+          break;
+        case 'date':
+          field.setting = {x, y, width, height, result: ''};
+          break;
+
+        // TODO: Remove this everywhere
+        // case 'checkbox':break;
+        // TODO: What is this?
+        // case 'placeholder':break;
+        case 'dropdown':
+          field.setting = {x, y, width, height, value: '', placeholder: 'Select a value'};
+          break;
+
+        case 'radio_button_group':
+          field.setting = {x, y};
+          break;
+
+        // TODO: What about textareas?
+        case 'textbox':
+          field.setting = {x, y, width, height, result: '', leading: 0, alignment: 0, upperCase: false};
+          break;
+
+        case 'timestamp':
+          field.setting = {x, y, width, height};
+          break;
+      }
 
       const saved = await createField(this.endpoint, this.templateId, field);
       console.log('Saved field', saved);

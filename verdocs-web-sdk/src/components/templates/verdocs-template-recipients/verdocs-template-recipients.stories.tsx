@@ -5,7 +5,7 @@ export default {
   title: 'Templates/Recipients',
   component: 'verdocs-template-recipients',
   args: {
-    templateId: 'f0678dfe-1d72-4ef7-a2ce-21d12f8c456c',
+    templateId: '951016b0-c5ef-450d-b628-9a0c5b84b163',
     // templateId: '056b837f-b183-4039-b50a-d68acbf81b67',
   },
   argTypes: {

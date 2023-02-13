@@ -297,7 +297,7 @@ export class VerdocsTemplateRecipients {
     return (
       <Host>
         <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off" data-r={this.forceRerender}>
-          <h5>Recipients</h5>
+          <h5>Roles</h5>
 
           <div class="participants">
             <div class="left-line" />
