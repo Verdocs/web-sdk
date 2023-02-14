@@ -59,6 +59,13 @@ verdocs-dropdown {
     background: transparent;
   }
 
+  .separator {
+    border-top: 1px solid #ffffff5f;
+    height: 1px;
+    padding-top: 5px;
+    margin-top: 5px;
+  }
+
   &.open {
     .items {
       display: block;

@@ -1669,6 +1669,10 @@ declare namespace LocalJSX {
          */
         "envelopeId"?: string;
         /**
+          * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onEnvelopeUpdated"?: (event: VerdocsEnvelopeSidebarCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsEnvelopeSidebarCustomEvent<SDKError>) => void;
@@ -2286,7 +2290,7 @@ declare namespace LocalJSX {
          */
         "onEnvelopeLoaded"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
         /**
-          * Event fired when the envelope is updated in any way.
+          * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
          */
         "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
         /**
@@ -2420,6 +2424,10 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsTemplateFieldsCustomEvent<SDKError>) => void;
         /**
+          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onTemplateUpdated"?: (event: VerdocsTemplateFieldsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
+        /**
           * The ID of the template to create the document from.
          */
         "templateId"?: string | null;
@@ -2481,6 +2489,10 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateRecipientsCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onTemplateUpdated"?: (event: VerdocsTemplateRecipientsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
          */
@@ -2672,6 +2684,10 @@ declare namespace LocalJSX {
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
          */
         "envelopeId"?: string;
+        /**
+          * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onEnvelopeUpdated"?: (event: VerdocsViewCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */

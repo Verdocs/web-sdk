@@ -2,7 +2,7 @@ import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {createRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
-import {TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
+import { ITemplate, TemplateSenderTypes } from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
 import TemplateStore from '../../../utils/templateStore';
 import {loadTemplate} from '../../../utils/Templates';
@@ -70,19 +70,23 @@ export class VerdocsTemplateRecipients {
    */
   @Event({composed: true}) cancel: EventEmitter;
 
-  sequences: number[] = [];
-  // rolesAtSequence: Record<number, TRole[]> = {};
-
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
+  /**
+   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
+
   @State() showingRoleDialog: string | null = null;
   @State() showingSenderDialog = false;
   @State() sender = null;
   @State() forceRerender = 1;
+
+  sequences: number[] = [];
 
   async componentWillLoad() {
     try {

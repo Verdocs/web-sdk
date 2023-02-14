@@ -1,15 +1,11 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment} from '@stencil/core';
+import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
 import {getEnvelopeById} from '../../../utils/Envelopes';
 import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
-import {savePDF} from '../../../utils/utils';
-
-const menuOptions = [
-  {id: 'print', label: 'Print'},
-  {id: 'download', label: 'Download'},
-];
 
 /**
  * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
@@ -37,6 +33,11 @@ export class VerdocsView {
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
+
+  /**
+   * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -82,11 +83,37 @@ export class VerdocsView {
     switch (e.detail.id) {
       case 'print':
         window.print();
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'printed'});
         break;
-      case 'download':
-        savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(e => {
-          console.log('Error downloading PDF', e);
-        });
+
+      case 'download-attachments':
+        saveAttachment(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id)
+          .then(() => {
+            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'downloaded'});
+          })
+          .catch(e => {
+            console.log('Error downloading PDF', e);
+          });
+        break;
+
+      case 'download-certificate':
+        saveCertificate(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.certificate_document_id)
+          .then(() => {
+            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'downloaded'});
+          })
+          .catch(e => {
+            console.log('Error downloading PDF', e);
+          });
+        break;
+
+      case 'download-all':
+        saveEnvelopesAsZip(this.endpoint, [EnvelopeStore.envelope])
+          .then(() => {
+            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'downloaded'});
+          })
+          .catch(e => {
+            console.log('Error downloading Zip', e);
+          });
         break;
     }
   }
@@ -109,8 +136,25 @@ export class VerdocsView {
       );
     }
 
+    const menuOptions: any[] = [{id: 'print', label: 'Print'}];
+
+    const hasAttachments = EnvelopeStore.envelope.documents.length > 0;
+    const hasCertificate = !!EnvelopeStore.envelope.certificate;
+    if (hasAttachments || hasCertificate) {
+      menuOptions.push({label: ''});
+    }
+    if (hasAttachments) {
+      menuOptions.push({id: 'download-attachments', label: 'Download Attachment(s)'});
+    }
+    if (hasCertificate) {
+      menuOptions.push({id: 'download-certificate', label: 'Download Certificate'});
+    }
+    if (hasAttachments && hasCertificate) {
+      menuOptions.push({id: 'download-all', label: 'Download All Files'});
+    }
+
     return (
-      <Host>
+      <Host data-r={EnvelopeStore.updateCount}>
         <div class="header">
           <Fragment>
             <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />

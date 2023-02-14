@@ -4,7 +4,7 @@ import {getEnvelopeById} from '../../../utils/Envelopes';
 import EnvelopeStore from '../../../utils/envelopeStore';
 import {SDKError} from '../../../utils/errors';
 import {format} from 'date-fns';
-import {IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
+import {IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 
 const InformationCircle = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>`;
 
@@ -66,6 +66,11 @@ export class VerdocsEnvelopeSidebar {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
+  /**
+   * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
+
   @State() activeTab: number = 1;
   @State() panelOpen = false;
 
@@ -118,6 +123,8 @@ export class VerdocsEnvelopeSidebar {
       case 'details':
         break;
     }
+
+    this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: id});
   }
 
   prepareHistoryEntries() {
@@ -249,7 +256,7 @@ export class VerdocsEnvelopeSidebar {
     const historyEntries = this.prepareHistoryEntries();
 
     return (
-      <Host class={this.panelOpen ? 'open' : ''}>
+      <Host class={this.panelOpen ? 'open' : ''} data-r={EnvelopeStore.updateCount}>
         <div class="buttons">
           <button class={this.activeTab === 1 ? 'active' : ''} onClick={() => this.setTab(1)} innerHTML={InformationCircle} />
           <button class={this.activeTab === 2 ? 'active' : ''} onClick={() => this.setTab(2)} innerHTML={Users} />

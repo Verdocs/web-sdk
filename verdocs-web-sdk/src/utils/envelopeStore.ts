@@ -12,6 +12,10 @@ const {state, onChange} = createStore({
   loading: true,
   error: '',
 
+  // This can be used as a data field on components that need to force re-rendering when the underlying data has changed. Stencil stores
+  // are handy but not very sophisticated. They don't re-render on "deep" changes.
+  updateCount: 1,
+
   roleNames: [] as string[],
   dirty: false,
 });

@@ -8,7 +8,7 @@ import {IDocumentField, IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/T
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
-import {getFieldId, getRoleIndex, renderDocumentField, savePDF, updateDocumentFieldValue} from '../../../utils/utils';
+import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {getEnvelopeById} from '../../../utils/Envelopes';
 import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -79,7 +79,7 @@ export class VerdocsSign {
   @Event({composed: true}) envelopeLoaded: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>;
 
   /**
-   * Event fired when the envelope is updated in any way.
+   * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
@@ -185,25 +185,30 @@ export class VerdocsSign {
       case 'later':
         this.finishLater = true;
         this.showFinishLater = true;
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'later'});
         // this.router.navigate([`view/sign/${this.envelopeId}/role/${this.roleName}/saved`]);
         break;
       case 'claim':
         window.alert('This feature will be available in an upcoming release.');
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'claimed'});
         break;
       case 'decline':
         {
           const declineResult = await envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId);
           console.log('Decline result', declineResult);
+          this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'declined'});
           this.isDone = true;
         }
         break;
       case 'print':
         window.print();
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'printed'});
         break;
       case 'download':
-        savePDF(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(e => {
+        saveAttachment(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(e => {
           console.log('Error downloading PDF', e);
         });
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'downloaded'});
         break;
     }
   }
@@ -497,7 +502,7 @@ export class VerdocsSign {
     }
 
     return (
-      <Host class={{agreed: this.agreed}}>
+      <Host class={{agreed: this.agreed}} data-r={EnvelopeStore.updateCount}>
         {!this.isDone && !this.finishLater && <div class="intro">Please review and act on these documents.</div>}
 
         {!this.isDone && (

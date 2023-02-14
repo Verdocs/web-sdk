@@ -1,5 +1,6 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {IPage, ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, Host, State} from '@stencil/core';
@@ -8,7 +9,6 @@ import TemplateStore from '../../../utils/templateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
-import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 
 const iconSingleline = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
@@ -81,6 +81,11 @@ export class VerdocsTemplateFields {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
+  /**
+   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
+
   @State() placing: TDocumentFieldType | null = null;
   @State() selectedRoleName = '';
 
@@ -128,6 +133,7 @@ export class VerdocsTemplateFields {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
     el.addEventListener('settingsChanged', () => {
       el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, field.role_name));
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: TemplateStore.template, event: 'updated-field'});
     });
 
     el.setAttribute('roleindex', roleIndex);
@@ -290,6 +296,8 @@ export class VerdocsTemplateFields {
       TemplateStore.fields.push(saved);
       this.placing = null;
 
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: TemplateStore.template, event: 'added-field'});
+
       this.handlePageRendered({detail: this.cachedPageInfo[pageNumber]});
     }
   }
@@ -319,7 +327,7 @@ export class VerdocsTemplateFields {
     return (
       <Host
         class={this.placing ? {[`placing-${this.placing}`]: true} : {}}
-        data-updated={TemplateStore.updateCount}
+        data-r={TemplateStore.updateCount}
         onSubmit={() => {
           console.log('onSubmit');
         }}

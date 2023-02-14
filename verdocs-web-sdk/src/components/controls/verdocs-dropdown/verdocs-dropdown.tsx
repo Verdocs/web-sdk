@@ -13,13 +13,15 @@ export interface IMenuOption {
 
 /**
  * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
- * when the button is pressed again, or an option is selected.
+ * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
  *
  * ```html
  * <verdocs-dropdown
  *   options={[
  *     {label: 'Option 1', disabled: true},
  *     {label: 'Option 2', id: '2'}
+ *     {label: ''}
+ *     {label: 'Option 3', id: '2'}
  *    ]}
  *   label="OK" onClick={() => (console.log('OK clicked'))}
  * />
@@ -138,11 +140,15 @@ export class VerdocsDropdown {
         />
 
         <div class="items" aria-hidden={!this.open} ref={el => (this.dropdownMenu = el as HTMLDivElement)}>
-          {this.options?.map(option => (
-            <button onClick={e => this.handleSelectOption(e, option)} class="option" disabled={option.disabled}>
-              {option.label}
-            </button>
-          ))}
+          {this.options?.map(option =>
+            option.label ? (
+              <button onClick={e => this.handleSelectOption(e, option)} class="option" disabled={option.disabled}>
+                {option.label}
+              </button>
+            ) : (
+              <div class="separator" />
+            ),
+          )}
         </div>
       </Host>
     );

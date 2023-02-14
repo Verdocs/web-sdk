@@ -16,7 +16,7 @@ export default {
   component: 'verdocs-dropdown',
   // We can apply default args only shown in Storybook as follows
   args: {
-    options: [{label: 'Option 1'}, {label: 'Disabled Option', disabled: true}, {label: 'Option 2'}],
+    options: [{label: 'Option 1'}, {label: 'Disabled Option', disabled: true}, {lable: ''}, {label: 'Option 2'}],
   },
   // Here we can apply overrides to component property documentation. Note that we don't need to (and shouldn't) specify every field
   // here. Only those that need special attention.

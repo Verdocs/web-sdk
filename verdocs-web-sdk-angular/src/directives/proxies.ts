@@ -279,12 +279,14 @@ export class VerdocsEnvelopeSidebar {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError']);
+    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated']);
   }
 }
 
 
 import type { SDKError as IVerdocsEnvelopeSidebarSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsEnvelopeSidebarVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsEnvelopeSidebarIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeSidebar extends Components.VerdocsEnvelopeSidebar {
   /**
@@ -292,6 +294,10 @@ export declare interface VerdocsEnvelopeSidebar extends Components.VerdocsEnvelo
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsEnvelopeSidebarSDKError>>;
+  /**
+   * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  envelopeUpdated: EventEmitter<CustomEvent<IVerdocsEnvelopeSidebarIVerdocsEnvelopeSidebar{endpoint: [object Object]; envelope: [object Object]; event: string}>>;
 }
 
 
@@ -1142,7 +1148,7 @@ terminate the process, and the calling application should correct the condition 
    */
   envelopeLoaded: EventEmitter<CustomEvent<IVerdocsSignIVerdocsSign{endpoint: [object Object]; envelope: [object Object]}>>;
   /**
-   * Event fired when the envelope is updated in any way.
+   * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
   envelopeUpdated: EventEmitter<CustomEvent<IVerdocsSignIVerdocsSign{endpoint: [object Object]; envelope: [object Object]; event: string}>>;
 }
@@ -1359,13 +1365,14 @@ export class VerdocsTemplateFields {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError']);
+    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError', 'templateUpdated']);
   }
 }
 
 
 import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateFieldsVerdocsEndpoint } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
   /**
@@ -1381,6 +1388,10 @@ export declare interface VerdocsTemplateFields extends Components.VerdocsTemplat
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateFieldsSDKError>>;
+  /**
+   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateFieldsIVerdocsTemplateFields{endpoint: [object Object]; template: [object Object]; event: string}>>;
 }
 
 
@@ -1473,12 +1484,14 @@ export class VerdocsTemplateRecipients {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError']);
+    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError', 'templateUpdated']);
   }
 }
 
 
 import type { SDKError as IVerdocsTemplateRecipientsSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateRecipientsVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateRecipientsITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateRecipients extends Components.VerdocsTemplateRecipients {
   /**
@@ -1494,6 +1507,10 @@ export declare interface VerdocsTemplateRecipients extends Components.VerdocsTem
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsSDKError>>;
+  /**
+   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsIVerdocsTemplateRecipients{endpoint: [object Object]; template: [object Object]; event: string}>>;
 }
 
 
@@ -1806,12 +1823,14 @@ export class VerdocsView {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError']);
+    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated']);
   }
 }
 
 
 import type { SDKError as IVerdocsViewSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsViewVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsViewIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsView extends Components.VerdocsView {
   /**
@@ -1819,6 +1838,10 @@ export declare interface VerdocsView extends Components.VerdocsView {
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsViewSDKError>>;
+  /**
+   * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  envelopeUpdated: EventEmitter<CustomEvent<IVerdocsViewIVerdocsView{endpoint: [object Object]; envelope: [object Object]; event: string}>>;
 }
 
 

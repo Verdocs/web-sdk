@@ -1,10 +1,12 @@
+import jszip from 'jszip';
+import {format} from 'date-fns';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
+import {downloadBlob} from '@verdocs/js-sdk/Utils/Files';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField, IEnvelope, TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {IDocumentPageInfo} from './Types';
-import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {downloadBlob} from '@verdocs/js-sdk/Utils/Files';
 
 export const defaultWidth = (type: TDocumentFieldType) => {
   // checkbox was a legacy field type
@@ -277,10 +279,56 @@ export const updateCssTransform = (el: HTMLElement, key: string, value: string) 
   ].join(' ');
 };
 
-export const savePDF = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {
-  const fileName = `${envelope.name} - ${envelope.updated_at.split('T')[0]}.pdf`;
+export const formatLocalDate = (date: Date) => format(date, 'P').replace(/\//g, '-');
+
+const formatEnvelopeDate = (envelope: IEnvelope) => formatLocalDate(new Date(envelope.updated_at));
+
+export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {
+  // e.g. "Colorado-Motor-Vehicle-Bill-of-Sale.pdf"
+  const fileName = `${envelope.name} - ${formatEnvelopeDate(envelope)}.pdf`;
   const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, documentId);
   downloadBlob(data, fileName);
+};
+
+export const saveCertificate = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {
+  // e.g "Colorado Motor Vehicle Bill of Sale_certificate.pdf"
+  const fileName = `${envelope.name} - ${formatEnvelopeDate(envelope)}_certificate.pdf`;
+  const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, documentId);
+  downloadBlob(data, fileName);
+};
+
+export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: IEnvelope[]) => {
+  const zip = new jszip();
+
+  for await (let envelope of envelopes) {
+    // e.g. "98a13bc0-8861-4408-86fc-8f9af51e867a-TheSwanBrothers Phase 1 Agreement - 11-02-22"
+    const subFolder = envelopes.length > 0 ? zip.folder(`${envelope.id} - ${envelope.name} - ${formatEnvelopeDate(envelope)}`) : null;
+    for await (let document of envelope.documents) {
+      // TODO: When attachments are added to envelopes, add a field that reflects the full, original filename (including extension)
+      const documentFileName = document.type === 'certificate' ? `${envelope.name}_certificate.pdf` : `${document.name}.pdf`;
+      const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, document.id);
+
+      if (subFolder) {
+        subFolder.file(documentFileName, data, {compression: 'DEFLATE'});
+      } else {
+        zip.file(documentFileName, data, {compression: 'DEFLATE'});
+      }
+
+      const attachFields = envelope.fields.filter(field => field.type === 'attachment' && field.settings['name']);
+      if (attachFields.length > 0) {
+        const attachmentsFolder = subFolder ? subFolder.folder('attachments') : zip.folder('attachments');
+        for await (let attachField of attachFields) {
+          const attachData = await Envelopes.getFieldAttachment(endpoint, envelope.id, attachField.name);
+          attachmentsFolder.file(attachField.settings.name, attachData, {compression: 'DEFLATE'});
+        }
+      }
+    }
+  }
+
+  // e.g. "Colorado Motor Vehicle Bill of Sale - 01-18-23.zip" or "Verdocs-Envelopes-02-13-23.zip"
+  const zipFileName = envelopes.length === 1 ? `${envelopes[0].name} - ${formatEnvelopeDate(envelopes[0])}.zip` : `Verdocs-Envelopes-${formatLocalDate(new Date())}`;
+  const zipped = await zip.generateAsync({type: 'blob', compression: 'DEFLATE'});
+  downloadBlob(zipped, zipFileName);
 };
 
 /**
