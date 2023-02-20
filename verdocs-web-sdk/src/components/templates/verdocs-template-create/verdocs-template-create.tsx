@@ -53,9 +53,8 @@ export class VerdocsTemplateCreate {
   }
 
   handleFileChanged(e: any) {
-    console.log('files', e.target.files);
     this.file = e.target.files?.[0] || null;
-    console.log('Selected file', this.file);
+    console.log('[CREATE] Selected file', this.file);
     // this.filePath = e.target.files?.[0]?.name;
   }
 
@@ -78,15 +77,17 @@ export class VerdocsTemplateCreate {
       return;
     }
 
+    this.creating = true;
+
     try {
       const template = await createTemplate(this.endpoint, {name: this.file.name});
-      console.log('created template', template);
+      console.log('[CREATE] Created template', template);
 
       const template_document = await createTemplateDocument(this.endpoint, template.id, this.file);
-      console.log('created document', template_document);
+      console.log('[CREATE] Created document', template_document);
 
       const finalTemplate = await getTemplate(this.endpoint, template.id);
-      console.log('[CREATE] Created template', finalTemplate);
+      console.log('[CREATE] Retrieved new template', finalTemplate);
 
       // for await (let pageNumber of Array.from(Array(template_document.page_numbers).keys(), n => n + 1)) {
       //   console.log('Updating page', pageNumber);
@@ -95,9 +96,11 @@ export class VerdocsTemplateCreate {
       // }
 
       this.next?.emit(finalTemplate);
+      this.creating = false;
     } catch (e) {
-      console.log('[TEMPLATE-CREATE] Error creating template', e);
+      console.log('[CREATE] Error creating template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      this.creating = false;
     }
   }
 
@@ -114,18 +117,34 @@ export class VerdocsTemplateCreate {
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <input type="file" id="verdocs-template-create-file" multiple accept="application/pdf" style={{display: 'none'}} onChange={e => this.handleFileChanged(e)} />
 
-        <div class="upload-box">
-          <div>
-            <span innerHTML={FileIcon} />
+        {this.creating ? (
+          <div class="loader-wrapper">
+            <verdocs-loader />
+            <div class="loading-text">Uploading, please wait...</div>
           </div>
-          <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
-          <div style={{marginTop: '20px', marginBottom: '20px', fontSize: '16px', height: '20px'}}>{this.file ? unicodeNBSP : 'Or, if you prefer...'}</div>
-          <verdocs-button label={this.file ? 'Select a different file' : 'Select a file from your computer'} size="small" onClick={e => this.handleUpload(e)} />
-        </div>
+        ) : (
+          <div class="upload-box">
+            <div>
+              <span innerHTML={FileIcon} />
+            </div>
+            <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
+            <div
+              style={{
+                marginTop: '20px',
+                marginBottom: '20px',
+                fontSize: '16px',
+                height: '20px',
+              }}
+            >
+              {this.file ? unicodeNBSP : 'Or, if you prefer...'}
+            </div>
+            <verdocs-button label={this.file ? 'Select a different file' : 'Select a file from your computer'} size="small" onClick={e => this.handleUpload(e)} />
+          </div>
+        )}
 
         <div class="buttons">
-          <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} />
-          <verdocs-button label="Next" size="small" onClick={e => this.handleSubmit(e)} disabled={!this.file} />
+          <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} disabled={this.creating} />
+          <verdocs-button label="Next" size="small" onClick={e => this.handleSubmit(e)} disabled={!this.file || this.creating} />
         </div>
       </form>
     );
