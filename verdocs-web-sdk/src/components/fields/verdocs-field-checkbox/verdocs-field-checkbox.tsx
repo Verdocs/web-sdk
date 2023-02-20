@@ -97,6 +97,10 @@ export class VerdocsFieldCheckbox {
                 templateId={TemplateStore.templateId}
                 fieldName={this.field.name}
                 onClose={() => this.hideSettingsPanel()}
+                onDelete={() => {
+                  this.settingsChanged?.emit({fieldName: this.field.name});
+                  return this.hideSettingsPanel();
+                }}
                 onSettingsChanged={e => {
                   this.settingsChanged?.emit(e.detail);
                   return this.hideSettingsPanel();

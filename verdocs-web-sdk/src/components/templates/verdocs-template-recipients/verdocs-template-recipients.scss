@@ -40,6 +40,7 @@ verdocs-template-recipients {
     .row {
       display: flex;
       column-gap: 0;
+      min-height: 35px;
       margin-left: 40px;
       position: relative;
       flex-direction: row;
@@ -178,6 +179,24 @@ verdocs-template-recipients {
   }
 
   .add-role {
+    margin: 0;
+    padding: 0;
+    border: none;
+    opacity: 0.5;
+    cursor: pointer;
+    background: none;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .add-step {
     margin: 0;
     padding: 0;
     border: none;

@@ -70,17 +70,20 @@ export class VerdocsTemplateName {
   }
 
   render() {
+    if (!this.endpoint.session) {
+      return (
+        <Host>
+          <verdocs-component-error message="You must be authenticated to use this module." />
+        </Host>
+      );
+    }
+
     if (this.loading) {
       return (
         <Host class="loading">
           <verdocs-loader />
         </Host>
       );
-    }
-
-    // This is meant to be a companion for larger visual experiences so we just go blank on errors for now.
-    if (!this.endpoint.session || !TemplateStore.template) {
-      return <Host class="empty" />;
     }
 
     return (

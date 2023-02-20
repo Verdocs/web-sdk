@@ -2,7 +2,7 @@ import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {createRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
-import { ITemplate, TemplateSenderTypes } from '@verdocs/js-sdk/Templates/Types';
+import {ITemplate, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
 import TemplateStore from '../../../utils/templateStore';
 import {loadTemplate} from '../../../utils/Templates';
@@ -258,19 +258,52 @@ export class VerdocsTemplateRecipients {
     this.extractSequenceNumbers();
   }
 
-  handleAddRole(e, sequence: number) {
-    e.stopPropagation();
-
-    // We don't need to look for a unique order number because we're already working with a sorted/renumbered set by now.
-    const order = TemplateStore.template.roles.filter(role => role.sequence === sequence).length + 1;
-
-    // We do need to look for name conflicts because they're UGC and can be anything, regardless of order.
+  // Look for name conflicts, because they're UGC and can be anything, regardless of order.
+  getNextRecipientName() {
     let name = '';
     let nextNumber = TemplateStore.template.roles.length;
     do {
       nextNumber++;
       name = `Recipient ${nextNumber}`;
     } while (!name || TemplateStore.template.roles.some(role => role.name === name));
+
+    return name;
+  }
+
+  handleAddRole(e, sequence: number) {
+    e.stopPropagation();
+
+    // We don't need to look for a unique order number because we're already working with a sorted/renumbered set by now.
+    const order = TemplateStore.template.roles.filter(role => role.sequence === sequence).length + 1;
+    const name = this.getNextRecipientName();
+    console.log('Will create', name, sequence, order);
+    createRole(this.endpoint, this.templateId, {
+      template_id: this.templateId,
+      name,
+      full_name: '',
+      email: '',
+      phone: '',
+      sequence,
+      order,
+      type: 'signer',
+      delegator: false,
+    })
+      .then(r => {
+        console.log('Created role', r);
+        TemplateStore.template.roles.push(r);
+        this.renumberTemplateRoles();
+        this.forceRerender++;
+      })
+      .catch(e => {
+        console.log('Error creating role', e);
+      });
+  }
+
+  handleAddStep(e, sequence: number) {
+    e.stopPropagation();
+
+    const order = 1;
+    const name = this.getNextRecipientName();
 
     console.log('Will create', name, sequence, order);
     createRole(this.endpoint, this.templateId, {
@@ -296,7 +329,15 @@ export class VerdocsTemplateRecipients {
   }
 
   render() {
-    const roleNames = TemplateStore.template.roles.map(role => role.name);
+    if (!this.endpoint.session) {
+      return (
+        <Host>
+          <verdocs-component-error message="You must be authenticated to use this module." />
+        </Host>
+      );
+    }
+
+    const roleNames = (TemplateStore.template?.roles || []).map(role => role.name);
 
     return (
       <Host>
@@ -362,6 +403,13 @@ export class VerdocsTemplateRecipients {
                 </div>
               </Fragment>
             ))}
+
+            <div class="row" data-sequence={this.sequences.length + 1}>
+              <div class="row-recipients">
+                <div class="icon" innerHTML={plusIcon} />
+                <button class="add-step" innerHTML={plusIcon} onClick={e => this.handleAddStep(e, this.sequences.length + 1)} />
+              </div>
+            </div>
 
             {this.sequences.length < 1 && (
               <Fragment>

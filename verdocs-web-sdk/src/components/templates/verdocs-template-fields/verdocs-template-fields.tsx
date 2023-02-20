@@ -30,12 +30,12 @@ const iconSignature =
 const iconInitial = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M6.225 20.775V7h-5V3.225H15V7h-5v13.775Zm9.775 0v-8h-3V9h9.775v3.775h-3v8Z"/></svg>';
 
 const menuOptions = [
-  {id: 'attachment', tooltip: 'Attachment', icon: 'A'},
+  // {id: 'attachment', tooltip: 'Attachment', icon: 'A'},
   {id: 'checkbox', tooltip: 'Check Box', icon: iconCheck},
   {id: 'date', tooltip: 'Date', icon: iconDatepicker},
   {id: 'dropdown', tooltip: 'Dropdown', icon: 'O'},
   {id: 'initial', tooltip: 'Initials', icon: iconInitial},
-  {id: 'payment', tooltip: 'Payment', icon: 'P'},
+  // {id: 'payment', tooltip: 'Payment', icon: 'P'},
   {id: 'radio', tooltip: 'Radio Button', icon: iconRadio},
   {id: 'signature', tooltip: 'Signature', icon: iconSignature},
   {id: 'textarea', tooltip: 'Text Area', icon: iconMultiline},
@@ -89,6 +89,8 @@ export class VerdocsTemplateFields {
   @State() placing: TDocumentFieldType | null = null;
   @State() selectedRoleName = '';
 
+  @State() rerender = 1;
+
   pageHeights: Record<number, number> = {};
 
   async componentWillLoad() {
@@ -127,12 +129,15 @@ export class VerdocsTemplateFields {
 
   async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
     console.log('[FIELDS] handleFieldChange', field, e, optionId);
+    this.rerender++;
   }
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
     el.addEventListener('settingsChanged', () => {
+      console.log('settings changed', this, field);
       el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, field.role_name));
+      this.rerender++;
       this.templateUpdated?.emit({endpoint: this.endpoint, template: TemplateStore.template, event: 'updated-field'});
     });
 
@@ -303,7 +308,6 @@ export class VerdocsTemplateFields {
   }
 
   render() {
-    console.log('rendering', TemplateStore.updateCount);
     if (!this.endpoint.session) {
       return (
         <Host>
@@ -327,7 +331,7 @@ export class VerdocsTemplateFields {
     return (
       <Host
         class={this.placing ? {[`placing-${this.placing}`]: true} : {}}
-        data-r={TemplateStore.updateCount}
+        data-r={this.rerender}
         onSubmit={() => {
           console.log('onSubmit');
         }}

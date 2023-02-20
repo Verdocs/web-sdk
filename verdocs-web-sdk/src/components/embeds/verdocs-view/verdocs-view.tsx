@@ -144,7 +144,7 @@ export class VerdocsView {
       menuOptions.push({label: ''});
     }
     if (hasAttachments) {
-      menuOptions.push({id: 'download-attachments', label: 'Download Attachment(s)'});
+      menuOptions.push({id: 'download-attachments', label: 'Download Documents(s)'});
     }
     if (hasCertificate) {
       menuOptions.push({id: 'download-certificate', label: 'Download Certificate'});

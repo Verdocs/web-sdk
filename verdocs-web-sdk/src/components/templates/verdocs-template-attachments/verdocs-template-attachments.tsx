@@ -54,6 +54,14 @@ export class VerdocsTemplateAttachments {
   }
 
   render() {
+    if (!this.endpoint.session) {
+      return (
+        <Host>
+          <verdocs-component-error message="You must be authenticated to use this module." />
+        </Host>
+      );
+    }
+
     if (this.loading) {
       return (
         <Host class="loading">
