@@ -766,6 +766,10 @@ export namespace Components {
           * The ID of the template to create the document from.
          */
         "templateId": string | null;
+        /**
+          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the toolbar will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects.
+         */
+        "toolbarTargetId": string | null;
     }
     interface VerdocsTemplateName {
         /**
@@ -1758,6 +1762,10 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldCheckboxCustomEvent<{fieldName: string}>) => void;
+        /**
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldCheckboxCustomEvent<{fieldName: string}>) => void;
@@ -1792,6 +1800,10 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldDateCustomEvent<{fieldName: string}>) => void;
+        /**
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldDateCustomEvent<{fieldName: string}>) => void;
@@ -1813,6 +1825,10 @@ declare namespace LocalJSX {
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string}>) => void;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
@@ -1860,6 +1876,10 @@ declare namespace LocalJSX {
          */
         "onCancel"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldInitialCustomEvent<{fieldName: string}>) => void;
+        /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
         "onFieldChange"?: (event: VerdocsFieldInitialCustomEvent<string>) => void;
@@ -1892,6 +1912,10 @@ declare namespace LocalJSX {
         "fieldId"?: string;
         "fields"?: any[];
         "focused"?: boolean;
+        /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldPaymentCustomEvent<{fieldName: string}>) => void;
         "onInitialComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
         /**
           * Event fired when the field's settings are changed.
@@ -1931,6 +1955,10 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldRadioButtonCustomEvent<{fieldName: string}>) => void;
+        /**
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldRadioButtonCustomEvent<{fieldName: string}>) => void;
@@ -1968,6 +1996,10 @@ declare namespace LocalJSX {
           * If set, the signature creation dialog will be initialized with this text.
          */
         "name"?: string;
+        /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldSignatureCustomEvent<{fieldName: string}>) => void;
         /**
           * Event emitted when the field has changed.
          */
@@ -2007,6 +2039,10 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string}>) => void;
+        /**
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string}>) => void;
@@ -2037,6 +2073,10 @@ declare namespace LocalJSX {
          */
         "moveable"?: boolean;
         /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string}>) => void;
+        /**
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string}>) => void;
@@ -2066,6 +2106,10 @@ declare namespace LocalJSX {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string}>) => void;
         /**
           * Event fired when the field's settings are changed.
          */
@@ -2506,6 +2550,10 @@ declare namespace LocalJSX {
           * The ID of the template to create the document from.
          */
         "templateId"?: string | null;
+        /**
+          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the toolbar will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects.
+         */
+        "toolbarTargetId"?: string | null;
     }
     interface VerdocsTemplateName {
         /**

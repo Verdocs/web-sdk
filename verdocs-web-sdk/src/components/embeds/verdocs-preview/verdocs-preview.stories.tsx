@@ -5,7 +5,8 @@ export default {
   title: 'Embeds/Preview',
   component: 'verdocs-preview',
   args: {
-    templateId: 'd2338742-f3a1-465b-8592-806587413cc1',
+    templateId: 'ea7a792f-7e46-4662-a0ff-db6bd389306e',
+    // templateId: 'd2338742-f3a1-465b-8592-806587413cc1',
   },
   argTypes: {
     templateId: {control: {type: 'string'}},

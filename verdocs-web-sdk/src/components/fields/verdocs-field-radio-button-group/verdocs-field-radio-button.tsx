@@ -62,6 +62,11 @@ export class VerdocsFieldRadioButton {
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
 
+  /**
+   * Event fired when the field is deleted.
+   */
+  @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
+
   @Method()
   async showSettingsPanel() {
     const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
@@ -116,7 +121,7 @@ export class VerdocsFieldRadioButton {
               fieldName={this.field.name}
               onClose={() => this.hideSettingsPanel()}
               onDelete={() => {
-                this.settingsChanged?.emit({fieldName: this.field.name});
+                this.deleted?.emit({fieldName: this.field.name});
                 return this.hideSettingsPanel();
               }}
               onSettingsChanged={e => {

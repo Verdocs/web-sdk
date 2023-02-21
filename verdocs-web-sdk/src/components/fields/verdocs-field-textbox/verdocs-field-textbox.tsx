@@ -55,6 +55,11 @@ export class VerdocsFieldTextbox {
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
 
+  /**
+   * Event fired when the field is deleted.
+   */
+  @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
+
   @Method()
   async focusField() {
     this.el.focus();
@@ -106,7 +111,7 @@ export class VerdocsFieldTextbox {
               fieldName={this.field.name}
               onClose={() => this.hideSettingsPanel()}
               onDelete={() => {
-                this.settingsChanged?.emit({fieldName: this.field.name});
+                this.deleted?.emit({fieldName: this.field.name});
                 return this.hideSettingsPanel();
               }}
               onSettingsChanged={e => {

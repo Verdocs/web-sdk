@@ -43,6 +43,22 @@ verdocs-template-fields {
     }
   }
 
+  #verdocs-template-fields-toolbar {
+    height: 50px;
+    display: flex;
+    flex: 0 0 50px;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    column-gap: 15px;
+    background: $verdocs-grey-blue;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
   &.placing-attachment {
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24'%3E%3Cpath d='m10.55 16.55 7.275-7.275L16.05 7.5l-5.5 5.45-2.675-2.65L6.1 12.075Zm-5.375 4.925q-1.125 0-1.887-.763-.763-.762-.763-1.887V5.175q0-1.125.763-1.888.762-.762 1.887-.762h13.65q1.125 0 1.888.762.762.763.762 1.888v13.65q0 1.125-.762 1.887-.763.763-1.888.763Zm0-2.65h13.65V5.175H5.175v13.65Zm0-13.65v13.65-13.65Z'/%3E%3C/svg%3E")
         16 16,
@@ -98,14 +114,14 @@ verdocs-template-fields {
   }
 
   &.placing-textbox {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24'%3E%3Cpath d='M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z'/%3E%3C/svg%3E")
-        16 16,
+    cursor: url("data:image/svg+xml,%3Csvg width='32' height='15' viewBox='0 0 32 15' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cmask id='path-1-inside-1_1401_24' fill='white'%3E%3Cpath d='M0 0H32V15H0V0Z'/%3E%3C/mask%3E%3Cpath d='M0 0H32V15H0V0Z' fill='%234C56CB' fill-opacity='0.1'/%3E%3Cpath d='M0 0V-1H-1V0H0ZM0 15H-1V16H0V15ZM0 1H32V-1H0V1ZM32 14H0V16H32V14ZM1 15V0H-1V15H1Z' fill='%234C56CB' mask='url(%23path-1-inside-1_1401_24)'/%3E%3Cpath d='M3 11.8V8.65H14.15V11.8H3ZM3 6.65V3.5H20.15V6.65H3Z' fill='%234C56CB'/%3E%3Cline x1='31.5' y1='1' x2='31.5' y2='14' stroke='%234C56CB' stroke-opacity='0.32' stroke-dasharray='1 1'/%3E%3C/svg%3E%0A")
+        0 14,
       pointer;
   }
 
   &.placing-timestamp {
     cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' width='24'%3E%3Cpath d='m10.55 16.55 7.275-7.275L16.05 7.5l-5.5 5.45-2.675-2.65L6.1 12.075Zm-5.375 4.925q-1.125 0-1.887-.763-.763-.762-.763-1.887V5.175q0-1.125.763-1.888.762-.762 1.887-.762h13.65q1.125 0 1.888.762.762.763.762 1.888v13.65q0 1.125-.762 1.887-.763.763-1.888.763Zm0-2.65h13.65V5.175H5.175v13.65Zm0-13.65v13.65-13.65Z'/%3E%3C/svg%3E")
-        16 16,
+        0 14,
       pointer;
   }
 }

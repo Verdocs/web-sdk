@@ -44,6 +44,11 @@ export class VerdocsFieldDropdown {
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
 
+  /**
+   * Event fired when the field is deleted.
+   */
+  @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
+
   @Method() async focusField() {
     this.el.focus();
   }

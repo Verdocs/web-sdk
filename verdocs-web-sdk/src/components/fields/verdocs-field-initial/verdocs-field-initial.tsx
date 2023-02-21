@@ -81,6 +81,11 @@ export class VerdocsFieldInitial {
    */
   @Event({composed: true}) settingsPress: EventEmitter;
 
+  /**
+   * Event fired when the field is deleted.
+   */
+  @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
+
   @Method() async focusField() {
     this.handleShow();
   }
@@ -156,7 +161,7 @@ export class VerdocsFieldInitial {
               fieldName={this.field.name}
               onClose={() => this.hideSettingsPanel()}
               onDelete={() => {
-                this.settingsChanged?.emit({fieldName: this.field.name});
+                this.deleted?.emit({fieldName: this.field.name});
                 return this.hideSettingsPanel();
               }}
               onSettingsChanged={e => {

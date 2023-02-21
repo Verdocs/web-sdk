@@ -62,6 +62,11 @@ export class VerdocsFieldDate {
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
 
+  /**
+   * Event fired when the field is deleted.
+   */
+  @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
+
   @State() containerId = `verdocs-date-picker-${Math.random().toString(36).substring(2, 11)}`;
 
   @Method() async focusField() {
@@ -129,7 +134,7 @@ export class VerdocsFieldDate {
               fieldName={this.field.name}
               onClose={() => this.hideSettingsPanel()}
               onDelete={() => {
-                this.settingsChanged?.emit({fieldName: this.field.name});
+                this.deleted?.emit({fieldName: this.field.name});
                 return this.hideSettingsPanel();
               }}
               onSettingsChanged={e => {

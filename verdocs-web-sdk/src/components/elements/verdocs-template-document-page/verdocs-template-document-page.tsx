@@ -154,6 +154,7 @@ export class VerdocsTemplateDocumentPage {
               src={this.pageDisplayUri}
               alt={`Page ${this.pageNumber}`}
               aria-hidden={true}
+              loading="lazy"
               onLoad={(e: any) => {
                 // Note that all we really care about is the aspect ratio. We track the natural Width and Height but they aren't really that
                 // useful as individual values. The image will already have been scaled down to fit a DIV for display (100%, auto height).

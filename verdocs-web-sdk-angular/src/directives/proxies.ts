@@ -346,7 +346,7 @@ export class VerdocsFieldCheckbox {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged']);
+    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -356,6 +356,10 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -375,7 +379,7 @@ export class VerdocsFieldDate {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsPress', 'settingsChanged']);
+    proxyOutputs(this, this.el, ['settingsPress', 'settingsChanged', 'deleted']);
   }
 }
 
@@ -389,6 +393,10 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -408,7 +416,7 @@ export class VerdocsFieldDropdown {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange', 'settingsChanged']);
+    proxyOutputs(this, this.el, ['fieldChange', 'settingsChanged', 'deleted']);
   }
 }
 
@@ -424,6 +432,10 @@ keypress.
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -443,7 +455,7 @@ export class VerdocsFieldInitial {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['adopt', 'cancel', 'fieldChange', 'settingsChanged', 'settingsPress']);
+    proxyOutputs(this, this.el, ['adopt', 'cancel', 'fieldChange', 'settingsChanged', 'settingsPress', 'deleted']);
   }
 }
 
@@ -471,6 +483,10 @@ keypress.
    * Event fired on every character entered into / deleted from the field.
    */
   settingsPress: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -490,7 +506,7 @@ export class VerdocsFieldPayment {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete', 'settingsChanged']);
+    proxyOutputs(this, this.el, ['signatureComplete', 'initialComplete', 'settingsChanged', 'deleted']);
   }
 }
 
@@ -504,6 +520,10 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -523,7 +543,7 @@ export class VerdocsFieldRadioButton {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged']);
+    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -533,6 +553,10 @@ export declare interface VerdocsFieldRadioButton extends Components.VerdocsField
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -552,7 +576,7 @@ export class VerdocsFieldSignature {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange', 'settingsPress', 'settingsChanged']);
+    proxyOutputs(this, this.el, ['fieldChange', 'settingsPress', 'settingsChanged', 'deleted']);
   }
 }
 
@@ -570,6 +594,10 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -589,7 +617,7 @@ export class VerdocsFieldTextarea {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged']);
+    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -599,6 +627,10 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -618,7 +650,7 @@ export class VerdocsFieldTextbox {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged']);
+    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -628,6 +660,10 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -647,7 +683,7 @@ export class VerdocsFieldTimestamp {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged']);
+    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -657,6 +693,10 @@ export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTi
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
@@ -1381,14 +1421,14 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'templateId']
+  inputs: ['endpoint', 'templateId', 'toolbarTargetId']
 })
 @Component({
   selector: 'verdocs-template-fields',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'templateId'],
+  inputs: ['endpoint', 'templateId', 'toolbarTargetId'],
 })
 export class VerdocsTemplateFields {
   protected el: HTMLElement;

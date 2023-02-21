@@ -82,6 +82,11 @@ export class VerdocsFieldPayment {
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
 
+  /**
+   * Event fired when the field is deleted.
+   */
+  @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
+
   componentWillLoad() {
     // Load validators
     // Load fields
