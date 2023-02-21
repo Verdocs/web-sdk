@@ -1,10 +1,9 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, h} from '@stencil/core';
 import {Event, EventEmitter, Host} from '@stencil/core';
-import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
-import {IDocumentPageInfo} from '../../../utils/Types';
 import TemplateStore from '../../../utils/templateStore';
+import {IDocumentPageInfo} from '../../../utils/Types';
 import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 
@@ -53,10 +52,6 @@ export class VerdocsPreview {
     }
   }
 
-  async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
-    console.log('[PREVIEW] handleFieldChange', field, e, optionId);
-  }
-
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
     console.log('[PREVIEW] Page rendered', pageInfo);
@@ -84,11 +79,12 @@ export class VerdocsPreview {
         {pages.map(page => {
           console.log('rendering page', page);
           return (
-            <verdocs-document-page
-              pageImageUri={page.display_uri}
+            <verdocs-template-document-page
+              templateId={page.template_id}
+              documentId={page.document_id}
+              pageNumber={page.sequence}
               virtualWidth={612}
               virtualHeight={792}
-              pageNumber={page.sequence}
               onPageRendered={e => this.handlePageRendered(e)}
               layers={[
                 {name: 'page', type: 'canvas'},

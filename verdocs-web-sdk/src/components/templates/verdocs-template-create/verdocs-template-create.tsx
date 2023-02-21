@@ -4,8 +4,6 @@ import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/cor
 import {createTemplateDocument} from '@verdocs/js-sdk/Templates/TemplateDocuments';
 import {createTemplate, getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {SDKError} from '../../../utils/errors';
-// import {ITemplate, ITemplateDocument} from '@verdocs/js-sdk/Templates/Types';
-// import {createPage} from '@verdocs/js-sdk/Templates/Pages';
 
 const unicodeNBSP = ' ';
 

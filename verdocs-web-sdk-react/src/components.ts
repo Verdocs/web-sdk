@@ -51,6 +51,7 @@ export const VerdocsStatusIndicator = /*@__PURE__*/createReactComponent<JSX.Verd
 export const VerdocsTemplateAttachments = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateAttachments, HTMLVerdocsTemplateAttachmentsElement>('verdocs-template-attachments');
 export const VerdocsTemplateCard = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateCard, HTMLVerdocsTemplateCardElement>('verdocs-template-card');
 export const VerdocsTemplateCreate = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateCreate, HTMLVerdocsTemplateCreateElement>('verdocs-template-create');
+export const VerdocsTemplateDocumentPage = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateDocumentPage, HTMLVerdocsTemplateDocumentPageElement>('verdocs-template-document-page');
 export const VerdocsTemplateFieldProperties = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateFieldProperties, HTMLVerdocsTemplateFieldPropertiesElement>('verdocs-template-field-properties');
 export const VerdocsTemplateFields = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateFields, HTMLVerdocsTemplateFieldsElement>('verdocs-template-fields');
 export const VerdocsTemplateName = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateName, HTMLVerdocsTemplateNameElement>('verdocs-template-name');

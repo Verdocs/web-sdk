@@ -713,6 +713,36 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
     }
+    interface VerdocsTemplateDocumentPage {
+        /**
+          * The ID of the document to display.
+         */
+        "documentId": string;
+        /**
+          * The endpoint to load from.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-document-page-ker2fr1p9">       <div id="verdocs-document-page-ker2fr1p9-page"></div>       <div id="verdocs-document-page-ker2fr1p9-fields"></div>     </div> ```
+         */
+        "layers": IPageLayer[];
+        /**
+          * The page number being rendered. (Reminder: page numbers are 1-based.)
+         */
+        "pageNumber": number;
+        /**
+          * The ID of the template the document is for.
+         */
+        "templateId": string;
+        /**
+          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+         */
+        "virtualHeight": number;
+        /**
+          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+         */
+        "virtualWidth": number;
+    }
     interface VerdocsTemplateFieldProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1027,6 +1057,10 @@ export interface VerdocsTemplateCreateCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateCreateElement;
 }
+export interface VerdocsTemplateDocumentPageCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateDocumentPageElement;
+}
 export interface VerdocsTemplateFieldPropertiesCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateFieldPropertiesElement;
@@ -1334,6 +1368,12 @@ declare global {
         prototype: HTMLVerdocsTemplateCreateElement;
         new (): HTMLVerdocsTemplateCreateElement;
     };
+    interface HTMLVerdocsTemplateDocumentPageElement extends Components.VerdocsTemplateDocumentPage, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateDocumentPageElement: {
+        prototype: HTMLVerdocsTemplateDocumentPageElement;
+        new (): HTMLVerdocsTemplateDocumentPageElement;
+    };
     interface HTMLVerdocsTemplateFieldPropertiesElement extends Components.VerdocsTemplateFieldProperties, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateFieldPropertiesElement: {
@@ -1474,6 +1514,7 @@ declare global {
         "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-create": HTMLVerdocsTemplateCreateElement;
+        "verdocs-template-document-page": HTMLVerdocsTemplateDocumentPageElement;
         "verdocs-template-field-properties": HTMLVerdocsTemplateFieldPropertiesElement;
         "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
         "verdocs-template-name": HTMLVerdocsTemplateNameElement;
@@ -2376,6 +2417,40 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsTemplateCreateCustomEvent<SDKError>) => void;
     }
+    interface VerdocsTemplateDocumentPage {
+        /**
+          * The ID of the document to display.
+         */
+        "documentId"?: string;
+        /**
+          * The endpoint to load from.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-document-page-ker2fr1p9">       <div id="verdocs-document-page-ker2fr1p9-page"></div>       <div id="verdocs-document-page-ker2fr1p9-fields"></div>     </div> ```
+         */
+        "layers"?: IPageLayer[];
+        /**
+          * Fired when a page has been rendered. This is also fired when the page is resized.
+         */
+        "onPageRendered"?: (event: VerdocsTemplateDocumentPageCustomEvent<IDocumentPageInfo>) => void;
+        /**
+          * The page number being rendered. (Reminder: page numbers are 1-based.)
+         */
+        "pageNumber"?: number;
+        /**
+          * The ID of the template the document is for.
+         */
+        "templateId"?: string;
+        /**
+          * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+         */
+        "virtualHeight"?: number;
+        /**
+          * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+         */
+        "virtualWidth"?: number;
+    }
     interface VerdocsTemplateFieldProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2737,6 +2812,7 @@ declare namespace LocalJSX {
         "verdocs-template-attachments": VerdocsTemplateAttachments;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-create": VerdocsTemplateCreate;
+        "verdocs-template-document-page": VerdocsTemplateDocumentPage;
         "verdocs-template-field-properties": VerdocsTemplateFieldProperties;
         "verdocs-template-fields": VerdocsTemplateFields;
         "verdocs-template-name": VerdocsTemplateName;
@@ -2802,6 +2878,7 @@ declare module "@stencil/core" {
             "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
             "verdocs-template-create": LocalJSX.VerdocsTemplateCreate & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;
+            "verdocs-template-document-page": LocalJSX.VerdocsTemplateDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsTemplateDocumentPageElement>;
             "verdocs-template-field-properties": LocalJSX.VerdocsTemplateFieldProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldPropertiesElement>;
             "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
             "verdocs-template-name": LocalJSX.VerdocsTemplateName & JSXBase.HTMLAttributes<HTMLVerdocsTemplateNameElement>;

@@ -5,8 +5,8 @@ export default {
   title: 'Templates/Recipients',
   component: 'verdocs-template-recipients',
   args: {
+    // templateId: 'ea7a792f-7e46-4662-a0ff-db6bd389306e',
     templateId: '951016b0-c5ef-450d-b628-9a0c5b84b163',
-    // templateId: '056b837f-b183-4039-b50a-d68acbf81b67',
   },
   argTypes: {
     onSave: {action: 'save'},

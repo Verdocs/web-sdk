@@ -1307,6 +1307,36 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  inputs: ['documentId', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth']
+})
+@Component({
+  selector: 'verdocs-template-document-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['documentId', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth'],
+})
+export class VerdocsTemplateDocumentPage {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['pageRendered']);
+  }
+}
+
+
+import type { IDocumentPageInfo as IVerdocsTemplateDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateDocumentPage extends Components.VerdocsTemplateDocumentPage {
+  /**
+   * Fired when a page has been rendered. This is also fired when the page is resized.
+   */
+  pageRendered: EventEmitter<CustomEvent<IVerdocsTemplateDocumentPageIDocumentPageInfo>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'fieldName', 'templateId']
 })
 @Component({

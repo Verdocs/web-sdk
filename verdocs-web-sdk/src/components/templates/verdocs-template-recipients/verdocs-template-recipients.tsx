@@ -166,7 +166,7 @@ export class VerdocsTemplateRecipients {
         const targetSequence = +event.target.dataset.sequence;
         const targetOrder = +event.target.dataset.order;
 
-        const changingRole = TemplateStore.template.roles.find(role => role.name === roleName);
+        const changingRole = TemplateStore.template?.roles.find(role => role.name === roleName);
         if (changingRole) {
           // To handle the renumbering, we update the role being moved to the new values, which will be some half-interval e.g.
           // sequence 1.5 order 1. Then we
@@ -182,7 +182,7 @@ export class VerdocsTemplateRecipients {
           //  code to do right, and since most workflows will typically only have 2-4 recipients max, it may not be worth it.
 
           Promise.all(
-            TemplateStore.template.roles.map(role =>
+            TemplateStore.template?.roles.map(role =>
               updateRole(this.endpoint, this.templateId, role.name, {
                 sequence: role.sequence,
                 order: role.order,
@@ -219,14 +219,14 @@ export class VerdocsTemplateRecipients {
   }
 
   sortTemplateRoles() {
-    TemplateStore.template.roles.sort((a, b) => {
+    TemplateStore.template?.roles.sort((a, b) => {
       return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
     });
   }
 
   extractSequenceNumbers() {
     this.sequences = [];
-    TemplateStore.template.roles.forEach(role => {
+    TemplateStore.template?.roles.forEach(role => {
       if (!this.sequences.includes(role.sequence)) {
         this.sequences.push(role.sequence);
       }
@@ -243,7 +243,7 @@ export class VerdocsTemplateRecipients {
     // If the user dragged an entry from below a row to above it, we end up here like [1,0]. Make sure it's [0,1] for the next operation.
     this.sequences.sort((a, b) => a - b);
     this.sequences.forEach((originalSequence, newSequenceIndex) => {
-      TemplateStore.template.roles
+      TemplateStore.template?.roles
         .filter(role => role.sequence === originalSequence)
         .forEach((role, newOrderIndex) => {
           if (!renumbered.includes(role.name)) {
@@ -261,11 +261,11 @@ export class VerdocsTemplateRecipients {
   // Look for name conflicts, because they're UGC and can be anything, regardless of order.
   getNextRecipientName() {
     let name = '';
-    let nextNumber = TemplateStore.template.roles.length;
+    let nextNumber = TemplateStore.template?.roles.length;
     do {
       nextNumber++;
       name = `Recipient ${nextNumber}`;
-    } while (!name || TemplateStore.template.roles.some(role => role.name === name));
+    } while (!name || TemplateStore.template?.roles.some(role => role.name === name));
 
     return name;
   }
@@ -337,7 +337,17 @@ export class VerdocsTemplateRecipients {
       );
     }
 
+    if (TemplateStore.loading || !TemplateStore.template) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
     const roleNames = (TemplateStore.template?.roles || []).map(role => role.name);
+
+    console.log('s', this.sequences);
 
     return (
       <Host>
@@ -393,14 +403,16 @@ export class VerdocsTemplateRecipients {
                   </div>
                 </div>
 
-                <div class="row add-sequence" data-sequence={sequence}>
-                  <div class="row-recipients">
-                    <div class="icon" innerHTML={plusIcon} />
-                    <div class="dropzone" data-sequence={sequence + 1} data-order={1}>
-                      Add Step
+                {this.sequences.length > 0 && (
+                  <div class="row add-sequence" data-sequence={sequence}>
+                    <div class="row-recipients">
+                      <div class="icon" innerHTML={plusIcon} />
+                      <div class="dropzone" data-sequence={sequence + 1} data-order={1}>
+                        Add Step
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </Fragment>
             ))}
 

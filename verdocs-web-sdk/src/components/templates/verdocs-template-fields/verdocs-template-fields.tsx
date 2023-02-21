@@ -352,12 +352,13 @@ export class VerdocsTemplateFields {
           {pages.map(page => {
             // console.log('rendering page', page);
             return (
-              <verdocs-document-page
-                pageImageUri={page.display_uri}
+              <verdocs-template-document-page
+                templateId={page.template_id}
+                documentId={page.document_id}
+                pageNumber={page.sequence}
                 virtualWidth={612}
                 virtualHeight={792}
                 onClick={(e: PointerEvent) => this.handleClickPage(e, page)}
-                pageNumber={page.sequence}
                 onPageRendered={e => this.handlePageRendered(e)}
                 layers={[
                   {name: 'page', type: 'canvas'},

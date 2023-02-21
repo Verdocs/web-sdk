@@ -58,6 +58,7 @@ export class VerdocsTemplateName {
     e.stopPropagation();
     this.name = TemplateStore.template.name;
     this.dirty = false;
+    console.log('Closing');
     this.close?.emit();
   }
 
@@ -66,6 +67,7 @@ export class VerdocsTemplateName {
     await updateTemplate(this.endpoint, this.templateId, {name: this.name});
     TemplateStore.template.name = this.name;
     this.dirty = false;
+    console.log('Closing');
     this.close?.emit();
   }
 

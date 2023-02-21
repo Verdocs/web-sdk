@@ -1,0 +1,19 @@
+@import '../../../theme.scss';
+
+verdocs-template-document-page {
+  width: 100%;
+  position: relative;
+
+  .verdocs-template-document-page-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: 0 0 10px 5px #0000000f;
+
+    &.img {
+      width: 100%;
+    }
+  }
+}
