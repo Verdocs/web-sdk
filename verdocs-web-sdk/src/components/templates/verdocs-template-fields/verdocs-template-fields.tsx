@@ -3,7 +3,7 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {IPage, ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {Component, h, Event, EventEmitter, Prop, Host, State} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
 import {defaultHeight, defaultWidth, getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
 import TemplateStore from '../../../utils/templateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -149,6 +149,14 @@ export class VerdocsTemplateFields {
     }
   }
 
+  // Stop field-placement mode if ESC is pressed
+  @Listen('keydown', {target: 'document'})
+  handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === 'Escape') {
+      this.placing = null;
+    }
+  }
+
   async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
     console.log('[FIELDS] handleFieldChange', field, e, optionId);
     this.rerender++;
@@ -247,9 +255,15 @@ export class VerdocsTemplateFields {
   }
 
   generateFieldName(type: string, pageNumber: number) {
-    const page = TemplateStore.template.pages?.[pageNumber - 1];
-    const fields = page?.fields || [];
-    return `${type}P${pageNumber}-${fields.length}`;
+    let i = 1;
+    let fieldName;
+    do {
+      fieldName = `${type}P${pageNumber}-${i}`;
+      i++;
+    } while (TemplateStore.fields.some(field => field.name === fieldName));
+
+    console.log('Field name', fieldName);
+    return fieldName;
   }
 
   // Scale the X,Y clicks to the virtual page dimensions. Also ensure the field doesn't go off the page.
@@ -262,6 +276,7 @@ export class VerdocsTemplateFields {
 
   async handleClickPage(e: any, page: IPage) {
     if (this.placing) {
+      console.log('Placing field', this.placing, page.sequence, e.offsetX, e.offsetY);
       const pageNumber = page.sequence;
       const clickedX = e.offsetX;
       const clickedY = e.offsetY;

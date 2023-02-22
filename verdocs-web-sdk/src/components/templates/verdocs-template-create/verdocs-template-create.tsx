@@ -84,7 +84,12 @@ export class VerdocsTemplateCreate {
       const template_document = await createTemplateDocument(this.endpoint, template.id, this.file);
       console.log('[CREATE] Created document', template_document);
 
-      const finalTemplate = await getTemplate(this.endpoint, template.id);
+      let finalTemplate: ITemplate | null = null;
+      while (!finalTemplate || !finalTemplate.processed) {
+        console.log('[CREATE] Waiting for template to be processed...', template_document);
+        finalTemplate = await getTemplate(this.endpoint, template.id);
+      }
+
       console.log('[CREATE] Retrieved new template', finalTemplate);
 
       // for await (let pageNumber of Array.from(Array(template_document.page_numbers).keys(), n => n + 1)) {

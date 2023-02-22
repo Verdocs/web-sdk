@@ -54,10 +54,10 @@ export class VerdocsPreview {
 
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    console.log('[PREVIEW] Page rendered', pageInfo);
+    // console.log('[PREVIEW] Page rendered', pageInfo);
 
     const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
-    console.log('[PREVIEW] Fields on page', fields);
+    // console.log('[PREVIEW] Fields on page', fields);
     fields.forEach(field => renderDocumentField(field, pageInfo, getRoleIndex(TemplateStore.roleNames, field.role_name), {disabled: true, editable: false, draggable: false}));
   }
 
