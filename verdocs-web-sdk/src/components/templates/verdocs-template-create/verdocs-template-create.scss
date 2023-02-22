@@ -11,7 +11,7 @@ verdocs-template-create {
 
     .upload-box {
       box-sizing: border-box;
-      max-width: 320px;
+      width: 320px;
       text-align: center;
       padding: 44px 18px 66px;
       border: 2px dashed #979797;
@@ -30,7 +30,7 @@ verdocs-template-create {
     flex-direction: column;
     box-sizing: border-box;
     position: relative;
-    max-width: 320px;
+    width: 320px;
     height: 320px;
     text-align: center;
     border: 2px dashed #979797;

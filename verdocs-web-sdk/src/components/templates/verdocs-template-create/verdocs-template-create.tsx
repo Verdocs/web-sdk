@@ -85,21 +85,26 @@ export class VerdocsTemplateCreate {
       console.log('[CREATE] Created document', template_document);
 
       let finalTemplate: ITemplate | null = null;
-      while (!finalTemplate || !finalTemplate.processed) {
+      const processingWait = setInterval(async () => {
         console.log('[CREATE] Waiting for template to be processed...', template_document);
         finalTemplate = await getTemplate(this.endpoint, template.id);
-      }
 
-      console.log('[CREATE] Retrieved new template', finalTemplate);
+        if (finalTemplate?.processed) {
+          console.log('[CREATE] Retrieved new template', finalTemplate);
 
-      // for await (let pageNumber of Array.from(Array(template_document.page_numbers).keys(), n => n + 1)) {
-      //   console.log('Updating page', pageNumber);
-      //   const page = await createPage(this.endpoint, template.id, {sequence: pageNumber, page_number: pageNumber, document_id: template_document.id});
-      //   console.log('Created page', page);
-      // }
+          // for await (let pageNumber of Array.from(Array(template_document.page_numbers).keys(), n => n + 1)) {
+          //   console.log('Updating page', pageNumber);
+          //   const page = await createPage(this.endpoint, template.id, {sequence: pageNumber, page_number: pageNumber, document_id: template_document.id});
+          //   console.log('Created page', page);
+          // }
+          if (processingWait) {
+            clearInterval(processingWait);
+          }
 
-      this.next?.emit(finalTemplate);
-      this.creating = false;
+          this.next?.emit(finalTemplate);
+          this.creating = false;
+        }
+      }, 3000);
     } catch (e) {
       console.log('[CREATE] Error creating template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -123,7 +128,7 @@ export class VerdocsTemplateCreate {
         {this.creating ? (
           <div class="loader-wrapper">
             <verdocs-loader />
-            <div class="loading-text">Uploading, please wait...</div>
+            <div class="loading-text">Processing, please wait...</div>
           </div>
         ) : (
           <div class="upload-box">
