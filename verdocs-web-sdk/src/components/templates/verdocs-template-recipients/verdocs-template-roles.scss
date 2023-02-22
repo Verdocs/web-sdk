@@ -1,6 +1,6 @@
 @import '../../../theme.scss';
 
-verdocs-template-recipients {
+verdocs-template-roles {
   display: block;
   min-width: 400px;
   font-family: $verdocs-primary-font;
@@ -46,7 +46,7 @@ verdocs-template-recipients {
       flex-direction: row;
       padding: 6px 0 4px 0;
 
-      .row-recipients {
+      .row-roles {
         flex: 1;
         display: flex;
         column-gap: 10px;

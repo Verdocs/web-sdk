@@ -791,16 +791,6 @@ export namespace Components {
          */
         "templateId": string;
     }
-    interface VerdocsTemplateRecipients {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId": string;
-    }
     interface VerdocsTemplateReminders {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -824,6 +814,16 @@ export namespace Components {
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
         "sender": TTemplateSender;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
+    interface VerdocsTemplateRoles {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
         /**
           * The template ID to edit.
          */
@@ -1081,10 +1081,6 @@ export interface VerdocsTemplatePropertiesCustomEvent<T> extends CustomEvent<T> 
     detail: T;
     target: HTMLVerdocsTemplatePropertiesElement;
 }
-export interface VerdocsTemplateRecipientsCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsTemplateRecipientsElement;
-}
 export interface VerdocsTemplateRemindersCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateRemindersElement;
@@ -1092,6 +1088,10 @@ export interface VerdocsTemplateRemindersCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsTemplateRolePropertiesCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateRolePropertiesElement;
+}
+export interface VerdocsTemplateRolesCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateRolesElement;
 }
 export interface VerdocsTemplateSenderCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1402,12 +1402,6 @@ declare global {
         prototype: HTMLVerdocsTemplatePropertiesElement;
         new (): HTMLVerdocsTemplatePropertiesElement;
     };
-    interface HTMLVerdocsTemplateRecipientsElement extends Components.VerdocsTemplateRecipients, HTMLStencilElement {
-    }
-    var HTMLVerdocsTemplateRecipientsElement: {
-        prototype: HTMLVerdocsTemplateRecipientsElement;
-        new (): HTMLVerdocsTemplateRecipientsElement;
-    };
     interface HTMLVerdocsTemplateRemindersElement extends Components.VerdocsTemplateReminders, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateRemindersElement: {
@@ -1419,6 +1413,12 @@ declare global {
     var HTMLVerdocsTemplateRolePropertiesElement: {
         prototype: HTMLVerdocsTemplateRolePropertiesElement;
         new (): HTMLVerdocsTemplateRolePropertiesElement;
+    };
+    interface HTMLVerdocsTemplateRolesElement extends Components.VerdocsTemplateRoles, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateRolesElement: {
+        prototype: HTMLVerdocsTemplateRolesElement;
+        new (): HTMLVerdocsTemplateRolesElement;
     };
     interface HTMLVerdocsTemplateSenderElement extends Components.VerdocsTemplateSender, HTMLStencilElement {
     }
@@ -1523,9 +1523,9 @@ declare global {
         "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
         "verdocs-template-name": HTMLVerdocsTemplateNameElement;
         "verdocs-template-properties": HTMLVerdocsTemplatePropertiesElement;
-        "verdocs-template-recipients": HTMLVerdocsTemplateRecipientsElement;
         "verdocs-template-reminders": HTMLVerdocsTemplateRemindersElement;
         "verdocs-template-role-properties": HTMLVerdocsTemplateRolePropertiesElement;
+        "verdocs-template-roles": HTMLVerdocsTemplateRolesElement;
         "verdocs-template-sender": HTMLVerdocsTemplateSenderElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-template-visibility": HTMLVerdocsTemplateVisibilityElement;
@@ -2595,32 +2595,6 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
-    interface VerdocsTemplateRecipients {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the user cancels the dialog.
-         */
-        "onCancel"?: (event: VerdocsTemplateRecipientsCustomEvent<any>) => void;
-        /**
-          * Event fired when the user clicks to proceed.
-         */
-        "onNext"?: (event: VerdocsTemplateRecipientsCustomEvent<any>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsTemplateRecipientsCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
-         */
-        "onTemplateUpdated"?: (event: VerdocsTemplateRecipientsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
-        /**
-          * The template ID to edit.
-         */
-        "templateId"?: string;
-    }
     interface VerdocsTemplateReminders {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2664,6 +2638,32 @@ declare namespace LocalJSX {
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
         "sender"?: TTemplateSender;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
+    interface VerdocsTemplateRoles {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user cancels the dialog.
+         */
+        "onCancel"?: (event: VerdocsTemplateRolesCustomEvent<any>) => void;
+        /**
+          * Event fired when the user clicks to proceed.
+         */
+        "onNext"?: (event: VerdocsTemplateRolesCustomEvent<any>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplateRolesCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onTemplateUpdated"?: (event: VerdocsTemplateRolesCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
          */
@@ -2865,9 +2865,9 @@ declare namespace LocalJSX {
         "verdocs-template-fields": VerdocsTemplateFields;
         "verdocs-template-name": VerdocsTemplateName;
         "verdocs-template-properties": VerdocsTemplateProperties;
-        "verdocs-template-recipients": VerdocsTemplateRecipients;
         "verdocs-template-reminders": VerdocsTemplateReminders;
         "verdocs-template-role-properties": VerdocsTemplateRoleProperties;
+        "verdocs-template-roles": VerdocsTemplateRoles;
         "verdocs-template-sender": VerdocsTemplateSender;
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-template-visibility": VerdocsTemplateVisibility;
@@ -2931,9 +2931,9 @@ declare module "@stencil/core" {
             "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
             "verdocs-template-name": LocalJSX.VerdocsTemplateName & JSXBase.HTMLAttributes<HTMLVerdocsTemplateNameElement>;
             "verdocs-template-properties": LocalJSX.VerdocsTemplateProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplatePropertiesElement>;
-            "verdocs-template-recipients": LocalJSX.VerdocsTemplateRecipients & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRecipientsElement>;
             "verdocs-template-reminders": LocalJSX.VerdocsTemplateReminders & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRemindersElement>;
             "verdocs-template-role-properties": LocalJSX.VerdocsTemplateRoleProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolePropertiesElement>;
+            "verdocs-template-roles": LocalJSX.VerdocsTemplateRoles & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolesElement>;
             "verdocs-template-sender": LocalJSX.VerdocsTemplateSender & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSenderElement>;
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             "verdocs-template-visibility": LocalJSX.VerdocsTemplateVisibility & JSXBase.HTMLAttributes<HTMLVerdocsTemplateVisibilityElement>;

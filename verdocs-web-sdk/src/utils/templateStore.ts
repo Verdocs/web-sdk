@@ -23,7 +23,6 @@ const {state, onChange} = createStore({
 });
 
 onChange('template', async newTemplate => {
-  console.log('nt', newTemplate);
   if (!newTemplate) {
     console.log('[TEMPLATESTORE] Clearing template');
     state.fields = [];

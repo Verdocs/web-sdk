@@ -39,14 +39,14 @@ const iconApprover = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24
 const iconCC = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" /><path d="M22.5 6.908V6.75a3 3 0 00-3-3h-15a3 3 0 00-3 3v.158l9.714 5.978a1.5 1.5 0 001.572 0L22.5 6.908z" /></svg>`;
 
 /**
- * Displays an edit form that allows the user to adjust a template's recipients and workflow.
+ * Displays an edit form that allows the user to adjust a template's roles and workflow.
  */
 @Component({
-  tag: 'verdocs-template-recipients',
-  styleUrl: 'verdocs-template-recipients.scss',
+  tag: 'verdocs-template-roles',
+  styleUrl: 'verdocs-template-roles.scss',
   shadow: false,
 })
-export class VerdocsTemplateRecipients {
+export class VerdocsTemplateRoles {
   @Element()
   el: HTMLElement;
 
@@ -93,20 +93,20 @@ export class VerdocsTemplateRecipients {
       this.endpoint.loadSession();
 
       if (!this.templateId) {
-        console.log(`[RECIPIENTS] Missing required template ID ${this.templateId}`);
+        console.log(`[ROLES] Missing required template ID ${this.templateId}`);
         return;
       }
 
       if (!this.endpoint.session) {
-        console.log('[RECIPIENTS] Unable to start builder session, must be authenticated');
+        console.log('[ROLES] Unable to start builder session, must be authenticated');
         return;
       }
 
       try {
-        console.log(`[RECIPIENTS] Loading template ${this.templateId}`, this.endpoint.session);
+        console.log(`[ROLES] Loading template ${this.templateId}`, this.endpoint.session);
         await loadTemplate(this.endpoint, this.templateId, true);
       } catch (e) {
-        console.log('[RECIPIENTS] Error loading template', e);
+        console.log('[ROLES] Error loading template', e);
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
 
@@ -189,8 +189,8 @@ export class VerdocsTemplateRecipients {
               }),
             ),
           )
-            .then(() => console.log('[RECIPIENTS] Updated roles'))
-            .catch(e => console.log('[RECIPIENTS] Role updates failed', e));
+            .then(() => console.log('[ROLES] Updated roles'))
+            .catch(e => console.log('[ROLES] Role updates failed', e));
         }
       }.bind(this),
       ondropactivate: e => {
@@ -259,7 +259,7 @@ export class VerdocsTemplateRecipients {
   }
 
   // Look for name conflicts, because they're UGC and can be anything, regardless of order.
-  getNextRecipientName() {
+  getNextRoleName() {
     let name = '';
     let nextNumber = TemplateStore.template?.roles.length;
     do {
@@ -275,7 +275,7 @@ export class VerdocsTemplateRecipients {
 
     // We don't need to look for a unique order number because we're already working with a sorted/renumbered set by now.
     const order = TemplateStore.template.roles.filter(role => role.sequence === sequence).length + 1;
-    const name = this.getNextRecipientName();
+    const name = this.getNextRoleName();
     console.log('Will create', name, sequence, order);
     createRole(this.endpoint, this.templateId, {
       template_id: this.templateId,
@@ -303,7 +303,7 @@ export class VerdocsTemplateRecipients {
     e.stopPropagation();
 
     const order = 1;
-    const name = this.getNextRecipientName();
+    const name = this.getNextRoleName();
 
     console.log('Will create', name, sequence, order);
     createRole(this.endpoint, this.templateId, {
@@ -347,8 +347,6 @@ export class VerdocsTemplateRecipients {
 
     const roleNames = (TemplateStore.template?.roles || []).map(role => role.name);
 
-    console.log('s', this.sequences);
-
     return (
       <Host>
         <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off" data-r={this.forceRerender}>
@@ -358,7 +356,7 @@ export class VerdocsTemplateRecipients {
             <div class="left-line" />
             <div class="row">
               <div class="icon" innerHTML={startIcon} />
-              <div class="row-recipients">
+              <div class="row-roles">
                 <div class="sender">
                   <span class="label">Sender:</span> {senderLabels[TemplateStore.template.sender]}{' '}
                   <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
@@ -368,7 +366,7 @@ export class VerdocsTemplateRecipients {
 
             <div class="row add-sequence" data-sequence={0}>
               <div class="icon" innerHTML={plusIcon} />
-              <div class="row-recipients">
+              <div class="row-roles">
                 <div class="dropzone" data-sequence={0} data-order={1}>
                   Add Step
                 </div>
@@ -379,7 +377,7 @@ export class VerdocsTemplateRecipients {
               <Fragment>
                 <div class="row">
                   <div class="icon" innerHTML={stepIcon} />
-                  <div class="row-recipients">
+                  <div class="row-roles">
                     {/* The "start of sequence" drop zone */}
                     <div class="dropzone" data-order={0.5} data-sequence={sequence} />
 
@@ -405,7 +403,7 @@ export class VerdocsTemplateRecipients {
 
                 {this.sequences.length > 0 && (
                   <div class="row add-sequence" data-sequence={sequence}>
-                    <div class="row-recipients">
+                    <div class="row-roles">
                       <div class="icon" innerHTML={plusIcon} />
                       <div class="dropzone" data-sequence={sequence + 1} data-order={1}>
                         Add Step
@@ -417,26 +415,26 @@ export class VerdocsTemplateRecipients {
             ))}
 
             <div class="row" data-sequence={this.sequences.length + 1}>
-              <div class="row-recipients">
+              <div class="row-roles">
                 <div class="icon" innerHTML={plusIcon} />
                 <button class="add-step" innerHTML={plusIcon} onClick={e => this.handleAddStep(e, this.sequences.length + 1)} />
               </div>
             </div>
 
-            {this.sequences.length < 1 && (
-              <Fragment>
-                <div class="row">
-                  <div class="icon" innerHTML={stepIcon} />
-                  <div class="row-recipients">
-                    <button class="add-role" innerHTML={plusIcon} onClick={e => this.handleAddRole(e, 1)} />
-                  </div>
-                </div>
-              </Fragment>
-            )}
+            {/*{this.sequences.length < 1 && (*/}
+            {/*  <Fragment>*/}
+            {/*    <div class="row">*/}
+            {/*      <div class="icon" innerHTML={stepIcon} />*/}
+            {/*      <div class="row-roles">*/}
+            {/*        <button class="add-role" innerHTML={plusIcon} onClick={e => this.handleAddRole(e, 1)} />*/}
+            {/*      </div>*/}
+            {/*    </div>*/}
+            {/*  </Fragment>*/}
+            {/*)}*/}
 
             <div class="row">
               <div class="icon" innerHTML={doneIcon} />
-              <div class="row-recipients">
+              <div class="row-roles">
                 <div class="complete">Document Complete</div>
               </div>
             </div>

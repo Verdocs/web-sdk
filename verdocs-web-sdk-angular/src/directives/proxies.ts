@@ -1543,51 +1543,6 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'templateId']
 })
 @Component({
-  selector: 'verdocs-template-recipients',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'templateId'],
-})
-export class VerdocsTemplateRecipients {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError', 'templateUpdated']);
-  }
-}
-
-
-import type { SDKError as IVerdocsTemplateRecipientsSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsTemplateRecipientsVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { ITemplate as IVerdocsTemplateRecipientsITemplate } from '@verdocs/web-sdk';
-
-export declare interface VerdocsTemplateRecipients extends Components.VerdocsTemplateRecipients {
-  /**
-   * Event fired when the user clicks to proceed.
-   */
-  next: EventEmitter<CustomEvent<any>>;
-  /**
-   * Event fired when the user cancels the dialog.
-   */
-  cancel: EventEmitter<CustomEvent<any>>;
-  /**
-   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
-terminate the process, and the calling application should correct the condition and re-render the component.
-   */
-  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsSDKError>>;
-  /**
-   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
-   */
-  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateRecipientsIVerdocsTemplateRecipients{endpoint: [object Object]; template: [object Object]; event: string}>>;
-}
-
-
-@ProxyCmp({
-  inputs: ['endpoint', 'templateId']
-})
-@Component({
   selector: 'verdocs-template-reminders',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
@@ -1656,6 +1611,51 @@ the role will have already been deleted server-side.
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateRolePropertiesSDKError>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'verdocs-template-roles',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class VerdocsTemplateRoles {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError', 'templateUpdated']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateRolesSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateRolesVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateRolesITemplate } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateRoles extends Components.VerdocsTemplateRoles {
+  /**
+   * Event fired when the user clicks to proceed.
+   */
+  next: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user cancels the dialog.
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateRolesSDKError>>;
+  /**
+   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateRolesIVerdocsTemplateRoles{endpoint: [object Object]; template: [object Object]; event: string}>>;
 }
 
 

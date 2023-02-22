@@ -84,9 +84,7 @@ export class VerdocsTemplateDocumentPage {
   @State() pageDisplayUri = '';
 
   async componentWillLoad() {
-    const uri = await getTemplateDocumentPageDisplayUri(this.endpoint, this.templateId, this.documentId, this.pageNumber);
-    console.log('pd', uri);
-    this.pageDisplayUri = uri;
+    this.pageDisplayUri = await getTemplateDocumentPageDisplayUri(this.endpoint, this.templateId, this.documentId, this.pageNumber);
   }
 
   componentDidLoad() {
