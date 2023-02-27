@@ -121,6 +121,10 @@ export class VerdocsContactPicker {
   @State() showMessage: boolean = false;
   @State() delegator: boolean = false;
 
+  @State() nameFieldId = `verdocs-contact-picker-name-${Math.random().toString(36).substring(2, 11)}`;
+  @State() emailFieldId = `verdocs-contact-picker-email-${Math.random().toString(36).substring(2, 11)}`;
+  @State() phoneFieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
+
   componentWillLoad() {
     if (this.templateRole) {
       this.name = this.templateRole.full_name || '';
@@ -177,14 +181,16 @@ export class VerdocsContactPicker {
     this.showSuggestions = false;
   }
 
+  // The reason for the random names/IDs is to disable browser autocomplete. We set the autocomplete tags but many browsers ignore them
+  // and show a duplicate autocomplete picker on top of our own.
   render() {
     return (
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <div class="row">
-          <label htmlFor="verdocs-contact-picker-name">Name:</label>
+          <label htmlFor={this.nameFieldId}>Name:</label>
           <input
-            id="verdocs-contact-picker-name"
-            name="verdocs-contact-picker-name"
+            id={this.nameFieldId}
+            name={this.nameFieldId}
             type="text"
             data-lpignore="true"
             autocomplete="blocked"
@@ -212,13 +218,13 @@ export class VerdocsContactPicker {
         </div>
 
         <div class="row">
-          <label htmlFor="verdocs-contact-picker-email">Email:</label>
+          <label htmlFor={this.emailFieldId}>Email:</label>
           <input
-            id="verdocs-contact-picker-email"
-            name="verdocs-contact-picker-email"
+            id={this.emailFieldId}
+            name={this.emailFieldId}
             type="text"
             data-lpignore="true"
-            autocomplete="blocked"
+            autoComplete="blocked"
             value={this.email}
             placeholder="Email Address..."
             onFocus={() => (this.showSuggestions = false)}
@@ -227,13 +233,13 @@ export class VerdocsContactPicker {
         </div>
 
         <div class="row">
-          <label htmlFor="verdocs-contact-picker-phone">Phone:</label>
+          <label htmlFor={this.phoneFieldId}>Phone:</label>
           <input
-            id="verdocs-contact-picker-phone"
-            name="verdocs-contact-picker-phone"
+            id={this.phoneFieldId}
+            name={this.phoneFieldId}
             type="text"
             data-lpignore="true"
-            autocomplete="blocked"
+            autoComplete="blocked"
             value={this.phone}
             placeholder="Phone Number..."
             onFocus={() => (this.showSuggestions = false)}

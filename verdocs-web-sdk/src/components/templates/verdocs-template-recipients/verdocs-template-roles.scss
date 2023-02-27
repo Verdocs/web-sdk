@@ -94,7 +94,7 @@ verdocs-template-roles {
       }
 
       .settings-button {
-        margin: 4px 0 0 9px;
+        margin: 0 0 0 9px;
         cursor: pointer;
       }
 
@@ -102,8 +102,8 @@ verdocs-template-roles {
         height: 30px;
         display: flex;
         font-size: 14px;
-        line-height: 30px;
         border-radius: 30px;
+        align-items: center;
         flex-direction: row;
         padding: 0 5px 0 6px;
         white-space: nowrap;
@@ -114,7 +114,7 @@ verdocs-template-roles {
           height: 24px;
           transform: scale(0.8);
           opacity: 0.6;
-          margin: 4px 12px 0 0;
+          margin: 0 12px 0 0;
         }
 
         &.dragging {

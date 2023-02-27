@@ -267,16 +267,21 @@ export const getFieldSettings = (field: ITemplateField | IDocumentField) => {
  * to be used for order-sensitive components e.g. translate-then-rotate.
  */
 export const updateCssTransform = (el: HTMLElement, key: string, value: string) => {
+  console.log('update', key, value, el.style.transform);
   // e.g. 'scale(1.87908, 1.87908) translate(0px, 0px);'
-  const currentTransform = el.style.transform;
-  // e.g. ['scale(1.87908, 1.87908)', 'scale', '1.87908, 1.87908', ...], [ 'translate(0px, 0px)', 'translate', '0px, 0px']]
-  const components = [...currentTransform.matchAll(/(\w+)\(([^)]*)\)/gi)];
-  el.style.transform = [
-    components //
-      .filter(component => component[1] !== key) // Remove the entry if it's already set
-      .map(component => component[0]), // Convert back the remaining entries
-    `${key}(${value})`,
-  ].join(' ');
+
+  const currentTransform = el.style.transform || '';
+
+  const newValue = `${key}(${value})`;
+  if (currentTransform.includes(key)) {
+    console.log('updating', currentTransform, currentTransform.replace(new RegExp(`${key}\(.+?\)`), newValue));
+    el.style.transform = currentTransform.replace(new RegExp(`${key}\\(.+?\\)`), newValue);
+  } else {
+    console.log('appending', currentTransform, currentTransform + ' ' + newValue);
+    el.style.transform = currentTransform + ' ' + newValue;
+  }
+
+  console.log('now', el.style.transform);
 };
 
 export const formatLocalDate = (date: Date) => format(date, 'P').replace(/\//g, '-');

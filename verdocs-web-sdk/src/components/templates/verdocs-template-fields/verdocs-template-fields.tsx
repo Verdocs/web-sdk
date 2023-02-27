@@ -188,14 +188,14 @@ export class VerdocsTemplateFields {
   cachedPageInfo: Record<number, IDocumentPageInfo> = {};
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    console.log('[FIELDS] Page rendered', pageInfo);
+    console.log('[FIELDS] Page rendered', pageInfo.pageNumber, pageInfo);
     this.cachedPageInfo[pageInfo.pageNumber] = pageInfo;
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
     const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
     // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
-    console.log('[FIELDS] Fields on page', fields);
+    // console.log('[FIELDS] Fields on page', fields);
     fields.forEach(field => {
       const roleIndex = getRoleIndex(TemplateStore.roleNames, field.role_name);
       const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
