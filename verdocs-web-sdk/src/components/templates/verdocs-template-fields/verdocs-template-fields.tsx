@@ -283,7 +283,10 @@ export class VerdocsTemplateFields {
 
       const width = defaultWidth(this.placing);
       const height = defaultHeight(this.placing);
-      const {naturalWidth = 612, naturalHeight = 792} = this.cachedPageInfo[pageNumber];
+
+      const cachedPage = this.cachedPageInfo[pageNumber];
+      console.log('Cached page', cachedPage);
+      const {naturalWidth = 612, naturalHeight = 792} = cachedPage;
 
       const {x, y} = this.viewCoordinatesToPageCoordinates(clickedX, clickedY, pageNumber, naturalWidth - width, naturalHeight - height);
 

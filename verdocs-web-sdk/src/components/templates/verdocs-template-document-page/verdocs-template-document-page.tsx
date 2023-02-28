@@ -165,6 +165,7 @@ export class VerdocsTemplateDocumentPage {
                 this.naturalHeight = e.target.naturalHeight;
                 this.aspectRatio = this.naturalWidth / this.naturalHeight;
                 this.virtualHeight = this.virtualWidth / this.aspectRatio;
+                this.renderedHeight = e.target.offsetWidth / this.aspectRatio;
               }}
             />
           ) : (

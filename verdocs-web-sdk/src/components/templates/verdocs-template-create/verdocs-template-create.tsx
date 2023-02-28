@@ -135,7 +135,7 @@ export class VerdocsTemplateCreate {
             <div>
               <span innerHTML={FileIcon} />
             </div>
-            <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
+            <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold', overflowWrap: 'anywhere'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
             <div
               style={{
                 marginTop: '20px',
