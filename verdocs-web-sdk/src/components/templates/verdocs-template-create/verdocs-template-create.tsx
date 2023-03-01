@@ -31,6 +31,11 @@ export class VerdocsTemplateCreate {
   @Event({composed: true}) cancel: EventEmitter;
 
   /**
+   * Test event for debugging
+   */
+  @Event({composed: true}) testev: EventEmitter;
+
+  /**
    * Event fired when the user changes the type.
    */
   @Event({composed: true}) next: EventEmitter<ITemplate>;
@@ -65,7 +70,8 @@ export class VerdocsTemplateCreate {
   handleCancel(e) {
     e.stopPropagation();
     console.log('Canceling');
-    this.cancel?.emit();
+    this.testev.emit();
+    this.cancel.emit();
   }
 
   async handleSubmit(e) {
