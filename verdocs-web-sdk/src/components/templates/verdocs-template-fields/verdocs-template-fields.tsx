@@ -80,16 +80,6 @@ export class VerdocsTemplateFields {
   @Prop() toolbarTargetId: string | null = null;
 
   /**
-   * Event fired when the user completes the step.
-   */
-  @Event({composed: true}) next: EventEmitter<ITemplate>;
-
-  /**
-   * Event fired when the user cancels the dialog.
-   */
-  @Event({composed: true}) cancel: EventEmitter;
-
-  /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */

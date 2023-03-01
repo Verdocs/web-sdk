@@ -8,15 +8,12 @@ export default {
     templateId: 'ea7a792f-7e46-4662-a0ff-db6bd389306e',
     // templateId: 'd2338742-f3a1-465b-8592-806587413cc1',
   },
-  argTypes: {
-    onCancel: {action: 'cancel'},
-    onNext: {action: 'next'},
-  },
+  argTypes: {},
   parameters: {
     layout: 'fullscreen',
   },
 } as Meta;
 
-export const Fields = ({templateId, onCancel, onNext}) => html`<div style="height: 600px">
-  <verdocs-template-fields .templateId=${templateId} @cancel=${onCancel} @next=${onNext} />
+export const Fields = ({templateId}) => html`<div style="height: 600px">
+  <verdocs-template-fields .templateId=${templateId} />
 </div>`;

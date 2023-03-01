@@ -14,12 +14,12 @@ export default {
       action: 'next',
       table: {disable: true},
     },
-    onCancel: {
-      action: 'cancel',
+    onExit: {
+      action: 'exit',
       table: {disable: true},
     },
   },
 } as Meta;
 
-export const OkDialog = ({heading, message, showCancel, onNext, onCancel}) =>
-  html`<verdocs-ok-dialog .heading=${heading} .message=${message} .showCancel=${showCancel} @cancel=${onCancel} @next=${onNext} />`;
+export const OkDialog = ({heading, message, showCancel, onNext, onExit}) =>
+  html`<verdocs-ok-dialog .heading=${heading} .message=${message} .showCancel=${showCancel} @exit=${onExit} @next=${onNext} />`;

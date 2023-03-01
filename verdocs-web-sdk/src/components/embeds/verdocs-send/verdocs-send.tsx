@@ -50,9 +50,9 @@ export class VerdocsSend {
   @Event({composed: true}) send: EventEmitter<{roles: IRole[]; name: string; template_id: string}>;
 
   /**
-   * The user canceled the process.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -148,7 +148,7 @@ export class VerdocsSend {
 
   handleCancel(e) {
     e.stopPropagation();
-    this.cancel?.emit();
+    this.exit?.emit();
   }
 
   render() {

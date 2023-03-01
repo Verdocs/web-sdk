@@ -25,9 +25,9 @@ export class VerdocsTemplateProperties {
   @Prop() templateId: string = '';
 
   /**
-   * Event fired when the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   /**
    * Event fired when the user completes the step.
@@ -71,7 +71,7 @@ export class VerdocsTemplateProperties {
 
   handleCancel(e) {
     e.stopPropagation();
-    this.cancel?.emit();
+    this.exit?.emit();
   }
 
   handleSubmit(e) {

@@ -10,8 +10,8 @@ export default {
   },
   argTypes: {
     onSave: {action: 'save'},
-    onCancel: {action: 'cancel'},
+    onExit: {action: 'exit'},
   },
 } as Meta;
 
-export const Roles = ({templateId, onCancel, onSave}) => html`<verdocs-template-roles .templateId=${templateId} @cancel=${onCancel} @save=${onSave} />`;
+export const Roles = ({templateId, onExit, onSave}) => html`<verdocs-template-roles .templateId=${templateId} @exit=${onExit} @save=${onSave} />`;

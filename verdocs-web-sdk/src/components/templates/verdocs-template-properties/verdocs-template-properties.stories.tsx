@@ -8,9 +8,9 @@ export default {
     templateId: '951016b0-c5ef-450d-b628-9a0c5b84b163',
   },
   argTypes: {
-    onCancel: {action: 'cancel'},
+    onExit: {action: 'exit'},
     onNext: {action: 'next'},
   },
 } as Meta;
 
-export const Properties = ({onCancel, onNext, templateId}) => html`<verdocs-template-properties .templateId=${templateId} @cancel=${onCancel} @next=${onNext} />`;
+export const Properties = ({onExit, onNext, templateId}) => html`<verdocs-template-properties .templateId=${templateId} @exit=${onExit} @next=${onNext} />`;

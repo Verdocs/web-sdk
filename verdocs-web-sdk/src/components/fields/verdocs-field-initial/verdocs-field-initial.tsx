@@ -60,9 +60,9 @@ export class VerdocsFieldInitial {
   @Event({composed: true}) adopt: EventEmitter<string>;
 
   /**
-   * Event emitted when the user cancels the process.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
@@ -111,7 +111,7 @@ export class VerdocsFieldInitial {
     this.dialog = document.createElement('verdocs-initial-dialog');
     this.dialog.setAttribute('initials', this.initials);
     this.dialog.setAttribute('roleindex', this.roleindex);
-    this.dialog.addEventListener('cancel', () => this.hideDialog());
+    this.dialog.addEventListener('exit', () => this.hideDialog());
     this.dialog.addEventListener('next', e => this.handleAdopt(e));
     document.body.append(this.dialog);
   }

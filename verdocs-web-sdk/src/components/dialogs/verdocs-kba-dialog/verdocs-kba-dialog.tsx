@@ -53,9 +53,9 @@ export class VerdocsKbaDialog {
   @Prop() choices: string[] = ['553 Arbor Dr', '18 Lacey Ln', '23A Ball Ct', '2375 Cavallo Blvd', '23-1 RR-7', '151 Boulder Rd'];
 
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   /**
    * Event fired when the dialog is closed. The event data will contain the value selected.
@@ -65,7 +65,7 @@ export class VerdocsKbaDialog {
   @State() response = '';
 
   handleCancel() {
-    this.cancel.emit();
+    this.exit.emit();
   }
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components

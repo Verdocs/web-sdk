@@ -178,7 +178,7 @@ export class VerdocsContactPicker {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'cancel', 'next']);
+    proxyOutputs(this, this.el, ['searchContacts', 'exit', 'next']);
   }
 }
 
@@ -193,9 +193,9 @@ the `contactSuggestions` property.
    */
   searchContacts: EventEmitter<CustomEvent<IVerdocsContactPickerIContactSearchEvent>>;
   /**
-   * Event fired when the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the user changes the type.
    */
@@ -455,7 +455,7 @@ export class VerdocsFieldInitial {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['adopt', 'cancel', 'fieldChange', 'settingsChanged', 'settingsPress', 'deleted']);
+    proxyOutputs(this, this.el, ['adopt', 'exit', 'fieldChange', 'settingsChanged', 'settingsPress', 'deleted']);
   }
 }
 
@@ -466,9 +466,9 @@ export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInit
    */
   adopt: EventEmitter<CustomEvent<string>>;
   /**
-   * Event emitted when the user cancels the process.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
 It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
@@ -768,7 +768,7 @@ export class VerdocsInitialDialog {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'cancel']);
+    proxyOutputs(this, this.el, ['next', 'exit']);
   }
 }
 
@@ -779,9 +779,9 @@ export declare interface VerdocsInitialDialog extends Components.VerdocsInitialD
    */
   next: EventEmitter<CustomEvent<string>>;
   /**
-   * Event fired when the step is cancelled.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
 }
 
 
@@ -800,16 +800,16 @@ export class VerdocsKbaDialog {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'next']);
+    proxyOutputs(this, this.el, ['exit', 'next']);
   }
 }
 
 
 export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
   /**
-   * Event fired when the dialog is closed. The event data will contain the closure reason.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the dialog is closed. The event data will contain the value selected.
    */
@@ -853,7 +853,7 @@ export class VerdocsOkDialog {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'cancel']);
+    proxyOutputs(this, this.el, ['next', 'exit']);
   }
 }
 
@@ -864,9 +864,9 @@ export declare interface VerdocsOkDialog extends Components.VerdocsOkDialog {
    */
   next: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the user clicks the background overlay or Cancel button.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
 }
 
 
@@ -1128,7 +1128,7 @@ export class VerdocsSend {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['send', 'cancel', 'sdkError']);
+    proxyOutputs(this, this.el, ['send', 'exit', 'sdkError']);
   }
 }
 
@@ -1142,9 +1142,9 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
    */
   send: EventEmitter<CustomEvent<IVerdocsSend{roles: [object Object][]; name: string; template_id: string}>>;
   /**
-   * The user canceled the process.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -1209,7 +1209,7 @@ export class VerdocsSignatureDialog {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'cancel']);
+    proxyOutputs(this, this.el, ['next', 'exit']);
   }
 }
 
@@ -1221,9 +1221,9 @@ representation of the signature adopted.
    */
   next: EventEmitter<CustomEvent<string>>;
   /**
-   * Fired if the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
 }
 
 
@@ -1321,7 +1321,7 @@ export class VerdocsTemplateCreate {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'next', 'sdkError']);
+    proxyOutputs(this, this.el, ['exit', 'next', 'sdkError']);
   }
 }
 
@@ -1331,9 +1331,9 @@ import type { SDKError as IVerdocsTemplateCreateSDKError } from '@verdocs/web-sd
 
 export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplateCreate {
   /**
-   * Event fired when the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the user changes the type.
    */
@@ -1435,24 +1435,16 @@ export class VerdocsTemplateFields {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError', 'templateUpdated']);
+    proxyOutputs(this, this.el, ['sdkError', 'templateUpdated']);
   }
 }
 
 
-import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsTemplateFieldsVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
-  /**
-   * Event fired when the user completes the step.
-   */
-  next: EventEmitter<CustomEvent<IVerdocsTemplateFieldsITemplate>>;
-  /**
-   * Event fired when the user cancels the dialog.
-   */
-  cancel: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -1515,7 +1507,7 @@ export class VerdocsTemplateProperties {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'next', 'sdkError']);
+    proxyOutputs(this, this.el, ['exit', 'next', 'sdkError']);
   }
 }
 
@@ -1524,9 +1516,9 @@ import type { SDKError as IVerdocsTemplatePropertiesSDKError } from '@verdocs/we
 
 export declare interface VerdocsTemplateProperties extends Components.VerdocsTemplateProperties {
   /**
-   * Event fired when the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the user completes the step.
    */
@@ -1629,7 +1621,7 @@ export class VerdocsTemplateRoles {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'cancel', 'sdkError', 'templateUpdated']);
+    proxyOutputs(this, this.el, ['next', 'exit', 'sdkError', 'templateUpdated']);
   }
 }
 
@@ -1644,9 +1636,9 @@ export declare interface VerdocsTemplateRoles extends Components.VerdocsTemplate
    */
   next: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -1859,7 +1851,7 @@ export class VerdocsUploadDialog {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'next']);
+    proxyOutputs(this, this.el, ['exit', 'next']);
   }
 }
 
@@ -1868,9 +1860,9 @@ import type { FileWithData as IVerdocsUploadDialogFileWithData } from '@verdocs/
 
 export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDialog {
   /**
-   * Event fired when the dialog is cancelled.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  cancel: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired when the dialog is closed. The event data will contain the file selected.
    */

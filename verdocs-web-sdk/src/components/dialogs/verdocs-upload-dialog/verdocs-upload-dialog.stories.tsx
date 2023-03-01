@@ -9,13 +9,11 @@ export default {
     message: 'Login failed. Please check your username and password and try again.',
   },
   argTypes: {
-    closed: {
-      action: 'closed',
-      table: {
-        disable: true,
-      },
+    onExit: {
+      action: 'exit',
+      table: {disable: true},
     },
   },
 } as Meta;
 
-export const UploadDialog = ({message, open, closed}) => html`<verdocs-upload-dialog .message=${message} .open=${open} @closed=${closed} />`;
+export const UploadDialog = ({message, open, onExit}) => html`<verdocs-upload-dialog .message=${message} .open=${open} @exit=${onExit} />`;

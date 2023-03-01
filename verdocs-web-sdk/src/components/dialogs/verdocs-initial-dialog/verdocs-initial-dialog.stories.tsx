@@ -12,11 +12,11 @@ export default {
       action: 'next',
       description: 'Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string representation of the initials adopted.',
     },
-    onCancel: {
-      action: 'cancel',
+    onExit: {
+      action: 'exit',
       description: 'Fired if the user cancels the dialog.',
     },
   },
 } as Meta;
 
-export const InitialDialog = ({initials, onNext, onCancel}) => html`<verdocs-initial-dialog .initials=${initials} @cancel=${onCancel} @next=${onNext} />`;
+export const InitialDialog = ({initials, onNext, onExit}) => html`<verdocs-initial-dialog .initials=${initials} @exit=${onExit} @next=${onNext} />`;

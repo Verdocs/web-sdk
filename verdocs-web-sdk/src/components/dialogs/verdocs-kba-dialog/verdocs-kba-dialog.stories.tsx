@@ -19,14 +19,14 @@ export default {
       action: 'next',
       table: {disable: true},
     },
-    onCancel: {
-      action: 'cancel',
+    onExit: {
+      action: 'exit',
       table: {disable: true},
     },
   },
 } as Meta;
 
-export const KBADialog = ({helptitle, helptext, label, placeholder, mode, step, steps, choices, onNext, onCancel}) =>
+export const KBADialog = ({helptitle, helptext, label, placeholder, mode, step, steps, choices, onNext, onExit}) =>
   html`<verdocs-kba-dialog
     .mode=${mode}
     .helptitle=${helptitle}
@@ -37,5 +37,5 @@ export const KBADialog = ({helptitle, helptext, label, placeholder, mode, step, 
     .steps=${steps}
     .choices=${choices}
     @next=${onNext}
-    @cancel=${onCancel}
+    @exit=${onExit}
   />`;

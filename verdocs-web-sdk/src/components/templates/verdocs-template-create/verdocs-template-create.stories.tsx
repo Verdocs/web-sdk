@@ -6,9 +6,9 @@ export default {
   component: 'verdocs-template-create',
   args: {},
   argTypes: {
-    onCancel: {action: 'cancel'},
+    onExit: {action: 'exit'},
     onNext: {action: 'next'},
   },
 } as Meta;
 
-export const Create = ({onCancel, onNext}) => html`<verdocs-template-create @next=${onNext} @cancel=${onCancel} />`;
+export const Create = ({onExit, onNext}) => html`<verdocs-template-create @next=${onNext} @exit=${onExit} />`;

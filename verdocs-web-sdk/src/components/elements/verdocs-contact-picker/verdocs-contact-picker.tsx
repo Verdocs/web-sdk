@@ -104,9 +104,9 @@ export class VerdocsContactPicker {
   @Event({composed: true}) searchContacts: EventEmitter<IContactSearchEvent>;
 
   /**
-   * Event fired when the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   /**
    * Event fired when the user changes the type.
@@ -156,7 +156,7 @@ export class VerdocsContactPicker {
   handleCancel(e) {
     e.stopPropagation();
     this.showSuggestions = false;
-    this.cancel?.emit();
+    this.exit?.emit();
   }
 
   handleSubmit(e) {

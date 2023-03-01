@@ -18,9 +18,9 @@ export class VerdocsUploadDialog {
   private fileInput?: HTMLInputElement;
 
   /**
-   * Event fired when the dialog is cancelled.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   /**
    * Event fired when the dialog is closed. The event data will contain the file selected.
@@ -32,7 +32,7 @@ export class VerdocsUploadDialog {
   @State() decodedFiles = [] as FileWithData[];
 
   handleCancel() {
-    this.cancel.emit();
+    this.exit.emit();
   }
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components

@@ -12,11 +12,11 @@ export default {
       action: 'next',
       table: {disable: true},
     },
-    onCancel: {
-      action: 'cancel',
+    onExit: {
+      action: 'exit',
       table: {disable: true},
     },
   },
 } as Meta;
 
-export const SignatureDialog = ({name, onCancel, onNext}) => html`<verdocs-signature-dialog .name=${name} @cancel=${onCancel} @next=${onNext} />`;
+export const SignatureDialog = ({name, onCancel, onExit}) => html`<verdocs-signature-dialog .name=${name} @cancel=${onCancel} @exit=${onExit} />`;

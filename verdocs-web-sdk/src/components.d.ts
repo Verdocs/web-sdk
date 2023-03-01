@@ -1652,9 +1652,9 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * Event fired when the user cancels the dialog.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsContactPickerCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsContactPickerCustomEvent<any>) => void;
         /**
           * Event fired when the user changes the type.
          */
@@ -1872,13 +1872,13 @@ declare namespace LocalJSX {
          */
         "onAdopt"?: (event: VerdocsFieldInitialCustomEvent<string>) => void;
         /**
-          * Event emitted when the user cancels the process.
-         */
-        "onCancel"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
-        /**
           * Event fired when the field is deleted.
          */
         "onDeleted"?: (event: VerdocsFieldInitialCustomEvent<{fieldName: string}>) => void;
+        /**
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+         */
+        "onExit"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
           * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc. It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every keypress.
          */
@@ -2141,9 +2141,9 @@ declare namespace LocalJSX {
          */
         "initials"?: string;
         /**
-          * Event fired when the step is cancelled.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsInitialDialogCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsInitialDialogCustomEvent<any>) => void;
         /**
           * Event fired when the initials are adopted.
          */
@@ -2171,9 +2171,9 @@ declare namespace LocalJSX {
          */
         "mode"?: 'text' | 'choice';
         /**
-          * Event fired when the dialog is closed. The event data will contain the closure reason.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsKbaDialogCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsKbaDialogCustomEvent<any>) => void;
         /**
           * Event fired when the dialog is closed. The event data will contain the value selected.
          */
@@ -2203,9 +2203,9 @@ declare namespace LocalJSX {
          */
         "message"?: string;
         /**
-          * Event fired when the user clicks the background overlay or Cancel button.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsOkDialogCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsOkDialogCustomEvent<any>) => void;
         /**
           * Event fired when the user clicks the OK button.
          */
@@ -2345,9 +2345,9 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * The user canceled the process.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsSendCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsSendCustomEvent<any>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
@@ -2393,9 +2393,9 @@ declare namespace LocalJSX {
          */
         "name"?: string;
         /**
-          * Fired if the user cancels the dialog.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsSignatureDialogCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsSignatureDialogCustomEvent<any>) => void;
         /**
           * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string representation of the signature adopted.
          */
@@ -2449,9 +2449,9 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * Event fired when the user cancels the dialog.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsTemplateCreateCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsTemplateCreateCustomEvent<any>) => void;
         /**
           * Event fired when the user changes the type.
          */
@@ -2531,14 +2531,6 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * Event fired when the user cancels the dialog.
-         */
-        "onCancel"?: (event: VerdocsTemplateFieldsCustomEvent<any>) => void;
-        /**
-          * Event fired when the user completes the step.
-         */
-        "onNext"?: (event: VerdocsTemplateFieldsCustomEvent<ITemplate>) => void;
-        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateFieldsCustomEvent<SDKError>) => void;
@@ -2579,9 +2571,9 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * Event fired when the user cancels the dialog.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
         /**
           * Event fired when the user completes the step.
          */
@@ -2649,9 +2641,9 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * Event fired when the user cancels the dialog.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsTemplateRolesCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsTemplateRolesCustomEvent<any>) => void;
         /**
           * Event fired when the user clicks to proceed.
          */
@@ -2790,9 +2782,9 @@ declare namespace LocalJSX {
     }
     interface VerdocsUploadDialog {
         /**
-          * Event fired when the dialog is cancelled.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onCancel"?: (event: VerdocsUploadDialogCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsUploadDialogCustomEvent<any>) => void;
         /**
           * Event fired when the dialog is closed. The event data will contain the file selected.
          */

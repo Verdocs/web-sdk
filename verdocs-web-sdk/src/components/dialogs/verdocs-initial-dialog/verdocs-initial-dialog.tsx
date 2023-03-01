@@ -22,9 +22,9 @@ export class VerdocsInitialDialog {
   @Event({composed: true}) next: EventEmitter<string>;
 
   /**
-   * Event fired when the step is cancelled.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   @State() fontLoaded = false;
 
@@ -79,7 +79,7 @@ export class VerdocsInitialDialog {
   handleCancel(e: any) {
     e.stopPropagation();
     e.preventDefault();
-    this.cancel.emit();
+    this.exit.emit();
   }
 
   handleAdopt(e: any) {

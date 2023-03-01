@@ -23,9 +23,9 @@ export class VerdocsSignatureDialog {
   @Event({composed: true}) next: EventEmitter<string>;
 
   /**
-   * Fired if the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   @State() fontLoaded = false;
 
@@ -80,7 +80,7 @@ export class VerdocsSignatureDialog {
   handleCancel(e: any) {
     e.stopPropagation();
     e.preventDefault();
-    this.cancel.emit();
+    this.exit.emit();
   }
 
   handleAdopt(e: any) {

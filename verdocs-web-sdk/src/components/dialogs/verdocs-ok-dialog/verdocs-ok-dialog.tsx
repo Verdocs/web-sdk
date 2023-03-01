@@ -32,23 +32,23 @@ export class VerdocsOkDialog {
   @Event({composed: true}) next: EventEmitter;
 
   /**
-   * Event fired when the user clicks the background overlay or Cancel button.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   handleOk() {
     this.next.emit();
   }
 
   handleCancel() {
-    this.cancel.emit();
+    this.exit.emit();
   }
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
   handleDismiss(e: any) {
     if (e.target.className === 'background-overlay') {
       e.preventDefault();
-      this.cancel.emit();
+      this.exit.emit();
     }
   }
 

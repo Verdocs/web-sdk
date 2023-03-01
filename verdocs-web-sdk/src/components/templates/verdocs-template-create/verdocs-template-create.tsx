@@ -26,14 +26,9 @@ export class VerdocsTemplateCreate {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * Event fired when the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
-
-  /**
-   * Test event for debugging
-   */
-  @Event({composed: true}) testev: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   /**
    * Event fired when the user changes the type.
@@ -69,9 +64,7 @@ export class VerdocsTemplateCreate {
 
   handleCancel(e) {
     e.stopPropagation();
-    console.log('Canceling');
-    this.testev.emit();
-    this.cancel.emit();
+    this.exit.emit();
   }
 
   async handleSubmit(e) {

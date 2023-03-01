@@ -45,7 +45,7 @@ export class VerdocsFieldAttachment {
   handleShow() {
     this.dialog = document.createElement('verdocs-upload-dialog');
     this.dialog.open = true;
-    this.dialog.addEventListener('cancel', () => this.dialog?.remove());
+    this.dialog.addEventListener('exit', () => this.dialog?.remove());
     document.addEventListener('done', () => this.dialog?.remove());
     document.body.append(this.dialog);
   }

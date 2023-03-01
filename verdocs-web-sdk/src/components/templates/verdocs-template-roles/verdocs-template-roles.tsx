@@ -66,9 +66,9 @@ export class VerdocsTemplateRoles {
   @Event({composed: true}) next: EventEmitter;
 
   /**
-   * Event fired when the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  @Event({composed: true}) cancel: EventEmitter;
+  @Event({composed: true}) exit: EventEmitter;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -210,7 +210,7 @@ export class VerdocsTemplateRoles {
 
   handleCancel(e) {
     e.stopPropagation();
-    this.cancel?.emit();
+    this.exit?.emit();
   }
 
   handleSubmit(e) {
