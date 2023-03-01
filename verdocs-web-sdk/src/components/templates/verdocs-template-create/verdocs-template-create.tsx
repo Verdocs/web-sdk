@@ -64,11 +64,14 @@ export class VerdocsTemplateCreate {
 
   handleCancel(e) {
     e.stopPropagation();
+    console.log('Canceling');
     this.cancel?.emit();
   }
 
   async handleSubmit(e) {
     e.stopPropagation();
+
+    console.log('Submitting');
 
     // Should be true if we're here because onClick is only enabled then. We're just guarding this for Typescript.
     if (!this.file) {
