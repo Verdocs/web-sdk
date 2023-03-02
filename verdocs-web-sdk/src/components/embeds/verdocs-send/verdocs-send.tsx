@@ -175,7 +175,7 @@ export class VerdocsSend {
                   <div class="icon" innerHTML={editIcon} />
                   {this.showPickerForId === role.id && (
                     <verdocs-contact-picker
-                      onCancel={() => (this.showPickerForId = '')}
+                      onExit={() => (this.showPickerForId = '')}
                       onNext={e => this.handleSelectContact(e, role)}
                       contactSuggestions={this.sessionContacts}
                       templateRole={this.rolesCompleted[role.id] ?? role}

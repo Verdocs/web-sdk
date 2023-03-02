@@ -31,23 +31,28 @@ const iconInitial =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M6.225 20.775V7h-5V3.225H15V7h-5v13.775Zm9.775 0v-8h-3V9h9.775v3.775h-3v8Z"/></svg>';
 
 const iconClock =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path fill="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="none"><path fill="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
 
 const iconBarsDown =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" /></svg>';
 
+const separator = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.707 14.707"><g><rect x="6.275" y="0" fill="#ffffff7f" width="1" height="15"/></g></svg>';
+
 const menuOptions = [
-  // {id: 'attachment', tooltip: 'Attachment', icon: 'A'},
-  {id: 'checkbox', tooltip: 'Check Box', icon: iconCheck},
-  {id: 'date', tooltip: 'Date', icon: iconDatepicker},
-  {id: 'dropdown', tooltip: 'Dropdown', icon: iconBarsDown},
-  {id: 'initial', tooltip: 'Initials', icon: iconInitial},
-  // {id: 'payment', tooltip: 'Payment', icon: 'P'},
-  {id: 'radio', tooltip: 'Radio Button', icon: iconRadio},
   {id: 'signature', tooltip: 'Signature', icon: iconSignature},
-  {id: 'textarea', tooltip: 'Text Area', icon: iconMultiline},
+  {id: 'initial', tooltip: 'Initials', icon: iconInitial},
+  {id: 'sep1', tooltip: '', icon: separator},
   {id: 'textbox', tooltip: 'Text Box', icon: iconSingleline},
+  {id: 'textarea', tooltip: 'Text Area', icon: iconMultiline},
+  {id: 'checkbox', tooltip: 'Check Box', icon: iconCheck},
+  {id: 'radio', tooltip: 'Radio Button', icon: iconRadio},
+  {id: 'dropdown', tooltip: 'Dropdown', icon: iconBarsDown},
+  {id: 'sep2', tooltip: '', icon: separator},
+  {id: 'date', tooltip: 'Date', icon: iconDatepicker},
   {id: 'timestamp', tooltip: 'Timestamp', icon: iconClock},
+  // {id: 'sep3', tooltip: '', icon: separator},
+  // {id: 'attachment', tooltip: 'Attachment', icon: 'A'},
+  // {id: 'payment', tooltip: 'Payment', icon: 'P'},
 ];
 
 /**
@@ -375,7 +380,16 @@ export class VerdocsTemplateFields {
       >
         <div id="verdocs-template-fields-toolbar">
           {menuOptions.map(option => (
-            <verdocs-toolbar-icon text={option.tooltip} icon={option.icon} onClick={() => (this.placing = option.id as TDocumentFieldType)} />
+            <verdocs-toolbar-icon
+              text={option.tooltip}
+              icon={option.icon}
+              onClick={() => {
+                if (option.tooltip) {
+                  // We have empty tooltips on the separators, quick hack...
+                  this.placing = option.id as TDocumentFieldType;
+                }
+              }}
+            />
           ))}
         </div>
         {/* <div class="page-0" ref={el => (this.page0El = el as HTMLDivElement)}>*/}
