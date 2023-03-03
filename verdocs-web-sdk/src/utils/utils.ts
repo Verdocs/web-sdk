@@ -67,7 +67,7 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IDocum
   const settings = (field as ITemplateField).setting || (field as IDocumentField).settings;
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = settings;
 
-  const optionSettings = option !== undefined && settings.options[option] ? settings.options[option] : null;
+  const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
   if (optionSettings) {
     x = optionSettings.x ?? x;
     y = optionSettings.y ?? y;
@@ -118,6 +118,7 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
     return;
   }
 
+  // @ts-ignore
   switch (field.type) {
     case 'attachment':
     case 'date':
@@ -164,6 +165,37 @@ export const renderDocumentField = (field: ITemplateField | IDocumentField, docP
 
       return el;
     }
+
+    // @ts-ignore
+    case 'checkbox':
+      const id = getFieldOptionId(field, 0);
+      const existingField = document.getElementById(id);
+      if (existingField) {
+        setControlStyles(existingField, field, docPage.xScale, docPage.yScale, 0);
+        return existingField;
+      }
+
+      const cbEl: any = document.createElement(`verdocs-field-checkbox`);
+      cbEl.field = field;
+      cbEl.setAttribute('id', id);
+      cbEl.setAttribute('roleIndex', roleIndex);
+      cbEl.setAttribute('option', 0);
+      if (disabled) {
+        cbEl.setAttribute('disabled', true);
+      }
+      if (done) {
+        cbEl.setAttribute('done', true);
+      }
+      if (editable) {
+        cbEl.setAttribute('editable', true);
+      }
+      if (draggable) {
+        cbEl.setAttribute('draggable', true);
+      }
+      setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, 0);
+      controlsDiv.appendChild(cbEl);
+
+      return cbEl;
 
     case 'checkbox_group':
       return ((field as any).settings || (field as any).setting || {}).options.map((_, checkboxIndex) => {
@@ -267,21 +299,21 @@ export const getFieldSettings = (field: ITemplateField | IDocumentField) => {
  * to be used for order-sensitive components e.g. translate-then-rotate.
  */
 export const updateCssTransform = (el: HTMLElement, key: string, value: string) => {
-  console.log('update', key, value, el.style.transform);
+  // console.log('update', key, value, el.style.transform);
   // e.g. 'scale(1.87908, 1.87908) translate(0px, 0px);'
 
   const currentTransform = el.style.transform || '';
 
   const newValue = `${key}(${value})`;
   if (currentTransform.includes(key)) {
-    console.log('updating', currentTransform, currentTransform.replace(new RegExp(`${key}\(.+?\)`), newValue));
+    // console.log('updating', currentTransform, currentTransform.replace(new RegExp(`${key}\(.+?\)`), newValue));
     el.style.transform = currentTransform.replace(new RegExp(`${key}\\(.+?\\)`), newValue);
   } else {
-    console.log('appending', currentTransform, currentTransform + ' ' + newValue);
+    // console.log('appending', currentTransform, currentTransform + ' ' + newValue);
     el.style.transform = currentTransform + ' ' + newValue;
   }
 
-  console.log('now', el.style.transform);
+  // console.log('now', el.style.transform);
 };
 
 export const formatLocalDate = (date: Date) => format(date, 'P').replace(/\//g, '-');

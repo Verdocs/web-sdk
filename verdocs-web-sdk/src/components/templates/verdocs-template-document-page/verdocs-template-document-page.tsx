@@ -144,7 +144,7 @@ export class VerdocsTemplateDocumentPage {
       <Host id={`${this.containerId}`} style={{height}}>
         {this.layers.map(layer =>
           layer.type === 'div' ? (
-            <div class="verdocs-template-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
+            <div class="verdocs-template-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height, flex: `0 0 ${height}`}} />
           ) : this.pageDisplayUri ? (
             <img
               class="verdocs-template-document-page-layer img"

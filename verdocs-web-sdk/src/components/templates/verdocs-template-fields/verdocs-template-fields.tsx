@@ -199,30 +199,51 @@ export class VerdocsTemplateFields {
       }
 
       if (Array.isArray(el)) {
-        el.map(e => this.attachFieldAttributes(pageInfo, field, roleIndex, e));
+        el.forEach(e => {
+          this.attachFieldAttributes(pageInfo, field, roleIndex, e);
+
+          interact(e).draggable({
+            listeners: {
+              start(event) {
+                console.log('[FIELDS] Drag started', event.type, event.target);
+              },
+              move(event) {
+                const oldX = +(event.target.getAttribute('posX') || 0);
+                const oldY = +(event.target.getAttribute('posY') || 0);
+                const xScale = +(event.target.getAttribute('xScale') || 1);
+                const yScale = +(event.target.getAttribute('yScale') || 1);
+                const newX = event.dx / xScale + oldX;
+                const newY = event.dy / yScale + oldY;
+                event.target.setAttribute('posX', newX);
+                event.target.setAttribute('posy', newY);
+                updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
+              },
+              end: this.handleMoveField.bind(this),
+            },
+          });
+        });
       } else {
         this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+        interact(el).draggable({
+          listeners: {
+            start(event) {
+              console.log('[FIELDS] Drag started', event.type, event.target);
+            },
+            move(event) {
+              const oldX = +(event.target.getAttribute('posX') || 0);
+              const oldY = +(event.target.getAttribute('posY') || 0);
+              const xScale = +(event.target.getAttribute('xScale') || 1);
+              const yScale = +(event.target.getAttribute('yScale') || 1);
+              const newX = event.dx / xScale + oldX;
+              const newY = event.dy / yScale + oldY;
+              event.target.setAttribute('posX', newX);
+              event.target.setAttribute('posy', newY);
+              updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
+            },
+            end: this.handleMoveField.bind(this),
+          },
+        });
       }
-
-      interact(el).draggable({
-        listeners: {
-          start(event) {
-            console.log('[FIELDS] Drag started', event.type, event.target);
-          },
-          move(event) {
-            const oldX = +(event.target.getAttribute('posX') || 0);
-            const oldY = +(event.target.getAttribute('posY') || 0);
-            const xScale = +(event.target.getAttribute('xScale') || 1);
-            const yScale = +(event.target.getAttribute('yScale') || 1);
-            const newX = event.dx / xScale + oldX;
-            const newY = event.dy / yScale + oldY;
-            event.target.setAttribute('posX', newX);
-            event.target.setAttribute('posy', newY);
-            updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
-          },
-          end: this.handleMoveField.bind(this),
-        },
-      });
     });
   }
 
