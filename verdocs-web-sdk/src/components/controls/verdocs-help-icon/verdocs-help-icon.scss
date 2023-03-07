@@ -4,6 +4,7 @@ verdocs-help-icon {
   font-family: $verdocs-primary-font;
   display: inline-block;
   opacity: 0.3;
+  position: relative;
 
   &:hover {
     opacity: 1;
@@ -20,12 +21,13 @@ verdocs-help-icon {
 
   .tooltip {
     display: none;
+    min-width: 200px;
     box-shadow: 0 0 10px 1px #999999;
     background: #ffffff;
     color: $label-color;
     max-width: 240px;
     font-weight: bold;
-    position: relative;
+    position: absolute;
     padding: 5px 10px;
     font-size: 13px;
     border-radius: 4px;

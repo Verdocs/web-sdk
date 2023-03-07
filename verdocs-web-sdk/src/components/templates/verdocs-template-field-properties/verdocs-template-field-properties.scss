@@ -38,6 +38,8 @@ verdocs-template-field-properties {
   }
 
   verdocs-text-input {
+    margin: 0;
+
     label {
       margin: 0;
       display: flex;
@@ -53,10 +55,6 @@ verdocs-template-field-properties {
     input {
       flex: 1;
       display: flex;
-    }
-
-    verdocs-text-input {
-      margin: 0;
     }
   }
 
@@ -82,6 +80,81 @@ verdocs-template-field-properties {
     svg {
       width: 24px;
       height: 24px;
+    }
+  }
+
+  h6 {
+    flex: 1;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    color: $verdocs-grey-0;
+  }
+
+  .row-header {
+    gap: 15px;
+    display: flex;
+    flex-direction: row;
+
+    h6 {
+      margin-bottom: 0;
+    }
+
+    verdocs-help-icon {
+      transform: scale(0.85);
+
+      svg {
+        margin-bottom: -5px;
+      }
+    }
+
+    .add-button {
+      margin: 0;
+      padding: 0;
+      border: none;
+      opacity: 0.5;
+      cursor: pointer;
+      background: none;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      svg {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  .option-row {
+    margin: 15px 0;
+
+    .remove-button {
+      height: 28px;
+      display: flex;
+      cursor: pointer;
+      background: none;
+      border-radius: 4px;
+      align-items: center;
+      border: 1px solid #999;
+      justify-content: center;
+
+      &:active {
+        background: #f3f3f3;
+      }
+
+      &:hover {
+        svg {
+          stroke: rgb(165, 0, 33);
+        }
+      }
+
+      svg {
+        width: 20px;
+        height: 20px;
+        stroke: #333333;
+      }
     }
   }
 }

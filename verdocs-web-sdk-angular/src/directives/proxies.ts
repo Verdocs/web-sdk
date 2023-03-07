@@ -401,7 +401,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'field', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'roleindex'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -409,7 +409,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'field', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'roleindex'],
 })
 export class VerdocsFieldDropdown {
   protected el: HTMLElement;

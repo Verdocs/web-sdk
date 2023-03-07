@@ -252,11 +252,23 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IDocumentField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -1822,9 +1834,21 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IDocumentField | ITemplateField | null;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * Event fired when the field is deleted.
          */

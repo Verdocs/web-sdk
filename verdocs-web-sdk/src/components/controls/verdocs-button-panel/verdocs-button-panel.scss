@@ -73,9 +73,10 @@ verdocs-button-panel {
   }
 
   h6 {
-    color: $verdocs-grey-0;
     font-size: 16px;
     font-weight: bold;
-    margin: 0 0 8px 0;
+    margin: 0 0 16px 0;
+    color: $verdocs-grey-0;
+    border-bottom: 1px solid #cccccc;
   }
 }

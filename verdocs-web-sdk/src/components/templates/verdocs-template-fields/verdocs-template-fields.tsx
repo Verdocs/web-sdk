@@ -340,8 +340,10 @@ export class VerdocsTemplateFields {
         // case 'checkbox':break;
         // TODO: What is this?
         // case 'placeholder':break;
+
         case 'dropdown':
-          field.setting = {x, y, width, height, value: '', placeholder: 'Select a value'};
+          field.required = false;
+          field.setting = {x, y, width, height, value: null, placeholder: 'Choose', options: [{id: 'option-1', value: 'Option 1'}]};
           break;
 
         case 'radio_button_group':
@@ -349,6 +351,7 @@ export class VerdocsTemplateFields {
           break;
 
         // TODO: What about textareas?
+        case 'textarea':
         case 'textbox':
           field.setting = {x, y, width, height, result: '', leading: 0, alignment: 0, upperCase: false};
           break;
@@ -356,6 +359,11 @@ export class VerdocsTemplateFields {
         case 'timestamp':
           field.setting = {x, y, width, height};
           break;
+      }
+
+      // ??? We don't actually have a unique field type for multi-line text?
+      if (field.type === 'textarea') {
+        field.type = 'textbox';
       }
 
       const saved = await createField(this.endpoint, this.templateId, field);

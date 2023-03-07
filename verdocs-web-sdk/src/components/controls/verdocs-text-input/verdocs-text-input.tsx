@@ -50,7 +50,7 @@ export class VerdocsTextInput {
     return (
       <Host class="input-field">
         <label>
-          {this.label ? <div class="input-label">{this.label + ':'}</div> : <div />}
+          {this.label && <div class="input-label">{this.label + ':'}</div>}
           <input
             type={this.type}
             value={this.value}

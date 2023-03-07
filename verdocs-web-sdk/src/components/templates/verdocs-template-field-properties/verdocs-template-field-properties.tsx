@@ -1,12 +1,15 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {deleteField, updateField} from '@verdocs/js-sdk/Templates/Fields';
-import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
+import {Component, h, Element, Event, EventEmitter, Fragment, Prop, State, Host} from '@stencil/core';
 import TemplateStore from '../../../utils/templateStore';
 import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#a50021"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>`;
+
+const PlusIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
 
 /**
  * Displays an edit form that allows the user to adjust a field's settings.
@@ -61,9 +64,11 @@ export class VerdocsTemplateFieldProperties {
   @State() loading: boolean = true;
 
   @State() type: TDocumentFieldType = 'signature';
+  @State() setting = null as any;
   @State() name = '';
   @State() roleName = '';
   @State() required = false;
+  @State() options = [];
   @State() placeholder = '';
   @State() defaultValue = '';
 
@@ -97,7 +102,9 @@ export class VerdocsTemplateFieldProperties {
       this.roleName = field.role_name;
       this.required = field.required;
       this.placeholder = field.label; // TODO: Talk about how we want to handle labels/placeholders
-      this.defaultValue = field.setting?.result || '';
+      this.defaultValue = field.setting?.value || '';
+      this.setting = field.setting || {};
+      this.options = field.setting?.options || [];
       this.dirty = false;
       this.loading = false;
     } catch (e) {
@@ -125,12 +132,19 @@ export class VerdocsTemplateFieldProperties {
 
   handleSave(e) {
     e.stopPropagation();
-    updateField(this.endpoint, this.templateId, this.fieldName, {
+    const newProperties = {
       name: this.name,
       required: this.required,
       role_name: this.roleName,
       // TODO: Default value in setting?
-    })
+    } as Partial<ITemplateField>;
+
+    if (this.type === 'dropdown') {
+      newProperties.setting = this.setting;
+      newProperties.setting.options = this.options;
+    }
+
+    updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(() => {
         this.dirty = false;
         TemplateStore.fields.forEach(field => {
@@ -182,6 +196,8 @@ export class VerdocsTemplateFieldProperties {
 
     return (
       <Host>
+        <h6>Field Settings</h6>
+
         <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
           <div class="row">
             <verdocs-text-input
@@ -242,6 +258,79 @@ export class VerdocsTemplateFieldProperties {
                 }}
               />
             </div>
+          )}
+
+          {['dropdown'].includes(this.type) && (
+            <Fragment>
+              <div
+                class="row"
+                style={{
+                  marginTop: '15px',
+                  marginBottom: '15px',
+                  textAlign: 'center',
+                  fontWeight: '700',
+                  fontSize: '14px',
+                  justifyContent: 'center',
+                  backgroundColor: '#333333',
+                  padding: '5px 8px',
+                  color: '#ffffff',
+                }}
+              >
+                Options
+              </div>
+
+              <div class="row-header">
+                <h6>
+                  ID <verdocs-help-icon text="Each option requires a unique ID. This will be stored as the field's value when the user selects the option." />
+                </h6>
+                <h6>
+                  Label <verdocs-help-icon text="The label displayed to the user as the selectable value." />
+                </h6>
+                <div style={{width: '34px'}} />
+              </div>
+
+              {this.options.map((option, index) => (
+                <div class="row option-row" key={index}>
+                  <verdocs-text-input
+                    id={`verdocs-option-id-${option.id}`}
+                    value={option.id}
+                    placeholder="Unique ID"
+                    onInput={(e: any) => {
+                      this.options[index].id = e.target.value;
+                      this.dirty = true;
+                    }}
+                  />
+                  <verdocs-text-input
+                    id={`verdocs-option-value-${option.id}`}
+                    value={option.value}
+                    placeholder="Display value"
+                    onInput={(e: any) => {
+                      this.options[index].value = e.target.value;
+                      this.dirty = true;
+                    }}
+                  />
+                  <button
+                    innerHTML={TrashIcon}
+                    class="remove-button"
+                    onClick={() => {
+                      this.options = this.options.filter(opt => opt.id !== option.id);
+                      this.dirty = true;
+                    }}
+                  />
+                </div>
+              ))}
+
+              <div class="row-header">
+                <button
+                  class="add-button"
+                  innerHTML={PlusIcon}
+                  onClick={() => {
+                    this.options = [...this.options, {id: `option-${this.options.length + 1}`, value: `Option ${this.options.length + 1}`}];
+                    this.dirty = true;
+                  }}
+                />
+              </div>
+            </Fragment>
           )}
 
           <div class="buttons">

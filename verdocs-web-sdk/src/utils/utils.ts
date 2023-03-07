@@ -10,7 +10,9 @@ import {IDocumentPageInfo} from './Types';
 
 export const defaultWidth = (type: TDocumentFieldType) => {
   // checkbox was a legacy field type
-  switch (type as TDocumentFieldType | 'checkbox') {
+  switch (type as TDocumentFieldType | 'checkbox' | string) {
+    case 'textarea':
+      return 150;
     case 'textbox':
       return 150;
     case 'timestamp':
@@ -37,7 +39,9 @@ export const defaultWidth = (type: TDocumentFieldType) => {
 };
 
 export const defaultHeight = (type: TDocumentFieldType) => {
-  switch (type as TDocumentFieldType | 'checkbox') {
+  switch (type as TDocumentFieldType | 'checkbox' | string) {
+    case 'textarea':
+      return 41;
     case 'textbox':
       return 15;
     case 'timestamp':
