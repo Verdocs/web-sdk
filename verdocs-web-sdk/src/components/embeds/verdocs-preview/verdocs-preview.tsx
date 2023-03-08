@@ -45,7 +45,7 @@ export class VerdocsPreview {
 
     try {
       console.log(`[PREVIEW] Loading template ${this.templateId}`);
-      await loadTemplate(this.endpoint, this.templateId);
+      await loadTemplate(this.endpoint, this.templateId, true);
     } catch (e) {
       console.log('[PREVIEW] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));

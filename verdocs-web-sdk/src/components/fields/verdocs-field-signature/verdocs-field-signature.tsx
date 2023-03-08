@@ -138,7 +138,6 @@ export class VerdocsFieldSignature {
 
         {this.editable && (
           <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
-            <h6>Field Settings</h6>
             <verdocs-template-field-properties
               templateId={TemplateStore.templateId}
               fieldName={this.field.name}

@@ -204,36 +204,6 @@ the `contactSuggestions` property.
 
 
 @ProxyCmp({
-  inputs: ['layers', 'pageImageUri', 'pageNumber', 'virtualHeight', 'virtualWidth']
-})
-@Component({
-  selector: 'verdocs-document-page',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['layers', 'pageImageUri', 'pageNumber', 'virtualHeight', 'virtualWidth'],
-})
-export class VerdocsDocumentPage {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['pageRendered']);
-  }
-}
-
-
-import type { IDocumentPageInfo as IVerdocsDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk';
-
-export declare interface VerdocsDocumentPage extends Components.VerdocsDocumentPage {
-  /**
-   * Fired when a page has been rendered. This is also fired when the page is resized.
-   */
-  pageRendered: EventEmitter<CustomEvent<IVerdocsDocumentPageIDocumentPageInfo>>;
-}
-
-
-@ProxyCmp({
   inputs: ['options']
 })
 @Component({
@@ -261,6 +231,36 @@ export declare interface VerdocsDropdown extends Components.VerdocsDropdown {
 Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
    */
   optionSelected: EventEmitter<CustomEvent<IVerdocsDropdownIMenuOption>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['layers', 'pageImageUri', 'pageNumber', 'virtualHeight', 'virtualWidth']
+})
+@Component({
+  selector: 'verdocs-envelope-document-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['layers', 'pageImageUri', 'pageNumber', 'virtualHeight', 'virtualWidth'],
+})
+export class VerdocsEnvelopeDocumentPage {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['pageRendered']);
+  }
+}
+
+
+import type { IDocumentPageInfo as IVerdocsEnvelopeDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk';
+
+export declare interface VerdocsEnvelopeDocumentPage extends Components.VerdocsEnvelopeDocumentPage {
+  /**
+   * Fired when a page has been rendered. This is also fired when the page is resized.
+   */
+  pageRendered: EventEmitter<CustomEvent<IVerdocsEnvelopeDocumentPageIDocumentPageInfo>>;
 }
 
 

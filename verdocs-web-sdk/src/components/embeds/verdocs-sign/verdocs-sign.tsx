@@ -544,13 +544,13 @@ export class VerdocsSign {
                     // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
                     // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
                     // field vales (so far) stamped into them.
-                    const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
+                    // const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
                     // TODO: Confirm that a pure page-number match is good enough to find the matching template page. We need to make sure
                     //  we either don't reset our page numbers for additional attachments, or add match-on identifiers to work around that.
                     // console.log('tp', templatePage, page);
                     return (
-                      <verdocs-document-page
-                        pageImageUri={templatePage?.display_uri || page.display_uri}
+                      <verdocs-envelope-document-page
+                        pageImageUri={page.display_uri}
                         virtualWidth={612}
                         virtualHeight={792}
                         pageNumber={page.sequence}

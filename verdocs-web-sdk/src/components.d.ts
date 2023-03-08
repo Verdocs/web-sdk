@@ -10,8 +10,8 @@ import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { IRole, ITemplate, ITemplateField, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
-import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
+import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IDocumentField, IEnvelope, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
@@ -130,9 +130,15 @@ export namespace Components {
          */
         "templateRole": IRole | null;
     }
-    interface VerdocsDocumentPage {
+    interface VerdocsDropdown {
         /**
-          * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-document-page-ker2fr1p9">       <div id="verdocs-document-page-ker2fr1p9-page"></div>       <div id="verdocs-document-page-ker2fr1p9-fields"></div>     </div> ```
+          * The menu options to display.
+         */
+        "options": IMenuOption[];
+    }
+    interface VerdocsEnvelopeDocumentPage {
+        /**
+          * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-envelope-document-page-ker2fr1p9">       <div id="verdocs-envelope-document-page-ker2fr1p9-page"></div>       <div id="verdocs-envelope-document-page-ker2fr1p9-fields"></div>     </div> ```
          */
         "layers": IPageLayer[];
         /**
@@ -151,12 +157,6 @@ export namespace Components {
           * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
          */
         "virtualWidth": number;
-    }
-    interface VerdocsDropdown {
-        /**
-          * The menu options to display.
-         */
-        "options": IMenuOption[];
     }
     interface VerdocsEnvelopeSidebar {
         /**
@@ -965,13 +965,13 @@ export interface VerdocsContactPickerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsContactPickerElement;
 }
-export interface VerdocsDocumentPageCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsDocumentPageElement;
-}
 export interface VerdocsDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDropdownElement;
+}
+export interface VerdocsEnvelopeDocumentPageCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsEnvelopeDocumentPageElement;
 }
 export interface VerdocsEnvelopeSidebarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1168,17 +1168,17 @@ declare global {
         prototype: HTMLVerdocsContactPickerElement;
         new (): HTMLVerdocsContactPickerElement;
     };
-    interface HTMLVerdocsDocumentPageElement extends Components.VerdocsDocumentPage, HTMLStencilElement {
-    }
-    var HTMLVerdocsDocumentPageElement: {
-        prototype: HTMLVerdocsDocumentPageElement;
-        new (): HTMLVerdocsDocumentPageElement;
-    };
     interface HTMLVerdocsDropdownElement extends Components.VerdocsDropdown, HTMLStencilElement {
     }
     var HTMLVerdocsDropdownElement: {
         prototype: HTMLVerdocsDropdownElement;
         new (): HTMLVerdocsDropdownElement;
+    };
+    interface HTMLVerdocsEnvelopeDocumentPageElement extends Components.VerdocsEnvelopeDocumentPage, HTMLStencilElement {
+    }
+    var HTMLVerdocsEnvelopeDocumentPageElement: {
+        prototype: HTMLVerdocsEnvelopeDocumentPageElement;
+        new (): HTMLVerdocsEnvelopeDocumentPageElement;
     };
     interface HTMLVerdocsEnvelopeSidebarElement extends Components.VerdocsEnvelopeSidebar, HTMLStencilElement {
     }
@@ -1494,8 +1494,8 @@ declare global {
         "verdocs-checkbox": HTMLVerdocsCheckboxElement;
         "verdocs-component-error": HTMLVerdocsComponentErrorElement;
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
-        "verdocs-document-page": HTMLVerdocsDocumentPageElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
+        "verdocs-envelope-document-page": HTMLVerdocsEnvelopeDocumentPageElement;
         "verdocs-envelope-sidebar": HTMLVerdocsEnvelopeSidebarElement;
         "verdocs-field-attachment": HTMLVerdocsFieldAttachmentElement;
         "verdocs-field-checkbox": HTMLVerdocsFieldCheckboxElement;
@@ -1680,15 +1680,25 @@ declare namespace LocalJSX {
          */
         "templateRole"?: IRole | null;
     }
-    interface VerdocsDocumentPage {
+    interface VerdocsDropdown {
         /**
-          * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-document-page-ker2fr1p9">       <div id="verdocs-document-page-ker2fr1p9-page"></div>       <div id="verdocs-document-page-ker2fr1p9-fields"></div>     </div> ```
+          * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
+         */
+        "onOptionSelected"?: (event: VerdocsDropdownCustomEvent<IMenuOption>) => void;
+        /**
+          * The menu options to display.
+         */
+        "options"?: IMenuOption[];
+    }
+    interface VerdocsEnvelopeDocumentPage {
+        /**
+          * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-envelope-document-page-ker2fr1p9">       <div id="verdocs-envelope-document-page-ker2fr1p9-page"></div>       <div id="verdocs-envelope-document-page-ker2fr1p9-fields"></div>     </div> ```
          */
         "layers"?: IPageLayer[];
         /**
           * Fired when a page has been rendered. This is also fired when the page is resized.
          */
-        "onPageRendered"?: (event: VerdocsDocumentPageCustomEvent<IDocumentPageInfo>) => void;
+        "onPageRendered"?: (event: VerdocsEnvelopeDocumentPageCustomEvent<IDocumentPageInfo>) => void;
         /**
           * The URL of the image to render as the page background.
          */
@@ -1705,16 +1715,6 @@ declare namespace LocalJSX {
           * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
          */
         "virtualWidth"?: number;
-    }
-    interface VerdocsDropdown {
-        /**
-          * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
-         */
-        "onOptionSelected"?: (event: VerdocsDropdownCustomEvent<IMenuOption>) => void;
-        /**
-          * The menu options to display.
-         */
-        "options"?: IMenuOption[];
     }
     interface VerdocsEnvelopeSidebar {
         /**
@@ -2840,8 +2840,8 @@ declare namespace LocalJSX {
         "verdocs-checkbox": VerdocsCheckbox;
         "verdocs-component-error": VerdocsComponentError;
         "verdocs-contact-picker": VerdocsContactPicker;
-        "verdocs-document-page": VerdocsDocumentPage;
         "verdocs-dropdown": VerdocsDropdown;
+        "verdocs-envelope-document-page": VerdocsEnvelopeDocumentPage;
         "verdocs-envelope-sidebar": VerdocsEnvelopeSidebar;
         "verdocs-field-attachment": VerdocsFieldAttachment;
         "verdocs-field-checkbox": VerdocsFieldCheckbox;
@@ -2906,8 +2906,8 @@ declare module "@stencil/core" {
             "verdocs-checkbox": LocalJSX.VerdocsCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsCheckboxElement>;
             "verdocs-component-error": LocalJSX.VerdocsComponentError & JSXBase.HTMLAttributes<HTMLVerdocsComponentErrorElement>;
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
-            "verdocs-document-page": LocalJSX.VerdocsDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsDocumentPageElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
+            "verdocs-envelope-document-page": LocalJSX.VerdocsEnvelopeDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeDocumentPageElement>;
             "verdocs-envelope-sidebar": LocalJSX.VerdocsEnvelopeSidebar & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeSidebarElement>;
             "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
             "verdocs-field-checkbox": LocalJSX.VerdocsFieldCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;

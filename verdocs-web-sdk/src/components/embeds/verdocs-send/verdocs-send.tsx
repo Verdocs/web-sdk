@@ -86,7 +86,7 @@ export class VerdocsSend {
 
     try {
       console.log(`[SEND] Loading template ${this.templateId}`);
-      await loadTemplate(this.endpoint, this.templateId);
+      await loadTemplate(this.endpoint, this.templateId, true);
 
       if (TemplateStore.template?.roles) {
         const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};

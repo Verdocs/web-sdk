@@ -10,11 +10,11 @@ import {throttle} from '../../../utils/utils';
  * on its own as an individual component.
  */
 @Component({
-  tag: 'verdocs-document-page',
-  styleUrl: 'verdocs-document-page.scss',
+  tag: 'verdocs-envelope-document-page',
+  styleUrl: 'verdocs-envelope-document-page.scss',
   shadow: false,
 })
-export class VerdocsDocumentPage {
+export class VerdocsEnvelopeDocumentPage {
   @Element() container: HTMLElement;
   private resizeObserver: ResizeObserver;
 
@@ -47,9 +47,9 @@ export class VerdocsDocumentPage {
    * if `pages` was ['page', 'fields'] the structure will be:
    *
    * ```
-   *     <div id="verdocs-document-page-ker2fr1p9">
-   *       <div id="verdocs-document-page-ker2fr1p9-page"></div>
-   *       <div id="verdocs-document-page-ker2fr1p9-fields"></div>
+   *     <div id="verdocs-envelope-document-page-ker2fr1p9">
+   *       <div id="verdocs-envelope-document-page-ker2fr1p9-page"></div>
+   *       <div id="verdocs-envelope-document-page-ker2fr1p9-fields"></div>
    *     </div>
    * ```
    */
@@ -60,7 +60,7 @@ export class VerdocsDocumentPage {
    */
   @Event() pageRendered: EventEmitter<IDocumentPageInfo>;
 
-  @State() containerId = `verdocs-document-page-${Math.random().toString(36).substring(2, 11)}`;
+  @State() containerId = `verdocs-envelope-document-page-${Math.random().toString(36).substring(2, 11)}`;
 
   @State() renderedWidth: number = this.virtualWidth;
   @State() renderedHeight: number = this.virtualHeight;
@@ -127,10 +127,10 @@ export class VerdocsDocumentPage {
       <Host id={`${this.containerId}`} style={{height}}>
         {this.layers.map(layer =>
           layer.type === 'div' ? (
-            <div class="verdocs-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
+            <div class="verdocs-envelope-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
           ) : (
             <img
-              class="verdocs-document-page-layer img"
+              class="verdocs-envelope-document-page-layer img"
               id={`${this.containerId}-${layer.name}`}
               src={this.pageImageUri}
               alt={`Page ${this.pageNumber}`}
