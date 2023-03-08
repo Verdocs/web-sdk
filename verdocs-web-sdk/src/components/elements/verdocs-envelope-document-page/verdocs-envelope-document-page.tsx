@@ -1,6 +1,8 @@
 // NOTE: This component does not have a story because it's not intended for external use.
 
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Element} from '@stencil/core';
+import {getEnvelopeDocumentPageDisplayUri} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
 import {throttle} from '../../../utils/utils';
 
@@ -19,13 +21,22 @@ export class VerdocsEnvelopeDocumentPage {
   private resizeObserver: ResizeObserver;
 
   /**
-   * The URL of the image to render as the page background.
+   * The endpoint to load from.
    */
-  @Prop() pageImageUri: string = '';
+  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The page number being rendered. Not used internally, but included in callbacks/events beacuse page numbers
-   * are used everywhere in document handling. (Reminder: page numbers are 1-based.)
+   * The ID of the envelope the document is for.
+   */
+  @Prop() envelopeId: string = '';
+
+  /**
+   * The ID of the document to display.
+   */
+  @Prop() documentId: string = '';
+
+  /**
+   * The page number being rendered. (Reminder: page numbers are 1-based.)
    */
   @Prop() pageNumber: number = 1;
 
@@ -70,7 +81,13 @@ export class VerdocsEnvelopeDocumentPage {
 
   @State() skipFirstNotification = true;
 
-  componentDidLoad(): void {
+  @State() pageDisplayUri = '';
+
+  async componentWillLoad() {
+    this.pageDisplayUri = await getEnvelopeDocumentPageDisplayUri(this.endpoint, this.envelopeId, this.documentId, this.pageNumber);
+  }
+
+  componentDidLoad() {
     this.resizeObserver = new ResizeObserver(
       throttle(entries => {
         for (const entry of entries) {
@@ -123,18 +140,21 @@ export class VerdocsEnvelopeDocumentPage {
   render() {
     const height = `${this.renderedHeight}px`;
 
+    console.log('envelope page', this.envelopeId, this.documentId, this.pageNumber, this.pageDisplayUri);
+
     return (
-      <Host id={`${this.containerId}`} style={{height}}>
+      <Host id={`${this.containerId}`} style={{height, flex: `0 0 ${height}`}}>
         {this.layers.map(layer =>
           layer.type === 'div' ? (
             <div class="verdocs-envelope-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
-          ) : (
+          ) : this.pageDisplayUri ? (
             <img
               class="verdocs-envelope-document-page-layer img"
               id={`${this.containerId}-${layer.name}`}
-              src={this.pageImageUri}
+              src={this.pageDisplayUri}
               alt={`Page ${this.pageNumber}`}
               aria-hidden={true}
+              loading="lazy"
               onLoad={(e: any) => {
                 // Note that all we really care about is the aspect ratio. We track the natural Width and Height but they aren't really that
                 // useful as individual values. The image will already have been scaled down to fit a DIV for display (100%, auto height).
@@ -147,8 +167,11 @@ export class VerdocsEnvelopeDocumentPage {
                 this.naturalHeight = e.target.naturalHeight;
                 this.aspectRatio = this.naturalWidth / this.naturalHeight;
                 this.virtualHeight = this.virtualWidth / this.aspectRatio;
+                this.renderedHeight = e.target.offsetWidth / this.aspectRatio;
               }}
             />
+          ) : (
+            <div></div>
           ),
         )}
       </Host>

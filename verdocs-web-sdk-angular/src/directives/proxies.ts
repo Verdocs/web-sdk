@@ -235,14 +235,14 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
 
 
 @ProxyCmp({
-  inputs: ['layers', 'pageImageUri', 'pageNumber', 'virtualHeight', 'virtualWidth']
+  inputs: ['documentId', 'endpoint', 'envelopeId', 'layers', 'pageNumber', 'virtualHeight', 'virtualWidth']
 })
 @Component({
   selector: 'verdocs-envelope-document-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['layers', 'pageImageUri', 'pageNumber', 'virtualHeight', 'virtualWidth'],
+  inputs: ['documentId', 'endpoint', 'envelopeId', 'layers', 'pageNumber', 'virtualHeight', 'virtualWidth'],
 })
 export class VerdocsEnvelopeDocumentPage {
   protected el: HTMLElement;

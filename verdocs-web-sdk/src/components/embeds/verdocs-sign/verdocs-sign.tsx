@@ -550,7 +550,9 @@ export class VerdocsSign {
                     // console.log('tp', templatePage, page);
                     return (
                       <verdocs-envelope-document-page
-                        pageImageUri={page.display_uri}
+                        envelopeId={this.envelopeId}
+                        documentId={envelopeDocument.id}
+                        endpoint={this.endpoint}
                         virtualWidth={612}
                         virtualHeight={792}
                         pageNumber={page.sequence}

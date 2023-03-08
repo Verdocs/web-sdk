@@ -175,8 +175,10 @@ export class VerdocsView {
               return (
                 <Fragment>
                   {pages.map(page => (
-                    <verdocs-document-page
-                      pageImageUri={page.display_uri}
+                    <verdocs-envelope-document-page
+                      envelopeId={this.envelopeId}
+                      documentId={envelopeDocument.id}
+                      endpoint={this.endpoint}
                       virtualWidth={612}
                       virtualHeight={792}
                       pageNumber={page.sequence}

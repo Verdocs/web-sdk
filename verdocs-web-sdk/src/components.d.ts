@@ -138,15 +138,23 @@ export namespace Components {
     }
     interface VerdocsEnvelopeDocumentPage {
         /**
+          * The ID of the document to display.
+         */
+        "documentId": string;
+        /**
+          * The endpoint to load from.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The ID of the envelope the document is for.
+         */
+        "envelopeId": string;
+        /**
           * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-envelope-document-page-ker2fr1p9">       <div id="verdocs-envelope-document-page-ker2fr1p9-page"></div>       <div id="verdocs-envelope-document-page-ker2fr1p9-fields"></div>     </div> ```
          */
         "layers": IPageLayer[];
         /**
-          * The URL of the image to render as the page background.
-         */
-        "pageImageUri": string;
-        /**
-          * The page number being rendered. Not used internally, but included in callbacks/events beacuse page numbers are used everywhere in document handling. (Reminder: page numbers are 1-based.)
+          * The page number being rendered. (Reminder: page numbers are 1-based.)
          */
         "pageNumber": number;
         /**
@@ -1692,6 +1700,18 @@ declare namespace LocalJSX {
     }
     interface VerdocsEnvelopeDocumentPage {
         /**
+          * The ID of the document to display.
+         */
+        "documentId"?: string;
+        /**
+          * The endpoint to load from.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The ID of the envelope the document is for.
+         */
+        "envelopeId"?: string;
+        /**
           * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-envelope-document-page-ker2fr1p9">       <div id="verdocs-envelope-document-page-ker2fr1p9-page"></div>       <div id="verdocs-envelope-document-page-ker2fr1p9-fields"></div>     </div> ```
          */
         "layers"?: IPageLayer[];
@@ -1700,11 +1720,7 @@ declare namespace LocalJSX {
          */
         "onPageRendered"?: (event: VerdocsEnvelopeDocumentPageCustomEvent<IDocumentPageInfo>) => void;
         /**
-          * The URL of the image to render as the page background.
-         */
-        "pageImageUri"?: string;
-        /**
-          * The page number being rendered. Not used internally, but included in callbacks/events beacuse page numbers are used everywhere in document handling. (Reminder: page numbers are 1-based.)
+          * The page number being rendered. (Reminder: page numbers are 1-based.)
          */
         "pageNumber"?: number;
         /**
