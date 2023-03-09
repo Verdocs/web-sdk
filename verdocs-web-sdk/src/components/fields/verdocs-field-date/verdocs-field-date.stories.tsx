@@ -9,6 +9,7 @@ export default {
       settings: {
         x: 0,
         y: 0,
+        required: true,
       },
     },
     disabled: false,
@@ -16,4 +17,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Date = ({field, disabled}) => html`<verdocs-field-date .field="${field}.disabled" =${disabled} />`;
+export const Date = ({field, disabled}) => html`<verdocs-field-date .field="${field}" .disabled="${disabled}" />`;

@@ -157,4 +157,35 @@ verdocs-template-field-properties {
       }
     }
   }
+
+  .options {
+    background: #f3f3f3;
+    padding: 0 0 10px 0;
+
+    .row-header,
+    .option-row {
+      padding: 0 10px;
+    }
+
+    .add-option-button {
+      border-radius: 5px;
+      border: 1px solid #cccccc;
+      background: $verdocs-grey-blue;
+      color: #ffffff;
+      padding: 3px 8px;
+    }
+
+    .option-row .input-element {
+      font-size: 14px;
+    }
+
+    verdocs-help-icon {
+      opacity: 1;
+      transform: scale(.8);
+
+      svg {
+        fill: #ffffff;
+      }
+    }
+  }
 }

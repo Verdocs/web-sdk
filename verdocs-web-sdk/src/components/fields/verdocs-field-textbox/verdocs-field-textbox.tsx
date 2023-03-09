@@ -81,6 +81,7 @@ export class VerdocsFieldTextbox {
   @Method()
   async hideSettingsPanel() {
     const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    console.log('will hide', settingsPanel);
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }

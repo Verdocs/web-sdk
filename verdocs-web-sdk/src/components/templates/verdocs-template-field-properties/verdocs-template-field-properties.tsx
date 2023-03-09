@@ -1,15 +1,15 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {deleteField, updateField} from '@verdocs/js-sdk/Templates/Fields';
-import {Component, h, Element, Event, EventEmitter, Fragment, Prop, State, Host} from '@stencil/core';
+import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import TemplateStore from '../../../utils/templateStore';
 import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
-import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#a50021"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>`;
 
-const PlusIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+// const PlusIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
 
 /**
  * Displays an edit form that allows the user to adjust a field's settings.
@@ -118,6 +118,7 @@ export class VerdocsTemplateFieldProperties {
     e.stopPropagation();
 
     const field = TemplateStore.fields.find(field => field.name === this.fieldName);
+    console.log('hc', e, field);
     if (field) {
       this.name = field.name;
       this.roleName = field.role_name;
@@ -260,7 +261,7 @@ export class VerdocsTemplateFieldProperties {
           </div>
 
           {['dropdown'].includes(this.type) && (
-            <Fragment>
+            <div class="options">
               <div
                 class="row"
                 style={{
@@ -275,16 +276,12 @@ export class VerdocsTemplateFieldProperties {
                   color: '#ffffff',
                 }}
               >
-                Options
+                Options <verdocs-help-icon text="Each option requires a unique ID and value. The ID will be stored when the user selects an option." />
               </div>
 
               <div class="row-header">
-                <h6>
-                  ID <verdocs-help-icon text="Each option requires a unique ID. This will be stored as the field's value when the user selects the option." />
-                </h6>
-                <h6>
-                  Label <verdocs-help-icon text="The label displayed to the user as the selectable value." />
-                </h6>
+                <h6>ID</h6>
+                <h6>Label</h6>
                 <div style={{width: '34px'}} />
               </div>
 
@@ -321,15 +318,16 @@ export class VerdocsTemplateFieldProperties {
 
               <div class="row-header">
                 <button
-                  class="add-button"
-                  innerHTML={PlusIcon}
+                  class="add-option-button"
                   onClick={() => {
                     this.options = [...this.options, {id: `option-${this.options.length + 1}`, value: `Option ${this.options.length + 1}`}];
                     this.dirty = true;
                   }}
-                />
+                >
+                  Add Option
+                </button>
               </div>
-            </Fragment>
+            </div>
           )}
 
           <div class="buttons">

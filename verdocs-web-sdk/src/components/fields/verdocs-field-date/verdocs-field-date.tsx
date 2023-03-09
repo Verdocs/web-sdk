@@ -83,7 +83,7 @@ export class VerdocsFieldDate {
 
     flatpickr('#' + this.containerId, {
       positionElement: this.el,
-      dateFormat: 'F d, Y',
+      dateFormat: 'M d, Y',
       defaultDate: result,
       onChange: selectedDate => {
         // console.log('Selected', selectedDate, dateStr, instance);
@@ -122,14 +122,14 @@ export class VerdocsFieldDate {
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
-      const formatted = settings?.result ? format(new Date(settings?.result), 'MMM d, y') : '';
+      const formatted = settings?.result ? format(new Date(settings?.result), 'PP') : '';
 
       return <Host class={{done: this.done}}>{formatted}</Host>;
     }
 
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
-        <input type="text" value="" id={this.containerId} disabled={disabled} placeholder={settings.placeholder} required={settings.required} ref={el => (this.el = el)} />
+        <input type="text" value="" id={this.containerId} disabled={disabled} placeholder={settings.placeholder} ref={el => (this.el = el)} />
 
         {this.editable && (
           <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>

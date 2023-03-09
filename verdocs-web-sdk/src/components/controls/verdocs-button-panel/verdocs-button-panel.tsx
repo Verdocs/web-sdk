@@ -63,6 +63,7 @@ export class VerdocsButtonPanel {
 
   @Method()
   async hidePanel() {
+    console.log('Hiding panel', this.showing);
     if (this.showing) {
       await this.toggle();
     }

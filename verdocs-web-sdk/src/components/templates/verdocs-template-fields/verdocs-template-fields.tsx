@@ -262,10 +262,35 @@ export class VerdocsTemplateFields {
     const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - e.rect.width, naturalHeight - e.rect.height);
 
     const name = e.target.getAttribute('name');
+    const option = +(e.target.getAttribute('option') || '0');
     const field = TemplateStore.fields.find(field => field.name === name);
+    console.log('Will update', name, option, field);
     if (field) {
-      field.setting.x = x;
-      field.setting.y = y;
+      switch (field.type) {
+        case 'attachment':
+        case 'payment':
+        case 'initial':
+        case 'signature':
+        case 'date':
+        case 'dropdown':
+        case 'textarea':
+        case 'textbox':
+        case 'timestamp':
+          field.setting.x = x;
+          field.setting.y = y;
+          break;
+
+        case 'checkbox_group':
+        case 'radio_button_group':
+          {
+            const opt = field.setting.options[option];
+            if (opt) {
+              opt.x = x;
+              opt.y = y;
+            }
+          }
+          break;
+      }
       await updateField(this.endpoint, this.templateId, name, field);
       this.handlePageRendered({detail: this.cachedPageInfo[pageNumber]});
     }

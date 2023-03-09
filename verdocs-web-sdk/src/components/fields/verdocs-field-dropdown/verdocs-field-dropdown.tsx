@@ -84,6 +84,7 @@ export class VerdocsFieldDropdown {
   @Method()
   async showSettingsPanel() {
     const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    console.log('will hide', settingsPanel);
     if (settingsPanel && settingsPanel.showPanel) {
       settingsPanel.showPanel();
     }
