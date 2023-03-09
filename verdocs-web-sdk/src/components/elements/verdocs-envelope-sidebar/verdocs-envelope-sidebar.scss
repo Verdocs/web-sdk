@@ -51,6 +51,7 @@ verdocs-envelope-sidebar {
 
   &.open .content {
     display: flex;
+    overflow-y: scroll;
   }
 
   .title {

@@ -10,9 +10,9 @@ import {IDocumentPageInfo} from '../../../utils/Types';
 import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 
-const iconSingleline = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
+const iconTextbox = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
-const iconMultiline =
+const iconTextarea =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M3.225 20.725v-3.15h11.55v3.15Zm0-4.775V12.8h17.55v3.15Zm0-4.75V8.05h17.55v3.15Zm0-4.775v-3.15h17.55v3.15Z"/></svg>';
 
 const iconCheck =
@@ -30,11 +30,11 @@ const iconSignature =
 const iconInitial =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M6.225 20.775V7h-5V3.225H15V7h-5v13.775Zm9.775 0v-8h-3V9h9.775v3.775h-3v8Z"/></svg>';
 
-const iconClock =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="none"><path fill="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+const iconTimestamp =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M9 1h6v2H9zm10.03 6.39 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM13 14h-2V8h2v6z"></path></svg>';
 
-const iconBarsDown =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" /></svg>';
+const iconDropdown =
+  '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" stroke-width="1.5" stroke="currentColor"><path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" /></svg>';
 
 const separator = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.707 14.707"><g><rect x="6.275" y="0" fill="#ffffff7f" width="1" height="15"/></g></svg>';
 
@@ -42,14 +42,14 @@ const menuOptions = [
   {id: 'signature', tooltip: 'Signature', icon: iconSignature},
   {id: 'initial', tooltip: 'Initials', icon: iconInitial},
   {id: 'sep1', tooltip: '', icon: separator},
-  {id: 'textbox', tooltip: 'Text Box', icon: iconSingleline},
-  {id: 'textarea', tooltip: 'Text Area', icon: iconMultiline},
-  {id: 'checkbox', tooltip: 'Check Box', icon: iconCheck},
-  {id: 'radio', tooltip: 'Radio Button', icon: iconRadio},
-  {id: 'dropdown', tooltip: 'Dropdown', icon: iconBarsDown},
+  {id: 'textbox', tooltip: 'Text Box', icon: iconTextbox},
+  {id: 'textarea', tooltip: 'Text Area', icon: iconTextarea},
+  {id: 'checkbox_group', tooltip: 'Check Box', icon: iconCheck},
+  {id: 'radio_button_group', tooltip: 'Radio Button', icon: iconRadio},
+  {id: 'dropdown', tooltip: 'Dropdown', icon: iconDropdown},
   {id: 'sep2', tooltip: '', icon: separator},
   {id: 'date', tooltip: 'Date', icon: iconDatepicker},
-  {id: 'timestamp', tooltip: 'Timestamp', icon: iconClock},
+  {id: 'timestamp', tooltip: 'Timestamp', icon: iconTimestamp},
   // {id: 'sep3', tooltip: '', icon: separator},
   // {id: 'attachment', tooltip: 'Attachment', icon: 'A'},
   // {id: 'payment', tooltip: 'Payment', icon: 'P'},
@@ -304,7 +304,9 @@ export class VerdocsTemplateFields {
       console.log('Cached page', cachedPage);
       const {naturalWidth = 612, naturalHeight = 792} = cachedPage;
 
-      const {x, y} = this.viewCoordinatesToPageCoordinates(clickedX, clickedY, pageNumber, naturalWidth - width, naturalHeight - height);
+      const coords = this.viewCoordinatesToPageCoordinates(clickedX, clickedY, pageNumber, naturalWidth - width, naturalHeight - height);
+      const x = Math.floor(coords.x);
+      const y = Math.floor(coords.y);
 
       const field: ITemplateField = {
         name: this.generateFieldName(this.placing, pageNumber), //  'textboxP1-22',
@@ -329,15 +331,28 @@ export class VerdocsTemplateFields {
         case 'signature':
           field.setting = {x, y, result: ''};
           break;
+
         case 'checkbox_group':
-          field.setting = {x, y, minimum_checked: 0, maximum_checked: 1000};
+          // @ts-ignore
+          field.setting = {
+            minimum_checked: 0,
+            maximum_checked: 1000,
+            options: [
+              {
+                id: `${field.name}-1`,
+                value: 'Option 1',
+                checked: false,
+                x,
+                y,
+              },
+            ],
+          };
           break;
+
         case 'date':
           field.setting = {x, y, width, height, result: ''};
           break;
 
-        // TODO: Remove this everywhere
-        // case 'checkbox':break;
         // TODO: What is this?
         // case 'placeholder':break;
 
@@ -347,7 +362,19 @@ export class VerdocsTemplateFields {
           break;
 
         case 'radio_button_group':
-          field.setting = {x, y};
+          // @ts-ignore
+          field.setting = {
+            options: [
+              {
+                id: `${field.name}-1`,
+                value: 'Option 1',
+                selected: false,
+                x,
+                y,
+              },
+            ],
+          };
+
           break;
 
         // TODO: What about textareas?
