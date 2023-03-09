@@ -42,9 +42,7 @@ verdocs-field-checkbox {
   }
 
   &.required {
-    label > input[type='checkbox'] + *::before {
-      border: 1px solid $verdocs-red-1;
-    }
+    border: 1px solid $verdocs-red-1;
   }
 
   &.hide {

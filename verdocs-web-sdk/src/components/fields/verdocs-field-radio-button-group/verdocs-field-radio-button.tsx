@@ -58,6 +58,11 @@ export class VerdocsFieldRadioButton {
   @Prop() moveable?: boolean = false;
 
   /**
+   * May be used to force the field to re-render.
+   */
+  @Prop() rerender?: number = 0;
+
+  /**
    * Event fired when the field's settings are changed.
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;

@@ -32,6 +32,11 @@ export class VerdocsFieldAttachment {
   @Prop() roleIndex?: number = 0;
 
   /**
+   * May be used to force the field to re-render.
+   */
+  @Prop() rerender?: number = 0;
+
+  /**
    * Event fired when the field's settings are changed.
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;

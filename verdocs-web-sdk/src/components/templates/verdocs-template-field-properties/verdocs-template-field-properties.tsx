@@ -138,8 +138,9 @@ export class VerdocsTemplateFieldProperties {
       role_name: this.roleName,
       // TODO: Default value in setting?
     } as Partial<ITemplateField>;
+    console.log('np', this.required, newProperties);
 
-    if (this.type === 'dropdown') {
+    if (this.type === 'dropdown' || this.type === 'checkbox_group' || this.type === 'radio_button_group') {
       newProperties.setting = this.setting;
       newProperties.setting.options = this.options;
     }
@@ -242,23 +243,21 @@ export class VerdocsTemplateFieldProperties {
             />
           )}
 
-          {['signature', 'initial'].includes(this.type) && (
-            <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
-              <label htmlFor="verdocs-is-required" class="input-label">
-                Required
-              </label>
-              <verdocs-checkbox
-                id="verdocs-is-required"
-                name="is-required"
-                checked={this.required}
-                value="on"
-                onInput={(e: any) => {
-                  this.required = e.target.checked;
-                  this.dirty = true;
-                }}
-              />
-            </div>
-          )}
+          <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
+            <label htmlFor="verdocs-is-required" class="input-label">
+              Required
+            </label>
+            <verdocs-checkbox
+              id="verdocs-is-required"
+              name="is-required"
+              checked={this.required}
+              value="on"
+              onInput={(e: any) => {
+                this.required = e.target.checked;
+                this.dirty = true;
+              }}
+            />
+          </div>
 
           {['dropdown'].includes(this.type) && (
             <Fragment>

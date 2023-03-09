@@ -52,6 +52,11 @@ export class VerdocsFieldDropdown {
   @Prop() roleindex?: number = 0;
 
   /**
+   * May be used to force the field to re-render.
+   */
+  @Prop() rerender?: number = 0;
+
+  /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
    * It is generally the best event to subscribe to than `input` for most cases EXCEPT autocomplete fields that need to see every
    * keypress.

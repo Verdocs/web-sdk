@@ -55,6 +55,11 @@ export class VerdocsFieldInitial {
   @Prop() roleindex?: number = 0;
 
   /**
+   * May be used to force the field to re-render.
+   */
+  @Prop() rerender?: number = 0;
+
+  /**
    * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
    */
   @Event({composed: true}) adopt: EventEmitter<string>;

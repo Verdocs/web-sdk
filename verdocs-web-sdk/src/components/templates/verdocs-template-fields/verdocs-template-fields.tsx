@@ -163,6 +163,7 @@ export class VerdocsTemplateFields {
       console.log('settings changed', this, field);
       el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, field.role_name));
       this.rerender++;
+      el.setAttribute('rerender', this.rerender);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: TemplateStore.template, event: 'updated-field'});
     });
 

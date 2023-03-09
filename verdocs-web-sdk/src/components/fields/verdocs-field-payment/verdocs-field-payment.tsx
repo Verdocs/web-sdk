@@ -39,6 +39,11 @@ export class VerdocsFieldPayment {
   @Prop() focused: boolean = false;
   @Prop() signed: boolean = false;
 
+  /**
+   * May be used to force the field to re-render.
+   */
+  @Prop() rerender?: number = 0;
+
   @Event({composed: true}) signatureComplete: EventEmitter<string>;
 
   @Event({composed: true}) initialComplete: EventEmitter<string>;

@@ -188,6 +188,10 @@ export namespace Components {
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleIndex"?: number;
@@ -220,6 +224,10 @@ export namespace Components {
          */
         "option": number;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -249,6 +257,10 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -277,6 +289,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -311,6 +327,10 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -336,6 +356,10 @@ export namespace Components {
         "pageNum": number;
         "pdfPages": any[];
         "recipients": any;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         "roleName": string;
         /**
           * If set, the field will be colored using this index value to select the background color.
@@ -372,6 +396,10 @@ export namespace Components {
          */
         "option": number;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -405,6 +433,10 @@ export namespace Components {
          */
         "name"?: string;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -433,6 +465,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -463,6 +499,10 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -491,6 +531,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -1764,6 +1808,10 @@ declare namespace LocalJSX {
          */
         "onSettingsChanged"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string}>) => void;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleIndex"?: number;
@@ -1801,6 +1849,10 @@ declare namespace LocalJSX {
           * The index of the settings option this particular checkbox is for
          */
         "option"?: number;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -1840,6 +1892,10 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldDateCustomEvent<any>) => void;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -1877,6 +1933,10 @@ declare namespace LocalJSX {
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string}>) => void;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -1932,6 +1992,10 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -1965,6 +2029,10 @@ declare namespace LocalJSX {
         "pageNum"?: number;
         "pdfPages"?: any[];
         "recipients"?: any;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         "roleName"?: string;
         /**
           * If set, the field will be colored using this index value to select the background color.
@@ -2006,6 +2074,10 @@ declare namespace LocalJSX {
           * The index of the settings option this particular checkbox is for
          */
         "option"?: number;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -2053,6 +2125,10 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -2086,6 +2162,10 @@ declare namespace LocalJSX {
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string}>) => void;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
@@ -2121,6 +2201,10 @@ declare namespace LocalJSX {
          */
         "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string}>) => void;
         /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
+        /**
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
@@ -2154,6 +2238,10 @@ declare namespace LocalJSX {
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string}>) => void;
+        /**
+          * May be used to force the field to re-render.
+         */
+        "rerender"?: number;
         /**
           * If set, the field will be colored using this index value to select the background color.
          */

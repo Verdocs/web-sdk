@@ -53,6 +53,11 @@ export class VerdocsFieldDate {
   @Prop() roleindex?: number = 0;
 
   /**
+   * May be used to force the field to re-render.
+   */
+  @Prop() rerender?: number = 0;
+
+  /**
    * Event fired on every character entered into / deleted from the field.
    */
   @Event({composed: true}) settingsPress: EventEmitter;

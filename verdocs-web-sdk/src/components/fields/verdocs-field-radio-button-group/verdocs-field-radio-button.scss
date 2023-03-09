@@ -91,13 +91,7 @@ verdocs-field-radio-button {
   }
 
   &.required {
-    input[type='radio'] {
-      + label {
-        &:before {
-          border: 1px solid $verdocs-red-1;
-        }
-      }
-    }
+    border: 1px solid $verdocs-red-1;
   }
 
   &.hide {
