@@ -139,12 +139,19 @@ export class VerdocsTemplateFieldProperties {
       role_name: this.roleName,
       // TODO: Default value in setting?
     } as Partial<ITemplateField>;
-    console.log('np', this.required, newProperties);
 
-    if (this.type === 'dropdown' || this.type === 'checkbox_group' || this.type === 'radio_button_group') {
+    if (this.type === 'checkbox_group' || this.type === 'radio_button_group') {
       newProperties.setting = this.setting;
       newProperties.setting.options = this.options;
+    } else if (this.type === 'dropdown') {
+      newProperties.setting = {
+        x: this.setting.x,
+        y: this.setting.y,
+        options: this.options,
+      };
     }
+
+    console.log('np', this.required, newProperties);
 
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(() => {
