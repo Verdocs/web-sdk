@@ -160,7 +160,9 @@ export class VerdocsTemplateFields {
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
     el.addEventListener('settingsChanged', () => {
-      console.log('settings changed', this, field);
+      console.log('Settings', TemplateStore.fields);
+      this.selectedRoleName = field.role_name;
+      console.log('settings changed', this.selectedRoleName, field);
       el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, field.role_name));
       this.rerender++;
       el.setAttribute('rerender', this.rerender);
@@ -301,10 +303,11 @@ export class VerdocsTemplateFields {
     let fieldName;
     do {
       fieldName = `${type}P${pageNumber}-${i}`;
+      console.log('testing field', fieldName);
       i++;
     } while (TemplateStore.fields.some(field => field.name === fieldName));
 
-    console.log('Field name', fieldName);
+    console.log('Will use field name', fieldName, TemplateStore.fields);
     return fieldName;
   }
 
@@ -336,7 +339,7 @@ export class VerdocsTemplateFields {
 
       const field: ITemplateField = {
         name: this.generateFieldName(this.placing, pageNumber), //  'textboxP1-22',
-        role_name: this.selectedRoleName, // 'Buyer',
+        role_name: this.selectedRoleName,
         template_id: this.templateId,
         type: this.placing,
         required: true,

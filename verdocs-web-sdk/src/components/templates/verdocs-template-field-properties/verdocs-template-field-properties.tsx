@@ -151,18 +151,17 @@ export class VerdocsTemplateFieldProperties {
       };
     }
 
-    console.log('np', this.required, newProperties);
-
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(() => {
         this.dirty = false;
-        TemplateStore.fields.forEach(field => {
+        const field = TemplateStore.fields.find(field => field.name === this.fieldName);
+        if (field) {
           field.name = this.name;
           field.role_name = this.roleName;
           field.required = this.required;
           field.label = this.placeholder;
           field.setting.result = this.defaultValue;
-        });
+        }
         this.settingsChanged?.emit({fieldName: this.fieldName});
         this.close?.emit();
       })

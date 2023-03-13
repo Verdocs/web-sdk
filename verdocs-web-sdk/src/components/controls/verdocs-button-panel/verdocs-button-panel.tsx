@@ -56,42 +56,37 @@ export class VerdocsButtonPanel {
 
   @Method()
   async showPanel() {
-    if (!this.showing) {
-      await this.toggle();
-    }
+    this.panelEl?.setAttribute('data-show', '');
+    this.popperInstance?.update().catch(() => {});
+    this.showing = true;
+
+    this.hiderEl = document.createElement('div');
+    this.hiderEl.style.zIndex = '100';
+    this.hiderEl.style.position = 'absolute';
+    this.hiderEl.style.top = '0px';
+    this.hiderEl.style.left = '0px';
+    this.hiderEl.style.right = '0px';
+    this.hiderEl.style.bottom = '0px';
+    this.hiderEl.onclick = (e: any) => {
+      e.stopPropagation();
+      this.toggle();
+    };
+    document.body.appendChild(this.hiderEl);
   }
 
   @Method()
   async hidePanel() {
-    console.log('Hiding panel', this.showing);
-    if (this.showing) {
-      await this.toggle();
-    }
+    this.panelEl?.removeAttribute('data-show');
+    this.hiderEl?.remove();
+    this.showing = false;
   }
 
   @Method()
   async toggle() {
     if (this.showing) {
-      this.panelEl?.removeAttribute('data-show');
-      this.hiderEl?.remove();
-      this.showing = false;
+      await this.hidePanel();
     } else {
-      this.panelEl?.setAttribute('data-show', '');
-      this.popperInstance?.update().catch(() => {});
-      this.showing = true;
-
-      this.hiderEl = document.createElement('div');
-      this.hiderEl.style.zIndex = '100';
-      this.hiderEl.style.position = 'absolute';
-      this.hiderEl.style.top = '0px';
-      this.hiderEl.style.left = '0px';
-      this.hiderEl.style.right = '0px';
-      this.hiderEl.style.bottom = '0px';
-      this.hiderEl.onclick = (e: any) => {
-        e.stopPropagation();
-        this.toggle();
-      };
-      document.body.appendChild(this.hiderEl);
+      await this.showPanel();
     }
   }
 
