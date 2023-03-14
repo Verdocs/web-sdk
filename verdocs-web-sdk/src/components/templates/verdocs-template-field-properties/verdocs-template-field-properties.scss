@@ -39,6 +39,7 @@ verdocs-template-field-properties {
 
   verdocs-text-input {
     margin: 0;
+    flex: 1;
 
     label {
       margin: 0;
@@ -85,10 +86,25 @@ verdocs-template-field-properties {
 
   h6 {
     flex: 1;
+    display: flex;
     font-size: 16px;
     font-weight: bold;
     margin: 0 0 8px 0;
+    flex-direction: row;
     color: $verdocs-grey-0;
+
+    .help-icon {
+      opacity: 0.5;
+
+      &:hover {
+        opacity: 1;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .instructions {
+
   }
 
   .row-header {
@@ -181,7 +197,7 @@ verdocs-template-field-properties {
 
     verdocs-help-icon {
       opacity: 1;
-      transform: scale(.8);
+      transform: scale(0.8);
 
       svg {
         fill: #ffffff;

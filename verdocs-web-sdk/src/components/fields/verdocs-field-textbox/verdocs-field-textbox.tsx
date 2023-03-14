@@ -1,7 +1,8 @@
+import interact from 'interactjs';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, h, Host, Prop, Method, Event, EventEmitter} from '@stencil/core';
+import {Component, h, Host, Element, Prop, Method, Event, EventEmitter} from '@stencil/core';
 import TemplateStore from '../../../utils/templateStore';
 import {getFieldSettings} from '../../../utils/utils';
 
@@ -17,7 +18,9 @@ const settingsIcon =
   shadow: false,
 })
 export class VerdocsFieldTextbox {
-  private el: HTMLInputElement;
+  @Element() el: HTMLElement;
+  private inputEl: HTMLInputElement;
+  private resizeHandle: HTMLDivElement;
 
   /**
    * The document or template field to display.
@@ -67,7 +70,7 @@ export class VerdocsFieldTextbox {
 
   @Method()
   async focusField() {
-    this.el.focus();
+    this.inputEl.focus();
   }
 
   @Method()
@@ -81,11 +84,42 @@ export class VerdocsFieldTextbox {
   @Method()
   async hideSettingsPanel() {
     const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
-    console.log('will hide', settingsPanel);
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
     TemplateStore.updateCount++;
+  }
+
+  componentDidRender() {
+    interact.dynamicDrop(true);
+
+    if (this.editable) {
+      interact(this.resizeHandle).resizable({
+        listeners: {
+          start(event) {
+            console.log('[TEXTBOX] Resize started', event.type, event.target);
+          },
+          move: this.handleResize.bind(this),
+          end(event) {
+            console.log('[TEXTBOX] Resize end', event);
+          },
+        },
+      });
+    }
+  }
+
+  handleResize(event) {
+    console.log('[TEXTBOX] Resize', event.delta);
+
+    const oldX = +(event.target.getAttribute('resizeX') || 0);
+    const oldY = +(event.target.getAttribute('resizeY') || 0);
+    const newX = event.dx + oldX;
+    const newY = event.dy + oldY;
+    this.el.style.width = `${parseFloat(this.el.style.width || '0') + event.dx}px`;
+    // Single line text fields are not resizeable in height
+    // this.el.style.height = `${parseFloat(this.el.style.height || '0') + event.dy}px`;
+    event.target.setAttribute('resizeX', newX);
+    event.target.setAttribute('resizeY', newY);
   }
 
   render() {
@@ -107,8 +141,19 @@ export class VerdocsFieldTextbox {
           value={value}
           disabled={disabled}
           required={this.field?.required}
-          ref={el => (this.el = el)}
+          ref={el => (this.inputEl = el)}
         />
+        {this.editable && (
+          <div
+            class="resizer"
+            ref={el => (this.resizeHandle = el as HTMLDivElement)}
+            // (panstart)="fieldResizeStart()" (panmove)="fieldResizing($event, i, j)"
+            // (panend)="fieldResized($event, i, j)"
+            // (mouseenter)="resizeHover()" (mouseleave)="resizeHoverOut()"
+          >
+            <div class="resizer-inner" />
+          </div>
+        )}
         {this.editable && (
           <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
             <verdocs-template-field-properties

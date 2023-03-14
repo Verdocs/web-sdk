@@ -41,6 +41,49 @@ verdocs-field-textbox {
     animation: verdocs-field-pulse 0.75s 2;
   }
 
+  .resizer {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 8px;
+    height: 8px;
+    //background-color: transparent;
+    z-index: 9999;
+    //opacity: 0;
+
+    &:hover {
+      cursor: nwse-resize;
+    }
+
+    .resizer-inner {
+      position: absolute;
+      bottom: 0;
+
+      &:before {
+        position: absolute;
+        top: -4px;
+        left: -0.5px;
+        content: '';
+        display: block;
+        width: 10px;
+        height: 1px;
+        background-color: rgba(0, 0, 0, 0.32);
+        transform: rotate(-45deg);
+      }
+      &:after {
+        position: absolute;
+        top: -1.5px;
+        left: 4.5px;
+        content: '';
+        display: block;
+        width: 5px;
+        height: 1px;
+        background-color: rgba(0, 0, 0, 0.32);
+        transform: rotate(-45deg);
+      }
+    }
+  }
+
   verdocs-button-panel {
     top: -3px;
     left: -2px;
