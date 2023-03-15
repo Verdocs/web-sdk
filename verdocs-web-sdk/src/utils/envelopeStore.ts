@@ -4,7 +4,8 @@
 import {createStore} from '@stencil/store';
 import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
 
-const {state, onChange} = createStore({
+console.log('[ENVELOPESTORE] Creating store');
+const {state, onChange, reset} = createStore({
   envelope: null as IEnvelope | null,
   loadProgress: 0,
   loading: true,
@@ -37,3 +38,5 @@ onChange('envelope', async newEnvelope => {
 });
 
 export default state;
+
+export const resetEnvelopeStore = () => reset();

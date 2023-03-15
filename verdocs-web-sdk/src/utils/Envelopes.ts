@@ -1,10 +1,12 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import EnvelopeStore from './envelopeStore';
+import EnvelopeStore, {resetEnvelopeStore} from './envelopeStore';
 
 // Allows envelope data to be cached for reuse between components, without parent components having to prop-drill entire envelopes into
 // child elements.
 export const getEnvelopeById = async (endpoint: VerdocsEndpoint, envelopeId: string, forceReload: boolean = false) => {
+  console.log(`[ENVELOPES] getEnvelopeById`, {envelopeId, forceReload});
+
   if (!envelopeId) {
     console.log(`[ENVELOPES] Missing required envelope ID`);
     return;
@@ -15,9 +17,7 @@ export const getEnvelopeById = async (endpoint: VerdocsEndpoint, envelopeId: str
     return;
   }
 
-  EnvelopeStore.error = '';
-  EnvelopeStore.loading = true;
-  EnvelopeStore.envelope = null;
+  resetEnvelopeStore();
 
   try {
     console.log(`[ENVELOPES] Loading envelope ${envelopeId}`);
