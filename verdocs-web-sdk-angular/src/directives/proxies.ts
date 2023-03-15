@@ -1377,14 +1377,14 @@ export declare interface VerdocsTemplateDocumentPage extends Components.VerdocsT
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'fieldName', 'templateId']
+  inputs: ['endpoint', 'fieldName', 'helpText', 'templateId']
 })
 @Component({
   selector: 'verdocs-template-field-properties',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'fieldName', 'templateId'],
+  inputs: ['endpoint', 'fieldName', 'helpText', 'templateId'],
 })
 export class VerdocsTemplateFieldProperties {
   protected el: HTMLElement;

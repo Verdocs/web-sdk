@@ -821,6 +821,10 @@ export namespace Components {
          */
         "fieldName": string;
         /**
+          * If specified, the properties card will have a "back" side with the help text as its content.
+         */
+        "helpText"?: string;
+        /**
           * The template ID to edit.
          */
         "templateId": string;
@@ -2644,6 +2648,10 @@ declare namespace LocalJSX {
           * The field to configure.
          */
         "fieldName"?: string;
+        /**
+          * If specified, the properties card will have a "back" side with the help text as its content.
+         */
+        "helpText"?: string;
         /**
           * Event fired when the user cancels the dialog.
          */

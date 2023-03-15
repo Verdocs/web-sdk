@@ -44,6 +44,11 @@ export class VerdocsTemplateFieldProperties {
   @Prop() fieldName: string = '';
 
   /**
+   * If specified, the properties card will have a "back" side with the help text as its content.
+   */
+  @Prop() helpText?: string = '';
+
+  /**
    * Event fired when the user cancels the dialog.
    */
   @Event({composed: true}) close: EventEmitter;
@@ -77,7 +82,7 @@ export class VerdocsTemplateFieldProperties {
   @State() options = [];
   @State() placeholder = '';
   @State() defaultValue = '';
-  @State() showingHelp = true;
+  @State() showingHelp = false;
 
   async componentWillLoad() {
     try {
@@ -210,7 +215,7 @@ export class VerdocsTemplateFieldProperties {
       return <Host class="empty" />;
     }
 
-    if (this.showingHelp) {
+    if (this.helpText && this.showingHelp) {
       return (
         <Host>
           <h6>
@@ -218,8 +223,7 @@ export class VerdocsTemplateFieldProperties {
             <div class="help-icon" innerHTML={HelpIcon} onClick={() => (this.showingHelp = false)} />
           </h6>
 
-          <p class="instructions">Text boxes may be used to capture simple text input. Participant-entered values will be stored for later retrieval via the "name" field.</p>
-          <p class="instructions">If marked required, the participant must complete the field before proceeding..</p>
+          <p class="instructions" innerHTML={this.helpText} />
         </Host>
       );
     }
@@ -228,7 +232,7 @@ export class VerdocsTemplateFieldProperties {
       <Host>
         <h6>
           {capitalize(this.fieldType)} Settings <div style={{flex: '1'}} />
-          <div class="help-icon" innerHTML={HelpIcon} onClick={() => (this.showingHelp = true)} />
+          {this.helpText && <div class="help-icon" innerHTML={HelpIcon} onClick={() => (this.showingHelp = true)} />}
         </h6>
 
         <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">

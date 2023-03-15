@@ -168,6 +168,9 @@ export class VerdocsFieldTextbox {
                 this.settingsChanged?.emit(e.detail);
                 return this.hideSettingsPanel();
               }}
+              helpText={
+                'Text boxes may be used to capture simple text input. Participant-entered values will be stored for later retrieval via the "name" field.<br /><br />If marked required, the participant must complete the field before proceeding.'
+              }
             />
           </verdocs-button-panel>
         )}
