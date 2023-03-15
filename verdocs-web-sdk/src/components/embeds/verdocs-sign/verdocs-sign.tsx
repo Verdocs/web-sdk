@@ -542,7 +542,7 @@ export class VerdocsSign {
       <Host class={{agreed: this.agreed}} data-r={EnvelopeStore.updateCount}>
         {!this.finishLater && <div class="intro">Please review and act on these documents.</div>}
 
-        <div class="header" id="verdocs-sign-header">
+        <div id="verdocs-sign-header">
           {!this.agreed ? (
             <div class="agree">
               <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
@@ -563,7 +563,7 @@ export class VerdocsSign {
 
         {!this.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
-        <div class="document">
+        <div class="document" style={{paddingTop: this.headerTargetId ? '15px' : '70px'}}>
           {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
             const pages = [...(envelopeDocument?.pages || [])];
             pages.sort((a, b) => a.sequence - b.sequence);

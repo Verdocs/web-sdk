@@ -1154,14 +1154,14 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['envelopeId', 'inviteCode', 'roleId']
+  inputs: ['envelopeId', 'headerTargetId', 'inviteCode', 'roleId']
 })
 @Component({
   selector: 'verdocs-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['envelopeId', 'inviteCode', 'roleId'],
+  inputs: ['envelopeId', 'headerTargetId', 'inviteCode', 'roleId'],
 })
 export class VerdocsSign {
   protected el: HTMLElement;
@@ -1871,14 +1871,14 @@ export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDia
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'envelopeId']
+  inputs: ['endpoint', 'envelopeId', 'headerTargetId']
 })
 @Component({
   selector: 'verdocs-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'envelopeId'],
+  inputs: ['endpoint', 'envelopeId', 'headerTargetId'],
 })
 export class VerdocsView {
   protected el: HTMLElement;

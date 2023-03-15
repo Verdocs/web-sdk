@@ -186,7 +186,7 @@ export class VerdocsView {
 
     return (
       <Host data-r={EnvelopeStore.updateCount}>
-        <div class="header" id="verdocs-view-header">
+        <div id="verdocs-view-header">
           <Fragment>
             <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
             <div class="title">{EnvelopeStore.envelope.name}</div>
@@ -196,7 +196,7 @@ export class VerdocsView {
           </Fragment>
         </div>
 
-        <div class="document">
+        <div class="document" style={{paddingTop: this.headerTargetId ? '15px' : '70px'}}>
           {(EnvelopeStore.envelope?.documents || [])
             .filter(document => document.type !== 'certificate')
             .map(envelopeDocument => {
