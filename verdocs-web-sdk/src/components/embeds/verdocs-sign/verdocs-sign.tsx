@@ -68,6 +68,17 @@ export class VerdocsSign {
   @Prop() inviteCode: string | null = null;
 
   /**
+   * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this
+   * component renders, the header will be removed from its default location and placed in the target element.
+   * This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").
+   *
+   * The movement of the header to the target container is not dynamic - it is performed only on the initial
+   * render. Host applications should not conditionally render this container. If the header's visibility must
+   * be externally controlled, use CSS display options to hide/show it instead.
+   */
+  @Prop() headerTargetId: string | null = null;
+
+  /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
@@ -163,6 +174,16 @@ export class VerdocsSign {
     } catch (e) {
       console.log('Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+  }
+
+  componentDidRender() {
+    const headerTarget = this.headerTargetId ? document.getElementById(this.headerTargetId) : null;
+    const headerEl = document.getElementById('verdocs-sign-header');
+    if (headerTarget && headerEl) {
+      console.log('[SIGN] Moving header');
+      headerEl.remove();
+      headerTarget.append(headerEl);
     }
   }
 
@@ -521,7 +542,7 @@ export class VerdocsSign {
       <Host class={{agreed: this.agreed}} data-r={EnvelopeStore.updateCount}>
         {!this.finishLater && <div class="intro">Please review and act on these documents.</div>}
 
-        <div class="header">
+        <div class="header" id="verdocs-sign-header">
           {!this.agreed ? (
             <div class="agree">
               <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />

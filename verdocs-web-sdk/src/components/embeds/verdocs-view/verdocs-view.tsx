@@ -31,6 +31,17 @@ export class VerdocsView {
   @Prop() envelopeId: string = '';
 
   /**
+   * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this
+   * component renders, the header will be removed from its default location and placed in the target element.
+   * This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").
+   *
+   * The movement of the header to the target container is not dynamic - it is performed only on the initial
+   * render. Host applications should not conditionally render this container. If the header's visibility must
+   * be externally controlled, use CSS display options to hide/show it instead.
+   */
+  @Prop() headerTargetId: string | null = null;
+
+  /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
@@ -56,6 +67,16 @@ export class VerdocsView {
     }
 
     return this.reloadEnvelope();
+  }
+
+  componentDidRender() {
+    const headerTarget = this.headerTargetId ? document.getElementById(this.headerTargetId) : null;
+    const headerEl = document.getElementById('verdocs-view-header');
+    if (headerTarget && headerEl) {
+      console.log('[VIEW] Moving header');
+      headerEl.remove();
+      headerTarget.append(headerEl);
+    }
   }
 
   async reloadEnvelope() {
@@ -165,7 +186,7 @@ export class VerdocsView {
 
     return (
       <Host data-r={EnvelopeStore.updateCount}>
-        <div class="header">
+        <div class="header" id="verdocs-view-header">
           <Fragment>
             <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
             <div class="title">{EnvelopeStore.envelope.name}</div>

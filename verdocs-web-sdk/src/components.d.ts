@@ -723,6 +723,10 @@ export namespace Components {
          */
         "envelopeId": string | null;
         /**
+          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the header will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").  The movement of the header to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the header's visibility must be externally controlled, use CSS display options to hide/show it instead.
+         */
+        "headerTargetId": string | null;
+        /**
           * The invite code for the signer.
          */
         "inviteCode": string | null;
@@ -831,7 +835,7 @@ export namespace Components {
          */
         "templateId": string | null;
         /**
-          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the toolbar will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects.
+          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the toolbar will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects.  The movement of the toolbar to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the toolbar's visibility must be externally controlled, use CSS display options to hide/show it instead.
          */
         "toolbarTargetId": string | null;
     }
@@ -1003,6 +1007,10 @@ export namespace Components {
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
          */
         "envelopeId": string;
+        /**
+          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the header will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").  The movement of the header to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the header's visibility must be externally controlled, use CSS display options to hide/show it instead.
+         */
+        "headerTargetId": string | null;
     }
 }
 export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
@@ -2495,6 +2503,10 @@ declare namespace LocalJSX {
          */
         "envelopeId"?: string | null;
         /**
+          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the header will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").  The movement of the header to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the header's visibility must be externally controlled, use CSS display options to hide/show it instead.
+         */
+        "headerTargetId"?: string | null;
+        /**
           * The invite code for the signer.
          */
         "inviteCode"?: string | null;
@@ -2671,7 +2683,7 @@ declare namespace LocalJSX {
          */
         "templateId"?: string | null;
         /**
-          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the toolbar will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects.
+          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the toolbar will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects.  The movement of the toolbar to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the toolbar's visibility must be externally controlled, use CSS display options to hide/show it instead.
          */
         "toolbarTargetId"?: string | null;
     }
@@ -2927,6 +2939,10 @@ declare namespace LocalJSX {
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
          */
         "envelopeId"?: string;
+        /**
+          * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the header will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").  The movement of the header to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the header's visibility must be externally controlled, use CSS display options to hide/show it instead.
+         */
+        "headerTargetId"?: string | null;
         /**
           * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
          */

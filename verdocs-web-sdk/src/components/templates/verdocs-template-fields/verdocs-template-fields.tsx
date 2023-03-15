@@ -81,6 +81,10 @@ export class VerdocsTemplateFields {
    * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this
    * component renders, the toolbar will be removed from its default location and placed in the target element.
    * This allows the parent application to more easily control its placement and scroll effects.
+   *
+   * The movement of the toolbar to the target container is not dynamic - it is performed only on the initial
+   * render. Host applications should not conditionally render this container. If the toolbar's visibility must
+   * be externally controlled, use CSS display options to hide/show it instead.
    */
   @Prop() toolbarTargetId: string | null = null;
 
