@@ -1,10 +1,9 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
-import {getEnvelopeById} from '../../../utils/Envelopes';
-import EnvelopeStore from '../../../utils/envelopeStore';
-import {SDKError} from '../../../utils/errors';
 import {format} from 'date-fns';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
+import {throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
+import {SDKError} from '../../../utils/errors';
 
 const InformationCircle = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>`;
 
@@ -71,6 +70,8 @@ export class VerdocsEnvelopeSidebar {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
+  @State() envelope: IEnvelope | null = null;
+  @State() roleNames: string[] = [];
   @State() activeTab: number = 1;
   @State() panelOpen = false;
 
@@ -80,14 +81,15 @@ export class VerdocsEnvelopeSidebar {
 
   // TODO: Handling signing vs preview-as-user cases
   // TODO: Handle anonymous case and failure to load due to not being logged in
-  async componentDidLoad() {
+  async componentWillRender() {
     if (!this.envelopeId) {
       console.error(`[SIDEBAR] Missing required envelopeId`);
       return;
     }
 
     try {
-      await getEnvelopeById(this.endpoint, this.envelopeId);
+      this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
+      this.roleNames = this.envelope.recipients.map(r => r.role_name);
     } catch (e) {
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
@@ -102,7 +104,7 @@ export class VerdocsEnvelopeSidebar {
   canResendRecipient(recipient: IRecipient) {
     return (
       !['pending', 'declined', 'submitted', 'canceled'].includes(recipient.status) && //
-      !['complete', 'declined', 'canceled'].includes(EnvelopeStore.envelope.status)
+      !['complete', 'declined', 'canceled'].includes(this.envelope.status)
     );
   }
 
@@ -110,7 +112,7 @@ export class VerdocsEnvelopeSidebar {
     return (
       !recipient.claimed && //
       !['declined', 'signed', 'submitted', 'canceled'].includes(recipient.status) &&
-      !['complete', 'declined', 'canceled'].includes(EnvelopeStore.envelope.status)
+      !['complete', 'declined', 'canceled'].includes(this.envelope.status)
     );
   }
 
@@ -124,26 +126,26 @@ export class VerdocsEnvelopeSidebar {
         break;
     }
 
-    this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: id});
+    this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: id});
   }
 
   prepareHistoryEntries() {
     const entries: IHistoryEntry[] = [];
-    const histories = EnvelopeStore.envelope.histories || [];
+    const histories = this.envelope.histories || [];
 
-    entries.push({icon: 'pencil', message: 'Envelope created.', date: new Date(EnvelopeStore.envelope.created_at)});
+    entries.push({icon: 'pencil', message: 'Envelope created.', date: new Date(this.envelope.created_at)});
 
-    if (EnvelopeStore.envelope.status === 'complete') {
-      entries.push({icon: 'pencil', message: 'Envelope completed.', date: new Date(EnvelopeStore.envelope.updated_at)});
+    if (this.envelope.status === 'complete') {
+      entries.push({icon: 'pencil', message: 'Envelope completed.', date: new Date(this.envelope.updated_at)});
     }
 
     const ownerCanceled = histories.some(history => history.event === 'owner:canceled');
-    if (EnvelopeStore.envelope.status === 'canceled' && !ownerCanceled) {
-      entries.push({icon: 'pencil', message: 'Envelope Cancelled.', date: new Date(EnvelopeStore.envelope.canceled_at)});
+    if (this.envelope.status === 'canceled' && !ownerCanceled) {
+      entries.push({icon: 'pencil', message: 'Envelope Cancelled.', date: new Date(this.envelope.canceled_at)});
     }
 
     histories.forEach(history => {
-      const user = EnvelopeStore.envelope.recipients.find(recipient => recipient.role_name === history.role_name);
+      const user = this.envelope.recipients.find(recipient => recipient.role_name === history.role_name);
       const name = user?.full_name || '';
 
       switch (history.event.toLowerCase()) {
@@ -247,16 +249,16 @@ export class VerdocsEnvelopeSidebar {
   }
 
   render() {
-    if (!EnvelopeStore.envelope) {
+    if (!this.envelope) {
       return <Host />;
     }
 
     const session = this.endpoint.getSession();
-    const isEnvelopeOwner = session.profile_id === EnvelopeStore.envelope.profile_id; // TODO: What about org admins?
+    const isEnvelopeOwner = session.profile_id === this.envelope.profile_id; // TODO: What about org admins?
     const historyEntries = this.prepareHistoryEntries();
 
     return (
-      <Host class={this.panelOpen ? 'open' : ''} data-r={EnvelopeStore.updateCount}>
+      <Host class={this.panelOpen ? 'open' : ''}>
         <div class="buttons">
           <button class={this.activeTab === 1 ? 'active' : ''} onClick={() => this.setTab(1)} innerHTML={InformationCircle} />
           <button class={this.activeTab === 2 ? 'active' : ''} onClick={() => this.setTab(2)} innerHTML={Users} />
@@ -268,34 +270,34 @@ export class VerdocsEnvelopeSidebar {
             <div class="title">Details</div>
 
             <div class="label">Envelope ID</div>
-            <div class="value">{EnvelopeStore.envelope.id}</div>
+            <div class="value">{this.envelope.id}</div>
 
             <div class="label">Date Created</div>
-            <div class="value">{format(new Date(EnvelopeStore.envelope.created_at), 'PP pp')}</div>
+            <div class="value">{format(new Date(this.envelope.created_at), 'PP pp')}</div>
 
             <div class="label">Last Modified</div>
-            <div class="value">{format(new Date(EnvelopeStore.envelope.updated_at), 'PP pp')}</div>
+            <div class="value">{format(new Date(this.envelope.updated_at), 'PP pp')}</div>
 
             <div class="label">Status</div>
-            <div class="value">{EnvelopeStore.envelope.status}</div>
+            <div class="value">{this.envelope.status}</div>
 
             <div class="label">Verdoc Owner ID</div>
-            <div class="value">{EnvelopeStore.envelope.profile_id}</div>
+            <div class="value">{this.envelope.profile_id}</div>
 
             <div class="label">Verdoc Owner Name</div>
             <div class="value">
-              {EnvelopeStore.envelope.profile?.first_name} {EnvelopeStore.envelope.profile?.last_name}
+              {this.envelope.profile?.first_name} {this.envelope.profile?.last_name}
             </div>
 
             <div class="label">Verdoc Owner Email</div>
-            <div class="value">{EnvelopeStore.envelope.profile?.email}</div>
+            <div class="value">{this.envelope.profile?.email}</div>
           </div>
         )}
 
         {this.activeTab === 2 && (
           <div class="content">
             <div class="title">Recipients</div>
-            {EnvelopeStore.envelope.recipients.map((recipient, index) => (
+            {this.envelope.recipients.map((recipient, index) => (
               <div class="recipient-detail">
                 <div class="recipient-header">
                   <div class="recipient-number">{index + 1}</div>

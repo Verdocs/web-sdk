@@ -1,11 +1,9 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
-import {cancelEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {cancelEnvelope, throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {userCanCancelEnvelope} from '@verdocs/js-sdk/Envelopes/Permissions';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
-import {getEnvelopeById} from '../../../utils/Envelopes';
-import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
@@ -53,6 +51,8 @@ export class VerdocsView {
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
   @State() isProcessing = false;
+  @State() envelope: IEnvelope | null = null;
+  @State() roleNames: string[] = [];
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -83,8 +83,10 @@ export class VerdocsView {
     console.log('[VIEW] Checking for updated envelope');
 
     try {
-      await getEnvelopeById(this.endpoint, this.envelopeId, true);
-      this.isProcessing = EnvelopeStore.envelope.documents.some(document => document.type === 'attachment' && !document.processed);
+      this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
+      this.roleNames = this.envelope.recipients.map(r => r.role_name);
+
+      this.isProcessing = this.envelope.documents.some(document => document.type === 'attachment' && !document.processed);
       if (this.isProcessing) {
         setTimeout(() => this.reloadEnvelope(), 3000);
       }
@@ -104,19 +106,19 @@ export class VerdocsView {
         // TODO: Better option for inline-flow confirmation and alert dialogs.
         if (confirm('Are you sure you wish to cancel this envelope? This action cannot be undone.')) {
           await cancelEnvelope(this.endpoint, this.envelopeId);
-          this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'canceled'});
+          this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'canceled'});
         }
         break;
 
       case 'print':
         window.print();
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'printed'});
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'printed'});
         break;
 
       case 'download-attachments':
-        saveAttachment(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id)
+        saveAttachment(this.endpoint, this.envelope, this.envelope.envelope_document_id)
           .then(() => {
-            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'downloaded'});
+            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
           })
           .catch(e => {
             console.log('Error downloading PDF', e);
@@ -124,9 +126,9 @@ export class VerdocsView {
         break;
 
       case 'download-certificate':
-        saveCertificate(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.certificate_document_id)
+        saveCertificate(this.endpoint, this.envelope, this.envelope.certificate_document_id)
           .then(() => {
-            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'downloaded'});
+            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
           })
           .catch(e => {
             console.log('Error downloading PDF', e);
@@ -134,9 +136,9 @@ export class VerdocsView {
         break;
 
       case 'download-all':
-        saveEnvelopesAsZip(this.endpoint, [EnvelopeStore.envelope])
+        saveEnvelopesAsZip(this.endpoint, [this.envelope])
           .then(() => {
-            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'downloaded'});
+            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
           })
           .catch(e => {
             console.log('Error downloading Zip', e);
@@ -146,7 +148,8 @@ export class VerdocsView {
   }
 
   render() {
-    if (EnvelopeStore.loading || !EnvelopeStore.envelope) {
+    if (!this.envelope) {
+      console.log('rendering, no env');
       return (
         <Host>
           <verdocs-loader />
@@ -154,23 +157,15 @@ export class VerdocsView {
       );
     }
 
-    if (EnvelopeStore.error) {
-      return (
-        <Host>
-          <div>{EnvelopeStore.error}</div>
-        </Host>
-      );
-    }
-
     const menuOptions: any[] = [{id: 'print', label: 'Print'}];
 
-    if (userCanCancelEnvelope(this.endpoint.session, EnvelopeStore.envelope)) {
+    if (userCanCancelEnvelope(this.endpoint.session, this.envelope)) {
       menuOptions.push({id: 'cancel', label: 'Cancel'});
     }
 
     // Add download options to the menu
-    const hasAttachments = EnvelopeStore.envelope.documents.length > 0;
-    const hasCertificate = !!EnvelopeStore.envelope.certificate;
+    const hasAttachments = this.envelope.documents.length > 0;
+    const hasCertificate = !!this.envelope.certificate;
     if (hasAttachments || hasCertificate) {
       menuOptions.push({label: ''});
       if (hasAttachments) {
@@ -184,23 +179,25 @@ export class VerdocsView {
       }
     }
 
+    console.log('docs', this.envelope, this.envelope.documents);
+
     return (
-      <Host data-r={EnvelopeStore.updateCount}>
+      <Host>
         <div id="verdocs-view-header">
           <Fragment>
             <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-            <div class="title">{EnvelopeStore.envelope.name}</div>
+            <div class="title">{this.envelope.name}</div>
             <div style={{flex: '1'}} />
             <div style={{marginLeft: '10px'}} />
             <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
           </Fragment>
         </div>
 
-        <div class="document" style={{paddingTop: this.headerTargetId ? '15px' : '70px'}}>
-          {(EnvelopeStore.envelope?.documents || [])
+        <div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
+          {(this.envelope?.documents || [])
             .filter(document => document.type !== 'certificate')
             .map(envelopeDocument => {
-              console.log('[VIEW] Rendering document', EnvelopeStore.envelope, envelopeDocument);
+              console.log('[VIEW] Rendering document', this.envelope, envelopeDocument);
               const pages = [...(envelopeDocument?.pages || [])];
               pages.sort((a, b) => a.sequence - b.sequence);
 

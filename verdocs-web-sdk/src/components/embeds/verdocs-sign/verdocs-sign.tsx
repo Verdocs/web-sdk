@@ -1,16 +1,14 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
-import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
 import {fullNameToInitials} from '@verdocs/js-sdk/Utils/Primitives';
+import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {IDocumentField, IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
+import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
-import {getEnvelopeById} from '../../../utils/Envelopes';
-import EnvelopeStore from '../../../utils/envelopeStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
@@ -94,6 +92,8 @@ export class VerdocsSign {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
+  @State() envelope: IEnvelope | null = null;
+  @State() roleNames: string[] = [];
   @State() recipient: IRecipient | null = null;
   @State() signerToken = null;
   @State() hasSignature = false;
@@ -149,19 +149,20 @@ export class VerdocsSign {
         this.nextButtonLabel = 'Next';
       }
 
-      await getEnvelopeById(this.endpoint, this.envelopeId, true);
+      this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
+      this.roleNames = this.envelope.recipients.map(r => r.role_name);
 
-      if (EnvelopeStore.envelope.documents.length > 0) {
+      if (this.envelope.documents.length > 0) {
         this.documentsSingularPlural = 'document(s)';
       }
 
-      this.recipientIndex = EnvelopeStore.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
+      this.recipientIndex = this.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
       if (this.recipientIndex > -1) {
-        this.recipient = EnvelopeStore.envelope.recipients[this.recipientIndex];
+        this.recipient = this.envelope.recipients[this.recipientIndex];
         this.agreed = this.recipient.agreed;
         console.log('[SIGN] Found our recipient in the envelope', this.recipientIndex, this.recipient);
       } else {
-        console.log('[SIGN] Could not find our recipient record', this.roleId, EnvelopeStore.envelope.recipients);
+        console.log('[SIGN] Could not find our recipient record', this.roleId, this.envelope.recipients);
       }
 
       this.isDone = ['submitted', 'canceled', 'declined'].includes(this.recipient.status);
@@ -170,7 +171,7 @@ export class VerdocsSign {
       // const sigs = await getSignatures();
       // console.log('sigs', sigs);
 
-      this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope});
+      this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
     } catch (e) {
       console.log('Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -192,7 +193,7 @@ export class VerdocsSign {
       .then(() => {
         this.nextButtonLabel = 'Next';
         this.agreed = true; // The server returns a recipient object but it's not "deep" so we track this locally
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'agreed'});
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'agreed'});
       })
       .catch(e => {
         console.log('Update failure', e);
@@ -205,33 +206,33 @@ export class VerdocsSign {
       case 'later':
         this.finishLater = true;
         this.showFinishLater = true;
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'later'});
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'later'});
         break;
 
       case 'claim':
         window.alert('This feature will be available in an upcoming release.');
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'claimed'});
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'claimed'});
         break;
 
       case 'decline':
         {
           const declineResult = await envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId);
           console.log('Decline result', declineResult);
-          this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'declined'});
+          this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
           this.isDone = true;
         }
         break;
 
       case 'print':
         window.print();
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'printed'});
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'printed'});
         break;
 
       case 'download':
-        saveAttachment(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(e => {
+        saveAttachment(this.endpoint, this.envelope, this.envelope.envelope_document_id).catch(e => {
           console.log('Error downloading PDF', e);
         });
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'downloaded'});
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
         break;
     }
   }
@@ -435,7 +436,7 @@ export class VerdocsSign {
 
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    const roleIndex = getRoleIndex(EnvelopeStore.roleNames, this.recipient.role_name);
+    const roleIndex = getRoleIndex(this.roleNames, this.recipient.role_name);
     const recipientFields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
     console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
 
@@ -478,10 +479,10 @@ export class VerdocsSign {
     });
 
     // Render fields for "the other" recipients
-    EnvelopeStore.envelope.recipients
+    this.envelope.recipients
       .filter(recipient => recipient.role_name !== this.recipient.role_name)
       .forEach(otherRecipient => {
-        const otherRoleIndex = getRoleIndex(EnvelopeStore.roleNames, otherRecipient.role_name);
+        const otherRoleIndex = getRoleIndex(this.roleNames, otherRecipient.role_name);
         const recipientFields = otherRecipient.fields.filter(field => field.page === pageInfo.pageNumber);
 
         // We don't render other recipients' fields if they've already acted, because those values are now stamped into the document page.
@@ -516,7 +517,7 @@ export class VerdocsSign {
   }
 
   render() {
-    if (EnvelopeStore.loading || !EnvelopeStore.envelope) {
+    if (!this.envelope) {
       return (
         <Host>
           <verdocs-loader />
@@ -526,7 +527,7 @@ export class VerdocsSign {
 
     if (this.isDone) {
       return (
-        <Host class={{agreed: this.agreed}} data-r={EnvelopeStore.updateCount}>
+        <Host class={{agreed: this.agreed}}>
           {this.isDone ? (
             <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
           ) : (
@@ -539,7 +540,7 @@ export class VerdocsSign {
     }
 
     return (
-      <Host class={{agreed: this.agreed}} data-r={EnvelopeStore.updateCount}>
+      <Host class={{agreed: this.agreed}}>
         {!this.finishLater && <div class="intro">Please review and act on these documents.</div>}
 
         <div id="verdocs-sign-header">
@@ -550,7 +551,7 @@ export class VerdocsSign {
           ) : (
             <Fragment>
               <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-              <div class="title">{EnvelopeStore.envelope.name}</div>
+              <div class="title">{this.envelope.name}</div>
               <div style={{flex: '1'}} />
             </Fragment>
           )}
@@ -563,8 +564,8 @@ export class VerdocsSign {
 
         {!this.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
 
-        <div class="document" style={{paddingTop: this.headerTargetId ? '15px' : '70px'}}>
-          {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
+        <div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
+          {(this.envelope.documents || []).map(envelopeDocument => {
             const pages = [...(envelopeDocument?.pages || [])];
             pages.sort((a, b) => a.sequence - b.sequence);
 
