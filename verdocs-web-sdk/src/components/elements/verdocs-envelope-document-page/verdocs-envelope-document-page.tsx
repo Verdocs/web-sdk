@@ -140,8 +140,6 @@ export class VerdocsEnvelopeDocumentPage {
   render() {
     const height = `${this.renderedHeight}px`;
 
-    console.log('envelope page', this.envelopeId, this.documentId, this.pageNumber, this.pageDisplayUri);
-
     return (
       <Host id={`${this.containerId}`} style={{height, flex: `0 0 ${height}`}}>
         {this.layers.map(layer =>

@@ -167,6 +167,8 @@ export class VerdocsSign {
 
       this.isDone = ['submitted', 'canceled', 'declined'].includes(this.recipient.status);
 
+      this.checkRecipientFields();
+
       // TODO: Fix service to allow this?
       // const sigs = await getSignatures();
       // console.log('sigs', sigs);
@@ -192,6 +194,7 @@ export class VerdocsSign {
     envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, true)
       .then(() => {
         this.nextButtonLabel = 'Next';
+        this.recipient.agreed = true;
         this.agreed = true; // The server returns a recipient object but it's not "deep" so we track this locally
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'agreed'});
       })
@@ -243,6 +246,7 @@ export class VerdocsSign {
         oldField.settings = updateResult.settings;
         // TODO: When we break out other fields like value, update them here too
         updateDocumentFieldValue(oldField);
+        this.checkRecipientFields();
       }
     });
   }
@@ -362,10 +366,13 @@ export class VerdocsSign {
   }
 
   async handleNext() {
+    console.log('Next');
     if (this.nextSubmits) {
+      console.log('Next submits');
       try {
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
         console.log('[SIGN] Submitted successfully', result);
+        this.recipient.status = 'submitted';
         this.showDone = true;
         this.isDone = true;
       } catch (e) {
@@ -535,6 +542,17 @@ export class VerdocsSign {
           )}
 
           {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
+
+          {this.showDone && (
+            <verdocs-ok-dialog
+              heading="You're Done!"
+              message={`You can access the ${this.documentsSingularPlural} at any time by clicking on the link from the invitation email.<br /><br />After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.`}
+              onNext={() => {
+                this.showDone = false;
+                this.isDone = true;
+              }}
+            />
+          )}
         </Host>
       );
     }
@@ -614,7 +632,10 @@ export class VerdocsSign {
           <verdocs-ok-dialog
             heading="You're Done!"
             message={`You can access the ${this.documentsSingularPlural} at any time by clicking on the link from the invitation email.<br /><br />After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.`}
-            onNext={() => (this.showDone = false)}
+            onNext={() => {
+              this.showDone = false;
+              this.isDone = true;
+            }}
           />
         )}
       </Host>

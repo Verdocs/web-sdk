@@ -1,4 +1,4 @@
-import {Component, Prop, h, Event, EventEmitter, Host} from '@stencil/core';
+import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
 
 /**
  * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
@@ -36,6 +36,8 @@ export class VerdocsOkDialog {
    */
   @Event({composed: true}) exit: EventEmitter;
 
+  @State() closed = false;
+
   handleOk() {
     this.next.emit();
   }
@@ -46,6 +48,7 @@ export class VerdocsOkDialog {
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
   handleDismiss(e: any) {
+    this.closed = true;
     if (e.target.className === 'background-overlay') {
       e.preventDefault();
       this.exit.emit();
@@ -54,7 +57,7 @@ export class VerdocsOkDialog {
 
   render() {
     return (
-      <Host>
+      <Host class={this.closed ? 'closed' : ''}>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
             <div class="heading">{this.heading}</div>

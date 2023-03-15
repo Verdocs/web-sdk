@@ -4,8 +4,12 @@ verdocs-ok-dialog {
   font-family: $primary-font;
   box-sizing: border-box;
 
+  &.closed {
+    display: none;
+  }
+
   .background-overlay {
-    position: absolute;
+    position: fixed;
     z-index: 10000;
     top: 0;
     left: 0;

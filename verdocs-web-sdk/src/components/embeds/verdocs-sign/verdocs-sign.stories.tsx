@@ -8,9 +8,6 @@ export default {
     envelopeId: '',
     roleId: '',
     inviteCode: '',
-    // envelopeId: '4017df32-0daa-4c77-977e-8606a2dd5c82',
-    // roleId: 'Seller',
-    // inviteCode: '7736c2728e31fb36b7e2d95f9e0c319d',
   },
   argTypes: {
     envelopeId: {
