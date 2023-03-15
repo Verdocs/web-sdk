@@ -92,7 +92,6 @@ export class VerdocsSign {
   @State() focusedField = '';
   @State() isDone = false;
   @State() showDone = false;
-
   @State() finishLater = false;
   @State() showFinishLater = false;
   @State() agreed = false;
@@ -139,7 +138,7 @@ export class VerdocsSign {
         this.nextButtonLabel = 'Next';
       }
 
-      await getEnvelopeById(this.endpoint, this.envelopeId);
+      await getEnvelopeById(this.endpoint, this.envelopeId, true);
 
       if (EnvelopeStore.envelope.documents.length > 0) {
         this.documentsSingularPlural = 'document(s)';
@@ -186,12 +185,13 @@ export class VerdocsSign {
         this.finishLater = true;
         this.showFinishLater = true;
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'later'});
-        // this.router.navigate([`view/sign/${this.envelopeId}/role/${this.roleName}/saved`]);
         break;
+
       case 'claim':
         window.alert('This feature will be available in an upcoming release.');
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'claimed'});
         break;
+
       case 'decline':
         {
           const declineResult = await envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId);
@@ -200,10 +200,12 @@ export class VerdocsSign {
           this.isDone = true;
         }
         break;
+
       case 'print':
         window.print();
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'printed'});
         break;
+
       case 'download':
         saveAttachment(this.endpoint, EnvelopeStore.envelope, EnvelopeStore.envelope.envelope_document_id).catch(e => {
           console.log('Error downloading PDF', e);
@@ -501,74 +503,81 @@ export class VerdocsSign {
       );
     }
 
+    if (this.isDone) {
+      return (
+        <Host class={{agreed: this.agreed}} data-r={EnvelopeStore.updateCount}>
+          {this.isDone ? (
+            <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
+          ) : (
+            <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
+          )}
+
+          {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
+        </Host>
+      );
+    }
+
     return (
       <Host class={{agreed: this.agreed}} data-r={EnvelopeStore.updateCount}>
-        {!this.isDone && !this.finishLater && <div class="intro">Please review and act on these documents.</div>}
+        {!this.finishLater && <div class="intro">Please review and act on these documents.</div>}
 
-        {!this.isDone && (
-          <div class="header">
-            {!this.agreed ? (
-              <div class="agree">
-                <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
-              </div>
-            ) : (
+        <div class="header">
+          {!this.agreed ? (
+            <div class="agree">
+              <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
+            </div>
+          ) : (
+            <Fragment>
+              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+              <div class="title">{EnvelopeStore.envelope.name}</div>
+              <div style={{flex: '1'}} />
+            </Fragment>
+          )}
+
+          {!this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
+
+          <div style={{marginLeft: '10px'}} />
+          <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+        </div>
+
+        {!this.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
+
+        <div class="document">
+          {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
+            const pages = [...(envelopeDocument?.pages || [])];
+            pages.sort((a, b) => a.sequence - b.sequence);
+
+            return (
               <Fragment>
-                <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-                <div class="title">{EnvelopeStore.envelope.name}</div>
-                <div style={{flex: '1'}} />
+                {pages.map(page => {
+                  // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
+                  // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
+                  // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
+                  // field vales (so far) stamped into them.
+                  // const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
+                  // TODO: Confirm that a pure page-number match is good enough to find the matching template page. We need to make sure
+                  //  we either don't reset our page numbers for additional attachments, or add match-on identifiers to work around that.
+                  // console.log('tp', templatePage, page);
+                  return (
+                    <verdocs-envelope-document-page
+                      envelopeId={this.envelopeId}
+                      documentId={envelopeDocument.id}
+                      endpoint={this.endpoint}
+                      virtualWidth={612}
+                      virtualHeight={792}
+                      pageNumber={page.sequence}
+                      onPageRendered={e => this.handlePageRendered(e)}
+                      layers={[
+                        {name: 'page', type: 'canvas'},
+                        {name: 'controls', type: 'div'},
+                      ]}
+                    />
+                  );
+                })}
               </Fragment>
-            )}
-
-            {!this.isDone && !this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
-
-            <div style={{marginLeft: '10px'}} />
-            <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
-          </div>
-        )}
-
-        {!this.isDone && !this.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
-
-        {this.isDone ? (
-          // <div>test</div>
-          <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
-        ) : (
-          <div class="document">
-            {(EnvelopeStore.envelope.documents || []).map(envelopeDocument => {
-              const pages = [...(envelopeDocument?.pages || [])];
-              pages.sort((a, b) => a.sequence - b.sequence);
-
-              return (
-                <Fragment>
-                  {pages.map(page => {
-                    // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
-                    // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
-                    // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
-                    // field vales (so far) stamped into them.
-                    // const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
-                    // TODO: Confirm that a pure page-number match is good enough to find the matching template page. We need to make sure
-                    //  we either don't reset our page numbers for additional attachments, or add match-on identifiers to work around that.
-                    // console.log('tp', templatePage, page);
-                    return (
-                      <verdocs-envelope-document-page
-                        envelopeId={this.envelopeId}
-                        documentId={envelopeDocument.id}
-                        endpoint={this.endpoint}
-                        virtualWidth={612}
-                        virtualHeight={792}
-                        pageNumber={page.sequence}
-                        onPageRendered={e => this.handlePageRendered(e)}
-                        layers={[
-                          {name: 'page', type: 'canvas'},
-                          {name: 'controls', type: 'div'},
-                        ]}
-                      />
-                    );
-                  })}
-                </Fragment>
-              );
-            })}
-          </div>
-        )}
+            );
+          })}
+        </div>
 
         {this.showFinishLater && (
           <verdocs-ok-dialog

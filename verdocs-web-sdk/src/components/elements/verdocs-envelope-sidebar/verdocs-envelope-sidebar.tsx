@@ -279,7 +279,7 @@ export class VerdocsEnvelopeSidebar {
             <div class="label">Status</div>
             <div class="value">{EnvelopeStore.envelope.status}</div>
 
-            <div class="label">Verdoc Owner UUID</div>
+            <div class="label">Verdoc Owner ID</div>
             <div class="value">{EnvelopeStore.envelope.profile_id}</div>
 
             <div class="label">Verdoc Owner Name</div>

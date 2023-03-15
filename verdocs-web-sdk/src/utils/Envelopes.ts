@@ -4,13 +4,13 @@ import EnvelopeStore from './envelopeStore';
 
 // Allows envelope data to be cached for reuse between components, without parent components having to prop-drill entire envelopes into
 // child elements.
-export const getEnvelopeById = async (endpoint: VerdocsEndpoint, envelopeId: string) => {
+export const getEnvelopeById = async (endpoint: VerdocsEndpoint, envelopeId: string, forceReload: boolean = false) => {
   if (!envelopeId) {
     console.log(`[ENVELOPES] Missing required envelope ID`);
     return;
   }
 
-  if (EnvelopeStore.envelope?.id === envelopeId) {
+  if (EnvelopeStore.envelope?.id === envelopeId && !forceReload) {
     console.log(`[ENVELOPES] Skipping load for already-loaded envelope ID`);
     return;
   }

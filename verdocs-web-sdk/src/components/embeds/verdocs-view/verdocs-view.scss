@@ -2,6 +2,7 @@
 
 verdocs-view {
   display: flex;
+  align-items: center;
   overflow: hidden;
   position: relative;
   min-height: 600px;
@@ -15,6 +16,7 @@ verdocs-view {
   }
 
   .header {
+    width: 100%;
     color: #fff;
     display: flex;
     z-index: 1000;
@@ -44,6 +46,7 @@ verdocs-view {
 
   .document {
     flex: 1;
+    width: 100%;
     height: 100%;
     display: flex;
     padding: 15px;

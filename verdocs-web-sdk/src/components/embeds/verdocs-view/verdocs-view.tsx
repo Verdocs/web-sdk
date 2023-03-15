@@ -1,6 +1,8 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment} from '@stencil/core';
+import {cancelEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {userCanCancelEnvelope} from '@verdocs/js-sdk/Envelopes/Permissions';
+import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
 import {getEnvelopeById} from '../../../utils/Envelopes';
 import EnvelopeStore from '../../../utils/envelopeStore';
@@ -39,6 +41,8 @@ export class VerdocsView {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
+  @State() isProcessing = false;
+
   componentWillLoad() {
     this.endpoint.loadSession();
   }
@@ -51,8 +55,18 @@ export class VerdocsView {
       return;
     }
 
+    return this.reloadEnvelope();
+  }
+
+  async reloadEnvelope() {
+    console.log('[VIEW] Checking for updated envelope');
+
     try {
-      await getEnvelopeById(this.endpoint, this.envelopeId);
+      await getEnvelopeById(this.endpoint, this.envelopeId, true);
+      this.isProcessing = EnvelopeStore.envelope.documents.some(document => document.type === 'attachment' && !document.processed);
+      if (this.isProcessing) {
+        setTimeout(() => this.reloadEnvelope(), 3000);
+      }
     } catch (e) {
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
@@ -61,26 +75,18 @@ export class VerdocsView {
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
     console.log('[VIEW] Page rendered', pageInfo);
-
-    // EnvelopeStore.envelope.recipients.forEach((recipient, roleIndex) => {
-    //   console.log('rendering fields for recipient', roleIndex, recipient);
-    //   recipient.fields.forEach(field => {
-    //     const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: false, draggable: false, done: true});
-    //     if (!el) {
-    //       return;
-    //     }
-    //
-    //     if (el.setAttribute) {
-    //       el.setAttribute('roleindex', roleIndex);
-    //       el.setAttribute('xScale', pageInfo.xScale);
-    //       el.setAttribute('yScale', pageInfo.yScale);
-    //     }
-    //   });
-    // });
   }
 
   async handleOptionSelected(e) {
     switch (e.detail.id) {
+      case 'cancel':
+        // TODO: Better option for inline-flow confirmation and alert dialogs.
+        if (confirm('Are you sure you wish to cancel this envelope? This action cannot be undone.')) {
+          await cancelEnvelope(this.endpoint, this.envelopeId);
+          this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'canceled'});
+        }
+        break;
+
       case 'print':
         window.print();
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: EnvelopeStore.envelope, event: 'printed'});
@@ -119,7 +125,6 @@ export class VerdocsView {
   }
 
   render() {
-    console.log('[VIEW] Rendering', EnvelopeStore.error, EnvelopeStore.loading, EnvelopeStore.envelope);
     if (EnvelopeStore.loading || !EnvelopeStore.envelope) {
       return (
         <Host>
@@ -138,19 +143,24 @@ export class VerdocsView {
 
     const menuOptions: any[] = [{id: 'print', label: 'Print'}];
 
+    if (userCanCancelEnvelope(this.endpoint.session, EnvelopeStore.envelope)) {
+      menuOptions.push({id: 'cancel', label: 'Cancel'});
+    }
+
+    // Add download options to the menu
     const hasAttachments = EnvelopeStore.envelope.documents.length > 0;
     const hasCertificate = !!EnvelopeStore.envelope.certificate;
     if (hasAttachments || hasCertificate) {
       menuOptions.push({label: ''});
-    }
-    if (hasAttachments) {
-      menuOptions.push({id: 'download-attachments', label: 'Download Documents(s)'});
-    }
-    if (hasCertificate) {
-      menuOptions.push({id: 'download-certificate', label: 'Download Certificate'});
-    }
-    if (hasAttachments && hasCertificate) {
-      menuOptions.push({id: 'download-all', label: 'Download All Files'});
+      if (hasAttachments) {
+        menuOptions.push({id: 'download-attachments', label: 'Download Documents(s)'});
+      }
+      if (hasCertificate) {
+        menuOptions.push({id: 'download-certificate', label: 'Download Certificate'});
+      }
+      if (hasAttachments && hasCertificate) {
+        menuOptions.push({id: 'download-all', label: 'Download All Files'});
+      }
     }
 
     return (
@@ -171,6 +181,10 @@ export class VerdocsView {
             .map(envelopeDocument => {
               const pages = [...(envelopeDocument?.pages || [])];
               pages.sort((a, b) => a.sequence - b.sequence);
+
+              if (!envelopeDocument.processed) {
+                return <verdocs-loader />;
+              }
 
               return (
                 <Fragment>
