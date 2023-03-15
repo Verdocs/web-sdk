@@ -60,7 +60,7 @@ export class VerdocsView {
 
   // TODO: Handling signing vs preview-as-user cases
   // TODO: Handle anonymous case and failure to load due to not being logged in
-  async componentDidLoad() {
+  async componentWillRender() {
     if (!this.envelopeId) {
       console.error(`[VIEW] Missing required envelopeId`);
       return;

@@ -114,7 +114,7 @@ export class VerdocsSign {
     this.endpoint = new VerdocsEndpoint({sessionType: 'signing'});
   }
 
-  async componentDidLoad() {
+  async componentWillRender() {
     if (!this.envelopeId) {
       this.sdkError?.emit(new SDKError('[SIGN] Missing required envelopId', 500, ''));
       return;
