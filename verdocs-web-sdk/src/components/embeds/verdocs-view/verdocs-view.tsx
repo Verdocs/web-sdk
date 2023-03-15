@@ -200,6 +200,7 @@ export class VerdocsView {
           {(EnvelopeStore.envelope?.documents || [])
             .filter(document => document.type !== 'certificate')
             .map(envelopeDocument => {
+              console.log('[VIEW] Rendering document', envelopeDocument);
               const pages = [...(envelopeDocument?.pages || [])];
               pages.sort((a, b) => a.sequence - b.sequence);
 
