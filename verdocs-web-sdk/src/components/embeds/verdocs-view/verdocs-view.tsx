@@ -149,7 +149,6 @@ export class VerdocsView {
 
   render() {
     if (!this.envelope) {
-      console.log('rendering, no env');
       return (
         <Host>
           <verdocs-loader />
@@ -178,8 +177,6 @@ export class VerdocsView {
         menuOptions.push({id: 'download-all', label: 'Download All Files'});
       }
     }
-
-    console.log('docs', this.envelope, this.envelope.documents);
 
     return (
       <Host>

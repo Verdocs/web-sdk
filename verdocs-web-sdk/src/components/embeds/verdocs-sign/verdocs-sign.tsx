@@ -559,25 +559,31 @@ export class VerdocsSign {
 
     return (
       <Host class={{agreed: this.agreed}}>
-        {!this.finishLater && <div class="intro">Please review and act on these documents.</div>}
+        {!this.finishLater && (
+          <div class="intro">
+            <div class="inner">Please review and act on these documents.</div>
+          </div>
+        )}
 
         <div id="verdocs-sign-header">
-          {!this.agreed ? (
-            <div class="agree">
-              <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
-            </div>
-          ) : (
-            <Fragment>
-              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-              <div class="title">{this.envelope.name}</div>
-              <div style={{flex: '1'}} />
-            </Fragment>
-          )}
+          <div class="inner">
+            {!this.agreed ? (
+              <div class="agree">
+                <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
+              </div>
+            ) : (
+              <Fragment>
+                <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+                <div class="title">{this.envelope.name}</div>
+                <div style={{flex: '1'}} />
+              </Fragment>
+            )}
 
-          {!this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
+            {!this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
 
-          <div style={{marginLeft: '10px'}} />
-          <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+            <div style={{marginLeft: '10px'}} />
+            <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+          </div>
         </div>
 
         {!this.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
