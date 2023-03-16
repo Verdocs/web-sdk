@@ -23,7 +23,6 @@ verdocs-sign {
     display: flex;
     flex: 0 0 60px;
     color: #111111;
-    padding: 0 20px;
     font-size: 18px;
     font-weight: 500;
     line-height: 28px;
@@ -34,7 +33,7 @@ verdocs-sign {
       width: 100%;
       display: flex;
       margin: 0 auto;
-      padding: 0;
+      padding: 0 20px;
       max-width: 1200px;
       flex-direction: row;
       align-items: center;
@@ -108,7 +107,6 @@ verdocs-sign {
   display: flex;
   z-index: 1000;
   flex: 0 0 56px;
-  padding: 0 20px;
   font-size: 12px;
   column-gap: 15px;
   align-items: center;
@@ -118,10 +116,10 @@ verdocs-sign {
   box-shadow: 0 4px 4px 0 rgb(0 0 0 / 24%), 0 0 4px 0 rgb(0 0 0 / 12%);
 
   .inner {
-    padding: 0;
     width: 100%;
     display: flex;
     margin: 0 auto;
+    padding: 0 20px;
     max-width: 1200px;
     align-items: center;
     flex-direction: row;

@@ -45,25 +45,35 @@ verdocs-view {
   display: flex;
   z-index: 1000;
   flex: 0 0 56px;
-  padding: 0 15px;
+  padding: 0 20px;
   font-size: 12px;
+  column-gap: 15px;
   align-items: center;
   flex-direction: row;
   transition: all 0.25s;
   background-color: $medium-bg;
   box-shadow: 0 4px 4px 0 rgb(0 0 0 / 24%), 0 0 4px 0 rgb(0 0 0 / 12%);
 
+  .inner {
+    width: 100%;
+    display: flex;
+    margin: 0 auto;
+    padding: 0 20px;
+    max-width: 1200px;
+    align-items: center;
+    flex-direction: row;
+  }
+
   .logo {
     width: 80px;
     display: none;
-    margin: -6px 0 0 10px;
+    margin: -6px 0 0 0;
   }
 
   .title {
-    padding-left: 16px;
     font-size: 18px;
     font-weight: 500;
-    text-overflow: ellipsis;
     white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }

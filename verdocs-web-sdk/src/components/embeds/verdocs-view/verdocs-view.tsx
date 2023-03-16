@@ -181,13 +181,13 @@ export class VerdocsView {
     return (
       <Host>
         <div id="verdocs-view-header">
-          <Fragment>
+          <div class="inner">
             <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
             <div class="title">{this.envelope.name}</div>
             <div style={{flex: '1'}} />
             <div style={{marginLeft: '10px'}} />
             <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
-          </Fragment>
+          </div>
         </div>
 
         <div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
