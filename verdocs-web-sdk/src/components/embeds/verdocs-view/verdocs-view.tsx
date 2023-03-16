@@ -53,6 +53,7 @@ export class VerdocsView {
   @State() isProcessing = false;
   @State() envelope: IEnvelope | null = null;
   @State() roleNames: string[] = [];
+  @State() showCancelDone = false;
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -79,8 +80,9 @@ export class VerdocsView {
     }
   }
 
+  // TODO: Move this to the page renderer once the EnvelopePage model is deployed and envelope pages are individually processed
   async reloadEnvelope() {
-    console.log('[VIEW] Checking for updated envelope');
+    console.log('[VIEW] Loading envelope...');
 
     try {
       this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
@@ -106,6 +108,7 @@ export class VerdocsView {
         // TODO: Better option for inline-flow confirmation and alert dialogs.
         if (confirm('Are you sure you wish to cancel this envelope? This action cannot be undone.')) {
           await cancelEnvelope(this.endpoint, this.envelopeId);
+          this.showCancelDone = true;
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'canceled'});
         }
         break;
@@ -151,7 +154,11 @@ export class VerdocsView {
     if (!this.envelope) {
       return (
         <Host>
-          <verdocs-loader />
+          <img
+            src="https://verdocs-public-assets.s3.amazonaws.com/loading-placeholder.png"
+            style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+            alt="Placeholder page"
+          />
         </Host>
       );
     }
@@ -223,6 +230,15 @@ export class VerdocsView {
               );
             })}
         </div>
+        {this.showCancelDone && (
+          <verdocs-ok-dialog
+            heading="Cancelled"
+            message={`This envelope has been cancelled successfully.`}
+            onNext={() => {
+              this.showCancelDone = false;
+            }}
+          />
+        )}
       </Host>
     );
   }
