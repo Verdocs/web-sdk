@@ -326,6 +326,7 @@ export class VerdocsTemplateRoles {
         TemplateStore.template.roles.push(r);
         this.renumberTemplateRoles();
         this.forceRerender++;
+        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: TemplateStore.template});
       })
       .catch(e => {
         console.log('Error creating role', e);
