@@ -67,10 +67,11 @@ verdocs-template-roles {
         height: 30px;
         display: flex;
         font-size: 14px;
-        padding: 0 5px 0 15px;
         line-height: 30px;
-        flex-direction: row;
+        align-items: center;
         border-radius: 30px;
+        flex-direction: row;
+        padding: 0 5px 0 15px;
         border: 1px solid #c6c9cc;
         background-color: $verdocs-grey-3;
       }
@@ -94,8 +95,9 @@ verdocs-template-roles {
       }
 
       .settings-button {
-        margin: 0 0 0 9px;
+        display: flex;
         cursor: pointer;
+        margin: 0 0 0 9px;
       }
 
       .recipient {
@@ -107,7 +109,7 @@ verdocs-template-roles {
         flex-direction: row;
         padding: 0 5px 0 6px;
         white-space: nowrap;
-        border: 1px solid $verdocs-grey-2;
+        border: 2px solid $verdocs-grey-2;
 
         .type-icon {
           width: 24px;

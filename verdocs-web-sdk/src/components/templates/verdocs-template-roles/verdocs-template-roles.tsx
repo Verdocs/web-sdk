@@ -189,7 +189,10 @@ export class VerdocsTemplateRoles {
               }),
             ),
           )
-            .then(() => console.log('[ROLES] Updated roles'))
+            .then(() => {
+              console.log('[ROLES] Updated roles');
+              this.templateUpdated?.emit({event: 'updated-role', endpoint: this.endpoint, template: TemplateStore.template});
+            })
             .catch(e => console.log('[ROLES] Role updates failed', e));
         }
       }.bind(this),
@@ -293,6 +296,7 @@ export class VerdocsTemplateRoles {
         TemplateStore.template.roles.push(r);
         this.renumberTemplateRoles();
         this.forceRerender++;
+        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: TemplateStore.template});
       })
       .catch(e => {
         console.log('Error creating role', e);
@@ -350,7 +354,7 @@ export class VerdocsTemplateRoles {
     return (
       <Host>
         <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off" data-r={this.forceRerender}>
-          <h5>Roles</h5>
+          <h5>Roles and Workflow</h5>
 
           <div class="participants">
             <div class="left-line" />
@@ -384,11 +388,22 @@ export class VerdocsTemplateRoles {
                     {TemplateStore.template.roles
                       .filter(role => role.sequence === sequence)
                       .map(role => {
-                        return (
+                        const unknown = !role.email;
+                        return unknown ? (
                           <Fragment>
                             <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} data-rolename={role.name}>
                               <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
                               {role.name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
+                            </div>
+
+                            {/* The "after this recipient" drop zone */}
+                            <div class="dropzone" data-order={role.order + 0.5} data-sequence={sequence} />
+                          </Fragment>
+                        ) : (
+                          <Fragment>
+                            <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(roleNames, role.name))}} data-rolename={role.name}>
+                              <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
+                              {role.full_name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
                             </div>
 
                             {/* The "after this recipient" drop zone */}
@@ -470,6 +485,7 @@ export class VerdocsTemplateRoles {
               this.renumberTemplateRoles();
               this.showingRoleDialog = null;
               this.forceRerender++;
+              this.templateUpdated?.emit({event: 'deleted-role', endpoint: this.endpoint, template: TemplateStore.template});
             }}
           />
         )}
