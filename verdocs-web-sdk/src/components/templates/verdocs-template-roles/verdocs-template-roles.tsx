@@ -211,13 +211,11 @@ export class VerdocsTemplateRoles {
     });
   }
 
-  handleCancel(e) {
-    e.stopPropagation();
+  handleCancel() {
     this.exit?.emit();
   }
 
-  handleSubmit(e) {
-    e.stopPropagation();
+  handleSubmit() {
     this.next?.emit();
   }
 
@@ -437,17 +435,6 @@ export class VerdocsTemplateRoles {
               </div>
             </div>
 
-            {/*{this.sequences.length < 1 && (*/}
-            {/*  <Fragment>*/}
-            {/*    <div class="row">*/}
-            {/*      <div class="icon" innerHTML={stepIcon} />*/}
-            {/*      <div class="row-roles">*/}
-            {/*        <button class="add-role" innerHTML={plusIcon} onClick={e => this.handleAddRole(e, 1)} />*/}
-            {/*      </div>*/}
-            {/*    </div>*/}
-            {/*  </Fragment>*/}
-            {/*)}*/}
-
             <div class="row">
               <div class="icon" innerHTML={doneIcon} />
               <div class="row-roles">
@@ -466,8 +453,8 @@ export class VerdocsTemplateRoles {
           <div class="buttons">
             <div class="flex-fill" />
 
-            <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} />
-            <verdocs-button label="OK" size="small" onClick={e => this.handleSubmit(e)} disabled={roleNames.length < 1} />
+            <verdocs-button variant="outline" label="Cancel" size="small" onClick={() => this.handleCancel()} />
+            <verdocs-button label="OK" size="small" onClick={() => this.handleSubmit()} disabled={roleNames.length < 1} />
           </div>
         </form>
 

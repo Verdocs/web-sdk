@@ -88,13 +88,15 @@ export class VerdocsTemplateCreate {
       console.log('[CREATE] Created template', template);
 
       const template_document = await createTemplateDocument(this.endpoint, template.id, this.file, percent => {
-        console.log('Upload progress', percent);
-        this.progressPercent = percent;
+        if (percent >= 99) {
+          this.progressLabel = 'Processing...';
+          this.progressPercent = 100;
+        } else {
+          this.progressPercent = percent;
+        }
       });
 
       console.log('[CREATE] Created document', template_document);
-      this.progressLabel = 'Processing...';
-      this.progressPercent = 0;
 
       const finalTemplate = await getTemplate(this.endpoint, template.id);
       this.next?.emit(finalTemplate);

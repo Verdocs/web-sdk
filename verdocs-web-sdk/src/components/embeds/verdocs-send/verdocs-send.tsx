@@ -188,7 +188,7 @@ export class VerdocsSend {
                   </div>
                 ) : (
                   <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)}>
-                    {this.rolesCompleted[role.id]?.full_name ?? role.name}
+                    {this.rolesCompleted[role.id]?.full_name ?? role.full_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
                       <verdocs-contact-picker
