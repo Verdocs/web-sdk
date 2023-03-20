@@ -29,6 +29,12 @@ export class VerdocsBuild {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) stepChanged: EventEmitter<string>;
+
   @State() step = 'create';
   @State() pdfUrl = null;
   @State() template: ITemplate | null = null;
@@ -51,7 +57,7 @@ export class VerdocsBuild {
     try {
       console.log(`[BUILD] Loading template ${this.templateId}`);
       await loadTemplate(this.endpoint, this.templateId);
-      this.step = 'fields';
+      this.step = 'roles';
     } catch (e) {
       console.log('[BUILD] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -61,12 +67,19 @@ export class VerdocsBuild {
   handleCancel(e: any) {
     console.log('Cancel', e.detail);
     this.step = '';
+    this.stepChanged?.emit('');
   }
 
   handleTemplateCreated(e: any) {
     console.log('Created', e.detail);
+    this.step = 'roles';
+    this.stepChanged?.emit('roles');
+  }
+
+  handleRolesDone(e: any) {
+    console.log('Roles', e.detail);
     this.step = 'fields';
-    // this.step = 'properties';
+    this.stepChanged?.emit('fields');
   }
 
   render() {
@@ -81,6 +94,7 @@ export class VerdocsBuild {
     return (
       <Host>
         {this.step === 'create' && <verdocs-template-create onExit={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />}
+        {this.step === 'roles' && <verdocs-template-roles onExit={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />}
         {this.step === 'fields' && <verdocs-template-fields />}
       </Host>
     );

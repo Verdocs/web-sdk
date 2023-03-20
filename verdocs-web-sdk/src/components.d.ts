@@ -625,6 +625,20 @@ export namespace Components {
          */
         "templateId": string | null;
     }
+    interface VerdocsProgressBar {
+        /**
+          * Optional label to display above the bar
+         */
+        "label": string;
+        /**
+          * The current progress value (0-100)
+         */
+        "percent": number;
+        /**
+          * If true, the progress percentage will be displayed above the bar.
+         */
+        "showPercent": boolean;
+    }
     interface VerdocsQuickFunctions {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1364,6 +1378,12 @@ declare global {
         prototype: HTMLVerdocsPreviewElement;
         new (): HTMLVerdocsPreviewElement;
     };
+    interface HTMLVerdocsProgressBarElement extends Components.VerdocsProgressBar, HTMLStencilElement {
+    }
+    var HTMLVerdocsProgressBarElement: {
+        prototype: HTMLVerdocsProgressBarElement;
+        new (): HTMLVerdocsProgressBarElement;
+    };
     interface HTMLVerdocsQuickFunctionsElement extends Components.VerdocsQuickFunctions, HTMLStencilElement {
     }
     var HTMLVerdocsQuickFunctionsElement: {
@@ -1580,6 +1600,7 @@ declare global {
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
         "verdocs-preview": HTMLVerdocsPreviewElement;
+        "verdocs-progress-bar": HTMLVerdocsProgressBarElement;
         "verdocs-quick-functions": HTMLVerdocsQuickFunctionsElement;
         "verdocs-radio-button": HTMLVerdocsRadioButtonElement;
         "verdocs-search": HTMLVerdocsSearchElement;
@@ -1645,6 +1666,10 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsBuildCustomEvent<SDKError>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onStepChanged"?: (event: VerdocsBuildCustomEvent<string>) => void;
         /**
           * The ID of the template to create the document from.
          */
@@ -2375,6 +2400,20 @@ declare namespace LocalJSX {
          */
         "templateId"?: string | null;
     }
+    interface VerdocsProgressBar {
+        /**
+          * Optional label to display above the bar
+         */
+        "label"?: string;
+        /**
+          * The current progress value (0-100)
+         */
+        "percent"?: number;
+        /**
+          * If true, the progress percentage will be displayed above the bar.
+         */
+        "showPercent"?: boolean;
+    }
     interface VerdocsQuickFunctions {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2990,6 +3029,7 @@ declare namespace LocalJSX {
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
         "verdocs-preview": VerdocsPreview;
+        "verdocs-progress-bar": VerdocsProgressBar;
         "verdocs-quick-functions": VerdocsQuickFunctions;
         "verdocs-radio-button": VerdocsRadioButton;
         "verdocs-search": VerdocsSearch;
@@ -3056,6 +3096,7 @@ declare module "@stencil/core" {
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
+            "verdocs-progress-bar": LocalJSX.VerdocsProgressBar & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
             "verdocs-quick-functions": LocalJSX.VerdocsQuickFunctions & JSXBase.HTMLAttributes<HTMLVerdocsQuickFunctionsElement>;
             "verdocs-radio-button": LocalJSX.VerdocsRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsRadioButtonElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;

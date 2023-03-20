@@ -1,0 +1,37 @@
+@import '../../../theme.scss';
+
+verdocs-progress-bar {
+  font-family: $primary-font;
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  box-sizing: border-box;
+  flex-direction: column;
+
+  .labels {
+    display: flex;
+    margin: 0 0 8px 0;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .label {
+      display: flex;
+      font-size: 14px;
+      font-weight: 600;
+      color: $verdocs-grey-1;
+    }
+  }
+
+  .bar {
+    display: flex;
+    flex: 0 0 10px;
+    border-radius: 5px;
+    background-color: $verdocs-bg-1;
+
+    .slider {
+      display: flex;
+      border-radius: 5px;
+      background-color: $verdocs-green;
+    }
+  }
+}

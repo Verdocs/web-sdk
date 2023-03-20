@@ -3,6 +3,8 @@
 verdocs-template-fields {
   font-family: $verdocs-primary-font;
   position: relative;
+  display: block;
+  min-height: 600px;
 
   .page-0 {
     padding: 65px 15px 0 15px;

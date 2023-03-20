@@ -58,7 +58,7 @@ export class VerdocsBuild {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError']);
+    proxyOutputs(this, this.el, ['sdkError', 'stepChanged']);
   }
 }
 
@@ -71,6 +71,11 @@ export declare interface VerdocsBuild extends Components.VerdocsBuild {
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsBuildSDKError>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  stepChanged: EventEmitter<CustomEvent<string>>;
 }
 
 
@@ -921,6 +926,28 @@ terminate the process, and the calling application should correct the condition 
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsPreviewSDKError>>;
 }
+
+
+@ProxyCmp({
+  inputs: ['label', 'percent', 'showPercent']
+})
+@Component({
+  selector: 'verdocs-progress-bar',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['label', 'percent', 'showPercent'],
+})
+export class VerdocsProgressBar {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsProgressBar extends Components.VerdocsProgressBar {}
 
 
 @ProxyCmp({

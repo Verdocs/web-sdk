@@ -77,6 +77,7 @@ export class VerdocsTemplateFieldProperties {
   @State() setting = null as any;
   @State() name = '';
   @State() roleName = '';
+  @State() group = '';
   @State() fieldType = '';
   @State() required = false;
   @State() options = [];
@@ -111,6 +112,7 @@ export class VerdocsTemplateFieldProperties {
 
       this.type = field.type;
       this.name = field.name;
+      this.group = field.name;
       this.roleName = field.role_name;
       this.required = field.required;
       this.fieldType = field.type;
@@ -231,7 +233,7 @@ export class VerdocsTemplateFieldProperties {
     return (
       <Host>
         <h6>
-          {capitalize(this.fieldType)} Settings <div style={{flex: '1'}} />
+          {capitalize(this.fieldType.replace('_', ' '))} Settings <div style={{flex: '1'}} />
           {this.helpText && <div class="help-icon" innerHTML={HelpIcon} onClick={() => (this.showingHelp = true)} />}
         </h6>
 
@@ -263,6 +265,20 @@ export class VerdocsTemplateFieldProperties {
             />
             {/*<verdocs-help-icon text="The participant who will complete this field." />*/}
           </div>
+
+          {['checkbox_group', 'radio_button_group'].includes(this.type) && (
+            <verdocs-text-input
+              id="verdocs-field-group"
+              label="Group Name"
+              value={this.group}
+              autocomplete="off"
+              placeholder="Group Name..."
+              onInput={(e: any) => {
+                this.group = e.target.value;
+                this.dirty = true;
+              }}
+            />
+          )}
 
           {['textbox', 'textarea'].includes(this.type) && (
             <verdocs-text-input

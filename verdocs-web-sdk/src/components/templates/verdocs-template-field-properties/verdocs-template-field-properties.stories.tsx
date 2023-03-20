@@ -6,7 +6,8 @@ export default {
   component: 'verdocs-template-field-properties',
   args: {
     templateId: 'd2338742-f3a1-465b-8592-806587413cc1',
-    fieldName: 'textboxP1-2',
+    fieldName: 'checkbox_groupP1-18',
+    // fieldName: 'textboxP1-2',
   },
   argTypes: {
     onClose: {action: 'close'},

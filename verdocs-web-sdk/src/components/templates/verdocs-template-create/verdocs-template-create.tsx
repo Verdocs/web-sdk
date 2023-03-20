@@ -45,6 +45,9 @@ export class VerdocsTemplateCreate {
 
   @State() creating = false;
 
+  @State() progressLabel = 'Uploading...';
+  @State() progressPercent = 0;
+
   componentWillLoad() {
     this.endpoint.setTimeout(30000);
     this.endpoint.loadSession();
@@ -78,35 +81,26 @@ export class VerdocsTemplateCreate {
     }
 
     this.creating = true;
+    this.progressLabel = 'Uploading...';
 
     try {
       const template = await createTemplate(this.endpoint, {name: this.file.name});
       console.log('[CREATE] Created template', template);
 
-      const template_document = await createTemplateDocument(this.endpoint, template.id, this.file);
+      const template_document = await createTemplateDocument(this.endpoint, template.id, this.file, percent => {
+        console.log('Upload progress', percent);
+        this.progressPercent = percent;
+      });
+
       console.log('[CREATE] Created document', template_document);
+      this.progressLabel = 'Processing...';
+      this.progressPercent = 0;
 
-      let finalTemplate: ITemplate | null = null;
-      const processingWait = setInterval(async () => {
-        console.log('[CREATE] Waiting for template to be processed...', template_document);
-        finalTemplate = await getTemplate(this.endpoint, template.id);
-
-        if (finalTemplate?.processed) {
-          console.log('[CREATE] Retrieved new template', finalTemplate);
-
-          // for await (let pageNumber of Array.from(Array(template_document.page_numbers).keys(), n => n + 1)) {
-          //   console.log('Updating page', pageNumber);
-          //   const page = await createPage(this.endpoint, template.id, {sequence: pageNumber, page_number: pageNumber, document_id: template_document.id});
-          //   console.log('Created page', page);
-          // }
-          if (processingWait) {
-            clearInterval(processingWait);
-          }
-
-          this.next?.emit(finalTemplate);
-          this.creating = false;
-        }
-      }, 3000);
+      const finalTemplate = await getTemplate(this.endpoint, template.id);
+      this.next?.emit(finalTemplate);
+      this.creating = false;
+      this.progressLabel = '';
+      this.progressPercent = 0;
     } catch (e) {
       console.log('[CREATE] Error creating template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -130,7 +124,11 @@ export class VerdocsTemplateCreate {
         {this.creating ? (
           <div class="loader-wrapper">
             <verdocs-loader />
-            <div class="loading-text">Processing, please wait...</div>
+            {this.progressLabel && (
+              <div class="progress-wrapper">
+                <verdocs-progress-bar showPercent={true} percent={this.progressPercent} label={this.progressLabel} />
+              </div>
+            )}
           </div>
         ) : (
           <div class="upload-box">

@@ -169,21 +169,39 @@ export class VerdocsSend {
             <div class={`level level-${level}`}>
               {this.getLevelIcon(level)}
 
-              {this.rolesAtLevel[level].map(role => (
-                <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)}>
-                  {this.rolesCompleted[role.id]?.full_name ?? role.name}
-                  <div class="icon" innerHTML={editIcon} />
-                  {this.showPickerForId === role.id && (
-                    <verdocs-contact-picker
-                      onExit={() => (this.showPickerForId = '')}
-                      onNext={e => this.handleSelectContact(e, role)}
-                      contactSuggestions={this.sessionContacts}
-                      templateRole={this.rolesCompleted[role.id] ?? role}
-                      onSearchContacts={e => console.log('Search', e.detail)}
-                    />
-                  )}
-                </div>
-              ))}
+              {this.rolesAtLevel[level].map(role => {
+                console.log('showing role', role);
+                const unknown = !role.email;
+                return unknown ? (
+                  <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)}>
+                    {this.rolesCompleted[role.id]?.full_name ?? role.name}
+                    <div class="icon" innerHTML={editIcon} />
+                    {this.showPickerForId === role.id && (
+                      <verdocs-contact-picker
+                        onExit={() => (this.showPickerForId = '')}
+                        onNext={e => this.handleSelectContact(e, role)}
+                        contactSuggestions={this.sessionContacts}
+                        templateRole={this.rolesCompleted[role.id] ?? role}
+                        onSearchContacts={e => console.log('Search', e.detail)}
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)}>
+                    {this.rolesCompleted[role.id]?.full_name ?? role.name}
+                    <div class="icon" innerHTML={editIcon} />
+                    {this.showPickerForId === role.id && (
+                      <verdocs-contact-picker
+                        onExit={() => (this.showPickerForId = '')}
+                        onNext={e => this.handleSelectContact(e, role)}
+                        contactSuggestions={this.sessionContacts}
+                        templateRole={this.rolesCompleted[role.id] ?? role}
+                        onSearchContacts={e => console.log('Search', e.detail)}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ))}
 
