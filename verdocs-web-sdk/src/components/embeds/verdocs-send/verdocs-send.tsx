@@ -98,7 +98,7 @@ export class VerdocsSend {
       console.log(`[SEND] Loading template ${this.templateId}`);
       await loadTemplate(this.endpoint, this.templateId, true);
 
-      if (!TemplateStore.template.is_sendable) {
+      if (!TemplateStore.template?.is_sendable) {
         console.warn(`[SEND] Template is not sendable`, this.templateId);
       }
 
@@ -171,7 +171,7 @@ export class VerdocsSend {
     const allRolesAssigned = rolesAssigned.length >= roleNames.length;
 
     return (
-      <Host class={{sendable: TemplateStore.template.is_sendable}}>
+      <Host class={{sendable: TemplateStore.template?.is_sendable}}>
         <div class="recipients">
           <div class="left-line" />
           <div class={`level level-start`}>
