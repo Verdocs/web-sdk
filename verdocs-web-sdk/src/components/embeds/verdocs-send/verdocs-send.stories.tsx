@@ -5,7 +5,7 @@ export default {
   title: 'Embeds/Send',
   component: 'verdocs-send',
   args: {
-    templateId: 'd2338742-f3a1-465b-8592-806587413cc1',
+    templateId: '',
   },
   argTypes: {
     templateId: {control: {type: 'string'}},

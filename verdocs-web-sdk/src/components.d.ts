@@ -158,6 +158,7 @@ export namespace Components {
           * The page number being rendered. (Reminder: page numbers are 1-based.)
          */
         "pageNumber": number;
+        "type": 'original' | 'filled' | 'certificate';
         /**
           * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
          */
@@ -1805,6 +1806,7 @@ declare namespace LocalJSX {
           * The page number being rendered. (Reminder: page numbers are 1-based.)
          */
         "pageNumber"?: number;
+        "type"?: 'original' | 'filled' | 'certificate';
         /**
           * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
          */

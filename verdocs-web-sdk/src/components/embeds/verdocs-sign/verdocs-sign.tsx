@@ -1,11 +1,11 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
-import {fullNameToInitials} from '@verdocs/js-sdk/Utils/Primitives';
 import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
-import {IDocumentField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/js-sdk/Envelopes/Types';
+import {fullNameToInitials, integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
+import {IDocumentField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/js-sdk/Envelopes/Types';
 import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
@@ -609,12 +609,11 @@ export class VerdocsSign {
 
         <div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
           {(this.envelope.documents || []).map(envelopeDocument => {
-            const pages = [...(envelopeDocument?.pages || [])];
-            pages.sort((a, b) => a.sequence - b.sequence);
+            const pageNumbers = integerSequence(1, envelopeDocument.page_numbers);
 
             return (
               <Fragment>
-                {pages.map(page => {
+                {pageNumbers.map(pageNumber => {
                   // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
                   // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
                   // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
@@ -630,8 +629,9 @@ export class VerdocsSign {
                       endpoint={this.endpoint}
                       virtualWidth={612}
                       virtualHeight={792}
-                      pageNumber={page.sequence}
+                      pageNumber={pageNumber}
                       onPageRendered={e => this.handlePageRendered(e)}
+                      type="filled"
                       layers={[
                         {name: 'page', type: 'canvas'},
                         {name: 'controls', type: 'div'},

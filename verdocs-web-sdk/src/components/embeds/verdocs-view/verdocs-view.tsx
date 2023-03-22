@@ -6,6 +6,7 @@ import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State}
 import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
+import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 
 /**
  * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
@@ -87,11 +88,6 @@ export class VerdocsView {
     try {
       this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
       this.roleNames = this.envelope.recipients.map(r => r.role_name);
-
-      this.isProcessing = this.envelope.documents.some(document => document.type === 'attachment' && !document.processed);
-      if (this.isProcessing) {
-        setTimeout(() => this.reloadEnvelope(), 3000);
-      }
     } catch (e) {
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
@@ -201,24 +197,19 @@ export class VerdocsView {
           {(this.envelope?.documents || [])
             .filter(document => document.type !== 'certificate')
             .map(envelopeDocument => {
-              console.log('[VIEW] Rendering document', this.envelope, envelopeDocument);
-              const pages = [...(envelopeDocument?.pages || [])];
-              pages.sort((a, b) => a.sequence - b.sequence);
-
-              if (!envelopeDocument.processed) {
-                return <verdocs-loader />;
-              }
+              const pageNumbers = integerSequence(1, envelopeDocument.page_numbers);
 
               return (
                 <Fragment>
-                  {pages.map(page => (
+                  {pageNumbers.map(pageNumber => (
                     <verdocs-envelope-document-page
                       envelopeId={this.envelopeId}
                       documentId={envelopeDocument.id}
                       endpoint={this.endpoint}
+                      type="filled"
                       virtualWidth={612}
                       virtualHeight={792}
-                      pageNumber={page.sequence}
+                      pageNumber={pageNumber}
                       onPageRendered={e => this.handlePageRendered(e)}
                       layers={[
                         {name: 'page', type: 'canvas'},

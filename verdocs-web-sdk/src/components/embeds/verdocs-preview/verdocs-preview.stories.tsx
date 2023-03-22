@@ -5,8 +5,7 @@ export default {
   title: 'Embeds/Preview',
   component: 'verdocs-preview',
   args: {
-    templateId: 'ea7a792f-7e46-4662-a0ff-db6bd389306e',
-    // templateId: 'd2338742-f3a1-465b-8592-806587413cc1',
+    templateId: '',
   },
   argTypes: {
     templateId: {control: {type: 'string'}},
@@ -16,4 +15,7 @@ export default {
   },
 } as Meta;
 
-export const Preview = ({templateId}) => html`<verdocs-preview .templateId=${templateId} />`;
+export const Preview = ({templateId}) =>
+  !templateId
+    ? html`<img src="https://verdocs-public-assets.s3.amazonaws.com/billofsale-signed.png" alt="Signed document sample" style="display: flex; row-gap: 15px; padding: 15px;" />`
+    : html`<verdocs-preview .templateId=${templateId} />`;

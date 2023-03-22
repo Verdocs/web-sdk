@@ -66,6 +66,8 @@ export class VerdocsEnvelopeDocumentPage {
    */
   @Prop() layers: IPageLayer[] = [{name: 'page', type: 'canvas'}];
 
+  @Prop() type: 'original' | 'filled' | 'certificate' = 'original';
+
   /**
    * Fired when a page has been rendered. This is also fired when the page is resized.
    */
@@ -84,7 +86,7 @@ export class VerdocsEnvelopeDocumentPage {
   @State() pageDisplayUri = 'https://verdocs-public-assets.s3.amazonaws.com/page-loading-placeholder.png';
 
   async componentWillLoad() {
-    this.pageDisplayUri = await getEnvelopeDocumentPageDisplayUri(this.endpoint, this.envelopeId, this.documentId, this.pageNumber);
+    this.pageDisplayUri = await getEnvelopeDocumentPageDisplayUri(this.endpoint, this.envelopeId, this.documentId, this.pageNumber, this.type);
   }
 
   componentDidLoad() {

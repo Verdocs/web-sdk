@@ -77,7 +77,6 @@ export class VerdocsPreview {
     return (
       <Host>
         {pages.map(page => {
-          console.log('rendering page', page);
           return (
             <verdocs-template-document-page
               templateId={page.template_id}
