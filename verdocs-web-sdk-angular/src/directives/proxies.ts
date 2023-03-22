@@ -1155,13 +1155,14 @@ export class VerdocsSend {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['send', 'exit', 'sdkError']);
+    proxyOutputs(this, this.el, ['send', 'exit', 'sdkError', 'searchContacts']);
   }
 }
 
 
 import type { IRole as IVerdocsSendIRole } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
+import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
@@ -1177,6 +1178,11 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsSendSDKError>>;
+  /**
+   * Event fired when the user enters text in a search field. The parent application may use this to update
+the `contactSuggestions` property.
+   */
+  searchContacts: EventEmitter<CustomEvent<IVerdocsSendIContactSearchEvent>>;
 }
 
 

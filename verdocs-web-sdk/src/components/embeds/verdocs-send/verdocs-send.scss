@@ -1,12 +1,16 @@
 @import '../../../theme.scss';
 
 verdocs-send {
-  display: flex;
   padding: 10px;
   position: relative;
   background: #ffffff;
   flex-direction: column;
   font-family: $verdocs-primary-font;
+  display: none;
+
+  &.sendable {
+    display: flex;
+  }
 
   .recipients {
     position: relative;

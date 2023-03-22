@@ -7,6 +7,7 @@ import TemplateStore from '../../../utils/templateStore';
 import {loadTemplate} from '../../../utils/Templates';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
+import {IContactSearchEvent} from '../../elements/verdocs-contact-picker/verdocs-contact-picker';
 
 const editIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>';
@@ -27,6 +28,9 @@ type TAnnotatedRole = IRole & {id: string};
  * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
  * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
  * directly to the `createEnvelope()` call in JS-SDK.
+ *
+ * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
+ * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
  */
 @Component({
   tag: 'verdocs-send',
@@ -60,6 +64,12 @@ export class VerdocsSend {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
+  /**
+   * Event fired when the user enters text in a search field. The parent application may use this to update
+   * the `contactSuggestions` property.
+   */
+  @Event({composed: true}) searchContacts: EventEmitter<IContactSearchEvent>;
+
   @State() containerId = `verdocs-send-${Math.random().toString(36).substring(2, 11)}`;
 
   @State() rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
@@ -87,6 +97,10 @@ export class VerdocsSend {
     try {
       console.log(`[SEND] Loading template ${this.templateId}`);
       await loadTemplate(this.endpoint, this.templateId, true);
+
+      if (!TemplateStore.template.is_sendable) {
+        console.warn(`[SEND] Template is not sendable`, this.templateId);
+      }
 
       if (TemplateStore.template?.roles) {
         const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
@@ -152,12 +166,12 @@ export class VerdocsSend {
   }
 
   render() {
-    const roleNames = TemplateStore.template.roles.map(role => role.name) || [];
+    const roleNames = (TemplateStore.template?.roles || []).map(role => role.name) || [];
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= roleNames.length;
 
     return (
-      <Host class={{}}>
+      <Host class={{sendable: TemplateStore.template.is_sendable}}>
         <div class="recipients">
           <div class="left-line" />
           <div class={`level level-start`}>
@@ -170,7 +184,6 @@ export class VerdocsSend {
               {this.getLevelIcon(level)}
 
               {this.rolesAtLevel[level].map(role => {
-                console.log('showing role', role);
                 const unknown = !role.email;
                 return unknown ? (
                   <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)}>
@@ -182,7 +195,7 @@ export class VerdocsSend {
                         onNext={e => this.handleSelectContact(e, role)}
                         contactSuggestions={this.sessionContacts}
                         templateRole={this.rolesCompleted[role.id] ?? role}
-                        onSearchContacts={e => console.log('Search', e.detail)}
+                        onSearchContacts={e => this.searchContacts?.emit(e.detail)}
                       />
                     )}
                   </div>
@@ -196,7 +209,7 @@ export class VerdocsSend {
                         onNext={e => this.handleSelectContact(e, role)}
                         contactSuggestions={this.sessionContacts}
                         templateRole={this.rolesCompleted[role.id] ?? role}
-                        onSearchContacts={e => console.log('Search', e.detail)}
+                        onSearchContacts={e => this.searchContacts?.emit(e.detail)}
                       />
                     )}
                   </div>

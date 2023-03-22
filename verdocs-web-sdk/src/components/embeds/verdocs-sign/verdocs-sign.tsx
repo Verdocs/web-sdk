@@ -4,7 +4,7 @@ import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
 import {fullNameToInitials} from '@verdocs/js-sdk/Utils/Primitives';
 import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
-import {IDocumentField, IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
+import {IDocumentField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/js-sdk/Envelopes/Types';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
@@ -484,6 +484,25 @@ export class VerdocsSign {
       //   },
       // });
     });
+
+    this.envelope.recipients
+      .filter(
+        r => r.role_name !== this.recipient.role_name && (r.status === RecipientStates.SUBMITTED || r.status === RecipientStates.CANCELED || r.status === RecipientStates.DECLINED),
+      )
+      .forEach(recipient => {
+        recipient.fields.forEach(field => {
+          const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: false, draggable: false, done: this.isDone});
+          if (!el) {
+            return;
+          }
+
+          if (Array.isArray(el)) {
+            el.map(e => this.attachFieldAttributes(pageInfo, field, roleIndex, e));
+          } else {
+            this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+          }
+        });
+      });
 
     // Render fields for "the other" recipients
     this.envelope.recipients

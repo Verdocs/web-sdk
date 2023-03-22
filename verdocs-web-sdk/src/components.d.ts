@@ -17,6 +17,7 @@ import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-flo
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
+import { IContactSearchEvent as IContactSearchEvent1 } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
@@ -2531,6 +2532,10 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsSendCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user enters text in a search field. The parent application may use this to update the `contactSuggestions` property.
+         */
+        "onSearchContacts"?: (event: VerdocsSendCustomEvent<IContactSearchEvent1>) => void;
         /**
           * The user completed the form and clicked send.
          */
