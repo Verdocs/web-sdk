@@ -9,7 +9,8 @@ export default {
   },
   argTypes: {
     envelopeId: {name: 'envelopeId'},
+    toggle: {action: 'toggle'},
   },
 } as Meta;
 
-export const EnvelopeSidebar = ({envelopeId}) => html`<verdocs-envelope-sidebar .envelopeId=${envelopeId} />`;
+export const EnvelopeSidebar = ({envelopeId, toggle}) => html`<verdocs-envelope-sidebar .envelopeId=${envelopeId} @toggle=${toggle} />`;

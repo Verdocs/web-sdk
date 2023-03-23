@@ -93,6 +93,17 @@ verdocs-sign {
     align-items: flex-start;
     padding-top: 100px;
   }
+
+  .loading-indicator {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    z-index: 10000;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
 }
 
 @media print {

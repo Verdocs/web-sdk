@@ -70,6 +70,11 @@ export class VerdocsEnvelopeSidebar {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
+  /**
+   * Event fired when the sidebar is opened or closed.
+   */
+  @Event({composed: true}) toggle: EventEmitter<{open: boolean}>;
+
   @State() envelope: IEnvelope | null = null;
   @State() roleNames: string[] = [];
   @State() activeTab: number = 1;
@@ -97,6 +102,7 @@ export class VerdocsEnvelopeSidebar {
 
   setTab(tab: number) {
     this.panelOpen = tab !== this.activeTab || !this.panelOpen;
+    this.toggle?.emit({open: this.panelOpen});
     this.activeTab = tab;
   }
 

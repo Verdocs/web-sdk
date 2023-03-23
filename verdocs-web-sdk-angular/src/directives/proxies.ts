@@ -284,7 +284,7 @@ export class VerdocsEnvelopeSidebar {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated']);
+    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated', 'toggle']);
   }
 }
 
@@ -303,6 +303,10 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
   envelopeUpdated: EventEmitter<CustomEvent<IVerdocsEnvelopeSidebarIVerdocsEnvelopeSidebar{endpoint: [object Object]; envelope: [object Object]; event: string}>>;
+  /**
+   * Event fired when the sidebar is opened or closed.
+   */
+  toggle: EventEmitter<CustomEvent<{open: boolean}>>;
 }
 
 

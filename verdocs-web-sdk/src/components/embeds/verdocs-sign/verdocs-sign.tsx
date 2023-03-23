@@ -101,6 +101,7 @@ export class VerdocsSign {
   @State() nextSubmits = false;
   @State() errorMessage = '';
   @State() focusedField = '';
+  @State() submitting = false;
   @State() isDone = false;
   @State() showDone = false;
   @State() finishLater = false;
@@ -219,9 +220,11 @@ export class VerdocsSign {
 
       case 'decline':
         {
+          this.submitting = true;
           const declineResult = await envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId);
           console.log('Decline result', declineResult);
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
+          this.submitting = false;
           this.isDone = true;
         }
         break;
@@ -366,19 +369,19 @@ export class VerdocsSign {
   }
 
   async handleNext() {
-    console.log('Next');
     if (this.nextSubmits) {
-      console.log('Next submits');
       try {
+        this.submitting = true;
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
         console.log('[SIGN] Submitted successfully', result);
         this.recipient.status = 'submitted';
         this.showDone = true;
         this.isDone = true;
       } catch (e) {
-        console.log('Error submitting', e);
+        console.log('[SIGN] Error submitting', e);
       }
 
+      this.submitting = false;
       return;
     }
 
@@ -572,6 +575,12 @@ export class VerdocsSign {
               }}
             />
           )}
+
+          {this.submitting && (
+            <div class="loading-indicator">
+              <verdocs-loader />
+            </div>
+          )}
         </Host>
       );
     }
@@ -662,6 +671,12 @@ export class VerdocsSign {
               this.isDone = true;
             }}
           />
+        )}
+
+        {this.submitting && (
+          <div class="loading-indicator">
+            <verdocs-loader />
+          </div>
         )}
       </Host>
     );
