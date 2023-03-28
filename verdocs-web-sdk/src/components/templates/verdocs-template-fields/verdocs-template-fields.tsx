@@ -168,9 +168,17 @@ export class VerdocsTemplateFields {
       this.selectedRoleName = field.role_name;
       console.log('settings changed', this.selectedRoleName, field);
       el.setAttribute('roleindex', getRoleIndex(TemplateStore.roleNames, field.role_name));
+      el.field = TemplateStore.fields.find(f => f.name === field.name);
       this.rerender++;
       el.setAttribute('rerender', this.rerender);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: TemplateStore.template, event: 'updated-field'});
+
+      console.log('Re-rendering field', field.name, pageInfo.pageNumber);
+      this.reRenderField(field, pageInfo.pageNumber);
+      const newEl = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
+      if (!newEl) {
+        return;
+      }
     });
 
     el.addEventListener('deleted', () => {
@@ -196,42 +204,22 @@ export class VerdocsTemplateFields {
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
     const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
-    // const fields = this.fields.filter(field => field.page_sequence === pageInfo.renderedPage.pageNumber);
-    // console.log('[FIELDS] Fields on page', fields);
-    fields.forEach(field => {
-      const roleIndex = getRoleIndex(TemplateStore.roleNames, field.role_name);
-      const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
-      if (!el) {
-        return;
-      }
+    fields.forEach(field => this.reRenderField(field, pageInfo.pageNumber));
+  }
 
-      if (Array.isArray(el)) {
-        el.forEach(e => {
-          this.attachFieldAttributes(pageInfo, field, roleIndex, e);
+  reRenderField(field: ITemplateField, pageNumber: number) {
+    const pageInfo = this.cachedPageInfo[pageNumber];
+    const roleIndex = getRoleIndex(TemplateStore.roleNames, field.role_name);
+    const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
+    if (!el) {
+      return;
+    }
 
-          interact(e).draggable({
-            listeners: {
-              start(event) {
-                console.log('[FIELDS] Drag started', event.type, event.target);
-              },
-              move(event) {
-                const oldX = +(event.target.getAttribute('posX') || 0);
-                const oldY = +(event.target.getAttribute('posY') || 0);
-                const xScale = +(event.target.getAttribute('xScale') || 1);
-                const yScale = +(event.target.getAttribute('yScale') || 1);
-                const newX = event.dx / xScale + oldX;
-                const newY = event.dy / yScale + oldY;
-                event.target.setAttribute('posX', newX);
-                event.target.setAttribute('posy', newY);
-                updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
-              },
-              end: this.handleMoveField.bind(this),
-            },
-          });
-        });
-      } else {
-        this.attachFieldAttributes(pageInfo, field, roleIndex, el);
-        interact(el).draggable({
+    if (Array.isArray(el)) {
+      el.forEach(e => {
+        this.attachFieldAttributes(pageInfo, field, roleIndex, e);
+
+        interact(e).draggable({
           listeners: {
             start(event) {
               console.log('[FIELDS] Drag started', event.type, event.target);
@@ -250,8 +238,29 @@ export class VerdocsTemplateFields {
             end: this.handleMoveField.bind(this),
           },
         });
-      }
-    });
+      });
+    } else {
+      this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+      interact(el).draggable({
+        listeners: {
+          start(event) {
+            console.log('[FIELDS] Drag started', event.type, event.target);
+          },
+          move(event) {
+            const oldX = +(event.target.getAttribute('posX') || 0);
+            const oldY = +(event.target.getAttribute('posY') || 0);
+            const xScale = +(event.target.getAttribute('xScale') || 1);
+            const yScale = +(event.target.getAttribute('yScale') || 1);
+            const newX = event.dx / xScale + oldX;
+            const newY = event.dy / yScale + oldY;
+            event.target.setAttribute('posX', newX);
+            event.target.setAttribute('posy', newY);
+            updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
+          },
+          end: this.handleMoveField.bind(this),
+        },
+      });
+    }
   }
 
   async handleMoveField(e: any) {

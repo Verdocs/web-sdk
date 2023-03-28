@@ -18,9 +18,9 @@ export const defaultWidth = (type: TDocumentFieldType) => {
     case 'timestamp':
       return 64;
     case 'date':
-      return 74;
+      return 84;
     case 'dropdown':
-      return 64;
+      return 85;
     case 'attachment':
     case 'payment':
       return 24;
@@ -49,7 +49,7 @@ export const defaultHeight = (type: TDocumentFieldType) => {
     case 'date':
       return 15;
     case 'dropdown':
-      return 15;
+      return 20;
     case 'attachment':
     case 'payment':
       return 24;

@@ -1,5 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import uuidv4 from 'uuid-browser';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {deleteField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
@@ -133,7 +134,6 @@ export class VerdocsTemplateFieldProperties {
     e.stopPropagation();
 
     const field = TemplateStore.fields.find(field => field.name === this.fieldName);
-    console.log('hc', e, field);
     if (field) {
       this.name = field.name;
       this.roleName = field.role_name;
@@ -176,9 +176,62 @@ export class VerdocsTemplateFieldProperties {
           field.required = this.required;
           field.label = this.placeholder;
           field.setting.result = this.defaultValue;
+          if (field.setting.options) {
+            field.setting.options = this.options;
+          }
         }
         this.settingsChanged?.emit({fieldName: this.fieldName});
         this.close?.emit();
+      })
+      .catch(() => {
+        console.log('Field update failed', e);
+      });
+  }
+
+  handleAddOption(e) {
+    e.stopPropagation();
+    const newProperties = {
+      name: this.name,
+      required: this.required,
+      role_name: this.roleName,
+      // TODO: Default value in setting?
+    } as Partial<ITemplateField>;
+
+    this.options.push(
+      this.type === 'radio_button_group'
+        ? {
+            id: uuidv4(),
+            value: `Option ${this.options.length + 1}`,
+            selected: false,
+            x: this.options.length > 0 ? this.options[this.options.length - 1].x : 20,
+            y: this.options.length > 0 ? this.options[this.options.length - 1].y - 25 : 20,
+          }
+        : {
+            id: uuidv4(),
+            value: `Option ${this.options.length + 1}`,
+            checked: false,
+            x: this.options.length > 0 ? this.options[this.options.length - 1].x : 20,
+            y: this.options.length > 0 ? this.options[this.options.length - 1].y - 25 : 20,
+          },
+    );
+
+    newProperties.setting = this.setting;
+    newProperties.setting.options = this.options;
+
+    updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
+      .then(() => {
+        this.dirty = false;
+        const field = TemplateStore.fields.find(field => field.name === this.fieldName);
+        if (field) {
+          field.name = this.name;
+          field.role_name = this.roleName;
+          field.required = this.required;
+          field.label = this.placeholder;
+          field.setting.result = this.defaultValue;
+        }
+        this.settingsChanged?.emit({fieldName: this.fieldName});
+        this.close?.emit();
+        TemplateStore.updateCount++;
       })
       .catch(() => {
         console.log('Field update failed', e);
@@ -233,7 +286,7 @@ export class VerdocsTemplateFieldProperties {
     return (
       <Host>
         <h6>
-          {capitalize(this.fieldType.replace('_', ' '))} Settings <div style={{flex: '1'}} />
+          {capitalize(this.fieldType.replace(/_/g, ' '))} Settings <div style={{flex: '1'}} />
           {this.helpText && <div class="help-icon" innerHTML={HelpIcon} onClick={() => (this.showingHelp = true)} />}
         </h6>
 
@@ -266,20 +319,6 @@ export class VerdocsTemplateFieldProperties {
             {/*<verdocs-help-icon text="The participant who will complete this field." />*/}
           </div>
 
-          {['checkbox_group', 'radio_button_group'].includes(this.type) && (
-            <verdocs-text-input
-              id="verdocs-field-group"
-              label="Group Name"
-              value={this.group}
-              autocomplete="off"
-              placeholder="Group Name..."
-              onInput={(e: any) => {
-                this.group = e.target.value;
-                this.dirty = true;
-              }}
-            />
-          )}
-
           {['textbox', 'textarea'].includes(this.type) && (
             <verdocs-text-input
               id="verdocs-field-placeholder"
@@ -310,6 +349,8 @@ export class VerdocsTemplateFieldProperties {
               }}
             />
           </div>
+
+          {['checkbox_group', 'radio_button_group'].includes(this.type) && <verdocs-button size="small" onClick={e => this.handleAddOption(e)} label="Add Option" />}
 
           {['dropdown'].includes(this.type) && (
             <div class="options">

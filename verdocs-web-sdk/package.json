@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "1.12.42",
+  "version": "1.12.43",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -24,8 +24,8 @@
     "test": "stencil test --spec --e2e --screenshot",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate",
-    "storybook": "NODE_DEBUG=true rm -rf storybook-static && BROWSER=none start-storybook -p 6006 --no-open",
-    "build-storybook": "NODE_DEBUG=true rm -rf storybook-static && build-storybook"
+    "storybook": "NODE_OPTIONS=--openssl-legacy-provider NODE_DEBUG=true rm -rf storybook-static && BROWSER=none start-storybook -p 6006 --no-open",
+    "build-storybook": "export NODE_OPTIONS=--openssl-legacy-provider && NODE_DEBUG=true rm -rf storybook-static && build-storybook"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",
@@ -37,6 +37,7 @@
     "flatpickr": "^4.6.13",
     "interactjs": "^1.10.17",
     "jszip": "^3.10.1",
+    "uuid": "^9.0.0",
     "workflow-svg.js": "^3.0.2"
   },
   "devDependencies": {

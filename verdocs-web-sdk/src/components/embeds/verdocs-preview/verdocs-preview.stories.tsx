@@ -7,9 +7,6 @@ export default {
   args: {
     templateId: '',
   },
-  argTypes: {
-    templateId: {control: {type: 'string'}},
-  },
   parameters: {
     layout: 'fullscreen',
   },

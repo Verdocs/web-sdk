@@ -11,8 +11,9 @@ module.exports = {
     '@pxtrn/storybook-addon-docs-stencil',
     '@storybook/addon-essentials', // actions, viewport docs, controls, backgrounds, toolbars
   ],
-  webpackFinal: async (config, { configType }) => {
-    config.devtool = 'inline-source-map'
+  webpackFinal: async (config, {configType}) => {
+    config.devtool = 'inline-source-map';
+    // config.output.hashFunction = 'xxhash64';
     return config;
   },
   staticDirs: ['../public'],

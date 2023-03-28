@@ -61,6 +61,7 @@ export class VerdocsButtonPanel {
     this.showing = true;
 
     this.hiderEl = document.createElement('div');
+    this.hiderEl.id = 'verdocs-button-panel-hider';
     this.hiderEl.style.zIndex = '100';
     this.hiderEl.style.position = 'absolute';
     this.hiderEl.style.top = '0px';
@@ -76,8 +77,10 @@ export class VerdocsButtonPanel {
 
   @Method()
   async hidePanel() {
-    this.panelEl?.removeAttribute('data-show');
-    this.hiderEl?.remove();
+    Array.from(document.getElementsByClassName('verdocs-button-panel-content')).forEach(el => {
+      el.removeAttribute('data-show');
+    });
+    document.getElementById('verdocs-button-panel-hider')?.remove();
     this.showing = false;
   }
 
