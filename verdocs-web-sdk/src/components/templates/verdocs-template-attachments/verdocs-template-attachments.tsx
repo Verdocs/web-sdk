@@ -1,7 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import TemplateStore from '../../../utils/templateStore';
-import {loadTemplate} from '../../../utils/Templates';
+import {Component, h, Event, EventEmitter, Prop, Host} from '@stencil/core';
+import {loadTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
 const FileIcon =
@@ -38,17 +37,14 @@ export class VerdocsTemplateAttachments {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() loading: boolean = true;
+  store: TTemplateStore | null = null;
 
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
-
-      await loadTemplate(this.endpoint, this.templateId);
-      this.loading = false;
+      this.store = await loadTemplateStore(this.endpoint, this.templateId);
     } catch (e) {
-      console.log('[TEMPLATE NAME] Error loading template', e);
-      this.loading = false;
+      console.log('[TEMPLATE ATTACHMENTS] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -62,7 +58,8 @@ export class VerdocsTemplateAttachments {
       );
     }
 
-    if (this.loading) {
+    const templateState = this.store?.state;
+    if (!templateState.isLoaded) {
       return (
         <Host class="loading">
           <verdocs-loader />
@@ -71,7 +68,8 @@ export class VerdocsTemplateAttachments {
     }
 
     // This is meant to be a companion for larger visual experiences so we just go blank on errors for now.
-    if (!this.endpoint.session || !TemplateStore.template) {
+    // Checking
+    if (!this.endpoint.session || !templateState.profile_id) {
       return <Host class="empty" />;
     }
 
@@ -79,7 +77,7 @@ export class VerdocsTemplateAttachments {
       <Host>
         <h5>Attachments</h5>
 
-        {TemplateStore.template.template_documents.map(document => (
+        {this.store?.state.template_documents.map(document => (
           <div class="attachment">
             <span innerHTML={FileIcon} />
             {document.name} ({document.page_numbers} page{document.page_numbers > 1 ? 's' : ''})

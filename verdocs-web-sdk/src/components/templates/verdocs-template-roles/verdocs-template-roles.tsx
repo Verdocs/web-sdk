@@ -4,8 +4,7 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {createRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
 import {ITemplate, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
-import TemplateStore from '../../../utils/templateStore';
-import {loadTemplate} from '../../../utils/Templates';
+import {loadTemplateStore, TTemplateStore} from '../../../utils/templateStore';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
 
@@ -84,9 +83,10 @@ export class VerdocsTemplateRoles {
   @State() showingRoleDialog: string | null = null;
   @State() showingSenderDialog = false;
   @State() sender = null;
-  @State() forceRerender = 1;
 
   sequences: number[] = [];
+
+  store: TTemplateStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -102,13 +102,7 @@ export class VerdocsTemplateRoles {
         return;
       }
 
-      try {
-        console.log(`[ROLES] Loading template ${this.templateId}`, this.endpoint.session);
-        await loadTemplate(this.endpoint, this.templateId, true);
-      } catch (e) {
-        console.log('[ROLES] Error loading template', e);
-        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      }
+      this.store = await loadTemplateStore(this.endpoint, this.templateId, true);
 
       this.sortTemplateRoles();
       this.renumberTemplateRoles();
@@ -166,7 +160,7 @@ export class VerdocsTemplateRoles {
         const targetSequence = +event.target.dataset.sequence;
         const targetOrder = +event.target.dataset.order;
 
-        const changingRole = TemplateStore.template?.roles.find(role => role.name === roleName);
+        const changingRole = this.store?.state?.roles?.find(role => role.name === roleName);
         if (changingRole) {
           // To handle the renumbering, we update the role being moved to the new values, which will be some half-interval e.g.
           // sequence 1.5 order 1. Then we
@@ -182,7 +176,7 @@ export class VerdocsTemplateRoles {
           //  code to do right, and since most workflows will typically only have 2-4 recipients max, it may not be worth it.
 
           Promise.all(
-            TemplateStore.template?.roles.map(role =>
+            this.store?.state?.roles.map(role =>
               updateRole(this.endpoint, this.templateId, role.name, {
                 sequence: role.sequence,
                 order: role.order,
@@ -191,7 +185,7 @@ export class VerdocsTemplateRoles {
           )
             .then(() => {
               console.log('[ROLES] Updated roles');
-              this.templateUpdated?.emit({event: 'updated-role', endpoint: this.endpoint, template: TemplateStore.template});
+              this.templateUpdated?.emit({event: 'updated-role', endpoint: this.endpoint, template: this.store?.state});
             })
             .catch(e => console.log('[ROLES] Role updates failed', e));
         }
@@ -220,14 +214,14 @@ export class VerdocsTemplateRoles {
   }
 
   sortTemplateRoles() {
-    TemplateStore.template?.roles.sort((a, b) => {
+    this.store?.state?.roles.sort((a, b) => {
       return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
     });
   }
 
   extractSequenceNumbers() {
     this.sequences = [];
-    TemplateStore.template?.roles.forEach(role => {
+    this.store?.state?.roles.forEach(role => {
       if (!this.sequences.includes(role.sequence)) {
         this.sequences.push(role.sequence);
       }
@@ -244,7 +238,7 @@ export class VerdocsTemplateRoles {
     // If the user dragged an entry from below a row to above it, we end up here like [1,0]. Make sure it's [0,1] for the next operation.
     this.sequences.sort((a, b) => a - b);
     this.sequences.forEach((originalSequence, newSequenceIndex) => {
-      TemplateStore.template?.roles
+      this.store?.state?.roles
         .filter(role => role.sequence === originalSequence)
         .forEach((role, newOrderIndex) => {
           if (!renumbered.includes(role.name)) {
@@ -262,11 +256,11 @@ export class VerdocsTemplateRoles {
   // Look for name conflicts, because they're UGC and can be anything, regardless of order.
   getNextRoleName() {
     let name = '';
-    let nextNumber = TemplateStore.template?.roles.length;
+    let nextNumber = this.store?.state?.roles.length;
     do {
       nextNumber++;
       name = `Recipient ${nextNumber}`;
-    } while (!name || TemplateStore.template?.roles.some(role => role.name === name));
+    } while (!name || this.store?.state?.roles.some(role => role.name === name));
 
     return name;
   }
@@ -275,7 +269,7 @@ export class VerdocsTemplateRoles {
     e.stopPropagation();
 
     // We don't need to look for a unique order number because we're already working with a sorted/renumbered set by now.
-    const order = TemplateStore.template.roles.filter(role => role.sequence === sequence).length + 1;
+    const order = this.store?.state.roles.filter(role => role.sequence === sequence).length + 1;
     const name = this.getNextRoleName();
     console.log('Will create', name, sequence, order);
     createRole(this.endpoint, this.templateId, {
@@ -291,10 +285,9 @@ export class VerdocsTemplateRoles {
     })
       .then(r => {
         console.log('Created role', r);
-        TemplateStore.template.roles.push(r);
+        this.store?.state.roles.push(r);
         this.renumberTemplateRoles();
-        this.forceRerender++;
-        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: TemplateStore.template});
+        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: this.store?.state});
       })
       .catch(e => {
         console.log('Error creating role', e);
@@ -307,7 +300,6 @@ export class VerdocsTemplateRoles {
     const order = 1;
     const name = this.getNextRoleName();
 
-    console.log('Will create', name, sequence, order);
     createRole(this.endpoint, this.templateId, {
       template_id: this.templateId,
       name,
@@ -320,11 +312,9 @@ export class VerdocsTemplateRoles {
       delegator: false,
     })
       .then(r => {
-        console.log('Created role', r);
-        TemplateStore.template.roles.push(r);
+        this.store?.state?.roles?.push(r);
         this.renumberTemplateRoles();
-        this.forceRerender++;
-        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: TemplateStore.template});
+        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: this.store.state});
       })
       .catch(e => {
         console.log('Error creating role', e);
@@ -340,19 +330,20 @@ export class VerdocsTemplateRoles {
       );
     }
 
-    if (TemplateStore.loading || !TemplateStore.template) {
+    const templateState = this.store?.state;
+    if (!templateState.isLoaded) {
       return (
-        <Host>
+        <Host class="loading">
           <verdocs-loader />
         </Host>
       );
     }
 
-    const roleNames = (TemplateStore.template?.roles || []).map(role => role.name);
+    const roleNames = (templateState.roles || []).map(role => role.name);
 
     return (
       <Host>
-        <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off" data-r={this.forceRerender}>
+        <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off" data-r={this.store.state?.updateCount}>
           <h5>Roles and Workflow</h5>
 
           <div class="participants">
@@ -361,7 +352,7 @@ export class VerdocsTemplateRoles {
               <div class="icon" innerHTML={startIcon} />
               <div class="row-roles">
                 <div class="sender">
-                  <span class="label">Sender:</span> {senderLabels[TemplateStore.template.sender]}{' '}
+                  <span class="label">Sender:</span> {senderLabels[templateState.sender]}{' '}
                   <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
                 </div>
               </div>
@@ -384,7 +375,7 @@ export class VerdocsTemplateRoles {
                     {/* The "start of sequence" drop zone */}
                     <div class="dropzone" data-order={0.5} data-sequence={sequence} />
 
-                    {TemplateStore.template.roles
+                    {templateState.roles
                       .filter(role => role.sequence === sequence)
                       .map(role => {
                         const unknown = !role.email;
@@ -466,14 +457,16 @@ export class VerdocsTemplateRoles {
             roleName={this.showingRoleDialog}
             onClose={() => {
               this.showingRoleDialog = null;
-              this.forceRerender++;
+              // this.forceRerender++;
             }}
-            onDelete={e => {
-              console.log('deleted', e.detail);
+            onDelete={async () => {
+              await loadTemplateStore(this.endpoint, this.templateId, true);
+
               this.renumberTemplateRoles();
               this.showingRoleDialog = null;
-              this.forceRerender++;
-              this.templateUpdated?.emit({event: 'deleted-role', endpoint: this.endpoint, template: TemplateStore.template});
+              // this.forceRerender++;
+
+              this.templateUpdated?.emit({event: 'deleted-role', endpoint: this.endpoint, template: templateState});
             }}
           />
         )}
