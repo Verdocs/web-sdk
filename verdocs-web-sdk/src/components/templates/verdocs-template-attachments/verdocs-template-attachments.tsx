@@ -1,6 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, Host} from '@stencil/core';
-import {loadTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
 const FileIcon =
@@ -42,7 +42,20 @@ export class VerdocsTemplateAttachments {
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
-      this.store = await loadTemplateStore(this.endpoint, this.templateId);
+
+      if (!this.templateId) {
+        console.log(`[ROLES] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      if (!this.endpoint.session) {
+        console.log('[ROLES] Unable to start builder session, must be authenticated');
+        return;
+      }
+
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+
+      this.endpoint.loadSession();
     } catch (e) {
       console.log('[TEMPLATE ATTACHMENTS] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));

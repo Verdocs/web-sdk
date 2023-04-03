@@ -1,12 +1,12 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
-import {cancelEnvelope, throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {userCanCancelEnvelope} from '@verdocs/js-sdk/Envelopes/Permissions';
+import {cancelEnvelope, throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
-import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 
 /**
  * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.

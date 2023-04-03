@@ -198,6 +198,10 @@ export namespace Components {
          */
         "roleIndex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFieldCheckbox {
         /**
@@ -234,6 +238,10 @@ export namespace Components {
          */
         "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFieldDate {
         /**
@@ -267,6 +275,10 @@ export namespace Components {
          */
         "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required for the field builder, passed down to the properties component.
+         */
+        "templateId": string;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -300,6 +312,10 @@ export namespace Components {
          */
         "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFieldInitial {
         /**
@@ -337,6 +353,10 @@ export namespace Components {
          */
         "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFieldPayment {
         "currentInitial": string;
@@ -370,6 +390,10 @@ export namespace Components {
         "selectedRoleName": string;
         "showSettingsPanel": () => Promise<void>;
         "signed": boolean;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFieldRadioButton {
         /**
@@ -406,6 +430,10 @@ export namespace Components {
          */
         "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFieldSignature {
         /**
@@ -443,6 +471,10 @@ export namespace Components {
          */
         "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -476,6 +508,10 @@ export namespace Components {
          */
         "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -509,6 +545,10 @@ export namespace Components {
          */
         "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -542,6 +582,10 @@ export namespace Components {
          */
         "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
     }
     interface VerdocsFloatingMenu {
         /**
@@ -1859,6 +1903,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleIndex"?: number;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFieldCheckbox {
         /**
@@ -1901,6 +1949,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFieldDate {
         /**
@@ -1943,6 +1995,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        /**
+          * The template the field is for/from. Only required for the field builder, passed down to the properties component.
+         */
+        "templateId"?: string;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -1985,6 +2041,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFieldInitial {
         /**
@@ -2043,6 +2103,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFieldPayment {
         "currentInitial"?: string;
@@ -2084,6 +2148,10 @@ declare namespace LocalJSX {
         "roleindex"?: number;
         "selectedRoleName"?: string;
         "signed"?: boolean;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFieldRadioButton {
         /**
@@ -2126,6 +2194,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFieldSignature {
         /**
@@ -2176,6 +2248,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -2214,6 +2290,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -2252,6 +2332,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -2290,6 +2374,10 @@ declare namespace LocalJSX {
           * If set, the field will be colored using this index value to select the background color.
          */
         "roleindex"?: number;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
     }
     interface VerdocsFloatingMenu {
         /**

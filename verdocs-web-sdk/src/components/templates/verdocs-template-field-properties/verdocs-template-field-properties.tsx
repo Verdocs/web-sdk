@@ -1,11 +1,10 @@
+import uuidv4 from 'uuid-browser';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import uuidv4 from 'uuid-browser';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {deleteField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import TemplateStore from '../../../utils/templateStore';
-import {loadTemplate} from '../../../utils/Templates';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -86,12 +85,14 @@ export class VerdocsTemplateFieldProperties {
   @State() defaultValue = '';
   @State() showingHelp = false;
 
+  store: TTemplateStore | null = null;
+
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
 
       if (!this.templateId) {
-        console.error(`[FIELD PROPERTIES] Missing required template ID`);
+        console.log(`[ROLES] Missing required template ID ${this.templateId}`);
         return;
       }
 
@@ -101,12 +102,12 @@ export class VerdocsTemplateFieldProperties {
       }
 
       if (!this.endpoint.session) {
-        console.error('[FIELD PROPERTIES] Unable to start builder session, must be authenticated');
+        console.log('[ROLES] Unable to start builder session, must be authenticated');
         return;
       }
 
-      await loadTemplate(this.endpoint, this.templateId);
-      const field = TemplateStore.fields.find(field => field.name === this.fieldName);
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+      const field = this.store?.state?.fields.find(field => field.name === this.fieldName);
       if (!field) {
         console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in template`);
       }
@@ -133,7 +134,7 @@ export class VerdocsTemplateFieldProperties {
   handleCancel(e) {
     e.stopPropagation();
 
-    const field = TemplateStore.fields.find(field => field.name === this.fieldName);
+    const field = this.store?.state?.fields.find(field => field.name === this.fieldName);
     if (field) {
       this.name = field.name;
       this.roleName = field.role_name;
@@ -169,7 +170,7 @@ export class VerdocsTemplateFieldProperties {
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(() => {
         this.dirty = false;
-        const field = TemplateStore.fields.find(field => field.name === this.fieldName);
+        const field = this.store?.state?.fields.find(field => field.name === this.fieldName);
         if (field) {
           field.name = this.name;
           field.role_name = this.roleName;
@@ -221,7 +222,7 @@ export class VerdocsTemplateFieldProperties {
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(() => {
         this.dirty = false;
-        const field = TemplateStore.fields.find(field => field.name === this.fieldName);
+        const field = this.store?.state?.fields.find(field => field.name === this.fieldName);
         if (field) {
           field.name = this.name;
           field.role_name = this.roleName;
@@ -231,7 +232,8 @@ export class VerdocsTemplateFieldProperties {
         }
         this.settingsChanged?.emit({fieldName: this.fieldName});
         this.close?.emit();
-        TemplateStore.updateCount++;
+        // TODO: Verify this
+        // TemplateStore.updateCount++;
       })
       .catch(() => {
         console.log('Field update failed', e);
@@ -244,8 +246,8 @@ export class VerdocsTemplateFieldProperties {
       deleteField(this.endpoint, this.templateId, this.fieldName)
         .then(r => {
           console.log('Field deleted', r);
-          TemplateStore.fields = [...TemplateStore.fields.filter(field => field.name !== this.fieldName)];
-          TemplateStore.template.roles.forEach(role => {
+          this.store.state.fields = [...this.store?.state?.fields.filter(field => field.name !== this.fieldName)];
+          this.store?.state?.roles.forEach(role => {
             role.fields = [...role.fields.filter(field => field.name !== this.fieldName)];
           });
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
@@ -266,7 +268,7 @@ export class VerdocsTemplateFieldProperties {
     }
 
     // This is meant to be a companion for larger visual experiences so we just go blank on errors for now.
-    if (!this.endpoint.session || !TemplateStore.template) {
+    if (!this.endpoint.session || !this.store?.state?.isLoaded) {
       return <Host class="empty" />;
     }
 
@@ -310,7 +312,7 @@ export class VerdocsTemplateFieldProperties {
             <div class="input-label">Role:</div>
             <verdocs-select-input
               value={this.roleName}
-              options={TemplateStore.template.roles.map(role => ({label: role.name, value: role.name}))}
+              options={this.store?.state?.roles.map(role => ({label: role.name, value: role.name}))}
               onInput={(e: any) => {
                 this.roleName = e.target.value;
                 this.dirty = true;

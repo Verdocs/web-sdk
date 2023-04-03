@@ -2,8 +2,7 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {updateTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
 import {TemplateSenderTypes, TTemplateSender} from '@verdocs/js-sdk/Templates/Types';
-import TemplateStore from '../../../utils/templateStore';
-import {loadTemplate} from '../../../utils/Templates';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -42,32 +41,27 @@ export class VerdocsTemplateSender {
 
   @State() saving = false;
 
+  store: TTemplateStore | null = null;
+
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
 
       if (!this.templateId) {
-        console.log(`[TEMPLATE SENDER] Missing required template ID ${this.templateId}`);
+        console.log(`[SENDER] Missing required template ID ${this.templateId}`);
         return;
       }
 
       if (!this.endpoint.session) {
-        console.log('[TEMPLATE SENDER] Unable to start builder session, must be authenticated');
+        console.log('[SENDER] Unable to start builder session, must be authenticated');
         return;
       }
 
-      try {
-        console.log(`[TEMPLATE SENDER] Loading template ${this.templateId}`, this.endpoint.session);
-        await loadTemplate(this.endpoint, this.templateId);
-      } catch (e) {
-        console.log('[TEMPLATE SENDER] Error loading template', e);
-        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      }
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
 
-      this.sender = TemplateStore.template.sender;
-      console.log('s', this.sender);
+      this.sender = this.store?.state?.sender;
     } catch (e) {
-      console.log('[TEMPLATE SENDER] Error with preview session', e);
+      console.log('[SENDER] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -89,7 +83,9 @@ export class VerdocsTemplateSender {
     updateTemplate(this.endpoint, this.templateId, {sender: value})
       .then(r => {
         console.log('Update result', r);
-        TemplateStore.template.sender = value;
+        if (this.store?.state) {
+          this.store.state.sender = value;
+        }
         this.saving = false;
         this.sender = value;
       })

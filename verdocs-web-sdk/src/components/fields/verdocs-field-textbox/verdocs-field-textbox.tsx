@@ -3,7 +3,6 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter} from '@stencil/core';
-import TemplateStore from '../../../utils/templateStore';
 import {getFieldSettings} from '../../../utils/utils';
 
 const settingsIcon =
@@ -21,6 +20,11 @@ export class VerdocsFieldTextbox {
   @Element() el: HTMLElement;
   private inputEl: HTMLInputElement;
   private resizeHandle: HTMLDivElement;
+
+  /**
+   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   */
+  @Prop() templateid: string = '';
 
   /**
    * The document or template field to display.
@@ -87,7 +91,7 @@ export class VerdocsFieldTextbox {
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
-    TemplateStore.updateCount++;
+    // TemplateStore.updateCount++;
   }
 
   componentDidRender() {
@@ -157,7 +161,7 @@ export class VerdocsFieldTextbox {
         {this.editable && (
           <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
             <verdocs-template-field-properties
-              templateId={TemplateStore.templateId}
+              templateId={this.templateid}
               fieldName={this.field.name}
               onClose={() => this.hideSettingsPanel()}
               onDelete={() => {

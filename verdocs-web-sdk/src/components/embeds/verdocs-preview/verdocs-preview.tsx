@@ -2,9 +2,8 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, h} from '@stencil/core';
 import {Event, EventEmitter, Host} from '@stencil/core';
 import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
-import TemplateStore from '../../../utils/templateStore';
+import { getRoleNames, getTemplateStore, TTemplateStore } from "../../../utils/TemplateStore";
 import {IDocumentPageInfo} from '../../../utils/Types';
-import {loadTemplate} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -34,20 +33,27 @@ export class VerdocsPreview {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  // TODO: Move to state store so we can load this one time
-  async componentDidLoad() {
-    this.endpoint.loadSession();
+  store: TTemplateStore | null = null;
 
-    if (!this.templateId) {
-      console.log(`[PREVIEW] Missing required template ID ${this.templateId}`);
-      return;
-    }
-
+  async componentWillLoad() {
     try {
-      console.log(`[PREVIEW] Loading template ${this.templateId}`);
-      await loadTemplate(this.endpoint, this.templateId, true);
+      this.endpoint.loadSession();
+
+      if (!this.templateId) {
+        console.log(`[PREVIEW] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      if (!this.endpoint.session) {
+        console.log('[PREVIEW] Unable to start builder session, must be authenticated');
+        return;
+      }
+
+      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+
+      console.log(`[PREVIEW] Loading template ${this.templateId}`, this.endpoint.session);
     } catch (e) {
-      console.log('[PREVIEW] Error loading template', e);
+      console.log('[PREVIEW] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -56,14 +62,14 @@ export class VerdocsPreview {
     const pageInfo = e.detail as IDocumentPageInfo;
     // console.log('[PREVIEW] Page rendered', pageInfo);
 
-    const fields = TemplateStore.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
+    const fields = this.store?.state?.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
     // console.log('[PREVIEW] Fields on page', fields);
-    fields.forEach(field => renderDocumentField(field, pageInfo, getRoleIndex(TemplateStore.roleNames, field.role_name), {disabled: true, editable: false, draggable: false}));
+    fields.forEach(field => renderDocumentField(field, pageInfo, getRoleIndex(getRoleNames(this.store), field.role_name), {disabled: true, editable: false, draggable: false}));
   }
 
   render() {
     // TODO: Render a better error
-    if (TemplateStore.loading || !TemplateStore.template) {
+    if (!this.store?.state?.isLoaded) {
       return (
         <Host>
           <verdocs-loader />
@@ -71,7 +77,7 @@ export class VerdocsPreview {
       );
     }
 
-    const pages = [...TemplateStore.template.pages];
+    const pages = [...this.store?.state?.pages];
     pages.sort((a, b) => a.sequence - b.sequence);
 
     return (

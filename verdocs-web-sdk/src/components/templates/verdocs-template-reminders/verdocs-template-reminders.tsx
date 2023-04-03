@@ -1,8 +1,7 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {createReminder, updateReminder, deleteReminder, ICreateTemplateReminderRequest} from '@verdocs/js-sdk/Templates/Reminders';
-import TemplateStore from '../../../utils/templateStore';
-import {loadTemplate} from '../../../utils/Templates';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -40,26 +39,36 @@ export class VerdocsTemplateReminders {
   @State() firstReminderDays = '1';
   @State() reminderDays = '1';
   @State() dirty: boolean = false;
-  @State() loading: boolean = true;
+
+  store: TTemplateStore | null = null;
 
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
 
-      await loadTemplate(this.endpoint, this.templateId);
-      this.loading = false;
-      this.sendReminders = !!TemplateStore.template.reminder_id;
+      if (!this.templateId) {
+        console.log(`[ROLES] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      if (!this.endpoint.session) {
+        console.log('[ROLES] Unable to start builder session, must be authenticated');
+        return;
+      }
+
+      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+
+      this.sendReminders = !!this.store?.state?.reminder_id;
       this.dirty = false;
     } catch (e) {
       console.log('[TEMPLATE REMINDERS] Error loading template', e);
-      this.loading = false;
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
   handleCancel(e) {
     e.stopPropagation();
-    this.sendReminders = !!TemplateStore.template.reminder_id;
+    this.sendReminders = !!this.store?.state?.reminder_id;
     this.dirty = false;
     this.close?.emit();
   }
@@ -72,13 +81,13 @@ export class VerdocsTemplateReminders {
         interval_time: 86400000 * +this.reminderDays,
       };
 
-      if (!TemplateStore.template.reminder_id) {
+      if (!this.store?.state?.reminder_id) {
         await createReminder(this.endpoint, this.templateId, params);
       } else {
-        await updateReminder(this.endpoint, this.templateId, TemplateStore.template.reminder_id, params);
+        await updateReminder(this.endpoint, this.templateId, this.store?.state.reminder_id, params);
       }
     } else {
-      await deleteReminder(this.endpoint, this.templateId, TemplateStore.template.reminder_id);
+      await deleteReminder(this.endpoint, this.templateId, this.store?.state.reminder_id);
     }
 
     this.dirty = false;
@@ -95,7 +104,7 @@ export class VerdocsTemplateReminders {
     }
 
     // This is meant to be a companion for larger visual experiences so we just go blank on errors for now.
-    if (!this.endpoint.session || !TemplateStore.template) {
+    if (!this.endpoint.session || !this.store?.state?.isLoaded) {
       return <Host class="empty" />;
     }
 

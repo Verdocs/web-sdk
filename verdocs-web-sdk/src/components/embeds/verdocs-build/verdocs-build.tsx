@@ -1,7 +1,7 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Prop, State, h, Event, EventEmitter, Host} from '@stencil/core';
-import {loadTemplate} from '../../../utils/Templates';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -41,23 +41,24 @@ export class VerdocsBuild {
 
   fields: ITemplateField[] = [];
 
+  store: TTemplateStore | null = null;
+
   async componentWillLoad() {
-    this.endpoint.loadSession();
-    if (!this.endpoint.session) {
-      console.log('[BUILD] Unable to start builder session, must be authenticated');
-      return;
-    }
-
-    if (!this.templateId) {
-      console.log(`[BUILD] No template ID specified, showing upload option`);
-      this.step = 'create';
-      return;
-    }
-
     try {
-      console.log(`[BUILD] Loading template ${this.templateId}`);
-      await loadTemplate(this.endpoint, this.templateId);
+      this.endpoint.loadSession();
+
+      if (!this.templateId) {
+        console.log(`[BUILD] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      if (!this.endpoint.session) {
+        console.log('[BUILD] Unable to start builder session, must be authenticated');
+        return;
+      }
+
       this.step = 'roles';
+      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
     } catch (e) {
       console.log('[BUILD] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));

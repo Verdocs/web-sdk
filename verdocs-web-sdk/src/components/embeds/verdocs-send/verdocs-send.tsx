@@ -3,11 +3,10 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {IRole} from '@verdocs/js-sdk/Templates/Types';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method} from '@stencil/core';
-import TemplateStore from '../../../utils/templateStore';
-import {loadTemplate} from '../../../utils/Templates';
+import {IContactSearchEvent} from '../../elements/verdocs-contact-picker/verdocs-contact-picker';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
-import {IContactSearchEvent} from '../../elements/verdocs-contact-picker/verdocs-contact-picker';
 
 const editIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>';
@@ -86,28 +85,33 @@ export class VerdocsSend {
 
   levels: number[] = [];
 
+  store: TTemplateStore | null = null;
+
   async componentWillLoad() {
-    const loadSessionResult = this.endpoint.loadSession();
-
-    if (!this.templateId) {
-      console.log(`[SEND] Missing required template ID ${this.templateId}`);
-      return;
-    }
-
     try {
-      console.log(`[SEND] Loading template ${this.templateId}`);
-      await loadTemplate(this.endpoint, this.templateId, true);
+      const loadSessionResult = this.endpoint.loadSession();
 
-      if (!TemplateStore.template?.is_sendable) {
+      if (!this.templateId) {
+        console.log(`[SEND] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      if (!this.endpoint.session) {
+        console.log('[SEND] Unable to start builder session, must be authenticated');
+        return;
+      }
+
+      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+      if (!this.store?.state?.is_sendable) {
         console.warn(`[SEND] Template is not sendable`, this.templateId);
       }
 
-      if (TemplateStore.template?.roles) {
+      if (this.store?.state?.roles) {
         const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
 
         this.rolesCompleted = {};
 
-        TemplateStore.template.roles.forEach(role => {
+        this.store?.state?.roles.forEach(role => {
           const level = role.sequence - 1;
           rolesAtLevel[level] ||= [];
           const id = `r-${level}-${rolesAtLevel[level].length}`;
@@ -118,18 +122,18 @@ export class VerdocsSend {
         this.levels = Object.keys(rolesAtLevel).map(levelStr => +levelStr);
         this.levels.sort((a, b) => a - b);
       }
-    } catch (e) {
-      console.log('[SEND] Error loading template', e);
-      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-    }
 
-    if (loadSessionResult.session?.profile) {
-      this.sessionContacts.push({
-        id: loadSessionResult.session.profile.id,
-        name: `${loadSessionResult.session.profile.first_name} ${loadSessionResult.session.profile.last_name}`,
-        email: loadSessionResult.session.profile.email,
-        phone: loadSessionResult.session.profile.phone,
-      });
+      if (loadSessionResult?.session?.profile) {
+        this.sessionContacts.push({
+          id: loadSessionResult.session.profile.id,
+          name: `${loadSessionResult.session.profile.first_name} ${loadSessionResult.session.profile.last_name}`,
+          email: loadSessionResult.session.profile.email,
+          phone: loadSessionResult.session.profile.phone,
+        });
+      }
+    } catch (e) {
+      console.log('[SEND] Error with preview session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
@@ -157,7 +161,7 @@ export class VerdocsSend {
 
   handleSend(e) {
     e.stopPropagation();
-    this.send?.emit({roles: Object.values(this.rolesCompleted), name: TemplateStore.template.name, template_id: this.templateId});
+    this.send?.emit({roles: Object.values(this.rolesCompleted), name: this.store?.state?.name, template_id: this.templateId});
   }
 
   handleCancel(e) {
@@ -166,12 +170,12 @@ export class VerdocsSend {
   }
 
   render() {
-    const roleNames = (TemplateStore.template?.roles || []).map(role => role.name) || [];
+    const roleNames = (this.store?.state?.roles || []).map(role => role.name) || [];
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= roleNames.length;
 
     return (
-      <Host class={{sendable: TemplateStore.template?.is_sendable}}>
+      <Host class={{sendable: this.store?.state?.is_sendable}}>
         <div class="recipients">
           <div class="left-line" />
           <div class={`level level-start`}>

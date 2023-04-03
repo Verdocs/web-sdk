@@ -3,7 +3,6 @@ import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/co
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
 import {getFieldSettings} from '../../../utils/utils';
-import TemplateStore from '../../../utils/templateStore';
 
 const RadioIconUnselected = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg>`;
 
@@ -21,6 +20,11 @@ const settingsIcon =
   shadow: false,
 })
 export class VerdocsFieldRadioButton {
+  /**
+   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   */
+  @Prop() templateid: string = '';
+
   /**
    * The document or template field to display.
    */
@@ -86,7 +90,7 @@ export class VerdocsFieldRadioButton {
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
-    TemplateStore.updateCount++;
+    // TemplateStore.updateCount++;
   }
 
   render() {
@@ -121,7 +125,7 @@ export class VerdocsFieldRadioButton {
         {this.editable && (
           <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
             <verdocs-template-field-properties
-              templateId={TemplateStore.templateId}
+              templateId={this.templateid}
               fieldName={this.field.name}
               onClose={() => this.hideSettingsPanel()}
               onDelete={() => {

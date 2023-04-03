@@ -3,7 +3,6 @@ import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
 import { Component, h, Host, Prop, Event, EventEmitter, State, Method } from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
-import TemplateStore from '../../../utils/templateStore';
 
 /**
  * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
@@ -15,6 +14,11 @@ import TemplateStore from '../../../utils/templateStore';
   shadow: false,
 })
 export class VerdocsFieldPayment {
+  /**
+   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   */
+  @Prop() templateid: string = '';
+
   /**
    * The document or template field to display.
    */
@@ -154,7 +158,7 @@ export class VerdocsFieldPayment {
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
-    TemplateStore.updateCount++;
+    // TemplateStore.updateCount++;
   }
 
   render() {

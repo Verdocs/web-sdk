@@ -1,8 +1,7 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {updateTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import TemplateStore from '../../../utils/templateStore';
-import {loadTemplate} from '../../../utils/Templates';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -37,26 +36,36 @@ export class VerdocsTemplateName {
 
   @State() name: string = '';
   @State() dirty: boolean = false;
-  @State() loading: boolean = true;
+
+  store: TTemplateStore | null = null;
 
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
 
-      await loadTemplate(this.endpoint, this.templateId);
-      this.loading = false;
-      this.name = TemplateStore.template.name;
+      if (!this.templateId) {
+        console.log(`[ROLES] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      if (!this.endpoint.session) {
+        console.log('[ROLES] Unable to start builder session, must be authenticated');
+        return;
+      }
+
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+
+      this.name = this.store?.state?.name;
       this.dirty = false;
     } catch (e) {
       console.log('[TEMPLATE NAME] Error loading template', e);
-      this.loading = false;
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
   handleCancel(e) {
     e.stopPropagation();
-    this.name = TemplateStore.template.name;
+    this.name = this.store?.state?.name;
     this.dirty = false;
     console.log('Closing');
     this.close?.emit();
@@ -65,7 +74,9 @@ export class VerdocsTemplateName {
   async handleSave(e) {
     e.stopPropagation();
     await updateTemplate(this.endpoint, this.templateId, {name: this.name});
-    TemplateStore.template.name = this.name;
+    if (this.store?.state) {
+      this.store.state.name = this.name;
+    }
     this.dirty = false;
     console.log('Closing');
     this.close?.emit();
@@ -80,7 +91,7 @@ export class VerdocsTemplateName {
       );
     }
 
-    if (this.loading) {
+    if (this.store?.state?.isLoading) {
       return (
         <Host class="loading">
           <verdocs-loader />
@@ -99,7 +110,7 @@ export class VerdocsTemplateName {
             placeholder="Template Name..."
             onInput={(e: any) => {
               this.name = e.target.value;
-              this.dirty = this.name !== TemplateStore.template.name;
+              this.dirty = this.name !== this.store?.state?.name;
             }}
           />
 

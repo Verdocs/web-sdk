@@ -1,8 +1,7 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {updateTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import TemplateStore from '../../../utils/templateStore';
-import {loadTemplate} from '../../../utils/Templates';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -36,30 +35,40 @@ export class VerdocsTemplateVisibility {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() dirty: boolean = false;
-  @State() loading: boolean = true;
   @State() personal: boolean = false;
   @State() public: boolean = false;
+
+  store: TTemplateStore | null = null;
 
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
 
-      await loadTemplate(this.endpoint, this.templateId);
-      this.loading = false;
-      this.personal = TemplateStore.template.is_personal;
-      this.public = TemplateStore.template.is_public;
+      if (!this.templateId) {
+        console.log(`[VISIBILITY] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      if (!this.endpoint.session) {
+        console.log('[VISIBILITY] Unable to start builder session, must be authenticated');
+        return;
+      }
+
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+
+      this.personal = this.store?.state?.is_personal || true;
+      this.public = this.store?.state?.is_public || false;
       this.dirty = false;
     } catch (e) {
       console.log('[TEMPLATE VISIBILITY] Error loading template', e);
-      this.loading = false;
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
   handleCancel(e) {
     e.stopPropagation();
-    this.personal = TemplateStore.template.is_personal;
-    this.public = TemplateStore.template.is_public;
+    this.personal = this.store?.state?.is_personal;
+    this.public = this.store?.state?.is_public;
     this.dirty = false;
     this.close?.emit();
   }
@@ -67,8 +76,10 @@ export class VerdocsTemplateVisibility {
   async handleSave(e) {
     e.stopPropagation();
     await updateTemplate(this.endpoint, this.templateId, {is_personal: this.personal, is_public: this.public});
-    TemplateStore.template.is_personal = this.personal;
-    TemplateStore.template.is_public = this.public;
+    if (this.store?.state) {
+      this.store.state.is_personal = this.personal;
+      this.store.state.is_public = this.public;
+    }
     this.dirty = false;
     this.close?.emit();
   }
@@ -83,7 +94,7 @@ export class VerdocsTemplateVisibility {
     }
 
     // This is meant to be a companion for larger visual experiences so we just go blank on errors for now.
-    if (!this.endpoint.session || !TemplateStore.template) {
+    if (!this.endpoint.session || !this.store?.state?.isLoaded) {
       return <Host class="empty" />;
     }
 

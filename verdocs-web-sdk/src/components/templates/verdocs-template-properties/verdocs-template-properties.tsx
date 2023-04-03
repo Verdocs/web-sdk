@@ -1,9 +1,7 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
-import TemplateStore from '../../../utils/templateStore';
 
 /**
  * Displays a collection of settings boxes that allow a user to configure a template's behavior.
@@ -40,29 +38,32 @@ export class VerdocsTemplateProperties {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() template: ITemplate | null = null;
   @State() name: string = '';
   @State() visibility: string = '';
   @State() sendReminders = false;
   @State() firstReminderDays = '1';
   @State() reminderDays = '1';
 
+  store: TTemplateStore | null = null;
+
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
 
-      console.log(`[PROPERTIES] Loading template ${this.templateId}`);
-      const template = await getTemplate(this.endpoint, this.templateId);
-      if (!template) {
-        console.log('[PREVIEW] Unable to load template');
+      if (!this.templateId) {
+        console.log(`[PROPERTIES] Missing required template ID ${this.templateId}`);
         return;
       }
 
-      console.log('[PROPERTIES] Got template', template);
-      this.template = template;
-      TemplateStore.template = template;
-      this.name = template.name;
-      this.sendReminders = template.reminder_id !== null;
+      if (!this.endpoint.session) {
+        console.log('[PROPERTIES] Unable to start builder session, must be authenticated');
+        return;
+      }
+
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+
+      this.name = this.store?.state?.name;
+      this.sendReminders = this.store?.state?.reminder_id !== null;
     } catch (e) {
       console.log('[PROPERTIES] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));

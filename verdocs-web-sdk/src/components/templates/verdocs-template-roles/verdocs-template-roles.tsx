@@ -4,7 +4,7 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {createRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
 import {ITemplate, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
-import {loadTemplateStore, TTemplateStore} from '../../../utils/templateStore';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
 
@@ -102,7 +102,7 @@ export class VerdocsTemplateRoles {
         return;
       }
 
-      this.store = await loadTemplateStore(this.endpoint, this.templateId, true);
+      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
 
       this.sortTemplateRoles();
       this.renumberTemplateRoles();
@@ -330,8 +330,7 @@ export class VerdocsTemplateRoles {
       );
     }
 
-    const templateState = this.store?.state;
-    if (!templateState.isLoaded) {
+    if (!this.store?.state.isLoaded) {
       return (
         <Host class="loading">
           <verdocs-loader />
@@ -339,7 +338,7 @@ export class VerdocsTemplateRoles {
       );
     }
 
-    const roleNames = (templateState.roles || []).map(role => role.name);
+    const roleNames = (this.store?.state?.roles || []).map(role => role.name);
 
     return (
       <Host>
@@ -352,7 +351,7 @@ export class VerdocsTemplateRoles {
               <div class="icon" innerHTML={startIcon} />
               <div class="row-roles">
                 <div class="sender">
-                  <span class="label">Sender:</span> {senderLabels[templateState.sender]}{' '}
+                  <span class="label">Sender:</span> {senderLabels[this.store?.state?.sender]}{' '}
                   <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
                 </div>
               </div>
@@ -375,7 +374,7 @@ export class VerdocsTemplateRoles {
                     {/* The "start of sequence" drop zone */}
                     <div class="dropzone" data-order={0.5} data-sequence={sequence} />
 
-                    {templateState.roles
+                    {this.store?.state?.roles
                       .filter(role => role.sequence === sequence)
                       .map(role => {
                         const unknown = !role.email;
@@ -460,13 +459,13 @@ export class VerdocsTemplateRoles {
               // this.forceRerender++;
             }}
             onDelete={async () => {
-              await loadTemplateStore(this.endpoint, this.templateId, true);
+              await getTemplateStore(this.endpoint, this.templateId, true);
 
               this.renumberTemplateRoles();
               this.showingRoleDialog = null;
               // this.forceRerender++;
 
-              this.templateUpdated?.emit({event: 'deleted-role', endpoint: this.endpoint, template: templateState});
+              this.templateUpdated?.emit({event: 'deleted-role', endpoint: this.endpoint, template: this.store?.state});
             }}
           />
         )}

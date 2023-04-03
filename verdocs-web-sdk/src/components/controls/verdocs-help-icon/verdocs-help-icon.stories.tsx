@@ -9,7 +9,7 @@ export default {
   },
   argTypes: {},
   parameters: {
-    layout: 'fullscreen',
+    // layout: 'fullscreen',
   },
 } as Meta;
 

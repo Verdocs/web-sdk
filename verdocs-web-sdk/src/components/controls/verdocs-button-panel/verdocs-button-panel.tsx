@@ -5,10 +5,9 @@ import {Component, h, Host, Method, Prop} from '@stencil/core';
  * Displays a clickable icon suitable for display in a toolbar. When clicked, a customizable drop-down panel will be
  * displayed.
  *
- * *
  * ```html
  * <verdocs-button-panel icon="<svg.../>">
- *   <form>...</form>
+ *   <div class="content">...</div>
  * </verdocs-button-panel>
  * ```
  */

@@ -10,6 +10,7 @@ export interface ITemplateStore extends ITemplate {
   isError: boolean;
   error: any | null;
   updateCount: number;
+  roleNames: string[];
 }
 
 export type TTemplateStore = ObservableMap<ITemplateStore>;
@@ -22,6 +23,7 @@ const createTemplateStore = (templateId: string) => {
     isError: false,
     error: null,
     updateCount: 0,
+    roleNames: [],
 
     id: templateId,
     name: '',
@@ -51,7 +53,7 @@ const createTemplateStore = (templateId: string) => {
 
 const templateStores: Record<string, TTemplateStore> = {};
 
-export const loadTemplateStore = async (endpoint: VerdocsEndpoint, templateId: string, forceReload: boolean = false) => {
+export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: string, forceReload: boolean = false) => {
   let created = false;
   if (!templateStores[templateId]) {
     console.log('[TEMPLATES] No template store found for ID, creating', templateId);
@@ -87,6 +89,8 @@ export const loadTemplateStore = async (endpoint: VerdocsEndpoint, templateId: s
       store.state.isLoaded = false;
       store.state.isError = true;
       store.state.error = e;
+
+      throw e;
     }
 
     store.state.isLoading = false;
@@ -95,3 +99,5 @@ export const loadTemplateStore = async (endpoint: VerdocsEndpoint, templateId: s
 
   return store;
 };
+
+export const getRoleNames = (store?: TTemplateStore) => (store?.state?.roles || []).map(role => role.name);

@@ -311,7 +311,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'field', 'rerender', 'roleIndex'],
+  inputs: ['disabled', 'field', 'rerender', 'roleIndex', 'templateid'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -319,7 +319,7 @@ terminate the process, and the calling application should correct the condition 
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'field', 'rerender', 'roleIndex'],
+  inputs: ['disabled', 'field', 'rerender', 'roleIndex', 'templateid'],
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLElement;
@@ -340,7 +340,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'rerender', 'roleindex', 'templateid'],
   methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -348,7 +348,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'rerender', 'roleindex', 'templateid'],
 })
 export class VerdocsFieldCheckbox {
   protected el: HTMLElement;
@@ -373,7 +373,7 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateId'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -381,7 +381,7 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateId'],
 })
 export class VerdocsFieldDate {
   protected el: HTMLElement;
@@ -410,7 +410,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -418,7 +418,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
 })
 export class VerdocsFieldDropdown {
   protected el: HTMLElement;
@@ -449,7 +449,7 @@ keypress.
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'initials', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'initials', 'moveable', 'rerender', 'roleindex', 'templateid'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -457,7 +457,7 @@ keypress.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'initials', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'initials', 'moveable', 'rerender', 'roleindex', 'templateid'],
 })
 export class VerdocsFieldInitial {
   protected el: HTMLElement;
@@ -500,7 +500,7 @@ keypress.
 
 
 @ProxyCmp({
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'rerender', 'roleName', 'roleindex', 'selectedRoleName', 'signed'],
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'rerender', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'templateid'],
   methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -508,7 +508,7 @@ keypress.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'rerender', 'roleName', 'roleindex', 'selectedRoleName', 'signed'],
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'field', 'fieldId', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'rerender', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'templateid'],
 })
 export class VerdocsFieldPayment {
   protected el: HTMLElement;
@@ -537,7 +537,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'rerender', 'roleindex', 'templateid'],
   methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -545,7 +545,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'option', 'rerender', 'roleindex', 'templateid'],
 })
 export class VerdocsFieldRadioButton {
   protected el: HTMLElement;
@@ -570,7 +570,7 @@ export declare interface VerdocsFieldRadioButton extends Components.VerdocsField
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'name', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'name', 'rerender', 'roleindex', 'templateid'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -578,7 +578,7 @@ export declare interface VerdocsFieldRadioButton extends Components.VerdocsField
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'name', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'name', 'rerender', 'roleindex', 'templateid'],
 })
 export class VerdocsFieldSignature {
   protected el: HTMLElement;
@@ -611,7 +611,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -619,7 +619,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
 })
 export class VerdocsFieldTextarea {
   protected el: HTMLElement;
@@ -644,7 +644,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -652,7 +652,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLElement;
@@ -677,7 +677,7 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -685,7 +685,7 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
 })
 export class VerdocsFieldTimestamp {
   protected el: HTMLElement;
