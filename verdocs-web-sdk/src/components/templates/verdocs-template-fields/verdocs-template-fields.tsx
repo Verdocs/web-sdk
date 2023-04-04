@@ -467,6 +467,8 @@ export class VerdocsTemplateFields {
     const pages = [...this.store?.state.pages];
     pages.sort((a, b) => a.sequence - b.sequence);
 
+    const selectableRoles = this.store?.state?.roles.map(role => ({value: role.name, label: role.name}));
+
     return (
       <Host
         class={this.placing ? {[`placing-${this.placing}`]: true} : {}}
@@ -476,6 +478,9 @@ export class VerdocsTemplateFields {
         }}
       >
         <div id="verdocs-template-fields-toolbar">
+          <div class="add-for">Add field:</div>
+          <verdocs-select-input value={this.selectedRoleName} options={selectableRoles} onInput={(e: any) => (this.selectedRoleName = e.target.value)} />
+
           {menuOptions.map(option => (
             <verdocs-toolbar-icon
               text={option.tooltip}
@@ -489,6 +494,7 @@ export class VerdocsTemplateFields {
             />
           ))}
         </div>
+
         {/* <div class="page-0" ref={el => (this.page0El = el as HTMLDivElement)}>*/}
         {/*  <div class="user-placed-fields">*/}
         {/*    <div class="title">User-Placed Fields</div>*/}

@@ -170,17 +170,7 @@ export class VerdocsTemplateFieldProperties {
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(() => {
         this.dirty = false;
-        const field = this.store?.state?.fields.find(field => field.name === this.fieldName);
-        if (field) {
-          field.name = this.name;
-          field.role_name = this.roleName;
-          field.required = this.required;
-          field.label = this.placeholder;
-          field.setting.result = this.defaultValue;
-          if (field.setting.options) {
-            field.setting.options = this.options;
-          }
-        }
+        this.updateField();
         this.settingsChanged?.emit({fieldName: this.fieldName});
         this.close?.emit();
       })
@@ -216,28 +206,37 @@ export class VerdocsTemplateFieldProperties {
           },
     );
 
-    newProperties.setting = this.setting;
-    newProperties.setting.options = this.options;
+    newProperties.setting = {...this.setting};
+    delete newProperties.setting.result;
+    newProperties.setting.options = {...this.options};
 
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(() => {
         this.dirty = false;
-        const field = this.store?.state?.fields.find(field => field.name === this.fieldName);
-        if (field) {
-          field.name = this.name;
-          field.role_name = this.roleName;
-          field.required = this.required;
-          field.label = this.placeholder;
-          field.setting.result = this.defaultValue;
-        }
+        this.updateField();
         this.settingsChanged?.emit({fieldName: this.fieldName});
         this.close?.emit();
-        // TODO: Verify this
-        // TemplateStore.updateCount++;
       })
       .catch(() => {
         console.log('Field update failed', e);
       });
+  }
+
+  updateField() {
+    const newFields = [...this.store.state.fields];
+    newFields.forEach(field => {
+      if (field.name === this.fieldName) {
+        field.name = this.name;
+        field.role_name = this.roleName;
+        field.required = this.required;
+        field.label = this.placeholder;
+        // field.setting.result = this.defaultValue;
+        if (field.setting.options) {
+          field.setting.options = this.options;
+        }
+      }
+    });
+    this.store.state.fields = newFields;
   }
 
   async handleDelete(e) {

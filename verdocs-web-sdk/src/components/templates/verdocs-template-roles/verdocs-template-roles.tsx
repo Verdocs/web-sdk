@@ -265,33 +265,37 @@ export class VerdocsTemplateRoles {
     return name;
   }
 
+  callCreateRole(name: string, sequence: number, order: number) {
+    console.log('[ROLES] Will create role', {name, sequence, order});
+    createRole(this.endpoint, this.templateId, {
+      template_id: this.templateId,
+      name,
+      sequence,
+      order,
+      full_name: '',
+      email: '',
+      phone: '',
+      type: 'signer',
+      delegator: false,
+    })
+      .then(r => {
+        console.log('[ROLES] Created role', r);
+        this.store.state.roles = [...this.store?.state.roles, r];
+        this.renumberTemplateRoles();
+        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: this.store?.state});
+      })
+      .catch(e => {
+        console.log('[ROLES] Error creating role', e);
+      });
+  }
+
   handleAddRole(e, sequence: number) {
     e.stopPropagation();
 
     // We don't need to look for a unique order number because we're already working with a sorted/renumbered set by now.
     const order = this.store?.state.roles.filter(role => role.sequence === sequence).length + 1;
     const name = this.getNextRoleName();
-    console.log('Will create', name, sequence, order);
-    createRole(this.endpoint, this.templateId, {
-      template_id: this.templateId,
-      name,
-      full_name: '',
-      email: '',
-      phone: '',
-      sequence,
-      order,
-      type: 'signer',
-      delegator: false,
-    })
-      .then(r => {
-        console.log('Created role', r);
-        this.store?.state.roles.push(r);
-        this.renumberTemplateRoles();
-        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: this.store?.state});
-      })
-      .catch(e => {
-        console.log('Error creating role', e);
-      });
+    this.callCreateRole(name, sequence, order);
   }
 
   handleAddStep(e, sequence: number) {
@@ -299,26 +303,7 @@ export class VerdocsTemplateRoles {
 
     const order = 1;
     const name = this.getNextRoleName();
-
-    createRole(this.endpoint, this.templateId, {
-      template_id: this.templateId,
-      name,
-      full_name: '',
-      email: '',
-      phone: '',
-      sequence,
-      order,
-      type: 'signer',
-      delegator: false,
-    })
-      .then(r => {
-        this.store?.state?.roles?.push(r);
-        this.renumberTemplateRoles();
-        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: this.store.state});
-      })
-      .catch(e => {
-        console.log('Error creating role', e);
-      });
+    this.callCreateRole(name, sequence, order);
   }
 
   render() {

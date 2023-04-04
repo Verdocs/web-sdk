@@ -192,15 +192,18 @@ export class VerdocsSign {
   }
 
   handleClickAgree() {
+    this.submitting = true;
     envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, true)
       .then(() => {
         this.nextButtonLabel = 'Next';
         this.recipient.agreed = true;
+        this.submitting = false;
         this.agreed = true; // The server returns a recipient object but it's not "deep" so we track this locally
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'agreed'});
       })
       .catch(e => {
         console.log('Update failure', e);
+        this.submitting = false;
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
   }
@@ -244,6 +247,7 @@ export class VerdocsSign {
   }
 
   updateRecipientFieldValue(fieldName: string, updateResult: any) {
+    console.log('[SIGN] updateRecipientFieldValue', fieldName);
     this.recipient.fields.forEach(oldField => {
       if (oldField.name === fieldName) {
         oldField.settings = updateResult.settings;
@@ -255,10 +259,9 @@ export class VerdocsSign {
   }
 
   saveFieldChange(fieldName: string, fields: Record<string, any>) {
+    console.log('[SIGN] updateRecipientFieldValue', fieldName);
     Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, fieldName, fields) //
-      .then(updateResult => {
-        this.updateRecipientFieldValue(fieldName, updateResult);
-      })
+      .then(updateResult => this.updateRecipientFieldValue(fieldName, updateResult))
       .catch(e => {
         if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
           // TODO: Do we want to improve the instructions here?
@@ -433,7 +436,10 @@ export class VerdocsSign {
   }
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
-    el.addEventListener('input', () => this.checkRecipientFields());
+    el.addEventListener('input', (e: any) => {
+      console.log('[SIGN] onfieldInput', e.detail, e.target.value);
+      this.checkRecipientFields();
+    });
     el.addEventListener('focusout', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
     el.addEventListener('fieldChange', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
 
@@ -557,11 +563,7 @@ export class VerdocsSign {
     if (this.isDone) {
       return (
         <Host class={{agreed: this.agreed}}>
-          {this.isDone ? (
-            <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
-          ) : (
-            <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
-          )}
+          <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
 
           {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
 

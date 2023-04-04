@@ -118,7 +118,8 @@ export class VerdocsTemplateRoleProperties {
         console.log('Update result', r);
         this.saving = false;
         this.dirty = false;
-        this.store?.state?.roles.forEach(role => {
+        const newRoles = [...this.store.state.roles];
+        newRoles.forEach(role => {
           if (role.name === this.roleName) {
             role.name = this.name;
             role.type = this.type;
@@ -128,10 +129,11 @@ export class VerdocsTemplateRoleProperties {
             role.delegator = this.allowDelegation;
           }
         });
+        this.store.state.roles = newRoles;
         this.close?.emit();
       })
       .catch(e => {
-        console.log('Uopdate error', e);
+        console.log('Update error', e);
         this.saving = false;
       });
   }
@@ -142,9 +144,7 @@ export class VerdocsTemplateRoleProperties {
       deleteRole(this.endpoint, this.templateId, this.roleName)
         .then(r => {
           console.log('Role deleted', r);
-          if (this.store?.state) {
-            this.store.state.roles = [...this.store.state.roles.filter(role => role.name !== this.roleName)];
-          }
+          this.store.state.roles = [...this.store.state.roles.filter(role => role.name !== this.roleName)];
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
         })
         .catch(e => {

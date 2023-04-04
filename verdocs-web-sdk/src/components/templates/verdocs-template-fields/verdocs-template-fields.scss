@@ -49,15 +49,26 @@ verdocs-template-fields {
     height: 50px;
     display: flex;
     flex: 0 0 50px;
+    column-gap: 15px;
+    padding: 0 20px 0 0; // Right-only to better balance the visual
     align-items: center;
     flex-direction: row;
     justify-content: center;
-    column-gap: 15px;
     background: $verdocs-grey-blue;
 
     svg {
       width: 24px;
       height: 24px;
+    }
+
+    .add-for {
+      font-weight: 500;
+      margin: 0;
+      color: $verdocs-grey-3;
+    }
+
+    verdocs-select-input {
+      margin: 0 20px 0 0;
     }
   }
 
