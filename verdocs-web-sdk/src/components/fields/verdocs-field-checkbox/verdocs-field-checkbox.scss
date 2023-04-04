@@ -2,11 +2,9 @@
 
 // See https://www.kallmanation.com/styling-a-checkbox-with-only-css
 verdocs-field-checkbox {
-  font-family: $verdocs-primary-font;
-  font-size: 14px;
-  position: relative;
-  background-color: transparent;
+  line-height: 18px;
   transform-origin: bottom left;
+  font-family: $verdocs-primary-font;
 
   &.disabled {
     opacity: 0.5;
@@ -18,15 +16,17 @@ verdocs-field-checkbox {
 
   label > input[type='checkbox'] + *::before {
     content: '';
-    position: absolute;
-    display: block;
-    top: 1px;
-    left: 1px;
-    width: 10px;
-    height: 10px;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    line-height: 18px;
     border-radius: 2px;
-    //background: $verdocs-grey-3;
-    border: 1px solid rgba(0, 0, 0, 0.7);
+    border-style: solid;
+    margin-right: 0.5rem;
+    border-width: 0.1rem;
+    display: inline-block;
+    vertical-align: bottom;
+    border-color: $verdocs-grey-2;
   }
 
   label > input[type='checkbox']:checked + * {

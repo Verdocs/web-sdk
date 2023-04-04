@@ -438,7 +438,14 @@ export class VerdocsSign {
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
     el.addEventListener('input', (e: any) => {
       console.log('[SIGN] onfieldInput', e.detail, e.target.value);
-      this.checkRecipientFields();
+      // These field types don't emit fieldChange. Should we standardize on that? We don't tap "input" for fields like
+      // text boxes because we'd be updating the field on every keystroke. We do those on blur which fires fieldChange.
+      if (e.target.name.includes('checkbox_group') || e.target.name.includes('radio_button_group')) {
+        console.log('CB', e.target);
+        this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
+      } else {
+        this.checkRecipientFields();
+      }
     });
     el.addEventListener('focusout', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
     el.addEventListener('fieldChange', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));

@@ -114,9 +114,9 @@ export class VerdocsFieldRadioButton {
         <input
           id={id}
           type="radio"
+          name={this.field.name}
           value={option.id}
           tabIndex={settings.order}
-          name={this.field.name}
           checked={!!option.selected}
           disabled={disabled}
           required={settings.required}

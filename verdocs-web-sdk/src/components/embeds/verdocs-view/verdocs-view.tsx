@@ -51,7 +51,7 @@ export class VerdocsView {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
-  @State() isProcessing = false;
+  @State() canceling = false;
   @State() envelope: IEnvelope | null = null;
   @State() roleNames: string[] = [];
   @State() showCancelDone = false;
@@ -103,7 +103,22 @@ export class VerdocsView {
       case 'cancel':
         // TODO: Better option for inline-flow confirmation and alert dialogs.
         if (confirm('Are you sure you wish to cancel this envelope? This action cannot be undone.')) {
-          await cancelEnvelope(this.endpoint, this.envelopeId);
+          this.canceling = true;
+          cancelEnvelope(this.endpoint, this.envelopeId)
+            .then(r => {
+              this.canceling = false;
+              console.log('[VIEW] Envelope canceled', r);
+              return throttledGetEnvelope(this.endpoint, this.envelopeId);
+            })
+            .then(env => {
+              console.log('[VIEW] Loaded new envelope details', env);
+              this.envelope = env;
+            })
+            .catch(e => {
+              this.canceling = false;
+              console.log('[VIEW] Error canceling envelope', e);
+              this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+            });
           this.showCancelDone = true;
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'canceled'});
         }
@@ -229,6 +244,11 @@ export class VerdocsView {
               this.showCancelDone = false;
             }}
           />
+        )}
+        {this.canceling && (
+          <div class="loading-indicator">
+            <verdocs-loader />
+          </div>
         )}
       </Host>
     );

@@ -208,7 +208,7 @@ export class VerdocsTemplateFieldProperties {
 
     newProperties.setting = {...this.setting};
     delete newProperties.setting.result;
-    newProperties.setting.options = {...this.options};
+    newProperties.setting.options = [...this.options];
 
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(() => {

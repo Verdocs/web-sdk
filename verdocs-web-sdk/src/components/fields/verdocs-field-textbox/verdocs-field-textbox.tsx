@@ -140,6 +140,7 @@ export class VerdocsFieldTextbox {
       <Host class={{required: this.field?.required, disabled, done: this.done}} style={{backgroundColor}}>
         <input
           type="text"
+          name={this.field.name}
           placeholder={settings?.placeholder}
           tabIndex={settings?.order}
           value={value}

@@ -53,6 +53,7 @@ verdocs-template-fields {
     padding: 0 20px 0 0; // Right-only to better balance the visual
     align-items: center;
     flex-direction: row;
+    color: $verdocs-grey-3;
     justify-content: center;
     background: $verdocs-grey-blue;
 
@@ -62,8 +63,8 @@ verdocs-template-fields {
     }
 
     .add-for {
-      font-weight: 500;
       margin: 0;
+      font-weight: 500;
       color: $verdocs-grey-3;
     }
 

@@ -133,7 +133,7 @@ export class VerdocsFieldDate {
 
     return (
       <Host class={{required: this.field?.required, disabled}} style={{backgroundColor}}>
-        <input type="text" value="" id={this.containerId} disabled={disabled} placeholder={settings.placeholder} ref={el => (this.el = el)} />
+        <input name={this.field.name} type="text" value="" id={this.containerId} disabled={disabled} placeholder={settings.placeholder} ref={el => (this.el = el)} />
 
         {this.editable && (
           <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>

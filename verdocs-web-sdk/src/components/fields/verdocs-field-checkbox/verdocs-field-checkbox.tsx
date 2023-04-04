@@ -102,7 +102,7 @@ export class VerdocsFieldCheckbox {
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
         <label>
-          <input type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} value={option.id} />
+          <input name={this.field.name} type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} value={option.id} />
           <span />
           {this.editable && (
             <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>

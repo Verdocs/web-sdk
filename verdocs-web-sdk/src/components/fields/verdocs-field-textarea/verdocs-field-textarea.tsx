@@ -106,6 +106,7 @@ export class VerdocsFieldTextarea {
           tabIndex={settings.order}
           value={settings.value}
           disabled={disabled}
+          name={this.field.name}
           required={settings.required}
           ref={el => (this.el = el)}
         />

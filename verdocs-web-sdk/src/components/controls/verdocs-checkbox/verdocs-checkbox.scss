@@ -2,8 +2,8 @@
 
 // Your periodic reminder that it's 2022 and you still can't style HTML checkboxes
 verdocs-checkbox {
-  font-family: $verdocs-primary-font;
   line-height: 18px;
+  font-family: $verdocs-primary-font;
 
   label > input[type='checkbox'] {
     display: none;
