@@ -50,12 +50,17 @@ verdocs-template-fields {
     display: flex;
     flex: 0 0 50px;
     column-gap: 15px;
+    font-weight: 700;
     padding: 0 20px 0 0; // Right-only to better balance the visual
     align-items: center;
     flex-direction: row;
     color: $verdocs-grey-3;
     justify-content: center;
     background: $verdocs-grey-blue;
+
+    > verdocs-select-input {
+      margin: 0;
+    }
 
     svg {
       width: 24px;

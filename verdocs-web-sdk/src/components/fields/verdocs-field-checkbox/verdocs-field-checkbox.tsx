@@ -1,7 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/core';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
+import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
 import {getFieldSettings} from '../../../utils/utils';
 
 const settingsIcon =
@@ -24,7 +24,7 @@ export class VerdocsFieldCheckbox {
   /**
    * The document or template field to display.
    */
-  @Prop() field: IDocumentField | ITemplateField | null = null;
+  @Prop() field: IEnvelopeField | ITemplateField | null = null;
 
   /**
    * The index of the settings option this particular checkbox is for

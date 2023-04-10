@@ -1,6 +1,6 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
+import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, State} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
 
@@ -25,7 +25,7 @@ export class VerdocsFieldSignature {
   /**
    * The document or template field to display.
    */
-  @Prop() field: IDocumentField | ITemplateField | null = null;
+  @Prop() field: IEnvelopeField | ITemplateField | null = null;
 
   /**
    * If set, the signature creation dialog will be initialized with this text.

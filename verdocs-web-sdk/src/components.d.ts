@@ -12,7 +12,7 @@ import { IRole, ITemplate, ITemplateField, TTemplateSender } from "@verdocs/js-s
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
-import { IDocumentField, IEnvelope, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
+import { IEnvelope, IEnvelopeField, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
@@ -186,7 +186,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -219,7 +219,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
@@ -259,7 +259,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -296,7 +296,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -333,7 +333,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -370,7 +370,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "fieldId": string;
         "fields": any[];
         "focused": boolean;
@@ -411,7 +411,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
@@ -451,7 +451,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -492,7 +492,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -529,7 +529,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -566,7 +566,7 @@ export namespace Components {
         /**
           * The document or template field to display.
          */
-        "field": IDocumentField | ITemplateField | null;
+        "field": IEnvelopeField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -1890,7 +1890,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * Event fired when the field's settings are changed.
          */
@@ -1924,7 +1924,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -1970,7 +1970,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2016,7 +2016,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2062,7 +2062,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * The document or template field to display.
          */
@@ -2120,7 +2120,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         "fieldId"?: string;
         "fields"?: any[];
         "focused"?: boolean;
@@ -2169,7 +2169,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2215,7 +2215,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2269,7 +2269,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2311,7 +2311,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2353,7 +2353,7 @@ declare namespace LocalJSX {
         /**
           * The document or template field to display.
          */
-        "field"?: IDocumentField | ITemplateField | null;
+        "field"?: IEnvelopeField | ITemplateField | null;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */

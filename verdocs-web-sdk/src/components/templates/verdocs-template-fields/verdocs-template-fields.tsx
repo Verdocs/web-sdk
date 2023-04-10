@@ -356,6 +356,11 @@ export class VerdocsTemplateFields {
         page_sequence: pageNumber,
         validator: null,
         setting: {x, y}, // In the future, this is all we should send, see below
+        x,
+        y,
+        tabindex: 0,
+        width,
+        height,
       };
 
       // TODO: Fix how the server validates all this. It uses a JSON schema and is very particular about shapes for each field type.

@@ -1,6 +1,6 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
+import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
 import { Component, h, Host, Prop, Event, EventEmitter, State, Method } from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
 
@@ -22,7 +22,7 @@ export class VerdocsFieldPayment {
   /**
    * The document or template field to display.
    */
-  @Prop() field: IDocumentField | ITemplateField | null = null;
+  @Prop() field: IEnvelopeField | ITemplateField | null = null;
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
