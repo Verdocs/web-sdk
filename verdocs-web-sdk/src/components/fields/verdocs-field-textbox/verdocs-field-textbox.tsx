@@ -131,6 +131,9 @@ export class VerdocsFieldTextbox {
     let disabled = this.disabled ?? settings.disabled ?? false;
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
     const value = settings?.result || '';
+    const width = settings.width || 150;
+    // TODO: This is an antiquated technique from the old system. We should compute it.
+    const maxlength = width / 5;
 
     if (this.done) {
       return <Host class={{done: this.done}}>{value}</Host>;
@@ -147,6 +150,7 @@ export class VerdocsFieldTextbox {
           disabled={disabled}
           required={this.field?.required}
           ref={el => (this.inputEl = el)}
+          maxlength={maxlength}
         />
         {this.editable && (
           <div

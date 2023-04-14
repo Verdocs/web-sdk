@@ -5,7 +5,7 @@ import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {downloadBlob} from '@verdocs/js-sdk/Utils/Files';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IDocumentField, IEnvelope, TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
+import {IEnvelopeField, IEnvelope, TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {IDocumentPageInfo} from './Types';
 
 export const defaultWidth = (type: TDocumentFieldType) => {
@@ -67,8 +67,8 @@ export const defaultHeight = (type: TDocumentFieldType) => {
   return 50;
 };
 
-export const setControlStyles = (el: HTMLElement, field: ITemplateField | IDocumentField, xScale: number, yScale: number, option?: number) => {
-  const settings = (field as ITemplateField).setting || (field as IDocumentField).settings;
+export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number, option?: number) => {
+  const settings = (field as ITemplateField).setting || (field as IEnvelopeField).settings;
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = settings;
 
   const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
@@ -88,11 +88,11 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IDocum
   // el.style.backgroundColor = field['rgba'] || getRGBA(roleIndex);
 };
 
-export const getFieldId = (field: ITemplateField | IDocumentField) => {
+export const getFieldId = (field: ITemplateField | IEnvelopeField) => {
   return `verdocs-doc-fld-${field.name}`;
 };
 
-export const getFieldOptionId = (field: ITemplateField | IDocumentField, index: number) => {
+export const getFieldOptionId = (field: ITemplateField | IEnvelopeField, index: number) => {
   return `verdocs-doc-fld-${field.name}-${index}`;
 };
 
@@ -103,7 +103,7 @@ interface IFieldOptions {
   done?: boolean;
 }
 
-export const updateDocumentFieldValue = (field: ITemplateField | IDocumentField) => {
+export const updateDocumentFieldValue = (field: ITemplateField | IEnvelopeField) => {
   const id = getFieldId(field);
   const existingField = document.getElementById(id) as any;
   if (existingField) {
@@ -114,7 +114,7 @@ export const updateDocumentFieldValue = (field: ITemplateField | IDocumentField)
   }
 };
 
-export const renderDocumentField = (field: ITemplateField | IDocumentField, docPage: IDocumentPageInfo, roleIndex: number, fieldOptions: IFieldOptions) => {
+export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docPage: IDocumentPageInfo, roleIndex: number, fieldOptions: IFieldOptions) => {
   const {disabled = false, editable = false, draggable = false, done = false} = fieldOptions;
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
   if (!controlsDiv) {
@@ -283,13 +283,13 @@ export const getRoleIndex = (roles: string[], role: string) => roles.indexOf(rol
 
 // TODO: We can clean this up a lot if we alter the API to emit both setting and settings regardless of the source type,
 //   but then merge the SDK types to encourage developers to use just `settings`.
-export const getFieldSettings = (field: ITemplateField | IDocumentField) => {
+export const getFieldSettings = (field: ITemplateField | IEnvelopeField) => {
   if ((field as ITemplateField).setting) {
     return (field as ITemplateField).setting;
   }
 
-  if ((field as IDocumentField).settings) {
-    return (field as IDocumentField).settings;
+  if ((field as IEnvelopeField).settings) {
+    return (field as IEnvelopeField).settings;
   }
 
   return {x: 0, y: 0, required: false, disabled: false, result: '', value: ''};
@@ -382,3 +382,14 @@ export const throttle = (f, delay) => {
     timer = setTimeout(() => f.apply(this, args), delay);
   };
 };
+
+/**
+ * Convert a browser File object's data into a base64-encoded string.
+ */
+export const fileToBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result?.toString() || '');
+    reader.onerror = error => reject(error);
+  });

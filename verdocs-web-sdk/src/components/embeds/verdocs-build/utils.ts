@@ -1,7 +1,7 @@
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
-import {IDocumentField} from '@verdocs/js-sdk/Envelopes/Types';
+import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
 
-export function getInputStyle(field: IDocumentField, mode, browserType: string) {
+export function getInputStyle(field: IEnvelopeField, mode, browserType: string) {
   const fontSize = 11;
   let setting = 'setting';
   if (!!field['settings']) {

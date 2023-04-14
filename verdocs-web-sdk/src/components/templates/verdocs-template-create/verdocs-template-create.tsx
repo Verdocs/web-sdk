@@ -1,8 +1,8 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {createTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {createTemplateDocument} from '@verdocs/js-sdk/Templates/TemplateDocuments';
-import {createTemplate, getTemplate} from '@verdocs/js-sdk/Templates/Templates';
+import {fileToBase64} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
 
 const unicodeNBSP = ' ';
@@ -42,9 +42,7 @@ export class VerdocsTemplateCreate {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() file: File | null;
-
   @State() creating = false;
-
   @State() progressLabel = 'Uploading...';
   @State() progressPercent = 0;
 
@@ -84,10 +82,9 @@ export class VerdocsTemplateCreate {
     this.progressLabel = 'Uploading...';
 
     try {
-      const template = await createTemplate(this.endpoint, {name: this.file.name});
-      console.log('[CREATE] Created template', template);
-
-      const template_document = await createTemplateDocument(this.endpoint, template.id, this.file, percent => {
+      const data = await fileToBase64(this.file);
+      console.log('Encoded data', data);
+      const template = await createTemplate(this.endpoint, {name: this.file.name, documents: [this.file]}, percent => {
         if (percent >= 99) {
           this.progressLabel = 'Processing...';
           this.progressPercent = 100;
@@ -95,11 +92,9 @@ export class VerdocsTemplateCreate {
           this.progressPercent = percent;
         }
       });
+      console.log('[CREATE] Created template', template);
+      this.next?.emit(template);
 
-      console.log('[CREATE] Created document', template_document);
-
-      const finalTemplate = await getTemplate(this.endpoint, template.id);
-      this.next?.emit(finalTemplate);
       this.creating = false;
       this.progressLabel = '';
       this.progressPercent = 0;

@@ -5,7 +5,7 @@ import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {fullNameToInitials, integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {IDocumentField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/js-sdk/Envelopes/Types';
+import {IEnvelopeField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/js-sdk/Envelopes/Types';
 import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
@@ -275,7 +275,7 @@ export class VerdocsSign {
       });
   }
 
-  async handleFieldChange(field: IDocumentField, e: any) {
+  async handleFieldChange(field: IEnvelopeField, e: any) {
     const {value, checked} = e.target;
 
     switch (field.type) {
@@ -325,7 +325,7 @@ export class VerdocsSign {
     }
   }
 
-  isFieldValid(field: IDocumentField) {
+  isFieldValid(field: IEnvelopeField) {
     const {required = false} = field;
     const {result = '', value = '', base64 = ''} = field.settings || {};
     switch (field.type) {
