@@ -2,7 +2,6 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {createTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {fileToBase64} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
 
 const unicodeNBSP = ' ';
@@ -82,8 +81,6 @@ export class VerdocsTemplateCreate {
     this.progressLabel = 'Uploading...';
 
     try {
-      const data = await fileToBase64(this.file);
-      console.log('Encoded data', data);
       const template = await createTemplate(this.endpoint, {name: this.file.name, documents: [this.file]}, percent => {
         if (percent >= 99) {
           this.progressLabel = 'Processing...';

@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "1.13.5",
+  "version": "1.13.7",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -38,6 +38,7 @@
     "flatpickr": "^4.6.13",
     "interactjs": "^1.10.17",
     "jszip": "^3.10.1",
+    "patch-package": "^6.5.1",
     "uuid": "^9.0.0",
     "workflow-svg.js": "^3.0.2"
   },
@@ -65,7 +66,6 @@
     "jest-cli": "^29.5.0",
     "jest-svg-transformer": "^1.0.0",
     "lit-html": "^2.7.0",
-    "patch-package": "^6.5.1",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.8.7",
     "puppeteer": "^16.2.0",

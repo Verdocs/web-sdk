@@ -1,0 +1,10 @@
+diff --git a/node_modules/@types/react/global.d.ts b/node_modules/@types/react/global.d.ts
+index a5ae8ca..7aab068 100755
+--- a/node_modules/@types/react/global.d.ts
++++ b/node_modules/@types/react/global.d.ts
+@@ -154,4 +154,4 @@ interface TouchList { }
+ interface WebGLRenderingContext { }
+ interface WebGL2RenderingContext { }
+ 
+-interface TrustedHTML { }
++// interface TrustedHTML { }
