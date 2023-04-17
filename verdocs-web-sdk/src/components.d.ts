@@ -2748,7 +2748,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user changes the type.
          */
-        "onNext"?: (event: VerdocsTemplateAttachmentsCustomEvent<ITemplate>) => void;
+        "onNext"?: (event: VerdocsTemplateAttachmentsCustomEvent<{template: ITemplate}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */

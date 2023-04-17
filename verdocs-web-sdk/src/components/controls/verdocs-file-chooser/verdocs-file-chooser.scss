@@ -1,60 +1,34 @@
 @import '../../../theme.scss';
 
 verdocs-file-chooser {
+  display: flex;
+  flex-direction: column;
+  background-color: $verdocs-grey-4;
   font-family: $verdocs-primary-font;
 
-  form {
-    background-color: $verdocs-grey-4;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-
-    .upload-box {
-      box-sizing: border-box;
-      width: 320px;
-      text-align: center;
-      padding: 44px 18px 66px;
-      border: 2px dashed #979797;
-      color: rgba(0, 0, 0, 0.54);
-
-      svg {
-        width: 64px;
-        fill: #5c6575;
-      }
-    }
-  }
-
-  .loader-wrapper {
-    background-color: $verdocs-grey-4;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    position: relative;
-    width: 320px;
-    height: 320px;
+  .upload-box {
     text-align: center;
-    border: 2px dashed #979797;
-    justify-content: flex-end;
-  }
+    box-sizing: border-box;
+    padding: 44px 18px 66px;
+    color: rgba(0, 0, 0, 0.54);
 
-  .progress-wrapper {
-    padding: 20px;
-  }
-
-  .buttons {
-    display: flex;
-    column-gap: 8px;
-    margin-top: 16px;
-    align-items: center;
-    flex-direction: row;
-    justify-content: flex-end;
-
-    .flex-fill {
-      flex: 1;
+    svg {
+      width: 64px;
+      height: 64px;
+      fill: #5c6575;
     }
   }
 
-  ::placeholder {
-    color: $verdocs-bg-2;
+  .selected-filename {
+    font-size: 20px;
+    margin-top: 20px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+  }
+
+  .or-prefer {
+    height: 20px;
+    margin: 20px 0;
+    font-size: 16px;
   }
 }

@@ -3,9 +3,7 @@ import {Component, h, Event, EventEmitter, Prop, Host, State} from '@stencil/cor
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import { createTemplate } from '@verdocs/js-sdk/Templates/Templates';
-
-const unicodeNBSP = ' ';
+import {createTemplate} from '@verdocs/js-sdk/Templates/Templates';
 
 const FileIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"></path></svg>';
@@ -40,7 +38,7 @@ export class VerdocsTemplateAttachments {
   /**
    * Event fired when the user changes the type.
    */
-  @Event({composed: true}) next: EventEmitter<ITemplate>;
+  @Event({composed: true}) next: EventEmitter<{template: ITemplate}>;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -48,8 +46,7 @@ export class VerdocsTemplateAttachments {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() file: File | null;
-  @State() creating = false;
+  @State() uploading = false;
   @State() progressLabel = 'Uploading...';
   @State() progressPercent = 0;
 
@@ -78,38 +75,26 @@ export class VerdocsTemplateAttachments {
     }
   }
 
-  handleFileChanged(e: any) {
-    this.file = e.target.files?.[0] || null;
-    console.log('[CREATE] Selected file', this.file);
-    // this.filePath = e.target.files?.[0]?.name;
-  }
-
-  handleUpload(e) {
-    e.stopPropagation();
-    const fileElem = document.getElementById('verdocs-template-create-file');
-    fileElem.click();
-  }
-
   handleCancel(e) {
     e.stopPropagation();
     this.exit.emit();
   }
 
-  async handleSubmit(e) {
+  async handleUpload(e) {
     e.stopPropagation();
 
-    console.log('Submitting');
-
-    // Should be true if we're here because onClick is only enabled then. We're just guarding this for Typescript.
-    if (!this.file) {
+    const file = e.detail.file;
+    if (!file) {
       return;
     }
 
-    this.creating = true;
+    console.log('[ATTACHMENTS] Uploading...', file);
+
+    this.uploading = true;
     this.progressLabel = 'Uploading...';
 
     try {
-      const template = await createTemplate(this.endpoint, {name: this.file.name, documents: [this.file]}, percent => {
+      const template = await createTemplate(this.endpoint, {name: file.name, documents: [file]}, percent => {
         if (percent >= 99) {
           this.progressLabel = 'Processing...';
           this.progressPercent = 100;
@@ -118,16 +103,24 @@ export class VerdocsTemplateAttachments {
         }
       });
       console.log('[CREATE] Created template', template);
-      this.next?.emit(template);
+      this.next?.emit({template: this.store.state as ITemplate});
 
-      this.creating = false;
+      this.uploading = false;
       this.progressLabel = '';
       this.progressPercent = 0;
     } catch (e) {
       console.log('[CREATE] Error creating template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      this.creating = false;
+      this.uploading = false;
     }
+  }
+
+  handleNext(e: any) {
+    e.stopPropagation();
+    this.uploading = false;
+    this.progressLabel = '';
+    this.progressPercent = 0;
+    this.next?.emit({template: this.store.state as ITemplate});
   }
 
   render() {
@@ -155,55 +148,39 @@ export class VerdocsTemplateAttachments {
 
     return (
       <Host>
-        <h5>Document Attachments</h5>
+        <h5>Existing Attachments</h5>
 
-        {this.store?.state.template_documents.map(document => (
-          <div class="attachment">
-            <div class="file-icon" innerHTML={FileIcon} />
-            <div class="filename">
-              {document.name} ({document.page_numbers} page{document.page_numbers > 1 ? 's' : ''})
-            </div>
-            <div class="trash-icon" innerHTML={TrashIcon} />
-          </div>
-        ))}
-
-        <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
-          <input type="file" id="verdocs-template-create-file" multiple accept="application/pdf" style={{display: 'none'}} onChange={e => this.handleFileChanged(e)} />
-
-          {this.creating ? (
-            <div class="loader-wrapper">
-              <verdocs-loader />
-              {this.progressLabel && (
-                <div class="progress-wrapper">
-                  <verdocs-progress-bar showPercent={true} percent={this.progressPercent} label={this.progressLabel} />
-                </div>
-              )}
-            </div>
-          ) : (
-            <div class="upload-box">
-              <div>
-                <span innerHTML={FileIcon} />
+        <div class="attachments">
+          {this.store?.state.template_documents.map(document => (
+            <div class="attachment">
+              <div class="file-icon" innerHTML={FileIcon} />
+              <div class="filename">
+                {document.name} ({document.page_numbers} page{document.page_numbers > 1 ? 's' : ''})
               </div>
-              <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold', overflowWrap: 'anywhere'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
-              <div
-                style={{
-                  marginTop: '20px',
-                  marginBottom: '20px',
-                  fontSize: '16px',
-                  height: '20px',
-                }}
-              >
-                {this.file ? unicodeNBSP : 'Or, if you prefer...'}
-              </div>
-              <verdocs-button label={this.file ? 'Select a different file' : 'Select a file from your computer'} size="small" onClick={e => this.handleUpload(e)} />
+              <div class="trash-icon" innerHTML={TrashIcon} />
             </div>
-          )}
+          ))}
+        </div>
 
-          <div class="buttons">
-            <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} disabled={this.creating} />
-            <verdocs-button label="Next" size="small" onClick={e => this.handleSubmit(e)} disabled={!this.file || this.creating} />
+        <h5>Attach a New Document</h5>
+
+        {this.uploading ? (
+          <div class="loader-wrapper">
+            <verdocs-loader />
+            {this.progressLabel && (
+              <div class="progress-wrapper">
+                <verdocs-progress-bar showPercent={true} percent={this.progressPercent} label={this.progressLabel} />
+              </div>
+            )}
           </div>
-        </form>
+        ) : (
+          <verdocs-file-chooser onFileSelected={e => this.handleUpload(e)} />
+        )}
+
+        <div class="buttons">
+          <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} disabled={this.uploading} />
+          <verdocs-button label="Next" size="small" onClick={e => this.handleNext(e)} disabled={!this.store?.state.template_documents.length || this.uploading} />
+        </div>
       </Host>
     );
   }

@@ -44,28 +44,28 @@ export class VerdocsFileChooser {
   }
 
   render() {
+    const buttonlabel = this.file ? 'Select a different file' : 'Select a file from your computer';
+
     return (
       <Host>
-        <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
-          <input
-            type="file"
-            multiple
-            id="verdocs-file-chooser"
-            accept="application/pdf,.pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            style={{display: 'none'}}
-            onChange={e => this.handleFileChanged(e)}
-          />
+        <input
+          type="file"
+          multiple
+          id="verdocs-file-chooser"
+          accept="application/pdf,.pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          style={{display: 'none'}}
+          onChange={e => this.handleFileChanged(e)}
+        />
 
-          <div class="upload-box">
-            <div>
-              <span innerHTML={FileIcon} />
-            </div>
+        <div class="upload-box">
+          <div innerHTML={FileIcon} />
 
-            <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold', overflowWrap: 'anywhere'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
-            <div style={{marginTop: '20px', marginBottom: '20px', fontSize: '16px', height: '20px'}}>{this.file ? unicodeNBSP : 'Or, if you prefer...'}</div>
-            <verdocs-button label={this.file ? 'Select a different file' : 'Select a file from your computer'} size="small" onClick={e => this.handleSelectFile(e)} />
-          </div>
-        </form>
+          <div class="selected-filename">{this.file ? this.file.name : 'Drag a file here'}</div>
+
+          <div class="or-prefer">{this.file ? unicodeNBSP : 'Or, if you prefer...'}</div>
+
+          <verdocs-button label={buttonlabel} size="small" onClick={e => this.handleSelectFile(e)} />
+        </div>
       </Host>
     );
   }

@@ -7,7 +7,11 @@ verdocs-template-attachments {
     font-size: 16px;
     font-weight: bold;
     margin: 0 0 10px 0;
-    color: $verdocs-deep-blue;
+    color: $verdocs-grey-blue;
+  }
+
+  .attachments {
+    margin: 0 0 30px 0;
   }
 
   .attachment {
@@ -40,25 +44,9 @@ verdocs-template-attachments {
     flex: 0;
   }
 
-  form {
-    background-color: $verdocs-grey-4;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-
-    .upload-box {
-      box-sizing: border-box;
-      width: 320px;
-      text-align: center;
-      padding: 44px 18px 66px;
-      border: 2px dashed #979797;
-      color: rgba(0, 0, 0, 0.54);
-
-      svg {
-        width: 64px;
-        fill: #5c6575;
-      }
-    }
+  verdocs-file-chooser {
+    margin: 10px 0;
+    border: 2px dashed #979797;
   }
 
   .loader-wrapper {
