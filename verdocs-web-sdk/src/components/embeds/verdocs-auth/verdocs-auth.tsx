@@ -11,8 +11,9 @@ export interface IAuthStatus {
 
 /**
  * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
- * occur during the process (especially successful completion). The success callback will be fired immediately if the
- * user is already authenticated with a valid session, so this component may not always display visibly.
+ * occur during the process (especially successful completion). If the user is already authenticated with a valid
+ * session, this component will hide itself and fire the success callback immediately. It is up to the host application
+ * to render the next appropriate view for the application.
  *
  * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
  * allows you to susbcribe to notifications from the
@@ -129,7 +130,7 @@ export class VerdocsAuth {
 
   render() {
     if (!this.visible) {
-      return <div style={{display: 'none'}}>Verdocs Auth Placeholder</div>;
+      return <div style={{display: 'none'}}>Authenticated</div>;
     }
 
     if (this.isAuthenticated) {

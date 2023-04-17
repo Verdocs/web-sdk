@@ -112,43 +112,45 @@ export class VerdocsTemplateCreate {
     }
 
     return (
-      <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
-        <input type="file" id="verdocs-template-create-file" multiple accept="application/pdf" style={{display: 'none'}} onChange={e => this.handleFileChanged(e)} />
+      <Host>
+        <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
+          <input type="file" id="verdocs-template-create-file" multiple accept="application/pdf" style={{display: 'none'}} onChange={e => this.handleFileChanged(e)} />
 
-        {this.creating ? (
-          <div class="loader-wrapper">
-            <verdocs-loader />
-            {this.progressLabel && (
-              <div class="progress-wrapper">
-                <verdocs-progress-bar showPercent={true} percent={this.progressPercent} label={this.progressLabel} />
+          {this.creating ? (
+            <div class="loader-wrapper">
+              <verdocs-loader />
+              {this.progressLabel && (
+                <div class="progress-wrapper">
+                  <verdocs-progress-bar showPercent={true} percent={this.progressPercent} label={this.progressLabel} />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div class="upload-box">
+              <div>
+                <span innerHTML={FileIcon} />
               </div>
-            )}
-          </div>
-        ) : (
-          <div class="upload-box">
-            <div>
-              <span innerHTML={FileIcon} />
+              <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold', overflowWrap: 'anywhere'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
+              <div
+                style={{
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  fontSize: '16px',
+                  height: '20px',
+                }}
+              >
+                {this.file ? unicodeNBSP : 'Or, if you prefer...'}
+              </div>
+              <verdocs-button label={this.file ? 'Select a different file' : 'Select a file from your computer'} size="small" onClick={e => this.handleUpload(e)} />
             </div>
-            <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold', overflowWrap: 'anywhere'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
-            <div
-              style={{
-                marginTop: '20px',
-                marginBottom: '20px',
-                fontSize: '16px',
-                height: '20px',
-              }}
-            >
-              {this.file ? unicodeNBSP : 'Or, if you prefer...'}
-            </div>
-            <verdocs-button label={this.file ? 'Select a different file' : 'Select a file from your computer'} size="small" onClick={e => this.handleUpload(e)} />
-          </div>
-        )}
+          )}
 
-        <div class="buttons">
-          <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} disabled={this.creating} />
-          <verdocs-button label="Next" size="small" onClick={e => this.handleSubmit(e)} disabled={!this.file || this.creating} />
-        </div>
-      </form>
+          <div class="buttons">
+            <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} disabled={this.creating} />
+            <verdocs-button label="Next" size="small" onClick={e => this.handleSubmit(e)} disabled={!this.file || this.creating} />
+          </div>
+        </form>
+      </Host>
     );
   }
 }

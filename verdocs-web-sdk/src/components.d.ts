@@ -42,7 +42,11 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The ID of the template to create the document from.
+          * The step in the creation process to display.
+         */
+        "step": 'create' | 'attachments' | 'roles' | 'settings' | 'fields' | 'preview';
+        /**
+          * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
          */
         "templateId": string | null;
     }
@@ -586,6 +590,12 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+    }
+    interface VerdocsFileChooser {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
     }
     interface VerdocsFloatingMenu {
         /**
@@ -1145,6 +1155,10 @@ export interface VerdocsFieldTimestampCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldTimestampElement;
 }
+export interface VerdocsFileChooserCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFileChooserElement;
+}
 export interface VerdocsFloatingMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFloatingMenuElement;
@@ -1375,6 +1389,12 @@ declare global {
     var HTMLVerdocsFieldTimestampElement: {
         prototype: HTMLVerdocsFieldTimestampElement;
         new (): HTMLVerdocsFieldTimestampElement;
+    };
+    interface HTMLVerdocsFileChooserElement extends Components.VerdocsFileChooser, HTMLStencilElement {
+    }
+    var HTMLVerdocsFileChooserElement: {
+        prototype: HTMLVerdocsFileChooserElement;
+        new (): HTMLVerdocsFileChooserElement;
     };
     interface HTMLVerdocsFloatingMenuElement extends Components.VerdocsFloatingMenu, HTMLStencilElement {
     }
@@ -1638,6 +1658,7 @@ declare global {
         "verdocs-field-textarea": HTMLVerdocsFieldTextareaElement;
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
         "verdocs-field-timestamp": HTMLVerdocsFieldTimestampElement;
+        "verdocs-file-chooser": HTMLVerdocsFileChooserElement;
         "verdocs-floating-menu": HTMLVerdocsFloatingMenuElement;
         "verdocs-help-icon": HTMLVerdocsHelpIconElement;
         "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
@@ -1717,7 +1738,11 @@ declare namespace LocalJSX {
          */
         "onStepChanged"?: (event: VerdocsBuildCustomEvent<string>) => void;
         /**
-          * The ID of the template to create the document from.
+          * The step in the creation process to display.
+         */
+        "step"?: 'create' | 'attachments' | 'roles' | 'settings' | 'fields' | 'preview';
+        /**
+          * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
          */
         "templateId"?: string | null;
     }
@@ -2379,6 +2404,16 @@ declare namespace LocalJSX {
          */
         "templateid"?: string;
     }
+    interface VerdocsFileChooser {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when a file has been selected. Note that the file may be null if the user is choosing a different file. Host applications should use this event to enable/disable buttons to upload or otherwise process the selected file.
+         */
+        "onFileSelected"?: (event: VerdocsFileChooserCustomEvent<{file: File | null}>) => void;
+    }
     interface VerdocsFloatingMenu {
         /**
           * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
@@ -2707,9 +2742,13 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * Event fired when the user cancels the dialog.
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
-        "onClose"?: (event: VerdocsTemplateAttachmentsCustomEvent<any>) => void;
+        "onExit"?: (event: VerdocsTemplateAttachmentsCustomEvent<any>) => void;
+        /**
+          * Event fired when the user changes the type.
+         */
+        "onNext"?: (event: VerdocsTemplateAttachmentsCustomEvent<ITemplate>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
@@ -3120,6 +3159,7 @@ declare namespace LocalJSX {
         "verdocs-field-textarea": VerdocsFieldTextarea;
         "verdocs-field-textbox": VerdocsFieldTextbox;
         "verdocs-field-timestamp": VerdocsFieldTimestamp;
+        "verdocs-file-chooser": VerdocsFileChooser;
         "verdocs-floating-menu": VerdocsFloatingMenu;
         "verdocs-help-icon": VerdocsHelpIcon;
         "verdocs-initial-dialog": VerdocsInitialDialog;
@@ -3187,6 +3227,7 @@ declare module "@stencil/core" {
             "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
             "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
             "verdocs-field-timestamp": LocalJSX.VerdocsFieldTimestamp & JSXBase.HTMLAttributes<HTMLVerdocsFieldTimestampElement>;
+            "verdocs-file-chooser": LocalJSX.VerdocsFileChooser & JSXBase.HTMLAttributes<HTMLVerdocsFileChooserElement>;
             "verdocs-floating-menu": LocalJSX.VerdocsFloatingMenu & JSXBase.HTMLAttributes<HTMLVerdocsFloatingMenuElement>;
             "verdocs-help-icon": LocalJSX.VerdocsHelpIcon & JSXBase.HTMLAttributes<HTMLVerdocsHelpIconElement>;
             "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;

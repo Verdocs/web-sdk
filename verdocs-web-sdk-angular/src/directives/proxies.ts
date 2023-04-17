@@ -44,14 +44,14 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'templateId']
+  inputs: ['endpoint', 'step', 'templateId']
 })
 @Component({
   selector: 'verdocs-build',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'templateId'],
+  inputs: ['endpoint', 'step', 'templateId'],
 })
 export class VerdocsBuild {
   protected el: HTMLElement;
@@ -710,6 +710,35 @@ export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTi
 
 
 @ProxyCmp({
+  inputs: ['endpoint']
+})
+@Component({
+  selector: 'verdocs-file-chooser',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint'],
+})
+export class VerdocsFileChooser {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['fileSelected']);
+  }
+}
+
+
+export declare interface VerdocsFileChooser extends Components.VerdocsFileChooser {
+  /**
+   * Event fired when a file has been selected. Note that the file may be null if the user is choosing a different file.
+Host applications should use this event to enable/disable buttons to upload or otherwise process the selected file.
+   */
+  fileSelected: EventEmitter<CustomEvent<{file: File | null}>>;
+}
+
+
+@ProxyCmp({
   inputs: ['options']
 })
 @Component({
@@ -1301,18 +1330,23 @@ export class VerdocsTemplateAttachments {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'sdkError']);
+    proxyOutputs(this, this.el, ['exit', 'next', 'sdkError']);
   }
 }
 
 
+import type { ITemplate as IVerdocsTemplateAttachmentsITemplate } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsTemplateAttachmentsSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateAttachments extends Components.VerdocsTemplateAttachments {
   /**
-   * Event fired when the user cancels the dialog.
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
-  close: EventEmitter<CustomEvent<any>>;
+  exit: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user changes the type.
+   */
+  next: EventEmitter<CustomEvent<IVerdocsTemplateAttachmentsITemplate>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.

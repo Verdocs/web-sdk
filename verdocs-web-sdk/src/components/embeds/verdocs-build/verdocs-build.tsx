@@ -1,5 +1,5 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Prop, State, h, Event, EventEmitter, Host} from '@stencil/core';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
@@ -19,9 +19,16 @@ export class VerdocsBuild {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The ID of the template to create the document from.
+   * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here.
+   * If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process.
+   * If it is not specified, `step` will be ignored and the create step will be shown.
    */
   @Prop() templateId: string | null = null;
+
+  /**
+   * The step in the creation process to display.
+   */
+  @Prop({reflect: true}) step: 'create' | 'attachments' | 'roles' | 'settings' | 'fields' | 'preview' = null;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -35,11 +42,7 @@ export class VerdocsBuild {
    */
   @Event({composed: true}) stepChanged: EventEmitter<string>;
 
-  @State() step = 'create';
-  @State() pdfUrl = null;
   @State() template: ITemplate | null = null;
-
-  fields: ITemplateField[] = [];
 
   store: TTemplateStore | null = null;
 
@@ -67,7 +70,7 @@ export class VerdocsBuild {
 
   handleCancel(e: any) {
     console.log('Cancel', e.detail);
-    this.step = '';
+    this.step = 'preview';
     this.stepChanged?.emit('');
   }
 
@@ -95,8 +98,13 @@ export class VerdocsBuild {
     return (
       <Host>
         {this.step === 'create' && <verdocs-template-create onExit={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />}
+        {this.step === 'attachments' && (
+          <verdocs-template-attachments templateId={this.templateId} onExit={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />
+        )}
         {this.step === 'roles' && <verdocs-template-roles onExit={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />}
-        {this.step === 'fields' && <verdocs-template-fields />}
+        {this.step === 'settings' && <verdocs-template-settings templateId={this.templateId} />}
+        {this.step === 'fields' && <verdocs-template-fields templateId={this.templateId} />}
+        {this.step === 'preview' && <verdocs-template-preview />}
       </Host>
     );
   }
