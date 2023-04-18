@@ -56,18 +56,27 @@ const templateStores: Record<string, TTemplateStore> = {};
 export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: string, forceReload: boolean = false) => {
   let created = false;
   if (!templateStores[templateId]) {
-    console.log('[TEMPLATES] No template store found for ID, creating', templateId);
+    console.debug('[TEMPLATES] No template store found for ID, creating', templateId);
     templateStores[templateId] = createTemplateStore(templateId);
     created = true;
   }
 
   const store = templateStores[templateId];
 
+  // NOTE: If we need it, store.use() returns an unsubcribe function
+  // See https://github.com/ionic-team/stencil-store#storeusesubscriptions
+  store.use({
+    // get: key => console.log(`Someone's reading prop ${key}`),
+    // set: (key, newValue, oldValue) => console.log(`Prop ${key} changed from ${oldValue} to ${newValue}`),
+    reset: () => console.debug('[TEMPLATES] Store got reset'),
+    dispose: () => console.debug('[TEMPLATES] Store got disposed'),
+  });
+
   // TODO: This can create a race condition if two components call this at the same time.
   //  For now we can probably defer doing something smart here because it's only a
   //  double-load issue.
   if (created || forceReload) {
-    console.log('[TEMPLATES] Reloading template', {templateId, created, forceReload});
+    console.debug('[TEMPLATES] Reloading template', {templateId, created, forceReload});
 
     store.state.isLoading = true;
     store.state.isLoaded = false;
@@ -76,7 +85,7 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
 
     try {
       const template = await getTemplate(endpoint, templateId);
-      console.log('[TEMPLATES] Got template', template);
+      console.debug('[TEMPLATES] Got template', template);
       Object.assign(store.state, template);
       // Object.keys(template).forEach(key => store.set(key as keyof TTemplateStore, template[key]));
 

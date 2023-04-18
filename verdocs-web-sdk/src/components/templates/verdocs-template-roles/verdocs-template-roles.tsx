@@ -311,6 +311,8 @@ export class VerdocsTemplateRoles {
   }
 
   render() {
+    console.log('[ROLES] Rendering');
+
     if (!this.endpoint.session) {
       return (
         <Host>

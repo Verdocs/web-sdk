@@ -317,7 +317,7 @@ export class VerdocsTemplateFields {
       i++;
     } while (this.store?.state.fields.some(field => field.name === fieldName));
 
-    console.log('Will use field name', fieldName, this.store?.state.fields);
+    console.log('Will use field name', this, fieldName, this.store?.state.fields);
     return fieldName;
   }
 
@@ -331,7 +331,7 @@ export class VerdocsTemplateFields {
 
   async handleClickPage(e: any, pageNumber: number) {
     if (this.placing) {
-      console.log('Placing field', this.placing, pageNumber, e.offsetX, e.offsetY);
+      console.log('Placing field', this, this.selectedRoleName, this.placing, pageNumber, e.offsetX, e.offsetY);
       // console.log('Placing field', this.placing, page.sequence, e.offsetX, e.offsetY);
       // const pageNumber = page.sequence;
       const clickedX = e.offsetX;
@@ -453,6 +453,8 @@ export class VerdocsTemplateFields {
   }
 
   render() {
+    console.log('[FIELDS] Rendering');
+
     if (!this.endpoint.session) {
       return (
         <Host>
