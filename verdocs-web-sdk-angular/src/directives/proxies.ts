@@ -1330,7 +1330,7 @@ export class VerdocsTemplateAttachments {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next', 'sdkError']);
+    proxyOutputs(this, this.el, ['exit', 'next', 'templateUpdate', 'sdkError']);
   }
 }
 
@@ -1344,9 +1344,13 @@ export declare interface VerdocsTemplateAttachments extends Components.VerdocsTe
    */
   exit: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the user changes the type.
+   * Event fired when the user clicks the next button.
    */
   next: EventEmitter<CustomEvent<IVerdocsTemplateAttachments{template: [object Object]}>>;
+  /**
+   * Event fired when the user clicks the next button.
+   */
+  templateUpdate: EventEmitter<CustomEvent<IVerdocsTemplateAttachments{template: [object Object]}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -1939,28 +1943,6 @@ export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDia
    */
   next: EventEmitter<CustomEvent<IVerdocsUploadDialogFileWithData[]>>;
 }
-
-
-@ProxyCmp({
-  inputs: ['label', 'progress', 'showPercent']
-})
-@Component({
-  selector: 'verdocs-upload-progress',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['label', 'progress', 'showPercent'],
-})
-export class VerdocsUploadProgress {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface VerdocsUploadProgress extends Components.VerdocsUploadProgress {}
 
 
 @ProxyCmp({

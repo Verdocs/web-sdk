@@ -16,7 +16,7 @@ export default {
 export const Attachments = ({onClose, templateId}) =>
   templateId
     ? html`
-        <div style="width: 360px; background: #ffffff; padding: 20px; box-sizing: border-box">
+        <div style="width: 400px; background: #ffffff; padding: 20px; box-sizing: border-box">
           <verdocs-template-attachments .templateId=${templateId} @close=${onClose} />
         </div>
       `

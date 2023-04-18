@@ -36,7 +36,6 @@ export class VerdocsFileChooser {
   }
 
   handleSelectFile(e: any) {
-    console.log('sf');
     e.stopPropagation();
     this.file = null;
     this.fileSelected?.emit({file: null});

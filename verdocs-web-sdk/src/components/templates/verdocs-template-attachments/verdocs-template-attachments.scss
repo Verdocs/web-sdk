@@ -11,22 +11,31 @@ verdocs-template-attachments {
   }
 
   .attachments {
-    margin: 0 0 30px 0;
+    margin: 0 0 40px 0;
   }
 
   .attachment {
     display: flex;
-    padding: 5px 5px 5px 10px;
-    column-gap: 10px;
+    padding: 5px 0;
+    column-gap: 15px;
     align-items: center;
     flex-direction: row;
     color: $label-color;
-    border: 1px solid $light-border-color;
+
+    &:hover {
+      .trash-icon {
+        display: flex;
+      }
+
+      .pages {
+        display: none;
+      }
+    }
   }
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     fill: $verdocs-bg-4;
     margin: 2px 0 0 0;
   }
@@ -35,13 +44,51 @@ verdocs-template-attachments {
     flex: 0;
   }
 
+  .pages {
+    width: 24px;
+    height: 24px;
+    padding-left: 4px;
+    flex: 0 0 24px;
+    position: relative;
+    margin: -10px 0 0 0;
+
+    .pages-icon {
+      top: 0;
+      left: 0;
+      width: 24px;
+      height: 24px;
+      position: absolute;
+    }
+
+    .count {
+      top: 11px;
+      left: 7px;
+      z-index: 1;
+      width: 18px;
+      font-size: 12px;
+      font-weight: 500;
+      position: absolute;
+      text-align: center;
+      letter-spacing: -2px;
+    }
+  }
+
   .filename {
-    display: flex;
     flex: 1;
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+    text-after-overflow: '...';
+    text-overflow: ellipsis;
   }
 
   .trash-icon {
     flex: 0;
+    display: none;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   verdocs-file-chooser {
