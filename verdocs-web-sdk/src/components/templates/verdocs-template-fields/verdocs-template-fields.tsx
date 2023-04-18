@@ -1,8 +1,9 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
-import {IPage, ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
 import {defaultHeight, defaultWidth, getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
 import {getRoleNames, getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -122,11 +123,10 @@ export class VerdocsTemplateFields {
       }
 
       this.store = await getTemplateStore(this.endpoint, this.templateId, true);
-
-      console.log(`[FIELDS] Loading template ${this.templateId}`, this.endpoint.session);
+      console.log(`[FIELDS] Loaded template ${this.templateId}`, this.store.state);
 
       this.selectedRoleName = this.store?.state?.roles?.[0]?.name || '';
-      console.log('Starting with role', this.selectedRoleName);
+      console.log('[FIELDS] Starting with role', this.selectedRoleName);
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -329,10 +329,11 @@ export class VerdocsTemplateFields {
     return {x, y};
   }
 
-  async handleClickPage(e: any, page: IPage) {
+  async handleClickPage(e: any, pageNumber: number) {
     if (this.placing) {
-      console.log('Placing field', this.placing, page.sequence, e.offsetX, e.offsetY);
-      const pageNumber = page.sequence;
+      console.log('Placing field', this.placing, pageNumber, e.offsetX, e.offsetY);
+      // console.log('Placing field', this.placing, page.sequence, e.offsetX, e.offsetY);
+      // const pageNumber = page.sequence;
       const clickedX = e.offsetX;
       const clickedY = e.offsetY;
 
@@ -340,7 +341,7 @@ export class VerdocsTemplateFields {
       const height = defaultHeight(this.placing);
 
       const cachedPage = this.cachedPageInfo[pageNumber];
-      console.log('Cached page', cachedPage);
+      // console.log('Cached page', cachedPage);
       const {naturalWidth = 612, naturalHeight = 792} = cachedPage;
 
       const coords = this.viewCoordinatesToPageCoordinates(clickedX, clickedY, pageNumber, naturalWidth - width, naturalHeight - height);
@@ -469,9 +470,6 @@ export class VerdocsTemplateFields {
       );
     }
 
-    const pages = [...this.store?.state.pages];
-    pages.sort((a, b) => a.sequence - b.sequence);
-
     const selectableRoles = this.store?.state?.roles.map(role => ({value: role.name, label: role.name}));
 
     return (
@@ -513,12 +511,14 @@ export class VerdocsTemplateFields {
         {/*</div>*/}
 
         <div class="pages">
-          {pages.map(page => {
-            return (
+          {(this.store?.state?.template_documents || []).map(document => {
+            const pageNumbers = integerSequence(1, document.page_numbers);
+
+            return pageNumbers.map(page => (
               <verdocs-template-document-page
-                templateId={page.template_id}
-                documentId={page.document_id}
-                pageNumber={page.sequence}
+                templateId={this.templateId}
+                documentId={document.id}
+                pageNumber={page}
                 virtualWidth={612}
                 virtualHeight={792}
                 onClick={(e: PointerEvent) => this.handleClickPage(e, page)}
@@ -528,16 +528,9 @@ export class VerdocsTemplateFields {
                   {name: 'controls', type: 'div'},
                 ]}
               />
-            );
+            ));
           })}
         </div>
-
-        {/*<verdocs-floating-menu*/}
-        {/*  options={menuOptions}*/}
-        {/*  onOptionSelected={e => {*/}
-        {/*    this.placing = e.detail.id as TDocumentFieldType;*/}
-        {/*  }}*/}
-        {/*/>*/}
       </Host>
     );
   }

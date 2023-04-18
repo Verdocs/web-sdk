@@ -5,7 +5,7 @@ export default {
   title: 'Templates/Properties',
   component: 'verdocs-template-properties',
   args: {
-    templateId: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+    templateId: '',
   },
   argTypes: {
     onExit: {action: 'exit'},

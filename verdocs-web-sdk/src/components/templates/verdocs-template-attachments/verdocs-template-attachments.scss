@@ -47,8 +47,8 @@ verdocs-template-attachments {
   .pages {
     width: 24px;
     height: 24px;
-    padding-left: 4px;
     flex: 0 0 24px;
+    padding-left: 4px;
     position: relative;
     margin: -10px 0 0 0;
 
@@ -75,11 +75,11 @@ verdocs-template-attachments {
 
   .filename {
     flex: 1;
-    display: flex;
+    display: block;
     overflow: hidden;
     white-space: nowrap;
-    text-after-overflow: '...';
     text-overflow: ellipsis;
+    border-bottom: 1px dotted #cccccc;
   }
 
   .trash-icon {

@@ -88,7 +88,7 @@ export class VerdocsTemplateRoleProperties {
         this.email = editingRole.email;
         this.phone = editingRole.phone;
         this.allowDelegation = editingRole.delegator;
-        console.log('Got role', editingRole);
+        console.log('[ROLES] Editing role', editingRole);
       }
     } catch (e) {
       console.log('[TEMPLATE ROLE PROPERTIES] Error with preview session', e);
@@ -114,22 +114,27 @@ export class VerdocsTemplateRoleProperties {
       phone: this.phone,
       delegator: this.allowDelegation,
     })
-      .then(r => {
-        console.log('Update result', r);
+      .then(async r => {
+        console.log('[ROLE_PROPERTIES] Update result', r);
         this.saving = false;
         this.dirty = false;
-        const newRoles = [...this.store.state.roles];
-        newRoles.forEach(role => {
-          if (role.name === this.roleName) {
-            role.name = this.name;
-            role.type = this.type;
-            role.full_name = this.fullName;
-            role.email = this.email;
-            role.phone = this.phone;
-            role.delegator = this.allowDelegation;
-          }
-        });
-        this.store.state.roles = newRoles;
+
+        this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+        // this.sortTemplateRoles();
+        // this.renumberTemplateRoles();
+
+        // const newRoles = [...this.store.state.roles];
+        // newRoles.forEach(role => {
+        //   if (role.name === this.roleName) {
+        //     role.name = this.name;
+        //     role.type = this.type;
+        //     role.full_name = this.fullName;
+        //     role.email = this.email;
+        //     role.phone = this.phone;
+        //     role.delegator = this.allowDelegation;
+        //   }
+        // });
+        // this.store.state.roles = newRoles;
         this.close?.emit();
       })
       .catch(e => {

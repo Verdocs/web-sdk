@@ -9,7 +9,8 @@ verdocs-file-chooser {
   .upload-box {
     text-align: center;
     box-sizing: border-box;
-    padding: 44px 18px 66px;
+    padding: 40px 15px;
+    //padding: 44px 18px 66px;
     color: rgba(0, 0, 0, 0.54);
 
     svg {
@@ -21,7 +22,7 @@ verdocs-file-chooser {
 
   .selected-filename {
     font-size: 20px;
-    margin-top: 20px;
+    //margin-top: 20px;
     font-weight: bold;
     overflow-wrap: anywhere;
   }

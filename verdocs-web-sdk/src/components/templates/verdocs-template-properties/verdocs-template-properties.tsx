@@ -60,7 +60,7 @@ export class VerdocsTemplateProperties {
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
 
       this.name = this.store?.state?.name;
       this.sendReminders = this.store?.state?.reminder_id !== null;

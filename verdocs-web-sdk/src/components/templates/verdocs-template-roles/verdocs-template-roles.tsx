@@ -103,7 +103,6 @@ export class VerdocsTemplateRoles {
       }
 
       this.store = await getTemplateStore(this.endpoint, this.templateId, true);
-
       this.sortTemplateRoles();
       this.renumberTemplateRoles();
     } catch (e) {
@@ -278,10 +277,15 @@ export class VerdocsTemplateRoles {
       type: 'signer',
       delegator: false,
     })
-      .then(r => {
+      .then(async r => {
         console.log('[ROLES] Created role', r);
-        this.store.state.roles = [...this.store?.state.roles, r];
+
+        this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+        this.sortTemplateRoles();
         this.renumberTemplateRoles();
+
+        // this.store.state.roles = [...this.store?.state.roles, r];
+        // this.renumberTemplateRoles();
         this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: this.store?.state});
       })
       .catch(e => {

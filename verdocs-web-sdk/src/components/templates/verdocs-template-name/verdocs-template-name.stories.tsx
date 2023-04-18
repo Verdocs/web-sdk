@@ -5,8 +5,7 @@ export default {
   title: 'Templates/Name',
   component: 'verdocs-template-name',
   args: {
-    // templateId: '',
-    templateId: '951016b0-c5ef-450d-b628-9a0c5b84b163',
+    templateId: '',
   },
   argTypes: {
     onClose: {action: 'close'},
