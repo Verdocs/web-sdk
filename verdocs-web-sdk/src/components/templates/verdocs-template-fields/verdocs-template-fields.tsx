@@ -100,8 +100,8 @@ export class VerdocsTemplateFields {
   @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
 
   @State() placing: TDocumentFieldType | null = null;
+  @State() showMustSelectRole = false;
   @State() selectedRoleName = '';
-
   @State() rerender = 1;
 
   pageHeights: Record<number, number> = {};
@@ -142,6 +142,14 @@ export class VerdocsTemplateFields {
       console.log('[FIELDS] Moving toolbar');
       toolbarEl.remove();
       toolbarTarget.append(toolbarEl);
+    }
+  }
+
+  componentWillUpdate() {
+    // If a new role was added and there were none yet so far, or the "selected" role was deleted, reset our selection
+    if (!this.selectedRoleName || !(this.store?.state?.roles || []).find(role => role.name === this.selectedRoleName)) {
+      this.selectedRoleName = this.store?.state?.roles?.[0]?.name || '';
+      console.log('[FIELDS] Selected new role', this.selectedRoleName);
     }
   }
 
@@ -453,7 +461,7 @@ export class VerdocsTemplateFields {
   }
 
   render() {
-    console.log('[FIELDS] Rendering');
+    console.log('[FIELDS] Rendering', this.selectedRoleName);
 
     if (!this.endpoint.session) {
       return (
@@ -491,9 +499,14 @@ export class VerdocsTemplateFields {
               text={option.tooltip}
               icon={option.icon}
               onClick={() => {
+                // We ignore empty-tooltip entries because they're separators
                 if (option.tooltip) {
-                  // We have empty tooltips on the separators, quick hack...
-                  this.placing = option.id as TDocumentFieldType;
+                  // We require a role to be selected first
+                  if (this.selectedRoleName) {
+                    this.placing = option.id as TDocumentFieldType;
+                  } else {
+                    this.showMustSelectRole = true;
+                  }
                 }
               }}
             />
@@ -533,6 +546,13 @@ export class VerdocsTemplateFields {
             ));
           })}
         </div>
+        {this.showMustSelectRole && (
+          <verdocs-ok-dialog
+            heading="Unable to add field"
+            message={this.store?.state?.roles?.length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
+            onNext={() => (this.showMustSelectRole = false)}
+          />
+        )}
       </Host>
     );
   }
