@@ -126,7 +126,18 @@ export class VerdocsTemplateCreate {
               )}
             </div>
           ) : (
-            <div class="upload-box">
+            <div
+              class="upload-box"
+              onDrop={(e: any) => {
+                e.preventDefault();
+                e.target.classList.remove('drag-over');
+                this.file = e.dataTransfer.files[0];
+                console.log('drop', e.dataTransfer.files[0]);
+              }}
+              onDragOver={e => e.preventDefault()}
+              onDragEnter={(e: any) => e.target.classList.add('drag-over')}
+              onDragLeave={(e: any) => e.target.classList.remove('drag-over')}
+            >
               <div>
                 <span innerHTML={FileIcon} />
               </div>
