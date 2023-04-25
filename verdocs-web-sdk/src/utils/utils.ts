@@ -122,7 +122,6 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
     return;
   }
 
-  // @ts-ignore
   switch (field.type) {
     case 'attachment':
     case 'date':
@@ -140,7 +139,16 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
         return existingField;
       }
 
-      const el: any = document.createElement(`verdocs-field-${field.type}`);
+      let {type} = field;
+      if (type === 'textbox') {
+        console.log('Rendering text box', field);
+        if (field['setting']?.leading > 0 || field['settings']?.leading > 0) {
+          console.log('Switching to text area', field);
+          type = 'textarea';
+        }
+      }
+
+      const el: any = document.createElement(`verdocs-field-${type}`);
       el.field = field;
       el.setAttribute('id', id);
       el.setAttribute('roleIndex', roleIndex);

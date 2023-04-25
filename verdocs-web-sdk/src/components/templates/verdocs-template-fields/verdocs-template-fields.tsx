@@ -441,8 +441,10 @@ export class VerdocsTemplateFields {
           break;
       }
 
-      // ??? We don't actually have a unique field type for multi-line text?
+      // TODO: We don't actually have a unique field type for multi-line text. Instead a "text area" is stored
+      // as a textbox with a leading>0 (typically 16).
       if (field.type === 'textarea') {
+        field.setting.leading = 16;
         field.type = 'textbox';
       }
 

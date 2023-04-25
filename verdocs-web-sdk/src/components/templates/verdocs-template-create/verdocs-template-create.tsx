@@ -132,9 +132,11 @@ export class VerdocsTemplateCreate {
                 e.preventDefault();
                 e.target.classList.remove('drag-over');
                 this.file = e.dataTransfer.files[0];
-                console.log('drop', e.dataTransfer.files[0]);
               }}
-              onDragOver={e => e.preventDefault()}
+              onDragOver={(e: any) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+              }}
               onDragEnter={(e: any) => e.target.classList.add('drag-over')}
               onDragLeave={(e: any) => e.target.classList.remove('drag-over')}
             >
