@@ -126,6 +126,7 @@ export class VerdocsEnvelopeDocumentPage {
     this.pageRendered.emit({
       // container: this.container,
       containerId: this.containerId,
+      documentId: this.documentId,
       pageNumber: this.pageNumber,
       virtualWidth: this.virtualWidth,
       virtualHeight: this.virtualHeight,

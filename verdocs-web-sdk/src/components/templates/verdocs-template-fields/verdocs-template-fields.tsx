@@ -360,6 +360,7 @@ export class VerdocsTemplateFields {
         name: this.generateFieldName(this.placing, pageNumber), //  'textboxP1-22',
         role_name: this.selectedRoleName,
         template_id: this.templateId,
+        document_id: cachedPage.documentId,
         type: this.placing,
         required: true,
         page_sequence: pageNumber,

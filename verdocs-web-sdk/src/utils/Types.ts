@@ -1,5 +1,6 @@
 export interface IDocumentPageInfo {
   containerId: string;
+  documentId: string;
   pageNumber: number;
   virtualWidth: number;
   virtualHeight: number;
