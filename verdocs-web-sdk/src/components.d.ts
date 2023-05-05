@@ -22,16 +22,6 @@ import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs
 import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 export namespace Components {
-    interface IpcTest {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId": string;
-    }
     interface VerdocsAuth {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1274,12 +1264,6 @@ export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
     target: HTMLVerdocsViewElement;
 }
 declare global {
-    interface HTMLIpcTestElement extends Components.IpcTest, HTMLStencilElement {
-    }
-    var HTMLIpcTestElement: {
-        prototype: HTMLIpcTestElement;
-        new (): HTMLIpcTestElement;
-    };
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
     }
     var HTMLVerdocsAuthElement: {
@@ -1653,7 +1637,6 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
-        "ipc-test": HTMLIpcTestElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-button": HTMLVerdocsButtonElement;
@@ -1719,16 +1702,6 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    interface IpcTest {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId"?: string;
-    }
     interface VerdocsAuth {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3169,7 +3142,6 @@ declare namespace LocalJSX {
         "onSdkError"?: (event: VerdocsViewCustomEvent<SDKError>) => void;
     }
     interface IntrinsicElements {
-        "ipc-test": IpcTest;
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
         "verdocs-button": VerdocsButton;
@@ -3238,7 +3210,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "ipc-test": LocalJSX.IpcTest & JSXBase.HTMLAttributes<HTMLIpcTestElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;

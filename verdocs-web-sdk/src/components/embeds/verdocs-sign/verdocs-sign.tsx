@@ -11,6 +11,7 @@ import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSi
 import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
+import {format} from 'date-fns';
 
 const inProgressMenuOptions = [
   {id: 'later', label: 'Finish Later'}, //
@@ -313,7 +314,10 @@ export class VerdocsSign {
 
       case 'date':
         const iso = e.target.getAttribute('iso');
-        return this.saveFieldChange(field.name, {prepared: false, value: iso});
+        console.log('Formatting date for save', iso);
+        const formatted = format(new Date(iso), 'PP');
+        console.log('Formatted', formatted);
+        return this.saveFieldChange(field.name, {prepared: false, value: formatted});
 
       case 'timestamp':
         console.log('Updating timestamp', {value, ts: e.target.getAttribute('timestamp')});
