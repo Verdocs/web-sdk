@@ -159,6 +159,8 @@ export class VerdocsTemplateRoleProperties {
   }
 
   render() {
+    const hasFields = (this.store.state.fields || []).findIndex(field => field.role_name === this.roleName) !== -1;
+
     return (
       <Host>
         <div class="background-overlay" onClick={e => this.handleCancel(e)}>
@@ -169,7 +171,12 @@ export class VerdocsTemplateRoleProperties {
                 label="Role Name"
                 value={this.name}
                 autocomplete="off"
-                helpText="A unique name to identify the role in the workflow. Submitted data will also be tagged with this value."
+                disabled={hasFields}
+                helpText={
+                  hasFields
+                    ? 'This role has fields assigned and can no longer be renamed.'
+                    : 'A unique name to identify the role in the workflow. Submitted data will also be tagged with this value.'
+                }
                 placeholder="Template Name..."
                 onInput={(e: any) => {
                   this.name = e.target.value;
@@ -249,7 +256,9 @@ export class VerdocsTemplateRoleProperties {
 
               <div class="buttons">
                 <button class="delete-button" disabled={this.dirty} onClick={e => this.handleDelete(e)} innerHTML={TrashIcon} />
+
                 <div style={{flex: '1'}} />
+
                 <verdocs-button size="small" variant="outline" label="Cancel" disabled={!this.dirty} onClick={e => this.handleCancel(e)} />
                 <verdocs-button size="small" label="Save" disabled={!this.dirty} onClick={e => this.handleSave(e)} />
               </div>

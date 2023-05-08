@@ -478,36 +478,11 @@ export class VerdocsSign {
       } else {
         this.attachFieldAttributes(pageInfo, field, roleIndex, el);
       }
-
-      // interact(el).draggable({
-      //   listeners: {
-      //     start(event) {
-      //       console.log('[FIELDS] Drag started', event.type, event.target);
-      //     },
-      //     move(event) {
-      //       const oldX = +(event.target.getAttribute('posX') || 0);
-      //       const oldY = +(event.target.getAttribute('posY') || 0);
-      //       const xScale = +(event.target.getAttribute('xScale') || 1);
-      //       const yScale = +(event.target.getAttribute('yScale') || 1);
-      //       const newX = event.dx / xScale + oldX;
-      //       const newY = event.dy / yScale + oldY;
-      //       event.target.setAttribute('posX', newX);
-      //       event.target.setAttribute('posy', newY);
-      //       updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
-      //     },
-      //     end(event) {
-      //       console.log('[FIELDS] Drag ended', event);
-      //       // event.target.setAttribute('posX', 0);
-      //       // event.target.setAttribute('posy', 0);
-      //       // updateCssTransform(event.target, 'translate', `${0}px, ${0}px`);
-      //     },
-      //   },
-      // });
     });
 
     this.envelope.recipients
       .filter(
-        r => r.role_name !== this.recipient.role_name && (r.status === RecipientStates.SUBMITTED || r.status === RecipientStates.CANCELED || r.status === RecipientStates.DECLINED),
+        r => r.role_name !== this.recipient.role_name && (r.status === RecipientStates.INVITED || r.status === RecipientStates.OPENED || r.status === RecipientStates.PENDING),
       )
       .forEach(recipient => {
         recipient.fields.forEach(field => {
@@ -522,41 +497,6 @@ export class VerdocsSign {
             this.attachFieldAttributes(pageInfo, field, roleIndex, el);
           }
         });
-      });
-
-    // Render fields for "the other" recipients
-    this.envelope.recipients
-      .filter(recipient => recipient.role_name !== this.recipient.role_name)
-      .forEach(otherRecipient => {
-        const otherRoleIndex = getRoleIndex(this.roleNames, otherRecipient.role_name);
-        const recipientFields = otherRecipient.fields.filter(field => field.page === pageInfo.pageNumber);
-
-        // We don't render other recipients' fields if they've already acted, because those values are now stamped into the document page.
-        // TODO: Do we want to render alternate treatments for recipients who have declined (red boxes?) and/or if the envelope is cancelled?
-        // TODO: When doing server-side rendering we probably want to "stamp" values into the rendered PDF only once the recipient is done
-        //  acting. Do this once vSign is in Production.
-        // TODO: Changed tacks here. During signing we show the template PDFs and everybody's fields, filled in or no. When done, we switch
-        //  to showing the envelope PDFs with stamped-in values. Confirm this is a good approach.
-        // if (!['submitted', 'signed'].includes(otherRecipient.status)) {
-        recipientFields.forEach(field => {
-          const el = renderDocumentField(field, pageInfo, otherRoleIndex, {
-            disabled: true,
-            editable: false,
-            draggable: false,
-            done: this.isDone,
-          });
-          if (!el) {
-            return;
-          }
-
-          // TODO: Research why this occurs. There are cases when we're getting "el.setAttribute is not a function"
-          if (el.setAttribute) {
-            el.setAttribute('roleindex', otherRoleIndex);
-            el.setAttribute('xScale', pageInfo.xScale);
-            el.setAttribute('yScale', pageInfo.yScale);
-          }
-        });
-        // }
       });
 
     this.checkRecipientFields();

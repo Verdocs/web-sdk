@@ -2,7 +2,7 @@ import {Meta} from '@storybook/web-components';
 import {html} from 'lit-html';
 
 export default {
-  title: 'Controls/Template Tags',
+  title: 'Templates/Template Tags',
   component: 'verdocs-template-tags',
   args: {
     tags: ['contractors', 'taxes', 'irs'],

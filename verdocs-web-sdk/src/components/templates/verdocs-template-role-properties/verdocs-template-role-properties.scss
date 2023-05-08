@@ -106,6 +106,7 @@ verdocs-template-role-properties {
   .delete-button {
     height: 34px;
     display: flex;
+    padding: 0 6px;
     cursor: pointer;
     background: none;
     border-radius: 4px;
@@ -113,13 +114,13 @@ verdocs-template-role-properties {
     border: 1px solid #999;
     justify-content: center;
 
-    &:active {
-      background: #f3f3f3;
-    }
-
     svg {
       width: 24px;
       height: 24px;
+    }
+
+    &:active {
+      background: #f3f3f3;
     }
   }
 }

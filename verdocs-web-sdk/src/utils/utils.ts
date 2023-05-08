@@ -16,7 +16,7 @@ export const defaultWidth = (type: TDocumentFieldType) => {
     case 'textbox':
       return 150;
     case 'timestamp':
-      return 64;
+      return 120;
     case 'date':
       return 84;
     case 'dropdown':

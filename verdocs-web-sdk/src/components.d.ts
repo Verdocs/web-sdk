@@ -9,7 +9,7 @@ import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { IRole, ITemplate, ITemplateField, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
-import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
+import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IEnvelope, IEnvelopeField, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
@@ -17,11 +17,21 @@ import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-flo
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
-import { IContactSearchEvent as IContactSearchEvent1 } from "./components/elements/verdocs-contact-picker/verdocs-contact-picker";
+import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 export namespace Components {
+    interface IpcTest {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
     interface VerdocsAuth {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1264,6 +1274,12 @@ export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
     target: HTMLVerdocsViewElement;
 }
 declare global {
+    interface HTMLIpcTestElement extends Components.IpcTest, HTMLStencilElement {
+    }
+    var HTMLIpcTestElement: {
+        prototype: HTMLIpcTestElement;
+        new (): HTMLIpcTestElement;
+    };
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
     }
     var HTMLVerdocsAuthElement: {
@@ -1637,6 +1653,7 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
+        "ipc-test": HTMLIpcTestElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-button": HTMLVerdocsButtonElement;
@@ -1702,6 +1719,16 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface IpcTest {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
     interface VerdocsAuth {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3142,6 +3169,7 @@ declare namespace LocalJSX {
         "onSdkError"?: (event: VerdocsViewCustomEvent<SDKError>) => void;
     }
     interface IntrinsicElements {
+        "ipc-test": IpcTest;
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
         "verdocs-button": VerdocsButton;
@@ -3210,6 +3238,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "ipc-test": LocalJSX.IpcTest & JSXBase.HTMLAttributes<HTMLIpcTestElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;

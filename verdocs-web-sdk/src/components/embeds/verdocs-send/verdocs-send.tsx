@@ -3,7 +3,7 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {IRole} from '@verdocs/js-sdk/Templates/Types';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method} from '@stencil/core';
-import {IContactSearchEvent} from '../../elements/verdocs-contact-picker/verdocs-contact-picker';
+import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';

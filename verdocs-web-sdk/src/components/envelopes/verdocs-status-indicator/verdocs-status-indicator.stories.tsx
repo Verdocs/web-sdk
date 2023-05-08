@@ -14,7 +14,7 @@ const SampleDocument = {
 };
 
 export default {
-  title: 'Controls/Status Indicator',
+  title: 'Envelopes/Status Indicator',
   component: 'verdocs-status-indicator',
   args: {
     document: 0,

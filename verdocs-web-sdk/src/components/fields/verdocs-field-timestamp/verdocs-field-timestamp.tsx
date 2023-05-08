@@ -2,7 +2,7 @@ import {format} from 'date-fns';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
-import { Component, h, Host, Prop, Method, Event, EventEmitter } from '@stencil/core';
+import {Component, h, Host, Prop, Method, Event, EventEmitter} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
 
 const settingsIcon =
@@ -98,7 +98,7 @@ export class VerdocsFieldTimestamp {
     const value = settings.value || new Date().toISOString();
 
     const dt = new Date(value);
-    const formatted = format(dt, 'MMM d, y');
+    const formatted = format(dt, 'PPpp');
 
     if (this.done) {
       return <Host class={{done: this.done}}>{formatted}</Host>;

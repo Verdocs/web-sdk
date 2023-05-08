@@ -46,7 +46,7 @@ const MockTemplate = {
 } as ITemplate;
 
 export default {
-  title: 'Controls/Template Card',
+  title: 'Templates/Template Card',
   component: 'verdocs-template-card',
   args: {
     template: MockTemplate,
