@@ -95,6 +95,7 @@ export class VerdocsSign {
 
   @State() envelope: IEnvelope | null = null;
   @State() roleNames: string[] = [];
+  @State() sortedRecipients: IRecipient[] = [];
   @State() recipient: IRecipient | null = null;
   @State() signerToken = null;
   @State() hasSignature = false;
@@ -152,19 +153,24 @@ export class VerdocsSign {
       }
 
       this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
-      this.roleNames = this.envelope.recipients.map(r => r.role_name);
+      this.sortedRecipients = [...this.envelope.recipients];
+      this.sortedRecipients.sort((a, b) => {
+        return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
+      });
+
+      this.roleNames = this.sortedRecipients.map(r => r.role_name);
 
       if (this.envelope.documents.length > 0) {
         this.documentsSingularPlural = 'document(s)';
       }
 
-      this.recipientIndex = this.envelope.recipients.findIndex(recipient => recipient.role_name == this.roleId);
+      this.recipientIndex = this.roleNames.findIndex(roleName => roleName == this.roleId);
       if (this.recipientIndex > -1) {
-        this.recipient = this.envelope.recipients[this.recipientIndex];
+        this.recipient = this.sortedRecipients[this.recipientIndex];
         this.agreed = this.recipient.agreed;
         console.log('[SIGN] Found our recipient in the envelope', this.recipientIndex, this.recipient);
       } else {
-        console.log('[SIGN] Could not find our recipient record', this.roleId, this.envelope.recipients);
+        console.log('[SIGN] Could not find our recipient record', this.roleId, this.sortedRecipients);
       }
 
       this.isDone = ['submitted', 'canceled', 'declined'].includes(this.recipient.status);
@@ -467,6 +473,7 @@ export class VerdocsSign {
     const recipientFields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
     console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
 
+    // First render the fields for the signer
     recipientFields.forEach(field => {
       const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: false, editable: false, draggable: false, done: this.isDone});
       if (!el) {
@@ -480,21 +487,23 @@ export class VerdocsSign {
       }
     });
 
-    this.envelope.recipients
+    // Now render the fields for other signers who have yet to act
+    this.sortedRecipients
       .filter(
         r => r.role_name !== this.recipient.role_name && (r.status === RecipientStates.INVITED || r.status === RecipientStates.OPENED || r.status === RecipientStates.PENDING),
       )
       .forEach(recipient => {
+        const otherIndex = getRoleIndex(this.roleNames, recipient.role_name);
         recipient.fields.forEach(field => {
-          const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: false, draggable: false, done: this.isDone});
+          const el = renderDocumentField(field, pageInfo, otherIndex, {disabled: true, editable: false, draggable: false, done: this.isDone});
           if (!el) {
             return;
           }
 
           if (Array.isArray(el)) {
-            el.map(e => this.attachFieldAttributes(pageInfo, field, roleIndex, e));
+            el.map(e => this.attachFieldAttributes(pageInfo, field, otherIndex, e));
           } else {
-            this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+            this.attachFieldAttributes(pageInfo, field, otherIndex, el);
           }
         });
       });
