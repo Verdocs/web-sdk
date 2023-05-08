@@ -77,6 +77,7 @@ export class VerdocsEnvelopeSidebar {
   @Event({composed: true}) toggle: EventEmitter<{open: boolean}>;
 
   @State() envelope: IEnvelope | null = null;
+  @State() sortedRecipients: IRecipient[] = [];
   @State() roleNames: string[] = [];
   @State() activeTab: number = 1;
   @State() panelOpen = false;
@@ -95,7 +96,11 @@ export class VerdocsEnvelopeSidebar {
 
     try {
       this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
-      this.roleNames = this.envelope.recipients.map(r => r.role_name);
+      this.sortedRecipients = [...this.envelope.recipients];
+      this.sortedRecipients.sort((a, b) => {
+        return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
+      });
+      this.roleNames = this.sortedRecipients.map(r => r.role_name);
     } catch (e) {
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
@@ -162,7 +167,7 @@ export class VerdocsEnvelopeSidebar {
     }
 
     histories.forEach(history => {
-      const user = this.envelope.recipients.find(recipient => recipient.role_name === history.role_name);
+      const user = this.sortedRecipients.find(recipient => recipient.role_name === history.role_name);
       const name = user?.full_name || '';
 
       switch (history.event.toLowerCase()) {
@@ -315,7 +320,7 @@ export class VerdocsEnvelopeSidebar {
         {this.activeTab === 2 && (
           <div class="content">
             <div class="title">Recipients</div>
-            {this.envelope.recipients.map((recipient, index) => (
+            {this.sortedRecipients.map((recipient, index) => (
               <div class="recipient-detail">
                 <div class="recipient-header">
                   <div class="recipient-number">{index + 1}</div>
