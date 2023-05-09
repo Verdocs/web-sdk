@@ -390,6 +390,13 @@ export class VerdocsSign {
         this.recipient.status = 'submitted';
         this.showDone = true;
         this.isDone = true;
+
+        // TODO: This is a temporary hack. After submitting, if we immediately show the View component it won't have re-renedered the
+        //  pages yet with our submitted data.
+        setTimeout(() => {
+          console.log('[SIGN] Reloading');
+          window.location.reload();
+        }, 1000);
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
       }
