@@ -55,19 +55,19 @@ export class VerdocsEnvelopeRecipientSummary {
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
    * to redirect the user to the appropriate next workflow step.
    */
-  @Event({composed: true}) another: EventEmitter;
+  @Event({composed: true}) another: EventEmitter<{envelope: IEnvelope}>;
 
   /**
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
    * to redirect the user to the appropriate next workflow step.
    */
-  @Event({composed: true}) view: EventEmitter;
+  @Event({composed: true}) view: EventEmitter<{envelope: IEnvelope}>;
 
   /**
    * Event fired when the user clicks Done to proceed. It is up to the host application
    * to redirect the user to the appropriate next workflow step.
    */
-  @Event({composed: true}) next: EventEmitter;
+  @Event({composed: true}) next: EventEmitter<{envelope: IEnvelope}>;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -116,17 +116,17 @@ export class VerdocsEnvelopeRecipientSummary {
 
   handleAnother(e: any) {
     e.preventDefault();
-    this.another?.emit();
+    this.another?.emit({envelope: this.store.state});
   }
 
   handleView(e: any) {
     e.preventDefault();
-    this.view?.emit();
+    this.view?.emit({envelope: this.store.state});
   }
 
   handleDone(e: any) {
     e.preventDefault();
-    this.next?.emit();
+    this.next?.emit({envelope: this.store.state});
   }
 
   copyLink(link: string) {

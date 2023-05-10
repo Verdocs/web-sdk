@@ -311,6 +311,7 @@ export class VerdocsEnvelopeRecipientSummary {
 }
 
 
+import type { IEnvelope as IVerdocsEnvelopeRecipientSummaryIEnvelope } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsEnvelopeRecipientSummarySDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeRecipientSummary extends Components.VerdocsEnvelopeRecipientSummary {
@@ -318,17 +319,17 @@ export declare interface VerdocsEnvelopeRecipientSummary extends Components.Verd
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  another: EventEmitter<CustomEvent<any>>;
+  another: EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientSummary{envelope: [object Object]}>>;
   /**
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  view: EventEmitter<CustomEvent<any>>;
+  view: EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientSummary{envelope: [object Object]}>>;
   /**
    * Event fired when the user clicks Done to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  next: EventEmitter<CustomEvent<any>>;
+  next: EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientSummary{envelope: [object Object]}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -379,7 +380,7 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks Send Another in the Manage Recipients dialog. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  another: EventEmitter<CustomEvent<any>>;
+  another: EventEmitter<CustomEvent<IVerdocsEnvelopeSidebar{envelope: [object Object]}>>;
 }
 
 

@@ -81,7 +81,7 @@ export class VerdocsEnvelopeSidebar {
    * Event fired when the user clicks Send Another in the Manage Recipients dialog. It is up to the host application
    * to redirect the user to the appropriate next workflow step.
    */
-  @Event({composed: true}) another: EventEmitter;
+  @Event({composed: true}) another: EventEmitter<{envelope: IEnvelope}>;
 
   @State() envelope: IEnvelope | null = null;
   @State() sortedRecipients: IRecipient[] = [];
@@ -378,7 +378,7 @@ export class VerdocsEnvelopeSidebar {
             canView={false}
             onAnother={() => {
               this.showManageDialog = false;
-              this.another?.emit();
+              this.another?.emit({envelope: this.envelope});
             }}
             onNext={() => {
               this.showManageDialog = false;

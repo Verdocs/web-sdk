@@ -1977,11 +1977,11 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user clicks Send Another to proceed. It is up to the host application to redirect the user to the appropriate next workflow step.
          */
-        "onAnother"?: (event: VerdocsEnvelopeRecipientSummaryCustomEvent<any>) => void;
+        "onAnother"?: (event: VerdocsEnvelopeRecipientSummaryCustomEvent<{envelope: IEnvelope}>) => void;
         /**
           * Event fired when the user clicks Done to proceed. It is up to the host application to redirect the user to the appropriate next workflow step.
          */
-        "onNext"?: (event: VerdocsEnvelopeRecipientSummaryCustomEvent<any>) => void;
+        "onNext"?: (event: VerdocsEnvelopeRecipientSummaryCustomEvent<{envelope: IEnvelope}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
@@ -1989,7 +1989,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user clicks Send Another to proceed. It is up to the host application to redirect the user to the appropriate next workflow step.
          */
-        "onView"?: (event: VerdocsEnvelopeRecipientSummaryCustomEvent<any>) => void;
+        "onView"?: (event: VerdocsEnvelopeRecipientSummaryCustomEvent<{envelope: IEnvelope}>) => void;
     }
     interface VerdocsEnvelopeSidebar {
         /**
@@ -2003,7 +2003,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user clicks Send Another in the Manage Recipients dialog. It is up to the host application to redirect the user to the appropriate next workflow step.
          */
-        "onAnother"?: (event: VerdocsEnvelopeSidebarCustomEvent<any>) => void;
+        "onAnother"?: (event: VerdocsEnvelopeSidebarCustomEvent<{envelope: IEnvelope}>) => void;
         /**
           * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
          */
