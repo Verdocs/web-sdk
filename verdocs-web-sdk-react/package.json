@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk-react",
-  "version": "1.14.2",
+  "version": "1.14.3",
   "description": "Verdocs Web SDK for React",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -30,7 +30,7 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@verdocs/web-sdk": "^1.14.2"
+    "@verdocs/web-sdk": "^1.14.3"
   },
   "peerDependencies": {
     "react": "^18.2.0",

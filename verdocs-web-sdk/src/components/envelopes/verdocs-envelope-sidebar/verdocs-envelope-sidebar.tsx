@@ -286,7 +286,7 @@ export class VerdocsEnvelopeSidebar {
     console.log('e', this.envelope);
     return (
       <Host class={this.panelOpen ? 'open' : ''}>
-        <div class="buttons">
+        <div class="side-buttons">
           <button class={this.activeTab === 1 ? 'active' : ''} onClick={() => this.setTab(1)} innerHTML={InformationCircle} />
           <button class={this.activeTab === 2 ? 'active' : ''} onClick={() => this.setTab(2)} innerHTML={Users} />
           <button class={this.activeTab === 3 ? 'active' : ''} onClick={() => this.setTab(3)} innerHTML={ClipboardDocuments} />
