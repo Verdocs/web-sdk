@@ -1,3 +1,4 @@
+import {format} from 'date-fns';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
@@ -11,7 +12,7 @@ import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSi
 import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
-import {format} from 'date-fns';
+import {VerdocsToast} from '../../../utils/Toast';
 
 const inProgressMenuOptions = [
   {id: 'later', label: 'Finish Later'}, //
@@ -224,7 +225,7 @@ export class VerdocsSign {
         break;
 
       case 'claim':
-        window.alert('This feature will be available in an upcoming release.');
+        VerdocsToast('This feature will be available in an upcoming release.');
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'claimed'});
         break;
 

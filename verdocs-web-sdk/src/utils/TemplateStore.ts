@@ -87,7 +87,6 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
       const template = await getTemplate(endpoint, templateId);
       console.debug('[TEMPLATES] Got template', template);
       Object.assign(store.state, template);
-      // Object.keys(template).forEach(key => store.set(key as keyof TTemplateStore, template[key]));
 
       store.state.isLoaded = true;
       store.state.isError = false;
