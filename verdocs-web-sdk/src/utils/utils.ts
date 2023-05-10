@@ -141,9 +141,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
 
       let {type} = field;
       if (type === 'textbox') {
-        console.log('Rendering text box', field);
         if (field['setting']?.leading > 0 || field['settings']?.leading > 0) {
-          console.log('Switching to text area', field);
           type = 'textarea';
         }
       }

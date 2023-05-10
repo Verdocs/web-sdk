@@ -140,15 +140,15 @@ export class VerdocsEnvelopeRecipientSummary {
   }
 
   getLink(recipient: IRecipient) {
-    this.gettingLinks[recipient.role_name] = true;
+    this.gettingLinks = {...this.gettingLinks, [recipient.role_name]: true};
     getInPersonLink(this.endpoint, recipient.envelope_id, recipient.role_name)
       .then(response => {
-        this.gettingLinks[recipient.role_name] = false;
+        this.gettingLinks = {...this.gettingLinks, [recipient.role_name]: false};
         this.links = {...this.links, [recipient.role_name]: response.link};
         this.copyLink(response.link);
       })
       .catch(e => {
-        this.gettingLinks[recipient.role_name] = false;
+        this.gettingLinks = {...this.gettingLinks, [recipient.role_name]: false};
         console.log('[RECIPIENTS] Error getting link', e);
         VerdocsToast('Unable to get link: ' + e.message, {style: 'error'});
       });
@@ -157,9 +157,9 @@ export class VerdocsEnvelopeRecipientSummary {
   render() {
     return (
       <Host>
-        <div class="content">
-          <h1 class="title">Recipient Summary</h1>
-          <div class="rows">
+        <div class="summary-content">
+          <h1 class="summary-title">Recipient Summary</h1>
+          <div class="summary-rows">
             {this.store.state?.recipients.map(recipient => {
               const recipientsWithActions = getRecipientsWithActions(this.store.state);
               const showLinkButton = recipientCanAct(recipient, recipientsWithActions);
@@ -167,7 +167,7 @@ export class VerdocsEnvelopeRecipientSummary {
               const gettingLink = this.gettingLinks[recipient.role_name];
 
               return (
-                <div class="recipient">
+                <div class="summary-recipient">
                   <div class="role-name">{recipient.role_name}</div>
                   <div class="role-details">
                     <div class="role-info">

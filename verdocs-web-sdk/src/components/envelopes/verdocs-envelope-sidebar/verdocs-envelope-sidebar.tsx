@@ -265,7 +265,7 @@ export class VerdocsEnvelopeSidebar {
           entries.push({icon: 'link', message: `Owner accessed the In-person link for ${user}.`, date: new Date(history.created_at)});
           break;
         default:
-          console.log('unknown', history);
+          console.log('[SIDEBAR] Unknown history type', history);
           break;
       }
     });
@@ -283,7 +283,6 @@ export class VerdocsEnvelopeSidebar {
     const isEnvelopeOwner = userIsEnvelopeOwner(session, this.envelope);
     const historyEntries = this.prepareHistoryEntries();
 
-    console.log('e', this.envelope);
     return (
       <Host class={this.panelOpen ? 'open' : ''}>
         <div class="side-buttons">

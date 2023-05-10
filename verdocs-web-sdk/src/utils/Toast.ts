@@ -60,7 +60,7 @@ export const VerdocsToast = (text: string, config: IVerdocsToastConfig = {}) => 
   const toastBody = `
     ${icon}
     <div class="verdocs-toast-text" style="padding: 12px 12px 12px 0;">${text}</div>
-    <div class="verdocs-toast-close" style="padding: 12px 8px; background: rgba(0,0,0,0.25); cursor: pointer;">✕</div>
+    <div class="verdocs-toast-close" style="padding: 12px 10px; background: rgba(0, 0, 0, 0.2); cursor: pointer;">✕</div>
   `;
 
   const toast = document.createElement('div');
