@@ -63,7 +63,7 @@ export class VerdocsButton {
     return (
       <button disabled={this.disabled} type={this.type} class={`${this.variant} ${this.size} ${this.type}`}>
         {this.startIcon ? <span class="icon start" innerHTML={this.startIcon} /> : null}
-        <span class="label">{this.label}</span>
+        <span class="button-label">{this.label}</span>
         {this.endIcon ? <span class="icon end" innerHTML={this.endIcon} /> : null}
       </button>
     );

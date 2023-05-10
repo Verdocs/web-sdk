@@ -76,11 +76,9 @@ export class VerdocsEnvelopeRecipientSummary {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() isOpen: boolean;
-
+  @State() loading = true;
   @State() recipientStatusIcons = [];
-
   @State() containerId = `verdocs-status-indicator-${Math.random().toString(36).substring(2, 11)}`;
-
   @State() gettingLinks: Record<string, boolean> = {};
   @State() links: Record<string, string> = {};
 
@@ -102,6 +100,7 @@ export class VerdocsEnvelopeRecipientSummary {
 
       this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
       this.sortEnvelopeRecipients();
+      this.loading = false;
     } catch (e) {
       console.log('[RECIPIENTS] Error loading envelope', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -155,12 +154,16 @@ export class VerdocsEnvelopeRecipientSummary {
   }
 
   render() {
+    if (this.loading) {
+      return <Host />;
+    }
+
     return (
       <Host>
         <div class="summary-content">
           <h1 class="summary-title">Recipient Summary</h1>
           <div class="summary-rows">
-            {this.store.state?.recipients.map(recipient => {
+            {(this.store?.state?.recipients || []).map(recipient => {
               const recipientsWithActions = getRecipientsWithActions(this.store.state);
               const showLinkButton = recipientCanAct(recipient, recipientsWithActions);
               const link = this.links[recipient.role_name];

@@ -89,6 +89,7 @@ export class VerdocsEnvelopeSidebar {
   @State() activeTab: number = 1;
   @State() panelOpen = false;
   @State() showManageDialog = false;
+  @State() loading = true;
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -109,6 +110,7 @@ export class VerdocsEnvelopeSidebar {
         return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
       });
       this.roleNames = this.sortedRecipients.map(r => r.role_name);
+      this.loading = false;
     } catch (e) {
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
@@ -275,7 +277,7 @@ export class VerdocsEnvelopeSidebar {
   }
 
   render() {
-    if (!this.envelope) {
+    if (!this.envelope || this.loading) {
       return <Host />;
     }
 
