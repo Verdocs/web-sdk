@@ -10,7 +10,10 @@ export default {
   argTypes: {
     envelopeId: {name: 'envelopeId'},
     toggle: {action: 'toggle'},
+    another: {action: 'another'},
+    envelopeUpdated: {action: 'envelopeUpdated'},
   },
 } as Meta;
 
-export const EnvelopeSidebar = ({envelopeId, toggle}) => html`<verdocs-envelope-sidebar .envelopeId=${envelopeId} @toggle=${toggle} />`;
+export const EnvelopeSidebar = ({envelopeId, toggle, another, envelopeUpdated}) =>
+  html`<verdocs-envelope-sidebar .envelopeId=${envelopeId} @toggle=${toggle} @envelopeUpdated=${envelopeUpdated} @another=${another} />`;

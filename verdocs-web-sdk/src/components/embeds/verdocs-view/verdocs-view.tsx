@@ -51,6 +51,23 @@ export class VerdocsView {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
+  /**
+   * Event fired when the user clicks Send Another to proceed. It is up to the host application
+   * to redirect the user to the appropriate next workflow step.
+   */
+  @Event({composed: true}) another: EventEmitter;
+
+  /**
+   * Event fired when the user clicks Send Another to proceed. It is up to the host application
+   * to redirect the user to the appropriate next workflow step.
+   */
+  @Event({composed: true}) view: EventEmitter;
+
+  /**
+   * Event fired when the user clicks Done to proceed. It is up to the host application
+   * to redirect the user to the appropriate next workflow step.
+   */
+  @Event({composed: true}) next: EventEmitter;
   @State() canceling = false;
   @State() envelope: IEnvelope | null = null;
   @State() roleNames: string[] = [];

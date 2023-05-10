@@ -3,8 +3,9 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
+import {userIsEnvelopeOwner} from '@verdocs/js-sdk/Envelopes/Permissions';
+import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
-import {getInPersonLink} from '@verdocs/js-sdk/Envelopes/Recipients';
 
 const InformationCircle = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>`;
 
@@ -76,11 +77,18 @@ export class VerdocsEnvelopeSidebar {
    */
   @Event({composed: true}) toggle: EventEmitter<{open: boolean}>;
 
+  /**
+   * Event fired when the user clicks Send Another in the Manage Recipients dialog. It is up to the host application
+   * to redirect the user to the appropriate next workflow step.
+   */
+  @Event({composed: true}) another: EventEmitter;
+
   @State() envelope: IEnvelope | null = null;
   @State() sortedRecipients: IRecipient[] = [];
   @State() roleNames: string[] = [];
   @State() activeTab: number = 1;
   @State() panelOpen = false;
+  @State() showManageDialog = false;
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -131,20 +139,16 @@ export class VerdocsEnvelopeSidebar {
   handleRecipientAction(recipient: IRecipient, id: string) {
     console.log('[SIDEBAR] Recipient action', id, recipient);
     switch (id) {
-      case 'inperson':
-        getInPersonLink(this.endpoint, recipient.envelope_id, recipient.role_name)
-          // TODO: Can remove "any" once js-sdk is updated
-          .then((response: any) => {
-            console.log('Got in person link');
-            return window?.navigator?.clipboard?.writeText(response.link);
-          })
-          .then(r => console.log('copy result', r))
-          .catch(e => console.warn('[SIDEBAR] Error getting link', e));
+      case 'reminder':
+        VerdocsToast('This feature will be enabled in a future release. Please try again later.', {style: 'info'});
         break;
 
-      case 'reminder':
       case 'modify':
+        VerdocsToast('This feature will be enabled in a future release. Please try again later.', {style: 'info'});
+        break;
+
       case 'details':
+        VerdocsToast('This feature will be enabled in a future release. Please try again later.', {style: 'info'});
         break;
     }
 
@@ -276,7 +280,7 @@ export class VerdocsEnvelopeSidebar {
     }
 
     const session = this.endpoint.getSession();
-    const isEnvelopeOwner = session.profile_id === this.envelope.profile_id; // TODO: What about org admins?
+    const isEnvelopeOwner = userIsEnvelopeOwner(session, this.envelope);
     const historyEntries = this.prepareHistoryEntries();
 
     console.log('e', this.envelope);
@@ -332,7 +336,6 @@ export class VerdocsEnvelopeSidebar {
                       options={[
                         {id: 'reminder', label: 'Send Reminder', disabled: !this.canResendRecipient(recipient)},
                         {id: 'modify', label: 'Modify Recipient', disabled: !this.canModifyRecipient(recipient)},
-                        {id: 'inperson', label: 'Get In-Person Link', disabled: !this.canModifyRecipient(recipient) || !['invited', 'opened'].includes(recipient.status)},
                         // TODO: Details dialog
                         // {id:'details',label: 'View Details'},
                       ]}
@@ -347,6 +350,8 @@ export class VerdocsEnvelopeSidebar {
                 </dic>
               </div>
             ))}
+
+            {isEnvelopeOwner && <verdocs-button class="manage-recipients-button" variant="standard" label="Manage Recipients" onClick={() => (this.showManageDialog = true)} />}
           </div>
         )}
 
@@ -365,6 +370,20 @@ export class VerdocsEnvelopeSidebar {
               </div>
             ))}
           </div>
+        )}
+
+        {this.showManageDialog && (
+          <verdocs-envelope-recipient-summary
+            envelopeId={this.envelopeId}
+            canView={false}
+            onAnother={() => {
+              this.showManageDialog = false;
+              this.another?.emit();
+            }}
+            onNext={() => {
+              this.showManageDialog = false;
+            }}
+          />
         )}
       </Host>
     );

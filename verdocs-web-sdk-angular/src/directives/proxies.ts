@@ -292,14 +292,14 @@ export declare interface VerdocsEnvelopeDocumentPage extends Components.VerdocsE
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'envelope', 'envelopeId']
+  inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelope', 'envelopeId']
 })
 @Component({
   selector: 'verdocs-envelope-recipient-summary',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'envelope', 'envelopeId'],
+  inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelope', 'envelopeId'],
 })
 export class VerdocsEnvelopeRecipientSummary {
   protected el: HTMLElement;
@@ -352,7 +352,7 @@ export class VerdocsEnvelopeSidebar {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated', 'toggle']);
+    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated', 'toggle', 'another']);
   }
 }
 
@@ -375,6 +375,11 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the sidebar is opened or closed.
    */
   toggle: EventEmitter<CustomEvent<{open: boolean}>>;
+  /**
+   * Event fired when the user clicks Send Another in the Manage Recipients dialog. It is up to the host application
+to redirect the user to the appropriate next workflow step.
+   */
+  another: EventEmitter<CustomEvent<any>>;
 }
 
 
@@ -2028,7 +2033,7 @@ export class VerdocsView {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated']);
+    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated', 'another', 'view', 'next']);
   }
 }
 
@@ -2047,6 +2052,21 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
   envelopeUpdated: EventEmitter<CustomEvent<IVerdocsViewIVerdocsView{endpoint: [object Object]; envelope: [object Object]; event: string}>>;
+  /**
+   * Event fired when the user clicks Send Another to proceed. It is up to the host application
+to redirect the user to the appropriate next workflow step.
+   */
+  another: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user clicks Send Another to proceed. It is up to the host application
+to redirect the user to the appropriate next workflow step.
+   */
+  view: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user clicks Done to proceed. It is up to the host application
+to redirect the user to the appropriate next workflow step.
+   */
+  next: EventEmitter<CustomEvent<any>>;
 }
 
 

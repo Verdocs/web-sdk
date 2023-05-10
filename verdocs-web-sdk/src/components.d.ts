@@ -184,6 +184,18 @@ export namespace Components {
     }
     interface VerdocsEnvelopeRecipientSummary {
         /**
+          * Enable or disable the Done button.
+         */
+        "canDone": boolean;
+        /**
+          * Enable or disable the Send Another button.
+         */
+        "canSendAnother": boolean;
+        /**
+          * Enable or disable the View button.
+         */
+        "canView": boolean;
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
@@ -1939,6 +1951,18 @@ declare namespace LocalJSX {
     }
     interface VerdocsEnvelopeRecipientSummary {
         /**
+          * Enable or disable the Done button.
+         */
+        "canDone"?: boolean;
+        /**
+          * Enable or disable the Send Another button.
+         */
+        "canSendAnother"?: boolean;
+        /**
+          * Enable or disable the View button.
+         */
+        "canView"?: boolean;
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
@@ -1976,6 +2000,10 @@ declare namespace LocalJSX {
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
          */
         "envelopeId"?: string;
+        /**
+          * Event fired when the user clicks Send Another in the Manage Recipients dialog. It is up to the host application to redirect the user to the appropriate next workflow step.
+         */
+        "onAnother"?: (event: VerdocsEnvelopeSidebarCustomEvent<any>) => void;
         /**
           * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
          */
@@ -3215,13 +3243,25 @@ declare namespace LocalJSX {
          */
         "headerTargetId"?: string | null;
         /**
+          * Event fired when the user clicks Send Another to proceed. It is up to the host application to redirect the user to the appropriate next workflow step.
+         */
+        "onAnother"?: (event: VerdocsViewCustomEvent<any>) => void;
+        /**
           * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
          */
         "onEnvelopeUpdated"?: (event: VerdocsViewCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
         /**
+          * Event fired when the user clicks Done to proceed. It is up to the host application to redirect the user to the appropriate next workflow step.
+         */
+        "onNext"?: (event: VerdocsViewCustomEvent<any>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsViewCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user clicks Send Another to proceed. It is up to the host application to redirect the user to the appropriate next workflow step.
+         */
+        "onView"?: (event: VerdocsViewCustomEvent<any>) => void;
     }
     interface IntrinsicElements {
         "ipc-test": IpcTest;

@@ -13,15 +13,20 @@ verdocs-envelope-recipient-summary {
   font-family: $primary-font;
   background-color: #0000007f;
 
+  .label {
+    color: #ffffff;
+  }
+
   .content {
-    padding: 30px 20px 20px;
     width: 600px;
-    max-width: 100%;
     display: flex;
-    flex-direction: column;
+    max-width: 90%;
+    font-size: 18px;
+    flex: 0 0 600px;
     border-radius: 6px;
     background: #ffffff;
-    font-size: 18px;
+    flex-direction: column;
+    padding: 30px 20px 20px;
 
     .title {
       font-size: 20px;
@@ -32,6 +37,7 @@ verdocs-envelope-recipient-summary {
 
   .recipient {
     display: flex;
+    color: $verdocs-grey-1;
     margin: 8px 0 24px 0;
     flex-direction: column;
 
@@ -95,9 +101,6 @@ verdocs-envelope-recipient-summary {
         align-items: center;
         border: 1px solid #cccccc;
         background: rgb(249 250 251);
-      }
-
-      .copy-button {
       }
     }
   }

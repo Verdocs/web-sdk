@@ -5,7 +5,10 @@ export default {
   title: 'Envelopes/Recipient Summary',
   component: 'verdocs-envelope-recipient-summary',
   args: {
-    envelopeId: '498c2404-3d8c-4325-bdd3-e8c7c70e63b1',
+    envelopeId: '',
+    canView: true,
+    canDone: true,
+    canSendAnother: true,
   },
   argTypes: {
     another: {action: 'another'},
@@ -14,8 +17,11 @@ export default {
   },
 } as Meta;
 
-export const RecipientSummary = ({envelopeId, another, view, next}) => html`<verdocs-envelope-recipient-summary
+export const RecipientSummary = ({envelopeId, another, view, next, canView, canDone, canSendAnother}) => html`<verdocs-envelope-recipient-summary
   .envelopeId="${envelopeId}"
+  .canView="${canView}"
+  .canDone="${canDone}"
+  .canSendAnother="${canSendAnother}"
   @another=${another}
   @view=${view}
   @next=${next}

@@ -78,6 +78,16 @@ verdocs-envelope-sidebar {
     flex: 0;
   }
 
+  .manage-recipients-button {
+    align-self: center;
+    white-space: nowrap;
+
+    .label {
+      color: #ffffff;
+      font-size: 14px;
+    }
+  }
+
   .recipient-detail {
     flex: 0;
     padding: 8px;

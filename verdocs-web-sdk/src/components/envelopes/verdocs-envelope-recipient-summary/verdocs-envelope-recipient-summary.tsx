@@ -32,6 +32,21 @@ export class VerdocsEnvelopeRecipientSummary {
   @Prop() envelopeId: string = '';
 
   /**
+   * Enable or disable the Send Another button.
+   */
+  @Prop() canSendAnother = true;
+
+  /**
+   * Enable or disable the View button.
+   */
+  @Prop() canView = true;
+
+  /**
+   * Enable or disable the Done button.
+   */
+  @Prop() canDone = true;
+
+  /**
    * The document to display status for. Ignored if `status` is set directly.
    */
   @Prop() envelope?: IEnvelope;
@@ -174,11 +189,13 @@ export class VerdocsEnvelopeRecipientSummary {
             })}
           </div>
 
-          <div class="buttons">
-            <verdocs-button size="small" label="Send Another" onClick={e => this.handleAnother(e)} />
-            <verdocs-button size="small" label="View Now" onClick={e => this.handleView(e)} />
-            <verdocs-button size="small" label="Done" onClick={e => this.handleDone(e)} />
-          </div>
+          {(this.canSendAnother || this.canView || this.canDone) && (
+            <div class="buttons">
+              {this.canSendAnother && <verdocs-button size="small" label="Send Another" onClick={e => this.handleAnother(e)} />}
+              {this.canView && <verdocs-button size="small" label="View Now" onClick={e => this.handleView(e)} />}
+              {this.canDone && <verdocs-button size="small" label="Done" onClick={e => this.handleDone(e)} />}
+            </div>
+          )}
         </div>
       </Host>
     );
