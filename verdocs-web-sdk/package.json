@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "1.14.5",
+  "version": "1.14.6",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -33,7 +33,7 @@
     "@stencil/core": "2.20.0",
     "@stencil/store": "^2.0.4",
     "@svgdotjs/svg.js": "^3.1.2",
-    "@verdocs/js-sdk": "^3.6.4",
+    "@verdocs/js-sdk": "^3.6.5",
     "date-fns": "^2.29.3",
     "flatpickr": "^4.6.13",
     "interactjs": "^1.10.17",

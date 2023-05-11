@@ -2,7 +2,10 @@
 
 // See https://www.kallmanation.com/styling-a-checkbox-with-only-css
 verdocs-field-checkbox {
-  line-height: 18px;
+  width: 16px;
+  height: 16px;
+  padding: 1px;
+  box-sizing: border-box;
   transform-origin: bottom left;
   font-family: $verdocs-primary-font;
 
@@ -10,23 +13,27 @@ verdocs-field-checkbox {
     opacity: 0.5;
   }
 
+  label {
+    width: 14px;
+    height: 14px;
+    display: block;
+    box-sizing: border-box;
+  }
+
   label > input[type='checkbox'] {
     display: none;
   }
 
   label > input[type='checkbox'] + *::before {
+    margin: 0;
     content: '';
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
-    line-height: 18px;
+    width: 14px;
+    height: 14px;
+    display: block;
+    line-height: 14px;
     border-radius: 2px;
-    border-style: solid;
-    margin-right: 0.5rem;
-    border-width: 0.1rem;
-    display: inline-block;
-    vertical-align: bottom;
-    border-color: $verdocs-grey-2;
+    box-sizing: border-box;
+    border: 1px solid $verdocs-grey-2;
   }
 
   label > input[type='checkbox']:checked + * {
@@ -36,6 +43,7 @@ verdocs-field-checkbox {
   label > input[type='checkbox']:checked + *::before {
     content: '✓';
     color: white;
+    font-size: 12px;
     text-align: center;
     background: $verdocs-green;
     border-color: $verdocs-green;
