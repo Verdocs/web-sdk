@@ -6,7 +6,7 @@ import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {downloadBlob} from '@verdocs/js-sdk/Utils/Files';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {IEnvelopeField, IEnvelope, TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
-import {IDocumentPageInfo} from './Types';
+import {FORMAT_DATE, IDocumentPageInfo} from './Types';
 
 export const defaultWidth = (type: TDocumentFieldType) => {
   // checkbox was a legacy field type
@@ -16,9 +16,9 @@ export const defaultWidth = (type: TDocumentFieldType) => {
     case 'textbox':
       return 150;
     case 'timestamp':
-      return 120;
+      return 105;
     case 'date':
-      return 84;
+      return 64;
     case 'dropdown':
       return 85;
     case 'attachment':
@@ -309,37 +309,28 @@ export const getFieldSettings = (field: ITemplateField | IEnvelopeField) => {
  * to be used for order-sensitive components e.g. translate-then-rotate.
  */
 export const updateCssTransform = (el: HTMLElement, key: string, value: string) => {
-  // console.log('update', key, value, el.style.transform);
-  // e.g. 'scale(1.87908, 1.87908) translate(0px, 0px);'
-
   const currentTransform = el.style.transform || '';
 
   const newValue = `${key}(${value})`;
   if (currentTransform.includes(key)) {
-    // console.log('updating', currentTransform, currentTransform.replace(new RegExp(`${key}\(.+?\)`), newValue));
     el.style.transform = currentTransform.replace(new RegExp(`${key}\\(.+?\\)`), newValue);
   } else {
-    // console.log('appending', currentTransform, currentTransform + ' ' + newValue);
     el.style.transform = currentTransform + ' ' + newValue;
   }
-
-  // console.log('now', el.style.transform);
 };
-
-export const formatLocalDate = (date: Date) => format(date, 'P').replace(/\//g, '-');
-
-const formatEnvelopeDate = (envelope: IEnvelope) => formatLocalDate(new Date(envelope.updated_at));
 
 export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {
   // e.g. "Colorado-Motor-Vehicle-Bill-of-Sale.pdf"
-  const fileName = `${envelope.name} - ${formatEnvelopeDate(envelope)}.pdf`;
+  const date = format(new Date(envelope.updated_at), FORMAT_DATE);
+  const fileName = `${envelope.name} - ${date}.pdf`;
   const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, documentId);
   downloadBlob(data, fileName);
 };
 
 export const saveCertificate = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {
   // e.g "Colorado Motor Vehicle Bill of Sale_certificate.pdf"
-  const fileName = `${envelope.name} - ${formatEnvelopeDate(envelope)}_certificate.pdf`;
+  const date = format(new Date(envelope.updated_at), FORMAT_DATE);
+  const fileName = `${envelope.name} - ${date}_certificate.pdf`;
   const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, documentId);
   downloadBlob(data, fileName);
 };
@@ -349,7 +340,8 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: I
 
   for await (let envelope of envelopes) {
     // e.g. "98a13bc0-8861-4408-86fc-8f9af51e867a-TheSwanBrothers Phase 1 Agreement - 11-02-22"
-    const subFolder = envelopes.length > 0 ? zip.folder(`${envelope.id} - ${envelope.name} - ${formatEnvelopeDate(envelope)}`) : null;
+    const date = format(new Date(envelope.updated_at), FORMAT_DATE);
+    const subFolder = envelopes.length > 0 ? zip.folder(`${envelope.id} - ${envelope.name} - ${date}`) : null;
     for await (let document of envelope.documents) {
       // TODO: When attachments are added to envelopes, add a field that reflects the full, original filename (including extension)
       const documentFileName = document.type === 'certificate' ? `${envelope.name}_certificate.pdf` : `${document.name}.pdf`;
@@ -373,7 +365,8 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: I
   }
 
   // e.g. "Colorado Motor Vehicle Bill of Sale - 01-18-23.zip" or "Verdocs-Envelopes-02-13-23.zip"
-  const zipFileName = envelopes.length === 1 ? `${envelopes[0].name} - ${formatEnvelopeDate(envelopes[0])}.zip` : `Verdocs-Envelopes-${formatLocalDate(new Date())}`;
+  const formattedDate = format(envelopes.length === 1 ? new Date(envelopes[0].updated_at) : new Date(), FORMAT_DATE);
+  const zipFileName = envelopes.length === 1 ? `${envelopes[0].name} - ${formattedDate}.zip` : `Verdocs-Envelopes-${formattedDate}`;
   const zipped = await zip.generateAsync({type: 'blob', compression: 'DEFLATE'});
   downloadBlob(zipped, zipFileName);
 };

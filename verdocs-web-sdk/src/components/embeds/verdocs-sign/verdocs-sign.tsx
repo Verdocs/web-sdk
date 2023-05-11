@@ -10,7 +10,7 @@ import {IEnvelopeField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/j
 import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
-import {IDocumentPageInfo} from '../../../utils/Types';
+import {FORMAT_DATE, IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 import {VerdocsToast} from '../../../utils/Toast';
 
@@ -322,7 +322,7 @@ export class VerdocsSign {
       case 'date':
         const iso = e.target.getAttribute('iso');
         console.log('Formatting date for save', iso);
-        const formatted = format(new Date(iso), 'PP');
+        const formatted = format(new Date(iso), FORMAT_DATE);
         console.log('Formatted', formatted);
         return this.saveFieldChange(field.name, {prepared: false, value: formatted});
 

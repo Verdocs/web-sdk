@@ -4,6 +4,7 @@ import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, State} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
+import {FORMAT_DATE} from '../../../utils/Types';
 import {format} from 'date-fns';
 
 const settingsIcon =
@@ -87,7 +88,9 @@ export class VerdocsFieldDate {
 
     flatpickr('#' + this.containerId, {
       positionElement: this.el,
-      dateFormat: 'M j, Y',
+      // NOTE: This uses different tokens from date-fns::format().
+      // See https://flatpickr.js.org/formatting/.
+      dateFormat: 'Y-m-d',
       defaultDate: result,
       onChange: selectedDate => {
         // console.log('Selected', selectedDate, dateStr, instance);
@@ -126,7 +129,7 @@ export class VerdocsFieldDate {
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
-      const formatted = settings?.result ? format(new Date(settings?.result), 'MMM d, y') : '';
+      const formatted = settings?.result ? format(new Date(settings?.result), FORMAT_DATE) : '';
 
       return <Host class={{done: this.done}}>{formatted}</Host>;
     }

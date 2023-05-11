@@ -4,6 +4,7 @@ import {IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
 import {userIsEnvelopeOwner} from '@verdocs/js-sdk/Envelopes/Permissions';
+import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
@@ -301,10 +302,10 @@ export class VerdocsEnvelopeSidebar {
             <div class="value">{this.envelope.id}</div>
 
             <div class="label">Date Created</div>
-            <div class="value">{format(new Date(this.envelope.created_at), 'PP pp')}</div>
+            <div class="value">{format(new Date(this.envelope.created_at), FORMAT_TIMESTAMP)}</div>
 
             <div class="label">Last Modified</div>
-            <div class="value">{format(new Date(this.envelope.updated_at), 'PP pp')}</div>
+            <div class="value">{format(new Date(this.envelope.updated_at), FORMAT_TIMESTAMP)}</div>
 
             <div class="label">Status</div>
             <div class="value">{this.envelope.status}</div>
@@ -366,7 +367,7 @@ export class VerdocsEnvelopeSidebar {
                 <div class="activity-details">
                   <div class="activity-text">{entry.message}</div>
                   {/* 'MMMM Do YYYY, h:mm:ss a'  */}
-                  <div class="activity-date">{format(entry.date, 'PP pp')}</div>
+                  <div class="activity-date">{format(entry.date, FORMAT_TIMESTAMP)}</div>
                 </div>
               </div>
             ))}
