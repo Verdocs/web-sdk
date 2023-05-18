@@ -5,7 +5,7 @@ export default {
   title: 'Envelopes/Recipient Summary',
   component: 'verdocs-envelope-recipient-summary',
   args: {
-    envelopeId: '',
+    envelopeId: 'af083350-0202-4c00-ac90-5346914fa6ff',
     canView: true,
     canDone: true,
     canSendAnother: true,

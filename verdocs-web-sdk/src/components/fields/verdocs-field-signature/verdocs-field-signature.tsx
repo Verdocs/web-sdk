@@ -1,5 +1,5 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import { ITemplateField, ITemplateFieldSetting } from "@verdocs/js-sdk/Templates/Types";
 import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, State} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
@@ -76,7 +76,7 @@ export class VerdocsFieldSignature {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting}>;
 
   /**
    * Event fired when the field is deleted.

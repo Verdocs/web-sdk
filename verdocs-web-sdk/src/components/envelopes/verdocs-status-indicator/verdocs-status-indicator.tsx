@@ -265,9 +265,10 @@ export class VerdocsStatusIndicator {
         return 'Submitted';
       case 'some-signed':
         return 'Partly Signed';
-      default:
       case 'pending':
         return 'Pending';
+      default:
+        return status;
     }
   }
 

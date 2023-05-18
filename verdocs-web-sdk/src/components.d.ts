@@ -8,7 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
-import { IRole, ITemplate, ITemplateField, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
+import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
@@ -566,6 +566,10 @@ export namespace Components {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
+         */
+        "endpoint": VerdocsEndpoint;
         /**
           * The document or template field to display.
          */
@@ -2029,7 +2033,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * May be used to force the field to re-render.
          */
@@ -2071,7 +2075,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldCheckboxCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldCheckboxCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * The index of the settings option this particular checkbox is for
          */
@@ -2117,7 +2121,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldDateCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldDateCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
@@ -2167,7 +2171,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * May be used to force the field to re-render.
          */
@@ -2225,7 +2229,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldInitialCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldInitialCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
@@ -2316,7 +2320,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldRadioButtonCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldRadioButtonCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * The index of the settings option this particular checkbox is for
          */
@@ -2370,7 +2374,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldSignatureCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldSignatureCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
@@ -2416,7 +2420,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * May be used to force the field to re-render.
          */
@@ -2444,6 +2448,10 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
           * The document or template field to display.
          */
         "field"?: IEnvelopeField | ITemplateField | null;
@@ -2458,7 +2466,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * May be used to force the field to re-render.
          */
@@ -2500,7 +2508,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * May be used to force the field to re-render.
          */
@@ -2958,7 +2966,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<{fieldName: string}>) => void;
+        "onSettingsChanged"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
         /**
           * The template ID to edit.
          */

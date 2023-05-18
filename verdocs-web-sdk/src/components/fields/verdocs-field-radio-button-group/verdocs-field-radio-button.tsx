@@ -1,6 +1,6 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/core';
-import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import { ITemplateField, ITemplateFieldSetting } from "@verdocs/js-sdk/Templates/Types";
 import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
 import {getFieldSettings} from '../../../utils/utils';
 
@@ -69,7 +69,7 @@ export class VerdocsFieldRadioButton {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting}>;
 
   /**
    * Event fired when the field is deleted.

@@ -136,6 +136,8 @@ verdocs-envelope-sidebar {
     min-width: 100px;
     background-color: #616161; // Default
     text-transform: capitalize;
+    font-size: 14px;
+    padding: 3px 0;
 
     &.invited {
       background-color: #ff8f00;

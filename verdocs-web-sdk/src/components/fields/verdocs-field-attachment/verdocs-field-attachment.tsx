@@ -43,7 +43,7 @@ export class VerdocsFieldAttachment {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting}>;
 
   @Method() async focusField() {
     this.handleShow();

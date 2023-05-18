@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid-browser';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {deleteField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
@@ -62,7 +62,7 @@ export class VerdocsTemplateFieldProperties {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting}>;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -171,7 +171,7 @@ export class VerdocsTemplateFieldProperties {
       .then(() => {
         this.dirty = false;
         this.updateField();
-        this.settingsChanged?.emit({fieldName: this.fieldName});
+        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties});
         this.close?.emit();
       })
       .catch(() => {
@@ -214,7 +214,7 @@ export class VerdocsTemplateFieldProperties {
       .then(() => {
         this.dirty = false;
         this.updateField();
-        this.settingsChanged?.emit({fieldName: this.fieldName});
+        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties});
         this.close?.emit();
       })
       .catch(() => {

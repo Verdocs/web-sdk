@@ -168,16 +168,17 @@ export class VerdocsTemplateFields {
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('settingsChanged', () => {
+    el.addEventListener('settingsChanged', e => {
+      console.log('[FIELDS] settingsChanged', e.detail);
+      Object.assign(field.setting, e.detail.settings);
       this.selectedRoleName = field.role_name;
-      console.log('settings changed', this.selectedRoleName, field);
       el.setAttribute('roleindex', getRoleIndex(getRoleNames(this.store), field.role_name));
       el.field = this.store?.state?.fields.find(f => f.name === field.name);
       this.rerender++;
       el.setAttribute('rerender', this.rerender);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store?.state, event: 'updated-field'});
 
-      console.log('Re-rendering field', field.name, pageInfo.pageNumber);
+      console.log('[FIELDS] Re-rendering field', field.name, pageInfo.pageNumber);
       this.reRenderField(field, pageInfo.pageNumber);
       const newEl = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
       if (!newEl) {
