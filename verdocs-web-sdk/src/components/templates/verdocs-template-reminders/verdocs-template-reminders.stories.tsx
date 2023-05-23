@@ -5,7 +5,7 @@ export default {
   title: 'Templates/Reminders',
   component: 'verdocs-template-reminders',
   args: {
-    templateId: '',
+    templateId: '8337af06-3b5a-4e1b-98be-67d82bc7ecd1',
   },
   argTypes: {
     onClose: {action: 'close'},

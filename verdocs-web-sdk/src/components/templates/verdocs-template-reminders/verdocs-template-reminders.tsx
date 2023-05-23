@@ -3,6 +3,7 @@ import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/cor
 import {createReminder, updateReminder, deleteReminder, ICreateTemplateReminderRequest} from '@verdocs/js-sdk/Templates/Reminders';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
+import {VerdocsToast} from '../../../utils/Toast';
 
 /**
  * Displays an edit form that allows the user to adjust a template's reminders.
@@ -42,6 +43,10 @@ export class VerdocsTemplateReminders {
 
   store: TTemplateStore | null = null;
 
+  // POST https://api.verdocs.com/templates/8337af06-3b5a-4e1b-98be-67d82bc7ecd1/reminder
+  // interval_time: 1,
+  // setup_time:1,
+
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
@@ -75,19 +80,28 @@ export class VerdocsTemplateReminders {
 
   async handleSave(e) {
     e.stopPropagation();
-    if (this.sendReminders) {
-      const params: ICreateTemplateReminderRequest = {
-        setup_time: 86400000 * +this.firstReminderDays,
-        interval_time: 86400000 * +this.reminderDays,
-      };
+    try {
+      if (this.sendReminders) {
+        const params: ICreateTemplateReminderRequest = {
+          setup_time: +this.firstReminderDays,
+          interval_time: +this.reminderDays,
+        };
 
-      if (!this.store?.state?.reminder_id) {
-        await createReminder(this.endpoint, this.templateId, params);
+        if (!this.store?.state?.reminder_id) {
+          await createReminder(this.endpoint, this.templateId, params);
+          this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+        } else {
+          await updateReminder(this.endpoint, this.templateId, this.store?.state.reminder_id, params);
+          this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+        }
       } else {
-        await updateReminder(this.endpoint, this.templateId, this.store?.state.reminder_id, params);
+        await deleteReminder(this.endpoint, this.templateId, this.store?.state.reminder_id);
+        this.store = await getTemplateStore(this.endpoint, this.templateId, true);
       }
-    } else {
-      await deleteReminder(this.endpoint, this.templateId, this.store?.state.reminder_id);
+    } catch (e) {
+      console.log('[TEMPLATE REMINDERS] Unable to update reminders', e);
+      VerdocsToast(e.message);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
 
     this.dirty = false;
@@ -121,10 +135,10 @@ export class VerdocsTemplateReminders {
               checked={this.sendReminders}
               value="on"
               onInput={(e: any) => {
-                this.showPlanBlocker = true;
-                e.target.checked = false;
-                // this.sendReminders = e.target.checked;
-                // this.dirty = true;
+                // this.showPlanBlocker = true;
+                // e.target.checked = false;
+                this.sendReminders = e.target.checked;
+                this.dirty = true;
               }}
             />
           </div>
@@ -135,7 +149,10 @@ export class VerdocsTemplateReminders {
               id="verdocs-first-reminder-days"
               type="number"
               value={this.firstReminderDays}
-              onInput={(e: any) => (this.firstReminderDays = e.target.value)}
+              onInput={(e: any) => {
+                this.firstReminderDays = e.target.value;
+                this.dirty = true;
+              }}
               disabled={!this.sendReminders}
             />
           </div>
@@ -145,7 +162,10 @@ export class VerdocsTemplateReminders {
               id="verdocs-days-between-reminders"
               type="number"
               value={this.reminderDays}
-              onInput={(e: any) => (this.reminderDays = e.target.value)}
+              onInput={(e: any) => {
+                this.reminderDays = e.target.value;
+                this.dirty = true;
+              }}
               disabled={!this.sendReminders}
             />
           </div>

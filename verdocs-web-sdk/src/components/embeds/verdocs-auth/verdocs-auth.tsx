@@ -2,6 +2,7 @@ import {Auth} from '@verdocs/js-sdk/Users';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {TSession} from '@verdocs/js-sdk/Sessions/Types';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
+import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
 export interface IAuthStatus {
@@ -80,7 +81,6 @@ export class VerdocsAuth {
   @State() password: string = '';
   @State() loggingIn: boolean = false;
   @State() activeSession: TSession = null;
-  @State() loginError: string | null = null;
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -112,9 +112,7 @@ export class VerdocsAuth {
         this.authenticated?.emit({authenticated: false, session: null});
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
 
-        if (e?.response?.status === 403) {
-          this.loginError = 'Please check your username and password and try again.';
-        }
+        VerdocsToast('Login failed. Please check your username and password and try again.', {style: 'error'});
       });
   }
 
@@ -124,17 +122,15 @@ export class VerdocsAuth {
     this.authenticated?.emit({authenticated: false, session: null});
   }
 
-  handleClearError() {
-    this.loginError = null;
-  }
-
   render() {
     if (!this.visible) {
       return <div style={{display: 'none'}}>Authenticated</div>;
     }
 
     if (this.isAuthenticated) {
-      return <div class="status-result">Authenticated</div>;
+      return (
+        <verdocs-button label="Sign Out" disabled={this.loggingIn} onClick={() => this.handleLogout()} style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}} />
+      );
     }
 
     if (this.displayMode === 'signup') {
@@ -201,8 +197,6 @@ export class VerdocsAuth {
 
           <verdocs-button label="Login" disabled={this.loggingIn} onClick={() => this.handleLogin()} style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}} />
         </form>
-
-        {this.loginError ? <verdocs-ok-dialog heading="Login Error" message={this.loginError} onNext={() => this.handleClearError()} /> : <div />}
       </div>
     );
   }

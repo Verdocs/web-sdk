@@ -4,7 +4,6 @@ verdocs-status-indicator {
   display: flex;
   font-size: 18px;
   flex-wrap: nowrap;
-  padding: 4px 12px;
   border-radius: 6px;
   color: $label-color;
   align-items: center;
@@ -19,7 +18,7 @@ verdocs-status-indicator {
   .icon {
     width: 25px;
     height: 25px;
-    margin: 0 10px -4px 0;
+    margin: 0 10px 0 0;
   }
 
   &.dark {
@@ -32,7 +31,7 @@ verdocs-status-indicator {
     .icon {
       width: 20px;
       height: 20px;
-      margin: 0 8px -4px 0;
+      margin: 0 8px 0 0;
     }
   }
 

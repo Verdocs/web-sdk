@@ -59,7 +59,6 @@ export const VerdocsTemplateDocumentPage = /*@__PURE__*/createReactComponent<JSX
 export const VerdocsTemplateFieldProperties = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateFieldProperties, HTMLVerdocsTemplateFieldPropertiesElement>('verdocs-template-field-properties');
 export const VerdocsTemplateFields = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateFields, HTMLVerdocsTemplateFieldsElement>('verdocs-template-fields');
 export const VerdocsTemplateName = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateName, HTMLVerdocsTemplateNameElement>('verdocs-template-name');
-export const VerdocsTemplateProperties = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateProperties, HTMLVerdocsTemplatePropertiesElement>('verdocs-template-properties');
 export const VerdocsTemplateReminders = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateReminders, HTMLVerdocsTemplateRemindersElement>('verdocs-template-reminders');
 export const VerdocsTemplateRoleProperties = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateRoleProperties, HTMLVerdocsTemplateRolePropertiesElement>('verdocs-template-role-properties');
 export const VerdocsTemplateRoles = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateRoles, HTMLVerdocsTemplateRolesElement>('verdocs-template-roles');

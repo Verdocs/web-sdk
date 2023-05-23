@@ -530,6 +530,10 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
           * The document or template field to display.
          */
         "field": IEnvelopeField | ITemplateField | null;
@@ -963,16 +967,6 @@ export namespace Components {
          */
         "templateId": string;
     }
-    interface VerdocsTemplateProperties {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId": string;
-    }
     interface VerdocsTemplateReminders {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1270,10 +1264,6 @@ export interface VerdocsTemplateFieldsCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsTemplateNameCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateNameElement;
-}
-export interface VerdocsTemplatePropertiesCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsTemplatePropertiesElement;
 }
 export interface VerdocsTemplateRemindersCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1614,12 +1604,6 @@ declare global {
         prototype: HTMLVerdocsTemplateNameElement;
         new (): HTMLVerdocsTemplateNameElement;
     };
-    interface HTMLVerdocsTemplatePropertiesElement extends Components.VerdocsTemplateProperties, HTMLStencilElement {
-    }
-    var HTMLVerdocsTemplatePropertiesElement: {
-        prototype: HTMLVerdocsTemplatePropertiesElement;
-        new (): HTMLVerdocsTemplatePropertiesElement;
-    };
     interface HTMLVerdocsTemplateRemindersElement extends Components.VerdocsTemplateReminders, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateRemindersElement: {
@@ -1744,7 +1728,6 @@ declare global {
         "verdocs-template-field-properties": HTMLVerdocsTemplateFieldPropertiesElement;
         "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
         "verdocs-template-name": HTMLVerdocsTemplateNameElement;
-        "verdocs-template-properties": HTMLVerdocsTemplatePropertiesElement;
         "verdocs-template-reminders": HTMLVerdocsTemplateRemindersElement;
         "verdocs-template-role-properties": HTMLVerdocsTemplateRolePropertiesElement;
         "verdocs-template-roles": HTMLVerdocsTemplateRolesElement;
@@ -2406,6 +2389,10 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
           * The document or template field to display.
          */
         "field"?: IEnvelopeField | ITemplateField | null;
@@ -3012,28 +2999,6 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
-    interface VerdocsTemplateProperties {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
-         */
-        "onExit"?: (event: VerdocsTemplatePropertiesCustomEvent<any>) => void;
-        /**
-          * Event fired when the user completes the step.
-         */
-        "onNext"?: (event: VerdocsTemplatePropertiesCustomEvent<{name: string; sendReminders: boolean; firstReminderDays: number; reminderDays: number}>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsTemplatePropertiesCustomEvent<SDKError>) => void;
-        /**
-          * The template ID to edit.
-         */
-        "templateId"?: string;
-    }
     interface VerdocsTemplateReminders {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3323,7 +3288,6 @@ declare namespace LocalJSX {
         "verdocs-template-field-properties": VerdocsTemplateFieldProperties;
         "verdocs-template-fields": VerdocsTemplateFields;
         "verdocs-template-name": VerdocsTemplateName;
-        "verdocs-template-properties": VerdocsTemplateProperties;
         "verdocs-template-reminders": VerdocsTemplateReminders;
         "verdocs-template-role-properties": VerdocsTemplateRoleProperties;
         "verdocs-template-roles": VerdocsTemplateRoles;
@@ -3393,7 +3357,6 @@ declare module "@stencil/core" {
             "verdocs-template-field-properties": LocalJSX.VerdocsTemplateFieldProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldPropertiesElement>;
             "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
             "verdocs-template-name": LocalJSX.VerdocsTemplateName & JSXBase.HTMLAttributes<HTMLVerdocsTemplateNameElement>;
-            "verdocs-template-properties": LocalJSX.VerdocsTemplateProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplatePropertiesElement>;
             "verdocs-template-reminders": LocalJSX.VerdocsTemplateReminders & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRemindersElement>;
             "verdocs-template-role-properties": LocalJSX.VerdocsTemplateRoleProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolePropertiesElement>;
             "verdocs-template-roles": LocalJSX.VerdocsTemplateRoles & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolesElement>;

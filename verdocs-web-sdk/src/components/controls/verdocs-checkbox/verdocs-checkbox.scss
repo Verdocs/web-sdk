@@ -11,13 +11,12 @@ verdocs-checkbox {
 
   label > input[type='checkbox'] + *::before {
     content: '';
-    width: 1rem;
-    height: 1rem;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
-    line-height: 18px;
+    line-height: 20px;
     border-radius: 2px;
     border-style: solid;
-    margin-right: 0.5rem;
     border-width: 0.1rem;
     display: inline-block;
     vertical-align: bottom;
