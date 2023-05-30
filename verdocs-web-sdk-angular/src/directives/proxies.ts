@@ -699,7 +699,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'moveable', 'rerender', 'roleindex', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -707,7 +707,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'moveable', 'rerender', 'roleindex', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldTextarea {
   protected el: HTMLElement;
@@ -734,7 +734,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'moveable', 'rerender', 'roleindex', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -742,7 +742,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'moveable', 'rerender', 'roleindex', 'templateid'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'moveable', 'rerender', 'roleindex', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLElement;

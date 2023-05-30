@@ -556,6 +556,14 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -597,6 +605,14 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldTimestamp {
         /**
@@ -2420,6 +2436,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldTextbox {
         /**
@@ -2466,6 +2490,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldTimestamp {
         /**

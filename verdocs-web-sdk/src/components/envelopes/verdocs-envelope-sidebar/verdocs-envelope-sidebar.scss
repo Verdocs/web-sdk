@@ -54,6 +54,10 @@ verdocs-envelope-sidebar {
     overflow-y: scroll;
   }
 
+  verdocs-ok-dialog .content {
+    color: black;
+  }
+
   .title {
     margin-bottom: 12px;
     font-size: 16px;
@@ -81,10 +85,16 @@ verdocs-envelope-sidebar {
   .manage-recipients-button {
     align-self: center;
     white-space: nowrap;
+    width: 100%;
+    margin: 0 0 10px 0;
 
     .label {
       color: #ffffff;
       font-size: 14px;
+    }
+
+    button {
+      width: 100%;
     }
   }
 

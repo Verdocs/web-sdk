@@ -67,6 +67,16 @@ export class VerdocsFieldTextbox {
   @Prop() roleindex?: number = 0;
 
   /**
+   * If set, the field will be be scaled horizontally by this factor.
+   */
+  @Prop() xscale?: number = 1;
+
+  /**
+   * If set, the field will be be scaled vertically by this factor.
+   */
+  @Prop() yscale?: number = 1;
+
+  /**
    * May be used to force the field to re-render.
    */
   @Prop() rerender?: number = 0;
@@ -124,28 +134,36 @@ export class VerdocsFieldTextbox {
   }
 
   handleResize(e) {
-    const oldX = +(e.target.getAttribute('resizeX') || 0);
-    const oldY = +(e.target.getAttribute('resizeY') || 0);
-    const newX = e.dx + oldX;
-    const newY = e.dy + oldY;
-    this.el.style.width = `${parseFloat(this.el.style.width || '0') + e.dx}px`;
-    // Single line text fields are not resizeable in height
-    // this.el.style.height = `${parseFloat(this.el.style.height || '0') + event.dy}px`;
-    e.target.setAttribute('resizeX', newX);
-    e.target.setAttribute('resizeY', newY);
+    let {x = 0, y = 0, h = 0} = e.target.dataset;
+    let {width, height} = e.rect;
+
+    x = (parseFloat(x) || 0) + e.deltaRect.left;
+    y = (parseFloat(y) || 0) + e.deltaRect.top;
+    h = (parseFloat(h) || 0) + e.deltaRect.height;
+
+    Object.assign(e.target.style, {
+      width: `${width}px`,
+      height: `${height}px`,
+      transform: `translate(${x}px, ${y + h}px)`,
+    });
+
+    Object.assign(e.target.dataset, {x, y, h});
   }
 
   handleResizeEnd(e) {
-    const resizeWidth = +(e.target.getAttribute('resizeX') || 0);
+    const newSettings = {...getFieldSettings(this.field)};
+    const [translateX, translateY] = e.target.style.transform.split('(')[1].split(')')[0].split(',').map(parseFloat);
 
-    const settings = getFieldSettings(this.field);
-    const newWidth = (settings.width || 150) + resizeWidth;
-
-    const newSettings = {...getFieldSettings(this.field), width: Math.round(newWidth)};
-    delete newSettings['result'];
+    newSettings.width = Math.round(parseFloat(e.target.style.width) / this.xscale);
+    newSettings.height = Math.round(parseFloat(e.target.style.height) / this.yscale);
+    newSettings.x = Math.round(newSettings.x + translateX / this.xscale);
+    newSettings.y = Math.round(newSettings.y - translateY / this.yscale);
 
     updateField(this.endpoint, this.templateid, this.field.name, {setting: newSettings})
-      .then(() => this.settingsChanged?.emit({fieldName: this.field.name, settings: newSettings}))
+      .then(() => {
+        this.settingsChanged?.emit({fieldName: this.field.name, settings: newSettings});
+        Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
+      })
       .catch(e => console.log('Field update failed', e));
   }
 

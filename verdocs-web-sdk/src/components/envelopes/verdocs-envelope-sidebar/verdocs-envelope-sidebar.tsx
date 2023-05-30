@@ -1,12 +1,14 @@
 import {format} from 'date-fns';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
-import {throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
 import {userIsEnvelopeOwner} from '@verdocs/js-sdk/Envelopes/Permissions';
+import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
+import {getInPersonLink, resendInvitation} from '@verdocs/js-sdk/Envelopes/Recipients';
+import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+import {cancelEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
 
 const InformationCircle = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>`;
 
@@ -84,37 +86,44 @@ export class VerdocsEnvelopeSidebar {
    */
   @Event({composed: true}) another: EventEmitter<{envelope: IEnvelope}>;
 
-  @State() envelope: IEnvelope | null = null;
-  @State() sortedRecipients: IRecipient[] = [];
-  @State() roleNames: string[] = [];
+  // @State() envelope: IEnvelope | null = null;
+  // @State() sortedRecipients: IRecipient[] = [];
+  // @State() roleNames: string[] = [];
   @State() activeTab: number = 1;
   @State() panelOpen = false;
   @State() showManageDialog = false;
+  @State() showCancelDialog = false;
   @State() loading = true;
 
-  componentWillLoad() {
-    this.endpoint.loadSession();
-  }
+  store: TEnvelopeStore | null = null;
 
-  // TODO: Handling signing vs preview-as-user cases
-  // TODO: Handle anonymous case and failure to load due to not being logged in
-  async componentWillRender() {
-    if (!this.envelopeId) {
-      console.error(`[SIDEBAR] Missing required envelopeId`);
-      return;
-    }
-
+  async componentWillLoad() {
     try {
-      this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
-      this.sortedRecipients = [...this.envelope.recipients];
-      this.sortedRecipients.sort((a, b) => {
-        return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
-      });
-      this.roleNames = this.sortedRecipients.map(r => r.role_name);
+      this.endpoint.loadSession();
+
+      if (!this.envelopeId) {
+        console.log(`[SIDEBAR] Missing required envelope ID ${this.envelopeId}`);
+        return;
+      }
+
+      if (!this.endpoint.session) {
+        console.log('[SIDEBAR] Unable to start session, must be authenticated');
+        return;
+      }
+
+      this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
+      this.sortEnvelopeRecipients();
       this.loading = false;
     } catch (e) {
+      console.log('[SIDEBAR] Error loading envelope', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
+  }
+
+  sortEnvelopeRecipients() {
+    this.store?.state?.recipients.sort((a, b) => {
+      return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
+    });
   }
 
   setTab(tab: number) {
@@ -127,7 +136,7 @@ export class VerdocsEnvelopeSidebar {
   canResendRecipient(recipient: IRecipient) {
     return (
       !['pending', 'declined', 'submitted', 'canceled'].includes(recipient.status) && //
-      !['complete', 'declined', 'canceled'].includes(this.envelope.status)
+      !['complete', 'declined', 'canceled'].includes(this.store?.state?.status)
     );
   }
 
@@ -135,7 +144,7 @@ export class VerdocsEnvelopeSidebar {
     return (
       !recipient.claimed && //
       !['declined', 'signed', 'submitted', 'canceled'].includes(recipient.status) &&
-      !['complete', 'declined', 'canceled'].includes(this.envelope.status)
+      !['complete', 'declined', 'canceled'].includes(this.store?.state?.status)
     );
   }
 
@@ -143,7 +152,24 @@ export class VerdocsEnvelopeSidebar {
     console.log('[SIDEBAR] Recipient action', id, recipient);
     switch (id) {
       case 'reminder':
-        VerdocsToast('This feature will be enabled in a future release. Please try again later.', {style: 'info'});
+        resendInvitation(this.endpoint, this.envelopeId, recipient.role_name)
+          .then(() => {
+            VerdocsToast('Reminder Sent', {style: 'success'});
+          })
+          .catch(e => {
+            console.log('[SIDEBAR] Error resending invitation', e);
+            VerdocsToast('Error resending invitation: ' + e.message, {style: 'error'});
+          });
+        break;
+
+      case 'inperson':
+        getInPersonLink(this.endpoint, recipient.envelope_id, recipient.role_name)
+          .then(({link}) => navigator.clipboard.writeText(link))
+          .then(() => VerdocsToast('Link copied to clipboard.', {style: 'success', duration: 2000}))
+          .catch(e => {
+            console.log('[RECIPIENTS] Error getting link', e);
+            VerdocsToast('Unable to get link: ' + e.message, {style: 'error'});
+          });
         break;
 
       case 'modify':
@@ -155,26 +181,42 @@ export class VerdocsEnvelopeSidebar {
         break;
     }
 
-    this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: id});
+    this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.store?.state, event: id});
+  }
+
+  cancelEnvelope() {
+    cancelEnvelope(this.endpoint, this.envelopeId)
+      .then(async r => {
+        console.log('[SIDEBAR] Envelope canceled', r);
+        VerdocsToast('Envelope canceled', {style: 'success'});
+
+        this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
+        this.sortEnvelopeRecipients();
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.store?.state, event: 'canceled'});
+      })
+      .catch(e => {
+        console.log('[SIDEBAR] Error canceling envelope', e);
+        VerdocsToast('Error canceling envelope: ' + e.message, {style: 'error'});
+      });
   }
 
   prepareHistoryEntries() {
     const entries: IHistoryEntry[] = [];
-    const histories = this.envelope.histories || [];
+    const histories = this.store?.state?.histories || [];
 
-    entries.push({icon: 'pencil', message: 'Envelope created.', date: new Date(this.envelope.created_at)});
+    entries.push({icon: 'pencil', message: 'Envelope created.', date: new Date(this.store?.state?.created_at)});
 
-    if (this.envelope.status === 'complete') {
-      entries.push({icon: 'pencil', message: 'Envelope completed.', date: new Date(this.envelope.updated_at)});
+    if (this.store?.state?.status === 'complete') {
+      entries.push({icon: 'pencil', message: 'Envelope completed.', date: new Date(this.store?.state?.updated_at)});
     }
 
     const ownerCanceled = histories.some(history => history.event === 'owner:canceled');
-    if (this.envelope.status === 'canceled' && !ownerCanceled) {
-      entries.push({icon: 'pencil', message: 'Envelope Cancelled.', date: new Date(this.envelope.canceled_at)});
+    if (this.store?.state?.status === 'canceled' && !ownerCanceled) {
+      entries.push({icon: 'pencil', message: 'Envelope Cancelled.', date: new Date(this.store?.state?.canceled_at)});
     }
 
     histories.forEach(history => {
-      const user = this.sortedRecipients.find(recipient => recipient.role_name === history.role_name);
+      const user = this.store.state?.recipients.find(recipient => recipient.role_name === history.role_name);
       const name = user?.full_name || '';
 
       switch (history.event.toLowerCase()) {
@@ -277,14 +319,21 @@ export class VerdocsEnvelopeSidebar {
     return entries;
   }
 
+  canModify(recipient: IRecipient) {
+    const invalidRecipientStatus = ['declined', 'signed', 'submitted', 'canceled'];
+    const invalidEnvelopeStatus = ['complete', 'declined', 'canceled'];
+    return recipient.claimed !== true && invalidRecipientStatus.indexOf(recipient.status) === -1 && invalidEnvelopeStatus.indexOf(this.store?.state?.status) === -1;
+  }
+
   render() {
-    if (!this.envelope || this.loading) {
+    if (!this.store.state) {
       return <Host />;
     }
 
     const session = this.endpoint.getSession();
-    const isEnvelopeOwner = userIsEnvelopeOwner(session, this.envelope);
+    const isEnvelopeOwner = userIsEnvelopeOwner(session, this.store.state);
     const historyEntries = this.prepareHistoryEntries();
+    const functionsDisabled = this.store?.state?.status !== 'pending' && this.store?.state?.status !== 'in progress';
 
     return (
       <Host class={this.panelOpen ? 'open' : ''}>
@@ -299,61 +348,83 @@ export class VerdocsEnvelopeSidebar {
             <div class="title">Details</div>
 
             <div class="label">Envelope ID</div>
-            <div class="value">{this.envelope.id}</div>
+            <div class="value">{this.store?.state?.id}</div>
 
             <div class="label">Date Created</div>
-            <div class="value">{format(new Date(this.envelope.created_at), FORMAT_TIMESTAMP)}</div>
+            <div class="value">{format(new Date(this.store?.state?.created_at), FORMAT_TIMESTAMP)}</div>
 
             <div class="label">Last Modified</div>
-            <div class="value">{format(new Date(this.envelope.updated_at), FORMAT_TIMESTAMP)}</div>
+            <div class="value">{format(new Date(this.store?.state?.updated_at), FORMAT_TIMESTAMP)}</div>
 
             <div class="label">Status</div>
-            <div class="value">{this.envelope.status}</div>
+            <div class="value">{this.store?.state?.status}</div>
 
             <div class="label">Verdoc Owner ID</div>
-            <div class="value">{this.envelope.profile_id}</div>
+            <div class="value">{this.store?.state?.profile_id}</div>
 
             <div class="label">Verdoc Owner Name</div>
             <div class="value">
-              {this.envelope.profile?.first_name} {this.envelope.profile?.last_name}
+              {this.store?.state?.profile?.first_name} {this.store?.state?.profile?.last_name}
             </div>
 
             <div class="label">Verdoc Owner Email</div>
-            <div class="value">{this.envelope.profile?.email}</div>
+            <div class="value">{this.store?.state?.profile?.email}</div>
           </div>
         )}
 
         {this.activeTab === 2 && (
           <div class="content">
             <div class="title">Recipients</div>
-            {this.sortedRecipients.map((recipient, index) => (
-              <div class="recipient-detail">
-                <div class="recipient-header">
-                  <div class="recipient-number">{index + 1}</div>
-                  <div class="recipient-type">{recipient.role_name}</div>
-                  <div class={{'recipient-status': true, [recipient.status]: true}}>{recipient.status}</div>
-                  {isEnvelopeOwner && (
-                    <verdocs-dropdown
-                      onOptionSelected={item => this.handleRecipientAction(recipient, item.detail.id)}
-                      options={[
-                        {id: 'reminder', label: 'Send Reminder', disabled: !this.canResendRecipient(recipient)},
-                        {id: 'modify', label: 'Modify Recipient', disabled: !this.canModifyRecipient(recipient)},
-                        // TODO: Details dialog
-                        // {id:'details',label: 'View Details'},
-                      ]}
-                    />
-                  )}
+            {this.store?.state?.recipients.map((recipient, index) => {
+              const canGetInPersonLink = !this.canModify(recipient) || (recipient.status !== 'invited' && recipient.status !== 'opened');
+              const canSendReminder = this.canResendRecipient(recipient);
+              return (
+                <div class="recipient-detail">
+                  <div class="recipient-header">
+                    <div class="recipient-number">{index + 1}</div>
+                    <div class="recipient-type">{recipient.role_name}</div>
+                    <div class={{'recipient-status': true, [recipient.status]: true}}>{recipient.status}</div>
+                    {isEnvelopeOwner && !functionsDisabled && (
+                      <verdocs-dropdown
+                        onOptionSelected={item => this.handleRecipientAction(recipient, item.detail.id)}
+                        options={[
+                          {id: 'reminder', label: 'Send Reminder', disabled: !canSendReminder},
+                          {id: 'inperson', label: 'Get In-Person Link', disabled: !canGetInPersonLink},
+                          // {id: 'modify', label: 'Modify Recipient', disabled: !this.canModifyRecipient(recipient)},
+                          // TODO: Details dialog
+                          // {id:'details',label: 'View Details'},
+                        ]}
+                      />
+                    )}
+                  </div>
+
+                  <dic class="recipient-content">
+                    <div class="recipient-name">{recipient.full_name}</div>
+                    <div class="recipient-name">{recipient.email}</div>
+                    <div class="recipient-name">{recipient.phone}</div>
+                  </dic>
                 </div>
+              );
+            })}
 
-                <dic class="recipient-content">
-                  <div class="recipient-name">{recipient.full_name}</div>
-                  <div class="recipient-name">{recipient.email}</div>
-                  <div class="recipient-name">{recipient.phone}</div>
-                </dic>
-              </div>
-            ))}
-
-            {isEnvelopeOwner && <verdocs-button class="manage-recipients-button" variant="standard" label="Manage Recipients" onClick={() => (this.showManageDialog = true)} />}
+            {isEnvelopeOwner && (
+              <verdocs-button
+                class="manage-recipients-button"
+                variant="standard"
+                label="Turn On Reminders"
+                onClick={() => (this.showManageDialog = !functionsDisabled)}
+                disabled={functionsDisabled}
+              />
+            )}
+            {isEnvelopeOwner && (
+              <verdocs-button
+                class="manage-recipients-button"
+                variant="standard"
+                label="Cancel Verdoc"
+                onClick={() => (this.showCancelDialog = !functionsDisabled)}
+                disabled={functionsDisabled}
+              />
+            )}
           </div>
         )}
 
@@ -380,10 +451,21 @@ export class VerdocsEnvelopeSidebar {
             canView={false}
             onAnother={() => {
               this.showManageDialog = false;
-              this.another?.emit({envelope: this.envelope});
+              this.another?.emit({envelope: this.store.state});
             }}
             onNext={() => {
               this.showManageDialog = false;
+            }}
+          />
+        )}
+
+        {this.showCancelDialog && (
+          <verdocs-ok-dialog
+            heading="Cancel Envelope?"
+            message={'Are you sure you want to cancel this Envelope? This action cannot be undone.'}
+            onNext={() => {
+              this.showCancelDialog = false;
+              this.cancelEnvelope();
             }}
           />
         )}
