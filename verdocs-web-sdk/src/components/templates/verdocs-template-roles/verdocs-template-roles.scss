@@ -48,8 +48,9 @@ verdocs-template-roles {
 
       .row-roles {
         flex: 1;
+        gap: 10px;
         display: flex;
-        column-gap: 10px;
+        flex-wrap: wrap;
         flex-direction: row;
       }
 
