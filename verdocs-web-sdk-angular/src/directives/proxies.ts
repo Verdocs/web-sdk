@@ -430,25 +430,53 @@ to redirect the user to the appropriate next workflow step.
 
 
 @ProxyCmp({
-  inputs: ['envelope', 'size', 'status', 'theme']
+  inputs: ['endpoint', 'items', 'page', 'sortBy', 'status', 'view']
 })
 @Component({
   selector: 'verdocs-envelopes-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['envelope', 'size', 'status', 'theme'],
+  inputs: ['endpoint', 'items', 'page', 'sortBy', 'status', 'view'],
 })
 export class VerdocsEnvelopesList {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'finishLater', 'viewAll']);
   }
 }
 
 
-export declare interface VerdocsEnvelopesList extends Components.VerdocsEnvelopesList {}
+import type { SDKError as IVerdocsEnvelopesListSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsEnvelopesListVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsEnvelopesListIEnvelope } from '@verdocs/web-sdk';
+
+export declare interface VerdocsEnvelopesList extends Components.VerdocsEnvelopesList {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsEnvelopesListSDKError>>;
+  /**
+   * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
+to the envelope detail view.
+   */
+  viewEnvelope: EventEmitter<CustomEvent<IVerdocsEnvelopesListIVerdocsEnvelopesList{endpoint: [object Object]; envelope: [object Object]}>>;
+  /**
+   * Event fired when the user clicks to finish signing later. Typically the host application should redirect
+the user to another page.
+   */
+  finishLater: EventEmitter<CustomEvent<IVerdocsEnvelopesListIVerdocsEnvelopesList{endpoint: [object Object]; envelope: [object Object]}>>;
+  /**
+   * Event fired when the user clicks View All in the title bar. The current view will be included in the event
+details to help the host application navigate the user to the appropriate screen for the request. Note that
+the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass
+this value through directly. This button is not visible if the header is hidden.
+   */
+  viewAll: EventEmitter<CustomEvent<IVerdocsEnvelopesList{endpoint: [object Object]; view: string}>>;
+}
 
 
 @ProxyCmp({
@@ -1942,37 +1970,47 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'templateId']
+  inputs: ['endpoint', 'header', 'items', 'view']
 })
 @Component({
   selector: 'verdocs-templates-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'templateId'],
+  inputs: ['endpoint', 'header', 'items', 'view'],
 })
 export class VerdocsTemplatesList {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'sdkError']);
+    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'viewAll']);
   }
 }
 
 
 import type { SDKError as IVerdocsTemplatesListSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplatesListVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsTemplatesListIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplatesList extends Components.VerdocsTemplatesList {
-  /**
-   * Event fired when the user cancels the dialog.
-   */
-  close: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplatesListSDKError>>;
+  /**
+   * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
+to the envelope detail view.
+   */
+  viewEnvelope: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; envelope: [object Object]}>>;
+  /**
+   * Event fired when the user clicks View All in the title bar. The current view will be included in the event
+details to help the host application navigate the user to the appropriate screen for the request. Note that
+the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass
+this value through directly. This button is not visible if the header is hidden.
+   */
+  viewAll: EventEmitter<CustomEvent<IVerdocsTemplatesList{endpoint: [object Object]; view: string}>>;
 }
 
 

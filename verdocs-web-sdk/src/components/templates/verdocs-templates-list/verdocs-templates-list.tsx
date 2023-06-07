@@ -1,15 +1,23 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {TTemplateStore} from '../../../utils/TemplateStore';
+import {Envelopes} from '@verdocs/js-sdk/Envelopes';
+import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
+import {formatShortTimeAgo} from '@verdocs/js-sdk/Utils/DateTime';
+import {getNextRecipient} from '@verdocs/js-sdk/Envelopes/Permissions';
+import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
+import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
+import {IEnvelopeSearchParams} from '@verdocs/js-sdk/Envelopes/Envelopes';
+
+const EmptyImage = 'https://verdocs-public-assets.s3.amazonaws.com/no-verdocs.png';
 
 /**
- * Displays an edit form that allows the user to adjust a template's visibility.
+ * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
+ * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
+ * them appear more visually balanced.
  */
 @Component({
   tag: 'verdocs-templates-list',
   styleUrl: 'verdocs-templates-list.scss',
-  shadow: false,
 })
 export class VerdocsTemplatesList {
   /**
@@ -18,14 +26,20 @@ export class VerdocsTemplatesList {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The template ID to edit.
+   * The number of items to display.
    */
-  @Prop() templateId: string = '';
+  @Prop() items: number = 5;
+
+  // The filtered view to display. "completed" will show envelopes that have been submitted. "action" will
+  // show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show
+  // only envelopes where the user is the sender and the envelope is not completed.
+  @Prop() view?: 'completed' | 'action' | 'waiting' = undefined;
 
   /**
-   * Event fired when the user cancels the dialog.
+   * The title to display on the box ("title" is a reserved word). This is optional, and if not set, the title
+   * will be derived from the view. Set this to an empty string to hide the header.
    */
-  @Event({composed: true}) close: EventEmitter;
+  @Prop() header?: string | undefined = undefined;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -33,134 +47,127 @@ export class VerdocsTemplatesList {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() dirty: boolean = false;
-  @State() personal: boolean = false;
-  @State() public: boolean = false;
+  /**
+   * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
+   * to the envelope detail view.
+   */
+  @Event({composed: true}) viewEnvelope: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>;
 
-  store: TTemplateStore | null = null;
+  /**
+   * Event fired when the user clicks View All in the title bar. The current view will be included in the event
+   * details to help the host application navigate the user to the appropriate screen for the request. Note that
+   * the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass
+   * this value through directly. This button is not visible if the header is hidden.
+   */
+  @Event({composed: true}) viewAll: EventEmitter<{endpoint: VerdocsEndpoint; view: string}>;
 
-  /*
+  @State() title = '';
+  @State() count = 0;
+  @State() loading = true;
+  @State() envelopes: IEnvelope[] = [];
+
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
 
-      if (!this.templateId) {
-        console.log(`[VISIBILITY] Missing required template ID ${this.templateId}`);
-        return;
-      }
-
       if (!this.endpoint.session) {
-        console.log('[VISIBILITY] Unable to start builder session, must be authenticated');
+        console.log('[ACTIVITIES] Must be authenticated');
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+      let queryParams: IEnvelopeSearchParams = {
+        page: 0,
+        ascending: false,
+        sort_by: 'updated_at',
+        limit: Math.max(Math.min(this.items, 30), 1),
+      };
 
-      this.personal = this.store?.state?.is_personal || true;
-      this.public = this.store?.state?.is_public || false;
-      this.dirty = false;
+      let defaultHeader;
+      switch (this.view) {
+        case 'action':
+          queryParams = {...queryParams, is_recipient: true, envelope_status: ['pending', 'in progress'], recipient_status: ['invited', 'opened', 'signed']};
+          defaultHeader = 'Action Required';
+
+          break;
+
+        case 'waiting':
+          queryParams = {...queryParams, is_owner: true, ascending: false, envelope_status: ['pending', 'in progress']};
+          defaultHeader = 'Waiting on Others';
+          break;
+
+        case 'completed':
+        default:
+          queryParams = {...queryParams, envelope_status: ['complete']};
+          defaultHeader = 'Completed';
+          break;
+      }
+
+      this.title = this.header !== undefined ? this.header : defaultHeader;
+
+      const response = await Envelopes.searchEnvelopes(this.endpoint, queryParams);
+      console.log('[ACTIVITIES] Got envelopes', response);
+      this.envelopes = response.result;
+      this.count = response.total;
+      this.loading = false;
     } catch (e) {
-      console.log('[TEMPLATE VISIBILITY] Error loading template', e);
+      console.log('[ACTIVITIES] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  handleCancel(e) {
-    e.stopPropagation();
-    this.personal = this.store?.state?.is_personal;
-    this.public = this.store?.state?.is_public;
-    this.dirty = false;
-    this.close?.emit();
-  }
-
-  async handleSave(e) {
-    e.stopPropagation();
-    await updateTemplate(this.endpoint, this.templateId, {is_personal: this.personal, is_public: this.public});
-    if (this.store?.state) {
-      this.store.state.is_personal = this.personal;
-      this.store.state.is_public = this.public;
-    }
-    this.dirty = false;
-    this.close?.emit();
+  getNextRecipientName(envelope: IEnvelope) {
+    const nextRecipient = getNextRecipient(envelope) || envelope.recipients?.[0];
+    return nextRecipient?.full_name || 'N/A';
   }
 
   render() {
-    if (!this.endpoint.session) {
+    if (this.loading) {
       return (
-        <Host>
-          <verdocs-component-error message="You must be authenticated to use this module." />
+        <Host style={{minHeight: '300px'}}>
+          {this.title && (
+            <div class="box-title">
+              {this.title} <span class="count">(0)</span>
+            </div>
+          )}
+
+          {integerSequence(0, this.items).map(() => (
+            <div class="loading-placeholder">
+              <div class="loading-placeholder-bg"></div>
+            </div>
+          ))}
         </Host>
       );
     }
 
-    // This is meant to be a companion for larger visual experiences so we just go blank on errors for now.
-    if (!this.endpoint.session || !this.store?.state?.isLoaded) {
-      return <Host class="empty" />;
-    }
-
     return (
       <Host>
-        <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
-          <h5>Visibility</h5>
+        {this.title && (
+          <div class="box-title">
+            {this.title} <span class="count">({this.count})</span>
+            <div class="spacer" />
+            <verdocs-button label="View All" size="small" onClick={() => this.viewAll?.emit({endpoint: this.endpoint, view: this.view})} />
+          </div>
+        )}
 
-          <div class="input-row">
-            <label htmlFor="verdocs-is-shared">Shared</label>
-            <verdocs-checkbox
-              id="verdocs-is-shared"
-              name="is-shared"
-              checked={!this.personal}
-              value="on"
-              onInput={(e: any) => {
-                this.personal = !e.target.checked;
-                this.dirty = true;
+        {this.count > 0 ? (
+          this.envelopes.slice(0, Math.max(this.items, 1)).map(envelope => (
+            <div
+              class="activity-entry"
+              onClick={() => {
+                this.viewEnvelope?.emit({endpoint: this.endpoint, envelope});
               }}
-            />
-          </div>
-          <div class="description">Shared templates are visible to other members of your Organization (if any).</div>
-
-          {/!*<div class="input-row">*!/}
-          {/!*  <label htmlFor="verdocs-is-personal">Personal</label>*!/}
-          {/!*  <verdocs-checkbox*!/}
-          {/!*    id="verdocs-is-personal"*!/}
-          {/!*    name="is-personal"*!/}
-          {/!*    checked={this.personal}*!/}
-          {/!*    value="on"*!/}
-          {/!*    onInput={(e: any) => {*!/}
-          {/!*      this.personal = e.target.checked;*!/}
-          {/!*      this.dirty = true;*!/}
-          {/!*    }}*!/}
-          {/!*  />*!/}
-          {/!*</div>*!/}
-          {/!*<div class="description">Personal templates are hidden from other members of your Organization (if any).</div>*!/}
-
-          <div class="input-row">
-            <label htmlFor="verdocs-is-public">Public</label>
-            <verdocs-checkbox
-              id="verdocs-is-public"
-              name="is-public"
-              checked={this.public}
-              value="on"
-              onInput={(e: any) => {
-                this.public = e.target.checked;
-                this.dirty = true;
-              }}
-            />
-          </div>
-          <div class="description">
-            Public templates may appear in results when any other user searches for templates. Note that a template may be both Personal and Public, which may be useful if you want
-            your template to be found via search but not otherwise displayed to other members of your Organization (if any).
-          </div>
-
-          <div class="buttons">
-            <verdocs-button size="small" variant="outline" label="Cancel" disabled={!this.dirty} onClick={e => this.handleCancel(e)} />
-            <verdocs-button size="small" label="Save" disabled={!this.dirty} onClick={e => this.handleSave(e)} />
-          </div>
-        </form>
+            >
+              <div class="title">
+                {envelope.name}
+                <br /> <strong>{this.getNextRecipientName(envelope)}</strong>
+              </div>
+              <div class="time-ago">{formatShortTimeAgo(envelope.updated_at)}</div>
+            </div>
+          ))
+        ) : (
+          <img src={EmptyImage} alt="No documents to show" style={{width: '190px', margin: '0 auto'}} />
+        )}
       </Host>
     );
-  }
-*/
-  render() {
-    return <Host></Host>;
   }
 }

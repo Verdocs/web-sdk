@@ -2,12 +2,85 @@
 
 verdocs-envelopes-list {
   display: flex;
+  padding: 10px;
   font-size: 18px;
   flex-wrap: nowrap;
   border-radius: 6px;
   color: $label-color;
   align-items: center;
-  flex-direction: row;
+  flex-direction: column;
   font-family: $primary-font;
-}
 
+  .header {
+    margin: 0;
+    width: 100%;
+    row-gap: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 16px;
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .filter {
+    align-items: center;
+  }
+
+  .envelope {
+    width: 100%;
+    margin: 3px 0;
+
+    &:hover {
+      cursor: pointer;
+      background: $verdocs-grey-4;
+      border: 1px solid $verdocs-bg-1;
+    }
+
+    .inner {
+      gap: 20px;
+      display: flex;
+      padding: 8px 20px;
+      border-radius: 6px;
+      flex-direction: row;
+      align-items: center;
+      background: $dialog-bg;
+      border: 1px solid $extra-light-border-color;
+    }
+  }
+
+  .vert-spacer {
+    height: 50px;
+    display: flex;
+    flex: 0 0 1px;
+    border-right: 1px solid #dad8dd;
+  }
+
+  .last-modified {
+    color: #444;
+    display: flex;
+    flex: 0 0 180px;
+    font-size: 16px;
+    flex-direction: row;
+    align-items: center;
+    white-space: nowrap;
+
+    svg {
+      width: 32px;
+      height: 32px;
+      margin-right: 8px;
+    }
+  }
+
+  .envelope-name {
+    flex: 1;
+    display: flex;
+    color: #000000;
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .envelope-recipients {
+    font-weight: 700;
+    color: #4b5563;
+  }
+}

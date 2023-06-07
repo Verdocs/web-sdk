@@ -45,6 +45,9 @@ export namespace Components {
           * The number of items to display.
          */
         "items": number;
+        /**
+          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+         */
         "view"?: 'completed' | 'action' | 'waiting';
     }
     interface VerdocsAuth {
@@ -235,21 +238,29 @@ export namespace Components {
     }
     interface VerdocsEnvelopesList {
         /**
-          * The document to display status for. Ignored if `status` is set directly.
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
-        "envelope"?: IEnvelope;
+        "endpoint": VerdocsEndpoint;
         /**
-          * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
+          * The number of items to display.
          */
-        "size": 'small' | 'normal';
+        "items": number;
         /**
-          * The status to display.
+          * The first page nymbver to display (0-based)
          */
-        "status"?: TEnvelopeStatus | TRecipientStatus | 'accepted';
+        "page": number;
         /**
-          * The theme to use for diplay.
+          * The sort field to use
          */
-        "theme"?: 'dark' | 'light';
+        "sortBy": 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status';
+        /**
+          * The status value to filter by
+         */
+        "status": TEnvelopeStatus | 'all';
+        /**
+          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+         */
+        "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
     }
     interface VerdocsFieldAttachment {
         /**
@@ -1090,9 +1101,14 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The template ID to edit.
+          * The title to display on the box ("title" is a reserved word). This is optional, and if not set, the title will be derived from the view. Set this to an empty string to hide the header.
          */
-        "templateId": string;
+        "header"?: string | undefined;
+        /**
+          * The number of items to display.
+         */
+        "items": number;
+        "view"?: 'completed' | 'action' | 'waiting';
     }
     interface VerdocsTextInput {
         /**
@@ -1211,6 +1227,10 @@ export interface VerdocsEnvelopeRecipientSummaryCustomEvent<T> extends CustomEve
 export interface VerdocsEnvelopeSidebarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsEnvelopeSidebarElement;
+}
+export interface VerdocsEnvelopesListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsEnvelopesListElement;
 }
 export interface VerdocsFieldAttachmentCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1866,6 +1886,9 @@ declare namespace LocalJSX {
           * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
          */
         "onViewEnvelope"?: (event: VerdocsActivityBoxCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        /**
+          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+         */
         "view"?: 'completed' | 'action' | 'waiting';
     }
     interface VerdocsAuth {
@@ -2121,21 +2144,45 @@ declare namespace LocalJSX {
     }
     interface VerdocsEnvelopesList {
         /**
-          * The document to display status for. Ignored if `status` is set directly.
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
-        "envelope"?: IEnvelope;
+        "endpoint"?: VerdocsEndpoint;
         /**
-          * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
+          * The number of items to display.
          */
-        "size"?: 'small' | 'normal';
+        "items"?: number;
         /**
-          * The status to display.
+          * Event fired when the user clicks to finish signing later. Typically the host application should redirect the user to another page.
          */
-        "status"?: TEnvelopeStatus | TRecipientStatus | 'accepted';
+        "onFinishLater"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
         /**
-          * The theme to use for diplay.
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
-        "theme"?: 'dark' | 'light';
+        "onSdkError"?: (event: VerdocsEnvelopesListCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user clicks View All in the title bar. The current view will be included in the event details to help the host application navigate the user to the appropriate screen for the request. Note that the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass this value through directly. This button is not visible if the header is hidden.
+         */
+        "onViewAll"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; view: string}>) => void;
+        /**
+          * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
+         */
+        "onViewEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        /**
+          * The first page nymbver to display (0-based)
+         */
+        "page"?: number;
+        /**
+          * The sort field to use
+         */
+        "sortBy"?: 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status';
+        /**
+          * The status value to filter by
+         */
+        "status"?: TEnvelopeStatus | 'all';
+        /**
+          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+         */
+        "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
     }
     interface VerdocsFieldAttachment {
         /**
@@ -3274,17 +3321,26 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * Event fired when the user cancels the dialog.
+          * The title to display on the box ("title" is a reserved word). This is optional, and if not set, the title will be derived from the view. Set this to an empty string to hide the header.
          */
-        "onClose"?: (event: VerdocsTemplatesListCustomEvent<any>) => void;
+        "header"?: string | undefined;
+        /**
+          * The number of items to display.
+         */
+        "items"?: number;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplatesListCustomEvent<SDKError>) => void;
         /**
-          * The template ID to edit.
+          * Event fired when the user clicks View All in the title bar. The current view will be included in the event details to help the host application navigate the user to the appropriate screen for the request. Note that the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass this value through directly. This button is not visible if the header is hidden.
          */
-        "templateId"?: string;
+        "onViewAll"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; view: string}>) => void;
+        /**
+          * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
+         */
+        "onViewEnvelope"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        "view"?: 'completed' | 'action' | 'waiting';
     }
     interface VerdocsTextInput {
         /**

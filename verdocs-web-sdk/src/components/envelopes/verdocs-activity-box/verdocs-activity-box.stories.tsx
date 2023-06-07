@@ -9,6 +9,11 @@ export default {
     view: 'completed',
     header: undefined,
   },
+  argTypes: {
+    onViewEnvelope: {action: 'viewEnvelope'},
+    onViewAll: {action: 'viewAll'},
+  },
 } as Meta;
 
-export const ActivityBox = ({items, view, header}) => html`<verdocs-activity-box .items="${items}" .view="${view}" .header="${header}" />`;
+export const ActivityBox = ({items, view, header, onViewEnvelope, onViewAll}) =>
+  html`<verdocs-activity-box .items="${items}" .view="${view}" .header="${header}" @viewEnvelope=${onViewEnvelope} @viewAll=${onViewAll} />`;

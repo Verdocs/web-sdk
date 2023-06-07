@@ -6,6 +6,7 @@ import {getNextRecipient} from '@verdocs/js-sdk/Envelopes/Permissions';
 import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
+import {IEnvelopeSearchParams} from '@verdocs/js-sdk/Envelopes/Envelopes';
 
 const EmptyImage = 'https://verdocs-public-assets.s3.amazonaws.com/no-verdocs.png';
 
@@ -29,9 +30,11 @@ export class VerdocsActivityBox {
    */
   @Prop() items: number = 5;
 
-  // The filtered view to display. "completed" will show envelopes that have been submitted. "action" will
-  // show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show
-  // only envelopes where the user is the sender and the envelope is not completed.
+  /**
+   * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will
+   * show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show
+   * only envelopes where the user is the sender and the envelope is not completed.
+   */
   @Prop() view?: 'completed' | 'action' | 'waiting' = undefined;
 
   /**
@@ -74,58 +77,34 @@ export class VerdocsActivityBox {
         return;
       }
 
-      const page = 0;
-      let queryParams;
+      let queryParams: IEnvelopeSearchParams = {
+        page: 0,
+        ascending: false,
+        sort_by: 'updated_at',
+        limit: Math.max(Math.min(this.items, 50), 1),
+      };
+
+      let defaultHeader;
       switch (this.view) {
         case 'action':
-          queryParams = {
-            page,
-            limit: 10,
-            ascending: false,
-            is_recipient: true,
-            sort_by: 'updated_at',
-            envelope_status: ['pending', 'in progress'],
-            recipient_status: ['invited', 'opened', 'signed'],
-          };
-
-          if (this.header === undefined) {
-            this.title = 'Action Required';
-          }
+          queryParams = {...queryParams, is_recipient: true, envelope_status: ['pending', 'in progress'], recipient_status: ['invited', 'opened', 'signed']};
+          defaultHeader = 'Action Required';
 
           break;
 
         case 'waiting':
-          queryParams = {
-            page,
-            limit: 10,
-            is_owner: true,
-            ascending: false,
-            sort_by: 'updated_at',
-            envelope_status: ['pending', 'in progress'],
-          };
-
-          if (this.header === undefined) {
-            this.title = 'Waiting on Others';
-          }
-
+          queryParams = {...queryParams, is_owner: true, ascending: false, envelope_status: ['pending', 'in progress']};
+          defaultHeader = 'Waiting on Others';
           break;
 
         case 'completed':
         default:
-          queryParams = {
-            page,
-            limit: 10,
-            ascending: false,
-            sort_by: 'updated_at',
-            envelope_status: ['complete'],
-          };
-
-          if (this.header === undefined) {
-            this.title = 'Completed';
-          }
-
+          queryParams = {...queryParams, envelope_status: ['complete']};
+          defaultHeader = 'Completed';
           break;
       }
+
+      this.title = this.header !== undefined ? this.header : defaultHeader;
 
       const response = await Envelopes.searchEnvelopes(this.endpoint, queryParams);
       console.log('[ACTIVITIES] Got envelopes', response);
