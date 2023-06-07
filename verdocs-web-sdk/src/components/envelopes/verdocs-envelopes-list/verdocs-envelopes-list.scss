@@ -1,0 +1,13 @@
+@import '../../../theme.scss';
+
+verdocs-envelopes-list {
+  display: flex;
+  font-size: 18px;
+  flex-wrap: nowrap;
+  border-radius: 6px;
+  color: $label-color;
+  align-items: center;
+  flex-direction: row;
+  font-family: $primary-font;
+}
+

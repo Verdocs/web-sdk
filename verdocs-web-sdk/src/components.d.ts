@@ -6,13 +6,13 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
-import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
+import { IEnvelope, IEnvelopeField, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
+import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
-import { IEnvelope, IEnvelopeField, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
@@ -22,6 +22,31 @@ import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs
 import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 export namespace Components {
+    interface IpcTest {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
+    interface VerdocsActivityBox {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The title to display on the box ("title" is a reserved word). This is optional, and if not set, the title will be derived from the view. Set this to an empty string to hide the header.
+         */
+        "header"?: string | undefined;
+        /**
+          * The number of items to display.
+         */
+        "items": number;
+        "view"?: 'completed' | 'action' | 'waiting';
+    }
     interface VerdocsAuth {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -207,6 +232,24 @@ export namespace Components {
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
          */
         "envelopeId": string;
+    }
+    interface VerdocsEnvelopesList {
+        /**
+          * The document to display status for. Ignored if `status` is set directly.
+         */
+        "envelope"?: IEnvelope;
+        /**
+          * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
+         */
+        "size": 'small' | 'normal';
+        /**
+          * The status to display.
+         */
+        "status"?: TEnvelopeStatus | TRecipientStatus | 'accepted';
+        /**
+          * The theme to use for diplay.
+         */
+        "theme"?: 'dark' | 'light';
     }
     interface VerdocsFieldAttachment {
         /**
@@ -1041,6 +1084,16 @@ export namespace Components {
          */
         "templateId": string;
     }
+    interface VerdocsTemplatesList {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
@@ -1126,6 +1179,10 @@ export namespace Components {
          */
         "headerTargetId": string | null;
     }
+}
+export interface VerdocsActivityBoxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsActivityBoxElement;
 }
 export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1291,6 +1348,10 @@ export interface VerdocsTemplateVisibilityCustomEvent<T> extends CustomEvent<T> 
     detail: T;
     target: HTMLVerdocsTemplateVisibilityElement;
 }
+export interface VerdocsTemplatesListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplatesListElement;
+}
 export interface VerdocsToggleButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsToggleButtonElement;
@@ -1304,6 +1365,18 @@ export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
     target: HTMLVerdocsViewElement;
 }
 declare global {
+    interface HTMLIpcTestElement extends Components.IpcTest, HTMLStencilElement {
+    }
+    var HTMLIpcTestElement: {
+        prototype: HTMLIpcTestElement;
+        new (): HTMLIpcTestElement;
+    };
+    interface HTMLVerdocsActivityBoxElement extends Components.VerdocsActivityBox, HTMLStencilElement {
+    }
+    var HTMLVerdocsActivityBoxElement: {
+        prototype: HTMLVerdocsActivityBoxElement;
+        new (): HTMLVerdocsActivityBoxElement;
+    };
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
     }
     var HTMLVerdocsAuthElement: {
@@ -1369,6 +1442,12 @@ declare global {
     var HTMLVerdocsEnvelopeSidebarElement: {
         prototype: HTMLVerdocsEnvelopeSidebarElement;
         new (): HTMLVerdocsEnvelopeSidebarElement;
+    };
+    interface HTMLVerdocsEnvelopesListElement extends Components.VerdocsEnvelopesList, HTMLStencilElement {
+    }
+    var HTMLVerdocsEnvelopesListElement: {
+        prototype: HTMLVerdocsEnvelopesListElement;
+        new (): HTMLVerdocsEnvelopesListElement;
     };
     interface HTMLVerdocsFieldAttachmentElement extends Components.VerdocsFieldAttachment, HTMLStencilElement {
     }
@@ -1640,6 +1719,12 @@ declare global {
         prototype: HTMLVerdocsTemplateVisibilityElement;
         new (): HTMLVerdocsTemplateVisibilityElement;
     };
+    interface HTMLVerdocsTemplatesListElement extends Components.VerdocsTemplatesList, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplatesListElement: {
+        prototype: HTMLVerdocsTemplatesListElement;
+        new (): HTMLVerdocsTemplatesListElement;
+    };
     interface HTMLVerdocsTextInputElement extends Components.VerdocsTextInput, HTMLStencilElement {
     }
     var HTMLVerdocsTextInputElement: {
@@ -1677,6 +1762,8 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
+        "ipc-test": HTMLIpcTestElement;
+        "verdocs-activity-box": HTMLVerdocsActivityBoxElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-button": HTMLVerdocsButtonElement;
@@ -1688,6 +1775,7 @@ declare global {
         "verdocs-envelope-document-page": HTMLVerdocsEnvelopeDocumentPageElement;
         "verdocs-envelope-recipient-summary": HTMLVerdocsEnvelopeRecipientSummaryElement;
         "verdocs-envelope-sidebar": HTMLVerdocsEnvelopeSidebarElement;
+        "verdocs-envelopes-list": HTMLVerdocsEnvelopesListElement;
         "verdocs-field-attachment": HTMLVerdocsFieldAttachmentElement;
         "verdocs-field-checkbox": HTMLVerdocsFieldCheckboxElement;
         "verdocs-field-date": HTMLVerdocsFieldDateElement;
@@ -1733,6 +1821,7 @@ declare global {
         "verdocs-template-sender": HTMLVerdocsTemplateSenderElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-template-visibility": HTMLVerdocsTemplateVisibilityElement;
+        "verdocs-templates-list": HTMLVerdocsTemplatesListElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
         "verdocs-toggle": HTMLVerdocsToggleElement;
         "verdocs-toggle-button": HTMLVerdocsToggleButtonElement;
@@ -1742,6 +1831,43 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface IpcTest {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
+    interface VerdocsActivityBox {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The title to display on the box ("title" is a reserved word). This is optional, and if not set, the title will be derived from the view. Set this to an empty string to hide the header.
+         */
+        "header"?: string | undefined;
+        /**
+          * The number of items to display.
+         */
+        "items"?: number;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsActivityBoxCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user clicks View All in the title bar. The current view will be included in the event details to help the host application navigate the user to the appropriate screen for the request. Note that the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass this value through directly. This button is not visible if the header is hidden.
+         */
+        "onViewAll"?: (event: VerdocsActivityBoxCustomEvent<{endpoint: VerdocsEndpoint; view: string}>) => void;
+        /**
+          * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
+         */
+        "onViewEnvelope"?: (event: VerdocsActivityBoxCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        "view"?: 'completed' | 'action' | 'waiting';
+    }
     interface VerdocsAuth {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1992,6 +2118,24 @@ declare namespace LocalJSX {
           * Event fired when the sidebar is opened or closed.
          */
         "onToggle"?: (event: VerdocsEnvelopeSidebarCustomEvent<{open: boolean}>) => void;
+    }
+    interface VerdocsEnvelopesList {
+        /**
+          * The document to display status for. Ignored if `status` is set directly.
+         */
+        "envelope"?: IEnvelope;
+        /**
+          * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
+         */
+        "size"?: 'small' | 'normal';
+        /**
+          * The status to display.
+         */
+        "status"?: TEnvelopeStatus | TRecipientStatus | 'accepted';
+        /**
+          * The theme to use for diplay.
+         */
+        "theme"?: 'dark' | 'light';
     }
     interface VerdocsFieldAttachment {
         /**
@@ -3124,6 +3268,24 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    interface VerdocsTemplatesList {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user cancels the dialog.
+         */
+        "onClose"?: (event: VerdocsTemplatesListCustomEvent<any>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplatesListCustomEvent<SDKError>) => void;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
@@ -3242,6 +3404,8 @@ declare namespace LocalJSX {
         "onView"?: (event: VerdocsViewCustomEvent<any>) => void;
     }
     interface IntrinsicElements {
+        "ipc-test": IpcTest;
+        "verdocs-activity-box": VerdocsActivityBox;
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
         "verdocs-button": VerdocsButton;
@@ -3253,6 +3417,7 @@ declare namespace LocalJSX {
         "verdocs-envelope-document-page": VerdocsEnvelopeDocumentPage;
         "verdocs-envelope-recipient-summary": VerdocsEnvelopeRecipientSummary;
         "verdocs-envelope-sidebar": VerdocsEnvelopeSidebar;
+        "verdocs-envelopes-list": VerdocsEnvelopesList;
         "verdocs-field-attachment": VerdocsFieldAttachment;
         "verdocs-field-checkbox": VerdocsFieldCheckbox;
         "verdocs-field-date": VerdocsFieldDate;
@@ -3298,6 +3463,7 @@ declare namespace LocalJSX {
         "verdocs-template-sender": VerdocsTemplateSender;
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-template-visibility": VerdocsTemplateVisibility;
+        "verdocs-templates-list": VerdocsTemplatesList;
         "verdocs-text-input": VerdocsTextInput;
         "verdocs-toggle": VerdocsToggle;
         "verdocs-toggle-button": VerdocsToggleButton;
@@ -3310,6 +3476,8 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "ipc-test": LocalJSX.IpcTest & JSXBase.HTMLAttributes<HTMLIpcTestElement>;
+            "verdocs-activity-box": LocalJSX.VerdocsActivityBox & JSXBase.HTMLAttributes<HTMLVerdocsActivityBoxElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
@@ -3321,6 +3489,7 @@ declare module "@stencil/core" {
             "verdocs-envelope-document-page": LocalJSX.VerdocsEnvelopeDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeDocumentPageElement>;
             "verdocs-envelope-recipient-summary": LocalJSX.VerdocsEnvelopeRecipientSummary & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientSummaryElement>;
             "verdocs-envelope-sidebar": LocalJSX.VerdocsEnvelopeSidebar & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeSidebarElement>;
+            "verdocs-envelopes-list": LocalJSX.VerdocsEnvelopesList & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopesListElement>;
             "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
             "verdocs-field-checkbox": LocalJSX.VerdocsFieldCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;
             "verdocs-field-date": LocalJSX.VerdocsFieldDate & JSXBase.HTMLAttributes<HTMLVerdocsFieldDateElement>;
@@ -3366,6 +3535,7 @@ declare module "@stencil/core" {
             "verdocs-template-sender": LocalJSX.VerdocsTemplateSender & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSenderElement>;
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             "verdocs-template-visibility": LocalJSX.VerdocsTemplateVisibility & JSXBase.HTMLAttributes<HTMLVerdocsTemplateVisibilityElement>;
+            "verdocs-templates-list": LocalJSX.VerdocsTemplatesList & JSXBase.HTMLAttributes<HTMLVerdocsTemplatesListElement>;
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
             "verdocs-toggle": LocalJSX.VerdocsToggle & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;
             "verdocs-toggle-button": LocalJSX.VerdocsToggleButton & JSXBase.HTMLAttributes<HTMLVerdocsToggleButtonElement>;

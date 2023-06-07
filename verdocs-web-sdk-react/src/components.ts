@@ -8,6 +8,8 @@ import type { JSX } from '@verdocs/web-sdk';
 import { defineCustomElements } from '@verdocs/web-sdk/loader';
 
 defineCustomElements();
+export const IpcTest = /*@__PURE__*/createReactComponent<JSX.IpcTest, HTMLIpcTestElement>('ipc-test');
+export const VerdocsActivityBox = /*@__PURE__*/createReactComponent<JSX.VerdocsActivityBox, HTMLVerdocsActivityBoxElement>('verdocs-activity-box');
 export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HTMLVerdocsAuthElement>('verdocs-auth');
 export const VerdocsBuild = /*@__PURE__*/createReactComponent<JSX.VerdocsBuild, HTMLVerdocsBuildElement>('verdocs-build');
 export const VerdocsButton = /*@__PURE__*/createReactComponent<JSX.VerdocsButton, HTMLVerdocsButtonElement>('verdocs-button');
@@ -19,6 +21,7 @@ export const VerdocsDropdown = /*@__PURE__*/createReactComponent<JSX.VerdocsDrop
 export const VerdocsEnvelopeDocumentPage = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopeDocumentPage, HTMLVerdocsEnvelopeDocumentPageElement>('verdocs-envelope-document-page');
 export const VerdocsEnvelopeRecipientSummary = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopeRecipientSummary, HTMLVerdocsEnvelopeRecipientSummaryElement>('verdocs-envelope-recipient-summary');
 export const VerdocsEnvelopeSidebar = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopeSidebar, HTMLVerdocsEnvelopeSidebarElement>('verdocs-envelope-sidebar');
+export const VerdocsEnvelopesList = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopesList, HTMLVerdocsEnvelopesListElement>('verdocs-envelopes-list');
 export const VerdocsFieldAttachment = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldAttachment, HTMLVerdocsFieldAttachmentElement>('verdocs-field-attachment');
 export const VerdocsFieldCheckbox = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldCheckbox, HTMLVerdocsFieldCheckboxElement>('verdocs-field-checkbox');
 export const VerdocsFieldDate = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldDate, HTMLVerdocsFieldDateElement>('verdocs-field-date');
@@ -64,6 +67,7 @@ export const VerdocsTemplateRoles = /*@__PURE__*/createReactComponent<JSX.Verdoc
 export const VerdocsTemplateSender = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateSender, HTMLVerdocsTemplateSenderElement>('verdocs-template-sender');
 export const VerdocsTemplateTags = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateTags, HTMLVerdocsTemplateTagsElement>('verdocs-template-tags');
 export const VerdocsTemplateVisibility = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateVisibility, HTMLVerdocsTemplateVisibilityElement>('verdocs-template-visibility');
+export const VerdocsTemplatesList = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplatesList, HTMLVerdocsTemplatesListElement>('verdocs-templates-list');
 export const VerdocsTextInput = /*@__PURE__*/createReactComponent<JSX.VerdocsTextInput, HTMLVerdocsTextInputElement>('verdocs-text-input');
 export const VerdocsToggle = /*@__PURE__*/createReactComponent<JSX.VerdocsToggle, HTMLVerdocsToggleElement>('verdocs-toggle');
 export const VerdocsToggleButton = /*@__PURE__*/createReactComponent<JSX.VerdocsToggleButton, HTMLVerdocsToggleButtonElement>('verdocs-toggle-button');

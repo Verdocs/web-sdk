@@ -8,6 +8,73 @@ import { Components } from '@verdocs/web-sdk';
 
 
 @ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'ipc-test',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class IpcTest {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface IpcTest extends Components.IpcTest {}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'header', 'items', 'view']
+})
+@Component({
+  selector: 'verdocs-activity-box',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'header', 'items', 'view'],
+})
+export class VerdocsActivityBox {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'viewAll']);
+  }
+}
+
+
+import type { SDKError as IVerdocsActivityBoxSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsActivityBoxVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsActivityBoxIEnvelope } from '@verdocs/web-sdk';
+
+export declare interface VerdocsActivityBox extends Components.VerdocsActivityBox {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsActivityBoxSDKError>>;
+  /**
+   * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
+to the envelope detail view.
+   */
+  viewEnvelope: EventEmitter<CustomEvent<IVerdocsActivityBoxIVerdocsActivityBox{endpoint: [object Object]; envelope: [object Object]}>>;
+  /**
+   * Event fired when the user clicks View All in the title bar. The current view will be included in the event
+details to help the host application navigate the user to the appropriate screen for the request. Note that
+the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass
+this value through directly. This button is not visible if the header is hidden.
+   */
+  viewAll: EventEmitter<CustomEvent<IVerdocsActivityBox{endpoint: [object Object]; view: string}>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'logo', 'visible']
 })
 @Component({
@@ -360,6 +427,28 @@ to redirect the user to the appropriate next workflow step.
    */
   another: EventEmitter<CustomEvent<IVerdocsEnvelopeSidebar{envelope: [object Object]}>>;
 }
+
+
+@ProxyCmp({
+  inputs: ['envelope', 'size', 'status', 'theme']
+})
+@Component({
+  selector: 'verdocs-envelopes-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['envelope', 'size', 'status', 'theme'],
+})
+export class VerdocsEnvelopesList {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsEnvelopesList extends Components.VerdocsEnvelopesList {}
 
 
 @ProxyCmp({
@@ -1849,6 +1938,41 @@ export declare interface VerdocsTemplateVisibility extends Components.VerdocsTem
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateVisibilitySDKError>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'verdocs-templates-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class VerdocsTemplatesList {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['close', 'sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplatesListSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplatesList extends Components.VerdocsTemplatesList {
+  /**
+   * Event fired when the user cancels the dialog.
+   */
+  close: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplatesListSDKError>>;
 }
 
 
