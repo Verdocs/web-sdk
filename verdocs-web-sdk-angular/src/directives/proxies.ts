@@ -1120,6 +1120,34 @@ export declare interface VerdocsOrganizationCard extends Components.VerdocsOrgan
 
 
 @ProxyCmp({
+  inputs: ['itemCount', 'perPage', 'selectedPage']
+})
+@Component({
+  selector: 'verdocs-pagination',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['itemCount', 'perPage', 'selectedPage'],
+})
+export class VerdocsPagination {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['selectPage']);
+  }
+}
+
+
+export declare interface VerdocsPagination extends Components.VerdocsPagination {
+  /**
+   * Event fired when the selected page changes. The new page number is included in the event.
+   */
+  selectPage: EventEmitter<CustomEvent<{selectedPage: number}>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'templateId']
 })
 @Component({
@@ -1511,6 +1539,28 @@ representation of the signature adopted.
    */
   exit: EventEmitter<CustomEvent<any>>;
 }
+
+
+@ProxyCmp({
+  inputs: ['mode', 'size']
+})
+@Component({
+  selector: 'verdocs-spinner',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['mode', 'size'],
+})
+export class VerdocsSpinner {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsSpinner extends Components.VerdocsSpinner {}
 
 
 @ProxyCmp({

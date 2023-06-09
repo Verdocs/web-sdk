@@ -247,7 +247,7 @@ export namespace Components {
          */
         "items": number;
         /**
-          * The first page nymbver to display (0-based)
+          * The first page numbver to display (0-based)
          */
         "page": number;
         /**
@@ -776,6 +776,20 @@ export namespace Components {
          */
         "organization": IOrganization;
     }
+    interface VerdocsPagination {
+        /**
+          * The total number of items.
+         */
+        "itemCount": number;
+        /**
+          * The number of displayed per page.
+         */
+        "perPage": number;
+        /**
+          * The currently selected page.
+         */
+        "selectedPage": number;
+    }
     interface VerdocsPreview {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -924,6 +938,10 @@ export namespace Components {
           * Initial signature text
          */
         "name": string;
+    }
+    interface VerdocsSpinner {
+        "mode": 'light' | 'dark';
+        "size": number;
     }
     interface VerdocsStatusIndicator {
         /**
@@ -1309,6 +1327,10 @@ export interface VerdocsOkDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsOkDialogElement;
 }
+export interface VerdocsPaginationCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsPaginationElement;
+}
 export interface VerdocsPreviewCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsPreviewElement;
@@ -1600,6 +1622,12 @@ declare global {
         prototype: HTMLVerdocsOrganizationCardElement;
         new (): HTMLVerdocsOrganizationCardElement;
     };
+    interface HTMLVerdocsPaginationElement extends Components.VerdocsPagination, HTMLStencilElement {
+    }
+    var HTMLVerdocsPaginationElement: {
+        prototype: HTMLVerdocsPaginationElement;
+        new (): HTMLVerdocsPaginationElement;
+    };
     interface HTMLVerdocsPreviewElement extends Components.VerdocsPreview, HTMLStencilElement {
     }
     var HTMLVerdocsPreviewElement: {
@@ -1677,6 +1705,12 @@ declare global {
     var HTMLVerdocsSignatureDialogElement: {
         prototype: HTMLVerdocsSignatureDialogElement;
         new (): HTMLVerdocsSignatureDialogElement;
+    };
+    interface HTMLVerdocsSpinnerElement extends Components.VerdocsSpinner, HTMLStencilElement {
+    }
+    var HTMLVerdocsSpinnerElement: {
+        prototype: HTMLVerdocsSpinnerElement;
+        new (): HTMLVerdocsSpinnerElement;
     };
     interface HTMLVerdocsStatusIndicatorElement extends Components.VerdocsStatusIndicator, HTMLStencilElement {
     }
@@ -1838,6 +1872,7 @@ declare global {
         "verdocs-loader": HTMLVerdocsLoaderElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
+        "verdocs-pagination": HTMLVerdocsPaginationElement;
         "verdocs-preview": HTMLVerdocsPreviewElement;
         "verdocs-progress-bar": HTMLVerdocsProgressBarElement;
         "verdocs-quick-filter": HTMLVerdocsQuickFilterElement;
@@ -1851,6 +1886,7 @@ declare global {
         "verdocs-send": HTMLVerdocsSendElement;
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
+        "verdocs-spinner": HTMLVerdocsSpinnerElement;
         "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
         "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
@@ -2192,7 +2228,7 @@ declare namespace LocalJSX {
          */
         "onViewEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
         /**
-          * The first page nymbver to display (0-based)
+          * The first page numbver to display (0-based)
          */
         "page"?: number;
         /**
@@ -2841,6 +2877,24 @@ declare namespace LocalJSX {
          */
         "organization"?: IOrganization;
     }
+    interface VerdocsPagination {
+        /**
+          * The total number of items.
+         */
+        "itemCount"?: number;
+        /**
+          * Event fired when the selected page changes. The new page number is included in the event.
+         */
+        "onSelectPage"?: (event: VerdocsPaginationCustomEvent<{selectedPage: number}>) => void;
+        /**
+          * The number of displayed per page.
+         */
+        "perPage"?: number;
+        /**
+          * The currently selected page.
+         */
+        "selectedPage"?: number;
+    }
     interface VerdocsPreview {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3055,6 +3109,10 @@ declare namespace LocalJSX {
           * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string representation of the signature adopted.
          */
         "onNext"?: (event: VerdocsSignatureDialogCustomEvent<string>) => void;
+    }
+    interface VerdocsSpinner {
+        "mode"?: 'light' | 'dark';
+        "size"?: number;
     }
     interface VerdocsStatusIndicator {
         /**
@@ -3537,6 +3595,7 @@ declare namespace LocalJSX {
         "verdocs-loader": VerdocsLoader;
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
+        "verdocs-pagination": VerdocsPagination;
         "verdocs-preview": VerdocsPreview;
         "verdocs-progress-bar": VerdocsProgressBar;
         "verdocs-quick-filter": VerdocsQuickFilter;
@@ -3550,6 +3609,7 @@ declare namespace LocalJSX {
         "verdocs-send": VerdocsSend;
         "verdocs-sign": VerdocsSign;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
+        "verdocs-spinner": VerdocsSpinner;
         "verdocs-status-indicator": VerdocsStatusIndicator;
         "verdocs-template-attachments": VerdocsTemplateAttachments;
         "verdocs-template-card": VerdocsTemplateCard;
@@ -3610,6 +3670,7 @@ declare module "@stencil/core" {
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
+            "verdocs-pagination": LocalJSX.VerdocsPagination & JSXBase.HTMLAttributes<HTMLVerdocsPaginationElement>;
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
             "verdocs-progress-bar": LocalJSX.VerdocsProgressBar & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
             "verdocs-quick-filter": LocalJSX.VerdocsQuickFilter & JSXBase.HTMLAttributes<HTMLVerdocsQuickFilterElement>;
@@ -3623,6 +3684,7 @@ declare module "@stencil/core" {
             "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
+            "verdocs-spinner": LocalJSX.VerdocsSpinner & JSXBase.HTMLAttributes<HTMLVerdocsSpinnerElement>;
             "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
             "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;

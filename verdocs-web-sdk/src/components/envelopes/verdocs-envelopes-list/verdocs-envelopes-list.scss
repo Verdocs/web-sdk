@@ -12,14 +12,22 @@ verdocs-envelopes-list {
   font-family: $primary-font;
 
   .header {
-    margin: 0;
     width: 100%;
     row-gap: 4px;
     display: flex;
     flex-wrap: wrap;
     column-gap: 16px;
+    margin: 0 0 10px 0;
     align-items: center;
     flex-direction: row;
+
+    verdocs-text-input {
+      margin: 0;
+
+      input {
+        height: 32px;
+      }
+    }
   }
 
   .filter {
@@ -29,11 +37,11 @@ verdocs-envelopes-list {
   .envelope {
     width: 100%;
     margin: 3px 0;
+    background: $verdocs-grey-4;
 
     &:hover {
       cursor: pointer;
-      background: $verdocs-grey-4;
-      border: 1px solid $verdocs-bg-1;
+      background: $verdocs-grey-3;
     }
 
     .inner {
@@ -43,8 +51,6 @@ verdocs-envelopes-list {
       border-radius: 6px;
       flex-direction: row;
       align-items: center;
-      background: $dialog-bg;
-      border: 1px solid $extra-light-border-color;
     }
   }
 
@@ -80,7 +86,15 @@ verdocs-envelopes-list {
   }
 
   .envelope-recipients {
-    font-weight: 700;
     color: #4b5563;
+    font-weight: 700;
+  }
+
+  .empty-text {
+    font-size: 20px;
+    text-align: center;
+    margin: 16px 0 0 0;
+    padding: 80px 80px;
+    border: 2px solid #ccc;
   }
 }

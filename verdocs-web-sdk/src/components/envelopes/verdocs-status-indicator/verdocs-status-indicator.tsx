@@ -69,9 +69,9 @@ export class VerdocsStatusIndicator {
 
   @State() isOpen: boolean;
 
-  @State() recipientStatusIcons = [];
-
   @State() containerId = `verdocs-status-indicator-${Math.random().toString(36).substring(2, 11)}`;
+
+  recipientStatusIcons = [];
 
   componentDidLoad() {
     this.popper = createPopper(this.summaryComponent, this.detailPanel, {placement: 'bottom-start', modifiers: [{name: 'offset', options: {offset: [0, 10]}}]});

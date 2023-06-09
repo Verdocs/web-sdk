@@ -6,9 +6,9 @@ verdocs-quick-filter {
 
   .control {
     outline: 0;
+    height: 34px;
     display: flex;
     cursor: pointer;
-    min-height: 38px;
     border-radius: 4px;
     align-items: center;
     flex-direction: row;
@@ -37,8 +37,8 @@ verdocs-quick-filter {
   }
 
   .arrow {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border: none;
     outline: none;
     cursor: pointer;
