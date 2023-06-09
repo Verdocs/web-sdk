@@ -9,7 +9,7 @@ import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
 import { IEnvelope, IEnvelopeField, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
-import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
+import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, ITemplateSummaryEntry, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
@@ -19,6 +19,7 @@ import { IFilterOption } from "./components/controls/verdocs-quick-filter/verdoc
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
+import { IGetTemplateSummarySortBy } from "@verdocs/js-sdk/Templates/Templates";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
@@ -239,13 +240,17 @@ export namespace Components {
     }
     interface VerdocsEnvelopesList {
         /**
+          * If set, filter envelopes by the specified "containing" value.
+         */
+        "containing": string;
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The max number of items to display.
+          * If set, filter envelopes by the specified name.
          */
-        "maxItems": number;
+        "name": string;
         /**
           * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
          */
@@ -1107,6 +1112,16 @@ export namespace Components {
          */
         "templateId": string;
     }
+    interface VerdocsTemplateStar {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The template to display the star for.
+         */
+        "template": ITemplateSummaryEntry;
+    }
     interface VerdocsTemplateTags {
         /**
           * The tags to display
@@ -1129,17 +1144,25 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The number of items to display.
+          * If set, filter templates by the specified name.
          */
-        "items": number;
+        "name": string;
         /**
-          * The first page nymbver to display (0-based)
+          * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
          */
-        "page": number;
+        "selectedPage": number;
         /**
-          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+          * The sharing settings to filter by.
          */
-        "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
+        "sharing"?: 'all' | 'personal' | 'shared' | 'public';
+        /**
+          * The sort order to display.
+         */
+        "sort": IGetTemplateSummarySortBy;
+        /**
+          * The starred settings to filter by.
+         */
+        "starred": 'all' | 'starred' | 'unstarred';
     }
     interface VerdocsTextInput {
         /**
@@ -1402,6 +1425,10 @@ export interface VerdocsTemplateRolesCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsTemplateSenderCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateSenderElement;
+}
+export interface VerdocsTemplateStarCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateStarElement;
 }
 export interface VerdocsTemplateVisibilityCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1784,6 +1811,12 @@ declare global {
         prototype: HTMLVerdocsTemplateSenderElement;
         new (): HTMLVerdocsTemplateSenderElement;
     };
+    interface HTMLVerdocsTemplateStarElement extends Components.VerdocsTemplateStar, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateStarElement: {
+        prototype: HTMLVerdocsTemplateStarElement;
+        new (): HTMLVerdocsTemplateStarElement;
+    };
     interface HTMLVerdocsTemplateTagsElement extends Components.VerdocsTemplateTags, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateTagsElement: {
@@ -1899,6 +1932,7 @@ declare global {
         "verdocs-template-role-properties": HTMLVerdocsTemplateRolePropertiesElement;
         "verdocs-template-roles": HTMLVerdocsTemplateRolesElement;
         "verdocs-template-sender": HTMLVerdocsTemplateSenderElement;
+        "verdocs-template-star": HTMLVerdocsTemplateStarElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-template-visibility": HTMLVerdocsTemplateVisibilityElement;
         "verdocs-templates-list": HTMLVerdocsTemplatesListElement;
@@ -2204,13 +2238,17 @@ declare namespace LocalJSX {
     }
     interface VerdocsEnvelopesList {
         /**
+          * If set, filter envelopes by the specified "containing" value.
+         */
+        "containing"?: string;
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * The max number of items to display.
+          * If set, filter envelopes by the specified name.
          */
-        "maxItems"?: number;
+        "name"?: string;
         /**
           * Event fired when the user clicks to finish signing later. Typically the host application should redirect the user to another page.
          */
@@ -2219,10 +2257,6 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsEnvelopesListCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the user clicks View All in the title bar. The current view will be included in the event details to help the host application navigate the user to the appropriate screen for the request. Note that the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass this value through directly. This button is not visible if the header is hidden.
-         */
-        "onViewAll"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; view: string}>) => void;
         /**
           * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
          */
@@ -3386,6 +3420,24 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    interface VerdocsTemplateStar {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplateStarCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user toggles the star on or off. The event detail will contain the new "starred" status and count.
+         */
+        "onStarChange"?: (event: VerdocsTemplateStarCustomEvent<{templateId: string; starred: boolean; count: number}>) => void;
+        /**
+          * The template to display the star for.
+         */
+        "template"?: ITemplateSummaryEntry;
+    }
     interface VerdocsTemplateTags {
         /**
           * The tags to display
@@ -3416,33 +3468,41 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * The number of items to display.
+          * If set, filter templates by the specified name.
          */
-        "items"?: number;
+        "name"?: string;
         /**
-          * Event fired when the user clicks to finish signing later. Typically the host application should redirect the user to another page.
+          * Event fired when the user chooses the Edit option from the dropdown menu.
          */
-        "onFinishLater"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
+        "onEditTemplate"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplatesListCustomEvent<SDKError>) => void;
         /**
-          * Event fired when the user clicks View All in the title bar. The current view will be included in the event details to help the host application navigate the user to the appropriate screen for the request. Note that the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass this value through directly. This button is not visible if the header is hidden.
+          * Event fired when the user chooses the Delete option from the dropdown menu. When this is fired, the template will already have been deleted. The host application should remove it from the list or refresh the list.
          */
-        "onViewAll"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; view: string}>) => void;
+        "onTemplateDeleted"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
         /**
-          * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
+          * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
          */
-        "onViewEnvelope"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
+        "onViewTemplate"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
         /**
-          * The first page nymbver to display (0-based)
+          * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
          */
-        "page"?: number;
+        "selectedPage"?: number;
         /**
-          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+          * The sharing settings to filter by.
          */
-        "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
+        "sharing"?: 'all' | 'personal' | 'shared' | 'public';
+        /**
+          * The sort order to display.
+         */
+        "sort"?: IGetTemplateSummarySortBy;
+        /**
+          * The starred settings to filter by.
+         */
+        "starred"?: 'all' | 'starred' | 'unstarred';
     }
     interface VerdocsTextInput {
         /**
@@ -3622,6 +3682,7 @@ declare namespace LocalJSX {
         "verdocs-template-role-properties": VerdocsTemplateRoleProperties;
         "verdocs-template-roles": VerdocsTemplateRoles;
         "verdocs-template-sender": VerdocsTemplateSender;
+        "verdocs-template-star": VerdocsTemplateStar;
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-template-visibility": VerdocsTemplateVisibility;
         "verdocs-templates-list": VerdocsTemplatesList;
@@ -3697,6 +3758,7 @@ declare module "@stencil/core" {
             "verdocs-template-role-properties": LocalJSX.VerdocsTemplateRoleProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolePropertiesElement>;
             "verdocs-template-roles": LocalJSX.VerdocsTemplateRoles & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolesElement>;
             "verdocs-template-sender": LocalJSX.VerdocsTemplateSender & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSenderElement>;
+            "verdocs-template-star": LocalJSX.VerdocsTemplateStar & JSXBase.HTMLAttributes<HTMLVerdocsTemplateStarElement>;
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             "verdocs-template-visibility": LocalJSX.VerdocsTemplateVisibility & JSXBase.HTMLAttributes<HTMLVerdocsTemplateVisibilityElement>;
             "verdocs-templates-list": LocalJSX.VerdocsTemplatesList & JSXBase.HTMLAttributes<HTMLVerdocsTemplatesListElement>;

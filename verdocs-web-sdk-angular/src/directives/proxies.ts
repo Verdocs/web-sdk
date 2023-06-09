@@ -430,21 +430,21 @@ to redirect the user to the appropriate next workflow step.
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'maxItems', 'selectedPage', 'sortBy', 'status', 'view']
+  inputs: ['containing', 'endpoint', 'name', 'selectedPage', 'sortBy', 'status', 'view']
 })
 @Component({
   selector: 'verdocs-envelopes-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'maxItems', 'selectedPage', 'sortBy', 'status', 'view'],
+  inputs: ['containing', 'endpoint', 'name', 'selectedPage', 'sortBy', 'status', 'view'],
 })
 export class VerdocsEnvelopesList {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'finishLater', 'viewAll']);
+    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'finishLater']);
   }
 }
 
@@ -469,13 +469,6 @@ to the envelope detail view.
 the user to another page.
    */
   finishLater: EventEmitter<CustomEvent<IVerdocsEnvelopesListIVerdocsEnvelopesList{endpoint: [object Object]; envelope: [object Object]}>>;
-  /**
-   * Event fired when the user clicks View All in the title bar. The current view will be included in the event
-details to help the host application navigate the user to the appropriate screen for the request. Note that
-the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass
-this value through directly. This button is not visible if the header is hidden.
-   */
-  viewAll: EventEmitter<CustomEvent<IVerdocsEnvelopesList{endpoint: [object Object]; view: string}>>;
 }
 
 
@@ -1994,6 +1987,42 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  inputs: ['endpoint', 'template']
+})
+@Component({
+  selector: 'verdocs-template-star',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'template'],
+})
+export class VerdocsTemplateStar {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['starChange', 'sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateStarSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateStar extends Components.VerdocsTemplateStar {
+  /**
+   * Event fired when the user toggles the star on or off. The event detail will contain
+the new "starred" status and count.
+   */
+  starChange: EventEmitter<CustomEvent<{templateId: string; starred: boolean; count: number}>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateStarSDKError>>;
+}
+
+
+@ProxyCmp({
   inputs: ['tags']
 })
 @Component({
@@ -2051,21 +2080,21 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'items', 'page', 'view']
+  inputs: ['endpoint', 'name', 'selectedPage', 'sharing', 'sort', 'starred']
 })
 @Component({
   selector: 'verdocs-templates-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'items', 'page', 'view'],
+  inputs: ['endpoint', 'name', 'selectedPage', 'sharing', 'sort', 'starred'],
 })
 export class VerdocsTemplatesList {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'finishLater', 'viewAll']);
+    proxyOutputs(this, this.el, ['sdkError', 'viewTemplate', 'editTemplate', 'templateDeleted']);
   }
 }
 
@@ -2081,22 +2110,19 @@ terminate the process, and the calling application should correct the condition 
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplatesListSDKError>>;
   /**
-   * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
-to the envelope detail view.
+   * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate
+to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
    */
-  viewEnvelope: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  viewTemplate: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
   /**
-   * Event fired when the user clicks to finish signing later. Typically the host application should redirect
-the user to another page.
+   * Event fired when the user chooses the Edit option from the dropdown menu.
    */
-  finishLater: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  editTemplate: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
   /**
-   * Event fired when the user clicks View All in the title bar. The current view will be included in the event
-details to help the host application navigate the user to the appropriate screen for the request. Note that
-the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass
-this value through directly. This button is not visible if the header is hidden.
+   * Event fired when the user chooses the Delete option from the dropdown menu. When this is fired, the template
+will already have been deleted. The host application should remove it from the list or refresh the list.
    */
-  viewAll: EventEmitter<CustomEvent<IVerdocsTemplatesList{endpoint: [object Object]; view: string}>>;
+  templateDeleted: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
 }
 
 

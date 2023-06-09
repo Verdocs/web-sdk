@@ -68,6 +68,7 @@ export const VerdocsTemplateReminders = /*@__PURE__*/createReactComponent<JSX.Ve
 export const VerdocsTemplateRoleProperties = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateRoleProperties, HTMLVerdocsTemplateRolePropertiesElement>('verdocs-template-role-properties');
 export const VerdocsTemplateRoles = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateRoles, HTMLVerdocsTemplateRolesElement>('verdocs-template-roles');
 export const VerdocsTemplateSender = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateSender, HTMLVerdocsTemplateSenderElement>('verdocs-template-sender');
+export const VerdocsTemplateStar = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateStar, HTMLVerdocsTemplateStarElement>('verdocs-template-star');
 export const VerdocsTemplateTags = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateTags, HTMLVerdocsTemplateTagsElement>('verdocs-template-tags');
 export const VerdocsTemplateVisibility = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateVisibility, HTMLVerdocsTemplateVisibilityElement>('verdocs-template-visibility');
 export const VerdocsTemplatesList = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplatesList, HTMLVerdocsTemplatesListElement>('verdocs-templates-list');

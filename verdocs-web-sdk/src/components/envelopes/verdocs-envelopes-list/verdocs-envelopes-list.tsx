@@ -51,11 +51,6 @@ export class VerdocsEnvelopesList {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The max number of items to display.
-   */
-  @Prop() maxItems: number = 40;
-
-  /**
    * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will
    * show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show
    * only envelopes where the user is the sender and the envelope is not completed.
@@ -71,6 +66,16 @@ export class VerdocsEnvelopesList {
    * The sort field to use
    */
   @Prop({reflect: true, mutable: true}) sortBy: 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status' = 'updated_at';
+
+  /**
+   * If set, filter envelopes by the specified name.
+   */
+  @Prop({reflect: true, mutable: true}) name: string = '';
+
+  /**
+   * If set, filter envelopes by the specified "containing" value.
+   */
+  @Prop({reflect: true, mutable: true}) containing: string = '';
 
   /**
    * The initial page number to select. Pagination is internally controlled but may be overriden by the
@@ -96,18 +101,8 @@ export class VerdocsEnvelopesList {
    */
   @Event({composed: true}) finishLater: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>;
 
-  /**
-   * Event fired when the user clicks View All in the title bar. The current view will be included in the event
-   * details to help the host application navigate the user to the appropriate screen for the request. Note that
-   * the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass
-   * this value through directly. This button is not visible if the header is hidden.
-   */
-  @Event({composed: true}) viewAll: EventEmitter<{endpoint: VerdocsEndpoint; view: string}>;
-
   @State() count = 0;
   @State() loading = true;
-  @State() name = '';
-  @State() containing = '';
   @State() selectedEnvelopes: IEnvelope[] = [];
   @State() envelopes: IEnvelope[] = [];
 
@@ -118,7 +113,7 @@ export class VerdocsEnvelopesList {
       return;
     }
 
-    this.queryEnvelopes();
+    return this.queryEnvelopes();
   }
 
   async queryEnvelopes() {
@@ -228,7 +223,7 @@ export class VerdocsEnvelopesList {
   }
 
   handleDownload() {
-    saveEnvelopesAsZip(VerdocsEndpoint.getDefault(), this.selectedEnvelopes)
+    saveEnvelopesAsZip(this.endpoint, this.selectedEnvelopes)
       .then(() => {
         this.selectedEnvelopes = [];
       })
@@ -239,7 +234,7 @@ export class VerdocsEnvelopesList {
   }
 
   downloadEnvelope(envelope: IEnvelope) {
-    saveEnvelopesAsZip(VerdocsEndpoint.getDefault(), [envelope]).catch(e => {
+    saveEnvelopesAsZip(this.endpoint, [envelope]).catch(e => {
       console.log('Download error', e);
       VerdocsToast('Download error: ' + e.message, {style: 'error'});
     });
@@ -324,6 +319,13 @@ export class VerdocsEnvelopesList {
           const userRole = recipientsWithActions.find(recipient => recipient.email === this.endpoint.session?.email || '');
           const userCanFinish = userRole && userCanCancel && userCanAct(this.endpoint.session?.email || '', recipientsWithActions);
 
+          const menuOptions = [
+            {label: 'View Envelope', id: 'view'},
+            {label: 'Finish Envelope', id: 'finish', disabled: !userCanFinish},
+            {label: 'Download', id: 'download'},
+            {label: 'Cancel', id: 'cancel', disabled: !userCanCancel},
+          ];
+
           return (
             <div class="envelope" key={envelope.id} onClick={() => this.viewEnvelope?.emit({endpoint: this.endpoint, envelope})}>
               <div class="inner">
@@ -358,12 +360,7 @@ export class VerdocsEnvelopesList {
                 <div class="vert-spacer" />
 
                 <verdocs-dropdown
-                  options={[
-                    {label: 'View Envelope', id: 'view'},
-                    {label: 'Finish Envelope', id: 'finish', disabled: !userCanFinish},
-                    {label: 'Download', id: 'download'},
-                    {label: 'Cancel', id: 'cancel', disabled: !userCanCancel},
-                  ]}
+                  options={menuOptions}
                   onOptionSelected={e => {
                     switch (e.detail.id) {
                       case 'view':
@@ -378,14 +375,8 @@ export class VerdocsEnvelopesList {
                       case 'cancel':
                         if (window.confirm('Are you sure you want to cancel this envelope?')) {
                           cancelEnvelope(this.endpoint, envelope.id)
-                            .then(r => {
-                              console.log('Cancel result', r);
-                              VerdocsToast('Envelope canceled');
-                            })
-                            .catch(e => {
-                              console.log('cxl error', e);
-                              VerdocsToast('Unable to cancel envelope: ' + e.messabge, {style: 'error'});
-                            });
+                            .then(() => VerdocsToast('Envelope canceled'))
+                            .catch(e => VerdocsToast('Unable to cancel envelope: ' + e.messabge, {style: 'error'}));
                         }
                         break;
                     }

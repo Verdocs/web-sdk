@@ -339,7 +339,6 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: I
   const zip = new jszip();
 
   for await (let envelope of envelopes) {
-    // e.g. "98a13bc0-8861-4408-86fc-8f9af51e867a-TheSwanBrothers Phase 1 Agreement - 11-02-22"
     const date = format(new Date(envelope.updated_at), FORMAT_DATE);
     const subFolder = envelopes.length > 0 ? zip.folder(`${envelope.id} - ${envelope.name} - ${date}`) : null;
     for await (let document of envelope.documents) {
@@ -353,7 +352,8 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: I
         zip.file(documentFileName, data, {compression: 'DEFLATE'});
       }
 
-      const attachFields = envelope.fields.filter(field => field.type === 'attachment' && field.settings['name']);
+      // TODO: fields needs to be added to envelope search result entries
+      const attachFields = envelope.fields?.filter(field => field.type === 'attachment' && field.settings['name']) || [];
       if (attachFields.length > 0) {
         const attachmentsFolder = subFolder ? subFolder.folder('attachments') : zip.folder('attachments');
         for await (let attachField of attachFields) {

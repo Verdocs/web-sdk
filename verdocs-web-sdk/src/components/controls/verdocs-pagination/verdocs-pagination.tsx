@@ -64,7 +64,6 @@ export class VerdocsQuickFilter {
     //   If page == 0 => firstPage: 0, numPagesToDisplay:
     const firstPage = Math.max(0, this.selectedPage - 2);
     const numPagesToDisplay = Math.min(numPages, 5);
-    console.log({firstPage, numPagesToDisplay});
 
     return (
       <Host>

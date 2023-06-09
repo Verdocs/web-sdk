@@ -1,23 +1,61 @@
 @import '../../../theme.scss';
 
 verdocs-templates-list {
-  font-family: $verdocs-primary-font;
+  display: flex;
+  padding: 10px;
+  font-size: 18px;
+  flex-wrap: nowrap;
+  border-radius: 6px;
+  color: $label-color;
+  align-items: center;
+  flex-direction: column;
+  font-family: $primary-font;
 
-  .template {
+  .header {
+    width: 100%;
+    row-gap: 4px;
     display: flex;
-    margin: 3px 0;
-    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 12px;
+    margin: 0 0 10px 0;
     align-items: center;
-    border: 1px solid #eee;
-    background: #fff;
-    padding: 8px 20px;
+    flex-direction: row;
 
-    svg {
-      width: 32px;
-      height: 32px;
+    .filter {
+      width: 150px;
     }
 
-    @media screen and (max-width: 1300px) {
+    verdocs-text-input {
+      margin: 0;
+
+      input {
+        height: 32px;
+      }
+    }
+  }
+
+  .filter {
+    align-items: center;
+  }
+
+  .template {
+    width: 100%;
+    margin: 3px 0;
+    background: $verdocs-grey-4;
+
+    &:hover {
+      cursor: pointer;
+      background: $verdocs-grey-3;
+    }
+
+    .inner {
+      gap: 10px;
+      display: flex;
+      padding: 8px 14px;
+      border-radius: 5px;
+      flex-direction: row;
+      align-items: center;
+
       svg {
         width: 24px;
         height: 24px;
@@ -42,16 +80,72 @@ verdocs-templates-list {
   }
 
   .spacer {
-    display: flex;
+    margin: 0;
+    height: 30px;
     flex: 0 0 1px;
-    height: 50px;
-    margin: 0 12px;
+    display: flex;
     border-right: 1px solid #dad8dd;
 
     @media screen and (max-width: 800px) {
       margin: 12px 0;
       border-top: 1px solid #dad8dd;
       border-right: none;
+    }
+  }
+
+  .empty-text {
+    font-size: 20px;
+    text-align: center;
+    margin: 16px 0 0 0;
+    padding: 80px 80px;
+    border: 2px solid #ccc;
+  }
+
+  .ownership {
+    color: #444;
+    display: flex;
+    flex: 0 0 100px;
+    font-size: 16px;
+    margin: 0 0 0 10px;
+    align-items: center;
+    flex-direction: row;
+
+    svg {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
+  }
+
+  .last-used {
+    color: #444;
+    display: flex;
+    flex: 0 0 280px;
+    font-size: 16px;
+    margin: 0 0 0 10px;
+    flex-direction: row;
+    align-items: center;
+
+    svg {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
+  }
+
+  .usage {
+    color: #444;
+    display: flex;
+    flex: 0 0 60px;
+    font-size: 16px;
+    margin: 0 0 0 10px;
+    align-items: center;
+    flex-direction: row;
+
+    svg {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
     }
   }
 }
