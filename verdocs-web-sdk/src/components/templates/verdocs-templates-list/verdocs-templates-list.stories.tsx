@@ -12,7 +12,7 @@ export default {
   },
 } as Meta;
 
-export const TemplateList = ({onClose, templateId}) =>
+export const TemplatesList = ({onClose, templateId}) =>
   html`
     <div style="width: 360px; background: #ffffff; padding: 20px; box-sizing: border-box">
       <verdocs-templates-list .templateId=${templateId} @close=${onClose} />

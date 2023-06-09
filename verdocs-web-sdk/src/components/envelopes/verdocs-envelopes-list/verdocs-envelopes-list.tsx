@@ -192,7 +192,7 @@ export class VerdocsEnvelopesList {
       }
 
       const response = await Envelopes.searchEnvelopes(this.endpoint, queryParams);
-      console.log('[ACTIVITIES] Got envelopes', response);
+      console.log('[ENVELOPES] Got envelopes', response);
       this.envelopes = response.result;
       this.count = response.total;
       this.loading = false;

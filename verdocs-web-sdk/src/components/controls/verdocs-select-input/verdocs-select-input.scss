@@ -8,10 +8,11 @@ verdocs-select-input {
 
   .input-element {
     box-sizing: border-box;
-    border: 1px solid $border-color;
+    background: $verdocs-grey-4;
+    border: 1px solid $verdocs-bg-1;
     border-radius: 4px;
     background: $verdocs-grey-4;
-    color: #000;
+    color: $verdocs-grey-0;
     width: 100%;
     font-size: 16px;
     height: 28px;
@@ -23,7 +24,7 @@ verdocs-select-input {
     }
 
     &:focus {
-      border: 1px solid $border-color-highlight;
+      //border: 1px solid $border-color-highlight;
     }
   }
 

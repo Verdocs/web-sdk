@@ -15,6 +15,7 @@ import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-drop
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
+import { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
@@ -799,6 +800,15 @@ export namespace Components {
          */
         "showPercent": boolean;
     }
+    interface VerdocsQuickFilter {
+        "label": string;
+        /**
+          * The menu options to display.
+         */
+        "options": IFilterOption[];
+        "placeholder": string;
+        "value": string;
+    }
     interface VerdocsQuickFunctions {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1101,14 +1111,17 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The title to display on the box ("title" is a reserved word). This is optional, and if not set, the title will be derived from the view. Set this to an empty string to hide the header.
-         */
-        "header"?: string | undefined;
-        /**
           * The number of items to display.
          */
         "items": number;
-        "view"?: 'completed' | 'action' | 'waiting';
+        /**
+          * The first page nymbver to display (0-based)
+         */
+        "page": number;
+        /**
+          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+         */
+        "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
     }
     interface VerdocsTextInput {
         /**
@@ -1299,6 +1312,10 @@ export interface VerdocsOkDialogCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsPreviewCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsPreviewElement;
+}
+export interface VerdocsQuickFilterCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsQuickFilterElement;
 }
 export interface VerdocsQuickFunctionsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1595,6 +1612,12 @@ declare global {
         prototype: HTMLVerdocsProgressBarElement;
         new (): HTMLVerdocsProgressBarElement;
     };
+    interface HTMLVerdocsQuickFilterElement extends Components.VerdocsQuickFilter, HTMLStencilElement {
+    }
+    var HTMLVerdocsQuickFilterElement: {
+        prototype: HTMLVerdocsQuickFilterElement;
+        new (): HTMLVerdocsQuickFilterElement;
+    };
     interface HTMLVerdocsQuickFunctionsElement extends Components.VerdocsQuickFunctions, HTMLStencilElement {
     }
     var HTMLVerdocsQuickFunctionsElement: {
@@ -1817,6 +1840,7 @@ declare global {
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
         "verdocs-preview": HTMLVerdocsPreviewElement;
         "verdocs-progress-bar": HTMLVerdocsProgressBarElement;
+        "verdocs-quick-filter": HTMLVerdocsQuickFilterElement;
         "verdocs-quick-functions": HTMLVerdocsQuickFunctionsElement;
         "verdocs-radio-button": HTMLVerdocsRadioButtonElement;
         "verdocs-search": HTMLVerdocsSearchElement;
@@ -2845,6 +2869,19 @@ declare namespace LocalJSX {
          */
         "showPercent"?: boolean;
     }
+    interface VerdocsQuickFilter {
+        "label"?: string;
+        /**
+          * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
+         */
+        "onOptionSelected"?: (event: VerdocsQuickFilterCustomEvent<IFilterOption>) => void;
+        /**
+          * The menu options to display.
+         */
+        "options"?: IFilterOption[];
+        "placeholder"?: string;
+        "value"?: string;
+    }
     interface VerdocsQuickFunctions {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3321,13 +3358,13 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * The title to display on the box ("title" is a reserved word). This is optional, and if not set, the title will be derived from the view. Set this to an empty string to hide the header.
-         */
-        "header"?: string | undefined;
-        /**
           * The number of items to display.
          */
         "items"?: number;
+        /**
+          * Event fired when the user clicks to finish signing later. Typically the host application should redirect the user to another page.
+         */
+        "onFinishLater"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
@@ -3339,8 +3376,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
          */
-        "onViewEnvelope"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
-        "view"?: 'completed' | 'action' | 'waiting';
+        "onViewEnvelope"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
+        /**
+          * The first page nymbver to display (0-based)
+         */
+        "page"?: number;
+        /**
+          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+         */
+        "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
     }
     interface VerdocsTextInput {
         /**
@@ -3495,6 +3539,7 @@ declare namespace LocalJSX {
         "verdocs-organization-card": VerdocsOrganizationCard;
         "verdocs-preview": VerdocsPreview;
         "verdocs-progress-bar": VerdocsProgressBar;
+        "verdocs-quick-filter": VerdocsQuickFilter;
         "verdocs-quick-functions": VerdocsQuickFunctions;
         "verdocs-radio-button": VerdocsRadioButton;
         "verdocs-search": VerdocsSearch;
@@ -3567,6 +3612,7 @@ declare module "@stencil/core" {
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
             "verdocs-progress-bar": LocalJSX.VerdocsProgressBar & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
+            "verdocs-quick-filter": LocalJSX.VerdocsQuickFilter & JSXBase.HTMLAttributes<HTMLVerdocsQuickFilterElement>;
             "verdocs-quick-functions": LocalJSX.VerdocsQuickFunctions & JSXBase.HTMLAttributes<HTMLVerdocsQuickFunctionsElement>;
             "verdocs-radio-button": LocalJSX.VerdocsRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsRadioButtonElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;

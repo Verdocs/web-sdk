@@ -1173,6 +1173,37 @@ export declare interface VerdocsProgressBar extends Components.VerdocsProgressBa
 
 
 @ProxyCmp({
+  inputs: ['label', 'options', 'placeholder', 'value']
+})
+@Component({
+  selector: 'verdocs-quick-filter',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['label', 'options', 'placeholder', 'value'],
+})
+export class VerdocsQuickFilter {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['optionSelected']);
+  }
+}
+
+
+import type { IFilterOption as IVerdocsQuickFilterIFilterOption } from '@verdocs/web-sdk';
+
+export declare interface VerdocsQuickFilter extends Components.VerdocsQuickFilter {
+  /**
+   * Event fired when a menu option is clicked.
+Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
+   */
+  optionSelected: EventEmitter<CustomEvent<IVerdocsQuickFilterIFilterOption>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint']
 })
 @Component({
@@ -1970,28 +2001,28 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'header', 'items', 'view']
+  inputs: ['endpoint', 'items', 'page', 'view']
 })
 @Component({
   selector: 'verdocs-templates-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'header', 'items', 'view'],
+  inputs: ['endpoint', 'items', 'page', 'view'],
 })
 export class VerdocsTemplatesList {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'viewAll']);
+    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'finishLater', 'viewAll']);
   }
 }
 
 
 import type { SDKError as IVerdocsTemplatesListSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsTemplatesListVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IEnvelope as IVerdocsTemplatesListIEnvelope } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplatesListITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplatesList extends Components.VerdocsTemplatesList {
   /**
@@ -2003,7 +2034,12 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
 to the envelope detail view.
    */
-  viewEnvelope: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; envelope: [object Object]}>>;
+  viewEnvelope: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  /**
+   * Event fired when the user clicks to finish signing later. Typically the host application should redirect
+the user to another page.
+   */
+  finishLater: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
   /**
    * Event fired when the user clicks View All in the title bar. The current view will be included in the event
 details to help the host application navigate the user to the appropriate screen for the request. Note that

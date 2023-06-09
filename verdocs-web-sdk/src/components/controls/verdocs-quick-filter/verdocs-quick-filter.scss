@@ -1,0 +1,115 @@
+@import '../../../theme.scss';
+
+verdocs-quick-filter {
+  position: relative;
+  font-family: $primary-font;
+
+  .control {
+    outline: 0;
+    display: flex;
+    cursor: pointer;
+    min-height: 38px;
+    border-radius: 4px;
+    align-items: center;
+    flex-direction: row;
+    box-sizing: border-box;
+    background: $verdocs-grey-4;
+    transition: all 100ms ease 0s;
+    border: 1px solid $verdocs-bg-1;
+  }
+
+  .title {
+    padding: 0 8px;
+    font-size: 16px;
+    max-width: 100%;
+    overflow: hidden;
+    color: $label-color;
+    white-space: nowrap;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+
+    .prefix {
+      display: inline;
+      font-weight: 700;
+      margin: 0 7px 0 0;
+      color: $secondary-color;
+    }
+  }
+
+  .arrow {
+    width: 36px;
+    height: 36px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    background: $verdocs-grey-4;
+    transition: color 150ms ease 0s;
+
+    svg {
+      transition: 0.3s;
+      fill: $verdocs-bg-1;
+    }
+  }
+
+  .separator {
+    width: 1px;
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    align-self: stretch;
+    box-sizing: border-box;
+    background-color: $verdocs-bg-1;
+  }
+
+  .items {
+    display: none;
+    z-index: 10000;
+    position: absolute;
+    border-radius: 4px;
+    background: $verdocs-grey-4;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 0 0 1px, rgba(0, 0, 0, 0.1) 0 4px 11px;
+  }
+
+  .items[data-show] {
+    display: block;
+  }
+
+  .option {
+    width: 100%;
+    border: none;
+    display: block;
+    font-size: 16px;
+    text-align: left;
+    background: none;
+    padding: 10px 20px;
+    color: $verdocs-bg-5;
+  }
+
+  .option:hover {
+    cursor: pointer;
+    background: #4c56cb3f;
+  }
+
+  .option[disabled] {
+    color: $light-disabled-color;
+  }
+
+  .option[disabled]:hover {
+    cursor: inherit;
+    background: transparent;
+    color: $light-disabled-color;
+  }
+
+  &.open {
+    .items {
+      display: block;
+    }
+
+    .arrow svg {
+      transform: scaleY(-1);
+    }
+  }
+}

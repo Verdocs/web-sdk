@@ -2,4 +2,56 @@
 
 verdocs-templates-list {
   font-family: $verdocs-primary-font;
+
+  .template {
+    display: flex;
+    margin: 3px 0;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid #eee;
+    background: #fff;
+    padding: 8px 20px;
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    @media screen and (max-width: 1300px) {
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  .name {
+    flex: 1;
+    display: flex;
+    color: black;
+    font-size: 18px;
+    margin-left: 10px;
+
+    @media screen and (max-width: 1300px) {
+      font-size: 16px;
+    }
+
+    @media screen and (max-width: 800px) {
+      //flex: 0;
+    }
+  }
+
+  .spacer {
+    display: flex;
+    flex: 0 0 1px;
+    height: 50px;
+    margin: 0 12px;
+    border-right: 1px solid #dad8dd;
+
+    @media screen and (max-width: 800px) {
+      margin: 12px 0;
+      border-top: 1px solid #dad8dd;
+      border-right: none;
+    }
+  }
 }
