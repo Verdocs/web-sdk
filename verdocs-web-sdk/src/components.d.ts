@@ -243,13 +243,13 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The number of items to display.
+          * The max number of items to display.
          */
-        "items": number;
+        "maxItems": number;
         /**
-          * The first page numbver to display (0-based)
+          * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
          */
-        "page": number;
+        "selectedPage": number;
         /**
           * The sort field to use
          */
@@ -2208,9 +2208,9 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * The number of items to display.
+          * The max number of items to display.
          */
-        "items"?: number;
+        "maxItems"?: number;
         /**
           * Event fired when the user clicks to finish signing later. Typically the host application should redirect the user to another page.
          */
@@ -2228,9 +2228,9 @@ declare namespace LocalJSX {
          */
         "onViewEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
         /**
-          * The first page numbver to display (0-based)
+          * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
          */
-        "page"?: number;
+        "selectedPage"?: number;
         /**
           * The sort field to use
          */

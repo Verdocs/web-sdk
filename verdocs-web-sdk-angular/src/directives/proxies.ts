@@ -430,14 +430,14 @@ to redirect the user to the appropriate next workflow step.
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'items', 'page', 'sortBy', 'status', 'view']
+  inputs: ['endpoint', 'maxItems', 'selectedPage', 'sortBy', 'status', 'view']
 })
 @Component({
   selector: 'verdocs-envelopes-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'items', 'page', 'sortBy', 'status', 'view'],
+  inputs: ['endpoint', 'maxItems', 'selectedPage', 'sortBy', 'status', 'view'],
 })
 export class VerdocsEnvelopesList {
   protected el: HTMLElement;

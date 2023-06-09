@@ -124,10 +124,9 @@ export class VerdocsQuickFilter {
 
   render() {
     const selectedOption = this.options?.find(option => option.value === this.value);
-
     const longestOption = this.options?.reduce((prev, curr) => (prev.label.length > curr.label.length ? prev : curr));
-    const longestLabelWidth = renderedTextWidth(longestOption?.label || 'FILLER', '16px Inter, Barlow, sans-serif');
-    const prefixWidth = renderedTextWidth(this.label, '16px Inter, Barlow, sans-serif');
+    const longestLabelWidth = renderedTextWidth(longestOption?.label || 'FILLER', '14px Inter, Barlow, sans-serif');
+    const prefixWidth = renderedTextWidth(this.label, '14px Inter, Barlow, sans-serif');
     const minWidth = `${longestLabelWidth + prefixWidth + 40}px`;
 
     return (
