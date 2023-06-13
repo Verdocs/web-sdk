@@ -1,12 +1,12 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
+import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {formatShortTimeAgo} from '@verdocs/js-sdk/Utils/DateTime';
 import {getNextRecipient} from '@verdocs/js-sdk/Envelopes/Permissions';
+import {IEnvelopeSearchParams} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
-import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
-import {IEnvelopeSearchParams} from '@verdocs/js-sdk/Envelopes/Envelopes';
 
 const EmptyImage = 'https://verdocs-public-assets.s3.amazonaws.com/no-verdocs.png';
 
