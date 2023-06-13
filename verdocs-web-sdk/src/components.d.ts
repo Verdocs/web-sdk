@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
-import { IEnvelope, IEnvelopeField, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
+import { IActivityEntry, IEnvelope, IEnvelopeField, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, ITemplateSummaryEntry, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
@@ -1979,7 +1979,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
          */
-        "onViewEnvelope"?: (event: VerdocsActivityBoxCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        "onViewEnvelope"?: (event: VerdocsActivityBoxCustomEvent<{endpoint: VerdocsEndpoint; entry: IActivityEntry}>) => void;
         /**
           * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
          */

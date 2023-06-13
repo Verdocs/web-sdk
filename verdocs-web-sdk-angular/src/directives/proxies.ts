@@ -51,7 +51,7 @@ export class VerdocsActivityBox {
 
 import type { SDKError as IVerdocsActivityBoxSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsActivityBoxVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IEnvelope as IVerdocsActivityBoxIEnvelope } from '@verdocs/web-sdk';
+import type { IActivityEntry as IVerdocsActivityBoxIActivityEntry } from '@verdocs/web-sdk';
 
 export declare interface VerdocsActivityBox extends Components.VerdocsActivityBox {
   /**
@@ -63,7 +63,7 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
 to the envelope detail view.
    */
-  viewEnvelope: EventEmitter<CustomEvent<IVerdocsActivityBoxIVerdocsActivityBox{endpoint: [object Object]; envelope: [object Object]}>>;
+  viewEnvelope: EventEmitter<CustomEvent<IVerdocsActivityBoxIVerdocsActivityBox{endpoint: [object Object]; entry: [object Object]}>>;
   /**
    * Event fired when the user clicks View All in the title bar. The current view will be included in the event
 details to help the host application navigate the user to the appropriate screen for the request. Note that

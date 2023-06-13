@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "1.15.3",
+  "version": "1.16.0",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -25,8 +25,8 @@
     "test.watch": "stencil test --spec --e2e --watchAll",
     "postinstall": "patch-package",
     "generate": "stencil generate",
-    "storybook": "NODE_OPTIONS=--openssl-legacy-provider NODE_DEBUG=true rm -rf storybook-static && BROWSER=none start-storybook -p 6006 --no-open",
-    "build-storybook": "export NODE_OPTIONS=--openssl-legacy-provider && NODE_DEBUG=true rm -rf storybook-static && build-storybook"
+    "storybook": "NODE_DEBUG=true rm -rf storybook-static && BROWSER=none start-storybook -p 6006 --no-open",
+    "build-storybook": "NODE_DEBUG=true rm -rf storybook-static && build-storybook"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.7",

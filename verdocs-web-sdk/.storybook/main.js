@@ -14,6 +14,7 @@ module.exports = {
   webpackFinal: async (config, {configType}) => {
     config.devtool = 'inline-source-map';
     // config.output.hashFunction = 'xxhash64';
+
     return config;
   },
   staticDirs: ['../public'],

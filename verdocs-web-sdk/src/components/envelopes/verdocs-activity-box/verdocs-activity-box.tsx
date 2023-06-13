@@ -1,10 +1,8 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
+import {IActivityEntry} from '@verdocs/js-sdk/Envelopes/Types';
 import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {formatShortTimeAgo} from '@verdocs/js-sdk/Utils/DateTime';
-import {getNextRecipient} from '@verdocs/js-sdk/Envelopes/Permissions';
-import {IEnvelopeSearchParams} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 
@@ -53,7 +51,7 @@ export class VerdocsActivityBox {
    * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
    * to the envelope detail view.
    */
-  @Event({composed: true}) viewEnvelope: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>;
+  @Event({composed: true}) viewEnvelope: EventEmitter<{endpoint: VerdocsEndpoint; entry: IActivityEntry}>;
 
   /**
    * Event fired when the user clicks View All in the title bar. The current view will be included in the event
@@ -66,7 +64,7 @@ export class VerdocsActivityBox {
   @State() title = '';
   @State() count = 0;
   @State() loading = true;
-  @State() envelopes: IEnvelope[] = [];
+  @State() entries: IActivityEntry[] = [];
 
   async componentWillLoad() {
     try {
@@ -77,39 +75,26 @@ export class VerdocsActivityBox {
         return;
       }
 
-      let queryParams: IEnvelopeSearchParams = {
-        page: 0,
-        ascending: false,
-        sort_by: 'updated_at',
-        limit: Math.max(Math.min(this.items, 50), 1),
-      };
+      const r = await Envelopes.getSummary(this.endpoint, 0);
 
       let defaultHeader;
-      switch (this.view) {
-        case 'action':
-          queryParams = {...queryParams, is_recipient: true, envelope_status: ['pending', 'in progress'], recipient_status: ['invited', 'opened', 'signed']};
-          defaultHeader = 'Action Required';
-
-          break;
-
-        case 'waiting':
-          queryParams = {...queryParams, is_owner: true, ascending: false, envelope_status: ['pending', 'in progress']};
-          defaultHeader = 'Waiting on Others';
-          break;
-
-        case 'completed':
-        default:
-          queryParams = {...queryParams, envelope_status: ['complete']};
-          defaultHeader = 'Completed';
-          break;
+      if (this.view === 'action') {
+        defaultHeader = 'Action Required';
+        this.entries = r.action_required.result;
+        this.count = r.action_required.total;
+      } else if (this.view === 'waiting') {
+        defaultHeader = 'Waiting on Others';
+        this.entries = r.waiting_others.result;
+        this.count = r.waiting_others.total;
+      } else if (this.view === 'completed') {
+        defaultHeader = 'Completed';
+        this.entries = r.completed.result;
+        this.count = r.completed.total;
       }
 
       this.title = this.header !== undefined ? this.header : defaultHeader;
 
-      const response = await Envelopes.searchEnvelopes(this.endpoint, queryParams);
-      console.log('[ACTIVITIES] Got envelopes', response);
-      this.envelopes = response.result;
-      this.count = response.total;
+      console.log('[ACTIVITIES] Got envelopes', this.entries);
       this.loading = false;
     } catch (e) {
       console.log('[ACTIVITIES] Error with preview session', e);
@@ -117,10 +102,10 @@ export class VerdocsActivityBox {
     }
   }
 
-  getNextRecipientName(envelope: IEnvelope) {
-    const nextRecipient = getNextRecipient(envelope) || envelope.recipients?.[0];
-    return nextRecipient?.full_name || 'N/A';
-  }
+  // getNextRecipientName(entry: IActivityEntry) {
+  //   const nextRecipient = getNextRecipient(entry) || envelope.recipients?.[0];
+  //   return nextRecipient?.full_name || 'N/A';
+  // }
 
   render() {
     if (this.loading) {
@@ -152,18 +137,18 @@ export class VerdocsActivityBox {
         )}
 
         {this.count > 0 ? (
-          this.envelopes.slice(0, Math.max(this.items, 1)).map(envelope => (
+          this.entries.slice(0, Math.max(this.items, 1)).map(entry => (
             <div
               class="activity-entry"
               onClick={() => {
-                this.viewEnvelope?.emit({endpoint: this.endpoint, envelope});
+                this.viewEnvelope?.emit({endpoint: this.endpoint, entry});
               }}
             >
               <div class="title">
-                {envelope.name}
-                <br /> <strong>{this.getNextRecipientName(envelope)}</strong>
+                {entry.name}
+                <br /> <strong>{entry.recipient.name}</strong>
               </div>
-              <div class="time-ago">{formatShortTimeAgo(envelope.updated_at)}</div>
+              <div class="time-ago">{formatShortTimeAgo(entry.updated_at)}</div>
             </div>
           ))
         ) : (
