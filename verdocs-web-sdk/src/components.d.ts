@@ -20,6 +20,7 @@ import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IGetTemplateSummarySortBy } from "@verdocs/js-sdk/Templates/Templates";
+import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
@@ -258,7 +259,7 @@ export namespace Components {
         /**
           * The sort field to use
          */
-        "sortBy": 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status';
+        "sort": 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status';
         /**
           * The status value to filter by
          */
@@ -1139,6 +1140,10 @@ export namespace Components {
         "templateId": string;
     }
     interface VerdocsTemplatesList {
+        /**
+          * Override the If set, filter templates by the specified name.
+         */
+        "allowedActions": TAllowedTemplateAction[];
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
@@ -2268,7 +2273,7 @@ declare namespace LocalJSX {
         /**
           * The sort field to use
          */
-        "sortBy"?: 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status';
+        "sort"?: 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status';
         /**
           * The status value to filter by
          */
@@ -3463,6 +3468,10 @@ declare namespace LocalJSX {
         "templateId"?: string;
     }
     interface VerdocsTemplatesList {
+        /**
+          * Override the If set, filter templates by the specified name.
+         */
+        "allowedActions"?: TAllowedTemplateAction[];
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */

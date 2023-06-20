@@ -430,14 +430,14 @@ to redirect the user to the appropriate next workflow step.
 
 
 @ProxyCmp({
-  inputs: ['containing', 'endpoint', 'name', 'selectedPage', 'sortBy', 'status', 'view']
+  inputs: ['containing', 'endpoint', 'name', 'selectedPage', 'sort', 'status', 'view']
 })
 @Component({
   selector: 'verdocs-envelopes-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['containing', 'endpoint', 'name', 'selectedPage', 'sortBy', 'status', 'view'],
+  inputs: ['containing', 'endpoint', 'name', 'selectedPage', 'sort', 'status', 'view'],
 })
 export class VerdocsEnvelopesList {
   protected el: HTMLElement;
@@ -2080,14 +2080,14 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'name', 'selectedPage', 'sharing', 'sort', 'starred']
+  inputs: ['allowedActions', 'endpoint', 'name', 'selectedPage', 'sharing', 'sort', 'starred']
 })
 @Component({
   selector: 'verdocs-templates-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'name', 'selectedPage', 'sharing', 'sort', 'starred'],
+  inputs: ['allowedActions', 'endpoint', 'name', 'selectedPage', 'sharing', 'sort', 'starred'],
 })
 export class VerdocsTemplatesList {
   protected el: HTMLElement;

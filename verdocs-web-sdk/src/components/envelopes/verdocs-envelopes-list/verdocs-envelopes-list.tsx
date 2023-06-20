@@ -1,7 +1,7 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {IEnvelope, TEnvelopeStatus} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
+import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
 import {cancelEnvelope, IEnvelopeSearchParams} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getRecipientsWithActions, userCanAct, userCanCancelEnvelope} from '@verdocs/js-sdk/Envelopes/Permissions';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
@@ -65,7 +65,7 @@ export class VerdocsEnvelopesList {
   /**
    * The sort field to use
    */
-  @Prop({reflect: true, mutable: true}) sortBy: 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status' = 'updated_at';
+  @Prop({reflect: true, mutable: true}) sort: 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status' = 'updated_at';
 
   /**
    * If set, filter envelopes by the specified name.
@@ -106,6 +106,36 @@ export class VerdocsEnvelopesList {
   @State() selectedEnvelopes: IEnvelope[] = [];
   @State() envelopes: IEnvelope[] = [];
 
+  @Watch('view')
+  handleViewUpdated() {
+    return this.queryEnvelopes();
+  }
+
+  @Watch('status')
+  handleStatusUpdated() {
+    return this.queryEnvelopes();
+  }
+
+  @Watch('sort')
+  handleSortUpdated() {
+    return this.queryEnvelopes();
+  }
+
+  @Watch('name')
+  handleNameUpdated() {
+    return this.queryEnvelopes();
+  }
+
+  @Watch('containing')
+  handleContainingUpdated() {
+    return this.queryEnvelopes();
+  }
+
+  @Watch('selectedPage')
+  handlePageUpdated() {
+    return this.queryEnvelopes();
+  }
+
   componentWillLoad() {
     this.endpoint.loadSession();
     if (!this.endpoint.session) {
@@ -128,8 +158,8 @@ export class VerdocsEnvelopesList {
         case 'all':
           queryParams = {
             ...queryParams,
-            sort_by: this.sortBy,
-            ascending: this.sortBy === 'envelope_name',
+            sort_by: this.sort,
+            ascending: this.sort === 'envelope_name',
             envelope_status: (this.status === 'all' ? ['pending', 'in progress', 'complete', 'declined', 'canceled'] : [this.status]) as TEnvelopeStatus[],
           };
           break;
@@ -198,9 +228,9 @@ export class VerdocsEnvelopesList {
         }
       }
 
-      if (this.sortBy !== 'updated_at') {
-        queryParams.sort_by = this.sortBy as any;
-        queryParams.ascending = this.sortBy === 'envelope_name';
+      if (this.sort !== 'updated_at') {
+        queryParams.sort_by = this.sort as any;
+        queryParams.ascending = this.sort === 'envelope_name';
       }
 
       if (this.name.trim()) {
@@ -228,14 +258,14 @@ export class VerdocsEnvelopesList {
         this.selectedEnvelopes = [];
       })
       .catch(e => {
-        console.log('Download error', e);
+        console.log('[ENVELOPES] Download error', e);
         VerdocsToast('Download error: ' + e.message, {style: 'error'});
       });
   }
 
   downloadEnvelope(envelope: IEnvelope) {
     saveEnvelopesAsZip(this.endpoint, [envelope]).catch(e => {
-      console.log('Download error', e);
+      console.log('[ENVELOPES] Download error', e);
       VerdocsToast('Download error: ' + e.message, {style: 'error'});
     });
   }
@@ -282,10 +312,10 @@ export class VerdocsEnvelopesList {
           {this.view === 'all' && (
             <verdocs-quick-filter
               label="Sort By"
-              value={this.sortBy}
+              value={this.sort}
               options={SortFilters}
               onOptionSelected={e => {
-                this.sortBy = e.detail.value as any;
+                this.sort = e.detail.value as any;
                 return this.queryEnvelopes();
               }}
             />

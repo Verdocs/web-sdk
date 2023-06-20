@@ -1,14 +1,15 @@
+import {formatDistance} from 'date-fns';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Templates} from '@verdocs/js-sdk/Templates';
 import {canPerformTemplateAction} from '@verdocs/js-sdk/Templates/Actions';
-import {userCanCreateTemplate} from '@verdocs/js-sdk/Templates/Permissions';
+// import {userCanCreateTemplate} from '@verdocs/js-sdk/Templates/Permissions';
 import {ITemplate, ITemplateSummaryEntry} from '@verdocs/js-sdk/Templates/Types';
-import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
+import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
 import {IGetTemplateSummaryParams, IGetTemplateSummarySortBy} from '@verdocs/js-sdk/Templates/Templates';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
+import {IMenuOption} from '../../controls/verdocs-dropdown/verdocs-dropdown';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
-import {formatDistance} from 'date-fns';
 
 const TemplateIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>`;
 const GlobeAltIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>`;
@@ -38,6 +39,8 @@ const SortOptions: IFilterOption[] = [
   {value: 'counter', label: 'Most Used'},
   {value: 'star_counter', label: 'Most Starred'},
 ];
+
+export type TAllowedTemplateAction = 'send' | 'createlink' | 'signnow' | 'submitted' | 'link' | 'edit' | 'delete';
 
 /**
  * Displays a list of envelopes matching specified conditions.
@@ -73,6 +76,11 @@ export class VerdocsTemplatesList {
   @Prop({reflect: true, mutable: true}) name: string = '';
 
   /**
+   * Override the If set, filter templates by the specified name.
+   */
+  @Prop({reflect: true, mutable: true}) allowedActions: TAllowedTemplateAction[] = ['send', 'createlink', 'signnow', 'submitted', 'link', 'edit', 'delete'];
+
+  /**
    * The initial page number to select. Pagination is internally controlled but may be overriden by the
    * host applicaiton.
    */
@@ -106,6 +114,26 @@ export class VerdocsTemplatesList {
   @State() confirmDelete: ITemplateSummaryEntry | null = null;
   @State() templates: ITemplateSummaryEntry[] = [];
 
+  @Watch('sharing')
+  handleSharingUpdated() {
+    return this.queryTemplates();
+  }
+
+  @Watch('starred')
+  handleStarredUpdated() {
+    return this.queryTemplates();
+  }
+
+  @Watch('sort')
+  handleSortUpdated() {
+    return this.queryTemplates();
+  }
+
+  @Watch('name')
+  handleNameUpdated() {
+    return this.queryTemplates();
+  }
+
   async componentWillLoad() {
     this.endpoint.loadSession();
 
@@ -119,13 +147,6 @@ export class VerdocsTemplatesList {
 
   async queryTemplates() {
     try {
-      this.endpoint.loadSession();
-
-      if (!this.endpoint.session) {
-        console.log('[TEMPLATES] Must be authenticated');
-        return;
-      }
-
       let queryParams: IGetTemplateSummaryParams = {
         page: this.selectedPage,
         ascending: this.sort === 'name' || this.sort === 'star_counter',
@@ -144,10 +165,8 @@ export class VerdocsTemplatesList {
       if (this.name.trim() !== '') {
         queryParams.name = this.name.trim();
       }
-      console.log('qp', queryParams, this.name);
 
       const response = await Templates.getSummary(this.endpoint, queryParams);
-      console.log('[TEMPLATES] Got templates', response);
       this.templates = response.result;
       this.count = response.total;
       this.loading = false;
@@ -158,7 +177,7 @@ export class VerdocsTemplatesList {
   }
 
   handleOptionSelected = (option: string, template: ITemplateSummaryEntry) => {
-    if (option === 'createdoc') {
+    if (option === 'send') {
       this.viewTemplate?.emit({endpoint: this.endpoint, template: template});
     } else if (option === 'createlink') {
       VerdocsToast('This feature is coming soon!');
@@ -175,9 +194,9 @@ export class VerdocsTemplatesList {
     }
   };
 
-  canCreate() {
-    return userCanCreateTemplate(this.endpoint.session);
-  }
+  // canCreate() {
+  //   return userCanCreateTemplate(this.endpoint.session);
+  // }
 
   canDelete(summary: ITemplateSummaryEntry) {
     return canPerformTemplateAction(this.endpoint.session, 'delete', summary);
@@ -263,21 +282,40 @@ export class VerdocsTemplatesList {
         </div>
 
         {this.templates.map(summary => {
-          const MENU_OPTIONS = [
-            //  [disabled]="!canSendEnvelope"
-            {label: 'Preview / Send', id: 'createdoc', disabled: !this.canPreview(summary)},
-            //  [disabled]="!(canSendEnvelope && canHaveLiveView)"
-            {label: 'Create Link', id: 'createlink', disabled: true},
-            // [disabled]="!(canSendEnvelope && canSignNow)"
-            {label: 'Sign Now', id: 'signnow', disabled: true},
-            // (click)="gotoEnvelope()"
-            {label: ''},
-            {label: 'Submissions', id: 'submitted'},
-            {label: ''},
-            {label: 'Get Preview Link', id: 'link', disabled: !this.canPreview(summary)},
-            {label: 'Edit', id: 'edit', disabled: !this.canEdit(summary)},
-            {label: 'Delete', id: 'delete', disabled: !this.canDelete(summary)},
-          ];
+          const MENU_OPTIONS: IMenuOption[] = [];
+
+          if (this.allowedActions.includes('send')) {
+            MENU_OPTIONS.push({label: 'Send', id: 'send', disabled: !this.canPreview(summary)});
+          }
+
+          if (this.allowedActions.includes('createlink')) {
+            MENU_OPTIONS.push({label: 'Create Link', id: 'createlink', disabled: true});
+          }
+
+          if (this.allowedActions.includes('createlink')) {
+            MENU_OPTIONS.push({label: 'Sign Now', id: 'signnow', disabled: true});
+          }
+
+          if (this.allowedActions.includes('submitted')) {
+            MENU_OPTIONS.push({label: ''});
+            MENU_OPTIONS.push({label: 'Submissions', id: 'submitted'});
+          }
+
+          if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
+            MENU_OPTIONS.push({label: ''});
+
+            if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
+              MENU_OPTIONS.push({label: 'Get Preview Link', id: 'link', disabled: !this.canPreview(summary)});
+            }
+
+            if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
+              MENU_OPTIONS.push({label: 'Edit', id: 'edit', disabled: !this.canEdit(summary)});
+            }
+
+            if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
+              MENU_OPTIONS.push({label: 'Delete', id: 'delete', disabled: !this.canDelete(summary)});
+            }
+          }
 
           return (
             <div

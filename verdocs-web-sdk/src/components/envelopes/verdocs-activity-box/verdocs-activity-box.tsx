@@ -3,7 +3,7 @@ import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {IActivityEntry} from '@verdocs/js-sdk/Envelopes/Types';
 import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {formatShortTimeAgo} from '@verdocs/js-sdk/Utils/DateTime';
-import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
+import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 
 const EmptyImage = 'https://verdocs-public-assets.s3.amazonaws.com/no-verdocs.png';
@@ -69,43 +69,51 @@ export class VerdocsActivityBox {
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
-
       if (!this.endpoint.session) {
         console.log('[ACTIVITIES] Must be authenticated');
         return;
       }
 
-      const r = await Envelopes.getSummary(this.endpoint, 0);
-
-      let defaultHeader;
-      if (this.view === 'action') {
-        defaultHeader = 'Action Required';
-        this.entries = r.action_required.result;
-        this.count = r.action_required.total;
-      } else if (this.view === 'waiting') {
-        defaultHeader = 'Waiting on Others';
-        this.entries = r.waiting_others.result;
-        this.count = r.waiting_others.total;
-      } else if (this.view === 'completed') {
-        defaultHeader = 'Completed';
-        this.entries = r.completed.result;
-        this.count = r.completed.total;
-      }
-
-      this.title = this.header !== undefined ? this.header : defaultHeader;
-
-      console.log('[ACTIVITIES] Got envelopes', this.entries);
-      this.loading = false;
+      this.loadActivity();
     } catch (e) {
       console.log('[ACTIVITIES] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  // getNextRecipientName(entry: IActivityEntry) {
-  //   const nextRecipient = getNextRecipient(entry) || envelope.recipients?.[0];
-  //   return nextRecipient?.full_name || 'N/A';
-  // }
+  @Watch('items')
+  handleItemsUpdated() {
+    return this.loadActivity();
+  }
+
+  @Watch('view')
+  handleViewUpdated() {
+    return this.loadActivity();
+  }
+
+  async loadActivity() {
+    this.loading = true;
+
+    const r = await Envelopes.getSummary(this.endpoint, 0);
+
+    let defaultHeader;
+    if (this.view === 'action') {
+      defaultHeader = 'Action Required';
+      this.entries = r.action_required.result;
+      this.count = r.action_required.total;
+    } else if (this.view === 'waiting') {
+      defaultHeader = 'Waiting on Others';
+      this.entries = r.waiting_others.result;
+      this.count = r.waiting_others.total;
+    } else if (this.view === 'completed') {
+      defaultHeader = 'Completed';
+      this.entries = r.completed.result;
+      this.count = r.completed.total;
+    }
+
+    this.title = this.header !== undefined ? this.header : defaultHeader;
+    this.loading = false;
+  }
 
   render() {
     if (this.loading) {
