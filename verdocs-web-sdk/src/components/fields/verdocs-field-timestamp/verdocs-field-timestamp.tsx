@@ -1,8 +1,8 @@
 import {format} from 'date-fns';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import { ITemplateField, ITemplateFieldSetting } from "@verdocs/js-sdk/Templates/Types";
 import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, h, Host, Prop, Method, Event, EventEmitter} from '@stencil/core';
+import { ITemplateField, ITemplateFieldSetting } from "@verdocs/js-sdk/Templates/Types";
 import {getFieldSettings} from '../../../utils/utils';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 

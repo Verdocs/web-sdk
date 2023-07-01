@@ -77,6 +77,9 @@ export class VerdocsAuth {
 
   @State() isAuthenticated: boolean = false;
   @State() displayMode: string = 'login';
+  @State() orgname: string = '';
+  @State() first: string = '';
+  @State() last: string = '';
   @State() username: string = '';
   @State() password: string = '';
   @State() loggingIn: boolean = false;
@@ -93,6 +96,27 @@ export class VerdocsAuth {
       console.log('[AUTH] Anonymous');
       this.authenticated?.emit({authenticated: false, session: null});
     }
+  }
+
+  handleSignup() {
+    this.loggingIn = true;
+    Auth.authenticateUser(this.endpoint, {username: this.username, password: this.password})
+      .then(r => {
+        this.loggingIn = false;
+        this.endpoint.setToken(r.accessToken);
+        this.activeSession = this.endpoint.session;
+        this.isAuthenticated = true;
+        this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
+      })
+      .catch(e => {
+        console.log('[AUTH] Authentication error', e.response, JSON.stringify(e));
+        this.loggingIn = false;
+        this.activeSession = null;
+        this.authenticated?.emit({authenticated: false, session: null});
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+
+        VerdocsToast('Login failed. Please check your username and password and try again.', {style: 'error'});
+      });
   }
 
   handleLogin() {
@@ -144,8 +168,14 @@ export class VerdocsAuth {
             <verdocs-button label="Log In" variant="text" onClick={() => (this.displayMode = 'login')} disabled={this.loggingIn} />
           </h4>
 
-          <form onSubmit={() => this.handleLogin()}>
-            <verdocs-text-input label="Email" autocomplete="username" value={this.username} onInput={(e: any) => (this.username = e.target.value)} disabled={this.loggingIn} />
+          <form onSubmit={() => this.handleSignup()}>
+            <verdocs-text-input label="Organization Name" autocomplete="org" value={this.orgname} onInput={(e: any) => (this.orgname = e.target.value)} disabled={this.loggingIn} />
+
+            <div style={{display: 'flex', flexDirection: 'row', columnGap: '20px'}}>
+              <verdocs-text-input label="First Name" autocomplete="first" value={this.first} onInput={(e: any) => (this.first = e.target.value)} disabled={this.loggingIn} />
+              <verdocs-text-input label="Last Name" autocomplete="last" value={this.last} onInput={(e: any) => (this.last = e.target.value)} disabled={this.loggingIn} />
+            </div>
+            <verdocs-text-input label="Email" autocomplete="email" value={this.username} onInput={(e: any) => (this.username = e.target.value)} disabled={this.loggingIn} />
             <verdocs-text-input
               label="Password"
               type="password"
@@ -156,9 +186,9 @@ export class VerdocsAuth {
             />
 
             <verdocs-button
-              label="Signup"
+              label="Create Account"
               disabled={this.loggingIn}
-              onClick={() => this.handleLogin()}
+              onClick={() => this.handleSignup()}
               style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
             />
           </form>
