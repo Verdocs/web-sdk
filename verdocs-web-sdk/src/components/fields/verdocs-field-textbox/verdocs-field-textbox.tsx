@@ -173,7 +173,7 @@ export class VerdocsFieldTextbox {
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
     const value = settings?.result || '';
     const width = settings.width || 150;
-    // TODO: This is an antiquated technique from the old system. We should compute it.
+    // TODO: This is an outdated technique from the old system. We should compute it.
     const maxlength = width / 5;
 
     if (this.done) {

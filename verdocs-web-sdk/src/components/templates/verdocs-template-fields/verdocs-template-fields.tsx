@@ -170,8 +170,9 @@ export class VerdocsTemplateFields {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
     el.addEventListener('settingsChanged', e => {
       console.log('[FIELDS] settingsChanged', e.detail);
-      Object.assign(field.setting, e.detail.settings);
+      Object.assign(field, e.detail.field);
       this.selectedRoleName = field.role_name;
+      el.field = e.detail.field;
       el.setAttribute('roleindex', getRoleIndex(getRoleNames(this.store), field.role_name));
       el.field = this.store?.state?.fields.find(f => f.name === field.name);
       this.rerender++;
@@ -187,7 +188,7 @@ export class VerdocsTemplateFields {
     });
 
     el.addEventListener('deleted', () => {
-      console.log('deleted', this, field);
+      console.log('[FIELDS] Deleted', this, field);
       el.remove();
       this.rerender++;
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store?.state, event: 'updated-field'});

@@ -1735,6 +1735,7 @@ export class VerdocsTemplateFieldProperties {
 
 
 import type { ITemplateFieldSetting as IVerdocsTemplateFieldPropertiesITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsTemplateFieldPropertiesITemplateField } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsTemplateFieldPropertiesSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateFieldProperties extends Components.VerdocsTemplateFieldProperties {
@@ -1750,7 +1751,7 @@ the role will have already been deleted server-side.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsTemplateFieldProperties{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsTemplateFieldPropertiesIVerdocsTemplateFieldProperties{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.

@@ -60,7 +60,7 @@ export class VerdocsTemplateFieldProperties {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -172,13 +172,12 @@ export class VerdocsTemplateFieldProperties {
         options: this.options,
       };
     }
-    console.log('will', newProperties);
 
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
-      .then(() => {
+      .then(field => {
         this.dirty = false;
-        this.updateField();
-        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties});
+        this.updateField(field);
+        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field});
         this.close?.emit();
       })
       .catch(() => {
@@ -218,10 +217,10 @@ export class VerdocsTemplateFieldProperties {
     newProperties.setting.options = [...this.options];
 
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
-      .then(() => {
+      .then(field => {
         this.dirty = false;
-        this.updateField();
-        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties});
+        this.updateField(field);
+        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field});
         this.close?.emit();
       })
       .catch(() => {
@@ -229,18 +228,19 @@ export class VerdocsTemplateFieldProperties {
       });
   }
 
-  updateField() {
+  updateField(newField) {
     const newFields = [...this.store.state.fields];
     newFields.forEach(field => {
       if (field.name === this.fieldName) {
-        field.name = this.name;
-        field.role_name = this.roleName;
-        field.required = this.required;
-        field.label = this.placeholder;
+        Object.assign(field, newField);
+        // field.name = this.name;
+        // field.role_name = this.roleName;
+        // field.required = this.required;
+        // field.label = this.placeholder;
         // field.setting.result = this.defaultValue;
-        if (field.setting.options) {
-          field.setting.options = this.options;
-        }
+        // if (field.setting.options) {
+        //   field.setting.options = this.options;
+        // }
       }
     });
     this.store.state.fields = newFields;

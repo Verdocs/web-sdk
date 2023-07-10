@@ -3283,7 +3283,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<{fieldName: string; settings: ITemplateFieldSetting}>) => void;
+        "onSettingsChanged"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
         /**
           * The template ID to edit.
          */
