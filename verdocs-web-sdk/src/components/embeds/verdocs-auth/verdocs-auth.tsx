@@ -106,7 +106,7 @@ export class VerdocsAuth {
    * override its source. (Alternatively, you may simply hide it via CSS overrides.) Logos should be
    * in SVG format for best results.
    */
-  @Prop() logo: string = 'https://verdocs.com/assets/blue-logo.svg';
+  @Prop() logo: string = 'https://app.verdocs.com/assets/blue-logo.svg';
 
   /**
    * Event fired when session authentication process has completed. Check the event contents for completion status.
