@@ -46,14 +46,25 @@ export class VerdocsTextInput {
    */
   @Prop() disabled: boolean = false;
 
+  /**
+   * Should the field be required?
+   */
+  @Prop() required: boolean = false;
+
   render() {
     return (
       <Host class="input-field">
         <label>
-          {this.label && <div class="input-label">{this.label + ':'}</div>}
+          {this.label && (
+            <div class="input-label">
+              {this.label + ':'}
+              {this.required && <span class="required">*</span>}
+            </div>
+          )}
           <input
             type={this.type}
             value={this.value}
+            required={this.required}
             class="input-element"
             data-lpignore="true"
             disabled={this.disabled}

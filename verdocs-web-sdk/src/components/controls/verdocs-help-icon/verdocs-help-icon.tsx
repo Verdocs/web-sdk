@@ -68,7 +68,7 @@ export class VerdocsHelpIcon {
           data-popper-placement="bottom"
           ref={el => (this.tooltip = el as HTMLDivElement)}
         >
-          {this.text}
+          <span innerHTML={this.text} />
           <div data-popper-arrow="true" class="arrow" />
         </div>
       </Host>

@@ -2128,14 +2128,14 @@ will already have been deleted. The host application should remove it from the l
 
 
 @ProxyCmp({
-  inputs: ['autocomplete', 'disabled', 'helpText', 'label', 'placeholder', 'type', 'value']
+  inputs: ['autocomplete', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value']
 })
 @Component({
   selector: 'verdocs-text-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autocomplete', 'disabled', 'helpText', 'label', 'placeholder', 'type', 'value'],
+  inputs: ['autocomplete', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value'],
 })
 export class VerdocsTextInput {
   protected el: HTMLElement;

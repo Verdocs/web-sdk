@@ -39,6 +39,10 @@ verdocs-auth {
     font-size: 14px;
     line-height: 1.43;
     margin: 0;
+
+    verdocs-button button.normal .button-label {
+      padding: 0;
+    }
   }
 
   .status-result {
@@ -61,5 +65,12 @@ verdocs-auth {
 
   verdocs-text-input {
     margin-bottom: 10px;
+  }
+
+  .account-option {
+    gap: 8px;
+    margin: 20px 0 8px 0;
+    display: flex;
+    flex-direction: row;
   }
 }

@@ -41,6 +41,12 @@ verdocs-text-input {
     margin: 0 0 4px 0;
   }
 
+  .required {
+    color: red;
+    margin-left: 2px;
+    display: inline-block;
+  }
+
   // @see https://community.logmein.com/t5/LastPass-Support-Discussions/placeholder-text-overrides-data-lpignore-quot-true-quot/td-p/295135
   // LastPass is ignoring the data-lpignore attribute in some cases
   [data-lastpass-icon-root] {

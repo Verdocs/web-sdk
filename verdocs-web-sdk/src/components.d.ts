@@ -1191,6 +1191,10 @@ export namespace Components {
          */
         "placeholder": string;
         /**
+          * Should the field be required?
+         */
+        "required": boolean;
+        /**
           * The type of field to render. Only text-type fields are allowed here for the current styling. Additional types (e.g. a date picker) will be supported by other controls in the future.
          */
         "type": 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url';
@@ -3534,6 +3538,10 @@ declare namespace LocalJSX {
           * The placeholder for the field.
          */
         "placeholder"?: string;
+        /**
+          * Should the field be required?
+         */
+        "required"?: boolean;
         /**
           * The type of field to render. Only text-type fields are allowed here for the current styling. Additional types (e.g. a date picker) will be supported by other controls in the future.
          */
