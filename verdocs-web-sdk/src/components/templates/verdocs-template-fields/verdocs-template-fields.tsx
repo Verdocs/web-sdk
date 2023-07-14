@@ -166,26 +166,29 @@ export class VerdocsTemplateFields {
     this.rerender++;
   }
 
+  handleFieldSettingsChange(pageInfo: any, field: any, roleIndex, el: any, newFieldData: any) {
+    console.log('[FIELDS] Field settings changed', field.name, newFieldData);
+    Object.assign(field, newFieldData);
+    el.field = newFieldData;
+
+    this.selectedRoleName = field.role_name;
+    el.setAttribute('roleindex', getRoleIndex(getRoleNames(this.store), field.role_name));
+    el.field = this.store?.state?.fields.find(f => f.name === field.name);
+    this.rerender++;
+    el.setAttribute('rerender', this.rerender);
+    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store?.state, event: 'updated-field'});
+
+    console.log('[FIELDS] Re-rendering field', field.name, pageInfo.pageNumber);
+    this.reRenderField(field, pageInfo.pageNumber);
+    const newEl = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
+    if (!newEl) {
+      return;
+    }
+  }
+
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('settingsChanged', e => {
-      console.log('[FIELDS] settingsChanged', e.detail);
-      Object.assign(field, e.detail.field);
-      this.selectedRoleName = field.role_name;
-      el.field = e.detail.field;
-      el.setAttribute('roleindex', getRoleIndex(getRoleNames(this.store), field.role_name));
-      el.field = this.store?.state?.fields.find(f => f.name === field.name);
-      this.rerender++;
-      el.setAttribute('rerender', this.rerender);
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store?.state, event: 'updated-field'});
-
-      console.log('[FIELDS] Re-rendering field', field.name, pageInfo.pageNumber);
-      this.reRenderField(field, pageInfo.pageNumber);
-      const newEl = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
-      if (!newEl) {
-        return;
-      }
-    });
+    el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, roleIndex, el, e.detail.field));
 
     el.addEventListener('deleted', () => {
       console.log('[FIELDS] Deleted', this, field);
@@ -223,70 +226,54 @@ export class VerdocsTemplateFields {
     }
 
     if (Array.isArray(el)) {
-      el.forEach(e => {
-        this.attachFieldAttributes(pageInfo, field, roleIndex, e);
-
-        interact(e).draggable({
-          listeners: {
-            start(event) {
-              console.log('[FIELDS] Drag started', event.type, event.target);
-            },
-            move(event) {
-              const oldX = +(event.target.getAttribute('posX') || 0);
-              const oldY = +(event.target.getAttribute('posY') || 0);
-              const xScale = +(event.target.getAttribute('xScale') || 1);
-              const yScale = +(event.target.getAttribute('yScale') || 1);
-              const newX = event.dx / xScale + oldX;
-              const newY = event.dy / yScale + oldY;
-              event.target.setAttribute('posX', newX);
-              event.target.setAttribute('posy', newY);
-              updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
-            },
-            end: this.handleMoveField.bind(this),
-          },
-        });
+      el.forEach(childEl => {
+        this.attachFieldAttributes(pageInfo, field, roleIndex, childEl);
+        this.makeDraggable(childEl);
       });
     } else {
       this.attachFieldAttributes(pageInfo, field, roleIndex, el);
-      interact(el).draggable({
-        listeners: {
-          start(event) {
-            console.log('[FIELDS] Drag started', event.type, event.target);
-          },
-          move(event) {
-            const oldX = +(event.target.getAttribute('posX') || 0);
-            const oldY = +(event.target.getAttribute('posY') || 0);
-            const xScale = +(event.target.getAttribute('xScale') || 1);
-            const yScale = +(event.target.getAttribute('yScale') || 1);
-            const newX = event.dx / xScale + oldX;
-            const newY = event.dy / yScale + oldY;
-            event.target.setAttribute('posX', newX);
-            event.target.setAttribute('posy', newY);
-            updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
-          },
-          end: this.handleMoveField.bind(this),
-        },
-      });
+      this.makeDraggable(el);
     }
   }
 
-  async handleMoveField(e: any) {
-    const pageNumber = e.target.getAttribute('pageNumber');
+  makeDraggable(el: HTMLElement) {
+    interact(el).draggable({
+      listeners: {
+        move: this.handleMoveField.bind(this),
+        end: this.handleMoveEnd.bind(this),
+      },
+    });
+  }
+
+  async handleMoveField(event: any) {
+    const oldX = +(event.target.getAttribute('posX') || 0);
+    const oldY = +(event.target.getAttribute('posY') || 0);
+    const xScale = +(event.target.getAttribute('xScale') || 1);
+    const yScale = +(event.target.getAttribute('yScale') || 1);
+    const newX = event.dx / xScale + oldX;
+    const newY = event.dy / yScale + oldY;
+    event.target.setAttribute('posX', newX);
+    event.target.setAttribute('posy', newY);
+    updateCssTransform(event.target, 'translate', `${newX}px, ${newY}px`);
+  }
+
+  async handleMoveEnd(event: any) {
+    const pageNumber = event.target.getAttribute('pageNumber');
     const {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
-    console.log('[FIELDS] Drag ended', pageNumber, e.target);
-    const clientRect = e.target.getBoundingClientRect();
-    const parent = e.target.parentElement;
+    console.log('[FIELDS] Drag ended', pageNumber, event.target);
+    const clientRect = event.target.getBoundingClientRect();
+    const parent = event.target.parentElement;
     const parentRect = parent.getBoundingClientRect();
     // These two being backwards is not a mistake. Left measures "over" from the left (positive displacement) while bottom measures
     // "up" from the bottom (negative displacement).
     const newX = Math.max(clientRect.left - parentRect.left, 0);
     const newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
-    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - e.rect.width, naturalHeight - e.rect.height);
+    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - event.rect.width, naturalHeight - event.rect.height);
 
-    const name = e.target.getAttribute('name');
-    const option = +(e.target.getAttribute('option') || '0');
+    const name = event.target.getAttribute('name');
+    const option = +(event.target.getAttribute('option') || '0');
     const field = this.store?.state.fields.find(field => field.name === name);
-    console.log('Will update', name, option, field);
+    console.log('[FIELDS] Will update', name, option, field);
     if (field) {
       switch (field.type) {
         case 'attachment':
@@ -313,8 +300,10 @@ export class VerdocsTemplateFields {
           }
           break;
       }
-      await updateField(this.endpoint, this.templateId, name, field);
-      this.handlePageRendered({detail: this.cachedPageInfo[pageNumber]});
+      const newFieldData = await updateField(this.endpoint, this.templateId, name, field);
+      const pageInfo = this.cachedPageInfo[pageNumber];
+      const roleIndex = getRoleIndex(getRoleNames(this.store), field.role_name);
+      this.handleFieldSettingsChange(pageInfo, field, roleIndex, event.target, newFieldData);
     }
   }
 
@@ -323,11 +312,9 @@ export class VerdocsTemplateFields {
     let fieldName;
     do {
       fieldName = `${type}P${pageNumber}-${i}`;
-      console.log('testing field', fieldName);
       i++;
     } while (this.store?.state.fields.some(field => field.name === fieldName));
 
-    console.log('Will use field name', this, fieldName, this.store?.state.fields);
     return fieldName;
   }
 
@@ -341,9 +328,6 @@ export class VerdocsTemplateFields {
 
   async handleClickPage(e: any, pageNumber: number) {
     if (this.placing) {
-      console.log('Placing field', this, this.selectedRoleName, this.placing, pageNumber, e.offsetX, e.offsetY);
-      // console.log('Placing field', this.placing, page.sequence, e.offsetX, e.offsetY);
-      // const pageNumber = page.sequence;
       const clickedX = e.offsetX;
       const clickedY = e.offsetY;
 
@@ -351,7 +335,6 @@ export class VerdocsTemplateFields {
       const height = defaultHeight(this.placing);
 
       const cachedPage = this.cachedPageInfo[pageNumber];
-      // console.log('Cached page', cachedPage);
       const {naturalWidth = 612, naturalHeight = 792} = cachedPage;
 
       const coords = this.viewCoordinatesToPageCoordinates(clickedX, clickedY, pageNumber, naturalWidth - width, naturalHeight - height);

@@ -76,7 +76,7 @@ export class VerdocsFieldSignature {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.

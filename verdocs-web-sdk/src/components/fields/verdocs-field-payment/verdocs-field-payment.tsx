@@ -1,7 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
-import { Component, h, Host, Prop, Event, EventEmitter, State, Method } from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
 
 /**
@@ -52,6 +52,8 @@ export class VerdocsFieldPayment {
 
   @Event({composed: true}) initialComplete: EventEmitter<string>;
 
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+
   @State() preparedMessage: string;
   @State() signatureUrl: string = '';
 
@@ -85,11 +87,6 @@ export class VerdocsFieldPayment {
   fontSize = 11;
   averageFontWidth = 5;
   requiredFields: any[] = [];
-
-  /**
-   * Event fired when the field's settings are changed.
-   */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string}>;
 
   /**
    * Event fired when the field is deleted.

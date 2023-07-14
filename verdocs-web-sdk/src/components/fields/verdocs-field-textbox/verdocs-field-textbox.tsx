@@ -1,5 +1,4 @@
 import interact from 'interactjs';
-
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {updateField} from '@verdocs/js-sdk/Templates/Fields';
@@ -84,7 +83,7 @@ export class VerdocsFieldTextbox {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -160,8 +159,9 @@ export class VerdocsFieldTextbox {
     newSettings.y = Math.round(newSettings.y - translateY / this.yscale);
 
     updateField(this.endpoint, this.templateid, this.field.name, {setting: newSettings})
-      .then(() => {
-        this.settingsChanged?.emit({fieldName: this.field.name, settings: newSettings});
+      .then(field => {
+        console.log('update result', field);
+        this.settingsChanged?.emit({fieldName: this.field.name, settings: newSettings, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
       })
       .catch(e => console.log('Field update failed', e));
@@ -204,6 +204,7 @@ export class VerdocsFieldTextbox {
                 return this.hideSettingsPanel();
               }}
               onSettingsChanged={e => {
+                console.log('here');
                 this.settingsChanged?.emit(e.detail);
                 return this.hideSettingsPanel();
               }}

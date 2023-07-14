@@ -494,12 +494,13 @@ export class VerdocsFieldAttachment {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldAttachmentITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldAttachmentITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldAttachment{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldAttachmentIVerdocsFieldAttachment{fieldName: string; settings: [object Object]; field: [object Object]}>>;
 }
 
 
@@ -525,12 +526,13 @@ export class VerdocsFieldCheckbox {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldCheckboxITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldCheckboxITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldCheckbox{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldCheckboxIVerdocsFieldCheckbox{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -560,6 +562,7 @@ export class VerdocsFieldDate {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldDateITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldDateITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   /**
@@ -569,7 +572,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldDate{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldDateIVerdocsFieldDate{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -599,6 +602,7 @@ export class VerdocsFieldDropdown {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldDropdownITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldDropdownITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
   /**
@@ -610,7 +614,7 @@ keypress.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldDropdown{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldDropdownIVerdocsFieldDropdown{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -640,6 +644,7 @@ export class VerdocsFieldInitial {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldInitialITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldInitialITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInitial {
   /**
@@ -659,7 +664,7 @@ keypress.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldInitial{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldInitialIVerdocsFieldInitial{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired on every character entered into / deleted from the field.
    */
@@ -692,15 +697,16 @@ export class VerdocsFieldPayment {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldPaymentITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldPaymentITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPayment {
 
   signatureComplete: EventEmitter<CustomEvent<string>>;
 
   initialComplete: EventEmitter<CustomEvent<string>>;
-  /**
-   * Event fired when the field's settings are changed.
-   */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string}>>;
+
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldPaymentIVerdocsFieldPayment{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -730,12 +736,13 @@ export class VerdocsFieldRadioButton {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldRadioButtonITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldRadioButtonITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldRadioButton extends Components.VerdocsFieldRadioButton {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldRadioButton{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldRadioButtonIVerdocsFieldRadioButton{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -765,6 +772,7 @@ export class VerdocsFieldSignature {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldSignatureITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldSignatureITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSignature {
   /**
@@ -778,7 +786,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldSignature{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldSignatureIVerdocsFieldSignature{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -808,12 +816,13 @@ export class VerdocsFieldTextarea {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldTextareaITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldTextareaITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldTextarea{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldTextareaIVerdocsFieldTextarea{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -843,12 +852,13 @@ export class VerdocsFieldTextbox {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldTextboxITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldTextboxITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldTextbox{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldTextboxIVerdocsFieldTextbox{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -878,12 +888,13 @@ export class VerdocsFieldTimestamp {
 
 
 import type { ITemplateFieldSetting as IVerdocsFieldTimestampITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldTimestampITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldTimestamp{fieldName: string; settings: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldTimestampIVerdocsFieldTimestamp{fieldName: string; settings: [object Object]; field: [object Object]}>>;
   /**
    * Event fired when the field is deleted.
    */

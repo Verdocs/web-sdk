@@ -12,10 +12,14 @@ export default {
   },
   argTypes: {
     onClose: {action: 'close'},
+    onEditTemplate: {action: 'editTemplate'},
+    onViewTemplate: {action: 'viewTemplate'},
   },
   parameters: {
     layout: 'fullscreen',
   },
 } as Meta;
 
-export const TemplatesList = ({onClose, templateId}) => html` <verdocs-templates-list .templateId=${templateId} @close=${onClose} /> `;
+export const TemplatesList = ({onClose, onEditTemplate, onViewTemplate, templateId}) => html`
+  <verdocs-templates-list .templateId=${templateId} @close=${onClose} @viewTemplate=${onViewTemplate} @editTemplate=${onEditTemplate} />
+`;

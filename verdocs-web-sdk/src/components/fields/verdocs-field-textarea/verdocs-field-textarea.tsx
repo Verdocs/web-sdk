@@ -88,7 +88,7 @@ export class VerdocsFieldTextarea {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -159,8 +159,8 @@ export class VerdocsFieldTextarea {
     newSettings.y = Math.round(newSettings.y - translateY / this.yscale);
 
     updateField(this.endpoint, this.templateid, this.field.name, {setting: newSettings})
-      .then(() => {
-        this.settingsChanged?.emit({fieldName: this.field.name, settings: newSettings});
+      .then(field => {
+        this.settingsChanged?.emit({fieldName: this.field.name, settings: newSettings, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
       })
       .catch(e => console.log('Field update failed', e));
