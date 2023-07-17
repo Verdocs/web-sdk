@@ -8,13 +8,7 @@ import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
 /**
- * Displays an icon and message describing a document's completion status. For convenience, the status may be passed in either
- * directly as a status field or the whole document object may be passed in.
- *
- * If the document is provided, the status flag will indicate the document's overall status. This also makes the component clickable
- * to display a popup panel with per-recipient status data.
- *
- * If the status is provided as a string it can be either a `TRecipientStatus` or `TDocumentStatus` value.
+ * Displays a list of recipients with options to get in-person signing links for each one.
  */
 @Component({
   tag: 'verdocs-envelope-recipient-summary',
@@ -45,11 +39,6 @@ export class VerdocsEnvelopeRecipientSummary {
    * Enable or disable the Done button.
    */
   @Prop() canDone = true;
-
-  /**
-   * The document to display status for. Ignored if `status` is set directly.
-   */
-  @Prop() envelope?: IEnvelope;
 
   /**
    * Event fired when the user clicks Send Another to proceed. It is up to the host application

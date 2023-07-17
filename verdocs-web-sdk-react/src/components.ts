@@ -19,6 +19,7 @@ export const VerdocsComponentError = /*@__PURE__*/createReactComponent<JSX.Verdo
 export const VerdocsContactPicker = /*@__PURE__*/createReactComponent<JSX.VerdocsContactPicker, HTMLVerdocsContactPickerElement>('verdocs-contact-picker');
 export const VerdocsDropdown = /*@__PURE__*/createReactComponent<JSX.VerdocsDropdown, HTMLVerdocsDropdownElement>('verdocs-dropdown');
 export const VerdocsEnvelopeDocumentPage = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopeDocumentPage, HTMLVerdocsEnvelopeDocumentPageElement>('verdocs-envelope-document-page');
+export const VerdocsEnvelopeRecipientLink = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopeRecipientLink, HTMLVerdocsEnvelopeRecipientLinkElement>('verdocs-envelope-recipient-link');
 export const VerdocsEnvelopeRecipientSummary = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopeRecipientSummary, HTMLVerdocsEnvelopeRecipientSummaryElement>('verdocs-envelope-recipient-summary');
 export const VerdocsEnvelopeSidebar = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopeSidebar, HTMLVerdocsEnvelopeSidebarElement>('verdocs-envelope-sidebar');
 export const VerdocsEnvelopesList = /*@__PURE__*/createReactComponent<JSX.VerdocsEnvelopesList, HTMLVerdocsEnvelopesListElement>('verdocs-envelopes-list');

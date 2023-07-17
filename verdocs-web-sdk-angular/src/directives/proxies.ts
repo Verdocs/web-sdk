@@ -337,14 +337,51 @@ export declare interface VerdocsEnvelopeDocumentPage extends Components.VerdocsE
 
 
 @ProxyCmp({
-  inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelope', 'envelopeId']
+  inputs: ['endpoint', 'envelopeId', 'roleName']
+})
+@Component({
+  selector: 'verdocs-envelope-recipient-link',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'envelopeId', 'roleName'],
+})
+export class VerdocsEnvelopeRecipientLink {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['next', 'sdkError']);
+  }
+}
+
+
+import type { IEnvelope as IVerdocsEnvelopeRecipientLinkIEnvelope } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsEnvelopeRecipientLinkSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsEnvelopeRecipientLink extends Components.VerdocsEnvelopeRecipientLink {
+  /**
+   * Event fired when the user clicks Done to proceed. It is up to the host application
+to redirect the user to the appropriate next workflow step.
+   */
+  next: EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientLink{envelope: [object Object]}>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientLinkSDKError>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelopeId']
 })
 @Component({
   selector: 'verdocs-envelope-recipient-summary',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelope', 'envelopeId'],
+  inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelopeId'],
 })
 export class VerdocsEnvelopeRecipientSummary {
   protected el: HTMLElement;

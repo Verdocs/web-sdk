@@ -203,6 +203,20 @@ export namespace Components {
          */
         "virtualWidth": number;
     }
+    interface VerdocsEnvelopeRecipientLink {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The envelope ID to edit.
+         */
+        "envelopeId": string;
+        /**
+          * The role to load.
+         */
+        "roleName": string;
+    }
     interface VerdocsEnvelopeRecipientSummary {
         /**
           * Enable or disable the Done button.
@@ -220,10 +234,6 @@ export namespace Components {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
-        /**
-          * The document to display status for. Ignored if `status` is set directly.
-         */
-        "envelope"?: IEnvelope;
         /**
           * The envelope ID to edit.
          */
@@ -1283,6 +1293,10 @@ export interface VerdocsEnvelopeDocumentPageCustomEvent<T> extends CustomEvent<T
     detail: T;
     target: HTMLVerdocsEnvelopeDocumentPageElement;
 }
+export interface VerdocsEnvelopeRecipientLinkCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsEnvelopeRecipientLinkElement;
+}
 export interface VerdocsEnvelopeRecipientSummaryCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsEnvelopeRecipientSummaryElement;
@@ -1525,6 +1539,12 @@ declare global {
     var HTMLVerdocsEnvelopeDocumentPageElement: {
         prototype: HTMLVerdocsEnvelopeDocumentPageElement;
         new (): HTMLVerdocsEnvelopeDocumentPageElement;
+    };
+    interface HTMLVerdocsEnvelopeRecipientLinkElement extends Components.VerdocsEnvelopeRecipientLink, HTMLStencilElement {
+    }
+    var HTMLVerdocsEnvelopeRecipientLinkElement: {
+        prototype: HTMLVerdocsEnvelopeRecipientLinkElement;
+        new (): HTMLVerdocsEnvelopeRecipientLinkElement;
     };
     interface HTMLVerdocsEnvelopeRecipientSummaryElement extends Components.VerdocsEnvelopeRecipientSummary, HTMLStencilElement {
     }
@@ -1892,6 +1912,7 @@ declare global {
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-envelope-document-page": HTMLVerdocsEnvelopeDocumentPageElement;
+        "verdocs-envelope-recipient-link": HTMLVerdocsEnvelopeRecipientLinkElement;
         "verdocs-envelope-recipient-summary": HTMLVerdocsEnvelopeRecipientSummaryElement;
         "verdocs-envelope-sidebar": HTMLVerdocsEnvelopeSidebarElement;
         "verdocs-envelopes-list": HTMLVerdocsEnvelopesListElement;
@@ -2177,6 +2198,28 @@ declare namespace LocalJSX {
          */
         "virtualWidth"?: number;
     }
+    interface VerdocsEnvelopeRecipientLink {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The envelope ID to edit.
+         */
+        "envelopeId"?: string;
+        /**
+          * Event fired when the user clicks Done to proceed. It is up to the host application to redirect the user to the appropriate next workflow step.
+         */
+        "onNext"?: (event: VerdocsEnvelopeRecipientLinkCustomEvent<{envelope: IEnvelope}>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsEnvelopeRecipientLinkCustomEvent<SDKError>) => void;
+        /**
+          * The role to load.
+         */
+        "roleName"?: string;
+    }
     interface VerdocsEnvelopeRecipientSummary {
         /**
           * Enable or disable the Done button.
@@ -2194,10 +2237,6 @@ declare namespace LocalJSX {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
-        /**
-          * The document to display status for. Ignored if `status` is set directly.
-         */
-        "envelope"?: IEnvelope;
         /**
           * The envelope ID to edit.
          */
@@ -3647,6 +3686,7 @@ declare namespace LocalJSX {
         "verdocs-contact-picker": VerdocsContactPicker;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-envelope-document-page": VerdocsEnvelopeDocumentPage;
+        "verdocs-envelope-recipient-link": VerdocsEnvelopeRecipientLink;
         "verdocs-envelope-recipient-summary": VerdocsEnvelopeRecipientSummary;
         "verdocs-envelope-sidebar": VerdocsEnvelopeSidebar;
         "verdocs-envelopes-list": VerdocsEnvelopesList;
@@ -3723,6 +3763,7 @@ declare module "@stencil/core" {
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
             "verdocs-envelope-document-page": LocalJSX.VerdocsEnvelopeDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeDocumentPageElement>;
+            "verdocs-envelope-recipient-link": LocalJSX.VerdocsEnvelopeRecipientLink & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientLinkElement>;
             "verdocs-envelope-recipient-summary": LocalJSX.VerdocsEnvelopeRecipientSummary & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientSummaryElement>;
             "verdocs-envelope-sidebar": LocalJSX.VerdocsEnvelopeSidebar & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeSidebarElement>;
             "verdocs-envelopes-list": LocalJSX.VerdocsEnvelopesList & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopesListElement>;

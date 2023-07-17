@@ -1,0 +1,124 @@
+@import '../../../theme.scss';
+
+verdocs-envelope-recipient-link {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  z-index: 100000;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  font-family: $primary-font;
+  background-color: #0000007f;
+
+  .summary-content {
+    width: 600px;
+    display: flex;
+    max-width: 90%;
+    font-size: 18px;
+    flex: 0 0 600px;
+    border-radius: 6px;
+    background: #ffffff;
+    flex-direction: column;
+    padding: 30px 20px 20px;
+
+    .summary-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+      color: $verdocs-dark-blue;
+    }
+  }
+
+  .summary-recipient {
+    display: flex;
+    color: $verdocs-grey-1;
+    margin: 8px 0 24px 0;
+    flex-direction: column;
+
+    .role-name {
+      flex: 1;
+      display: flex;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: $verdocs-grey-0;
+    }
+
+    .role-details {
+    }
+
+    .role-info {
+      gap: 5px;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+    }
+
+    .role-full-name {
+      flex: 1;
+      height: 34px;
+      display: flex;
+      font-size: 16px;
+      padding: 0 12px;
+      border-radius: 4px;
+      align-items: center;
+      border: 1px solid #cccccc;
+      background: rgb(249, 250, 251);
+    }
+
+    .recipient-link {
+      width: 120px;
+      padding: 0 16px;
+      font-weight: 500;
+      margin: 0 0 0 8px;
+      text-align: center;
+      font-size: 0.875rem;
+      border-radius: 100%;
+      color: rgb(55, 65, 81);
+      line-height: 1.25rem;
+      background-color: #d8d8d8;
+      border: 2px solid rgb(156, 163, 175);
+    }
+
+    .link-wrapper {
+      gap: 5px;
+      display: flex;
+      margin: 4px 0 0 0;
+      flex-direction: row;
+
+      .link {
+        flex: 1;
+        height: 34px;
+        display: flex;
+        font-size: 16px;
+        padding: 0 12px;
+        border-radius: 4px;
+        align-items: center;
+        border: 1px solid #cccccc;
+        background: rgb(249, 250, 251);
+      }
+    }
+  }
+
+  .buttons {
+    display: flex;
+    column-gap: 15px;
+    margin: 10px 0 0 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    verdocs-button {
+      flex: 0 0 120px;
+      margin-left: 10px;
+      white-space: nowrap;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
