@@ -27,6 +27,9 @@ verdocs-field-initial {
   }
 
   button {
+    // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
+    cursor: inherit;
+
     box-sizing: border-box;
     border: none;
     color: rgba(0, 0, 0, 0.87);

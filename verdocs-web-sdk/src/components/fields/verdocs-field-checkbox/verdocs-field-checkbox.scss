@@ -14,6 +14,9 @@ verdocs-field-checkbox {
   }
 
   label {
+    // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
+    cursor: inherit;
+
     width: 14px;
     height: 14px;
     display: block;

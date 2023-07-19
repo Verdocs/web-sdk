@@ -379,7 +379,7 @@ export namespace Components {
         /**
           * The template the field is for/from. Only required for the field builder, passed down to the properties component.
          */
-        "templateId": string;
+        "templateid": string;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -2442,7 +2442,7 @@ declare namespace LocalJSX {
         /**
           * The template the field is for/from. Only required for the field builder, passed down to the properties component.
          */
-        "templateId"?: string;
+        "templateid"?: string;
     }
     interface VerdocsFieldDropdown {
         /**

@@ -91,7 +91,7 @@ export class VerdocsTemplateFieldProperties {
       this.endpoint.loadSession();
 
       if (!this.templateId) {
-        console.log(`[ROLES] Missing required template ID ${this.templateId}`);
+        console.log(`[FIELD PROPERTIES] Missing required template ID ${this.templateId}`);
         return;
       }
 
@@ -101,7 +101,7 @@ export class VerdocsTemplateFieldProperties {
       }
 
       if (!this.endpoint.session) {
-        console.log('[ROLES] Unable to start builder session, must be authenticated');
+        console.log('[FIELD PROPERTIES] Unable to start builder session, must be authenticated');
         return;
       }
 
@@ -250,8 +250,7 @@ export class VerdocsTemplateFieldProperties {
     e.stopPropagation();
     if (window.confirm('Are you sure you wish to remove this field? This action cannot be undone.')) {
       deleteField(this.endpoint, this.templateId, this.fieldName)
-        .then(r => {
-          console.log('Field deleted', r);
+        .then(() => {
           this.store.state.fields = [...this.store?.state?.fields.filter(field => field.name !== this.fieldName)];
           this.store?.state?.roles.forEach(role => {
             role.fields = [...role.fields.filter(field => field.name !== this.fieldName)];
@@ -259,7 +258,7 @@ export class VerdocsTemplateFieldProperties {
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
         })
         .catch(e => {
-          console.log('Deletion error', e);
+          console.log('[FIELD PROPERTIES] Deletion error', e);
         });
     }
   }

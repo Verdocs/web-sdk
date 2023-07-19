@@ -260,10 +260,10 @@ export class VerdocsTemplateFields {
   async handleMoveEnd(event: any) {
     const pageNumber = event.target.getAttribute('pageNumber');
     const {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
-    console.log('[FIELDS] Drag ended', pageNumber, event.target);
     const clientRect = event.target.getBoundingClientRect();
     const parent = event.target.parentElement;
     const parentRect = parent.getBoundingClientRect();
+
     // These two being backwards is not a mistake. Left measures "over" from the left (positive displacement) while bottom measures
     // "up" from the bottom (negative displacement).
     const newX = Math.max(clientRect.left - parentRect.left, 0);
@@ -273,7 +273,7 @@ export class VerdocsTemplateFields {
     const name = event.target.getAttribute('name');
     const option = +(event.target.getAttribute('option') || '0');
     const field = this.store?.state.fields.find(field => field.name === name);
-    console.log('[FIELDS] Will update', name, option, field);
+
     if (field) {
       switch (field.type) {
         case 'attachment':
@@ -300,10 +300,14 @@ export class VerdocsTemplateFields {
           }
           break;
       }
+
+      console.log('[FIELDS] Will update', name, option, field);
       const newFieldData = await updateField(this.endpoint, this.templateId, name, field);
       const pageInfo = this.cachedPageInfo[pageNumber];
       const roleIndex = getRoleIndex(getRoleNames(this.store), field.role_name);
       this.handleFieldSettingsChange(pageInfo, field, roleIndex, event.target, newFieldData);
+      event.target.removeAttribute('posX');
+      event.target.removeAttribute('posY');
     }
   }
 
@@ -391,9 +395,6 @@ export class VerdocsTemplateFields {
         case 'date':
           field.setting = {x, y, width, height, result: ''};
           break;
-
-        // TODO: What is this?
-        // case 'placeholder':break;
 
         case 'dropdown':
           field.required = false;

@@ -18,6 +18,9 @@ verdocs-field-textbox {
   }
 
   input {
+    // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
+    cursor: inherit;
+
     width: 100%;
     height: 100%;
     border: none;

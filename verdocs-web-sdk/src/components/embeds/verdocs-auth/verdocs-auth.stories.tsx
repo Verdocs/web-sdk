@@ -6,7 +6,7 @@ export default {
   component: 'verdocs-auth',
   args: {
     visible: true,
-    logo: 'https://verdocs.com/assets/blue-logo.svg',
+    logo: 'https://app.verdocs.com/assets/blue-logo.svg',
   },
   argTypes: {
     sdkError: {

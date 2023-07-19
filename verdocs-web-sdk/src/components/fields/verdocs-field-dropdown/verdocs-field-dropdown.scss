@@ -15,6 +15,9 @@ verdocs-field-dropdown {
   }
 
   select {
+    // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
+    cursor: inherit;
+
     position: absolute;
     background: linear-gradient(55deg, transparent 50%, #333 50%), linear-gradient(125deg, #333 50%, transparent 50%), linear-gradient(to right, transparent, transparent);
     background-position: calc(100% - 7px) 6px, calc(100% - 3px) 6px, 100% 0;

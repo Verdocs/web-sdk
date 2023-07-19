@@ -24,6 +24,11 @@ verdocs-field-radio-button {
     opacity: 1;
   }
 
+  input {
+    // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
+    cursor: inherit;
+  }
+
   &.done input[type='radio'] {
     margin: 0;
     padding: 0;
