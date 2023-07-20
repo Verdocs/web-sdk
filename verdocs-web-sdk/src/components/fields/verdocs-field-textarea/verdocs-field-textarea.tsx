@@ -176,14 +176,14 @@ export class VerdocsFieldTextarea {
     }
 
     return (
-      <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
+      <Host class={{required: this.field?.required, disabled, done: this.done}} style={{backgroundColor}}>
         <textarea
           placeholder={settings.placeholder || ''}
           tabIndex={settings.order}
           value={settings.value}
           disabled={disabled}
           name={this.field.name}
-          required={settings.required}
+          required={this.field?.required}
           ref={el => (this.inputEl = el)}
           // style={{resize: 'none'}}
         />
