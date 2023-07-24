@@ -8,28 +8,6 @@ import { Components } from '@verdocs/web-sdk';
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'templateId']
-})
-@Component({
-  selector: 'ipc-test',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'templateId'],
-})
-export class IpcTest {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface IpcTest extends Components.IpcTest {}
-
-
-@ProxyCmp({
   inputs: ['endpoint', 'header', 'items', 'view']
 })
 @Component({

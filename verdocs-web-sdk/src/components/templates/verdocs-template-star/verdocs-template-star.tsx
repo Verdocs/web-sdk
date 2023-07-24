@@ -1,6 +1,6 @@
 import {Stars} from '@verdocs/js-sdk/Templates';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplateSummaryEntry} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Prop, h, Host, Event, EventEmitter, State} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 
@@ -24,7 +24,7 @@ export class VerdocsTemplateStar {
   /**
    * The template to display the star for.
    */
-  @Prop({mutable: true}) template: ITemplateSummaryEntry;
+  @Prop({mutable: true}) template: ITemplate;
 
   /**
    * Event fired when the user toggles the star on or off. The event detail will contain
@@ -55,7 +55,6 @@ export class VerdocsTemplateStar {
     Stars.toggleStar(VerdocsEndpoint.getDefault(), this.template.id)
       .then(r => {
         this.updating = false;
-        this.template.is_starred = r.is_starred;
         this.template.star_counter = r.star_counter;
         this.starChange.emit({
           templateId: this.template.id,
@@ -73,7 +72,7 @@ export class VerdocsTemplateStar {
   render() {
     return (
       <Host>
-        <div class={`star ${this.updating ? 'updating' : ''}`} innerHTML={this.template.is_starred ? SolidStarIcon : OutlineStarIcon} onClick={e => this.toggle(e)} />
+        <div class={`star ${this.updating ? 'updating' : ''}`} innerHTML={this.template.star_counter ? SolidStarIcon : OutlineStarIcon} onClick={e => this.toggle(e)} />
         <div class="count">{this.template.star_counter || '--'}</div>
       </Host>
     );

@@ -1,11 +1,10 @@
 import {formatDistance} from 'date-fns';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Templates} from '@verdocs/js-sdk/Templates';
+import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {canPerformTemplateAction} from '@verdocs/js-sdk/Templates/Actions';
-// import {userCanCreateTemplate} from '@verdocs/js-sdk/Templates/Permissions';
-import {ITemplate, ITemplateSummaryEntry} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
-import {IGetTemplateSummaryParams, IGetTemplateSummarySortBy} from '@verdocs/js-sdk/Templates/Templates';
+import {IListTemplatesParams, IGetTemplateSummarySortBy} from '@verdocs/js-sdk/Templates/Templates';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
 import {IMenuOption} from '../../controls/verdocs-dropdown/verdocs-dropdown';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -111,8 +110,8 @@ export class VerdocsTemplatesList {
 
   @State() count = 0;
   @State() loading = true;
-  @State() confirmDelete: ITemplateSummaryEntry | null = null;
-  @State() templates: ITemplateSummaryEntry[] = [];
+  @State() confirmDelete: ITemplate | null = null;
+  @State() templates: ITemplate[] = [];
 
   @Watch('sharing')
   handleSharingUpdated() {
@@ -147,27 +146,20 @@ export class VerdocsTemplatesList {
 
   async queryTemplates() {
     try {
-      let queryParams: IGetTemplateSummaryParams = {
+      let queryParams: IListTemplatesParams = {
+        sharing: this.sharing,
+        starred: this.starred,
         page: this.selectedPage,
-        ascending: this.sort === 'name' || this.sort === 'star_counter',
-        sort_by: this.sort,
+        sort: this.sort,
+        // ascending: this.sort === 'name' || this.sort === 'star_counter',
       };
-
-      if (this.sharing !== 'all') {
-        queryParams.is_personal = this.sharing === 'personal';
-        queryParams.is_public = this.sharing === 'public';
-      }
-
-      if (this.starred !== 'all') {
-        queryParams.is_starred = this.starred === 'starred';
-      }
 
       if (this.name.trim() !== '') {
         queryParams.name = this.name.trim();
       }
 
-      const response = await Templates.getSummary(this.endpoint, queryParams);
-      this.templates = response.result;
+      const response = await Templates.listTemplates(this.endpoint, queryParams);
+      this.templates = response.records;
       this.count = response.total;
       this.loading = false;
     } catch (e) {
@@ -176,7 +168,7 @@ export class VerdocsTemplatesList {
     }
   }
 
-  handleOptionSelected = (option: string, template: ITemplateSummaryEntry) => {
+  handleOptionSelected = (option: string, template: ITemplate) => {
     if (option === 'send') {
       this.viewTemplate?.emit({endpoint: this.endpoint, template: template});
     } else if (option === 'createlink') {
@@ -198,14 +190,14 @@ export class VerdocsTemplatesList {
   //   return userCanCreateTemplate(this.endpoint.session);
   // }
 
-  canDelete(summary: ITemplateSummaryEntry) {
+  canDelete(summary: ITemplate) {
     return canPerformTemplateAction(this.endpoint.session, 'delete', summary);
   }
-  canEdit(summary: ITemplateSummaryEntry) {
+  canEdit(summary: ITemplate) {
     return canPerformTemplateAction(this.endpoint.session, 'write', summary);
   }
 
-  canPreview(summary: ITemplateSummaryEntry) {
+  canPreview(summary: ITemplate) {
     const hasPermission = canPerformTemplateAction(this.endpoint.session, 'read', summary);
     // let canPreview;
     // const signers = filter(template.roles, {type: 'signer'});
@@ -217,7 +209,7 @@ export class VerdocsTemplatesList {
     return hasPermission;
   }
 
-  deleteTemplate(template: ITemplateSummaryEntry) {
+  deleteTemplate(template: ITemplate) {
     this.confirmDelete = null;
     Templates.deleteTemplate(this.endpoint, template.id)
       .then(() => {
@@ -243,7 +235,6 @@ export class VerdocsTemplatesList {
               placeholder="Filter by Name..."
               onFocusout={(e: any) => {
                 this.name = e.target.value;
-                return this.queryTemplates();
               }}
             />
           </div>
@@ -254,7 +245,6 @@ export class VerdocsTemplatesList {
             options={SharingFilters}
             onOptionSelected={e => {
               this.sharing = e.detail.value as any;
-              return this.queryTemplates();
             }}
           />
 
@@ -264,7 +254,6 @@ export class VerdocsTemplatesList {
             options={StarredFilters}
             onOptionSelected={e => {
               this.starred = e.detail.value as any;
-              return this.queryTemplates();
             }}
           />
 
@@ -274,18 +263,17 @@ export class VerdocsTemplatesList {
             options={SortOptions}
             onOptionSelected={e => {
               this.sort = e.detail.value as any;
-              return this.queryTemplates();
             }}
           />
           {this.loading && <verdocs-spinner mode="dark" size={24} />}
           <div style={{display: 'flex', flex: '1'}} />
         </div>
 
-        {this.templates.map(summary => {
+        {this.templates.map(template => {
           const MENU_OPTIONS: IMenuOption[] = [];
 
           if (this.allowedActions.includes('send')) {
-            MENU_OPTIONS.push({label: 'Send', id: 'send', disabled: !this.canPreview(summary)});
+            MENU_OPTIONS.push({label: 'Send', id: 'send', disabled: !this.canPreview(template)});
           }
 
           if (this.allowedActions.includes('createlink')) {
@@ -305,15 +293,15 @@ export class VerdocsTemplatesList {
             MENU_OPTIONS.push({label: ''});
 
             if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
-              MENU_OPTIONS.push({label: 'Get Preview Link', id: 'link', disabled: !this.canPreview(summary)});
+              MENU_OPTIONS.push({label: 'Get Preview Link', id: 'link', disabled: !this.canPreview(template)});
             }
 
             if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
-              MENU_OPTIONS.push({label: 'Edit', id: 'edit', disabled: !this.canEdit(summary)});
+              MENU_OPTIONS.push({label: 'Edit', id: 'edit', disabled: !this.canEdit(template)});
             }
 
             if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
-              MENU_OPTIONS.push({label: 'Delete', id: 'delete', disabled: !this.canDelete(summary)});
+              MENU_OPTIONS.push({label: 'Delete', id: 'delete', disabled: !this.canDelete(template)});
             }
           }
 
@@ -321,47 +309,47 @@ export class VerdocsTemplatesList {
             <div
               class="template"
               onClick={() => {
-                this.viewTemplate?.emit({endpoint: this.endpoint, template: summary});
+                this.viewTemplate?.emit({endpoint: this.endpoint, template});
               }}
             >
               <div class="inner">
-                <verdocs-template-star template={summary} endpoint={this.endpoint} />
+                <verdocs-template-star template={template} endpoint={this.endpoint} />
 
                 <div class="spacer icon-spacer" />
                 <span innerHTML={TemplateIcon} />
-                <div class="name">{summary.name}</div>
+                <div class="name">{template.name}</div>
 
                 <div class="spacer usage-spacer" />
                 <div class="usage">
                   <span innerHTML={EnvelopeIcon} />
-                  {summary.counter || '--'}
+                  {template.counter || '--'}
                 </div>
 
                 <div class="spacer last-used-spacer" />
                 <div class="last-used">
                   <span innerHTML={CalendarIcon} />
                   <span style={{marginRight: '5px'}}>Last Used:</span>
-                  {summary.last_used_at ? formatDistance(new Date(summary.last_used_at), new Date()) : 'Never'}
+                  {template.last_used_at ? formatDistance(new Date(template.last_used_at), new Date()) : 'Never'}
                 </div>
 
                 <div class="spacer ownership-spacer" />
-                {summary.is_public && (
+                {template.is_public && (
                   <div class="ownership">
                     <span innerHTML={GlobeAltIcon} /> Public
                   </div>
                 )}
-                {!summary.is_public && !summary.is_personal && (
+                {!template.is_public && !template.is_personal && (
                   <div class="ownership">
                     <span innerHTML={LockClosedIcon} /> Private
                   </div>
                 )}
-                {!summary.is_public && summary.is_personal && (
+                {!template.is_public && template.is_personal && (
                   <div class="ownership">
                     <span innerHTML={BuildingOfficeIcon} /> Shared
                   </div>
                 )}
 
-                <verdocs-dropdown options={MENU_OPTIONS} onOptionSelected={e => this.handleOptionSelected(e.detail.id, summary)} />
+                <verdocs-dropdown options={MENU_OPTIONS} onOptionSelected={e => this.handleOptionSelected(e.detail.id, template)} />
               </div>
             </div>
           );

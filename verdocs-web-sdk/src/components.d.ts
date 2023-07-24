@@ -9,7 +9,7 @@ import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
 import { IActivityEntry, IEnvelope, IEnvelopeField, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
-import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, ITemplateSummaryEntry, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
+import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
@@ -25,16 +25,6 @@ import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs
 import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 export namespace Components {
-    interface IpcTest {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId": string;
-    }
     interface VerdocsActivityBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1131,7 +1121,7 @@ export namespace Components {
         /**
           * The template to display the star for.
          */
-        "template": ITemplateSummaryEntry;
+        "template": ITemplate;
     }
     interface VerdocsTemplateTags {
         /**
@@ -1474,12 +1464,6 @@ export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
     target: HTMLVerdocsViewElement;
 }
 declare global {
-    interface HTMLIpcTestElement extends Components.IpcTest, HTMLStencilElement {
-    }
-    var HTMLIpcTestElement: {
-        prototype: HTMLIpcTestElement;
-        new (): HTMLIpcTestElement;
-    };
     interface HTMLVerdocsActivityBoxElement extends Components.VerdocsActivityBox, HTMLStencilElement {
     }
     var HTMLVerdocsActivityBoxElement: {
@@ -1901,7 +1885,6 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
-        "ipc-test": HTMLIpcTestElement;
         "verdocs-activity-box": HTMLVerdocsActivityBoxElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
@@ -1975,16 +1958,6 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    interface IpcTest {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId"?: string;
-    }
     interface VerdocsActivityBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3481,7 +3454,7 @@ declare namespace LocalJSX {
         /**
           * The template to display the star for.
          */
-        "template"?: ITemplateSummaryEntry;
+        "template"?: ITemplate;
     }
     interface VerdocsTemplateTags {
         /**
@@ -3675,7 +3648,6 @@ declare namespace LocalJSX {
         "onView"?: (event: VerdocsViewCustomEvent<any>) => void;
     }
     interface IntrinsicElements {
-        "ipc-test": IpcTest;
         "verdocs-activity-box": VerdocsActivityBox;
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
@@ -3752,7 +3724,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "ipc-test": LocalJSX.IpcTest & JSXBase.HTMLAttributes<HTMLIpcTestElement>;
             "verdocs-activity-box": LocalJSX.VerdocsActivityBox & JSXBase.HTMLAttributes<HTMLVerdocsActivityBoxElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
