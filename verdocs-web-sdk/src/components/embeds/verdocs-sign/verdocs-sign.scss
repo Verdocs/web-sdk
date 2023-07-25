@@ -124,7 +124,9 @@ verdocs-sign {
   flex-direction: row;
   transition: all 0.25s;
   background-color: $medium-bg;
-  box-shadow: 0 4px 4px 0 rgb(0 0 0 / 24%), 0 0 4px 0 rgb(0 0 0 / 12%);
+  box-shadow:
+    0 4px 4px 0 rgb(0 0 0 / 24%),
+    0 0 4px 0 rgb(0 0 0 / 12%);
 
   .inner {
     width: 100%;
@@ -145,7 +147,9 @@ verdocs-sign {
   .title {
     font-size: 18px;
     font-weight: 500;
+    overflow: hidden;
     white-space: nowrap;
+    padding: 0 10px 0 0;
     text-overflow: ellipsis;
   }
 }

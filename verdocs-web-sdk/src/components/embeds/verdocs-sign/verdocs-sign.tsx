@@ -557,7 +557,7 @@ export class VerdocsSign {
 
     return (
       <Host class={{agreed: this.agreed}}>
-        {!this.finishLater && (
+        {!this.agreed && !this.finishLater && (
           <div class="intro">
             <div class="inner">Please review and act on these documents.</div>
           </div>

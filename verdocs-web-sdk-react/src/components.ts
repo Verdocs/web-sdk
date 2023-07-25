@@ -8,6 +8,7 @@ import type { JSX } from '@verdocs/web-sdk';
 import { defineCustomElements } from '@verdocs/web-sdk/loader';
 
 defineCustomElements();
+export const IpcTest = /*@__PURE__*/createReactComponent<JSX.IpcTest, HTMLIpcTestElement>('ipc-test');
 export const VerdocsActivityBox = /*@__PURE__*/createReactComponent<JSX.VerdocsActivityBox, HTMLVerdocsActivityBoxElement>('verdocs-activity-box');
 export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HTMLVerdocsAuthElement>('verdocs-auth');
 export const VerdocsBuild = /*@__PURE__*/createReactComponent<JSX.VerdocsBuild, HTMLVerdocsBuildElement>('verdocs-build');
