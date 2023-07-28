@@ -102,6 +102,7 @@ export class VerdocsSign {
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
   @State() nextSubmits = false;
+  @State() showSubmitDialog = false;
   @State() errorMessage = '';
   @State() focusedField = '';
   @State() submitting = false;
@@ -445,7 +446,10 @@ export class VerdocsSign {
     const invalidFields = this.recipient.fields.filter(field => !this.isFieldValid(field));
     if (invalidFields.length < 1) {
       this.nextButtonLabel = 'Finish';
-      this.nextSubmits = true;
+      if (!this.nextSubmits) {
+        this.showSubmitDialog = true;
+        this.nextSubmits = true;
+      }
     } else {
       console.log('[SIGN] Remaining invalid fields', invalidFields);
       this.nextButtonLabel = 'Next';
@@ -639,6 +643,21 @@ export class VerdocsSign {
             onNext={() => {
               this.showDone = false;
               this.isDone = true;
+            }}
+          />
+        )}
+
+        {this.showSubmitDialog && (
+          <verdocs-ok-dialog
+            heading="Ready to Submit?"
+            message={`All required fields have been completed.<br />Are you ready to submit this document?`}
+            showCancel={true}
+            onExit={() => {
+              this.showSubmitDialog = false;
+            }}
+            onNext={() => {
+              this.showSubmitDialog = false;
+              return this.handleNext();
             }}
           />
         )}

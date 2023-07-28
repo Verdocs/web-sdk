@@ -363,7 +363,7 @@ export class VerdocsEnvelopeSidebar {
           <div class="content">
             <div class="title">Recipients</div>
             {this.store?.state?.recipients.map((recipient, index) => {
-              const canGetInPersonLink = recipient.status !== 'signed' && recipient.status !== 'submitted' && recipient.status !== 'canceled' && recipient.status !== 'declined';
+              const canGetInPersonLink = recipient.status !== 'submitted' && recipient.status !== 'canceled' && recipient.status !== 'declined';
               const canSendReminder = this.canResendRecipient(recipient);
               return (
                 <div class="recipient-detail">
