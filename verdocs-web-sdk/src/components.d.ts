@@ -3521,6 +3521,22 @@ declare namespace LocalJSX {
          */
         "name"?: string;
         /**
+          * Event fired when the user changes the name filter. This is fired for every inputChange event (every character typed). This event is provided for balance with the other events, but host applications should generally not save this value. Users might appreciate applications remembering their sorting or filtering preferences, but probably not their search terms.
+         */
+        "onChangeName"?: (event: VerdocsTemplatesListCustomEvent<string>) => void;
+        /**
+          * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+         */
+        "onChangeSharing"?: (event: VerdocsTemplatesListCustomEvent<'all' | 'personal' | 'shared' | 'public'>) => void;
+        /**
+          * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+         */
+        "onChangeSort"?: (event: VerdocsTemplatesListCustomEvent<IGetTemplateSummarySortBy>) => void;
+        /**
+          * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+         */
+        "onChangeStarred"?: (event: VerdocsTemplatesListCustomEvent<'all' | 'starred' | 'unstarred'>) => void;
+        /**
           * Event fired when the user chooses the Edit option from the dropdown menu.
          */
         "onEditTemplate"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;

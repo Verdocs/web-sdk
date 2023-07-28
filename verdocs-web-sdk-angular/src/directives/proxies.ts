@@ -2143,7 +2143,7 @@ export class VerdocsTemplatesList {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewTemplate', 'editTemplate', 'templateDeleted']);
+    proxyOutputs(this, this.el, ['sdkError', 'viewTemplate', 'editTemplate', 'templateDeleted', 'changeSort', 'changeSharing', 'changeStarred', 'changeName']);
   }
 }
 
@@ -2151,6 +2151,7 @@ export class VerdocsTemplatesList {
 import type { SDKError as IVerdocsTemplatesListSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsTemplatesListVerdocsEndpoint } from '@verdocs/web-sdk';
 import type { ITemplate as IVerdocsTemplatesListITemplate } from '@verdocs/web-sdk';
+import type { IGetTemplateSummarySortBy as IVerdocsTemplatesListIGetTemplateSummarySortBy } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplatesList extends Components.VerdocsTemplatesList {
   /**
@@ -2172,6 +2173,25 @@ to the template preview. This is also fired when the user selects "Preview/Send"
 will already have been deleted. The host application should remove it from the list or refresh the list.
    */
   templateDeleted: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  /**
+   * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+   */
+  changeSort: EventEmitter<CustomEvent<IVerdocsTemplatesListIGetTemplateSummarySortBy>>;
+  /**
+   * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+   */
+  changeSharing: EventEmitter<CustomEvent<'all' | 'personal' | 'shared' | 'public'>>;
+  /**
+   * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+   */
+  changeStarred: EventEmitter<CustomEvent<'all' | 'starred' | 'unstarred'>>;
+  /**
+   * Event fired when the user changes the name filter. This is fired for every inputChange event (every character
+typed). This event is provided for balance with the other events, but host applications should generally not
+save this value. Users might appreciate applications remembering their sorting or filtering preferences, but
+probably not their search terms.
+   */
+  changeName: EventEmitter<CustomEvent<string>>;
 }
 
 
