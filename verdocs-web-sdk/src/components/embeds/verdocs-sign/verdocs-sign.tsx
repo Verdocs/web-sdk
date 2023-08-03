@@ -472,6 +472,7 @@ export class VerdocsSign {
     el.addEventListener('focusout', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
     el.addEventListener('fieldChange', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
 
+    el.setAttribute('page', pageInfo.pageNumber);
     el.setAttribute('roleindex', roleIndex);
     el.setAttribute('xScale', pageInfo.xScale);
     el.setAttribute('yScale', pageInfo.yScale);
