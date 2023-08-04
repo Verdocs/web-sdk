@@ -19,4 +19,4 @@ export const Attachments = ({onClose, templateId}) =>
           <verdocs-template-attachments .templateId=${templateId} @close=${onClose} />
         </div>
       `
-    : html`<img src="https://verdocs-public-assets.s3.amazonaws.com/storybook-placeholders/template-name.png" alt="Placeholder" />`;
+    : html`<img src="https://verdocs-public-assets.s3.amazonaws.com/storybook-placeholders/template-attachments.png" alt="Placeholder" />`;

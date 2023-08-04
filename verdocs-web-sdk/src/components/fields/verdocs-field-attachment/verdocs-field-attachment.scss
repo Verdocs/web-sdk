@@ -2,10 +2,12 @@
 
 verdocs-field-attachment {
   font-family: $verdocs-primary-font;
+  box-sizing: border-box;
   width: 24px;
   height: 24px;
   display: block;
   font-size: 11px;
+  position: relative;
   background-color: transparent;
   transform-origin: bottom left;
 
@@ -32,5 +34,32 @@ verdocs-field-attachment {
 
   &.focused {
     animation: verdocs-field-pulse 0.75s 2;
+  }
+
+  verdocs-button-panel {
+    top: 1px;
+    left: -19px;
+    opacity: 0.5;
+    z-index: 1000;
+    cursor: pointer;
+    position: absolute;
+    transform: scale(0.6);
+
+    &[data-active],
+    &:hover {
+      opacity: 1;
+    }
+
+    .icon {
+      svg {
+        fill: #333333;
+      }
+
+      &:hover {
+        svg {
+          fill: #000000;
+        }
+      }
+    }
   }
 }

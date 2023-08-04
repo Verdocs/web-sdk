@@ -25,6 +25,16 @@ import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs
 import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 export namespace Components {
+    interface IpcTest {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
     interface VerdocsActivityBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -275,11 +285,23 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field": IEnvelopeField | ITemplateField | null;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * May be used to force the field to re-render.
          */
@@ -287,12 +309,20 @@ export namespace Components {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldCheckbox {
         /**
@@ -1472,6 +1502,12 @@ export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
     target: HTMLVerdocsViewElement;
 }
 declare global {
+    interface HTMLIpcTestElement extends Components.IpcTest, HTMLStencilElement {
+    }
+    var HTMLIpcTestElement: {
+        prototype: HTMLIpcTestElement;
+        new (): HTMLIpcTestElement;
+    };
     interface HTMLVerdocsActivityBoxElement extends Components.VerdocsActivityBox, HTMLStencilElement {
     }
     var HTMLVerdocsActivityBoxElement: {
@@ -1893,6 +1929,7 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
+        "ipc-test": HTMLIpcTestElement;
         "verdocs-activity-box": HTMLVerdocsActivityBoxElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
@@ -1966,6 +2003,16 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface IpcTest {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
     interface VerdocsActivityBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2313,9 +2360,29 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
           * The document or template field to display.
          */
         "field"?: IEnvelopeField | ITemplateField | null;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
+        /**
+          * Event fired when the field is deleted.
+         */
+        "onAttached"?: (event: VerdocsFieldAttachmentCustomEvent<{data: string; lastModified: number; name: string; size: number; type: string}>) => void;
+        /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string}>) => void;
         /**
           * Event fired when the field's settings are changed.
          */
@@ -2327,11 +2394,19 @@ declare namespace LocalJSX {
         /**
           * If set, the field will be colored using this index value to select the background color.
          */
-        "roleIndex"?: number;
+        "roleindex"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldCheckbox {
         /**
@@ -3688,6 +3763,7 @@ declare namespace LocalJSX {
         "onView"?: (event: VerdocsViewCustomEvent<any>) => void;
     }
     interface IntrinsicElements {
+        "ipc-test": IpcTest;
         "verdocs-activity-box": VerdocsActivityBox;
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
@@ -3764,6 +3840,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "ipc-test": LocalJSX.IpcTest & JSXBase.HTMLAttributes<HTMLIpcTestElement>;
             "verdocs-activity-box": LocalJSX.VerdocsActivityBox & JSXBase.HTMLAttributes<HTMLVerdocsActivityBoxElement>;
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;

@@ -9,20 +9,20 @@ verdocs-upload-dialog {
   }
 
   .background-overlay {
-    position: absolute;
-    z-index: 10000;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     display: flex;
+    z-index: 10000;
+    position: absolute;
     align-items: center;
-    justify-content: center;
     background: #0000007f;
+    justify-content: center;
   }
 
   .dialog {
-    width: 300px;
+    width: 320px;
     display: flex;
     flex-direction: column;
     border-radius: 4px;
@@ -34,9 +34,9 @@ verdocs-upload-dialog {
 
   .heading {
     display: flex;
-    flex-direction: row;
     font-size: 20px;
     font-weight: 500;
+    flex-direction: row;
   }
 
   .buttons {
@@ -51,19 +51,19 @@ verdocs-upload-dialog {
   }
 
   .drop-target {
-    padding: 30px 15px;
+    opacity: 1;
     width: 100%;
     display: flex;
-    flex-direction: column;
-    background-color: #f5f5f5;
-    border: 2px dashed #979797;
-    min-height: 260px;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    color: rgba(0, 0, 0, 0.54);
-    opacity: 1;
     margin: 20px 0;
+    min-height: 260px;
+    padding: 30px 15px;
+    text-align: center;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #f5f5f5;
+    color: rgba(0, 0, 0, 0.54);
+    border: 2px dashed #979797;
 
     p {
       margin: 12px 0;
@@ -86,9 +86,13 @@ verdocs-upload-dialog {
     padding: 0 16px;
     line-height: 56px;
     white-space: normal;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 20%), 0 2px 2px 0 rgb(0 0 0 / 12%), 0 0 2px 0 rgb(0 0 0 / 14%);
+    box-shadow:
+      0 1px 3px 0 rgb(0 0 0 / 20%),
+      0 2px 2px 0 rgb(0 0 0 / 12%),
+      0 0 2px 0 rgb(0 0 0 / 14%);
 
     .attachment {
+      gap: 10px;
       display: flex;
       align-items: center;
       flex-direction: row;
@@ -105,10 +109,11 @@ verdocs-upload-dialog {
 
       .name {
         flex: 1;
-        display: flex;
-        padding: 0 8px;
         font-size: 14px;
+        overflow: hidden;
         font-weight: 400;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }

@@ -8,7 +8,7 @@ import {fullNameToInitials, integerSequence} from '@verdocs/js-sdk/Utils/Primiti
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {IEnvelopeField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/js-sdk/Envelopes/Types';
 import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
-import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {FORMAT_DATE, IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
@@ -469,6 +469,15 @@ export class VerdocsSign {
         this.checkRecipientFields();
       }
     });
+    el.addEventListener('attached', async (e: any) => {
+      console.log('[SIGN] onAttached', e.detail, e.target.value);
+      const r = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, this.roleId, field.name, e.detail);
+      console.log('upload result', r);
+      this.checkRecipientFields();
+    });
+    el.addEventListener('removed', (e: any) => {
+      console.log('[SIGN] onRemoved', e.detail, e.target.value);
+    });
     el.addEventListener('focusout', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
     el.addEventListener('fieldChange', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
 
@@ -484,7 +493,7 @@ export class VerdocsSign {
     const pageInfo = e.detail as IDocumentPageInfo;
     const roleIndex = getRoleIndex(this.roleNames, this.recipient.role_name);
     const recipientFields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
-    console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
+    // console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
 
     // First render the fields for the signer
     recipientFields
@@ -509,18 +518,20 @@ export class VerdocsSign {
       )
       .forEach(recipient => {
         const otherIndex = getRoleIndex(this.roleNames, recipient.role_name);
-        recipient.fields.forEach(field => {
-          const el = renderDocumentField(field, pageInfo, otherIndex, {disabled: true, editable: false, draggable: false, done: this.isDone});
-          if (!el) {
-            return;
-          }
+        recipient.fields
+          .filter(field => field.page === pageInfo.pageNumber)
+          .forEach(field => {
+            const el = renderDocumentField(field, pageInfo, otherIndex, {disabled: true, editable: false, draggable: false, done: this.isDone});
+            if (!el) {
+              return;
+            }
 
-          if (Array.isArray(el)) {
-            el.map(e => this.attachFieldAttributes(pageInfo, field, otherIndex, e));
-          } else {
-            this.attachFieldAttributes(pageInfo, field, otherIndex, el);
-          }
-        });
+            if (Array.isArray(el)) {
+              el.map(e => this.attachFieldAttributes(pageInfo, field, otherIndex, e));
+            } else {
+              this.attachFieldAttributes(pageInfo, field, otherIndex, el);
+            }
+          });
       });
 
     this.checkRecipientFields();

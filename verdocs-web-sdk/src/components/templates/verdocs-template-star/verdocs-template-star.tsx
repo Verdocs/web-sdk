@@ -58,7 +58,7 @@ export class VerdocsTemplateStar {
         this.template.star_counter = r.star_counter;
         this.starChange.emit({
           templateId: this.template.id,
-          starred: r.is_starred,
+          starred: r.star_counter > 0,
           count: r.star_counter,
         });
       })

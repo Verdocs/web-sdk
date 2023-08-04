@@ -8,6 +8,28 @@ import { Components } from '@verdocs/web-sdk';
 
 
 @ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'ipc-test',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class IpcTest {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface IpcTest extends Components.IpcTest {}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'header', 'items', 'view']
 })
 @Component({
@@ -488,7 +510,7 @@ the user to another page.
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'field', 'rerender', 'roleIndex', 'templateid'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -496,14 +518,14 @@ the user to another page.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'field', 'rerender', 'roleIndex', 'templateid'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'moveable', 'rerender', 'roleindex', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged']);
+    proxyOutputs(this, this.el, ['settingsChanged', 'deleted', 'attached']);
   }
 }
 
@@ -516,6 +538,14 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
    * Event fired when the field's settings are changed.
    */
   settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldAttachmentIVerdocsFieldAttachment{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  attached: EventEmitter<CustomEvent<{data: string; lastModified: number; name: string; size: number; type: string}>>;
 }
 
 

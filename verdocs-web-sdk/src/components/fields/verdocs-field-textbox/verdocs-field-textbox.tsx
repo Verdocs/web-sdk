@@ -109,7 +109,6 @@ export class VerdocsFieldTextbox {
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
-    // TemplateStore.updateCount++;
   }
 
   componentDidRender() {
