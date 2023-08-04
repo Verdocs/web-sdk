@@ -487,18 +487,20 @@ export class VerdocsSign {
     console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
 
     // First render the fields for the signer
-    recipientFields.forEach(field => {
-      const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: false, editable: false, draggable: false, done: this.isDone});
-      if (!el) {
-        return;
-      }
+    recipientFields
+      .filter(field => field.page === pageInfo.pageNumber)
+      .forEach(field => {
+        const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: false, editable: false, draggable: false, done: this.isDone});
+        if (!el) {
+          return;
+        }
 
-      if (Array.isArray(el)) {
-        el.map(e => this.attachFieldAttributes(pageInfo, field, roleIndex, e));
-      } else {
-        this.attachFieldAttributes(pageInfo, field, roleIndex, el);
-      }
-    });
+        if (Array.isArray(el)) {
+          el.map(e => this.attachFieldAttributes(pageInfo, field, roleIndex, e));
+        } else {
+          this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+        }
+      });
 
     // Now render the fields for other signers who have yet to act
     this.sortedRecipients

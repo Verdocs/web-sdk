@@ -7,7 +7,6 @@ verdocs-templates-list {
   flex-wrap: nowrap;
   border-radius: 6px;
   color: $label-color;
-  align-items: center;
   flex-direction: column;
   font-family: $primary-font;
 
@@ -36,6 +35,14 @@ verdocs-templates-list {
 
   .filter {
     align-items: center;
+  }
+
+  .template-placeholder {
+    height: 48px;
+    flex: 0 0 48px;
+    margin: 5px 0;
+    border-radius: 5px;
+    background: $verdocs-grey-3;
   }
 
   .template {

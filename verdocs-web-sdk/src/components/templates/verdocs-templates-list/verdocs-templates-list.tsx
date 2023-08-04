@@ -1,13 +1,12 @@
 import {format} from 'date-fns';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Templates} from '@verdocs/js-sdk/Templates';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {canPerformTemplateAction} from '@verdocs/js-sdk/Templates/Actions';
-import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
-import {IListTemplatesParams, IGetTemplateSummarySortBy} from '@verdocs/js-sdk/Templates/Templates';
+import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
+import {ITemplate, ITemplateSummary, TemplateActions} from '@verdocs/js-sdk/Templates/Types';
+import {Component, Event, EventEmitter, h, Host, Prop, State, Watch} from '@stencil/core';
+import {IGetTemplateSummarySortBy, IListTemplatesParams} from '@verdocs/js-sdk/Templates/Templates';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
 import {IMenuOption} from '../../controls/verdocs-dropdown/verdocs-dropdown';
-import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
 const GlobeAltIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>`;
@@ -78,13 +77,24 @@ export class VerdocsTemplatesList {
   /**
    * Override the If set, filter templates by the specified name.
    */
-  @Prop({reflect: true, mutable: true}) allowedActions: TAllowedTemplateAction[] = ['send', 'createlink', 'signnow', 'submitted', 'link', 'edit', 'delete'];
+  @Prop({reflect: true, mutable: true}) allowedActions: TAllowedTemplateAction[] = ['send', 'submitted', 'link', 'edit', 'delete'];
+  // @Prop({reflect: true, mutable: true}) allowedActions: TAllowedTemplateAction[] = ['send', 'createlink', 'signnow', 'submitted', 'link', 'edit', 'delete'];
+
+  /**
+   * Whether or not pagination should be enabled.
+   */
+  @Prop() showPagination = true;
+
+  /**
+   * The number of rows to display per page.
+   */
+  @Prop() rowsPerPage = 10;
 
   /**
    * The initial page number to select. Pagination is internally controlled but may be overriden by the
    * host applicaiton.
    */
-  @Prop({reflect: true, mutable: true}) selectedPage = 0;
+  @Prop() selectedPage = 0;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -97,6 +107,21 @@ export class VerdocsTemplatesList {
    * to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
    */
   @Event({composed: true}) viewTemplate: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate}>;
+
+  /**
+   * Event fired when the user clicks to sign a template now.
+   */
+  @Event({composed: true}) signNow: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate}>;
+
+  /**
+   * Event fired when the user clicks to sign a template now.
+   */
+  @Event({composed: true}) submittedData: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate}>;
+
+  /**
+   * Event fired when the user selects to create a preview link for a template.
+   */
+  // @Event({composed: true}) createLink: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate}>;
 
   /**
    * Event fired when the user chooses the Edit option from the dropdown menu.
@@ -133,9 +158,10 @@ export class VerdocsTemplatesList {
   @Event({composed: true}) changeName: EventEmitter<string>;
 
   @State() count = 0;
+  @State() initiallyLoaded = false;
   @State() loading = true;
-  @State() confirmDelete: ITemplate | null = null;
-  @State() templates: ITemplate[] = [];
+  @State() confirmDelete: ITemplateSummary | null = null;
+  @State() templates: ITemplateSummary[] = [];
 
   @Watch('sharing')
   handleSharingUpdated() {
@@ -157,24 +183,30 @@ export class VerdocsTemplatesList {
     return this.queryTemplates();
   }
 
-  async componentWillLoad() {
+  componentWillLoad() {
     this.endpoint.loadSession();
 
     if (!this.endpoint.session) {
       console.log('[TEMPLATES] Must be authenticated');
       return;
     }
+  }
 
-    return this.queryTemplates();
+  async componentDidLoad() {
+    await this.queryTemplates();
+    this.initiallyLoaded = true;
   }
 
   async queryTemplates() {
+    console.log('[TEMPLATES] Querying templates');
+    this.loading = true;
     try {
       let queryParams: IListTemplatesParams = {
         sharing: this.sharing,
         starred: this.starred,
         page: this.selectedPage,
         sort: this.sort,
+        rows: this.rowsPerPage,
         // ascending: this.sort === 'name' || this.sort === 'star_counter',
       };
 
@@ -192,46 +224,23 @@ export class VerdocsTemplatesList {
     }
   }
 
-  handleOptionSelected = (option: string, template: ITemplate) => {
+  handleOptionSelected = (option: string, template: ITemplateSummary) => {
     if (option === 'send') {
       this.viewTemplate?.emit({endpoint: this.endpoint, template: template});
-    } else if (option === 'createlink') {
-      VerdocsToast('This feature is coming soon!');
+      // } else if (option === 'createlink') {
+      //   VerdocsToast('This feature is coming soon!');
     } else if (option === 'signnow') {
-      VerdocsToast('This feature is coming soon!');
+      this.signNow?.emit({endpoint: this.endpoint, template: template});
     } else if (option === 'submitted') {
-      VerdocsToast('This feature is coming soon!');
-    } else if (option === 'link') {
-      VerdocsToast('This feature is coming soon!');
+      this.submittedData?.emit({endpoint: this.endpoint, template: template});
+      // } else if (option === 'link') {
+      //   VerdocsToast('This feature is coming soon!');
     } else if (option === 'edit') {
       this.editTemplate?.emit({endpoint: this.endpoint, template: template});
     } else if (option === 'delete') {
       this.confirmDelete = template;
     }
   };
-
-  // canCreate() {
-  //   return userCanCreateTemplate(this.endpoint.session);
-  // }
-
-  canDelete(summary: ITemplate) {
-    return canPerformTemplateAction(this.endpoint.session, 'delete', summary);
-  }
-  canEdit(summary: ITemplate) {
-    return canPerformTemplateAction(this.endpoint.session, 'write', summary);
-  }
-
-  canPreview(summary: ITemplate) {
-    const hasPermission = canPerformTemplateAction(this.endpoint.session, 'read', summary);
-    // let canPreview;
-    // const signers = filter(template.roles, {type: 'signer'});
-    // canPreview = signers && signers.length > 0;
-    // for (const signer of signers) {
-    //   canPreview = signer['fields'] && signer['fields'].length > 0;
-    // }
-    // return hasPermission && canPreview;
-    return hasPermission;
-  }
 
   deleteTemplate(template: ITemplate) {
     this.confirmDelete = null;
@@ -303,19 +312,19 @@ export class VerdocsTemplatesList {
 
           const MENU_OPTIONS: IMenuOption[] = [];
 
-          if (this.allowedActions.includes('send')) {
-            MENU_OPTIONS.push({label: 'Send', id: 'send', disabled: !this.canPreview(template)});
+          if (template.allowed_operations.includes(TemplateActions.READ) && this.allowedActions.includes('send')) {
+            MENU_OPTIONS.push({label: 'Preview / Send', id: 'send', disabled: !template.allowed_operations.includes(TemplateActions.READ)});
           }
 
-          if (this.allowedActions.includes('createlink')) {
-            MENU_OPTIONS.push({label: 'Create Link', id: 'createlink', disabled: true});
-          }
+          // if (this.allowedActions.includes('createlink')) {
+          //   MENU_OPTIONS.push({label: 'Create Link', id: 'createlink', disabled: true});
+          // }
 
-          if (this.allowedActions.includes('createlink')) {
+          if (template.allowed_operations.includes(TemplateActions.CREATE_PERSONAL) && this.allowedActions.includes('signnow')) {
             MENU_OPTIONS.push({label: 'Sign Now', id: 'signnow', disabled: true});
           }
 
-          if (this.allowedActions.includes('submitted')) {
+          if (template.allowed_operations.includes(TemplateActions.READ) && this.allowedActions.includes('submitted')) {
             MENU_OPTIONS.push({label: ''});
             MENU_OPTIONS.push({label: 'Submissions', id: 'submitted'});
           }
@@ -323,16 +332,19 @@ export class VerdocsTemplatesList {
           if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
             MENU_OPTIONS.push({label: ''});
 
+            // TODO: The preview link used to be just an internal route in the main Web application, but
+            // that's not suitable for embeddding. Disabling until this gets re-requested as a feature,
+            // in which case we'll want to move this to an API-driven function.
+            // if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
+            //   MENU_OPTIONS.push({label: 'Get Preview Link', id: 'link', disabled: !this.canPreview(template)});
+            // }
+
             if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
-              MENU_OPTIONS.push({label: 'Get Preview Link', id: 'link', disabled: !this.canPreview(template)});
+              MENU_OPTIONS.push({label: 'Edit', id: 'edit', disabled: !template.allowed_operations.includes(TemplateActions.WRITE)});
             }
 
             if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
-              MENU_OPTIONS.push({label: 'Edit', id: 'edit', disabled: !this.canEdit(template)});
-            }
-
-            if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
-              MENU_OPTIONS.push({label: 'Delete', id: 'delete', disabled: !this.canDelete(template)});
+              MENU_OPTIONS.push({label: 'Delete', id: 'delete', disabled: !template.allowed_operations.includes(TemplateActions.DELETE)});
             }
           }
 
@@ -386,13 +398,21 @@ export class VerdocsTemplatesList {
           );
         })}
 
-        {!this.templates.length ? (
-          <div class="empty-text">No matching templates found. Please adjust your filters and try again.</div>
-        ) : (
-          <div style={{marginTop: '10px'}}>
+        {!this.initiallyLoaded && (
+          <div>
+            {integerSequence(0, this.rowsPerPage).map(() => (
+              <div class="template-placeholder" />
+            ))}
+          </div>
+        )}
+
+        {this.initiallyLoaded && !this.templates.length && <div class="empty-text">No matching templates found. Please adjust your filters and try again.</div>}
+
+        {this.initiallyLoaded && this.templates.length && this.showPagination ? (
+          <div style={{marginTop: '20px'}}>
             <verdocs-pagination
               selectedPage={this.selectedPage}
-              perPage={10}
+              perPage={this.rowsPerPage}
               itemCount={this.count}
               onSelectPage={e => {
                 this.selectedPage = e.detail.selectedPage;
@@ -400,6 +420,8 @@ export class VerdocsTemplatesList {
               }}
             />
           </div>
+        ) : (
+          <div />
         )}
 
         {this.confirmDelete && (

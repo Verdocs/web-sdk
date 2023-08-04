@@ -1153,6 +1153,10 @@ export namespace Components {
          */
         "name": string;
         /**
+          * The number of rows to display per page.
+         */
+        "rowsPerPage": number;
+        /**
           * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
          */
         "selectedPage": number;
@@ -1160,6 +1164,10 @@ export namespace Components {
           * The sharing settings to filter by.
          */
         "sharing"?: 'all' | 'personal' | 'shared' | 'public';
+        /**
+          * Whether or not pagination should be enabled.
+         */
+        "showPagination": boolean;
         /**
           * The sort order to display.
          */
@@ -3518,6 +3526,14 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsTemplatesListCustomEvent<SDKError>) => void;
         /**
+          * Event fired when the user clicks to sign a template now.
+         */
+        "onSignNow"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
+        /**
+          * Event fired when the user clicks to sign a template now.
+         */
+        "onSubmittedData"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
+        /**
           * Event fired when the user chooses the Delete option from the dropdown menu. When this is fired, the template will already have been deleted. The host application should remove it from the list or refresh the list.
          */
         "onTemplateDeleted"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
@@ -3526,6 +3542,10 @@ declare namespace LocalJSX {
          */
         "onViewTemplate"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
         /**
+          * The number of rows to display per page.
+         */
+        "rowsPerPage"?: number;
+        /**
           * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
          */
         "selectedPage"?: number;
@@ -3533,6 +3553,10 @@ declare namespace LocalJSX {
           * The sharing settings to filter by.
          */
         "sharing"?: 'all' | 'personal' | 'shared' | 'public';
+        /**
+          * Whether or not pagination should be enabled.
+         */
+        "showPagination"?: boolean;
         /**
           * The sort order to display.
          */

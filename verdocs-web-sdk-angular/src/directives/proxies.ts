@@ -2107,21 +2107,21 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['allowedActions', 'endpoint', 'name', 'selectedPage', 'sharing', 'sort', 'starred']
+  inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'sharing', 'showPagination', 'sort', 'starred']
 })
 @Component({
   selector: 'verdocs-templates-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['allowedActions', 'endpoint', 'name', 'selectedPage', 'sharing', 'sort', 'starred'],
+  inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'sharing', 'showPagination', 'sort', 'starred'],
 })
 export class VerdocsTemplatesList {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewTemplate', 'editTemplate', 'templateDeleted', 'changeSort', 'changeSharing', 'changeStarred', 'changeName']);
+    proxyOutputs(this, this.el, ['sdkError', 'viewTemplate', 'signNow', 'submittedData', 'editTemplate', 'templateDeleted', 'changeSort', 'changeSharing', 'changeStarred', 'changeName']);
   }
 }
 
@@ -2142,6 +2142,14 @@ terminate the process, and the calling application should correct the condition 
 to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
    */
   viewTemplate: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  /**
+   * Event fired when the user clicks to sign a template now.
+   */
+  signNow: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  /**
+   * Event fired when the user clicks to sign a template now.
+   */
+  submittedData: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
   /**
    * Event fired when the user chooses the Edit option from the dropdown menu.
    */
