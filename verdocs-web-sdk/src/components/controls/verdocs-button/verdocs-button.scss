@@ -11,6 +11,11 @@ verdocs-button {
     cursor: pointer;
     margin: 0;
 
+    &:disabled {
+      cursor: inherit;
+      pointer-events: none;
+    }
+
     .icon {
       margin: 0 12px;
 
