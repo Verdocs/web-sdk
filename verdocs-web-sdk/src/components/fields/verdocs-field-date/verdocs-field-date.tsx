@@ -93,7 +93,7 @@ export class VerdocsFieldDate {
       dateFormat: 'Y-m-d',
       defaultDate: result,
       onChange: selectedDate => {
-        // console.log('Selected', selectedDate, dateStr, instance);
+        console.log('Selected date', selectedDate[0]);
         this.el.setAttribute('iso', selectedDate[0].toISOString());
         const event = new window.Event('input');
         this.el.dispatchEvent(event);

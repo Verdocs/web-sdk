@@ -322,10 +322,11 @@ export class VerdocsSign {
 
       case 'date':
         const iso = e.target.getAttribute('iso');
-        console.log('Formatting date for save', iso);
         const formatted = format(new Date(iso), FORMAT_DATE);
-        console.log('Formatted', formatted);
-        return this.saveFieldChange(field.name, {prepared: false, value: formatted});
+        if (formatted !== '1970-12-31') {
+          return this.saveFieldChange(field.name, {prepared: false, value: formatted});
+        }
+        break;
 
       case 'timestamp':
         console.log('Updating timestamp', {value, ts: e.target.getAttribute('timestamp')});
