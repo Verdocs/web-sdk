@@ -1,8 +1,9 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {IEnvelope, TEnvelopeStatus} from '@verdocs/js-sdk/Envelopes/Types';
+import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
+import {IEnvelopeSummary, TEnvelopeStatus} from '@verdocs/js-sdk/Envelopes/Types';
+import {cancelEnvelope, IListEnvelopesParams} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
-import {cancelEnvelope, IEnvelopeSearchParams} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getRecipientsWithActions, userCanAct, userCanCancelEnvelope} from '@verdocs/js-sdk/Envelopes/Permissions';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
 import {saveEnvelopesAsZip} from '../../../utils/utils';
@@ -65,23 +66,56 @@ export class VerdocsEnvelopesList {
   /**
    * The sort field to use
    */
-  @Prop({reflect: true, mutable: true}) sort: 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status' = 'updated_at';
+  @Prop({reflect: true, mutable: true}) sort: 'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status' = 'created_at';
 
   /**
-   * If set, filter envelopes by the specified name.
+   * If set, filter envelopes by the specified string.
    */
-  @Prop({reflect: true, mutable: true}) name: string = '';
+  @Prop({reflect: true, mutable: true}) match: string = '';
 
   /**
    * If set, filter envelopes by the specified "containing" value.
    */
-  @Prop({reflect: true, mutable: true}) containing: string = '';
+  // @Prop({reflect: true, mutable: true}) containing: string = '';
+
+  /**
+   * Whether or not pagination should be enabled.
+   */
+  @Prop() showPagination = true;
+
+  /**
+   * The number of rows to display per page.
+   */
+  @Prop() rowsPerPage = 10;
 
   /**
    * The initial page number to select. Pagination is internally controlled but may be overriden by the
    * host applicaiton.
    */
-  @Prop({reflect: true, mutable: true}) selectedPage = 0;
+  @Prop() selectedPage = 0;
+
+  /**
+   * Event fired when the user changes their view. Host applications can use this to save the user's preferences.
+   */
+  @Event({composed: true}) changeView: EventEmitter<'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting'>;
+
+  /**
+   * Event fired when the user changes their status filter. Host applications can use this to save the user's preferences.
+   */
+  @Event({composed: true}) changeStatus: EventEmitter<TEnvelopeStatus | 'all'>;
+
+  /**
+   * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+   */
+  @Event({composed: true}) changeSort: EventEmitter<'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status'>;
+
+  /**
+   * Event fired when the user changes the match filter. This is fired for every inputChange event (every character
+   * typed). This event is provided for balance with the other events, but host applications should generally not
+   * save this value. Users might appreciate applications remembering their sorting or filtering preferences, but
+   * probably not their search terms.
+   */
+  @Event({composed: true}) changeMatch: EventEmitter<string>;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -93,18 +127,19 @@ export class VerdocsEnvelopesList {
    * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
    * to the envelope detail view.
    */
-  @Event({composed: true}) viewEnvelope: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>;
+  @Event({composed: true}) viewEnvelope: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>;
 
   /**
    * Event fired when the user clicks to finish signing later. Typically the host application should redirect
    * the user to another page.
    */
-  @Event({composed: true}) finishLater: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>;
+  @Event({composed: true}) finishLater: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>;
 
   @State() count = 0;
+  @State() initiallyLoaded = false;
   @State() loading = true;
-  @State() selectedEnvelopes: IEnvelope[] = [];
-  @State() envelopes: IEnvelope[] = [];
+  @State() selectedEnvelopes: IEnvelopeSummary[] = [];
+  @State() envelopes: IEnvelopeSummary[] = [];
 
   @Watch('view')
   handleViewUpdated() {
@@ -121,15 +156,15 @@ export class VerdocsEnvelopesList {
     return this.queryEnvelopes();
   }
 
-  @Watch('name')
-  handleNameUpdated() {
+  @Watch('match')
+  handleMatchUpdated() {
     return this.queryEnvelopes();
   }
 
-  @Watch('containing')
-  handleContainingUpdated() {
-    return this.queryEnvelopes();
-  }
+  // @Watch('containing')
+  // handleContainingUpdated() {
+  //   return this.queryEnvelopes();
+  // }
 
   @Watch('selectedPage')
   handlePageUpdated() {
@@ -142,25 +177,29 @@ export class VerdocsEnvelopesList {
       console.log('[ENVELOPES] Must be authenticated');
       return;
     }
+  }
 
-    return this.queryEnvelopes();
+  async componentDidLoad() {
+    await this.queryEnvelopes();
+    this.initiallyLoaded = true;
   }
 
   async queryEnvelopes() {
     try {
       this.loading = true;
-      let queryParams: IEnvelopeSearchParams = {
-        page: this.selectedPage + 1,
-        limit: 10,
+      let queryParams: IListEnvelopesParams = {
+        page: this.selectedPage,
+        sort: this.sort,
+        rows: this.rowsPerPage,
       };
 
       switch (this.view) {
         case 'all':
           queryParams = {
             ...queryParams,
-            sort_by: this.sort,
-            ascending: this.sort === 'envelope_name',
-            envelope_status: (this.status === 'all' ? ['pending', 'in progress', 'complete', 'declined', 'canceled'] : [this.status]) as TEnvelopeStatus[],
+            sort: this.sort,
+            direction: this.sort === 'name' ? 'asc' : 'desc',
+            status: (this.status === 'all' ? ['pending', 'in progress', 'complete', 'declined', 'canceled'] : [this.status]) as TEnvelopeStatus[],
           };
           break;
 
@@ -168,7 +207,7 @@ export class VerdocsEnvelopesList {
           queryParams = {
             ...queryParams,
             is_recipient: true,
-            sort_by: 'updated_at',
+            sort: 'updated_at',
             recipient_status: ['invited', 'declined', 'opened', 'signed', 'submitted', 'canceled'],
           };
           break;
@@ -177,16 +216,16 @@ export class VerdocsEnvelopesList {
           queryParams = {
             ...queryParams,
             is_owner: true,
-            sort_by: 'updated_at',
+            sort: 'updated_at',
           };
           break;
 
         case 'action':
           queryParams = {
             ...queryParams,
-            sort_by: 'updated_at',
+            sort: 'updated_at',
             is_recipient: true,
-            envelope_status: ['pending', 'in progress'],
+            status: ['pending', 'in progress'],
             recipient_status: ['invited', 'opened', 'signed'],
           };
           break;
@@ -195,27 +234,27 @@ export class VerdocsEnvelopesList {
           queryParams = {
             ...queryParams,
             is_owner: true,
-            sort_by: 'updated_at',
-            ascending: false,
-            envelope_status: ['pending', 'in progress'],
+            sort: 'updated_at',
+            direction: 'desc',
+            status: ['pending', 'in progress'],
           };
           break;
 
         case 'completed':
           queryParams = {
             ...queryParams,
-            sort_by: 'updated_at',
-            ascending: false,
-            envelope_status: ['complete'],
+            sort: 'updated_at',
+            direction: 'desc',
+            status: ['complete'],
           };
           break;
 
         default:
           queryParams = {
             ...queryParams,
-            sort_by: 'updated_at',
-            ascending: false,
-            envelope_status: (this.status === 'all' ? ['pending', 'in progress', 'complete', 'declined', 'canceled'] : [this.status]) as TEnvelopeStatus[],
+            sort: 'updated_at',
+            direction: 'desc',
+            status: (this.status === 'all' ? ['pending', 'in progress', 'complete', 'declined', 'canceled'] : [this.status]) as TEnvelopeStatus[],
           };
       }
 
@@ -224,30 +263,30 @@ export class VerdocsEnvelopesList {
       // would never return anything).
       if (this.view === 'all') {
         if (this.status !== 'all') {
-          queryParams.envelope_status = [this.status as TEnvelopeStatus];
+          queryParams.status = [this.status as TEnvelopeStatus];
         }
       }
 
       if (this.sort !== 'updated_at') {
-        queryParams.sort_by = this.sort as any;
-        queryParams.ascending = this.sort === 'envelope_name';
+        queryParams.sort = this.sort;
+        queryParams.direction = this.sort === 'name' ? 'asc' : 'desc';
       }
 
-      if (this.name.trim()) {
-        queryParams.name = this.name.trim();
+      if (this.match.trim()) {
+        queryParams.match = this.match.trim();
       }
 
-      if (this.containing.trim()) {
-        queryParams.text_field_value = this.containing.trim();
-      }
+      // if (this.containing.trim()) {
+      //   queryParams.field_value = this.containing.trim();
+      // }
 
-      const response = await Envelopes.searchEnvelopes(this.endpoint, queryParams);
-      this.envelopes = response.result;
+      const response = await Envelopes.listEnvelopes(this.endpoint, queryParams);
+      this.envelopes = response.records;
       this.count = response.total;
       this.loading = false;
     } catch (e) {
-      console.log('[ENVELOPES] Error with preview session', e);
-      this.loading = true;
+      this.loading = false;
+      console.log('[ENVELOPES] Error listing envelopes', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -263,7 +302,7 @@ export class VerdocsEnvelopesList {
       });
   }
 
-  downloadEnvelope(envelope: IEnvelope) {
+  downloadEnvelope(envelope: IEnvelopeSummary) {
     saveEnvelopesAsZip(this.endpoint, [envelope]).catch(e => {
       console.log('[ENVELOPES] Download error', e);
       VerdocsToast('Download error: ' + e.message, {style: 'error'});
@@ -277,12 +316,14 @@ export class VerdocsEnvelopesList {
           <div class="filter">
             <verdocs-text-input
               id="verdocs-filter-name"
-              value={this.name}
+              value={this.match}
+              clearable={true}
               autocomplete="off"
-              placeholder="Filter by Name..."
+              placeholder="Filter by Name, Recipient, or Field..."
               onFocusout={(e: any) => {
-                this.name = e.target.value;
-                return this.queryEnvelopes();
+                // We don't locally filter envelopes because there are too many fields to match against efficiently.
+                this.match = e.target.value.trim();
+                this.changeMatch?.emit(this.match);
               }}
             />
           </div>
@@ -293,7 +334,6 @@ export class VerdocsEnvelopesList {
             options={ViewFilters}
             onOptionSelected={e => {
               this.view = e.detail.value as any;
-              return this.queryEnvelopes();
             }}
           />
 
@@ -304,7 +344,6 @@ export class VerdocsEnvelopesList {
               options={StatusFilters}
               onOptionSelected={e => {
                 this.status = e.detail.value as any;
-                return this.queryEnvelopes();
               }}
             />
           )}
@@ -316,25 +355,23 @@ export class VerdocsEnvelopesList {
               options={SortFilters}
               onOptionSelected={e => {
                 this.sort = e.detail.value as any;
-                return this.queryEnvelopes();
               }}
             />
           )}
 
-          <div class="containing">
-            <div class="filter">
-              <verdocs-text-input
-                id="verdocs-filter-containing"
-                value={this.containing}
-                autocomplete="off"
-                placeholder="Fields Containing..."
-                onInput={(e: any) => {
-                  this.containing = e.target.value;
-                  return this.queryEnvelopes();
-                }}
-              />
-            </div>
-          </div>
+          {/*<div class="containing">*/}
+          {/*  <div class="filter">*/}
+          {/*    <verdocs-text-input*/}
+          {/*      id="verdocs-filter-containing"*/}
+          {/*      value={this.containing}*/}
+          {/*      autocomplete="off"*/}
+          {/*      placeholder="Fields Containing..."*/}
+          {/*      onInput={(e: any) => {*/}
+          {/*        this.containing = e.target.value;*/}
+          {/*      }}*/}
+          {/*    />*/}
+          {/*  </div>*/}
+          {/*</div>*/}
 
           {this.loading && <verdocs-spinner mode="dark" size={24} />}
 
@@ -417,20 +454,29 @@ export class VerdocsEnvelopesList {
           );
         })}
 
-        {!this.loading && !this.envelopes.length ? (
-          <div class="empty-text">No matching envelopes found. Please adjust your filters and try again.</div>
-        ) : (
-          <div style={{marginTop: '10px'}}>
+        {!this.initiallyLoaded && (
+          <div style={{width: '100%'}}>
+            {integerSequence(0, this.rowsPerPage).map(() => (
+              <div class="envelope-placeholder" />
+            ))}
+          </div>
+        )}
+
+        {this.initiallyLoaded && !this.envelopes.length && <div class="empty-text">No matching envelopes found. Please adjust your filters and try again.</div>}
+
+        {this.initiallyLoaded && this.envelopes.length && this.showPagination ? (
+          <div style={{marginTop: '20px'}}>
             <verdocs-pagination
               selectedPage={this.selectedPage}
-              perPage={10}
+              perPage={this.rowsPerPage}
               itemCount={this.count}
               onSelectPage={e => {
                 this.selectedPage = e.detail.selectedPage;
-                return this.queryEnvelopes();
               }}
             />
           </div>
+        ) : (
+          <div />
         )}
       </Host>
     );

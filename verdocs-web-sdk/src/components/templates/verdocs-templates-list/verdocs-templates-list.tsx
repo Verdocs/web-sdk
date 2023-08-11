@@ -2,8 +2,8 @@ import {format} from 'date-fns';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Templates} from '@verdocs/js-sdk/Templates';
 import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
-import {ITemplate, ITemplateSummary, TemplateActions} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Event, EventEmitter, h, Host, Prop, State, Watch} from '@stencil/core';
+import {ITemplate, ITemplateSummary, TemplateActions} from '@verdocs/js-sdk/Templates/Types';
 import {IGetTemplateSummarySortBy, IListTemplatesParams} from '@verdocs/js-sdk/Templates/Templates';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
 import {IMenuOption} from '../../controls/verdocs-dropdown/verdocs-dropdown';
@@ -162,6 +162,7 @@ export class VerdocsTemplatesList {
   @State() loading = true;
   @State() confirmDelete: ITemplateSummary | null = null;
   @State() templates: ITemplateSummary[] = [];
+  @State() localNameFilter = '';
 
   @Watch('sharing')
   handleSharingUpdated() {
@@ -183,9 +184,13 @@ export class VerdocsTemplatesList {
     return this.queryTemplates();
   }
 
+  @Watch('selectedPage')
+  handlePageUpdated() {
+    return this.queryTemplates();
+  }
+
   componentWillLoad() {
     this.endpoint.loadSession();
-
     if (!this.endpoint.session) {
       console.log('[TEMPLATES] Must be authenticated');
       return;
@@ -219,7 +224,8 @@ export class VerdocsTemplatesList {
       this.count = response.total;
       this.loading = false;
     } catch (e) {
-      console.log('[TEMPLATES] Error with preview session', e);
+      this.loading = false;
+      console.log('[TEMPLATES] Error listing templates', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -257,6 +263,10 @@ export class VerdocsTemplatesList {
   }
 
   render() {
+    // In addition to the server query we also filter locally. This provides a faster UI update
+    // while the onBlur re-queries the server for any new records that now qualify by the filter.
+    const locallyFilteredTemplates = !this.localNameFilter ? this.templates : this.templates.filter(t => t.name.toLowerCase().includes(this.localNameFilter.toLowerCase()));
+
     return (
       <Host>
         <div class="header">
@@ -264,10 +274,13 @@ export class VerdocsTemplatesList {
             <verdocs-text-input
               id="verdocs-filter-name"
               value={this.name}
+              clearable={true}
               autocomplete="off"
               placeholder="Filter by Name..."
+              onInput={(e: any) => (this.localNameFilter = e.target.value.trim())}
               onFocusout={(e: any) => {
-                this.name = e.target.value;
+                this.name = e.target.value.trim();
+                this.localNameFilter = e.target.value.trim();
                 this.changeName?.emit(this.name);
               }}
             />
@@ -306,7 +319,7 @@ export class VerdocsTemplatesList {
           <div style={{display: 'flex', flex: '1'}} />
         </div>
 
-        {this.templates.map(template => {
+        {locallyFilteredTemplates.map(template => {
           const dateToShow = this.sort === 'created_at' ? 'created_at' : this.sort === 'updated_at' ? 'updated_at' : 'last_used_at';
           const date = template[dateToShow];
 
@@ -416,7 +429,6 @@ export class VerdocsTemplatesList {
               itemCount={this.count}
               onSelectPage={e => {
                 this.selectedPage = e.detail.selectedPage;
-                return this.queryTemplates();
               }}
             />
           </div>

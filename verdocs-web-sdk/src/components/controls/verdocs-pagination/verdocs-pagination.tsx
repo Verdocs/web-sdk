@@ -8,6 +8,8 @@ const ChevronDoubleRight = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" 
 
 type TPageNumber = number | 'first' | 'last';
 
+const VISIBLE_PAGES = 5;
+
 const PageButton: FunctionalComponent<{page: TPageNumber; selected: number; onClick: (page: TPageNumber) => void}> = ({page, selected, onClick}) => {
   let label;
   if (page === 'first') {
@@ -58,12 +60,9 @@ export class VerdocsQuickFilter {
   }
 
   render() {
-    const numPages = this.itemCount > 0 ? Math.ceil(this.itemCount / this.perPage) : 0;
-
-    // If there are 10 pages:
-    //   If page == 0 => firstPage: 0, numPagesToDisplay:
     const firstPage = Math.max(0, this.selectedPage - 2);
-    const numPagesToDisplay = Math.min(numPages, 5);
+    const numPages = this.itemCount > 0 ? Math.ceil(this.itemCount / this.perPage) : 0;
+    const pagesToDisplay = integerSequence(0, Math.ceil(this.itemCount / this.perPage)).slice(firstPage, firstPage + VISIBLE_PAGES);
 
     return (
       <Host>
@@ -71,11 +70,11 @@ export class VerdocsQuickFilter {
 
         {firstPage > 0 && <div class="ellipsis">...</div>}
 
-        {integerSequence(firstPage, numPagesToDisplay - firstPage).map(pageNumber => (
+        {pagesToDisplay.map(pageNumber => (
           <PageButton page={pageNumber} selected={this.selectedPage} onClick={page => this.handleSelectPage(+page)} />
         ))}
 
-        {numPagesToDisplay < numPages && <div class="ellipsis">...</div>}
+        {this.selectedPage < numPages - 1 && <div class="ellipsis">...</div>}
 
         {this.selectedPage < numPages - 1 && <PageButton page={'last'} selected={this.selectedPage} onClick={() => this.handleSelectPage(numPages - 1)} />}
       </Host>

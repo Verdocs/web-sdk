@@ -396,10 +396,10 @@ export class VerdocsSign {
 
         // TODO: This is a temporary hack. After submitting, if we immediately show the View component it won't have re-renedered the
         //  pages yet with our submitted data.
-        setTimeout(() => {
-          console.log('[SIGN] Reloading');
-          window.location.reload();
-        }, 1000);
+        // setTimeout(() => {
+        //   console.log('[SIGN] Reloading');
+        //   window.location.reload();
+        // }, 250);
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
       }
@@ -603,7 +603,7 @@ export class VerdocsSign {
           </div>
         </div>
 
-        {!this.agreed ? <div class="cover" /> : <div style={{display: 'none'}} />}
+        {!this.agreed && <div class="cover" />}
 
         <div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
           {(this.envelope.documents || []).map(envelopeDocument => {

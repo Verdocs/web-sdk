@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
-import { IActivityEntry, IEnvelope, IEnvelopeField, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
+import { IActivityEntry, IEnvelope, IEnvelopeField, IEnvelopeSummary, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
@@ -251,25 +251,29 @@ export namespace Components {
     }
     interface VerdocsEnvelopesList {
         /**
-          * If set, filter envelopes by the specified "containing" value.
-         */
-        "containing": string;
-        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * If set, filter envelopes by the specified name.
+          * If set, filter envelopes by the specified string.
          */
-        "name": string;
+        "match": string;
+        /**
+          * The number of rows to display per page.
+         */
+        "rowsPerPage": number;
         /**
           * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
          */
         "selectedPage": number;
         /**
+          * Whether or not pagination should be enabled.
+         */
+        "showPagination": boolean;
+        /**
           * The sort field to use
          */
-        "sort": 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status';
+        "sort": 'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status';
         /**
           * The status value to filter by
          */
@@ -983,7 +987,7 @@ export namespace Components {
         /**
           * The document to display status for. Ignored if `status` is set directly.
          */
-        "envelope"?: IEnvelope;
+        "envelope"?: IEnvelope | IEnvelopeSummary;
         /**
           * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
          */
@@ -1212,6 +1216,10 @@ export namespace Components {
           * If desired, the autocomplete attribute to set.
          */
         "autocomplete": string;
+        /**
+          * If set, a clear button will be displayed.
+         */
+        "clearable": boolean;
         /**
           * Should the field be disabled?
          */
@@ -2314,21 +2322,33 @@ declare namespace LocalJSX {
     }
     interface VerdocsEnvelopesList {
         /**
-          * If set, filter envelopes by the specified "containing" value.
-         */
-        "containing"?: string;
-        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * If set, filter envelopes by the specified name.
+          * If set, filter envelopes by the specified string.
          */
-        "name"?: string;
+        "match"?: string;
+        /**
+          * Event fired when the user changes the match filter. This is fired for every inputChange event (every character typed). This event is provided for balance with the other events, but host applications should generally not save this value. Users might appreciate applications remembering their sorting or filtering preferences, but probably not their search terms.
+         */
+        "onChangeMatch"?: (event: VerdocsEnvelopesListCustomEvent<string>) => void;
+        /**
+          * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+         */
+        "onChangeSort"?: (event: VerdocsEnvelopesListCustomEvent<'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status'>) => void;
+        /**
+          * Event fired when the user changes their status filter. Host applications can use this to save the user's preferences.
+         */
+        "onChangeStatus"?: (event: VerdocsEnvelopesListCustomEvent<TEnvelopeStatus | 'all'>) => void;
+        /**
+          * Event fired when the user changes their view. Host applications can use this to save the user's preferences.
+         */
+        "onChangeView"?: (event: VerdocsEnvelopesListCustomEvent<'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting'>) => void;
         /**
           * Event fired when the user clicks to finish signing later. Typically the host application should redirect the user to another page.
          */
-        "onFinishLater"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        "onFinishLater"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
@@ -2336,15 +2356,23 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
          */
-        "onViewEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        "onViewEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>) => void;
+        /**
+          * The number of rows to display per page.
+         */
+        "rowsPerPage"?: number;
         /**
           * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
          */
         "selectedPage"?: number;
         /**
+          * Whether or not pagination should be enabled.
+         */
+        "showPagination"?: boolean;
+        /**
           * The sort field to use
          */
-        "sort"?: 'created_at' | 'updated_at' | 'envelope_name' | 'canceled_at' | 'envelope_status';
+        "sort"?: 'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status';
         /**
           * The status value to filter by
          */
@@ -3253,7 +3281,7 @@ declare namespace LocalJSX {
         /**
           * The document to display status for. Ignored if `status` is set directly.
          */
-        "envelope"?: IEnvelope;
+        "envelope"?: IEnvelope | IEnvelopeSummary;
         /**
           * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
          */
@@ -3646,6 +3674,10 @@ declare namespace LocalJSX {
           * If desired, the autocomplete attribute to set.
          */
         "autocomplete"?: string;
+        /**
+          * If set, a clear button will be displayed.
+         */
+        "clearable"?: boolean;
         /**
           * Should the field be disabled?
          */

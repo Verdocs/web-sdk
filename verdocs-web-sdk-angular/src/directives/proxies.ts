@@ -467,30 +467,50 @@ to redirect the user to the appropriate next workflow step.
 
 
 @ProxyCmp({
-  inputs: ['containing', 'endpoint', 'name', 'selectedPage', 'sort', 'status', 'view']
+  inputs: ['endpoint', 'match', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'status', 'view']
 })
 @Component({
   selector: 'verdocs-envelopes-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['containing', 'endpoint', 'name', 'selectedPage', 'sort', 'status', 'view'],
+  inputs: ['endpoint', 'match', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'status', 'view'],
 })
 export class VerdocsEnvelopesList {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'finishLater']);
+    proxyOutputs(this, this.el, ['changeView', 'changeStatus', 'changeSort', 'changeMatch', 'sdkError', 'viewEnvelope', 'finishLater']);
   }
 }
 
 
+import type { TEnvelopeStatus as IVerdocsEnvelopesListTEnvelopeStatus } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsEnvelopesListSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsEnvelopesListVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IEnvelope as IVerdocsEnvelopesListIEnvelope } from '@verdocs/web-sdk';
+import type { IEnvelopeSummary as IVerdocsEnvelopesListIEnvelopeSummary } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopesList extends Components.VerdocsEnvelopesList {
+  /**
+   * Event fired when the user changes their view. Host applications can use this to save the user's preferences.
+   */
+  changeView: EventEmitter<CustomEvent<'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting'>>;
+  /**
+   * Event fired when the user changes their status filter. Host applications can use this to save the user's preferences.
+   */
+  changeStatus: EventEmitter<CustomEvent<IVerdocsEnvelopesListTEnvelopeStatus | 'all'>>;
+  /**
+   * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+   */
+  changeSort: EventEmitter<CustomEvent<'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status'>>;
+  /**
+   * Event fired when the user changes the match filter. This is fired for every inputChange event (every character
+typed). This event is provided for balance with the other events, but host applications should generally not
+save this value. Users might appreciate applications remembering their sorting or filtering preferences, but
+probably not their search terms.
+   */
+  changeMatch: EventEmitter<CustomEvent<string>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -2212,14 +2232,14 @@ probably not their search terms.
 
 
 @ProxyCmp({
-  inputs: ['autocomplete', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value']
+  inputs: ['autocomplete', 'clearable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value']
 })
 @Component({
   selector: 'verdocs-text-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autocomplete', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value'],
+  inputs: ['autocomplete', 'clearable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value'],
 })
 export class VerdocsTextInput {
   protected el: HTMLElement;

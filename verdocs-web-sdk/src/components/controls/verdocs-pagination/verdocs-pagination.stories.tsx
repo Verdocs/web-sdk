@@ -6,7 +6,7 @@ export default {
   component: 'verdocs-pagination',
   args: {
     selectedPage: 0,
-    itemCount: 37,
+    itemCount: 67,
     perPage: 10,
     argTypes: {
       onSelectPage: {action: 'selectPage'},

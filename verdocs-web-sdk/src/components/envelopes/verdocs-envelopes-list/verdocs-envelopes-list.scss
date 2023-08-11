@@ -7,9 +7,17 @@ verdocs-envelopes-list {
   flex-wrap: nowrap;
   border-radius: 6px;
   color: $label-color;
-  align-items: center;
+  //align-items: center;
   flex-direction: column;
   font-family: $primary-font;
+
+  .envelope-placeholder {
+    height: 48px;
+    flex: 0 0 48px;
+    margin: 5px 0;
+    border-radius: 5px;
+    background: $verdocs-grey-3;
+  }
 
   .header {
     width: 100%;
@@ -22,7 +30,7 @@ verdocs-envelopes-list {
     flex-direction: row;
 
     .filter {
-      width: 150px;
+      width: 300px;
     }
 
     verdocs-text-input {

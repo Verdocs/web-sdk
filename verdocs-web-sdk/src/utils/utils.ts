@@ -5,7 +5,7 @@ import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {rescale} from '@verdocs/js-sdk/Utils/Fields';
 import {downloadBlob} from '@verdocs/js-sdk/Utils/Files';
 import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IEnvelopeField, IEnvelope, TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
+import {IEnvelopeField, IEnvelope, TDocumentFieldType, IEnvelopeSummary} from '@verdocs/js-sdk/Envelopes/Types';
 import {FORMAT_DATE, IDocumentPageInfo} from './Types';
 
 export const defaultWidth = (type: TDocumentFieldType) => {
@@ -336,7 +336,7 @@ export const saveCertificate = async (endpoint: VerdocsEndpoint, envelope: IEnve
   downloadBlob(data, fileName);
 };
 
-export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: IEnvelope[]) => {
+export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: (IEnvelope | IEnvelopeSummary)[]) => {
   const zip = new jszip();
 
   for await (let envelope of envelopes) {

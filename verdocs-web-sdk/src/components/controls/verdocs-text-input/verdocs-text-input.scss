@@ -52,4 +52,22 @@ verdocs-text-input {
   [data-lastpass-icon-root] {
     display: none !important;
   }
+
+  .input-container {
+    position: relative;
+  }
+
+  .clear {
+    top: 7px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    fill: #cccccc;
+    position: absolute;
+
+    &:hover {
+      fill: #720101;
+      cursor: pointer;
+    }
+  }
 }
