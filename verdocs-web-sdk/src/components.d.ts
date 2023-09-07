@@ -2346,9 +2346,9 @@ declare namespace LocalJSX {
          */
         "onChangeView"?: (event: VerdocsEnvelopesListCustomEvent<'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting'>) => void;
         /**
-          * Event fired when the user clicks to finish signing later. Typically the host application should redirect the user to another page.
+          * Event fired when the user clicks to finish the envelope.
          */
-        "onFinishLater"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>) => void;
+        "onFinishEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */

@@ -130,10 +130,9 @@ export class VerdocsEnvelopesList {
   @Event({composed: true}) viewEnvelope: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>;
 
   /**
-   * Event fired when the user clicks to finish signing later. Typically the host application should redirect
-   * the user to another page.
+   * Event fired when the user clicks to finish the envelope.
    */
-  @Event({composed: true}) finishLater: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>;
+  @Event({composed: true}) finishEnvelope: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>;
 
   @State() count = 0;
   @State() initiallyLoaded = false;
@@ -434,7 +433,7 @@ export class VerdocsEnvelopesList {
                         this.viewEnvelope?.emit({endpoint: this.endpoint, envelope});
                         break;
                       case 'finish':
-                        this.finishLater?.emit({endpoint: this.endpoint, envelope});
+                        this.finishEnvelope?.emit({endpoint: this.endpoint, envelope});
                         break;
                       case 'download':
                         this.downloadEnvelope(envelope);
@@ -444,6 +443,7 @@ export class VerdocsEnvelopesList {
                           cancelEnvelope(this.endpoint, envelope.id)
                             .then(() => VerdocsToast('Envelope canceled'))
                             .catch(e => VerdocsToast('Unable to cancel envelope: ' + e.messabge, {style: 'error'}));
+                          this.queryEnvelopes().catch(() => {});
                         }
                         break;
                     }

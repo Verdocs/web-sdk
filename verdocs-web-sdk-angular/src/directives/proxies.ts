@@ -481,7 +481,7 @@ export class VerdocsEnvelopesList {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['changeView', 'changeStatus', 'changeSort', 'changeMatch', 'sdkError', 'viewEnvelope', 'finishLater']);
+    proxyOutputs(this, this.el, ['changeView', 'changeStatus', 'changeSort', 'changeMatch', 'sdkError', 'viewEnvelope', 'finishEnvelope']);
   }
 }
 
@@ -522,10 +522,9 @@ to the envelope detail view.
    */
   viewEnvelope: EventEmitter<CustomEvent<IVerdocsEnvelopesListIVerdocsEnvelopesList{endpoint: [object Object]; envelope: [object Object]}>>;
   /**
-   * Event fired when the user clicks to finish signing later. Typically the host application should redirect
-the user to another page.
+   * Event fired when the user clicks to finish the envelope.
    */
-  finishLater: EventEmitter<CustomEvent<IVerdocsEnvelopesListIVerdocsEnvelopesList{endpoint: [object Object]; envelope: [object Object]}>>;
+  finishEnvelope: EventEmitter<CustomEvent<IVerdocsEnvelopesListIVerdocsEnvelopesList{endpoint: [object Object]; envelope: [object Object]}>>;
 }
 
 

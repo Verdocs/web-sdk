@@ -576,25 +576,11 @@ export class VerdocsSign {
 
     return (
       <Host class={{agreed: this.agreed}}>
-        {!this.agreed && !this.finishLater && (
-          <div class="intro">
-            <div class="inner">Please review and act on these documents.</div>
-          </div>
-        )}
-
         <div id="verdocs-sign-header">
           <div class="inner">
-            {!this.agreed ? (
-              <div class="agree">
-                <verdocs-checkbox name="agree" label="I agree to use electronic records and signatures." onInput={() => this.handleClickAgree()} />
-              </div>
-            ) : (
-              <Fragment>
-                <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-                <div class="title">{this.envelope.name}</div>
-                <div style={{flex: '1'}} />
-              </Fragment>
-            )}
+            <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+            <div class="title">{this.envelope.name}</div>
+            <div style={{flex: '1'}} />
 
             {!this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
 
@@ -602,8 +588,6 @@ export class VerdocsSign {
             <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
           </div>
         </div>
-
-        {!this.agreed && <div class="cover" />}
 
         <div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
           {(this.envelope.documents || []).map(envelopeDocument => {
@@ -680,6 +664,34 @@ export class VerdocsSign {
         {this.submitting && (
           <div class="loading-indicator">
             <verdocs-loader />
+          </div>
+        )}
+
+        {!this.agreed && (
+          <div class="cover">
+            <div class="agree">
+              <verdocs-checkbox name="agree" label="By checking this box, you:" onInput={() => this.handleClickAgree()} />
+              <ul>
+                <li>
+                  Agree to use electronic records and signatures, and confirm you have read the{' '}
+                  <a href="https://verdocs.com/en/electronic-record-signature-disclosure/" target="_blank">
+                    Electronic Record and Signatures Disclosure
+                  </a>
+                  .
+                </li>
+                <li>
+                  Agree to Verdocs{' '}
+                  <a href="https://verdocs.com/en/eula" target="_blank">
+                    End User License Agreement
+                  </a>{' '}
+                  and confirm you have read Verdocs'{' '}
+                  <a href="https://verdocs.com/en/privacy-policy/" target="_blank">
+                    Privacy Policy
+                  </a>
+                  .
+                </li>
+              </ul>
+            </div>
           </div>
         )}
       </Host>

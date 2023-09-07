@@ -18,37 +18,27 @@ verdocs-sign {
     vertical-align: top;
   }
 
-  .intro {
-    width: 100%;
-    display: flex;
-    flex: 0 0 60px;
-    color: #111111;
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 28px;
-    flex-direction: row;
-    background: #ffffff;
-
-    .inner {
-      width: 100%;
-      display: flex;
-      margin: 0 auto;
-      padding: 0 20px;
-      max-width: 1200px;
-      flex-direction: row;
-      align-items: center;
-    }
-  }
-
-  .cover {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 999;
-    position: absolute;
-    background: rgba(0, 0, 0, 0.5);
-  }
+  //.intro {
+  //  width: 100%;
+  //  display: flex;
+  //  flex: 0 0 60px;
+  //  color: #111111;
+  //  font-size: 18px;
+  //  font-weight: 500;
+  //  line-height: 28px;
+  //  flex-direction: row;
+  //  background: #ffffff;
+  //
+  //  .inner {
+  //    width: 100%;
+  //    display: flex;
+  //    margin: 0 auto;
+  //    padding: 0 20px;
+  //    max-width: 1200px;
+  //    flex-direction: row;
+  //    align-items: center;
+  //  }
+  //}
 
   > .document {
     flex: 1;
@@ -73,19 +63,35 @@ verdocs-sign {
     }
   }
 
-  .agree {
-    flex: 1;
+  .cover {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
-    flex-direction: row;
+    z-index: 5000;
+    position: absolute;
+    padding-top: 100px;
     align-items: center;
-    padding: 0 15px;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.5);
+  }
 
-    .intro {
-      display: none;
-    }
+  .agree {
+    flex: 0;
+    width: 600px;
+    display: flex;
+    max-width: 90%;
+    padding: 30px 15px;
+    flex-direction: column;
+    background-color: #ffffff;
 
     .header {
       flex: 0 0 56px;
+    }
+
+    li {
+      margin: 0.5em 0;
     }
   }
 
