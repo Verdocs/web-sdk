@@ -750,6 +750,10 @@ export namespace Components {
     }
     interface VerdocsHelpIcon {
         /**
+          * Optional icon to display. If not supplied, a standard help icon will be shown.
+         */
+        "icon": string;
+        /**
           * Help text to display on hover/focus
          */
         "text": string;
@@ -2949,6 +2953,10 @@ declare namespace LocalJSX {
         "options"?: IOption[];
     }
     interface VerdocsHelpIcon {
+        /**
+          * Optional icon to display. If not supplied, a standard help icon will be shown.
+         */
+        "icon"?: string;
         /**
           * Help text to display on hover/focus
          */

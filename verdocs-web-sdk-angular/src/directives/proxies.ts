@@ -1027,14 +1027,14 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
 
 
 @ProxyCmp({
-  inputs: ['text']
+  inputs: ['icon', 'text']
 })
 @Component({
   selector: 'verdocs-help-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['text'],
+  inputs: ['icon', 'text'],
 })
 export class VerdocsHelpIcon {
   protected el: HTMLElement;

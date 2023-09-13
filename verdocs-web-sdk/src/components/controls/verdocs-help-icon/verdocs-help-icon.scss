@@ -8,15 +8,10 @@ verdocs-help-icon {
 
   &:hover {
     opacity: 1;
-    //cursor: none;
   }
 
   .icon {
     display: inline-block;
-
-    svg {
-      fill: $choice-available-color;
-    }
   }
 
   .tooltip {
