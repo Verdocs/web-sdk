@@ -1,10 +1,13 @@
-import {Auth} from '@verdocs/js-sdk/Users';
+import {Token} from '@verdocs/js-sdk/Utils';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {Auth, Profiles} from '@verdocs/js-sdk/Users';
 import {TSession} from '@verdocs/js-sdk/Sessions/Types';
 import {Organizations} from '@verdocs/js-sdk/Organizations';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+
+const RECHECK_INTERVAL = 5000;
 
 const Industries = [
   {value: '', label: ''},
@@ -120,7 +123,7 @@ export class VerdocsAuth {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() isAuthenticated: boolean = false;
-  @State() displayMode: string = 'login';
+  @State() displayMode: 'login' | 'forgot' | 'signup' | 'verify' = 'login';
   @State() orgname: string = '';
   @State() orgAvailable: '' | 'TAKEN' | 'OK' = '';
   @State() first: string = '';
@@ -128,14 +131,19 @@ export class VerdocsAuth {
   @State() username: string = '';
   @State() phone: string = '';
   @State() password: string = '';
-  @State() loggingIn: boolean = false;
+  @State() submitting: boolean = false;
   @State() activeSession: TSession = null;
   @State() accountType: 'personal' | 'org' = 'org';
   @State() howHear: string = '';
   @State() industry: string = '';
   @State() companySize: string = '';
   @State() reason: string = '';
-  @State() step = 1;
+  @State() signupStep = 1;
+  @State() resendDisabled = false;
+
+  recheckTimer = null;
+  resendDisabledTimer = null;
+  accessTokenForVerification = null;
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -150,41 +158,97 @@ export class VerdocsAuth {
     }
   }
 
-  handleSignup() {
-    this.loggingIn = true;
+  disconnectedCallback() {
+    this.cancelRecheckTimer();
+  }
 
-    Auth.authenticateUser(this.endpoint, {username: this.username, password: this.password})
+  cancelRecheckTimer() {
+    if (this.recheckTimer) {
+      try {
+        clearTimeout(this.recheckTimer);
+      } catch (e) {
+        // NOP
+      }
+      this.recheckTimer = null;
+    }
+
+    if (this.resendDisabledTimer) {
+      try {
+        clearTimeout(this.resendDisabledTimer);
+      } catch (e) {
+        // NOP
+      }
+      this.resendDisabledTimer = null;
+    }
+  }
+
+  handleSignup() {
+    this.submitting = true;
+    this.accessTokenForVerification = null;
+
+    Profiles.createBusinessAccount(this.endpoint, {
+      email: this.username,
+      password: this.password,
+      firstName: this.first,
+      lastName: this.last,
+      orgName: this.orgname,
+      industry: this.industry,
+      size: this.companySize,
+      // source?: string;
+      // referral?: string;
+      // coupon?: string;
+      reason: this.reason,
+      hearabout: this.howHear,
+    })
       .then(r => {
-        this.loggingIn = false;
-        this.endpoint.setToken(r.accessToken);
-        this.activeSession = this.endpoint.session;
-        this.isAuthenticated = true;
-        this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
+        console.log('Result', r);
+        console.log('[AUTH] Created profile', r.profile);
+        console.log('[AUTH] Created organization', r.organization);
+        this.loginAndCheckVerification();
       })
       .catch(e => {
-        console.log('[AUTH] Authentication error', e.response, JSON.stringify(e));
-        this.loggingIn = false;
+        console.log('[AUTH] Signup error', e.response, JSON.stringify(e));
+        this.submitting = false;
         this.activeSession = null;
         this.authenticated?.emit({authenticated: false, session: null});
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
 
-        VerdocsToast('Login failed. Please check your username and password and try again.', {style: 'error'});
+        VerdocsToast('Signup failed: ' + e.response?.data, {style: 'error'});
       });
   }
 
-  handleLogin() {
-    this.loggingIn = true;
+  loginAndCheckVerification() {
+    this.submitting = true;
+    this.accessTokenForVerification = null;
+
     Auth.authenticateUser(this.endpoint, {username: this.username, password: this.password})
       .then(r => {
-        this.loggingIn = false;
-        this.endpoint.setToken(r.accessToken);
-        this.activeSession = this.endpoint.session;
-        this.isAuthenticated = true;
-        this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
+        this.cancelRecheckTimer();
+        this.submitting = false;
+
+        const body = Token.decodeAccessTokenBody(r.accessToken);
+        console.log('[AUTH] Got access token body', body);
+        if (body?.email_verified) {
+          console.log('[AUTH] Email address is verified, completing login');
+          this.displayMode = 'login'; // After signing out, this will be the next mode
+          this.accessTokenForVerification = null;
+          this.endpoint.setToken(r.accessToken);
+          this.activeSession = this.endpoint.session;
+          this.isAuthenticated = true;
+          this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
+        } else {
+          console.log('[AUTH] Logged in, pending email address verification');
+          this.displayMode = 'verify';
+          this.accessTokenForVerification = r.accessToken;
+          this.recheckTimer = setTimeout(() => this.loginAndCheckVerification(), RECHECK_INTERVAL);
+        }
       })
       .catch(e => {
+        this.cancelRecheckTimer();
+
         console.log('[AUTH] Authentication error', e.response, JSON.stringify(e));
-        this.loggingIn = false;
+        this.displayMode = 'login';
+        this.submitting = false;
         this.activeSession = null;
         this.authenticated?.emit({authenticated: false, session: null});
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -196,7 +260,42 @@ export class VerdocsAuth {
   handleLogout() {
     this.endpoint.clearSession();
     this.isAuthenticated = false;
+    this.accessTokenForVerification = null;
     this.authenticated?.emit({authenticated: false, session: null});
+  }
+
+  handleResend() {
+    // Avoid the user just click-spamming this pathway. The server rate-limits this anyway so it's not a
+    // security issue but it's a poor user experience to allow it.
+    this.resendDisabled = true;
+    this.resendDisabledTimer = setTimeout(() => {
+      this.resendDisabled = false;
+      this.resendDisabledTimer = null;
+    }, 30000);
+
+    Auth.resendVerification(this.endpoint, this.accessTokenForVerification)
+      .then(r => {
+        console.log('[AUTH] Verification request resent', r);
+        VerdocsToast('Please check your email for a message with verification instructions.', {style: 'info'});
+      })
+      .catch((e: any) => {
+        console.log('[AUTH] Unable to resend verification', e);
+      });
+  }
+
+  handleReset() {
+    this.submitting = true;
+    Auth.resetPassword(this.endpoint, {email: this.username})
+      .then(r => {
+        console.log('[AUTH] Reset sent', r);
+        this.submitting = false;
+        this.displayMode = 'login';
+        VerdocsToast('If your email address is registered, you will receive instructions on resetting your password shortly.', {style: 'info'});
+      })
+      .catch((e: any) => {
+        console.log('[AUTH] Unable to reset password', e);
+        this.submitting = false;
+      });
   }
 
   async checkAvailability(name: string) {
@@ -215,23 +314,30 @@ export class VerdocsAuth {
 
     if (this.isAuthenticated) {
       return (
-        <verdocs-button label="Sign Out" disabled={this.loggingIn} onClick={() => this.handleLogout()} style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}} />
+        <verdocs-button
+          label="Sign Out"
+          disabled={this.submitting}
+          onClick={() => this.handleLogout()}
+          style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
+        />
       );
     }
 
     if (this.displayMode === 'signup') {
-      const step1Valid = this.loggingIn || !this.first || !this.last || !this.username || !this.password || !this.orgname || this.orgAvailable !== 'OK';
+      const step1Invalid = this.submitting || !this.first || !this.last || !this.username || !this.password || !this.orgname || this.orgAvailable !== 'OK';
+      console.log({step1Invalid}, this.orgAvailable);
+
       return (
-        <div class="signup-form">
+        <div class="form">
           <img src={this.logo} alt="Verdocs Logo" class="logo" />
 
           <h3>Sign up for a trial account</h3>
           <h4>
             Already have an account?
-            <verdocs-button label="Log In" variant="text" onClick={() => (this.displayMode = 'login')} disabled={this.loggingIn} />
+            <verdocs-button label="Log In" variant="text" onClick={() => (this.displayMode = 'login')} disabled={this.submitting} />
           </h4>
 
-          {this.step === 1 && (
+          {this.signupStep === 1 && (
             <form onSubmit={() => this.handleSignup()}>
               <div style={{display: 'flex', flexDirection: 'row', columnGap: '20px'}}>
                 <verdocs-text-input
@@ -240,7 +346,7 @@ export class VerdocsAuth {
                   required={true}
                   value={this.first}
                   onInput={(e: any) => (this.first = e.target.value)}
-                  disabled={this.loggingIn}
+                  disabled={this.submitting}
                 />
                 <verdocs-text-input
                   label="Last Name"
@@ -248,7 +354,7 @@ export class VerdocsAuth {
                   required={true}
                   value={this.last}
                   onInput={(e: any) => (this.last = e.target.value)}
-                  disabled={this.loggingIn}
+                  disabled={this.submitting}
                 />
               </div>
               <verdocs-text-input
@@ -257,9 +363,9 @@ export class VerdocsAuth {
                 required={true}
                 value={this.username}
                 onInput={(e: any) => (this.username = e.target.value)}
-                disabled={this.loggingIn}
+                disabled={this.submitting}
               />
-              <verdocs-text-input label="Phone #" autocomplete="phone" value={this.phone} onInput={(e: any) => (this.phone = e.target.value)} disabled={this.loggingIn} />
+              <verdocs-text-input label="Phone #" autocomplete="phone" value={this.phone} onInput={(e: any) => (this.phone = e.target.value)} disabled={this.submitting} />
               <verdocs-text-input
                 label="Password"
                 type="password"
@@ -267,7 +373,7 @@ export class VerdocsAuth {
                 autocomplete="current-password"
                 value={this.password}
                 onInput={(e: any) => (this.password = e.target.value)}
-                disabled={this.loggingIn}
+                disabled={this.submitting}
               />
               <verdocs-text-input
                 label="Organization Name"
@@ -275,45 +381,50 @@ export class VerdocsAuth {
                 required={true}
                 value={this.orgname}
                 onInput={(e: any) => this.checkAvailability(e.target.value)}
-                disabled={this.loggingIn}
+                disabled={this.submitting}
               />
               {this.orgAvailable === 'TAKEN' && <p style={{color: 'red'}}>This organization name is already taken.</p>}
 
               <div style={{marginTop: '30px'}} />
 
-              <verdocs-button label="Next" disabled={step1Valid} onClick={() => (this.step = 2)} style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}} />
+              <verdocs-button
+                label="Next"
+                disabled={step1Invalid}
+                onClick={() => (this.signupStep = 2)}
+                style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
+              />
             </form>
           )}
 
-          {this.step === 2 && (
+          {this.signupStep === 2 && (
             <form onSubmit={() => this.handleSignup()}>
-              <verdocs-text-input label="How did you hear about Verdocs?" value={this.howHear} onInput={(e: any) => (this.howHear = e.target.value)} disabled={this.loggingIn} />
+              <verdocs-text-input label="How did you hear about Verdocs?" value={this.howHear} onInput={(e: any) => (this.howHear = e.target.value)} disabled={this.submitting} />
               <verdocs-select-input
                 label="Your Industry"
                 options={Industries}
                 value={this.industry}
                 onInput={(e: any) => (this.industry = e.target.value)}
-                disabled={this.loggingIn}
+                disabled={this.submitting}
               />
               <verdocs-select-input
                 label="Company Size"
                 options={CompanySizes}
                 value={this.companySize}
                 onInput={(e: any) => (this.companySize = e.target.value)}
-                disabled={this.loggingIn}
+                disabled={this.submitting}
               />
-              <verdocs-select-input label="Purpose" options={Reasons} value={this.reason} onInput={(e: any) => (this.reason = e.target.value)} disabled={this.loggingIn} />
+              <verdocs-select-input label="Purpose" options={Reasons} value={this.reason} onInput={(e: any) => (this.reason = e.target.value)} disabled={this.submitting} />
               <div style={{marginTop: '30px'}} />
               <verdocs-button
                 label="Create Account"
-                disabled={this.loggingIn}
+                disabled={this.submitting}
                 onClick={() => this.handleSignup()}
                 style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
               />
             </form>
           )}
 
-          {this.step === 3 && (
+          {this.signupStep === 3 && (
             <form onSubmit={() => this.handleSignup()}>
               <p>Please check your e-mail inbox for a verification code and follow the instructions provided.</p>
               <p>
@@ -326,9 +437,9 @@ export class VerdocsAuth {
               <div style={{display: 'flex', flexDirection: 'row', gap: '20px'}}>
                 <verdocs-button
                   label="Back"
-                  disabled={this.loggingIn}
+                  disabled={this.submitting}
                   onClick={() => {
-                    this.step = 4;
+                    this.signupStep = 2;
                   }}
                   style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
                 />
@@ -345,8 +456,71 @@ export class VerdocsAuth {
       );
     }
 
+    if (this.displayMode === 'forgot') {
+      return (
+        <div class="form">
+          <img src={this.logo} alt="Verdocs Logo" class="logo" />
+
+          <h3>Forgot your password?</h3>
+
+          <p>Enter your e-mail address below, and reset instructions will be sent to your Inbox.</p>
+          <p>
+            <em>Please allow up to 24 hours for delivery, and check your spam folder if you do not receive the message. </em>
+          </p>
+
+          <form onSubmit={() => this.handleSignup()}>
+            <verdocs-text-input
+              label="Email"
+              autocomplete="email"
+              required={true}
+              value={this.username}
+              onInput={(e: any) => (this.username = e.target.value)}
+              disabled={this.submitting}
+            />
+
+            <div style={{marginTop: '30px'}} />
+
+            <div class="buttons">
+              <verdocs-button label="Cancel" variant="outline" disabled={this.submitting} onClick={() => (this.displayMode = 'login')} />
+              <verdocs-button label="Reset" disabled={this.submitting} onClick={() => this.handleReset()} />
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+    if (this.displayMode === 'verify') {
+      return (
+        <div class="form">
+          <img src={this.logo} alt="Verdocs Logo" class="logo" />
+
+          <h3>Please Verify your Email Address</h3>
+
+          <p>Check your e-mail inbox for a verification email, and follow the instructions provided.</p>
+          <p>
+            <em>Please allow up to 24 hours for delivery, and check your spam folder if you do not receive the message. </em>
+          </p>
+
+          <div class="buttons">
+            <verdocs-button
+              label="Sign Out"
+              variant="outline"
+              disabled={this.submitting}
+              onClick={() => {
+                this.username = '';
+                this.password = '';
+                this.cancelRecheckTimer();
+                this.displayMode = 'login';
+              }}
+            />
+            <verdocs-button label="Resend Email" disabled={this.resendDisabled} onClick={() => this.handleResend()} />
+          </div>
+        </div>
+      );
+    }
+
     return (
-      <div class="login-form">
+      <div class="form">
         <img src={this.logo} alt="Verdocs Logo" class="logo" />
 
         <h3>Log in to your account</h3>
@@ -357,32 +531,37 @@ export class VerdocsAuth {
             variant="text"
             onClick={() => {
               this.displayMode = 'signup';
-              this.step = 1;
+              this.signupStep = 1;
             }}
-            disabled={this.loggingIn}
+            disabled={this.submitting}
           />
         </h4>
 
-        <form onSubmit={() => this.handleLogin()}>
-          <verdocs-text-input label="Email" autocomplete="username" value={this.username} onInput={(e: any) => (this.username = e.target.value)} disabled={this.loggingIn} />
+        <form onSubmit={() => this.loginAndCheckVerification()}>
+          <verdocs-text-input label="Email" autocomplete="username" value={this.username} onInput={(e: any) => (this.username = e.target.value)} disabled={this.submitting} />
           <verdocs-text-input
             label="Password"
             type="password"
             autocomplete="current-password"
             value={this.password}
             onInput={(e: any) => (this.password = e.target.value)}
-            disabled={this.loggingIn}
+            disabled={this.submitting}
           />
 
           <verdocs-button
             label="Forgot Your Password?"
             variant="text"
-            onClick={() => (this.displayMode = 'signup')}
-            disabled={this.loggingIn}
+            onClick={() => (this.displayMode = 'forgot')}
+            disabled={this.submitting}
             style={{display: 'flex', justifyContent: 'center', margin: '10px auto 20px'}}
           />
 
-          <verdocs-button label="Login" disabled={this.loggingIn} onClick={() => this.handleLogin()} style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}} />
+          <verdocs-button
+            label="Login"
+            disabled={this.submitting}
+            onClick={() => this.loginAndCheckVerification()}
+            style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}}
+          />
         </form>
       </div>
     );
