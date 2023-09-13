@@ -11,8 +11,8 @@ import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmi
 import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {FORMAT_DATE, IDocumentPageInfo} from '../../../utils/Types';
-import {SDKError} from '../../../utils/errors';
 import {VerdocsToast} from '../../../utils/Toast';
+import {SDKError} from '../../../utils/errors';
 
 const inProgressMenuOptions = [
   {id: 'later', label: 'Finish Later'}, //
@@ -102,7 +102,7 @@ export class VerdocsSign {
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
   @State() nextSubmits = false;
-  @State() showSubmitDialog = false;
+  // @State() showSubmitDialog = false;
   @State() errorMessage = '';
   @State() focusedField = '';
   @State() submitting = false;
@@ -448,7 +448,7 @@ export class VerdocsSign {
     if (invalidFields.length < 1) {
       this.nextButtonLabel = 'Finish';
       if (!this.nextSubmits) {
-        this.showSubmitDialog = true;
+        // this.showSubmitDialog = true;
         this.nextSubmits = true;
       }
     } else {
@@ -646,20 +646,20 @@ export class VerdocsSign {
           />
         )}
 
-        {this.showSubmitDialog && (
-          <verdocs-ok-dialog
-            heading="Ready to Submit?"
-            message={`All required fields have been completed.<br />Are you ready to submit this document?`}
-            showCancel={true}
-            onExit={() => {
-              this.showSubmitDialog = false;
-            }}
-            onNext={() => {
-              this.showSubmitDialog = false;
-              return this.handleNext();
-            }}
-          />
-        )}
+        {/*{this.showSubmitDialog && (*/}
+        {/*  <verdocs-ok-dialog*/}
+        {/*    heading="Ready to Submit?"*/}
+        {/*    message={`All required fields have been completed.<br />Are you ready to submit this document?`}*/}
+        {/*    showCancel={true}*/}
+        {/*    onExit={() => {*/}
+        {/*      this.showSubmitDialog = false;*/}
+        {/*    }}*/}
+        {/*    onNext={() => {*/}
+        {/*      this.showSubmitDialog = false;*/}
+        {/*      return this.handleNext();*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*)}*/}
 
         {this.submitting && (
           <div class="loading-indicator">
