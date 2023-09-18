@@ -1536,6 +1536,111 @@ the `contactSuggestions` property.
 
 
 @ProxyCmp({
+  inputs: ['endpoint']
+})
+@Component({
+  selector: 'verdocs-settings',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint'],
+})
+export class VerdocsSettings {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError']);
+  }
+}
+
+
+import type { SDKError as IVerdocsSettingsSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsSettings extends Components.VerdocsSettings {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsSettingsSDKError>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint']
+})
+@Component({
+  selector: 'verdocs-settings-organization',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint'],
+})
+export class VerdocsSettingsOrganization {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError', 'organizationUpdated']);
+  }
+}
+
+
+import type { SDKError as IVerdocsSettingsOrganizationSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsSettingsOrganizationVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IOrganization as IVerdocsSettingsOrganizationIOrganization } from '@verdocs/web-sdk';
+
+export declare interface VerdocsSettingsOrganization extends Components.VerdocsSettingsOrganization {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsSettingsOrganizationSDKError>>;
+  /**
+   * Event fired when the user chooses the Edit option from the dropdown menu.
+   */
+  organizationUpdated: EventEmitter<CustomEvent<IVerdocsSettingsOrganizationIVerdocsSettingsOrganization{endpoint: [object Object]; organization: [object Object]}>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint']
+})
+@Component({
+  selector: 'verdocs-settings-profile',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint'],
+})
+export class VerdocsSettingsProfile {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError', 'profileUpdated']);
+  }
+}
+
+
+import type { SDKError as IVerdocsSettingsProfileSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsSettingsProfileVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IProfile as IVerdocsSettingsProfileIProfile } from '@verdocs/web-sdk';
+
+export declare interface VerdocsSettingsProfile extends Components.VerdocsSettingsProfile {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsSettingsProfileSDKError>>;
+  /**
+   * Event fired when the user chooses the Edit option from the dropdown menu.
+   */
+  profileUpdated: EventEmitter<CustomEvent<IVerdocsSettingsProfileIVerdocsSettingsProfile{endpoint: [object Object]; profile: [object Object]}>>;
+}
+
+
+@ProxyCmp({
   inputs: ['envelopeId', 'headerTargetId', 'inviteCode', 'roleId']
 })
 @Component({

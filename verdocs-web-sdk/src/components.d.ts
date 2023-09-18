@@ -19,6 +19,7 @@ import { IFilterOption } from "./components/controls/verdocs-quick-filter/verdoc
 import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
+import { IProfile } from "@verdocs/js-sdk/Users/Types";
 import { IGetTemplateSummarySortBy } from "@verdocs/js-sdk/Templates/Templates";
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
@@ -959,6 +960,24 @@ export namespace Components {
          */
         "templateId": string | null;
     }
+    interface VerdocsSettings {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+    }
+    interface VerdocsSettingsOrganization {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+    }
+    interface VerdocsSettingsProfile {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+    }
     interface VerdocsSign {
         /**
           * The ID of the envelope to sign.
@@ -1441,6 +1460,18 @@ export interface VerdocsSendCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSendElement;
 }
+export interface VerdocsSettingsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSettingsElement;
+}
+export interface VerdocsSettingsOrganizationCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSettingsOrganizationElement;
+}
+export interface VerdocsSettingsProfileCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSettingsProfileElement;
+}
 export interface VerdocsSignCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSignElement;
@@ -1790,6 +1821,24 @@ declare global {
         prototype: HTMLVerdocsSendElement;
         new (): HTMLVerdocsSendElement;
     };
+    interface HTMLVerdocsSettingsElement extends Components.VerdocsSettings, HTMLStencilElement {
+    }
+    var HTMLVerdocsSettingsElement: {
+        prototype: HTMLVerdocsSettingsElement;
+        new (): HTMLVerdocsSettingsElement;
+    };
+    interface HTMLVerdocsSettingsOrganizationElement extends Components.VerdocsSettingsOrganization, HTMLStencilElement {
+    }
+    var HTMLVerdocsSettingsOrganizationElement: {
+        prototype: HTMLVerdocsSettingsOrganizationElement;
+        new (): HTMLVerdocsSettingsOrganizationElement;
+    };
+    interface HTMLVerdocsSettingsProfileElement extends Components.VerdocsSettingsProfile, HTMLStencilElement {
+    }
+    var HTMLVerdocsSettingsProfileElement: {
+        prototype: HTMLVerdocsSettingsProfileElement;
+        new (): HTMLVerdocsSettingsProfileElement;
+    };
     interface HTMLVerdocsSignElement extends Components.VerdocsSign, HTMLStencilElement {
     }
     var HTMLVerdocsSignElement: {
@@ -1987,6 +2036,9 @@ declare global {
         "verdocs-search-tabs": HTMLVerdocsSearchTabsElement;
         "verdocs-select-input": HTMLVerdocsSelectInputElement;
         "verdocs-send": HTMLVerdocsSendElement;
+        "verdocs-settings": HTMLVerdocsSettingsElement;
+        "verdocs-settings-organization": HTMLVerdocsSettingsOrganizationElement;
+        "verdocs-settings-profile": HTMLVerdocsSettingsProfileElement;
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-spinner": HTMLVerdocsSpinnerElement;
@@ -3237,6 +3289,44 @@ declare namespace LocalJSX {
          */
         "templateId"?: string | null;
     }
+    interface VerdocsSettings {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsSettingsCustomEvent<SDKError>) => void;
+    }
+    interface VerdocsSettingsOrganization {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user chooses the Edit option from the dropdown menu.
+         */
+        "onOrganizationUpdated"?: (event: VerdocsSettingsOrganizationCustomEvent<{endpoint: VerdocsEndpoint; organization: IOrganization}>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsSettingsOrganizationCustomEvent<SDKError>) => void;
+    }
+    interface VerdocsSettingsProfile {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user chooses the Edit option from the dropdown menu.
+         */
+        "onProfileUpdated"?: (event: VerdocsSettingsProfileCustomEvent<{endpoint: VerdocsEndpoint; profile: IProfile}>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsSettingsProfileCustomEvent<SDKError>) => void;
+    }
     interface VerdocsSign {
         /**
           * The ID of the envelope to sign.
@@ -3849,6 +3939,9 @@ declare namespace LocalJSX {
         "verdocs-search-tabs": VerdocsSearchTabs;
         "verdocs-select-input": VerdocsSelectInput;
         "verdocs-send": VerdocsSend;
+        "verdocs-settings": VerdocsSettings;
+        "verdocs-settings-organization": VerdocsSettingsOrganization;
+        "verdocs-settings-profile": VerdocsSettingsProfile;
         "verdocs-sign": VerdocsSign;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-spinner": VerdocsSpinner;
@@ -3926,6 +4019,9 @@ declare module "@stencil/core" {
             "verdocs-search-tabs": LocalJSX.VerdocsSearchTabs & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
             "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;
             "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
+            "verdocs-settings": LocalJSX.VerdocsSettings & JSXBase.HTMLAttributes<HTMLVerdocsSettingsElement>;
+            "verdocs-settings-organization": LocalJSX.VerdocsSettingsOrganization & JSXBase.HTMLAttributes<HTMLVerdocsSettingsOrganizationElement>;
+            "verdocs-settings-profile": LocalJSX.VerdocsSettingsProfile & JSXBase.HTMLAttributes<HTMLVerdocsSettingsProfileElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
             "verdocs-spinner": LocalJSX.VerdocsSpinner & JSXBase.HTMLAttributes<HTMLVerdocsSpinnerElement>;
