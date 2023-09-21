@@ -1,0 +1,45 @@
+@import '../../../theme.scss';
+
+verdocs-settings-api-keys {
+  display: flex;
+  padding: 10px;
+  font-size: 18px;
+  flex-wrap: nowrap;
+  border-radius: 6px;
+  color: $label-color;
+  flex-direction: column;
+  font-family: $primary-font;
+
+  .table {
+    margin: 12px 0;
+  }
+
+  .role {
+    font-size: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 32px;
+    background: #777777;
+    color: #ffffff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .col.col-actions {
+    align-items: center;
+    text-align: center;
+
+    svg {
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      fill: #777777;
+
+      &:hover {
+        fill: red;
+      }
+    }
+  }
+}

@@ -20,6 +20,7 @@ import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IProfile } from "@verdocs/js-sdk/Users/Types";
+import { IColumn } from "./components/controls/verdocs-table/verdocs-table";
 import { IGetTemplateSummarySortBy } from "@verdocs/js-sdk/Templates/Templates";
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
@@ -966,6 +967,18 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
     }
+    interface VerdocsSettingsApiKeys {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+    }
+    interface VerdocsSettingsMembers {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+    }
     interface VerdocsSettingsOrganization {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1023,6 +1036,16 @@ export namespace Components {
           * The theme to use for diplay.
          */
         "theme"?: 'dark' | 'light';
+    }
+    interface VerdocsTable {
+        /**
+          * The columns to display
+         */
+        "columns": IColumn[];
+        /**
+          * The rows to display
+         */
+        "data": any[];
     }
     interface VerdocsTemplateAttachments {
         /**
@@ -1464,6 +1487,14 @@ export interface VerdocsSettingsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSettingsElement;
 }
+export interface VerdocsSettingsApiKeysCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSettingsApiKeysElement;
+}
+export interface VerdocsSettingsMembersCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSettingsMembersElement;
+}
 export interface VerdocsSettingsOrganizationCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSettingsOrganizationElement;
@@ -1827,6 +1858,18 @@ declare global {
         prototype: HTMLVerdocsSettingsElement;
         new (): HTMLVerdocsSettingsElement;
     };
+    interface HTMLVerdocsSettingsApiKeysElement extends Components.VerdocsSettingsApiKeys, HTMLStencilElement {
+    }
+    var HTMLVerdocsSettingsApiKeysElement: {
+        prototype: HTMLVerdocsSettingsApiKeysElement;
+        new (): HTMLVerdocsSettingsApiKeysElement;
+    };
+    interface HTMLVerdocsSettingsMembersElement extends Components.VerdocsSettingsMembers, HTMLStencilElement {
+    }
+    var HTMLVerdocsSettingsMembersElement: {
+        prototype: HTMLVerdocsSettingsMembersElement;
+        new (): HTMLVerdocsSettingsMembersElement;
+    };
     interface HTMLVerdocsSettingsOrganizationElement extends Components.VerdocsSettingsOrganization, HTMLStencilElement {
     }
     var HTMLVerdocsSettingsOrganizationElement: {
@@ -1862,6 +1905,12 @@ declare global {
     var HTMLVerdocsStatusIndicatorElement: {
         prototype: HTMLVerdocsStatusIndicatorElement;
         new (): HTMLVerdocsStatusIndicatorElement;
+    };
+    interface HTMLVerdocsTableElement extends Components.VerdocsTable, HTMLStencilElement {
+    }
+    var HTMLVerdocsTableElement: {
+        prototype: HTMLVerdocsTableElement;
+        new (): HTMLVerdocsTableElement;
     };
     interface HTMLVerdocsTemplateAttachmentsElement extends Components.VerdocsTemplateAttachments, HTMLStencilElement {
     }
@@ -2037,12 +2086,15 @@ declare global {
         "verdocs-select-input": HTMLVerdocsSelectInputElement;
         "verdocs-send": HTMLVerdocsSendElement;
         "verdocs-settings": HTMLVerdocsSettingsElement;
+        "verdocs-settings-api-keys": HTMLVerdocsSettingsApiKeysElement;
+        "verdocs-settings-members": HTMLVerdocsSettingsMembersElement;
         "verdocs-settings-organization": HTMLVerdocsSettingsOrganizationElement;
         "verdocs-settings-profile": HTMLVerdocsSettingsProfileElement;
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-spinner": HTMLVerdocsSpinnerElement;
         "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
+        "verdocs-table": HTMLVerdocsTableElement;
         "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-create": HTMLVerdocsTemplateCreateElement;
@@ -3299,6 +3351,50 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsSettingsCustomEvent<SDKError>) => void;
     }
+    interface VerdocsSettingsApiKeys {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user chooses to invite a new member.
+         */
+        "onMemberInvited"?: (event: VerdocsSettingsApiKeysCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
+        /**
+          * Event fired when the user chooses to invite a new member.
+         */
+        "onMemberRemoved"?: (event: VerdocsSettingsApiKeysCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
+        /**
+          * Event fired when the user chooses to invite a new member.
+         */
+        "onMemberUpdated"?: (event: VerdocsSettingsApiKeysCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsSettingsApiKeysCustomEvent<SDKError>) => void;
+    }
+    interface VerdocsSettingsMembers {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the user chooses to invite a new member.
+         */
+        "onMemberInvited"?: (event: VerdocsSettingsMembersCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
+        /**
+          * Event fired when the user chooses to invite a new member.
+         */
+        "onMemberRemoved"?: (event: VerdocsSettingsMembersCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
+        /**
+          * Event fired when the user chooses to invite a new member.
+         */
+        "onMemberUpdated"?: (event: VerdocsSettingsMembersCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsSettingsMembersCustomEvent<SDKError>) => void;
+    }
     interface VerdocsSettingsOrganization {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3392,6 +3488,16 @@ declare namespace LocalJSX {
           * The theme to use for diplay.
          */
         "theme"?: 'dark' | 'light';
+    }
+    interface VerdocsTable {
+        /**
+          * The columns to display
+         */
+        "columns"?: IColumn[];
+        /**
+          * The rows to display
+         */
+        "data"?: any[];
     }
     interface VerdocsTemplateAttachments {
         /**
@@ -3940,12 +4046,15 @@ declare namespace LocalJSX {
         "verdocs-select-input": VerdocsSelectInput;
         "verdocs-send": VerdocsSend;
         "verdocs-settings": VerdocsSettings;
+        "verdocs-settings-api-keys": VerdocsSettingsApiKeys;
+        "verdocs-settings-members": VerdocsSettingsMembers;
         "verdocs-settings-organization": VerdocsSettingsOrganization;
         "verdocs-settings-profile": VerdocsSettingsProfile;
         "verdocs-sign": VerdocsSign;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-spinner": VerdocsSpinner;
         "verdocs-status-indicator": VerdocsStatusIndicator;
+        "verdocs-table": VerdocsTable;
         "verdocs-template-attachments": VerdocsTemplateAttachments;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-create": VerdocsTemplateCreate;
@@ -4020,12 +4129,15 @@ declare module "@stencil/core" {
             "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;
             "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
             "verdocs-settings": LocalJSX.VerdocsSettings & JSXBase.HTMLAttributes<HTMLVerdocsSettingsElement>;
+            "verdocs-settings-api-keys": LocalJSX.VerdocsSettingsApiKeys & JSXBase.HTMLAttributes<HTMLVerdocsSettingsApiKeysElement>;
+            "verdocs-settings-members": LocalJSX.VerdocsSettingsMembers & JSXBase.HTMLAttributes<HTMLVerdocsSettingsMembersElement>;
             "verdocs-settings-organization": LocalJSX.VerdocsSettingsOrganization & JSXBase.HTMLAttributes<HTMLVerdocsSettingsOrganizationElement>;
             "verdocs-settings-profile": LocalJSX.VerdocsSettingsProfile & JSXBase.HTMLAttributes<HTMLVerdocsSettingsProfileElement>;
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
             "verdocs-spinner": LocalJSX.VerdocsSpinner & JSXBase.HTMLAttributes<HTMLVerdocsSpinnerElement>;
             "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
+            "verdocs-table": LocalJSX.VerdocsTable & JSXBase.HTMLAttributes<HTMLVerdocsTableElement>;
             "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
             "verdocs-template-create": LocalJSX.VerdocsTemplateCreate & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;

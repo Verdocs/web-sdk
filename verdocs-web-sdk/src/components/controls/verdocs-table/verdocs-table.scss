@@ -1,0 +1,39 @@
+@import '../../../theme.scss';
+
+verdocs-table {
+  font-family: $primary-font;
+  box-sizing: border-box;
+  margin: 0 0 10px 0;
+  display: block;
+  width: 100%;
+
+  .table-wrapper {
+    margin: 10px 0;
+    padding: 0;
+  }
+
+  .table {
+    width: 100%;
+    border: none;
+  }
+
+  .row {
+    &.header-row {
+    }
+
+    &.data-row {
+    }
+  }
+
+  .header-col {
+    text-align: left;
+    padding: 3px 8px;
+    font-weight: 700;
+    color: #555555;
+  }
+
+  .data-col {
+    padding: 3px 8px;
+    font-weight: 400;
+  }
+}

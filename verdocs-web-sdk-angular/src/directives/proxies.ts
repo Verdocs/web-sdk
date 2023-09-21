@@ -1570,6 +1570,96 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint']
 })
 @Component({
+  selector: 'verdocs-settings-api-keys',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint'],
+})
+export class VerdocsSettingsApiKeys {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError', 'memberInvited', 'memberUpdated', 'memberRemoved']);
+  }
+}
+
+
+import type { SDKError as IVerdocsSettingsApiKeysSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsSettingsApiKeysVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IProfile as IVerdocsSettingsApiKeysIProfile } from '@verdocs/web-sdk';
+
+export declare interface VerdocsSettingsApiKeys extends Components.VerdocsSettingsApiKeys {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsSettingsApiKeysSDKError>>;
+  /**
+   * Event fired when the user chooses to invite a new member.
+   */
+  memberInvited: EventEmitter<CustomEvent<IVerdocsSettingsApiKeysIVerdocsSettingsApiKeys{endpoint: [object Object]; member: [object Object]}>>;
+  /**
+   * Event fired when the user chooses to invite a new member.
+   */
+  memberUpdated: EventEmitter<CustomEvent<IVerdocsSettingsApiKeysIVerdocsSettingsApiKeys{endpoint: [object Object]; member: [object Object]}>>;
+  /**
+   * Event fired when the user chooses to invite a new member.
+   */
+  memberRemoved: EventEmitter<CustomEvent<IVerdocsSettingsApiKeysIVerdocsSettingsApiKeys{endpoint: [object Object]; member: [object Object]}>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint']
+})
+@Component({
+  selector: 'verdocs-settings-members',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint'],
+})
+export class VerdocsSettingsMembers {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError', 'memberInvited', 'memberUpdated', 'memberRemoved']);
+  }
+}
+
+
+import type { SDKError as IVerdocsSettingsMembersSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsSettingsMembersVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IProfile as IVerdocsSettingsMembersIProfile } from '@verdocs/web-sdk';
+
+export declare interface VerdocsSettingsMembers extends Components.VerdocsSettingsMembers {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsSettingsMembersSDKError>>;
+  /**
+   * Event fired when the user chooses to invite a new member.
+   */
+  memberInvited: EventEmitter<CustomEvent<IVerdocsSettingsMembersIVerdocsSettingsMembers{endpoint: [object Object]; member: [object Object]}>>;
+  /**
+   * Event fired when the user chooses to invite a new member.
+   */
+  memberUpdated: EventEmitter<CustomEvent<IVerdocsSettingsMembersIVerdocsSettingsMembers{endpoint: [object Object]; member: [object Object]}>>;
+  /**
+   * Event fired when the user chooses to invite a new member.
+   */
+  memberRemoved: EventEmitter<CustomEvent<IVerdocsSettingsMembersIVerdocsSettingsMembers{endpoint: [object Object]; member: [object Object]}>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint']
+})
+@Component({
   selector: 'verdocs-settings-organization',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
@@ -1756,6 +1846,28 @@ export class VerdocsStatusIndicator {
 
 
 export declare interface VerdocsStatusIndicator extends Components.VerdocsStatusIndicator {}
+
+
+@ProxyCmp({
+  inputs: ['columns', 'data']
+})
+@Component({
+  selector: 'verdocs-table',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['columns', 'data'],
+})
+export class VerdocsTable {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsTable extends Components.VerdocsTable {}
 
 
 @ProxyCmp({

@@ -57,10 +57,18 @@ export class VerdocsSettings {
           <div class={`tab ${this.tab === 'organization' ? 'active' : ''}`} onClick={() => (this.tab = 'organization')}>
             Organization
           </div>
+          <div class={`tab ${this.tab === 'members' ? 'active' : ''}`} onClick={() => (this.tab = 'members')}>
+            Members
+          </div>
+          <div class={`tab ${this.tab === 'apikeys' ? 'active' : ''}`} onClick={() => (this.tab = 'apikeys')}>
+            API Keys
+          </div>
         </div>
 
         {this.tab === 'profile' && <verdocs-settings-profile endpoint={this.endpoint} />}
         {this.tab === 'organization' && <verdocs-settings-organization endpoint={this.endpoint} />}
+        {this.tab === 'members' && <verdocs-settings-members endpoint={this.endpoint} />}
+        {this.tab === 'apikeys' && <verdocs-settings-api-keys endpoint={this.endpoint} />}
       </Host>
     );
   }
