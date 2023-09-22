@@ -1,0 +1,41 @@
+@import '../../../theme.scss';
+
+verdocs-dialog {
+  font-family: $primary-font;
+  box-sizing: border-box;
+
+  div {
+    box-sizing: border-box;
+  }
+
+  .background-overlay {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    z-index: 10000;
+    position: absolute;
+    align-items: center;
+    background: #0000007f;
+    justify-content: center;
+  }
+
+  .dialog {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    overflow: hidden;
+    background: $verdocs-grey-4;
+    padding: 16px;
+    box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
+  }
+
+  .heading {
+    display: flex;
+    font-size: 20px;
+    font-weight: 500;
+    flex-direction: row;
+  }
+}

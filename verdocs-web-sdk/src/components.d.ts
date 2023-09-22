@@ -168,6 +168,8 @@ export namespace Components {
          */
         "templateRole": IRole | null;
     }
+    interface VerdocsDialog {
+    }
     interface VerdocsDropdown {
         /**
           * The menu options to display.
@@ -1367,6 +1369,10 @@ export interface VerdocsContactPickerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsContactPickerElement;
 }
+export interface VerdocsDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsDialogElement;
+}
 export interface VerdocsDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDropdownElement;
@@ -1629,6 +1635,12 @@ declare global {
     var HTMLVerdocsContactPickerElement: {
         prototype: HTMLVerdocsContactPickerElement;
         new (): HTMLVerdocsContactPickerElement;
+    };
+    interface HTMLVerdocsDialogElement extends Components.VerdocsDialog, HTMLStencilElement {
+    }
+    var HTMLVerdocsDialogElement: {
+        prototype: HTMLVerdocsDialogElement;
+        new (): HTMLVerdocsDialogElement;
     };
     interface HTMLVerdocsDropdownElement extends Components.VerdocsDropdown, HTMLStencilElement {
     }
@@ -2048,6 +2060,7 @@ declare global {
         "verdocs-checkbox": HTMLVerdocsCheckboxElement;
         "verdocs-component-error": HTMLVerdocsComponentErrorElement;
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
+        "verdocs-dialog": HTMLVerdocsDialogElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-envelope-document-page": HTMLVerdocsEnvelopeDocumentPageElement;
         "verdocs-envelope-recipient-link": HTMLVerdocsEnvelopeRecipientLinkElement;
@@ -2296,6 +2309,12 @@ declare namespace LocalJSX {
           * The role that this contact will be assigned to.
          */
         "templateRole"?: IRole | null;
+    }
+    interface VerdocsDialog {
+        /**
+          * Event fired when the dialog is dismissed by clicking the background overlay.
+         */
+        "onExit"?: (event: VerdocsDialogCustomEvent<any>) => void;
     }
     interface VerdocsDropdown {
         /**
@@ -4008,6 +4027,7 @@ declare namespace LocalJSX {
         "verdocs-checkbox": VerdocsCheckbox;
         "verdocs-component-error": VerdocsComponentError;
         "verdocs-contact-picker": VerdocsContactPicker;
+        "verdocs-dialog": VerdocsDialog;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-envelope-document-page": VerdocsEnvelopeDocumentPage;
         "verdocs-envelope-recipient-link": VerdocsEnvelopeRecipientLink;
@@ -4091,6 +4111,7 @@ declare module "@stencil/core" {
             "verdocs-checkbox": LocalJSX.VerdocsCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsCheckboxElement>;
             "verdocs-component-error": LocalJSX.VerdocsComponentError & JSXBase.HTMLAttributes<HTMLVerdocsComponentErrorElement>;
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
+            "verdocs-dialog": LocalJSX.VerdocsDialog & JSXBase.HTMLAttributes<HTMLVerdocsDialogElement>;
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
             "verdocs-envelope-document-page": LocalJSX.VerdocsEnvelopeDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeDocumentPageElement>;
             "verdocs-envelope-recipient-link": LocalJSX.VerdocsEnvelopeRecipientLink & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientLinkElement>;

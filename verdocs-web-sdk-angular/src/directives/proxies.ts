@@ -276,6 +276,33 @@ the `contactSuggestions` property.
 
 
 @ProxyCmp({
+})
+@Component({
+  selector: 'verdocs-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+})
+export class VerdocsDialog {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['exit']);
+  }
+}
+
+
+export declare interface VerdocsDialog extends Components.VerdocsDialog {
+  /**
+   * Event fired when the dialog is dismissed by clicking the background overlay.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+}
+
+
+@ProxyCmp({
   inputs: ['options']
 })
 @Component({
