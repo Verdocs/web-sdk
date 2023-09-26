@@ -1,12 +1,17 @@
-import {Members} from '@verdocs/js-sdk/Organizations';
+import {Profiles} from '@verdocs/js-sdk/Users';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IProfile} from '@verdocs/js-sdk/Users/Types';
+import {capitalize} from '@verdocs/js-sdk/Utils/Strings';
+import {IProfile, IRole} from '@verdocs/js-sdk/Users/Types';
+import {IInvitation} from '@verdocs/js-sdk/Organizations/Types';
+import {Members, Invitations} from '@verdocs/js-sdk/Organizations';
+import {formatFullName, formatInitials} from '@verdocs/js-sdk/Utils/Primitives';
 import {Component, Event, EventEmitter, h, Host, Prop, State} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
-import {capitalize} from '@verdocs/js-sdk/Utils/Strings';
+import {format} from 'date-fns';
 
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>`;
+const ArrowPathIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>`;
 
 const getRoleLabel = (roles: any[]) => {
   if (roles.find(role => role.name === 'owner') !== undefined) return 'Owner';
@@ -59,6 +64,16 @@ export class VerdocsSettingsMembers {
   @Event({composed: true}) memberRemoved: EventEmitter<{endpoint: VerdocsEndpoint; member: IProfile}>;
 
   @State() members: IProfile[] = [];
+  @State() invited: IInvitation[] = [];
+  @State() roles: IRole[] = [];
+  @State() selectedTab = 0;
+  @State() invitingMember = false;
+  @State() newEmailAddress = '';
+  @State() newRoleId = '';
+  @State() submitting = false;
+  @State() deletingInvitation: IInvitation | null = null;
+  @State() resendingInvitation: IInvitation | null = null;
+  @State() deletingMember: IProfile | null = null;
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -69,12 +84,101 @@ export class VerdocsSettingsMembers {
   }
 
   async componentDidLoad() {
+    this.loadMembers().catch((e: any) => console.log('Unknown Error', e));
+  }
+
+  async loadMembers() {
     try {
-      this.members = await Members.getMembers(this.endpoint, this.endpoint.session.organization_id);
+      const [roles, members, invites] = await Promise.all([
+        Profiles.getRoles(this.endpoint),
+        Members.getMembers(this.endpoint, this.endpoint.session.organization_id),
+        Invitations.getInvitations(this.endpoint, this.endpoint.session.organization_id),
+      ]);
+      this.roles = roles;
+      this.members = members;
+      this.invited = invites;
+      this.newRoleId = roles.find(role => role.name === 'member')?.id || '';
     } catch (e) {
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       VerdocsToast('Unable to load members. Please try again later');
     }
+  }
+
+  async handleInviteMember() {
+    this.submitting = true;
+    Invitations.createInvitation(VerdocsEndpoint.getDefault(), this.endpoint.session.organization_id, {
+      email: this.newEmailAddress,
+      role_id: this.newRoleId,
+      organization_id: this.endpoint.session.organization_id,
+    })
+      .then(r => {
+        console.log('[SETTINGS] Invited member', r);
+        this.invitingMember = false;
+        this.submitting = false;
+        this.newRoleId = '';
+        this.newEmailAddress = '';
+        VerdocsToast('Invitation sent!', {style: 'success'});
+        this.loadMembers();
+      })
+      .catch(e => {
+        console.log('[SETTINGS] Unable to invite member', e);
+        this.invitingMember = false;
+        this.submitting = false;
+        this.newRoleId = '';
+        this.newEmailAddress = '';
+        VerdocsToast('Unable to invite member. Please try again later', {style: 'error'});
+      });
+  }
+
+  async handleDeleteMember() {
+    this.submitting = true;
+    Members.deleteMember(VerdocsEndpoint.getDefault(), this.deletingMember.organization_id, this.deletingMember.email)
+      .then(() => {
+        this.submitting = false;
+        this.deletingMember = null;
+        VerdocsToast('The member has been deleted.', {style: 'success'});
+        this.loadMembers();
+      })
+      .catch(e => {
+        this.submitting = false;
+        this.deletingMember = null;
+        console.log('Delete error', e);
+        VerdocsToast('Unable to cancel invitation. Please try again later', {style: 'error'});
+      });
+  }
+
+  async handleDeleteInvitation() {
+    this.submitting = true;
+    Invitations.deleteInvitation(VerdocsEndpoint.getDefault(), this.deletingInvitation.organization_id, this.deletingInvitation.email)
+      .then(() => {
+        this.submitting = false;
+        this.deletingInvitation = null;
+        VerdocsToast('The invitation has been cancelled.', {style: 'success'});
+        this.loadMembers();
+      })
+      .catch(e => {
+        this.submitting = false;
+        this.deletingInvitation = null;
+        console.log('Delete error', e);
+        VerdocsToast('Unable to cancel invitation. Please try again later', {style: 'error'});
+      });
+  }
+
+  async handleResendInvitation() {
+    this.submitting = true;
+    Invitations.resendInvitation(VerdocsEndpoint.getDefault(), this.resendingInvitation.organization_id, this.resendingInvitation.email)
+      .then(() => {
+        this.submitting = false;
+        this.resendingInvitation = null;
+        VerdocsToast('The invitation has been resent.', {style: 'success'});
+        this.loadMembers();
+      })
+      .catch(e => {
+        this.submitting = false;
+        this.resendingInvitation = null;
+        console.log('REsend error', e);
+        VerdocsToast('Unable to resend invitation. Please try again later', {style: 'error'});
+      });
   }
 
   render() {
@@ -83,35 +187,148 @@ export class VerdocsSettingsMembers {
       return <Host class="authentication-required">Must be authenticated</Host>;
     }
 
+    const roleOptions = this.roles.map(role => ({label: getRoleLabel([{name: role.name}]), value: role.id}));
+
     return (
       <Host>
-        <h1>Members</h1>
-
-        <verdocs-table
-          data={this.members}
-          columns={[
-            {
-              id: 'name',
-              renderHeader: () => 'Member',
-              renderCell: (_, row) => (
-                <div style={{display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center'}}>
-                  <div class="role" style={{backgroundColor: getRoleColor(row.roles)}}>
-                    {row.first_name.charAt(0)} {row.last_name.charAt(0)}
-                  </div>
-                  <span>
-                    {capitalize(row.first_name)} {capitalize(row.last_name)}
-                  </span>
-                </div>
-              ),
-            },
-            {id: 'email', header: 'E-mail Address'},
-            {id: 'phone', header: 'Phone Number'},
-            {id: 'roles', header: 'Role', renderCell: (_, row) => `${getRoleLabel(row.roles)}`},
-            {id: 'actions', header: 'Actions', renderCell: () => <span innerHTML={TrashIcon} onClick={() => {}} />},
-          ]}
+        <verdocs-tabs
+          tabs={[{label: `Members (${this.members.length})`}, {label: `Pending Invitations (${this.invited.length})`}]}
+          onSelectTab={e => (this.selectedTab = e.detail.index)}
         />
 
-        <verdocs-button label="Invite New Member" size="normal" disabled={true} />
+        {this.selectedTab === 0 && (
+          <verdocs-table
+            data={this.members}
+            columns={[
+              {
+                id: 'name',
+                renderHeader: () => 'Member',
+                renderCell: (_, row) => (
+                  <div style={{display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center'}}>
+                    <div class="role" style={{backgroundColor: getRoleColor(row.roles)}}>
+                      {formatInitials(row)}
+                    </div>
+                    <span>{formatFullName(row)}</span>
+                  </div>
+                ),
+              },
+              {id: 'email', header: 'E-mail Address'},
+              {id: 'phone', header: 'Phone Number'},
+              {id: 'roles', header: 'Role', renderCell: (_, row) => `${getRoleLabel(row.roles)}`},
+              {
+                id: 'actions',
+                header: 'Actions',
+                renderCell: (_, row) => <div>{row.id !== this.endpoint.session.profile_id && <div innerHTML={TrashIcon} onClick={() => (this.deletingMember = row)} />}</div>,
+              },
+            ]}
+          />
+        )}
+
+        {this.selectedTab === 1 && (
+          <verdocs-table
+            data={this.invited}
+            columns={[
+              {id: 'email', header: 'E-mail Address'},
+              {id: 'generated_at', header: 'Invited', renderCell: (_, row) => <div>{format(new Date(row.generated_at), 'MMM d, Y')}</div>},
+              {id: 'role_id', header: 'Role', renderCell: (_, row) => <div>{getRoleLabel([{name: this.roles.find(r => r.id === row.role_id)?.name}])}</div>},
+              {id: 'status', header: 'Status', renderCell: (_, row) => <div>{capitalize(row.status)}</div>},
+              {
+                id: 'actions',
+                header: 'Actions',
+                renderCell: (_, row) => (
+                  <div>
+                    <div innerHTML={TrashIcon} onClick={() => (this.deletingInvitation = row)} />
+                    <div innerHTML={ArrowPathIcon} onClick={() => (this.resendingInvitation = row)} />
+                  </div>
+                ),
+              },
+            ]}
+          />
+        )}
+
+        <verdocs-button label="Invite New Member" size="normal" disabled={this.submitting} onClick={() => (this.invitingMember = true)} />
+
+        {this.invitingMember && (
+          <verdocs-dialog onExit={() => (this.invitingMember = false)}>
+            <div slot="title" class="heading">
+              Invite New Member
+            </div>
+            <div class="content">
+              <verdocs-text-input
+                label="E-mail Address"
+                placeholder="Enter the user's email address..."
+                id="verdocs-invite-email"
+                value={this.newEmailAddress}
+                autocomplete="off"
+                required={true}
+                onInput={(e: any) => (this.newEmailAddress = e.target.value)}
+                onFocusout={(e: any) => {
+                  this.newEmailAddress = e.target.value.trim();
+                }}
+              />
+
+              <div style={{marginBottom: '20px'}} />
+
+              <verdocs-select-input
+                options={roleOptions}
+                label="Role"
+                onInput={(e: any) => {
+                  this.newRoleId = e.target.value;
+                }}
+              />
+
+              <div class="buttons">
+                <verdocs-button variant="outline" size="small" label="Cancel" disabled={this.submitting} onClick={() => (this.invitingMember = false)} />
+                <verdocs-button size="small" label="OK" disabled={this.submitting || !this.newEmailAddress || !this.newRoleId} onClick={() => this.handleInviteMember()} />
+              </div>
+            </div>
+          </verdocs-dialog>
+        )}
+
+        {this.deletingMember && (
+          <verdocs-dialog onExit={() => (this.deletingMember = null)}>
+            <div slot="title" class="heading">
+              Delete Member?
+            </div>
+            <div class="content">
+              <p>Are you sure you want to delete this member? This action cannot be undone.</p>
+              <div class="buttons">
+                <verdocs-button variant="outline" size="small" disabled={this.submitting} label="Cancel" onClick={() => (this.deletingMember = null)} />
+                <verdocs-button size="small" label="OK" disabled={this.submitting} onClick={() => this.handleDeleteMember()} />
+              </div>
+            </div>
+          </verdocs-dialog>
+        )}
+
+        {this.deletingInvitation && (
+          <verdocs-dialog onExit={() => (this.deletingInvitation = null)}>
+            <div slot="title" class="heading">
+              Cancel Invitation?
+            </div>
+            <div class="content">
+              <p>Are you sure you want to cancel this invitation? This action cannot be undone.</p>
+              <div class="buttons">
+                <verdocs-button variant="outline" size="small" disabled={this.submitting} label="Cancel" onClick={() => (this.deletingInvitation = null)} />
+                <verdocs-button size="small" label="OK" disabled={this.submitting} onClick={() => this.handleDeleteInvitation()} />
+              </div>
+            </div>
+          </verdocs-dialog>
+        )}
+
+        {this.resendingInvitation && (
+          <verdocs-dialog onExit={() => (this.resendingInvitation = null)}>
+            <div slot="title" class="heading">
+              Resend Invitation?
+            </div>
+            <div class="content">
+              <p>The user will receive an email reminder to join your organization.</p>
+              <div class="buttons">
+                <verdocs-button variant="outline" size="small" disabled={this.submitting} label="Cancel" onClick={() => (this.resendingInvitation = null)} />
+                <verdocs-button size="small" label="OK" disabled={this.submitting} onClick={() => this.handleResendInvitation()} />
+              </div>
+            </div>
+          </verdocs-dialog>
+        )}
       </Host>
     );
   }

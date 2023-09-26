@@ -21,6 +21,7 @@ import { ISearchEvent, TContentType } from "./components/elements/verdocs-search
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IProfile } from "@verdocs/js-sdk/Users/Types";
 import { IColumn } from "./components/controls/verdocs-table/verdocs-table";
+import { ITab } from "./components/controls/verdocs-tabs/verdocs-tabs";
 import { IGetTemplateSummarySortBy } from "@verdocs/js-sdk/Templates/Templates";
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
@@ -1049,6 +1050,16 @@ export namespace Components {
          */
         "data": any[];
     }
+    interface VerdocsTabs {
+        /**
+          * The index of the initial tab to select.
+         */
+        "defaultTab": number;
+        /**
+          * The tabs to display
+         */
+        "tabs": ITab[];
+    }
     interface VerdocsTemplateAttachments {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1521,6 +1532,10 @@ export interface VerdocsSignatureDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSignatureDialogElement;
 }
+export interface VerdocsTabsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTabsElement;
+}
 export interface VerdocsTemplateAttachmentsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateAttachmentsElement;
@@ -1928,6 +1943,12 @@ declare global {
         prototype: HTMLVerdocsTableElement;
         new (): HTMLVerdocsTableElement;
     };
+    interface HTMLVerdocsTabsElement extends Components.VerdocsTabs, HTMLStencilElement {
+    }
+    var HTMLVerdocsTabsElement: {
+        prototype: HTMLVerdocsTabsElement;
+        new (): HTMLVerdocsTabsElement;
+    };
     interface HTMLVerdocsTemplateAttachmentsElement extends Components.VerdocsTemplateAttachments, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateAttachmentsElement: {
@@ -2112,6 +2133,7 @@ declare global {
         "verdocs-spinner": HTMLVerdocsSpinnerElement;
         "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
         "verdocs-table": HTMLVerdocsTableElement;
+        "verdocs-tabs": HTMLVerdocsTabsElement;
         "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-create": HTMLVerdocsTemplateCreateElement;
@@ -3522,6 +3544,20 @@ declare namespace LocalJSX {
          */
         "data"?: any[];
     }
+    interface VerdocsTabs {
+        /**
+          * The index of the initial tab to select.
+         */
+        "defaultTab"?: number;
+        /**
+          * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
+         */
+        "onSelectTab"?: (event: VerdocsTabsCustomEvent<{tab: ITab; index: number}>) => void;
+        /**
+          * The tabs to display
+         */
+        "tabs"?: ITab[];
+    }
     interface VerdocsTemplateAttachments {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -4083,6 +4119,7 @@ declare namespace LocalJSX {
         "verdocs-spinner": VerdocsSpinner;
         "verdocs-status-indicator": VerdocsStatusIndicator;
         "verdocs-table": VerdocsTable;
+        "verdocs-tabs": VerdocsTabs;
         "verdocs-template-attachments": VerdocsTemplateAttachments;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-create": VerdocsTemplateCreate;
@@ -4167,6 +4204,7 @@ declare module "@stencil/core" {
             "verdocs-spinner": LocalJSX.VerdocsSpinner & JSXBase.HTMLAttributes<HTMLVerdocsSpinnerElement>;
             "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
             "verdocs-table": LocalJSX.VerdocsTable & JSXBase.HTMLAttributes<HTMLVerdocsTableElement>;
+            "verdocs-tabs": LocalJSX.VerdocsTabs & JSXBase.HTMLAttributes<HTMLVerdocsTabsElement>;
             "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
             "verdocs-template-create": LocalJSX.VerdocsTemplateCreate & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;

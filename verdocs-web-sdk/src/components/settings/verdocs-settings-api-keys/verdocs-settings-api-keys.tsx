@@ -1,13 +1,13 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IProfile} from '@verdocs/js-sdk/Users/Types';
-import {capitalize} from '@verdocs/js-sdk/Utils/Strings';
 import {ApiKeys, Members} from '@verdocs/js-sdk/Organizations';
+import {formatFullName} from '@verdocs/js-sdk/Utils/Primitives';
 import {IApiKey, IApiKeyWithSecret} from '@verdocs/js-sdk/Organizations/Types';
 import {Component, Event, EventEmitter, h, Host, Prop, State} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
-const ClockIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" /></svg>`;
+// const ClockIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" /></svg>`;
 const TagIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767l6.5 6.5a2.5 2.5 0 003.536 0l2.878-2.878a2.5 2.5 0 000-3.536l-6.5-6.5A2.5 2.5 0 008.38 3H5.5zM6 7a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>`;
 const UserIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z" clip-rule="evenodd" /></svg>`;
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>`;
@@ -139,7 +139,7 @@ export class VerdocsSettingsApiKeys {
   }
 
   render() {
-    const profileOptions = this.members.map(member => ({label: `${member.first_name} ${member.last_name}`, value: member.id}));
+    const profileOptions = this.members.map(member => ({label: formatFullName(member), value: member.id}));
 
     if (!this.endpoint.session) {
       console.log('[SETTINGS] Must be authenticated');
@@ -148,8 +148,6 @@ export class VerdocsSettingsApiKeys {
 
     return (
       <Host>
-        <h1>API Keys</h1>
-
         <verdocs-table
           data={this.keys}
           columns={[
@@ -158,7 +156,7 @@ export class VerdocsSettingsApiKeys {
               header: 'Name',
               renderCell: (_, row) => (
                 <div>
-                  <div innerHTML={ClockIcon} />
+                  {/*<div innerHTML={ClockIcon} />*/}
                   <div>{row.name}</div>
                 </div>
               ),
@@ -179,9 +177,7 @@ export class VerdocsSettingsApiKeys {
               renderCell: (_, row) => (
                 <div>
                   <div innerHTML={UserIcon} />
-                  <div>
-                    {capitalize(row.profile?.first_name)} {capitalize(row.profile?.last_name)}
-                  </div>
+                  <div>{formatFullName(row.profile)}</div>
                 </div>
               ),
             },
@@ -274,7 +270,7 @@ export class VerdocsSettingsApiKeys {
             </div>
             <div class="content">
               <verdocs-text-input label="Name" disabled={true} value={this.createdKey?.name} />
-              <verdocs-text-input label="Profile" disabled={true} value={`${this.createdKey?.profile?.first_name} ${this.createdKey?.profile?.last_name}`} />
+              <verdocs-text-input label="Profile" disabled={true} value={formatFullName(this.createdKey?.profile)} />
 
               <p>Please save the Client ID and Secret below. Be sure to never expose your secret key in insecure (Web or mobile environments)!</p>
 

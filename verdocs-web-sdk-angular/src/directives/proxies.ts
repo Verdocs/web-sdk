@@ -1898,6 +1898,37 @@ export declare interface VerdocsTable extends Components.VerdocsTable {}
 
 
 @ProxyCmp({
+  inputs: ['defaultTab', 'tabs']
+})
+@Component({
+  selector: 'verdocs-tabs',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['defaultTab', 'tabs'],
+})
+export class VerdocsTabs {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['selectTab']);
+  }
+}
+
+
+import type { ITab as IVerdocsTabsITab } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTabs extends Components.VerdocsTabs {
+  /**
+   * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate
+to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
+   */
+  selectTab: EventEmitter<CustomEvent<IVerdocsTabs{tab: [object Object]; index: number}>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'templateId']
 })
 @Component({

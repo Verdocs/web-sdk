@@ -65,6 +65,7 @@ export const VerdocsSignatureDialog = /*@__PURE__*/createReactComponent<JSX.Verd
 export const VerdocsSpinner = /*@__PURE__*/createReactComponent<JSX.VerdocsSpinner, HTMLVerdocsSpinnerElement>('verdocs-spinner');
 export const VerdocsStatusIndicator = /*@__PURE__*/createReactComponent<JSX.VerdocsStatusIndicator, HTMLVerdocsStatusIndicatorElement>('verdocs-status-indicator');
 export const VerdocsTable = /*@__PURE__*/createReactComponent<JSX.VerdocsTable, HTMLVerdocsTableElement>('verdocs-table');
+export const VerdocsTabs = /*@__PURE__*/createReactComponent<JSX.VerdocsTabs, HTMLVerdocsTabsElement>('verdocs-tabs');
 export const VerdocsTemplateAttachments = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateAttachments, HTMLVerdocsTemplateAttachmentsElement>('verdocs-template-attachments');
 export const VerdocsTemplateCard = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateCard, HTMLVerdocsTemplateCardElement>('verdocs-template-card');
 export const VerdocsTemplateCreate = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateCreate, HTMLVerdocsTemplateCreateElement>('verdocs-template-create');

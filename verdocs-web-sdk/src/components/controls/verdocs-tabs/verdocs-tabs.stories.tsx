@@ -1,0 +1,28 @@
+import {html} from 'lit-html';
+import {Meta} from '@storybook/web-components';
+
+export default {
+  title: 'Controls/Tabs',
+  component: 'verdocs-tabs',
+  args: {
+    tabs: [
+      {id: 'id', header: 'ID'},
+      {id: 'name', header: 'Name'},
+      {
+        id: 'date',
+        header: 'Date',
+        renderHeader: () => 'Past Due Since',
+        renderCell: (_, row) => `<span style="color: red">${new Date(row.date).toLocaleDateString()}</a>`,
+      },
+    ],
+    data: [
+      {id: '123', name: 'Test 1', date: new Date()},
+      {id: '456', name: 'Test 2', date: new Date()},
+    ],
+  },
+  parameters: {
+    layout: 'fullscreen',
+  },
+} as Meta;
+
+export const Table = ({columns, data}) => html`<verdocs-table .columns=${columns} .data=${data} />`;
