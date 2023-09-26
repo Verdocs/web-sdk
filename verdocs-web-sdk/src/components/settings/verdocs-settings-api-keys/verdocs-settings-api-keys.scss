@@ -14,32 +14,51 @@ verdocs-settings-api-keys {
     margin: 12px 0;
   }
 
-  .role {
-    font-size: 12px;
-    width: 32px;
-    height: 32px;
-    border-radius: 32px;
-    background: #777777;
-    color: #ffffff;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
+  .data-col {
+    div {
+      gap: 12px;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .col-name,
+  .col-client_id,
+  .col-profile_id {
+    svg {
+      fill: #a1a1aa;
+    }
+  }
+
+  .col-actions {
+    svg {
+      fill: #ffffff;
+      stroke: #a1a1aa;
+
+      &:hover {
+        cursor: pointer;
+        stroke: red;
+      }
+    }
+  }
+
+  .col-actions > div {
     justify-content: center;
   }
 
-  .col.col-actions {
-    align-items: center;
+  .header-col.col-actions {
     text-align: center;
+  }
 
-    svg {
-      cursor: pointer;
-      width: 24px;
-      height: 24px;
-      fill: #777777;
-
-      &:hover {
-        fill: red;
-      }
-    }
+  verdocs-dialog p {
+    font-size: 16px;
+    line-height: 18px;
+    margin: 0 0 1em 0;
   }
 }

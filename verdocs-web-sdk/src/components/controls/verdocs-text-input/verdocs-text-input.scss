@@ -70,4 +70,25 @@ verdocs-text-input {
       cursor: pointer;
     }
   }
+
+  .copy {
+    top: 7px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    fill: #cccccc;
+    position: absolute;
+
+    &:hover {
+      fill: $verdocs-purple;
+      cursor: pointer;
+    }
+  }
+
+  &.clearable,
+  &.copyable {
+    .input-element {
+      padding-right: 32px;
+    }
+  }
 }

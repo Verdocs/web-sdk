@@ -2475,14 +2475,14 @@ probably not their search terms.
 
 
 @ProxyCmp({
-  inputs: ['autocomplete', 'clearable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value']
+  inputs: ['autocomplete', 'clearable', 'copyable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value']
 })
 @Component({
   selector: 'verdocs-text-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autocomplete', 'clearable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value'],
+  inputs: ['autocomplete', 'clearable', 'copyable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value'],
 })
 export class VerdocsTextInput {
   protected el: HTMLElement;

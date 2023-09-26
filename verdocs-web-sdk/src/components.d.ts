@@ -1269,6 +1269,10 @@ export namespace Components {
          */
         "clearable": boolean;
         /**
+          * If set, a copy-to-clipboard button will be displayed. NOTE: A field may not be both clearable and copyable. If both properties are set to true, copyable will be ignored.
+         */
+        "copyable": boolean;
+        /**
           * Should the field be disabled?
          */
         "disabled": boolean;
@@ -3901,6 +3905,10 @@ declare namespace LocalJSX {
           * If set, a clear button will be displayed.
          */
         "clearable"?: boolean;
+        /**
+          * If set, a copy-to-clipboard button will be displayed. NOTE: A field may not be both clearable and copyable. If both properties are set to true, copyable will be ignored.
+         */
+        "copyable"?: boolean;
         /**
           * Should the field be disabled?
          */

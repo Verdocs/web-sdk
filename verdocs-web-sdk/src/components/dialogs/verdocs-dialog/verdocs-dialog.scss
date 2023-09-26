@@ -22,20 +22,39 @@ verdocs-dialog {
   }
 
   .dialog {
-    width: 320px;
+    width: 420px;
     display: flex;
-    flex-direction: column;
-    border-radius: 4px;
+    max-width: 100%;
     overflow: hidden;
+    border-radius: 4px;
+    flex-direction: column;
     background: $verdocs-grey-4;
-    padding: 16px;
     box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
   }
 
   .heading {
     display: flex;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 500;
+    padding: 8px 16px;
     flex-direction: row;
+    color: $verdocs-grey-4;
+    background: $verdocs-grey-blue;
+  }
+
+  .content {
+    padding: 16px;
+
+    p {
+      margin: 0 0 1em 0;
+    }
+  }
+
+  .buttons {
+    gap: 14px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
   }
 }

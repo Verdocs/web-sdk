@@ -22,18 +22,20 @@ verdocs-table {
     }
 
     &.data-row {
+      border: 1px solid #cccccc;
+      background-color: #ffffff;
     }
   }
 
   .header-col {
     text-align: left;
-    padding: 3px 8px;
-    font-weight: 700;
-    color: #555555;
+    padding: 8px 16px;
+    font-weight: 600;
+    color: #5c6575;
   }
 
   .data-col {
-    padding: 3px 8px;
+    padding: 8px 16px;
     font-weight: 400;
   }
 }

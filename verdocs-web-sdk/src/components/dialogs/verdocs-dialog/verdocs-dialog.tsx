@@ -15,9 +15,10 @@ export class VerdocsDialog {
 
   // We need a separate event handler for clicking the background because it can receive events "through" other child components
   handleDismiss(e: any) {
+    console.log('e', e.target.className);
     if (e.target.className === 'background-overlay') {
       e.preventDefault();
-      this.exit.emit();
+      this.exit?.emit();
     }
   }
 
@@ -31,7 +32,7 @@ export class VerdocsDialog {
             </slot>
 
             <slot>
-              <p></p>
+              <div class="content"></div>
             </slot>
           </div>
         </div>

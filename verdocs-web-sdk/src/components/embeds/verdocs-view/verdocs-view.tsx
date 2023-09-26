@@ -104,7 +104,14 @@ export class VerdocsView {
 
     try {
       this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
+      console.log('[VIEW] Loaded envelope', this.envelope);
       this.roleNames = this.envelope.recipients.map(r => r.role_name);
+
+      setTimeout(async () => {
+        console.log('[VIEW] Reloading envelope...');
+        this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
+        console.log('[VIEW] Reloaded envelope', this.envelope);
+      }, 2000);
     } catch (e) {
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
@@ -199,11 +206,12 @@ export class VerdocsView {
 
     // Add download options to the menu
     const hasAttachments = this.envelope.documents.length > 0;
-    const hasCertificate = !!this.envelope.certificate;
+    const normalDocCount = this.envelope.documents.filter(doc => doc.type === 'attachment').length;
+    const hasCertificate = this.envelope.documents.find(doc => doc.type === 'certificate') !== undefined;
     if (hasAttachments || hasCertificate) {
       menuOptions.push({label: ''});
       if (hasAttachments) {
-        menuOptions.push({id: 'download-attachments', label: 'Download Documents(s)'});
+        menuOptions.push({id: 'download-attachments', label: normalDocCount > 1 ? 'Download Documents' : 'Download Document'});
       }
       if (hasCertificate) {
         menuOptions.push({id: 'download-certificate', label: 'Download Certificate'});
