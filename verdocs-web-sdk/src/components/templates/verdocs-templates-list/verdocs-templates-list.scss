@@ -78,6 +78,9 @@ verdocs-templates-list {
     color: black;
     font-size: 16px;
     margin-left: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
     @media screen and (max-width: 1300px) {
       font-size: 16px;
@@ -120,6 +123,9 @@ verdocs-templates-list {
     margin: 0 0 0 10px;
     align-items: center;
     flex-direction: row;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
     span,
     svg {
@@ -134,6 +140,10 @@ verdocs-templates-list {
 
   .ownership {
     flex: 0 0 100px;
+
+    @media screen and (max-width: 600px) {
+      display: none;
+    }
   }
 
   .last-used {
