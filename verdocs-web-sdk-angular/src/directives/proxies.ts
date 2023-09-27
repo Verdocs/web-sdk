@@ -1890,11 +1890,23 @@ export class VerdocsTable {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['colHeaderClick', 'rowClick']);
   }
 }
 
 
-export declare interface VerdocsTable extends Components.VerdocsTable {}
+import type { IColumn as IVerdocsTableIColumn } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTable extends Components.VerdocsTable {
+  /**
+   * Event fired when the user clicks a column header. This may be used to manage sorting options.
+   */
+  colHeaderClick: EventEmitter<CustomEvent<IVerdocsTable{col: [object Object]}>>;
+  /**
+   * Event fired when the user clicks a row.
+   */
+  rowClick: EventEmitter<CustomEvent<{row: any}>>;
+}
 
 
 @ProxyCmp({

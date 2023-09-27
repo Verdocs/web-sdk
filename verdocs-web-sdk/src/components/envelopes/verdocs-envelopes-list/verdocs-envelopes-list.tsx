@@ -408,23 +408,19 @@ export class VerdocsEnvelopesList {
                 />
 
                 <div class="vert-spacer" />
-
-                <span innerHTML={DocumentIcon} />
+                <span innerHTML={DocumentIcon} class="envelope-icon" />
 
                 <div class="envelope-name">
                   {envelope.name}:&nbsp; <div class="envelope-recipients">{envelope.recipients.map(r => r.full_name).join(', ')}</div>
                 </div>
 
                 <div class="vert-spacer" />
-
                 <verdocs-status-indicator envelope={envelope} style={{width: '125px'}} />
 
                 <div class="vert-spacer" />
-
                 <div class="last-modified">{new Date(envelope.updated_at).toLocaleString()}</div>
 
                 <div class="vert-spacer" />
-
                 <verdocs-dropdown
                   options={menuOptions}
                   onOptionSelected={e => {

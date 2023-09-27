@@ -47,7 +47,7 @@ verdocs-templates-list {
 
   .template {
     width: 100%;
-    margin: 3px 0;
+    margin: 2px 0;
     border: 1px solid #ffffff;
     background: $verdocs-grey-4;
 
@@ -58,12 +58,13 @@ verdocs-templates-list {
     }
 
     .inner {
-      gap: 10px;
+      gap: 12px;
       display: flex;
       padding: 8px 14px;
       border-radius: 5px;
       flex-direction: row;
       align-items: center;
+      container-type: inline-size;
 
       svg {
         width: 24px;
@@ -77,7 +78,7 @@ verdocs-templates-list {
     display: flex;
     color: black;
     font-size: 16px;
-    margin-left: 10px;
+    //margin-left: 10px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -86,7 +87,7 @@ verdocs-templates-list {
       font-size: 16px;
     }
 
-    @media screen and (max-width: 800px) {
+    @media screen and (max-width: 700px) {
       //flex: 0;
     }
   }
@@ -99,9 +100,7 @@ verdocs-templates-list {
     border-right: 1px solid #dad8dd;
 
     @media screen and (max-width: 800px) {
-      margin: 12px 0;
-      border-top: 1px solid #dad8dd;
-      border-right: none;
+      display: none;
     }
   }
 
@@ -138,10 +137,16 @@ verdocs-templates-list {
     }
   }
 
+  verdocs-template-star {
+    @media screen and (max-width: 700px) {
+      display: none;
+    }
+  }
+
   .ownership {
     flex: 0 0 100px;
 
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: 700px) {
       display: none;
     }
   }
@@ -152,5 +157,43 @@ verdocs-templates-list {
 
   .usage {
     flex: 0 0 60px;
+  }
+
+  .header-row {
+    display: none;
+  }
+
+  table {
+    container-type: size;
+    max-width: 100%;
+    overflow: hidden;
+    table-layout: fixed;
+  }
+
+  .data-row {
+    cursor: pointer;
+    background: #ededff;
+    border: 1px solid #a7a7f5;
+  }
+
+  .data-col {
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .col-name {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  verdocs-templates-list {
+    @container (max-width:700 px) {
+      .col-starred {
+        display: none;
+      }
+    }
   }
 }

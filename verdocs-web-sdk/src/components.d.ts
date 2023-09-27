@@ -1532,6 +1532,10 @@ export interface VerdocsSignatureDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSignatureDialogElement;
 }
+export interface VerdocsTableCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTableElement;
+}
 export interface VerdocsTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTabsElement;
@@ -3543,6 +3547,14 @@ declare namespace LocalJSX {
           * The rows to display
          */
         "data"?: any[];
+        /**
+          * Event fired when the user clicks a column header. This may be used to manage sorting options.
+         */
+        "onColHeaderClick"?: (event: VerdocsTableCustomEvent<{col: IColumn}>) => void;
+        /**
+          * Event fired when the user clicks a row.
+         */
+        "onRowClick"?: (event: VerdocsTableCustomEvent<{row: any}>) => void;
     }
     interface VerdocsTabs {
         /**

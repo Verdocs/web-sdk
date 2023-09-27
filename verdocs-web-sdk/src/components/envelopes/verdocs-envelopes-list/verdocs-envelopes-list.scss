@@ -7,9 +7,12 @@ verdocs-envelopes-list {
   flex-wrap: nowrap;
   border-radius: 6px;
   color: $label-color;
-  //align-items: center;
   flex-direction: column;
   font-family: $primary-font;
+
+  @media screen and (max-width: 800px) {
+    font-size: 14px;
+  }
 
   .envelope-placeholder {
     height: 48px;
@@ -57,12 +60,13 @@ verdocs-envelopes-list {
     }
 
     .inner {
-      gap: 14px;
+      gap: 12px;
       display: flex;
-      padding: 8px 20px;
-      border-radius: 6px;
+      padding: 8px 14px;
+      border-radius: 5px;
       flex-direction: row;
       align-items: center;
+      container-type: inline-size;
 
       svg {
         width: 24px;
@@ -76,23 +80,41 @@ verdocs-envelopes-list {
     display: flex;
     flex: 0 0 1px;
     border-right: 1px solid #dad8dd;
+
+    @media screen and (max-width: 800px) {
+      display: none;
+    }
+  }
+
+  .envelope-icon {
+    @media screen and (max-width: 800px) {
+      display: none;
+    }
+  }
+
+  verdocs-checkbox {
+    @media screen and (max-width: 800px) {
+      display: none;
+    }
   }
 
   .last-modified {
     color: #444;
     display: flex;
     flex: 0 0 180px;
-    font-size: 16px;
     flex-direction: row;
     align-items: center;
     white-space: nowrap;
+
+    @media screen and (max-width: 800px) {
+      display: none;
+    }
   }
 
   .envelope-name {
     flex: 1;
     display: flex;
     color: #000000;
-    font-size: 18px;
     line-height: 28px;
     overflow: hidden;
     white-space: nowrap;
@@ -108,7 +130,6 @@ verdocs-envelopes-list {
   }
 
   .empty-text {
-    font-size: 20px;
     text-align: center;
     margin: 16px 0 0 0;
     padding: 80px 80px;
@@ -120,5 +141,11 @@ verdocs-envelopes-list {
     display: flex;
     align-items: center;
     flex-direction: row;
+  }
+
+  verdocs-status-indicator {
+    @media screen and (max-width: 800px) {
+      font-size: 14px;
+    }
   }
 }

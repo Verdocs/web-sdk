@@ -1,4 +1,4 @@
-import {Component, Prop, Host, h} from '@stencil/core';
+import {Component, Prop, Host, h, Event, EventEmitter} from '@stencil/core';
 
 export interface IColumn {
   id: string;
@@ -26,6 +26,16 @@ export class VerdocsTable {
    */
   @Prop() data: any[] = [];
 
+  /**
+   * Event fired when the user clicks a column header. This may be used to manage sorting options.
+   */
+  @Event({composed: true}) colHeaderClick: EventEmitter<{col: IColumn}>;
+
+  /**
+   * Event fired when the user clicks a row.
+   */
+  @Event({composed: true}) rowClick: EventEmitter<{row: any}>;
+
   render() {
     return (
       <Host class="table-wrapper">
@@ -33,14 +43,20 @@ export class VerdocsTable {
           <thead>
             <tr class="row header-row">
               {this.columns.map((col, i) => {
-                return <th class={`col header-col col-${i} col-${col.id}`} innerHTML={col.renderHeader ? col.renderHeader(col) : col.header || col.id} />;
+                return (
+                  <th
+                    class={`col header-col col-${i} col-${col.id}`}
+                    onClick={() => this.colHeaderClick?.emit({col})}
+                    innerHTML={col.renderHeader ? col.renderHeader(col) : col.header || col.id}
+                  />
+                );
               })}
             </tr>
           </thead>
 
           <tbody>
             {this.data.map(row => (
-              <tr class="row data-row">
+              <tr class="row data-row" onClick={() => this.rowClick?.emit({row})}>
                 {this.columns.map((col, i) => {
                   return <td class={`col data-col col-${i} col-${col.id}`}>{col.renderCell?.(col, row) || row[col.id]}</td>;
                   // return <td class={`col data-col col-${i} col-${col.id}`} innerHTML={col.renderCell?.(col, row) || row[col.id]} />;

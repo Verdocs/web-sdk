@@ -319,6 +319,115 @@ export class VerdocsTemplatesList {
           <div style={{display: 'flex', flex: '1'}} />
         </div>
 
+        {/*<verdocs-table*/}
+        {/*  data={locallyFilteredTemplates}*/}
+        {/*  onRowClick={(template: any) => this.viewTemplate?.emit({endpoint: this.endpoint, template: template as ITemplate})}*/}
+        {/*  columns={[*/}
+        {/*    {*/}
+        {/*      id: 'starred',*/}
+        {/*      renderCell: (_, row) => <verdocs-template-star template={row} endpoint={this.endpoint} />,*/}
+        {/*    },*/}
+        {/*    {*/}
+        {/*      id: 'name',*/}
+        {/*    },*/}
+        {/*    {*/}
+        {/*      id: 'usage',*/}
+        {/*      renderCell: (_, row) => (*/}
+        {/*        <div>*/}
+        {/*          <span innerHTML={EnvelopeIcon} title="Usage Counter" />*/}
+        {/*          {row.counter || '--'}*/}
+        {/*        </div>*/}
+        {/*      ),*/}
+        {/*    },*/}
+        {/*    {*/}
+        {/*      id: 'created_at',*/}
+        {/*      renderCell: (_, row) => {*/}
+        {/*        const dateToShow = this.sort === 'created_at' ? 'created_at' : this.sort === 'updated_at' ? 'updated_at' : 'last_used_at';*/}
+        {/*        const date = row[dateToShow];*/}
+
+        {/*        return (*/}
+        {/*          <div class="last-used">*/}
+        {/*            {dateToShow === 'created_at' && <span innerHTML={CreatedIcon} title="Created" />}*/}
+        {/*            {dateToShow === 'updated_at' && <span innerHTML={UpdatedIcon} title="Last Updated" />}*/}
+        {/*            {dateToShow === 'last_used_at' && <span innerHTML={LastUsedIcon} title="Last Used" />}*/}
+        {/*            {date ? format(new Date(date), 'P') : 'Never'}*/}
+        {/*          </div>*/}
+        {/*        );*/}
+        {/*      },*/}
+        {/*    },*/}
+        {/*    {*/}
+        {/*      id: 'ownership',*/}
+        {/*      renderCell: (_, row) => (*/}
+        {/*        <div>*/}
+        {/*          {row.is_public && (*/}
+        {/*            <div class="ownership">*/}
+        {/*              <span innerHTML={GlobeAltIcon} /> Public*/}
+        {/*            </div>*/}
+        {/*          )}*/}
+        {/*          {!row.is_public && !row.is_personal && (*/}
+        {/*            <div class="ownership">*/}
+        {/*              <span innerHTML={LockClosedIcon} /> Private*/}
+        {/*            </div>*/}
+        {/*          )}*/}
+        {/*          {!row.is_public && row.is_personal && (*/}
+        {/*            <div class="ownership">*/}
+        {/*              <span innerHTML={BuildingOfficeIcon} /> Shared*/}
+        {/*            </div>*/}
+        {/*          )}*/}
+        {/*        </div>*/}
+        {/*      ),*/}
+        {/*    },*/}
+        {/*    {*/}
+        {/*      id: 'actions',*/}
+        {/*      renderCell: (_, row) => {*/}
+        {/*        const MENU_OPTIONS: IMenuOption[] = [];*/}
+
+        {/*        if (row.allowed_operations.includes(TemplateActions.READ) && this.allowedActions.includes('send')) {*/}
+        {/*          MENU_OPTIONS.push({label: 'Preview / Send', id: 'send', disabled: !row.allowed_operations.includes(TemplateActions.READ)});*/}
+        {/*        }*/}
+
+        {/*        // if (this.allowedActions.includes('createlink')) {*/}
+        {/*        //   MENU_OPTIONS.push({label: 'Create Link', id: 'createlink', disabled: true});*/}
+        {/*        // }*/}
+
+        {/*        if (row.allowed_operations.includes(TemplateActions.CREATE_PERSONAL) && this.allowedActions.includes('signnow')) {*/}
+        {/*          MENU_OPTIONS.push({label: 'Sign Now', id: 'signnow', disabled: true});*/}
+        {/*        }*/}
+
+        {/*        if (row.allowed_operations.includes(TemplateActions.READ) && this.allowedActions.includes('submitted')) {*/}
+        {/*          MENU_OPTIONS.push({label: ''});*/}
+        {/*          MENU_OPTIONS.push({label: 'Submissions', id: 'submitted'});*/}
+        {/*        }*/}
+
+        {/*        if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {*/}
+        {/*          MENU_OPTIONS.push({label: ''});*/}
+
+        {/*          // TODO: The preview link used to be just an internal route in the main Web application, but*/}
+        {/*          // that's not suitable for embeddding. Disabling until this gets re-requested as a feature,*/}
+        {/*          // in which case we'll want to move this to an API-driven function.*/}
+        {/*          // if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {*/}
+        {/*          //   MENU_OPTIONS.push({label: 'Get Preview Link', id: 'link', disabled: !this.canPreview(template)});*/}
+        {/*          // }*/}
+
+        {/*          if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {*/}
+        {/*            MENU_OPTIONS.push({label: 'Edit', id: 'edit', disabled: !row.allowed_operations.includes(TemplateActions.WRITE)});*/}
+        {/*          }*/}
+
+        {/*          if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {*/}
+        {/*            MENU_OPTIONS.push({*/}
+        {/*              label: 'Delete',*/}
+        {/*              id: 'delete',*/}
+        {/*              disabled: !row.allowed_operations.includes(TemplateActions.DELETE),*/}
+        {/*            });*/}
+        {/*          }*/}
+        {/*        }*/}
+
+        {/*        return <verdocs-dropdown options={MENU_OPTIONS} onOptionSelected={e => this.handleOptionSelected(e.detail.id, row)} />;*/}
+        {/*      },*/}
+        {/*    },*/}
+        {/*  ]}*/}
+        {/*/>*/}
+
         {locallyFilteredTemplates.map(template => {
           const dateToShow = this.sort === 'created_at' ? 'created_at' : this.sort === 'updated_at' ? 'updated_at' : 'last_used_at';
           const date = template[dateToShow];
