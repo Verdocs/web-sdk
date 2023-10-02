@@ -4,6 +4,8 @@ import {Component, Prop, State, h, Event, EventEmitter, Host} from '@stencil/cor
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
+export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview';
+
 /**
  * Display a template building experience.
  */
@@ -28,7 +30,7 @@ export class VerdocsBuild {
   /**
    * The step in the creation process to display.
    */
-  @Prop({reflect: true}) step: 'create' | 'attachments' | 'roles' | 'settings' | 'fields' | 'preview' = null;
+  @Prop({reflect: true}) step: TVerdocsBuildStep = null;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -74,16 +76,20 @@ export class VerdocsBuild {
     this.stepChanged?.emit('');
   }
 
-  handleTemplateCreated(e: any) {
-    console.log('Created', e.detail);
+  handleAttachmentsNext() {
     this.step = 'roles';
     this.stepChanged?.emit('roles');
   }
 
-  handleRolesDone(e: any) {
-    console.log('Roles', e.detail);
+  handleRolesNext() {
     this.step = 'fields';
     this.stepChanged?.emit('fields');
+  }
+
+  setStep(e: any, step: TVerdocsBuildStep) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.step = step;
   }
 
   render() {
@@ -97,14 +103,51 @@ export class VerdocsBuild {
 
     return (
       <Host>
-        {this.step === 'create' && <verdocs-template-create onExit={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />}
-        {this.step === 'attachments' && (
-          <verdocs-template-attachments templateId={this.templateId} onExit={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />
-        )}
-        {this.step === 'roles' && <verdocs-template-roles onExit={e => this.handleCancel(e)} onNext={e => this.handleTemplateCreated(e)} />}
-        {this.step === 'settings' && <verdocs-template-settings templateId={this.templateId} />}
-        {this.step === 'fields' && <verdocs-template-fields templateId={this.templateId} />}
-        {this.step === 'preview' && <verdocs-template-preview />}
+        <div class="steps">
+          <div class={`step ${this.step === 'attachments' ? 'active' : ''}`} onClick={e => this.setStep(e, 'attachments')}>
+            Attachments
+          </div>
+          <div class={`step ${this.step === 'roles' ? 'active' : ''}`} onClick={e => this.setStep(e, 'roles')}>
+            Roles
+          </div>
+          <div class={`step ${this.step === 'settings' ? 'active' : ''}`} onClick={e => this.setStep(e, 'settings')}>
+            Settings
+          </div>
+          <div class={`step ${this.step === 'fields' ? 'active' : ''}`} onClick={e => this.setStep(e, 'fields')}>
+            Fields
+          </div>
+          <div class={`step ${this.step === 'preview' ? 'active' : ''}`} onClick={e => this.setStep(e, 'preview')}>
+            Preview/Send
+          </div>
+        </div>
+
+        <div class="content">
+          {this.step === 'attachments' && (
+            <verdocs-template-attachments templateId={this.templateId} endpoint={this.endpoint} onExit={e => this.handleCancel(e)} onNext={() => this.handleAttachmentsNext()} />
+          )}
+          {this.step === 'roles' && (
+            <verdocs-template-roles templateId={this.templateId} endpoint={this.endpoint} onExit={e => this.handleCancel(e)} onNext={() => this.handleRolesNext()} />
+          )}
+          {this.step === 'settings' && (
+            <div style={{flexDirection: 'column', gap: '20px', display: 'flex', maxWidth: '400px', margin: '20px'}}>
+              <verdocs-template-name templateId={this.templateId} endpoint={this.endpoint} style={{backgroundColor: '#ffffff', padding: '20px'}} />
+              <verdocs-template-reminders templateId={this.templateId} endpoint={this.endpoint} style={{backgroundColor: '#ffffff', padding: '20px'}} />
+              <verdocs-template-visibility templateId={this.templateId} endpoint={this.endpoint} style={{backgroundColor: '#ffffff', padding: '20px'}} />
+            </div>
+          )}
+          {this.step === 'fields' && <verdocs-template-fields templateId={this.templateId} endpoint={this.endpoint} />}
+
+          {this.step === 'preview' && (
+            <div style={{flexDirection: 'row', display: 'flex', width: '100%'}}>
+              <div style={{display: 'flex', flex: '0'}}>
+                <verdocs-send templateId={this.templateId} endpoint={this.endpoint} />
+              </div>
+              <div style={{display: 'flex', flex: '1'}}>
+                <verdocs-preview templateId={this.templateId} endpoint={this.endpoint} />
+              </div>
+            </div>
+          )}
+        </div>
       </Host>
     );
   }

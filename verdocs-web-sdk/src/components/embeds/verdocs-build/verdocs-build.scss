@@ -2,7 +2,61 @@
 
 verdocs-build {
   display: flex;
+  flex-direction: column;
   font-family: $verdocs-primary-font;
-  justify-content: center;
-  align-items: center;
+
+  .steps {
+    flex: 0;
+    display: flex;
+    padding: 0 20px;
+    align-items: center;
+    flex-direction: row;
+    background-color: $verdocs-grey-blue;
+
+    .step {
+      height: 50px;
+      padding: 0 20px;
+      opacity: 0.6;
+      display: flex;
+      color: #ffffff;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+
+      &.active {
+        opacity: 1;
+        background-color: $verdocs-light-blue;
+      }
+    }
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    //padding: 20px;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  verdocs-template-attachments,
+  verdocs-template-roles {
+    margin: 20px;
+  }
+
+  verdocs-template-fields {
+    border-top: 1px solid #777777;
+  }
+
+  verdocs-template-attachments {
+    padding: 20px;
+    background: #ffffff;
+  }
+
+  verdocs-template-fields {
+    width: 100%;
+  }
+
+  verdocs-preview {
+    flex: 1;
+  }
 }

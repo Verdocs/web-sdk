@@ -9,6 +9,7 @@ import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
 import { IActivityEntry, IEnvelope, IEnvelopeField, IEnvelopeSummary, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
+import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
 import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
@@ -78,7 +79,7 @@ export namespace Components {
         /**
           * The step in the creation process to display.
          */
-        "step": 'create' | 'attachments' | 'roles' | 'settings' | 'fields' | 'preview';
+        "step": TVerdocsBuildStep;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
          */
@@ -2240,7 +2241,7 @@ declare namespace LocalJSX {
         /**
           * The step in the creation process to display.
          */
-        "step"?: 'create' | 'attachments' | 'roles' | 'settings' | 'fields' | 'preview';
+        "step"?: TVerdocsBuildStep;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
          */
