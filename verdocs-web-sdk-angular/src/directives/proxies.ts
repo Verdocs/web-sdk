@@ -125,12 +125,14 @@ export class VerdocsBuild {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'stepChanged']);
+    proxyOutputs(this, this.el, ['sdkError', 'stepChanged', 'send']);
   }
 }
 
 
 import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk';
+import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk';
+import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
 
 export declare interface VerdocsBuild extends Components.VerdocsBuild {
   /**
@@ -139,10 +141,13 @@ terminate the process, and the calling application should correct the condition 
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsBuildSDKError>>;
   /**
-   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
-terminate the process, and the calling application should correct the condition and re-render the component.
+   * Event fired when the user selects a different step.
    */
-  stepChanged: EventEmitter<CustomEvent<string>>;
+  stepChanged: EventEmitter<CustomEvent<IVerdocsBuildTVerdocsBuildStep>>;
+  /**
+   * The user completed the Send form and clicked send.
+   */
+  send: EventEmitter<CustomEvent<IVerdocsBuild{roles: [object Object][]; name: string; template_id: string}>>;
 }
 
 

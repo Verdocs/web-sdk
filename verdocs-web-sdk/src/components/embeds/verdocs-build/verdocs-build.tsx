@@ -1,6 +1,7 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {Component, Prop, State, h, Event, EventEmitter, Host} from '@stencil/core';
+import {IRole} from '@verdocs/js-sdk/Templates/Types';
+import {Component, Prop, h, Event, EventEmitter, Host} from '@stencil/core';
+import {userCanBuildTemplate, userCanPreviewTemplate, userCanUpdateTemplate} from '@verdocs/js-sdk/Templates/Permissions';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
@@ -30,7 +31,7 @@ export class VerdocsBuild {
   /**
    * The step in the creation process to display.
    */
-  @Prop({reflect: true}) step: TVerdocsBuildStep = null;
+  @Prop({reflect: true, mutable: true}) step: TVerdocsBuildStep = null;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -39,12 +40,14 @@ export class VerdocsBuild {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   /**
-   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
-   * terminate the process, and the calling application should correct the condition and re-render the component.
+   * Event fired when the user selects a different step.
    */
-  @Event({composed: true}) stepChanged: EventEmitter<string>;
+  @Event({composed: true}) stepChanged: EventEmitter<TVerdocsBuildStep>;
 
-  @State() template: ITemplate | null = null;
+  /**
+   * The user completed the Send form and clicked send.
+   */
+  @Event({composed: true}) send: EventEmitter<{roles: IRole[]; name: string; template_id: string}>;
 
   store: TTemplateStore | null = null;
 
@@ -73,7 +76,6 @@ export class VerdocsBuild {
   handleCancel(e: any) {
     console.log('Cancel', e.detail);
     this.step = 'preview';
-    this.stepChanged?.emit('');
   }
 
   handleAttachmentsNext() {
@@ -90,6 +92,7 @@ export class VerdocsBuild {
     e.stopPropagation();
     e.preventDefault();
     this.step = step;
+    this.stepChanged?.emit(step);
   }
 
   render() {
@@ -101,33 +104,39 @@ export class VerdocsBuild {
       );
     }
 
+    const canPreview = userCanPreviewTemplate(this.endpoint.session, this.store.state);
+    const canEditFields = userCanBuildTemplate(this.endpoint.session, this.store.state);
+    const canEditRoles = userCanUpdateTemplate(this.endpoint.session, this.store.state);
+
     return (
       <Host>
         <div class="steps">
-          <div class={`step ${this.step === 'attachments' ? 'active' : ''}`} onClick={e => this.setStep(e, 'attachments')}>
+          <button class={`step ${this.step === 'attachments' ? 'active' : ''}`} onClick={e => this.setStep(e, 'attachments')}>
             Attachments
-          </div>
-          <div class={`step ${this.step === 'roles' ? 'active' : ''}`} onClick={e => this.setStep(e, 'roles')}>
+          </button>
+          <button class={`step ${this.step === 'roles' ? 'active' : ''}`} onClick={e => this.setStep(e, 'roles')} disabled={!canEditRoles}>
             Roles
-          </div>
-          <div class={`step ${this.step === 'settings' ? 'active' : ''}`} onClick={e => this.setStep(e, 'settings')}>
+          </button>
+          <button class={`step ${this.step === 'settings' ? 'active' : ''}`} onClick={e => this.setStep(e, 'settings')} disabled={!canEditFields}>
             Settings
-          </div>
-          <div class={`step ${this.step === 'fields' ? 'active' : ''}`} onClick={e => this.setStep(e, 'fields')}>
+          </button>
+          <button class={`step ${this.step === 'fields' ? 'active' : ''}`} onClick={e => this.setStep(e, 'fields')} disabled={!canEditFields}>
             Fields
-          </div>
-          <div class={`step ${this.step === 'preview' ? 'active' : ''}`} onClick={e => this.setStep(e, 'preview')}>
+          </button>
+          <button class={`step ${this.step === 'preview' ? 'active' : ''}`} onClick={e => this.setStep(e, 'preview')} disabled={!canPreview}>
             Preview/Send
-          </div>
+          </button>
         </div>
 
         <div class="content">
           {this.step === 'attachments' && (
             <verdocs-template-attachments templateId={this.templateId} endpoint={this.endpoint} onExit={e => this.handleCancel(e)} onNext={() => this.handleAttachmentsNext()} />
           )}
+
           {this.step === 'roles' && (
             <verdocs-template-roles templateId={this.templateId} endpoint={this.endpoint} onExit={e => this.handleCancel(e)} onNext={() => this.handleRolesNext()} />
           )}
+
           {this.step === 'settings' && (
             <div style={{flexDirection: 'column', gap: '20px', display: 'flex', maxWidth: '400px', margin: '20px'}}>
               <verdocs-template-name templateId={this.templateId} endpoint={this.endpoint} style={{backgroundColor: '#ffffff', padding: '20px'}} />
@@ -135,15 +144,16 @@ export class VerdocsBuild {
               <verdocs-template-visibility templateId={this.templateId} endpoint={this.endpoint} style={{backgroundColor: '#ffffff', padding: '20px'}} />
             </div>
           )}
+
           {this.step === 'fields' && <verdocs-template-fields templateId={this.templateId} endpoint={this.endpoint} />}
 
           {this.step === 'preview' && (
-            <div style={{flexDirection: 'row', display: 'flex', width: '100%'}}>
-              <div style={{display: 'flex', flex: '0'}}>
-                <verdocs-send templateId={this.templateId} endpoint={this.endpoint} />
+            <div style={{flexDirection: 'row', display: 'flex', width: '100%', backgroundColor: '#eeeeee', maxHeight: '100%'}}>
+              <div style={{display: 'flex', flex: '0 0 300px', backgroundColor: '#ffffff', boxShadow: '1px 1px 6px -2px #0000007f'}}>
+                <verdocs-send templateId={this.templateId} endpoint={this.endpoint} onSend={e => this.send?.emit(e.detail)} style={{width: '100%'}} />
               </div>
-              <div style={{display: 'flex', flex: '1'}}>
-                <verdocs-preview templateId={this.templateId} endpoint={this.endpoint} />
+              <div style={{display: 'flex', flex: '1', justifyContent: 'center', overflowY: 'scroll'}}>
+                <verdocs-preview templateId={this.templateId} endpoint={this.endpoint} style={{display: 'flex', flex: '1', maxWidth: '1000px'}} />
               </div>
             </div>
           )}

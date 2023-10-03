@@ -2235,9 +2235,13 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsBuildCustomEvent<SDKError>) => void;
         /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+          * The user completed the Send form and clicked send.
          */
-        "onStepChanged"?: (event: VerdocsBuildCustomEvent<string>) => void;
+        "onSend"?: (event: VerdocsBuildCustomEvent<{roles: IRole[]; name: string; template_id: string}>) => void;
+        /**
+          * Event fired when the user selects a different step.
+         */
+        "onStepChanged"?: (event: VerdocsBuildCustomEvent<TVerdocsBuildStep>) => void;
         /**
           * The step in the creation process to display.
          */
