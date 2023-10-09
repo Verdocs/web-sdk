@@ -1,7 +1,7 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {Component, Prop, h, Event, EventEmitter, Host} from '@stencil/core';
-import {userCanBuildTemplate, userCanPreviewTemplate, userCanUpdateTemplate} from '@verdocs/js-sdk/Templates/Permissions';
+import {Component, Prop, h, Event, EventEmitter, Host, Watch, State} from '@stencil/core';
+import {userCanBuildTemplate, userCanUpdateTemplate} from '@verdocs/js-sdk/Templates/Permissions';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
@@ -26,7 +26,7 @@ export class VerdocsBuild {
    * If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process.
    * If it is not specified, `step` will be ignored and the create step will be shown.
    */
-  @Prop() templateId: string | null = null;
+  @Prop({reflect: true, mutable: true}) templateId: string | null = null;
 
   /**
    * The step in the creation process to display.
@@ -59,7 +59,17 @@ export class VerdocsBuild {
    */
   @Event({composed: true}) templateCreated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
 
+  @Watch('templateId')
+  onTemplateIdChanged() {
+    console.log('Template ID changed', this.templateId);
+    this.loadTemplate().catch((e: any) => console.log('Unknown Error', e));
+  }
+
+  @State()
   store: TTemplateStore | null = null;
+
+  @State()
+  tabsUpdateKey = 1;
 
   async componentWillLoad() {
     try {
@@ -94,6 +104,19 @@ export class VerdocsBuild {
     this.step = 'preview';
   }
 
+  async handleTemplateCreated(templateId: string) {
+    this.templateId = templateId;
+    await this.loadTemplate();
+    this.step = 'roles';
+    this.stepChanged?.emit('roles');
+  }
+
+  async handleTemplateUpdated(e: any) {
+    console.log('tup');
+    this.templateUpdated?.emit(e.detail);
+    this.tabsUpdateKey++;
+  }
+
   handleAttachmentsNext() {
     this.step = 'roles';
     this.stepChanged?.emit('roles');
@@ -120,89 +143,103 @@ export class VerdocsBuild {
       );
     }
 
-    const isUploader = this.store.state.template_documents.length < 1;
-    const canPreview = !isUploader && userCanPreviewTemplate(this.endpoint.session, this.store.state);
-    const canEditFields = !isUploader && userCanBuildTemplate(this.endpoint.session, this.store.state);
-    const canEditRoles = !isUploader && userCanUpdateTemplate(this.endpoint.session, this.store.state);
+    if (!this.templateId || !this.store) {
+      console.log('[BUILD] No template ID, rendering created view');
+      return (
+        <Host>
+          <div class="content">
+            <verdocs-tabs
+              key={this.tabsUpdateKey}
+              onSelectTab={() => {}}
+              tabs={[
+                {id: 'attachments', disabled: false, label: 'Upload Attachment(s)'},
+                {id: 'roles', disabled: true, label: 'Roles'},
+                {id: 'settings', disabled: true, label: 'Settings'},
+                {id: 'fields', disabled: true, label: 'Fields'},
+                {id: 'preview', disabled: true, label: 'Preview/Send'},
+              ]}
+            />
 
-    // Ensure a caller can't accidentally override this for "new" templates.
-    const selectedStep = isUploader ? 'attachments' : this.step;
+            <verdocs-template-create
+              endpoint={this.endpoint}
+              onExit={e => this.handleCancel(e)}
+              onNext={() => this.handleAttachmentsNext()}
+              onTemplateCreated={e => this.handleTemplateCreated(e.detail.templateId)}
+            />
+          </div>
+        </Host>
+      );
+    }
+
+    console.log('[BUILD] Rendering build view', this.step, ['attachments', 'roles', 'settings', 'fields', 'preview'].indexOf(this.step));
+    // const canPreview = this.store && userCanPreviewTemplate(this.endpoint.session, this.store?.state);
+    // TODO: Had to disable this for now to research why reactivity isn't re-rendering the tabs
+    const canPreview = this.store && userCanBuildTemplate(this.endpoint.session, this.store?.state);
+    const canEditFields = this.store && userCanBuildTemplate(this.endpoint.session, this.store?.state);
+    const canEditRoles = this.store && userCanUpdateTemplate(this.endpoint.session, this.store?.state);
 
     return (
       <Host>
-        <div class="steps">
-          {isUploader ? (
-            <button class="attachments" onClick={() => {}}>
-              Upload Document(s)
-            </button>
-          ) : (
-            <button class={`step ${this.step === 'attachments' ? 'active' : ''}`} onClick={e => this.setStep(e, 'attachments')}>
-              Attachments
-            </button>
-          )}
-          <button class={`step ${this.step === 'roles' ? 'active' : ''}`} onClick={e => this.setStep(e, 'roles')} disabled={!canEditRoles}>
-            Roles
-          </button>
-          <button class={`step ${this.step === 'settings' ? 'active' : ''}`} onClick={e => this.setStep(e, 'settings')} disabled={!canEditFields}>
-            Settings
-          </button>
-          <button class={`step ${this.step === 'fields' ? 'active' : ''}`} onClick={e => this.setStep(e, 'fields')} disabled={!canEditFields}>
-            Fields
-          </button>
-          <button class={`step ${this.step === 'preview' ? 'active' : ''}`} onClick={e => this.setStep(e, 'preview')} disabled={!canPreview}>
-            Preview/Send
-          </button>
-        </div>
-
         <div class="content">
-          {selectedStep === 'attachments' && (
+          <verdocs-tabs
+            key={this.tabsUpdateKey}
+            onSelectTab={e => this.setStep(e, e.detail.tab.id as TVerdocsBuildStep)}
+            defaultTab={['attachments', 'roles', 'settings', 'fields', 'preview'].indexOf(this.step)}
+            tabs={[
+              {id: 'attachments', disabled: false, label: 'Attachment(s)'},
+              {id: 'roles', disabled: !canEditRoles, label: 'Roles'},
+              {id: 'settings', disabled: !canEditFields, label: 'Settings'},
+              {id: 'fields', disabled: !canEditFields, label: 'Fields'},
+              {id: 'preview', disabled: !canPreview, label: 'Preview/Send'},
+            ]}
+          />
+
+          {this.step === 'attachments' && (
             <verdocs-template-attachments
               templateId={this.templateId}
               endpoint={this.endpoint}
               onExit={e => this.handleCancel(e)}
               onNext={() => this.handleAttachmentsNext()}
-              onTemplateUpdated={e => this.templateUpdated?.emit(e.detail)}
+              onTemplateUpdated={e => this.handleTemplateUpdated(e)}
             />
           )}
 
-          {selectedStep === 'roles' && (
+          {this.step === 'roles' && (
             <verdocs-template-roles
               templateId={this.templateId}
               endpoint={this.endpoint}
               onExit={e => this.handleCancel(e)}
               onNext={() => this.handleRolesNext()}
-              onTemplateUpdated={e => this.templateUpdated?.emit(e.detail)}
+              onTemplateUpdated={e => this.handleTemplateUpdated(e)}
             />
           )}
 
-          {selectedStep === 'settings' && (
+          {this.step === 'settings' && (
             <div style={{flexDirection: 'column', gap: '20px', display: 'flex', maxWidth: '400px', margin: '20px'}}>
               <verdocs-template-name
                 templateId={this.templateId}
                 endpoint={this.endpoint}
                 style={{backgroundColor: '#ffffff', padding: '20px'}}
-                onTemplateUpdated={e => this.templateUpdated?.emit(e.detail)}
+                onTemplateUpdated={e => this.handleTemplateUpdated(e)}
               />
               <verdocs-template-reminders
                 templateId={this.templateId}
                 endpoint={this.endpoint}
                 style={{backgroundColor: '#ffffff', padding: '20px'}}
-                onTemplateUpdated={e => this.templateUpdated?.emit(e.detail)}
+                onTemplateUpdated={e => this.handleTemplateUpdated(e)}
               />
               <verdocs-template-visibility
                 templateId={this.templateId}
                 endpoint={this.endpoint}
                 style={{backgroundColor: '#ffffff', padding: '20px'}}
-                onTemplateUpdated={e => this.templateUpdated?.emit(e.detail)}
+                onTemplateUpdated={e => this.handleTemplateUpdated(e)}
               />
             </div>
           )}
 
-          {selectedStep === 'fields' && (
-            <verdocs-template-fields templateId={this.templateId} endpoint={this.endpoint} onTemplateUpdated={e => this.templateUpdated?.emit(e.detail)} />
-          )}
+          {this.step === 'fields' && <verdocs-template-fields templateId={this.templateId} endpoint={this.endpoint} onTemplateUpdated={e => this.handleTemplateUpdated(e)} />}
 
-          {selectedStep === 'preview' && (
+          {this.step === 'preview' && (
             <div style={{flexDirection: 'row', display: 'flex', width: '100%', backgroundColor: '#eeeeee', maxHeight: '100%'}}>
               <div style={{display: 'flex', flex: '0 0 300px', backgroundColor: '#ffffff', boxShadow: '1px 1px 6px -2px #0000007f'}}>
                 <verdocs-send templateId={this.templateId} endpoint={this.endpoint} onSend={e => this.send?.emit(e.detail)} style={{width: '100%'}} />

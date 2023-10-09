@@ -33,7 +33,11 @@ export class VerdocsTabs {
    */
   @Event({composed: true}) selectTab: EventEmitter<{tab: ITab; index: number}>;
 
-  componentWillLoad() {
+  componentDidLoad() {
+    this.selectedTab = this.defaultTab || 0;
+  }
+
+  componentDidUpdate() {
     this.selectedTab = this.defaultTab || 0;
   }
 

@@ -40,6 +40,11 @@ export class VerdocsTemplateCreate {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
+  /**
+   * Event fired when the user updates the template.
+   */
+  @Event({composed: true}) templateCreated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; templateId: string}>;
+
   @State() file: File | null;
   @State() creating = false;
   @State() progressLabel = 'Uploading...';
@@ -89,7 +94,9 @@ export class VerdocsTemplateCreate {
           this.progressPercent = percent;
         }
       });
+
       console.log('[CREATE] Created template', template);
+      this.templateCreated?.emit({endpoint: this.endpoint, template, templateId: template.id});
       this.next?.emit(template);
 
       this.creating = false;

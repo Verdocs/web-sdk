@@ -6,18 +6,9 @@ export default {
   component: 'verdocs-tabs',
   args: {
     tabs: [
-      {id: 'id', header: 'ID'},
-      {id: 'name', header: 'Name'},
-      {
-        id: 'date',
-        header: 'Date',
-        renderHeader: () => 'Past Due Since',
-        renderCell: (_, row) => `<span style="color: red">${new Date(row.date).toLocaleDateString()}</a>`,
-      },
-    ],
-    data: [
-      {id: '123', name: 'Test 1', date: new Date()},
-      {id: '456', name: 'Test 2', date: new Date()},
+      {id: 'tab1', label: 'Tab 1'},
+      {id: 'tab2', label: 'Tab 2', disabled: true},
+      {id: 'tab3', label: 'Tab 3'},
     ],
   },
   parameters: {
@@ -25,4 +16,4 @@ export default {
   },
 } as Meta;
 
-export const Table = ({columns, data}) => html`<verdocs-table .columns=${columns} .data=${data} />`;
+export const Tabs = ({tabs}) => html`<verdocs-tabs .tabs=${tabs} />`;

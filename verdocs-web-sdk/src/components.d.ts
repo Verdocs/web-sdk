@@ -3632,6 +3632,10 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateCreateCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user updates the template.
+         */
+        "onTemplateCreated"?: (event: VerdocsTemplateCreateCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; templateId: string}>) => void;
     }
     interface VerdocsTemplateDocumentPage {
         /**

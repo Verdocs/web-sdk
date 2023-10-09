@@ -2037,13 +2037,14 @@ export class VerdocsTemplateCreate {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next', 'sdkError']);
+    proxyOutputs(this, this.el, ['exit', 'next', 'sdkError', 'templateCreated']);
   }
 }
 
 
 import type { ITemplate as IVerdocsTemplateCreateITemplate } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsTemplateCreateSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateCreateVerdocsEndpoint } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplateCreate {
   /**
@@ -2059,6 +2060,10 @@ export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplat
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateCreateSDKError>>;
+  /**
+   * Event fired when the user updates the template.
+   */
+  templateCreated: EventEmitter<CustomEvent<IVerdocsTemplateCreateIVerdocsTemplateCreate{endpoint: [object Object]; template: [object Object]; templateId: string}>>;
 }
 
 

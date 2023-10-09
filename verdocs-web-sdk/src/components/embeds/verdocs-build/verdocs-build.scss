@@ -5,49 +5,13 @@ verdocs-build {
   flex-direction: column;
   font-family: $verdocs-primary-font;
 
-  .steps {
-    flex: 0;
-    gap: 10px;
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    padding: 5px 20px 0 10px;
-    background-color: #f2f5fa;
-    border-bottom: 1px solid #cccccc;
-
-    .step {
-      border: none;
-      height: 40px;
-      display: flex;
-      color: #ffffff;
-      cursor: pointer;
-      padding: 0 20px;
-      font-size: 13px;
-      font-weight: 600;
-      align-items: center;
-      justify-content: center;
-      text-transform: uppercase;
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
-      background-color: #666666;
-
-      &:disabled {
-        cursor: inherit;
-        background-color: #aaaaaa;
-      }
-
-      &.active {
-        background-color: $verdocs-light-blue;
-      }
-    }
-  }
-
   .content {
     flex: 1;
+    gap: 20px;
     display: flex;
     align-items: center;
     flex-direction: column;
-    box-shadow: 0 0 7px -3px #000000cc;
+    //box-shadow: 0 0 7px -3px #000000cc;
   }
 
   verdocs-template-attachments,
