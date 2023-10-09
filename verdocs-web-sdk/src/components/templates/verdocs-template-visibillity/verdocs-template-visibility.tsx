@@ -3,6 +3,7 @@ import {updateTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
+import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 
 /**
  * Displays an edit form that allows the user to adjust a template's visibility.
@@ -33,6 +34,11 @@ export class VerdocsTemplateVisibility {
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
+
+  /**
+   * Event fired when the user updates the template.
+   */
+  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
 
   @State() dirty: boolean = false;
   @State() personal: boolean = false;
@@ -81,6 +87,7 @@ export class VerdocsTemplateVisibility {
       this.store.state.is_public = this.public;
     }
     this.dirty = false;
+    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store.state, event: 'visibility'});
     this.close?.emit();
   }
 

@@ -37,9 +37,9 @@ export class VerdocsTemplateAttachments {
   @Event({composed: true}) next: EventEmitter<{template: ITemplate}>;
 
   /**
-   * Event fired when the user clicks the next button.
+   * Event fired when the user updates the template.
    */
-  @Event({composed: true}) templateUpdate: EventEmitter<{template: ITemplate}>;
+  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -108,7 +108,9 @@ export class VerdocsTemplateAttachments {
       console.log('[ATTACHMENTS] Created attachment', template);
 
       this.store = await getTemplateStore(this.endpoint, this.templateId, true);
-      console.log('[ATTACHMENTS] New template', this.store.state);
+      console.log('[ATTACHMENTS] Updated template', this.store.state);
+
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store.state, event: 'attachments'});
 
       this.uploading = false;
       this.progressLabel = '';

@@ -125,7 +125,7 @@ export class VerdocsBuild {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'stepChanged', 'send']);
+    proxyOutputs(this, this.el, ['sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated']);
   }
 }
 
@@ -133,6 +133,8 @@ export class VerdocsBuild {
 import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk';
 import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk';
 import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsBuild extends Components.VerdocsBuild {
   /**
@@ -148,6 +150,14 @@ terminate the process, and the calling application should correct the condition 
    * The user completed the Send form and clicked send.
    */
   send: EventEmitter<CustomEvent<IVerdocsBuild{roles: [object Object][]; name: string; template_id: string}>>;
+  /**
+   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  templateUpdated: EventEmitter<CustomEvent<IVerdocsBuildIVerdocsBuild{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  /**
+   * Event fired when the template is created by the upload step.
+   */
+  templateCreated: EventEmitter<CustomEvent<IVerdocsBuildIVerdocsBuild{endpoint: [object Object]; template: [object Object]; event: string}>>;
 }
 
 
@@ -1960,12 +1970,13 @@ export class VerdocsTemplateAttachments {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next', 'templateUpdate', 'sdkError']);
+    proxyOutputs(this, this.el, ['exit', 'next', 'templateUpdated', 'sdkError']);
   }
 }
 
 
 import type { ITemplate as IVerdocsTemplateAttachmentsITemplate } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateAttachmentsVerdocsEndpoint } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsTemplateAttachmentsSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateAttachments extends Components.VerdocsTemplateAttachments {
@@ -1978,9 +1989,9 @@ export declare interface VerdocsTemplateAttachments extends Components.VerdocsTe
    */
   next: EventEmitter<CustomEvent<IVerdocsTemplateAttachments{template: [object Object]}>>;
   /**
-   * Event fired when the user clicks the next button.
+   * Event fired when the user updates the template.
    */
-  templateUpdate: EventEmitter<CustomEvent<IVerdocsTemplateAttachments{template: [object Object]}>>;
+  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateAttachmentsIVerdocsTemplateAttachments{endpoint: [object Object]; template: [object Object]; event: string}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -2179,12 +2190,14 @@ export class VerdocsTemplateName {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'sdkError']);
+    proxyOutputs(this, this.el, ['close', 'sdkError', 'templateUpdated']);
   }
 }
 
 
 import type { SDKError as IVerdocsTemplateNameSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateNameVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateNameITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateName extends Components.VerdocsTemplateName {
   /**
@@ -2196,6 +2209,10 @@ export declare interface VerdocsTemplateName extends Components.VerdocsTemplateN
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateNameSDKError>>;
+  /**
+   * Event fired when the user updates the template.
+   */
+  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateNameIVerdocsTemplateName{endpoint: [object Object]; template: [object Object]; event: string}>>;
 }
 
 
@@ -2214,12 +2231,14 @@ export class VerdocsTemplateReminders {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'sdkError']);
+    proxyOutputs(this, this.el, ['close', 'sdkError', 'templateUpdated']);
   }
 }
 
 
 import type { SDKError as IVerdocsTemplateRemindersSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateRemindersVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateRemindersITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateReminders extends Components.VerdocsTemplateReminders {
   /**
@@ -2231,6 +2250,10 @@ export declare interface VerdocsTemplateReminders extends Components.VerdocsTemp
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateRemindersSDKError>>;
+  /**
+   * Event fired when the user updates the template.
+   */
+  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateRemindersIVerdocsTemplateReminders{endpoint: [object Object]; template: [object Object]; event: string}>>;
 }
 
 
@@ -2427,12 +2450,14 @@ export class VerdocsTemplateVisibility {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'sdkError']);
+    proxyOutputs(this, this.el, ['close', 'sdkError', 'templateUpdated']);
   }
 }
 
 
 import type { SDKError as IVerdocsTemplateVisibilitySDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateVisibilityVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateVisibilityITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateVisibility extends Components.VerdocsTemplateVisibility {
   /**
@@ -2444,6 +2469,10 @@ export declare interface VerdocsTemplateVisibility extends Components.VerdocsTem
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateVisibilitySDKError>>;
+  /**
+   * Event fired when the user updates the template.
+   */
+  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateVisibilityIVerdocsTemplateVisibility{endpoint: [object Object]; template: [object Object]; event: string}>>;
 }
 
 

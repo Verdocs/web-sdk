@@ -2243,6 +2243,14 @@ declare namespace LocalJSX {
          */
         "onStepChanged"?: (event: VerdocsBuildCustomEvent<TVerdocsBuildStep>) => void;
         /**
+          * Event fired when the template is created by the upload step.
+         */
+        "onTemplateCreated"?: (event: VerdocsBuildCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
+        /**
+          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onTemplateUpdated"?: (event: VerdocsBuildCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
+        /**
           * The step in the creation process to display.
          */
         "step"?: TVerdocsBuildStep;
@@ -3593,9 +3601,9 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsTemplateAttachmentsCustomEvent<SDKError>) => void;
         /**
-          * Event fired when the user clicks the next button.
+          * Event fired when the user updates the template.
          */
-        "onTemplateUpdate"?: (event: VerdocsTemplateAttachmentsCustomEvent<{template: ITemplate}>) => void;
+        "onTemplateUpdated"?: (event: VerdocsTemplateAttachmentsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
          */
@@ -3729,6 +3737,10 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsTemplateNameCustomEvent<SDKError>) => void;
         /**
+          * Event fired when the user updates the template.
+         */
+        "onTemplateUpdated"?: (event: VerdocsTemplateNameCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
+        /**
           * The template ID to edit.
          */
         "templateId"?: string;
@@ -3746,6 +3758,10 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateRemindersCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user updates the template.
+         */
+        "onTemplateUpdated"?: (event: VerdocsTemplateRemindersCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
          */
@@ -3866,6 +3882,10 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateVisibilityCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user updates the template.
+         */
+        "onTemplateUpdated"?: (event: VerdocsTemplateVisibilityCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
          */

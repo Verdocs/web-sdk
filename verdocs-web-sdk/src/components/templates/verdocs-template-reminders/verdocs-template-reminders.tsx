@@ -4,6 +4,7 @@ import {createReminder, updateReminder, deleteReminder, ICreateTemplateReminderR
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 import {VerdocsToast} from '../../../utils/Toast';
+import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 
 /**
  * Displays an edit form that allows the user to adjust a template's reminders.
@@ -34,6 +35,11 @@ export class VerdocsTemplateReminders {
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
+
+  /**
+   * Event fired when the user updates the template.
+   */
+  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
 
   @State() showPlanBlocker = false;
   @State() sendReminders = false;
@@ -98,6 +104,7 @@ export class VerdocsTemplateReminders {
         await deleteReminder(this.endpoint, this.templateId, this.store?.state.reminder_id);
         this.store = await getTemplateStore(this.endpoint, this.templateId, true);
       }
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store.state, event: 'attachments'});
     } catch (e) {
       console.log('[TEMPLATE REMINDERS] Unable to update reminders', e);
       VerdocsToast(e.message);
