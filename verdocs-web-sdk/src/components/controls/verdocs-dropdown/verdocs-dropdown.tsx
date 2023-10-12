@@ -86,6 +86,7 @@ export class VerdocsDropdown {
       const bodyWidth = document.body.scrollWidth;
       const buttonRect = this.dropdownButton?.getBoundingClientRect();
       const triggerHeight = this.dropdownButton?.offsetWidth || 28;
+      console.log('Repositioning dropdown', {bodyWidth, buttonRect, triggerHeight}, menu);
 
       menu.style.top = `${(buttonRect?.top || 0) + triggerHeight}px`;
       menu.style.right = `${Math.max(0, bodyWidth - (buttonRect?.right || 0))}px`;
