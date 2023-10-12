@@ -1,6 +1,5 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, h, Event, EventEmitter, Host, Watch, State} from '@stencil/core';
-import {userCanBuildTemplate, userCanPreviewTemplate, userCanUpdateTemplate} from '@verdocs/js-sdk/Templates/Permissions';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
@@ -97,20 +96,32 @@ export class VerdocsTemplateBuildTabs {
       );
     }
 
-    const selectedStepIndex = Math.max(STEPS.indexOf(this.step), 0);
-    console.log({selectedStepIndex});
-
     let canPreview = false;
     let canEditFields = false;
     let canEditRoles = false;
     if (this.templateId && this.store) {
-      console.log('[BUILD] Rendering build view', this.step, selectedStepIndex);
-      canPreview = this.store && userCanPreviewTemplate(this.endpoint.session, this.store?.state);
-      canEditFields = this.store && userCanBuildTemplate(this.endpoint.session, this.store?.state);
-      canEditRoles = this.store && userCanUpdateTemplate(this.endpoint.session, this.store?.state);
+      console.log('lengths', this.store?.state?.template_documents.length, this.store?.state?.roles.length, this.store?.state?.fields.length);
+      canEditRoles = this.store?.state?.template_documents.length > 0;
+      canEditFields = canEditRoles && this.store?.state?.roles.length > 0;
+      canPreview = canEditFields && this.store?.state?.fields.length > 0;
+      // TODO
+      // canPreview = this.store && userCanPreviewTemplate(this.endpoint.session, this.store?.state);
+      // canEditFields = this.store && userCanBuildTemplate(this.endpoint.session, this.store?.state);
+      // canEditRoles = this.store && userCanUpdateTemplate(this.endpoint.session, this.store?.state);
     }
 
-    console.log({canPreview, canEditFields, canEditRoles});
+    let selectedStepIndex = Math.max(STEPS.indexOf(this.step), 0);
+    if (!canPreview && selectedStepIndex >= 4) {
+      selectedStepIndex = 3;
+    }
+    if (!canEditFields && selectedStepIndex >= 3) {
+      selectedStepIndex = 1;
+    }
+    if (!canEditRoles && selectedStepIndex >= 1) {
+      selectedStepIndex = 0;
+    }
+    console.log({selectedStepIndex, canPreview, canEditFields, canEditRoles});
+    console.log('[BUILD_TABS] Rendering', this.step, selectedStepIndex);
 
     return (
       <Host>

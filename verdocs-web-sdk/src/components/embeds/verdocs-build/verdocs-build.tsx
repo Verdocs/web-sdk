@@ -1,6 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {Component, Prop, h, Event, EventEmitter, Host, Watch, State} from '@stencil/core';
+import {Component, Prop, h, Element, Event, EventEmitter, forceUpdate, Host, Watch, State} from '@stencil/core';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
@@ -15,6 +15,8 @@ export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' 
   shadow: false,
 })
 export class VerdocsBuild {
+  @Element() el!: any;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -59,15 +61,15 @@ export class VerdocsBuild {
   @Event({composed: true}) templateCreated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
 
   @Watch('templateId')
-  onTemplateIdChanged() {
-    console.log('Template ID changed', this.templateId);
-    this.loadTemplate().catch((e: any) => console.log('Unknown Error', e));
+  onTemplateIdChanged(newTemplateId: string) {
+    console.log('Template ID changed', newTemplateId);
+    this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
   }
 
   @Watch('step')
-  onStepChanged() {
-    console.log('Step changed', this.step, this.templateId);
-    this.loadTemplate().catch((e: any) => console.log('Unknown Error', e));
+  onStepChanged(newStep: TVerdocsBuildStep) {
+    console.log('Step changed', newStep);
+    this.loadTemplate(this.templateId).catch((e: any) => console.log('Unknown Error', e));
   }
 
   @State()
@@ -88,16 +90,18 @@ export class VerdocsBuild {
         return;
       }
 
-      this.loadTemplate().catch(e => console.log('[BUILD] Unable to load template', e));
+      this.loadTemplate(this.templateId).catch(e => console.log('[BUILD] Unable to load template', e));
     } catch (e) {
       console.log('[BUILD] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  async loadTemplate() {
-    if (this.templateId) {
-      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+  async loadTemplate(templateId: string) {
+    if (templateId) {
+      console.log('Loading store', templateId);
+      this.store = await getTemplateStore(this.endpoint, templateId, true);
+      forceUpdate(this.el);
     }
   }
 
@@ -107,8 +111,8 @@ export class VerdocsBuild {
   }
 
   async handleTemplateCreated(templateId: string) {
+    await this.loadTemplate(templateId);
     this.templateId = templateId;
-    await this.loadTemplate();
     this.step = 'roles';
     this.stepChanged?.emit('roles');
   }
@@ -143,7 +147,7 @@ export class VerdocsBuild {
       );
     }
 
-    if (!this.templateId || !this.store) {
+    if (!this.store) {
       console.log('[BUILD] No template ID, rendering created view');
       return (
         <Host>
@@ -175,11 +179,9 @@ export class VerdocsBuild {
           <verdocs-template-build-tabs
             endpoint={this.endpoint}
             templateId={this.templateId}
-            step="attachments"
+            step={this.step}
             onSdkError={e => this.sdkError?.emit(e.detail)}
-            onStepChanged={e => {
-              console.log('osc', e.detail);
-            }}
+            onStepChanged={e => this.handleStepChanged(e.detail)}
           />
 
           {this.step === 'attachments' && (

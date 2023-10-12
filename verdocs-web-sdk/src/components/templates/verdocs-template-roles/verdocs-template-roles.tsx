@@ -102,13 +102,17 @@ export class VerdocsTemplateRoles {
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
-      this.sortTemplateRoles();
-      this.renumberTemplateRoles();
+      await this.reloadStore();
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
+  }
+
+  async reloadStore() {
+    this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+    this.sortTemplateRoles();
+    this.renumberTemplateRoles();
   }
 
   componentDidRender() {
@@ -185,6 +189,7 @@ export class VerdocsTemplateRoles {
             .then(() => {
               console.log('[ROLES] Updated roles');
               this.templateUpdated?.emit({event: 'updated-role', endpoint: this.endpoint, template: this.store?.state});
+              this.reloadStore().catch(e => console.log('Unknown error', e));
             })
             .catch(e => console.log('[ROLES] Role updates failed', e));
         }
@@ -287,6 +292,7 @@ export class VerdocsTemplateRoles {
         // this.store.state.roles = [...this.store?.state.roles, r];
         // this.renumberTemplateRoles();
         this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: this.store?.state});
+        this.reloadStore().catch(e => console.log('Unknown error', e));
       })
       .catch(e => {
         console.log('[ROLES] Error creating role', e);
@@ -457,6 +463,7 @@ export class VerdocsTemplateRoles {
               // this.forceRerender++;
 
               this.templateUpdated?.emit({event: 'deleted-role', endpoint: this.endpoint, template: this.store?.state});
+              this.reloadStore().catch(e => console.log('Unknown error', e));
             }}
           />
         )}
