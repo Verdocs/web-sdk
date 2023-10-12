@@ -1,4 +1,4 @@
-import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
+import {Component, Prop, Host, h, Event, EventEmitter} from '@stencil/core';
 
 export interface ITab {
   id?: string;
@@ -8,7 +8,8 @@ export interface ITab {
 }
 
 /**
- * Display a simple row of selectable tabs.
+ * Display a simple row of selectable tabs. This is a controlled element.
+ * The parent must adjust selectedTab as selection events are fired.
  */
 @Component({
   tag: 'verdocs-tabs',
@@ -21,11 +22,9 @@ export class VerdocsTabs {
   @Prop() tabs: ITab[] = [];
 
   /**
-   * The index of the initial tab to select.
+   * The index of the tab to show selected.
    */
-  @Prop() defaultTab: number = 0;
-
-  @State() selectedTab = 0;
+  @Prop() selectedTab: number = 0;
 
   /**
    * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate
@@ -33,16 +32,7 @@ export class VerdocsTabs {
    */
   @Event({composed: true}) selectTab: EventEmitter<{tab: ITab; index: number}>;
 
-  componentDidLoad() {
-    this.selectedTab = this.defaultTab || 0;
-  }
-
-  componentDidUpdate() {
-    this.selectedTab = this.defaultTab || 0;
-  }
-
   handleSelectTab(index: number) {
-    this.selectedTab = index;
     this.selectTab?.emit({tab: this.tabs[index], index});
   }
 

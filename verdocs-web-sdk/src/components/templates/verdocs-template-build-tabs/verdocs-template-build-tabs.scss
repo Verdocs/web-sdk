@@ -1,0 +1,32 @@
+@import '../../../theme.scss';
+
+verdocs-template-build-tabs {
+  flex: 1;
+  gap: 20px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-family: $verdocs-primary-font;
+
+  verdocs-template-attachments,
+  verdocs-template-roles {
+    margin: 20px;
+  }
+
+  verdocs-template-fields {
+    border-top: 1px solid #777777;
+  }
+
+  verdocs-template-attachments {
+    padding: 20px;
+    background: #ffffff;
+  }
+
+  verdocs-template-fields {
+    width: 100%;
+  }
+
+  verdocs-preview {
+    flex: 1;
+  }
+}

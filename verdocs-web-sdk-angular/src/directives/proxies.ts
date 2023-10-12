@@ -1925,14 +1925,14 @@ export declare interface VerdocsTable extends Components.VerdocsTable {
 
 
 @ProxyCmp({
-  inputs: ['defaultTab', 'tabs']
+  inputs: ['selectedTab', 'tabs']
 })
 @Component({
   selector: 'verdocs-tabs',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['defaultTab', 'tabs'],
+  inputs: ['selectedTab', 'tabs'],
 })
 export class VerdocsTabs {
   protected el: HTMLElement;
@@ -1997,6 +1997,42 @@ export declare interface VerdocsTemplateAttachments extends Components.VerdocsTe
 terminate the process, and the calling application should correct the condition and re-render the component.
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsTemplateAttachmentsSDKError>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'step', 'templateId']
+})
+@Component({
+  selector: 'verdocs-template-build-tabs',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'step', 'templateId'],
+})
+export class VerdocsTemplateBuildTabs {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['sdkError', 'stepChanged']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateBuildTabsSDKError } from '@verdocs/web-sdk';
+import type { TVerdocsBuildStep as IVerdocsTemplateBuildTabsTVerdocsBuildStep } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateBuildTabs extends Components.VerdocsTemplateBuildTabs {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateBuildTabsSDKError>>;
+  /**
+   * Event fired when the user selects a different step.
+   */
+  stepChanged: EventEmitter<CustomEvent<IVerdocsTemplateBuildTabsTVerdocsBuildStep>>;
 }
 
 

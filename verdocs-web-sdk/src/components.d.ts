@@ -23,6 +23,7 @@ import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelo
 import { IProfile } from "@verdocs/js-sdk/Users/Types";
 import { IColumn } from "./components/controls/verdocs-table/verdocs-table";
 import { ITab } from "./components/controls/verdocs-tabs/verdocs-tabs";
+import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/verdocs-template-build-tabs/verdocs-template-build-tabs";
 import { IGetTemplateSummarySortBy } from "@verdocs/js-sdk/Templates/Templates";
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
@@ -1053,9 +1054,9 @@ export namespace Components {
     }
     interface VerdocsTabs {
         /**
-          * The index of the initial tab to select.
+          * The index of the tab to show selected.
          */
-        "defaultTab": number;
+        "selectedTab": number;
         /**
           * The tabs to display
          */
@@ -1070,6 +1071,20 @@ export namespace Components {
           * The template ID to edit.
          */
         "templateId": string;
+    }
+    interface VerdocsTemplateBuildTabs {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The step in the creation process to display.
+         */
+        "step": TVerdocsBuildStep;
+        /**
+          * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+         */
+        "templateId": string | null;
     }
     interface VerdocsTemplateCard {
         /**
@@ -1545,6 +1560,10 @@ export interface VerdocsTemplateAttachmentsCustomEvent<T> extends CustomEvent<T>
     detail: T;
     target: HTMLVerdocsTemplateAttachmentsElement;
 }
+export interface VerdocsTemplateBuildTabsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateBuildTabsElement;
+}
 export interface VerdocsTemplateCreateCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateCreateElement;
@@ -1960,6 +1979,12 @@ declare global {
         prototype: HTMLVerdocsTemplateAttachmentsElement;
         new (): HTMLVerdocsTemplateAttachmentsElement;
     };
+    interface HTMLVerdocsTemplateBuildTabsElement extends Components.VerdocsTemplateBuildTabs, HTMLStencilElement {
+    }
+    var HTMLVerdocsTemplateBuildTabsElement: {
+        prototype: HTMLVerdocsTemplateBuildTabsElement;
+        new (): HTMLVerdocsTemplateBuildTabsElement;
+    };
     interface HTMLVerdocsTemplateCardElement extends Components.VerdocsTemplateCard, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateCardElement: {
@@ -2140,6 +2165,7 @@ declare global {
         "verdocs-table": HTMLVerdocsTableElement;
         "verdocs-tabs": HTMLVerdocsTabsElement;
         "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
+        "verdocs-template-build-tabs": HTMLVerdocsTemplateBuildTabsElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-create": HTMLVerdocsTemplateCreateElement;
         "verdocs-template-document-page": HTMLVerdocsTemplateDocumentPageElement;
@@ -3571,13 +3597,13 @@ declare namespace LocalJSX {
     }
     interface VerdocsTabs {
         /**
-          * The index of the initial tab to select.
-         */
-        "defaultTab"?: number;
-        /**
           * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
          */
         "onSelectTab"?: (event: VerdocsTabsCustomEvent<{tab: ITab; index: number}>) => void;
+        /**
+          * The index of the tab to show selected.
+         */
+        "selectedTab"?: number;
         /**
           * The tabs to display
          */
@@ -3608,6 +3634,28 @@ declare namespace LocalJSX {
           * The template ID to edit.
          */
         "templateId"?: string;
+    }
+    interface VerdocsTemplateBuildTabs {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplateBuildTabsCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user selects a different step.
+         */
+        "onStepChanged"?: (event: VerdocsTemplateBuildTabsCustomEvent<TVerdocsBuildStep>) => void;
+        /**
+          * The step in the creation process to display.
+         */
+        "step"?: TVerdocsBuildStep;
+        /**
+          * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+         */
+        "templateId"?: string | null;
     }
     interface VerdocsTemplateCard {
         /**
@@ -4162,6 +4210,7 @@ declare namespace LocalJSX {
         "verdocs-table": VerdocsTable;
         "verdocs-tabs": VerdocsTabs;
         "verdocs-template-attachments": VerdocsTemplateAttachments;
+        "verdocs-template-build-tabs": VerdocsTemplateBuildTabs;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-create": VerdocsTemplateCreate;
         "verdocs-template-document-page": VerdocsTemplateDocumentPage;
@@ -4247,6 +4296,7 @@ declare module "@stencil/core" {
             "verdocs-table": LocalJSX.VerdocsTable & JSXBase.HTMLAttributes<HTMLVerdocsTableElement>;
             "verdocs-tabs": LocalJSX.VerdocsTabs & JSXBase.HTMLAttributes<HTMLVerdocsTabsElement>;
             "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
+            "verdocs-template-build-tabs": LocalJSX.VerdocsTemplateBuildTabs & JSXBase.HTMLAttributes<HTMLVerdocsTemplateBuildTabsElement>;
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
             "verdocs-template-create": LocalJSX.VerdocsTemplateCreate & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;
             "verdocs-template-document-page": LocalJSX.VerdocsTemplateDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsTemplateDocumentPageElement>;

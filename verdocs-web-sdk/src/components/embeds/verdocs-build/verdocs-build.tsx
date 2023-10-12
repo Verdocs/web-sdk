@@ -1,7 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Prop, h, Event, EventEmitter, Host, Watch, State} from '@stencil/core';
-import {userCanBuildTemplate, userCanUpdateTemplate} from '@verdocs/js-sdk/Templates/Permissions';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
@@ -65,11 +64,14 @@ export class VerdocsBuild {
     this.loadTemplate().catch((e: any) => console.log('Unknown Error', e));
   }
 
-  @State()
-  store: TTemplateStore | null = null;
+  @Watch('step')
+  onStepChanged() {
+    console.log('Step changed', this.step, this.templateId);
+    this.loadTemplate().catch((e: any) => console.log('Unknown Error', e));
+  }
 
   @State()
-  tabsUpdateKey = 1;
+  store: TTemplateStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -114,7 +116,6 @@ export class VerdocsBuild {
   async handleTemplateUpdated(e: any) {
     console.log('tup');
     this.templateUpdated?.emit(e.detail);
-    this.tabsUpdateKey++;
   }
 
   handleAttachmentsNext() {
@@ -127,9 +128,8 @@ export class VerdocsBuild {
     this.stepChanged?.emit('fields');
   }
 
-  setStep(e: any, step: TVerdocsBuildStep) {
-    e.stopPropagation();
-    e.preventDefault();
+  handleStepChanged(step: TVerdocsBuildStep) {
+    console.log('osc', step);
     this.step = step;
     this.stepChanged?.emit(step);
   }
@@ -148,16 +148,12 @@ export class VerdocsBuild {
       return (
         <Host>
           <div class="content">
-            <verdocs-tabs
-              key={this.tabsUpdateKey}
-              onSelectTab={() => {}}
-              tabs={[
-                {id: 'attachments', disabled: false, label: 'Upload Attachment(s)'},
-                {id: 'roles', disabled: true, label: 'Roles'},
-                {id: 'settings', disabled: true, label: 'Settings'},
-                {id: 'fields', disabled: true, label: 'Fields'},
-                {id: 'preview', disabled: true, label: 'Preview/Send'},
-              ]}
+            <verdocs-template-build-tabs
+              endpoint={this.endpoint}
+              templateId={this.templateId}
+              step="attachments"
+              onSdkError={e => this.sdkError?.emit(e.detail)}
+              onStepChanged={e => this.handleStepChanged(e.detail)}
             />
 
             <verdocs-template-create
@@ -172,26 +168,18 @@ export class VerdocsBuild {
     }
 
     console.log('[BUILD] Rendering build view', this.step, ['attachments', 'roles', 'settings', 'fields', 'preview'].indexOf(this.step));
-    // const canPreview = this.store && userCanPreviewTemplate(this.endpoint.session, this.store?.state);
-    // TODO: Had to disable this for now to research why reactivity isn't re-rendering the tabs
-    const canPreview = this.store && userCanBuildTemplate(this.endpoint.session, this.store?.state);
-    const canEditFields = this.store && userCanBuildTemplate(this.endpoint.session, this.store?.state);
-    const canEditRoles = this.store && userCanUpdateTemplate(this.endpoint.session, this.store?.state);
 
     return (
       <Host>
         <div class="content">
-          <verdocs-tabs
-            key={this.tabsUpdateKey}
-            onSelectTab={e => this.setStep(e, e.detail.tab.id as TVerdocsBuildStep)}
-            defaultTab={['attachments', 'roles', 'settings', 'fields', 'preview'].indexOf(this.step)}
-            tabs={[
-              {id: 'attachments', disabled: false, label: 'Attachment(s)'},
-              {id: 'roles', disabled: !canEditRoles, label: 'Roles'},
-              {id: 'settings', disabled: !canEditFields, label: 'Settings'},
-              {id: 'fields', disabled: !canEditFields, label: 'Fields'},
-              {id: 'preview', disabled: !canPreview, label: 'Preview/Send'},
-            ]}
+          <verdocs-template-build-tabs
+            endpoint={this.endpoint}
+            templateId={this.templateId}
+            step="attachments"
+            onSdkError={e => this.sdkError?.emit(e.detail)}
+            onStepChanged={e => {
+              console.log('osc', e.detail);
+            }}
           />
 
           {this.step === 'attachments' && (
