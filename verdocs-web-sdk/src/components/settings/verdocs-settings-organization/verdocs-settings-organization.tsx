@@ -11,12 +11,12 @@ import {TimeZones} from './TimeZones';
 const timeZoneOptions = TimeZones.map(tz => ({value: tz[2], label: tz[2]}));
 
 const schema = z.object({
-  name: z.string().trim().min(1, 'Name is required').max(30),
+  // name: z.string().trim().min(1, 'Name is required').max(30),
   business_name: z.string().trim().max(30).optional(),
   contact_email: z.string().trim().email('Invalid email').optional().or(z.literal('')),
   phone: z.preprocess(val => convertToE164(String(val).trim()), z.string().optional()),
-  address: z.string().trim().max(30).optional(),
-  address2: z.string().trim().max(30).optional(),
+  // address: z.string().trim().max(30).optional(),
+  // address2: z.string().trim().max(30).optional(),
   timezone: z.string().trim().optional(),
   url: z.string().trim().optional(),
 });
@@ -142,7 +142,8 @@ export class VerdocsSettingsOrganization {
                 value={this.name}
                 autocomplete="off"
                 label="Name"
-                required={true}
+                required={false}
+                disabled={false}
                 placeholder="Enter your organization's name..."
                 onInput={(e: any) => (this.name = e.target.value)}
                 onFocusout={(e: any) => {
@@ -155,8 +156,8 @@ export class VerdocsSettingsOrganization {
                 id="verdocs-organization-business-name"
                 value={this.business_name}
                 autocomplete="off"
-                label="d/b/a"
-                placeholder="Enter your d/b/a, if any..."
+                label="Display Name"
+                placeholder="The name to display on communications..."
                 onInput={(e: any) => (this.business_name = e.target.value)}
                 onFocusout={(e: any) => {
                   this.business_name = e.target.value.trim();
@@ -194,47 +195,47 @@ export class VerdocsSettingsOrganization {
             </div>
 
             <div class="column">
-              <verdocs-text-input
-                id="verdocs-organization-address"
-                value={this.address}
-                autocomplete="off"
-                label="Address"
-                required={true}
-                placeholder="Enter your address..."
-                onInput={(e: any) => (this.address = e.target.value)}
-                onFocusout={(e: any) => {
-                  this.address = e.target.value.trim();
-                  this.processFields();
-                }}
-              />
+              {/*<verdocs-text-input*/}
+              {/*  id="verdocs-organization-address"*/}
+              {/*  value={this.address}*/}
+              {/*  autocomplete="off"*/}
+              {/*  label="Address"*/}
+              {/*  required={true}*/}
+              {/*  placeholder="Enter your address..."*/}
+              {/*  onInput={(e: any) => (this.address = e.target.value)}*/}
+              {/*  onFocusout={(e: any) => {*/}
+              {/*    this.address = e.target.value.trim();*/}
+              {/*    this.processFields();*/}
+              {/*  }}*/}
+              {/*/>*/}
 
-              <verdocs-text-input
-                id="verdocs-organization-address"
-                value={this.address2}
-                autocomplete="off"
-                label="Address 2"
-                required={true}
-                placeholder="Address line 2..."
-                onInput={(e: any) => (this.address2 = e.target.value)}
-                onFocusout={(e: any) => {
-                  this.address2 = e.target.value.trim();
-                  this.processFields();
-                }}
-              />
+              {/*<verdocs-text-input*/}
+              {/*  id="verdocs-organization-address2"*/}
+              {/*  value={this.address2}*/}
+              {/*  autocomplete="off"*/}
+              {/*  label="Address 2"*/}
+              {/*  required={false}*/}
+              {/*  placeholder="Address line 2..."*/}
+              {/*  onInput={(e: any) => (this.address2 = e.target.value)}*/}
+              {/*  onFocusout={(e: any) => {*/}
+              {/*    this.address2 = e.target.value.trim();*/}
+              {/*    this.processFields();*/}
+              {/*  }}*/}
+              {/*/>*/}
 
-              <verdocs-text-input
-                id="verdocs-organization-address2"
-                value={this.address2}
-                clearable={true}
-                autocomplete="off"
-                label="Address 2"
-                placeholder="Enter your address..."
-                onInput={(e: any) => (this.address2 = e.target.value)}
-                onFocusout={(e: any) => {
-                  this.address2 = e.target.value.trim();
-                  this.processFields();
-                }}
-              />
+              {/*<verdocs-text-input*/}
+              {/*  id="verdocs-organization-address2"*/}
+              {/*  value={this.address2}*/}
+              {/*  clearable={true}*/}
+              {/*  autocomplete="off"*/}
+              {/*  label="Address 2"*/}
+              {/*  placeholder="Enter your address..."*/}
+              {/*  onInput={(e: any) => (this.address2 = e.target.value)}*/}
+              {/*  onFocusout={(e: any) => {*/}
+              {/*    this.address2 = e.target.value.trim();*/}
+              {/*    this.processFields();*/}
+              {/*  }}*/}
+              {/*/>*/}
 
               <verdocs-text-input
                 id="verdocs-organization-email"

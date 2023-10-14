@@ -40,6 +40,7 @@ export class VerdocsSettings {
   }
 
   render() {
+    console.log('sess', this.endpoint.session);
     if (!this.endpoint.session) {
       return (
         <Host>
