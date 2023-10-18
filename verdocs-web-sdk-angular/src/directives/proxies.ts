@@ -132,7 +132,7 @@ export class VerdocsBuild {
 
 import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk';
 import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk';
-import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
+import type { ICreateEnvelopeRole as IVerdocsBuildICreateEnvelopeRole } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk';
 import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk';
 
@@ -1531,7 +1531,7 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'templateId'],
+  inputs: ['endpoint', 'environment', 'templateId'],
   methods: ['reset']
 })
 @Component({
@@ -1539,7 +1539,7 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'templateId'],
+  inputs: ['endpoint', 'environment', 'templateId'],
 })
 export class VerdocsSend {
   protected el: HTMLElement;
@@ -1551,7 +1551,7 @@ export class VerdocsSend {
 }
 
 
-import type { IRole as IVerdocsSendIRole } from '@verdocs/web-sdk';
+import type { ICreateEnvelopeRole as IVerdocsSendICreateEnvelopeRole } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
 import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk';
 

@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
-import { IActivityEntry, IEnvelope, IEnvelopeField, IEnvelopeSummary, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
+import { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeField, IEnvelopeSummary, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
 import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
@@ -960,6 +960,10 @@ export namespace Components {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
+        /**
+          * The environment the control is being called from, e.g. 'web'. This has an impact on how certain operations such as email communications are handled to ensure users receive the correct URLs for their invitations. Setting this to unknown values may produce unexpected/incorrect behaviors. If environment is not known, do this set this property.
+         */
+        "environment": string;
         "reset": () => Promise<void>;
         /**
           * The ID of the template to create the document from.
@@ -2263,7 +2267,7 @@ declare namespace LocalJSX {
         /**
           * The user completed the Send form and clicked send.
          */
-        "onSend"?: (event: VerdocsBuildCustomEvent<{roles: IRole[]; name: string; template_id: string}>) => void;
+        "onSend"?: (event: VerdocsBuildCustomEvent<{roles: ICreateEnvelopeRole[]; name: string; template_id: string}>) => void;
         /**
           * Event fired when the user selects a different step.
          */
@@ -3409,6 +3413,10 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
+          * The environment the control is being called from, e.g. 'web'. This has an impact on how certain operations such as email communications are handled to ensure users receive the correct URLs for their invitations. Setting this to unknown values may produce unexpected/incorrect behaviors. If environment is not known, do this set this property.
+         */
+        "environment"?: string;
+        /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
         "onExit"?: (event: VerdocsSendCustomEvent<any>) => void;
@@ -3423,7 +3431,7 @@ declare namespace LocalJSX {
         /**
           * The user completed the form and clicked send.
          */
-        "onSend"?: (event: VerdocsSendCustomEvent<{roles: IRole[]; name: string; template_id: string}>) => void;
+        "onSend"?: (event: VerdocsSendCustomEvent<{roles: ICreateEnvelopeRole[]; name: string; template_id: string}>) => void;
         /**
           * The ID of the template to create the document from.
          */

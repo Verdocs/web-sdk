@@ -8,7 +8,6 @@ export default {
     templateId: '',
   },
   argTypes: {
-    templateId: {control: {type: 'string'}},
     onSend: {action: 'send'},
   },
   parameters: {

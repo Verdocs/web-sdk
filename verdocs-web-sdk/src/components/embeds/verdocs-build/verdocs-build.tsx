@@ -1,5 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {ICreateEnvelopeRole} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, Prop, h, Element, Event, EventEmitter, forceUpdate, Host, Watch, State} from '@stencil/core';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
@@ -48,7 +49,7 @@ export class VerdocsBuild {
   /**
    * The user completed the Send form and clicked send.
    */
-  @Event({composed: true}) send: EventEmitter<{roles: IRole[]; name: string; template_id: string}>;
+  @Event({composed: true}) send: EventEmitter<{roles: ICreateEnvelopeRole[]; name: string; template_id: string}>;
 
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.

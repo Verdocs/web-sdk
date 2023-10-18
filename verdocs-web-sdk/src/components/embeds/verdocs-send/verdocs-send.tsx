@@ -7,6 +7,9 @@ import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdoc
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
+import {Envelopes} from '@verdocs/js-sdk/Envelopes';
+import {ICreateEnvelopeRequest} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {ICreateEnvelopeRole} from '@verdocs/js-sdk/Envelopes/Types';
 
 const editIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>';
@@ -48,9 +51,17 @@ export class VerdocsSend {
   @Prop() templateId: string | null = null;
 
   /**
+   * The environment the control is being called from, e.g. 'web'. This has an impact on how certain
+   * operations such as email communications are handled to ensure users receive the correct URLs for
+   * their invitations. Setting this to unknown values may produce unexpected/incorrect behaviors.
+   * If environment is not known, do this set this property.
+   */
+  @Prop() environment: string = 'web';
+
+  /**
    * The user completed the form and clicked send.
    */
-  @Event({composed: true}) send: EventEmitter<{roles: IRole[]; name: string; template_id: string}>;
+  @Event({composed: true}) send: EventEmitter<{roles: ICreateEnvelopeRole[]; name: string; template_id: string}>;
 
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -76,6 +87,8 @@ export class VerdocsSend {
   @State() showPickerForId = '';
 
   @State() sessionContacts = [];
+
+  @State() sending = false;
 
   @State() rolesCompleted: Record<string, TAnnotatedRole> = {};
 
@@ -160,8 +173,34 @@ export class VerdocsSend {
   }
 
   handleSend(e) {
+    console.log('Sending', e);
+    e.preventDefault();
     e.stopPropagation();
-    this.send?.emit({roles: Object.values(this.rolesCompleted), name: this.store?.state?.name, template_id: this.templateId});
+
+    this.sending = true;
+
+    const details: ICreateEnvelopeRequest = {
+      template_id: this.templateId,
+      name: this.store?.state?.name,
+      environment: this.environment,
+      roles: Object.values(this.rolesCompleted) as ICreateEnvelopeRole[],
+      // TODO
+      prepared_fields: [],
+    };
+
+    console.log('[SEND] Creating envelope', details);
+    Envelopes.createEnvelope(this.endpoint, details)
+      .then(r => {
+        console.log('[SEND] Send envelope', r);
+        this.reset().catch((e: any) => console.log('Unknown Error', e));
+        this.sending = false;
+        this.send?.emit(details);
+      })
+      .catch(e => {
+        console.log('Send error', e);
+        // toast.error(e.response?.data?.message || 'Unknown error creating envelope');
+        this.sending = false;
+      });
   }
 
   handleCancel(e) {
