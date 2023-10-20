@@ -13,7 +13,13 @@ verdocs-envelope-sidebar {
 
   &.open {
     flex: 0 0 400px;
+    max-width: 100%;
     width: 400px;
+
+    @media screen and (max-width: 500px) {
+      flex: 0 0 300px;
+      width: 300px;
+    }
   }
 
   .side-buttons {
@@ -59,27 +65,36 @@ verdocs-envelope-sidebar {
   }
 
   .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin-bottom: 12px;
     font-size: 16px;
     line-height: 24px;
     font-weight: 400;
-    flex: 0;
+    //flex: 0;
   }
 
   .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 12px;
     line-height: 16px;
     color: rgba(255, 255, 255, 0.54);
-    flex: 0;
+    //flex: 0;
   }
 
   .value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin-bottom: 14px;
     font-size: 14px;
     font-weight: 500;
     line-height: 16px;
     color: #fff;
-    flex: 0;
+    //flex: 0;
   }
 
   .manage-recipients-button {
@@ -166,6 +181,12 @@ verdocs-envelope-sidebar {
     &.declined {
       background-color: #c62828;
     }
+
+    @media screen and (max-width: 500px) {
+      flex: 1 1 60px;
+      max-width: 60px;
+      min-width: 60px;
+    }
   }
 
   .recipient-content {
@@ -173,6 +194,9 @@ verdocs-envelope-sidebar {
   }
 
   .recipient-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .history-entry {

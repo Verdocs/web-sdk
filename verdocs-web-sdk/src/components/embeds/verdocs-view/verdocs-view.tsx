@@ -2,9 +2,10 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
 import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {userCanCancelEnvelope} from '@verdocs/js-sdk/Envelopes/Permissions';
-import {cancelEnvelope, throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {cancelEnvelope, getDocumentDownloadLink, throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
-import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
+import {saveEnvelopesAsZip} from '../../../utils/utils';
+// import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
@@ -154,23 +155,32 @@ export class VerdocsView {
         break;
 
       case 'download-attachments':
-        saveAttachment(this.endpoint, this.envelope, this.envelope.envelope_document_id)
-          .then(() => {
-            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
-          })
-          .catch(e => {
-            console.log('Error downloading PDF', e);
-          });
+        {
+          const url = await getDocumentDownloadLink(this.endpoint, this.envelopeId, this.envelope.envelope_document_id);
+          window.open(url, '_blank');
+        }
+        // console.log('url', url);
+        // saveAttachment(this.endpoint, this.envelope, this.envelope.envelope_document_id)
+        //   .then(() => {
+        //     this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
+        //   })
+        //   .catch(e => {
+        //     console.log('Error downloading PDF', e);
+        //   });
         break;
 
       case 'download-certificate':
-        saveCertificate(this.endpoint, this.envelope, this.envelope.certificate_document_id)
-          .then(() => {
-            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
-          })
-          .catch(e => {
-            console.log('Error downloading PDF', e);
-          });
+        {
+          const url = await getDocumentDownloadLink(this.endpoint, this.envelopeId, this.envelope.certificate_document_id);
+          window.open(url, '_blank');
+        }
+        // saveCertificate(this.endpoint, this.envelope, this.envelope.certificate_document_id)
+        //   .then(() => {
+        //     this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
+        //   })
+        //   .catch(e => {
+        //     console.log('Error downloading PDF', e);
+        //   });
         break;
 
       case 'download-all':

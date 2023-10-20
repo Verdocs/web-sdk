@@ -63,7 +63,13 @@ verdocs-view {
   flex-direction: row;
   transition: all 0.25s;
   background-color: $medium-bg;
-  box-shadow: 0 4px 4px 0 rgb(0 0 0 / 24%), 0 0 4px 0 rgb(0 0 0 / 12%);
+  box-shadow:
+    0 4px 4px 0 rgb(0 0 0 / 24%),
+    0 0 4px 0 rgb(0 0 0 / 12%);
+
+  @media all and (max-width: 500px) {
+    padding: 0 10px;
+  }
 
   .inner {
     width: 100%;
@@ -73,6 +79,10 @@ verdocs-view {
     max-width: 1200px;
     align-items: center;
     flex-direction: row;
+
+    @media all and (max-width: 500px) {
+      padding: 0 10px;
+    }
   }
 
   .logo {
@@ -84,6 +94,7 @@ verdocs-view {
   .title {
     font-size: 18px;
     font-weight: 500;
+    overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
