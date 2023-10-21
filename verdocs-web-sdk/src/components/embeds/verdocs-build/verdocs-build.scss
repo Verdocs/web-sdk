@@ -35,4 +35,30 @@ verdocs-build {
   verdocs-preview {
     flex: 1;
   }
+
+  .preview-container {
+    flex-direction: row;
+    display: flex;
+    width: 100%;
+    background-color: #eeeeee;
+    max-height: 100%;
+
+    @media all and (max-width: 450px) {
+      flex-direction: column;
+    }
+  }
+
+  .preview-send-wrapper {
+    display: flex;
+    flex: 0 0 300px;
+    background-color: #ffffff;
+    box-shadow: 1px 1px 6px -2px #0000007f;
+  }
+
+  .preview-preview-wrapper {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    overflow-y: scroll;
+  }
 }

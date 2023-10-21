@@ -61,4 +61,11 @@ verdocs-settings-api-keys {
     line-height: 18px;
     margin: 0 0 1em 0;
   }
+
+  @media all and (max-width: 450px) {
+    .col-client_id,
+    .col-actions {
+      display: none;
+    }
+  }
 }

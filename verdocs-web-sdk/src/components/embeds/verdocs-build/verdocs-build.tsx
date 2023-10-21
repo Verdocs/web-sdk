@@ -231,11 +231,11 @@ export class VerdocsBuild {
           {this.step === 'fields' && <verdocs-template-fields templateId={this.templateId} endpoint={this.endpoint} onTemplateUpdated={e => this.handleTemplateUpdated(e)} />}
 
           {this.step === 'preview' && (
-            <div style={{flexDirection: 'row', display: 'flex', width: '100%', backgroundColor: '#eeeeee', maxHeight: '100%'}}>
-              <div style={{display: 'flex', flex: '0 0 300px', backgroundColor: '#ffffff', boxShadow: '1px 1px 6px -2px #0000007f'}}>
+            <div class="preview-container">
+              <div class="preview-send-wrapper">
                 <verdocs-send templateId={this.templateId} endpoint={this.endpoint} onSend={e => this.send?.emit(e.detail)} style={{width: '100%'}} />
               </div>
-              <div style={{display: 'flex', flex: '1', justifyContent: 'center', overflowY: 'scroll'}}>
+              <div class="preview-preview-wrapper">
                 <verdocs-preview templateId={this.templateId} endpoint={this.endpoint} style={{display: 'flex', flex: '1', maxWidth: '1000px'}} />
               </div>
             </div>

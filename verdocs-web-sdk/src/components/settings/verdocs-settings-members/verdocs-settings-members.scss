@@ -78,4 +78,12 @@ verdocs-settings-members {
     line-height: 18px;
     margin: 0 0 1em 0;
   }
+
+  @media all and (max-width: 450px) {
+    .col-email,
+    .col-phone,
+    .col-actions {
+      display: none;
+    }
+  }
 }
