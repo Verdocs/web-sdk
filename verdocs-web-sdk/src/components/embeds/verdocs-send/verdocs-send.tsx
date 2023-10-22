@@ -1,15 +1,15 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {IRole} from '@verdocs/js-sdk/Templates/Types';
+import {ICreateEnvelopeRequest} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {ICreateEnvelopeRole, IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method} from '@stencil/core';
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
-import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {ICreateEnvelopeRequest} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import {ICreateEnvelopeRole} from '@verdocs/js-sdk/Envelopes/Types';
 
 const editIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>';
@@ -61,7 +61,7 @@ export class VerdocsSend {
   /**
    * The user completed the form and clicked send.
    */
-  @Event({composed: true}) send: EventEmitter<{roles: ICreateEnvelopeRole[]; name: string; template_id: string}>;
+  @Event({composed: true}) send: EventEmitter<{roles: ICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>;
 
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -194,7 +194,7 @@ export class VerdocsSend {
         console.log('[SEND] Send envelope', r);
         this.reset().catch((e: any) => console.log('Unknown Error', e));
         this.sending = false;
-        this.send?.emit(details);
+        this.send?.emit({...details, envelope_id: r.id, envelope: r});
       })
       .catch(e => {
         console.log('Send error', e);
@@ -268,8 +268,9 @@ export class VerdocsSend {
         </div>
 
         <div class="buttons">
-          <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} />
-          <verdocs-button label="Send" size="small" disabled={!allRolesAssigned} onClick={e => this.handleSend(e)} />
+          <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} disabled={this.sending} />
+          <verdocs-button label="Send" size="small" disabled={!allRolesAssigned || this.sending} onClick={e => this.handleSend(e)} />
+          {this.sending && <verdocs-spinner />}
         </div>
       </Host>
     );

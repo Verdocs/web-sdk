@@ -1552,6 +1552,7 @@ export class VerdocsSend {
 
 
 import type { ICreateEnvelopeRole as IVerdocsSendICreateEnvelopeRole } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
 import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk';
 
@@ -1559,7 +1560,7 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
    * The user completed the form and clicked send.
    */
-  send: EventEmitter<CustomEvent<IVerdocsSend{roles: [object Object][]; name: string; template_id: string}>>;
+  send: EventEmitter<CustomEvent<IVerdocsSendIVerdocsSend{roles: [object Object][]; name: string; template_id: string; envelope_id: string; envelope: [object Object]}>>;
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */

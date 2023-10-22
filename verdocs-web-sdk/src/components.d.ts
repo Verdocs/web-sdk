@@ -3431,7 +3431,7 @@ declare namespace LocalJSX {
         /**
           * The user completed the form and clicked send.
          */
-        "onSend"?: (event: VerdocsSendCustomEvent<{roles: ICreateEnvelopeRole[]; name: string; template_id: string}>) => void;
+        "onSend"?: (event: VerdocsSendCustomEvent<{roles: ICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>) => void;
         /**
           * The ID of the template to create the document from.
          */

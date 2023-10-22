@@ -99,8 +99,8 @@ export class VerdocsTemplateBuildTabs {
     let canPreview = false;
     let canEditFields = false;
     let canEditRoles = false;
-    if (this.templateId && this.store) {
-      console.log('lengths', this.store?.state?.template_documents?.length, this.store?.state?.roles?.length, this.store?.state?.fields?.length);
+    console.log('[BUILD_TABS] Rendering tabs', this.templateId, this.step);
+    if (this.templateId && this.store && this.store.state) {
       canEditRoles = this.store?.state?.template_documents?.length > 0;
       canEditFields = canEditRoles && this.store?.state?.roles?.length > 0;
       canPreview = canEditFields && this.store?.state?.fields?.length > 0;
@@ -120,8 +120,8 @@ export class VerdocsTemplateBuildTabs {
     if (!canEditRoles && selectedStepIndex >= 1) {
       selectedStepIndex = 0;
     }
+
     console.log({selectedStepIndex, canPreview, canEditFields, canEditRoles});
-    console.log('[BUILD_TABS] Rendering', this.step, selectedStepIndex);
 
     return (
       <Host>
