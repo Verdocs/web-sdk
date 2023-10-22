@@ -100,10 +100,10 @@ export class VerdocsTemplateBuildTabs {
     let canEditFields = false;
     let canEditRoles = false;
     if (this.templateId && this.store) {
-      console.log('lengths', this.store?.state?.template_documents.length, this.store?.state?.roles.length, this.store?.state?.fields.length);
-      canEditRoles = this.store?.state?.template_documents.length > 0;
-      canEditFields = canEditRoles && this.store?.state?.roles.length > 0;
-      canPreview = canEditFields && this.store?.state?.fields.length > 0;
+      console.log('lengths', this.store?.state?.template_documents?.length, this.store?.state?.roles?.length, this.store?.state?.fields?.length);
+      canEditRoles = this.store?.state?.template_documents?.length > 0;
+      canEditFields = canEditRoles && this.store?.state?.roles?.length > 0;
+      canPreview = canEditFields && this.store?.state?.fields?.length > 0;
       // TODO
       // canPreview = this.store && userCanPreviewTemplate(this.endpoint.session, this.store?.state);
       // canEditFields = this.store && userCanBuildTemplate(this.endpoint.session, this.store?.state);

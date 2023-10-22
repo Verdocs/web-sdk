@@ -172,7 +172,7 @@ export class VerdocsBuild {
       );
     }
 
-    console.log('[BUILD] Rendering build view', this.step, ['attachments', 'roles', 'settings', 'fields', 'preview'].indexOf(this.step));
+    console.log('[BUILD] Rendering build view', this.templateId, this.step, ['attachments', 'roles', 'settings', 'fields', 'preview'].indexOf(this.step));
 
     return (
       <Host>

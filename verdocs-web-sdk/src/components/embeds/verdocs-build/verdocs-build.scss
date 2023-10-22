@@ -53,6 +53,10 @@ verdocs-build {
     flex: 0 0 300px;
     background-color: #ffffff;
     box-shadow: 1px 1px 6px -2px #0000007f;
+
+    @media all and (max-width: 450px) {
+      flex: 0;
+    }
   }
 
   .preview-preview-wrapper {
