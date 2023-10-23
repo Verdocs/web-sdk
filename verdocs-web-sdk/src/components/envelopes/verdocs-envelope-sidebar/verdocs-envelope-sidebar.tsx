@@ -172,6 +172,7 @@ export class VerdocsEnvelopeSidebar {
   }
 
   cancelEnvelope() {
+    this.loading = true;
     cancelEnvelope(this.endpoint, this.envelopeId)
       .then(async r => {
         console.log('[SIDEBAR] Envelope canceled', r);
@@ -179,10 +180,12 @@ export class VerdocsEnvelopeSidebar {
 
         this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
         this.sortEnvelopeRecipients();
+        this.loading = false;
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.store?.state, event: 'canceled'});
       })
       .catch(e => {
         console.log('[SIDEBAR] Error canceling envelope', e);
+        this.loading = false;
         VerdocsToast('Error canceling envelope: ' + e.message, {style: 'error'});
       });
   }
