@@ -4,7 +4,7 @@ import {IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
 import {getRecipientsWithActions, recipientCanAct} from '@verdocs/js-sdk/Envelopes/Permissions';
 import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
-import {VerdocsToast} from '../../../utils/Toast';
+// import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -120,10 +120,13 @@ export class VerdocsEnvelopeRecipientSummary {
   copyLink(link: string) {
     navigator.clipboard
       .writeText(link)
-      .then(() => VerdocsToast('Link copied to clipboard!', {style: 'success', duration: 3000}))
+      .then(() => {
+        // VerdocsToast('Link copied to clipboard!', {style: 'success', duration: 3000});
+      })
       .catch(e => {
         console.warn('[RECIPIENTS] Error copying to clipboard', e);
-        VerdocsToast(`Unable to copy to clipboard: ${e.message}`, {style: 'error'});
+        this.sdkError?.emit(e);
+        // VerdocsToast(`Unable to copy to clipboard: ${e.message}`, {style: 'error'});
       });
   }
 
@@ -138,7 +141,8 @@ export class VerdocsEnvelopeRecipientSummary {
       .catch(e => {
         this.gettingLinks = {...this.gettingLinks, [recipient.role_name]: false};
         console.log('[RECIPIENTS] Error getting link', e);
-        VerdocsToast('Unable to get link: ' + e.message, {style: 'error'});
+        this.sdkError?.emit(e);
+        // VerdocsToast('Unable to get link: ' + e.message, {style: 'error'});
       });
   }
 
