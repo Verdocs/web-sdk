@@ -129,6 +129,10 @@ export class VerdocsSend {
           rolesAtLevel[level] ||= [];
           const id = `r-${level}-${rolesAtLevel[level].length}`;
           rolesAtLevel[level].push({...role, id});
+
+          if (role.full_name && (role.email || role.phone)) {
+            this.rolesCompleted[id] = {...role, id};
+          }
         });
 
         this.rolesAtLevel = rolesAtLevel;
@@ -173,6 +177,11 @@ export class VerdocsSend {
   }
 
   handleSend(e) {
+    if (this.sending) {
+      console.log('Skipping duplicate send', e);
+      return;
+    }
+
     console.log('Sending', e);
     e.preventDefault();
     e.stopPropagation();

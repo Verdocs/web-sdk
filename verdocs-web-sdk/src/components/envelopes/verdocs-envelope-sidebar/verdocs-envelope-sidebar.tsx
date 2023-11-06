@@ -397,15 +397,16 @@ export class VerdocsEnvelopeSidebar {
               );
             })}
 
-            {isEnvelopeOwner && (
-              <verdocs-button
-                class="manage-recipients-button"
-                variant="standard"
-                label="Turn On Reminders"
-                onClick={() => (this.showManageDialog = !functionsDisabled)}
-                disabled={functionsDisabled}
-              />
-            )}
+            {/*{isEnvelopeOwner && (*/}
+            {/*  <verdocs-button*/}
+            {/*    class="manage-recipients-button"*/}
+            {/*    variant="standard"*/}
+            {/*    label="Turn On Reminders"*/}
+            {/*    onClick={() => (this.showManageDialog = !functionsDisabled)}*/}
+            {/*    disabled={functionsDisabled}*/}
+            {/*  />*/}
+            {/*)}*/}
+
             {isEnvelopeOwner && (
               <verdocs-button
                 class="manage-recipients-button"
