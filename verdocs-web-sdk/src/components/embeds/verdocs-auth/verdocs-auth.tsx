@@ -342,7 +342,9 @@ export class VerdocsAuth {
 
       return (
         <div class="form">
-          <img src={this.logo} alt="Verdocs Logo" class="logo" />
+          <a href="https://verdocs.com/en/">
+            <img src={this.logo} alt="Verdocs Logo" class="logo" />
+          </a>
 
           <h3>Sign up for a trial account</h3>
           <h4>
@@ -481,7 +483,9 @@ export class VerdocsAuth {
     if (this.displayMode === 'forgot') {
       return (
         <div class="form">
-          <img src={this.logo} alt="Verdocs Logo" class="logo" />
+          <a href="https://verdocs.com/en/">
+            <img src={this.logo} alt="Verdocs Logo" class="logo" />
+          </a>
 
           <h3>Forgot your password?</h3>
 
@@ -543,7 +547,9 @@ export class VerdocsAuth {
 
     return (
       <div class="form">
-        <img src={this.logo} alt="Verdocs Logo" class="logo" />
+        <a href="https://verdocs.com/en/">
+          <img src={this.logo} alt="Verdocs Logo" class="logo" />
+        </a>
 
         <h3>Log in to your account</h3>
         <h4>
