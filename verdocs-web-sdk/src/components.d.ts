@@ -2548,7 +2548,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user clicks to finish the envelope.
          */
-        "onFinishEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>) => void;
+        "onFinishEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
@@ -2556,7 +2556,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
          */
-        "onViewEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelopeSummary}>) => void;
+        "onViewEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
         /**
           * The number of rows to display per page.
          */

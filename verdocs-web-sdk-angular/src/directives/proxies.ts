@@ -531,7 +531,7 @@ export class VerdocsEnvelopesList {
 import type { TEnvelopeStatus as IVerdocsEnvelopesListTEnvelopeStatus } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsEnvelopesListSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsEnvelopesListVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IEnvelopeSummary as IVerdocsEnvelopesListIEnvelopeSummary } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsEnvelopesListIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopesList extends Components.VerdocsEnvelopesList {
   /**

@@ -2,9 +2,9 @@ import {format} from 'date-fns';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Templates} from '@verdocs/js-sdk/Templates';
 import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
+import {ITemplate, TemplateActions} from '@verdocs/js-sdk/Templates/Types';
+import { IGetTemplateSummarySortBy, ITemplateListParams } from "@verdocs/js-sdk/Templates/Templates";
 import {Component, Event, EventEmitter, h, Host, Prop, State, Watch} from '@stencil/core';
-import {ITemplate, ITemplateSummary, TemplateActions} from '@verdocs/js-sdk/Templates/Types';
-import {IGetTemplateSummarySortBy, IListTemplatesParams} from '@verdocs/js-sdk/Templates/Templates';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
 import {IMenuOption} from '../../controls/verdocs-dropdown/verdocs-dropdown';
 import {SDKError} from '../../../utils/errors';
@@ -160,8 +160,8 @@ export class VerdocsTemplatesList {
   @State() count = 0;
   @State() initiallyLoaded = false;
   @State() loading = true;
-  @State() confirmDelete: ITemplateSummary | null = null;
-  @State() templates: ITemplateSummary[] = [];
+  @State() confirmDelete: ITemplate | null = null;
+  @State() templates: ITemplate[] = [];
   @State() localNameFilter = '';
 
   @Watch('sharing')
@@ -206,21 +206,21 @@ export class VerdocsTemplatesList {
     console.log('[TEMPLATES] Querying templates');
     this.loading = true;
     try {
-      let queryParams: IListTemplatesParams = {
-        sharing: this.sharing,
-        starred: this.starred,
+      let queryParams: ITemplateListParams = {
+        // sharing: this.sharing,
+        // starred: this.starred,
         page: this.selectedPage,
-        sort: this.sort,
+        // sort: this.sort,
         rows: this.rowsPerPage,
         // ascending: this.sort === 'name' || this.sort === 'star_counter',
       };
 
       if (this.name.trim() !== '') {
-        queryParams.name = this.name.trim();
+        queryParams.q = this.name.trim();
       }
 
       const response = await Templates.listTemplates(this.endpoint, queryParams);
-      this.templates = response.records;
+      this.templates = response.templates;
       this.count = response.total;
       this.loading = false;
     } catch (e) {
@@ -230,7 +230,7 @@ export class VerdocsTemplatesList {
     }
   }
 
-  handleOptionSelected = (option: string, template: ITemplateSummary) => {
+  handleOptionSelected = (option: string, template: ITemplate) => {
     if (option === 'send') {
       this.viewTemplate?.emit({endpoint: this.endpoint, template: template});
       // } else if (option === 'createlink') {
@@ -434,19 +434,32 @@ export class VerdocsTemplatesList {
 
           const MENU_OPTIONS: IMenuOption[] = [];
 
-          if (template.allowed_operations.includes(TemplateActions.READ) && this.allowedActions.includes('send')) {
-            MENU_OPTIONS.push({label: 'Preview / Send', id: 'send', disabled: !template.allowed_operations.includes(TemplateActions.READ)});
+          const allowed_operations = [];
+
+          // serverless/src/functions/getTemplates.ts:        allowed_operations: [] as string[],
+          // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'create_personal', record) && record.allowed_operations.push('create_personal');
+          // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'create_org', record) && record.allowed_operations.push('create_org');
+          // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'create_public', record) && record.allowed_operations.push('create_public');
+          // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'read', record) && record.allowed_operations.push('read');
+          // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'write', record) && record.allowed_operations.push('write');
+          // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'delete', record) && record.allowed_operations.push('delete');
+          // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'change_visibility_personal', record) && record.allowed_operations.push('change_visibility_personal');
+          // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'change_visibility_org', record) && record.allowed_operations.push('change_visibility_org');
+          // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'change_visibility_public', record) && record.allowed_operations.push('change_visibility_public');
+
+          if (allowed_operations.includes(TemplateActions.READ) && this.allowedActions.includes('send')) {
+            MENU_OPTIONS.push({label: 'Preview / Send', id: 'send', disabled: !allowed_operations.includes(TemplateActions.READ)});
           }
 
           // if (this.allowedActions.includes('createlink')) {
           //   MENU_OPTIONS.push({label: 'Create Link', id: 'createlink', disabled: true});
           // }
 
-          if (template.allowed_operations.includes(TemplateActions.CREATE_PERSONAL) && this.allowedActions.includes('signnow')) {
+          if (allowed_operations.includes(TemplateActions.CREATE_PERSONAL) && this.allowedActions.includes('signnow')) {
             MENU_OPTIONS.push({label: 'Sign Now', id: 'signnow', disabled: true});
           }
 
-          if (template.allowed_operations.includes(TemplateActions.READ) && this.allowedActions.includes('submitted')) {
+          if (allowed_operations.includes(TemplateActions.READ) && this.allowedActions.includes('submitted')) {
             MENU_OPTIONS.push({label: ''});
             MENU_OPTIONS.push({label: 'Submissions', id: 'submitted'});
           }
@@ -462,11 +475,11 @@ export class VerdocsTemplatesList {
             // }
 
             if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
-              MENU_OPTIONS.push({label: 'Edit', id: 'edit', disabled: !template.allowed_operations.includes(TemplateActions.WRITE)});
+              MENU_OPTIONS.push({label: 'Edit', id: 'edit', disabled: !allowed_operations.includes(TemplateActions.WRITE)});
             }
 
             if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
-              MENU_OPTIONS.push({label: 'Delete', id: 'delete', disabled: !template.allowed_operations.includes(TemplateActions.DELETE)});
+              MENU_OPTIONS.push({label: 'Delete', id: 'delete', disabled: !allowed_operations.includes(TemplateActions.DELETE)});
             }
           }
 
