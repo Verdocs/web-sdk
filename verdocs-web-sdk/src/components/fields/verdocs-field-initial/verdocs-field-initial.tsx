@@ -1,5 +1,5 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import { ITemplateField, ITemplateFieldSetting } from "@verdocs/js-sdk/Templates/Types";
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, State} from '@stencil/core';
 import {getFieldSettings} from '../../../utils/utils';
@@ -153,7 +153,7 @@ export class VerdocsFieldInitial {
     }
 
     return (
-      <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
+      <Host class={{required: this.field?.required, disabled}} style={{backgroundColor}}>
         {value ? (
           <img src={value} alt="Initials" />
         ) : (
