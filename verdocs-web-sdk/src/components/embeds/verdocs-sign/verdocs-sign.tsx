@@ -305,6 +305,13 @@ export class VerdocsSign {
         return this.saveFieldChange(field.name, {prepared: false, value: e.detail});
 
       case 'initial':
+        // This can be caused by a focus-out event if the user clicks the field
+        // after it's already filled in, then clicks something else like a textbox.
+        // We don't visually indicate the focus, but it's still there.
+        if (!e.detail) {
+          return;
+        }
+
         const initialsBlob = await (await fetch(e.detail)).blob();
         return createInitials(this.endpoint, 'initial', initialsBlob) //
           .then(async newInitials => {
@@ -313,11 +320,24 @@ export class VerdocsSign {
           });
 
       case 'signature':
+        // This can be caused by a focus-out event if the user clicks the field
+        // after it's already filled in, then clicks something else like a textbox.
+        // We don't visually indicate the focus, but it's still there.
+        if (!e.detail) {
+          return;
+        }
+
+        console.log('Creating signature blob', e.detail);
         const signatureBlob = await (await fetch(e.detail)).blob();
+        console.log('Created signature blob', signatureBlob);
         return createSignature(this.endpoint, 'signature', signatureBlob) //
           .then(async newSignature => {
+            console.log('Signature update result', newSignature);
             const updateResult = await updateEnvelopeFieldSignature(this.endpoint, this.envelopeId, field.name, newSignature.id);
             this.updateRecipientFieldValue(field.name, updateResult);
+          })
+          .catch(e => {
+            console.warn('Error updating signature', e);
           });
 
       case 'date':
