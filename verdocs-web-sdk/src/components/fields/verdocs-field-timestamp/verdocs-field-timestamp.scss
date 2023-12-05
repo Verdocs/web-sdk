@@ -16,6 +16,8 @@ verdocs-field-timestamp {
   }
 
   input {
+    position: absolute;
+
     // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
     cursor: inherit;
 

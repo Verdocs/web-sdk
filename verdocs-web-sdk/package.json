@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "2.2.47",
+  "version": "2.3.0",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -33,16 +33,16 @@
     "@stencil/core": "2.20.0",
     "@stencil/store": "^2.0.4",
     "@svgdotjs/svg.js": "^3.2.0",
-    "@verdocs/js-sdk": "^3.10.9",
+    "@verdocs/js-sdk": "^3.10.18",
     "choices.js": "^10.2.0",
     "date-fns": "^2.30.0",
     "flatpickr": "^4.6.13",
-    "interactjs": "^1.10.17",
+    "interactjs": "^1.10.25",
     "jszip": "^3.10.1",
     "patch-package": "^6.5.1",
     "uuid": "^9.0.1",
     "workflow-svg.js": "^3.0.2",
-    "zod": "^3.22.2"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -69,16 +69,16 @@
     "jest-svg-transformer": "^1.0.0",
     "lit-html": "^2.7.5",
     "postinstall-postinstall": "^2.1.0",
-    "prettier": "^3.0.3",
+    "prettier": "^3.1.0",
     "puppeteer": "^16.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "rollup-plugin-typescript2": "^0.34.1",
-    "terser-webpack-plugin": "^5.3.7",
+    "terser-webpack-plugin": "^5.3.9",
     "tslib": "^2.6.2",
-    "typescript": "^5.1.6",
+    "typescript": "^5.3.2",
     "write-file-webpack-plugin": "^4.5.1"
   }
 }

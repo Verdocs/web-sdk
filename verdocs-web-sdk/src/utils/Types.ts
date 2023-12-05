@@ -18,5 +18,6 @@ export interface IPageLayer {
   type: 'div' | 'canvas';
 }
 
-export const FORMAT_TIMESTAMP = 'Y-MM-dd hh:mm:ss a';
+export const FORMAT_TIMESTAMP = 'P';
+// export const FORMAT_TIMESTAMP = 'Y-MM-dd hh:mm:ss a';
 export const FORMAT_DATE = 'Y-MM-dd'
