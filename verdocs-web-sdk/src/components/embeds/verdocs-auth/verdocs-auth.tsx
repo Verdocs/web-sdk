@@ -197,13 +197,10 @@ export class VerdocsAuth {
       firstName: this.first,
       lastName: this.last,
       orgName: this.orgname,
-      industry: this.industry,
-      size: this.companySize,
-      // source?: string;
-      // referral?: string;
-      // coupon?: string;
-      reason: this.reason,
-      hearabout: this.howHear,
+      // industry: this.industry,
+      // size: this.companySize,
+      // reason: this.reason,
+      // hearabout: this.howHear,
     })
       .then(r => {
         console.log('Result', r);

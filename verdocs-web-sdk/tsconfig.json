@@ -12,6 +12,7 @@
     "noUnusedParameters": true,
     "jsx": "react",
     "jsxFactory": "h",
+    "skipLibCheck": true,
     "preserveConstEnums": true,
     "resolveJsonModule": true,
     "stripInternal": true,

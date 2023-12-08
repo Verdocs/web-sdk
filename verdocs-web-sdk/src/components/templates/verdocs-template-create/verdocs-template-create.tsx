@@ -1,6 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {createTemplate} from '@verdocs/js-sdk/Templates/Templates';
+import {createTemplatev2} from '@verdocs/js-sdk/Templates/Templates';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 
@@ -86,7 +86,7 @@ export class VerdocsTemplateCreate {
     this.progressLabel = 'Uploading...';
 
     try {
-      const template = await createTemplate(this.endpoint, {name: this.file.name, documents: [this.file]}, percent => {
+      const template = await createTemplatev2(this.endpoint, {name: this.file.name, documents: [this.file]}, percent => {
         if (percent >= 99) {
           this.progressLabel = 'Processing...';
           this.progressPercent = 100;
