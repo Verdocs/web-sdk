@@ -73,6 +73,7 @@ export class VerdocsTemplateFieldProperties {
 
   @State() type: TDocumentFieldType = 'signature';
   @State() setting = null as any;
+  @State() label = '';
   @State() name = '';
   @State() roleName = '';
   @State() group = '';
@@ -113,6 +114,7 @@ export class VerdocsTemplateFieldProperties {
 
       this.type = field.type;
       this.name = field.name;
+      this.label = field.label;
       this.group = field.name;
       this.roleName = field.role_name;
       this.required = field.required;
@@ -138,6 +140,7 @@ export class VerdocsTemplateFieldProperties {
     const field = this.store?.state?.fields.find(field => field.name === this.fieldName);
     if (field) {
       this.name = field.name;
+      this.label = field.label;
       this.roleName = field.role_name;
       this.required = field.required;
       // TODO: Talk about how we want to handle labels/placeholders
@@ -154,6 +157,7 @@ export class VerdocsTemplateFieldProperties {
     e.stopPropagation();
     const newProperties = {
       name: this.name,
+      label: this.label || null,
       required: this.required,
       role_name: this.roleName,
       // TODO: Default value in setting?
@@ -308,6 +312,21 @@ export class VerdocsTemplateFieldProperties {
               placeholder="Field Name..."
               onInput={(e: any) => {
                 this.name = e.target.value;
+                this.dirty = true;
+              }}
+            />
+          </div>
+
+          <div class="row">
+            <verdocs-text-input
+              id="verdocs-field-label"
+              label="Optional Label"
+              value={this.label}
+              autocomplete="off"
+              //              helpText="The internal name of the field. Must be unique, and contain only letters, numbers, and dashes. After an envelope is completed, the value entered by the signer will be tagged with this key."
+              placeholder="Optional Label..."
+              onInput={(e: any) => {
+                this.label = e.target.value;
                 this.dirty = true;
               }}
             />
