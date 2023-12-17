@@ -258,6 +258,14 @@ export class VerdocsTemplateFields {
   }
 
   async handleMoveEnd(event: any) {
+    const name = event.target.getAttribute('name');
+    const option = +(event.target.getAttribute('option') || '0');
+    const field = this.store?.state.fields.find(field => field.name === name);
+    if (!field) {
+      console.log('[FIELDS] Unable to find field', name);
+      return;
+    }
+
     const pageNumber = event.target.getAttribute('pageNumber');
     const {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
     const clientRect = event.target.getBoundingClientRect();
@@ -268,47 +276,43 @@ export class VerdocsTemplateFields {
     // "up" from the bottom (negative displacement).
     const newX = Math.max(clientRect.left - parentRect.left, 0);
     const newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
-    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - event.rect.width, naturalHeight - event.rect.height);
+    // console.log('Computing coordinates', {naturalWidth, width: event.rect.width, naturalHeight, height: event.rect.height, newX, newY});
+    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - field.setting.width, naturalHeight - field.setting.height);
+    // console.log('Drop End', {x, y, newX, newY});
 
-    const name = event.target.getAttribute('name');
-    const option = +(event.target.getAttribute('option') || '0');
-    const field = this.store?.state.fields.find(field => field.name === name);
+    switch (field.type) {
+      case 'attachment':
+      case 'payment':
+      case 'initial':
+      case 'signature':
+      case 'date':
+      case 'dropdown':
+      case 'textarea':
+      case 'textbox':
+      case 'timestamp':
+        field.setting.x = x;
+        field.setting.y = y;
+        break;
 
-    if (field) {
-      switch (field.type) {
-        case 'attachment':
-        case 'payment':
-        case 'initial':
-        case 'signature':
-        case 'date':
-        case 'dropdown':
-        case 'textarea':
-        case 'textbox':
-        case 'timestamp':
-          field.setting.x = x;
-          field.setting.y = y;
-          break;
-
-        case 'checkbox_group':
-        case 'radio_button_group':
-          {
-            const opt = field.setting.options[option];
-            if (opt) {
-              opt.x = x;
-              opt.y = y;
-            }
+      case 'checkbox_group':
+      case 'radio_button_group':
+        {
+          const opt = field.setting.options[option];
+          if (opt) {
+            opt.x = x;
+            opt.y = y;
           }
-          break;
-      }
-
-      console.log('[FIELDS] Will update', name, option, field);
-      const newFieldData = await updateField(this.endpoint, this.templateId, name, field);
-      const pageInfo = this.cachedPageInfo[pageNumber];
-      const roleIndex = getRoleIndex(getRoleNames(this.store), field.role_name);
-      this.handleFieldSettingsChange(pageInfo, field, roleIndex, event.target, newFieldData);
-      event.target.removeAttribute('posX');
-      event.target.removeAttribute('posY');
+        }
+        break;
     }
+
+    console.log('[FIELDS] Will update', name, option, field);
+    const newFieldData = await updateField(this.endpoint, this.templateId, name, field);
+    const pageInfo = this.cachedPageInfo[pageNumber];
+    const roleIndex = getRoleIndex(getRoleNames(this.store), field.role_name);
+    this.handleFieldSettingsChange(pageInfo, field, roleIndex, event.target, newFieldData);
+    event.target.removeAttribute('posX');
+    event.target.removeAttribute('posY');
   }
 
   generateFieldName(type: string, pageNumber: number) {
@@ -327,6 +331,7 @@ export class VerdocsTemplateFields {
     const {xScale = 1, yScale = 1, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
     const x = Math.floor(Math.min(viewX / xScale, xMax));
     const y = Math.floor(Math.min(Math.max(renderedHeight - viewY, 0) / yScale, yMax));
+    console.log('Computed coordinates', {x, y, viewX, viewY, xMax, yMax});
     return {x, y};
   }
 
