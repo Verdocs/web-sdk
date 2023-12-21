@@ -1,8 +1,11 @@
 @import '../../../theme.scss';
 
 verdocs-contact-picker {
-  font-family: $verdocs-primary-font;
+  display: block;
+  border: 1px solid #ebebeb;
   background-color: $verdocs-grey-4;
+  font-family: $verdocs-primary-font;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);
 
   form {
     background-color: $verdocs-grey-3;

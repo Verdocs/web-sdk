@@ -261,6 +261,7 @@ export class VerdocsTemplateFields {
     const name = event.target.getAttribute('name');
     const option = +(event.target.getAttribute('option') || '0');
     const field = this.store?.state.fields.find(field => field.name === name);
+    console.log('Dropped field', name, field);
     if (!field) {
       console.log('[FIELDS] Unable to find field', name);
       return;
@@ -272,12 +273,15 @@ export class VerdocsTemplateFields {
     const parent = event.target.parentElement;
     const parentRect = parent.getBoundingClientRect();
 
+    const width = field.setting.width || defaultWidth(field.type);
+    const height = field.setting.height || defaultHeight(field.type);
+
     // These two being backwards is not a mistake. Left measures "over" from the left (positive displacement) while bottom measures
     // "up" from the bottom (negative displacement).
     const newX = Math.max(clientRect.left - parentRect.left, 0);
     const newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
     // console.log('Computing coordinates', {naturalWidth, width: event.rect.width, naturalHeight, height: event.rect.height, newX, newY});
-    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - field.setting.width, naturalHeight - field.setting.height);
+    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - width, naturalHeight - height);
     // console.log('Drop End', {x, y, newX, newY});
 
     switch (field.type) {

@@ -44,6 +44,7 @@ export const VerdocsLoader = /*@__PURE__*/createReactComponent<JSX.VerdocsLoader
 export const VerdocsOkDialog = /*@__PURE__*/createReactComponent<JSX.VerdocsOkDialog, HTMLVerdocsOkDialogElement>('verdocs-ok-dialog');
 export const VerdocsOrganizationCard = /*@__PURE__*/createReactComponent<JSX.VerdocsOrganizationCard, HTMLVerdocsOrganizationCardElement>('verdocs-organization-card');
 export const VerdocsPagination = /*@__PURE__*/createReactComponent<JSX.VerdocsPagination, HTMLVerdocsPaginationElement>('verdocs-pagination');
+export const VerdocsPortal = /*@__PURE__*/createReactComponent<JSX.VerdocsPortal, HTMLVerdocsPortalElement>('verdocs-portal');
 export const VerdocsPreview = /*@__PURE__*/createReactComponent<JSX.VerdocsPreview, HTMLVerdocsPreviewElement>('verdocs-preview');
 export const VerdocsProgressBar = /*@__PURE__*/createReactComponent<JSX.VerdocsProgressBar, HTMLVerdocsProgressBarElement>('verdocs-progress-bar');
 export const VerdocsQuickFilter = /*@__PURE__*/createReactComponent<JSX.VerdocsQuickFilter, HTMLVerdocsQuickFilterElement>('verdocs-quick-filter');

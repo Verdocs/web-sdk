@@ -1258,6 +1258,32 @@ export declare interface VerdocsPagination extends Components.VerdocsPagination 
 
 
 @ProxyCmp({
+  inputs: ['align', 'anchor', 'voffset']
+})
+@Component({
+  selector: 'verdocs-portal',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['align', 'anchor', 'voffset'],
+})
+export class VerdocsPortal {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['clickAway']);
+  }
+}
+
+
+export declare interface VerdocsPortal extends Components.VerdocsPortal {
+
+  clickAway: EventEmitter<CustomEvent<void>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'templateId']
 })
 @Component({

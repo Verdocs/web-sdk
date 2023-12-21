@@ -841,6 +841,20 @@ export namespace Components {
          */
         "selectedPage": number;
     }
+    interface VerdocsPortal {
+        /**
+          * Horizontal alignment.
+         */
+        "align": 'left' | 'center' | 'right';
+        /**
+          * Unique ID of the parent element to anchor to.
+         */
+        "anchor": string;
+        /**
+          * Vertical offset from the parent.
+         */
+        "voffset": number;
+    }
     interface VerdocsPreview {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1500,6 +1514,10 @@ export interface VerdocsPaginationCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsPaginationElement;
 }
+export interface VerdocsPortalCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsPortalElement;
+}
 export interface VerdocsPreviewCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsPreviewElement;
@@ -1845,6 +1863,12 @@ declare global {
         prototype: HTMLVerdocsPaginationElement;
         new (): HTMLVerdocsPaginationElement;
     };
+    interface HTMLVerdocsPortalElement extends Components.VerdocsPortal, HTMLStencilElement {
+    }
+    var HTMLVerdocsPortalElement: {
+        prototype: HTMLVerdocsPortalElement;
+        new (): HTMLVerdocsPortalElement;
+    };
     interface HTMLVerdocsPreviewElement extends Components.VerdocsPreview, HTMLStencilElement {
     }
     var HTMLVerdocsPreviewElement: {
@@ -2146,6 +2170,7 @@ declare global {
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
         "verdocs-pagination": HTMLVerdocsPaginationElement;
+        "verdocs-portal": HTMLVerdocsPortalElement;
         "verdocs-preview": HTMLVerdocsPreviewElement;
         "verdocs-progress-bar": HTMLVerdocsProgressBarElement;
         "verdocs-quick-filter": HTMLVerdocsQuickFilterElement;
@@ -3262,6 +3287,21 @@ declare namespace LocalJSX {
          */
         "selectedPage"?: number;
     }
+    interface VerdocsPortal {
+        /**
+          * Horizontal alignment.
+         */
+        "align"?: 'left' | 'center' | 'right';
+        /**
+          * Unique ID of the parent element to anchor to.
+         */
+        "anchor"?: string;
+        "onClickAway"?: (event: VerdocsPortalCustomEvent<void>) => void;
+        /**
+          * Vertical offset from the parent.
+         */
+        "voffset"?: number;
+    }
     interface VerdocsPreview {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -4195,6 +4235,7 @@ declare namespace LocalJSX {
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
         "verdocs-pagination": VerdocsPagination;
+        "verdocs-portal": VerdocsPortal;
         "verdocs-preview": VerdocsPreview;
         "verdocs-progress-bar": VerdocsProgressBar;
         "verdocs-quick-filter": VerdocsQuickFilter;
@@ -4281,6 +4322,7 @@ declare module "@stencil/core" {
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
             "verdocs-pagination": LocalJSX.VerdocsPagination & JSXBase.HTMLAttributes<HTMLVerdocsPaginationElement>;
+            "verdocs-portal": LocalJSX.VerdocsPortal & JSXBase.HTMLAttributes<HTMLVerdocsPortalElement>;
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
             "verdocs-progress-bar": LocalJSX.VerdocsProgressBar & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
             "verdocs-quick-filter": LocalJSX.VerdocsQuickFilter & JSXBase.HTMLAttributes<HTMLVerdocsQuickFilterElement>;
