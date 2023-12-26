@@ -1444,36 +1444,6 @@ export declare interface VerdocsSearch extends Components.VerdocsSearch {}
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'options', 'type']
-})
-@Component({
-  selector: 'verdocs-search-activity',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'options', 'type'],
-})
-export class VerdocsSearchActivity {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['entrySelected']);
-  }
-}
-
-
-import type { IRecentSearch as IVerdocsSearchActivityIRecentSearch } from '@verdocs/web-sdk';
-
-export declare interface VerdocsSearchActivity extends Components.VerdocsSearchActivity {
-  /**
-   * Event fired when an entry is clicked.
-   */
-  entrySelected: EventEmitter<CustomEvent<IVerdocsSearchActivityIRecentSearch>>;
-}
-
-
-@ProxyCmp({
   inputs: ['endpoint', 'grabsFocus', 'placeholder', 'query', 'type'],
   methods: ['focusField']
 })

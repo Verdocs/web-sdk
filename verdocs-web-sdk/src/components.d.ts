@@ -17,7 +17,6 @@ import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
 import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
-import { IRecentSearch } from "@verdocs/js-sdk/Search/Types";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IProfile } from "@verdocs/js-sdk/Users/Types";
@@ -918,14 +917,6 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
     }
-    interface VerdocsSearchActivity {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        "options": any;
-        "type": 'recent' | 'saved' | 'starred';
-    }
     interface VerdocsSearchBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1530,10 +1521,6 @@ export interface VerdocsQuickFunctionsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsQuickFunctionsElement;
 }
-export interface VerdocsSearchActivityCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsSearchActivityElement;
-}
 export interface VerdocsSearchBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSearchBoxElement;
@@ -1905,12 +1892,6 @@ declare global {
         prototype: HTMLVerdocsSearchElement;
         new (): HTMLVerdocsSearchElement;
     };
-    interface HTMLVerdocsSearchActivityElement extends Components.VerdocsSearchActivity, HTMLStencilElement {
-    }
-    var HTMLVerdocsSearchActivityElement: {
-        prototype: HTMLVerdocsSearchActivityElement;
-        new (): HTMLVerdocsSearchActivityElement;
-    };
     interface HTMLVerdocsSearchBoxElement extends Components.VerdocsSearchBox, HTMLStencilElement {
     }
     var HTMLVerdocsSearchBoxElement: {
@@ -2177,7 +2158,6 @@ declare global {
         "verdocs-quick-functions": HTMLVerdocsQuickFunctionsElement;
         "verdocs-radio-button": HTMLVerdocsRadioButtonElement;
         "verdocs-search": HTMLVerdocsSearchElement;
-        "verdocs-search-activity": HTMLVerdocsSearchActivityElement;
         "verdocs-search-box": HTMLVerdocsSearchBoxElement;
         "verdocs-search-tabs": HTMLVerdocsSearchTabsElement;
         "verdocs-select-input": HTMLVerdocsSelectInputElement;
@@ -3381,18 +3361,6 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
     }
-    interface VerdocsSearchActivity {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when an entry is clicked.
-         */
-        "onEntrySelected"?: (event: VerdocsSearchActivityCustomEvent<IRecentSearch>) => void;
-        "options"?: any;
-        "type"?: 'recent' | 'saved' | 'starred';
-    }
     interface VerdocsSearchBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -4242,7 +4210,6 @@ declare namespace LocalJSX {
         "verdocs-quick-functions": VerdocsQuickFunctions;
         "verdocs-radio-button": VerdocsRadioButton;
         "verdocs-search": VerdocsSearch;
-        "verdocs-search-activity": VerdocsSearchActivity;
         "verdocs-search-box": VerdocsSearchBox;
         "verdocs-search-tabs": VerdocsSearchTabs;
         "verdocs-select-input": VerdocsSelectInput;
@@ -4329,7 +4296,6 @@ declare module "@stencil/core" {
             "verdocs-quick-functions": LocalJSX.VerdocsQuickFunctions & JSXBase.HTMLAttributes<HTMLVerdocsQuickFunctionsElement>;
             "verdocs-radio-button": LocalJSX.VerdocsRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsRadioButtonElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
-            "verdocs-search-activity": LocalJSX.VerdocsSearchActivity & JSXBase.HTMLAttributes<HTMLVerdocsSearchActivityElement>;
             "verdocs-search-box": LocalJSX.VerdocsSearchBox & JSXBase.HTMLAttributes<HTMLVerdocsSearchBoxElement>;
             "verdocs-search-tabs": LocalJSX.VerdocsSearchTabs & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
             "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;

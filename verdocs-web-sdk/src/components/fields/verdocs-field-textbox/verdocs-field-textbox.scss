@@ -7,7 +7,6 @@ verdocs-field-textbox {
   height: 15px;
   display: block;
   font-size: 11px;
-  position: relative;
   letter-spacing: -0.2px;
   background-color: transparent;
   transform-origin: bottom left;
@@ -29,6 +28,7 @@ verdocs-field-textbox {
     font-size: 11px;
     background: none;
     font-weight: 500;
+    position: absolute;
     transform-origin: 0 0;
     box-sizing: border-box;
     color: rgba(0, 0, 0, 0.87);

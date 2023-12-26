@@ -383,6 +383,7 @@ export class VerdocsSign {
       case 'textarea':
       case 'date':
       case 'attachment':
+        console.log('Date-type field valid', {required, result, output: !required || result !== ''});
         return !required || result !== '';
 
       case 'dropdown':

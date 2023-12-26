@@ -51,7 +51,6 @@ export const VerdocsQuickFilter = /*@__PURE__*/createReactComponent<JSX.VerdocsQ
 export const VerdocsQuickFunctions = /*@__PURE__*/createReactComponent<JSX.VerdocsQuickFunctions, HTMLVerdocsQuickFunctionsElement>('verdocs-quick-functions');
 export const VerdocsRadioButton = /*@__PURE__*/createReactComponent<JSX.VerdocsRadioButton, HTMLVerdocsRadioButtonElement>('verdocs-radio-button');
 export const VerdocsSearch = /*@__PURE__*/createReactComponent<JSX.VerdocsSearch, HTMLVerdocsSearchElement>('verdocs-search');
-export const VerdocsSearchActivity = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchActivity, HTMLVerdocsSearchActivityElement>('verdocs-search-activity');
 export const VerdocsSearchBox = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchBox, HTMLVerdocsSearchBoxElement>('verdocs-search-box');
 export const VerdocsSearchTabs = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchTabs, HTMLVerdocsSearchTabsElement>('verdocs-search-tabs');
 export const VerdocsSelectInput = /*@__PURE__*/createReactComponent<JSX.VerdocsSelectInput, HTMLVerdocsSelectInputElement>('verdocs-select-input');

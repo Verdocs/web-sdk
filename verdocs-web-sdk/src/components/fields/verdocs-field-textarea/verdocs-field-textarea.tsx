@@ -169,6 +169,7 @@ export class VerdocsFieldTextarea {
   render() {
     const settings = getFieldSettings(this.field);
     const disabled = this.disabled ?? settings.disabled ?? false;
+    const value = settings?.result || '';
     const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
@@ -180,13 +181,13 @@ export class VerdocsFieldTextarea {
         <textarea
           placeholder={settings.placeholder || ''}
           tabIndex={settings.order}
-          value={settings.value}
           disabled={disabled}
           name={this.field.name}
           required={this.field?.required}
           ref={el => (this.inputEl = el)}
-          // style={{resize: 'none'}}
-        />
+        >
+          {value}
+        </textarea>
 
         {this.editable && (
           <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
