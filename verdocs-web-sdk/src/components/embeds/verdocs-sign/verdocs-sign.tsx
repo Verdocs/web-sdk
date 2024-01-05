@@ -102,12 +102,12 @@ export class VerdocsSign {
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
   @State() nextSubmits = false;
-  // @State() showSubmitDialog = false;
   @State() errorMessage = '';
   @State() focusedField = '';
   @State() submitting = false;
   @State() isDone = false;
   @State() showDone = false;
+  @State() showLoadError = false;
   @State() finishLater = false;
   @State() showFinishLater = false;
   @State() agreed = false;
@@ -187,6 +187,7 @@ export class VerdocsSign {
     } catch (e) {
       console.log('Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      this.showLoadError = true;
     }
   }
 
@@ -327,9 +328,7 @@ export class VerdocsSign {
           return;
         }
 
-        console.log('Creating signature blob', e.detail);
         const signatureBlob = await (await fetch(e.detail)).blob();
-        console.log('Created signature blob', signatureBlob);
         return createSignature(this.endpoint, 'signature', signatureBlob) //
           .then(async newSignature => {
             console.log('Signature update result', newSignature);
@@ -469,7 +468,6 @@ export class VerdocsSign {
     if (invalidFields.length < 1) {
       this.nextButtonLabel = 'Finish';
       if (!this.nextSubmits) {
-        // this.showSubmitDialog = true;
         this.nextSubmits = true;
       }
     } else {
@@ -656,6 +654,7 @@ export class VerdocsSign {
         )}
 
         {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
+
         {this.showDone && (
           <verdocs-ok-dialog
             heading="You're Done!"
@@ -667,20 +666,17 @@ export class VerdocsSign {
           />
         )}
 
-        {/*{this.showSubmitDialog && (*/}
-        {/*  <verdocs-ok-dialog*/}
-        {/*    heading="Ready to Submit?"*/}
-        {/*    message={`All required fields have been completed.<br />Are you ready to submit this document?`}*/}
-        {/*    showCancel={true}*/}
-        {/*    onExit={() => {*/}
-        {/*      this.showSubmitDialog = false;*/}
-        {/*    }}*/}
-        {/*    onNext={() => {*/}
-        {/*      this.showSubmitDialog = false;*/}
-        {/*      return this.handleNext();*/}
-        {/*    }}*/}
-        {/*  />*/}
-        {/*)}*/}
+        {this.showLoadError && (
+          <verdocs-ok-dialog
+            heading="Error Loading Document"
+            message={`Please check with the sender to ensure it has not been canceled, and try again later.`}
+            buttonLabel="Retry"
+            onNext={() => {
+              this.showLoadError = false;
+              window.location.reload();
+            }}
+          />
+        )}
 
         {this.submitting && (
           <div class="loading-indicator">

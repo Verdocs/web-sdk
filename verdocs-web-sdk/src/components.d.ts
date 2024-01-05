@@ -808,6 +808,10 @@ export namespace Components {
     }
     interface VerdocsOkDialog {
         /**
+          * Override the "OK" button's label
+         */
+        "buttonLabel": string;
+        /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
          */
         "heading": string;
@@ -3222,6 +3226,10 @@ declare namespace LocalJSX {
     interface VerdocsLoader {
     }
     interface VerdocsOkDialog {
+        /**
+          * Override the "OK" button's label
+         */
+        "buttonLabel"?: string;
         /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
          */

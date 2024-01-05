@@ -2,16 +2,11 @@ import {Token} from '@verdocs/js-sdk/Utils';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Auth, Profiles} from '@verdocs/js-sdk/Users';
 import {TSession} from '@verdocs/js-sdk/Sessions/Types';
-import {Organizations} from '@verdocs/js-sdk/Organizations';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
 const RECHECK_INTERVAL = 5000;
-
-const OkIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="green"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" /></svg>`;
-const TakenIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="red"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" /></svg>`;
-const InfoIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="#4a4a4a"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm11.378-3.917c-.89-.777-2.366-.777-3.255 0a.75.75 0 01-.988-1.129c1.454-1.272 3.776-1.272 5.23 0 1.513 1.324 1.513 3.518 0 4.842a3.75 3.75 0 01-.837.552c-.676.328-1.028.774-1.028 1.152v.75a.75.75 0 01-1.5 0v-.75c0-1.279 1.06-2.107 1.875-2.502.182-.088.351-.199.503-.331.83-.727.83-1.857 0-2.584zM12 18a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" /></svg>`;
 
 const Industries = [
   {value: '', label: ''},
@@ -129,7 +124,6 @@ export class VerdocsAuth {
   @State() isAuthenticated: boolean = false;
   @State() displayMode: 'login' | 'forgot' | 'signup' | 'verify' = 'login';
   @State() orgname: string = '';
-  @State() orgAvailable: 'UNKNOWN' | 'TAKEN' | 'AVAILABLE' = 'UNKNOWN';
   @State() first: string = '';
   @State() last: string = '';
   @State() username: string = '';
@@ -300,24 +294,6 @@ export class VerdocsAuth {
       });
   }
 
-  async checkAvailability(name: string) {
-    this.checkingOrg = true;
-    try {
-      this.orgname = name;
-      const r = await Organizations.isOrgAvailable(this.endpoint, name);
-      this.orgAvailable = r.result;
-      console.log('response', this.orgAvailable);
-      // Stage: POST - https://2r8pilqa44.execute-api.us-east-1.amazonaws.com/organizations/check-availability
-      // Prod: POST - https://lb1is9fxoc.execute-api.us-east-1.amazonaws.com/organizations/check-availability
-    } catch (e) {
-      // NOP
-      // We need to trap this error because we get a 400 if the org name is invalid.
-      this.orgAvailable = 'UNKNOWN';
-    }
-
-    this.checkingOrg = false;
-  }
-
   render() {
     if (!this.visible) {
       return <div style={{display: 'none'}}>Authenticated</div>;
@@ -335,7 +311,7 @@ export class VerdocsAuth {
     }
 
     if (this.displayMode === 'signup') {
-      const step1Invalid = this.submitting || !this.first || !this.last || !this.username || !this.password || !this.orgname || this.orgAvailable !== 'AVAILABLE';
+      const step1Invalid = this.submitting || !this.first || !this.last || !this.username || !this.password || !this.orgname;
 
       return (
         <div class="form">
@@ -387,24 +363,15 @@ export class VerdocsAuth {
                 onInput={(e: any) => (this.password = e.target.value)}
                 disabled={this.submitting}
               />
-              <div style={{display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center'}}>
-                <verdocs-text-input
-                  label="Organization Name"
-                  autocomplete="org"
-                  required={true}
-                  value={this.orgname}
-                  onInput={(e: any) => this.checkAvailability(e.target.value)}
-                  disabled={this.submitting}
-                  style={{flex: '1'}}
-                  onBlur={() => {
-                    console.log('blur');
-                  }}
-                />
-                {!this.checkingOrg && this.orgAvailable === 'AVAILABLE' && <verdocs-help-icon icon={OkIcon} text="Organization name is available." />}
-                {!this.checkingOrg && this.orgAvailable === 'TAKEN' && <verdocs-help-icon icon={TakenIcon} text="Organization already registered." />}
-                {!this.checkingOrg && this.orgAvailable === 'UNKNOWN' && <verdocs-help-icon icon={InfoIcon} text="Organization name must be unique." />}
-                {this.checkingOrg && <verdocs-spinner mode="dark" size={24} />}
-              </div>
+              <verdocs-text-input
+                label="Organization Name"
+                autocomplete="org"
+                required={true}
+                value={this.orgname}
+                onInput={(e: any) => (this.orgname = e.target.value)}
+                disabled={this.submitting}
+                style={{flex: '1'}}
+              />
 
               <div style={{marginTop: '30px'}} />
 

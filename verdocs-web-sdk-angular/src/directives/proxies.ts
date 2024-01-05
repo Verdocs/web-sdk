@@ -1176,14 +1176,14 @@ export declare interface VerdocsLoader extends Components.VerdocsLoader {}
 
 
 @ProxyCmp({
-  inputs: ['heading', 'message', 'showCancel']
+  inputs: ['buttonLabel', 'heading', 'message', 'showCancel']
 })
 @Component({
   selector: 'verdocs-ok-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['heading', 'message', 'showCancel'],
+  inputs: ['buttonLabel', 'heading', 'message', 'showCancel'],
 })
 export class VerdocsOkDialog {
   protected el: HTMLElement;

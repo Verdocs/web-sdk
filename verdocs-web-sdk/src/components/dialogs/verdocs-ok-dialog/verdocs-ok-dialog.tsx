@@ -21,6 +21,11 @@ export class VerdocsOkDialog {
   @Prop() message: string = '';
 
   /**
+   * Override the "OK" button's label
+   */
+  @Prop() buttonLabel: string = 'OK';
+
+  /**
    * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background
    * overlay to dismiss it.
    */
@@ -66,7 +71,7 @@ export class VerdocsOkDialog {
 
               <div class="buttons">
                 {this.showCancel ? <verdocs-button label="CANCEL" variant="outline" onClick={() => this.handleCancel()} /> : <div style={{display: 'none'}} />}
-                <verdocs-button label="OK" onClick={() => this.handleOk()} />
+                <verdocs-button label={this.buttonLabel} onClick={() => this.handleOk()} />
               </div>
             </div>
           </div>
