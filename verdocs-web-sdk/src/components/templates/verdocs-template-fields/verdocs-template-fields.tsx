@@ -6,6 +6,7 @@ import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
 import {defaultHeight, defaultWidth, getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
+import {createTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getRoleNames, getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
@@ -106,7 +107,8 @@ export class VerdocsTemplateFields {
 
   pageHeights: Record<number, number> = {};
 
-  store: TTemplateStore | null = null;
+  templateStore: TTemplateStore | null = null;
+  fieldStore: TTemplateFieldStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -122,10 +124,11 @@ export class VerdocsTemplateFields {
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
-      console.log(`[FIELDS] Loaded template ${this.templateId}`, this.store.state);
+      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, true);
+      this.fieldStore = createTemplateFieldStore(this.templateStore.state);
+      console.log(`[FIELDS] Loaded template ${this.templateId}`, this.templateStore.state, this.fieldStore);
 
-      this.selectedRoleName = this.store?.state?.roles?.[0]?.name || '';
+      this.selectedRoleName = this.templateStore?.state?.roles?.[0]?.name || '';
       console.log('[FIELDS] Starting with role', this.selectedRoleName);
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
@@ -147,8 +150,8 @@ export class VerdocsTemplateFields {
 
   componentWillUpdate() {
     // If a new role was added and there were none yet so far, or the "selected" role was deleted, reset our selection
-    if (!this.selectedRoleName || !(this.store?.state?.roles || []).find(role => role.name === this.selectedRoleName)) {
-      this.selectedRoleName = this.store?.state?.roles?.[0]?.name || '';
+    if (!this.selectedRoleName || !(this.templateStore?.state?.roles || []).find(role => role.name === this.selectedRoleName)) {
+      this.selectedRoleName = this.templateStore?.state?.roles?.[0]?.name || '';
       console.log('[FIELDS] Selected new role', this.selectedRoleName);
     }
   }
@@ -172,11 +175,11 @@ export class VerdocsTemplateFields {
     el.field = newFieldData;
 
     this.selectedRoleName = field.role_name;
-    el.setAttribute('roleindex', getRoleIndex(getRoleNames(this.store), field.role_name));
-    el.field = this.store?.state?.fields.find(f => f.name === field.name);
+    el.setAttribute('roleindex', getRoleIndex(getRoleNames(this.templateStore), field.role_name));
+    el.field = this.fieldStore.get(field.name);
     this.rerender++;
     el.setAttribute('rerender', this.rerender);
-    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store?.state, event: 'updated-field'});
+    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
 
     console.log('[FIELDS] Re-rendering field', field.name, pageInfo.pageNumber);
     this.reRenderField(field, pageInfo.pageNumber);
@@ -194,7 +197,7 @@ export class VerdocsTemplateFields {
       console.log('[FIELDS] Deleted', this, field);
       el.remove();
       this.rerender++;
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store?.state, event: 'updated-field'});
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
     });
 
     el.setAttribute('templateid', this.templateId);
@@ -213,13 +216,13 @@ export class VerdocsTemplateFields {
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
-    const fields = this.store?.state.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
+    const fields = Object.values(this.fieldStore.state).filter(field => field.page_sequence === pageInfo.pageNumber);
     fields.forEach(field => this.reRenderField(field, pageInfo.pageNumber));
   }
 
   reRenderField(field: ITemplateField, pageNumber: number) {
     const pageInfo = this.cachedPageInfo[pageNumber];
-    const roleIndex = getRoleIndex(getRoleNames(this.store), field.role_name);
+    const roleIndex = getRoleIndex(getRoleNames(this.templateStore), field.role_name);
     const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
     if (!el) {
       return;
@@ -260,7 +263,7 @@ export class VerdocsTemplateFields {
   async handleMoveEnd(event: any) {
     const name = event.target.getAttribute('name');
     const option = +(event.target.getAttribute('option') || '0');
-    const field = this.store?.state.fields.find(field => field.name === name);
+    const field = this.fieldStore.get(name);
     console.log('Dropped field', name, field);
     if (!field) {
       console.log('[FIELDS] Unable to find field', name);
@@ -313,7 +316,7 @@ export class VerdocsTemplateFields {
     console.log('[FIELDS] Will update', name, option, field);
     const newFieldData = await updateField(this.endpoint, this.templateId, name, field);
     const pageInfo = this.cachedPageInfo[pageNumber];
-    const roleIndex = getRoleIndex(getRoleNames(this.store), field.role_name);
+    const roleIndex = getRoleIndex(getRoleNames(this.templateStore), field.role_name);
     this.handleFieldSettingsChange(pageInfo, field, roleIndex, event.target, newFieldData);
     event.target.removeAttribute('posX');
     event.target.removeAttribute('posY');
@@ -325,7 +328,7 @@ export class VerdocsTemplateFields {
     do {
       fieldName = `${type}P${pageNumber}-${i}`;
       i++;
-    } while (this.store?.state.fields.some(field => field.name === fieldName));
+    } while (Object.values(this.fieldStore.state).some(field => field.name === fieldName));
 
     return fieldName;
   }
@@ -370,6 +373,7 @@ export class VerdocsTemplateFields {
         width,
         height,
       };
+      console.log('[FIELDS] Will save new field', field);
 
       // TODO: Fix how the server validates all this. It uses a JSON schema and is very particular about shapes for each field type.
       //  That makes it harder for third party developers to create fields via API calls. It would be better to always set X/Y and
@@ -447,12 +451,10 @@ export class VerdocsTemplateFields {
       const saved = await createField(this.endpoint, this.templateId, field);
       console.log('Saved field', saved);
 
-      if (this.store.state) {
-        this.store.state.fields = [...this.store?.state.fields, saved];
-      }
+      this.fieldStore.set(saved.name, saved);
       this.placing = null;
 
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store?.state, event: 'added-field'});
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
 
       this.handlePageRendered({detail: this.cachedPageInfo[pageNumber]});
     }
@@ -470,7 +472,7 @@ export class VerdocsTemplateFields {
     }
 
     // TODO: Render a better error
-    if (!this.store?.state.isLoaded) {
+    if (!this.templateStore?.state.isLoaded) {
       return (
         <Host>
           <verdocs-loader />
@@ -478,7 +480,7 @@ export class VerdocsTemplateFields {
       );
     }
 
-    const selectableRoles = this.store?.state?.roles.map(role => ({value: role.name, label: role.name}));
+    const selectableRoles = this.templateStore?.state?.roles.map(role => ({value: role.name, label: role.name}));
 
     return (
       <Host
@@ -524,7 +526,7 @@ export class VerdocsTemplateFields {
         {/*</div>*/}
 
         <div class="pages">
-          {(this.store?.state?.template_documents || []).map(document => {
+          {(this.templateStore?.state?.template_documents || []).map(document => {
             const pageNumbers = integerSequence(1, document.page_numbers);
 
             return pageNumbers.map(page => (
@@ -547,7 +549,7 @@ export class VerdocsTemplateFields {
         {this.showMustSelectRole && (
           <verdocs-ok-dialog
             heading="Unable to add field"
-            message={this.store?.state?.roles?.length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
+            message={this.templateStore?.state?.roles?.length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
             onNext={() => (this.showMustSelectRole = false)}
           />
         )}

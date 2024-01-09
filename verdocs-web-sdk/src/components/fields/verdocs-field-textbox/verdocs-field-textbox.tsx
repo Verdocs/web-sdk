@@ -203,7 +203,6 @@ export class VerdocsFieldTextbox {
                 return this.hideSettingsPanel();
               }}
               onSettingsChanged={e => {
-                console.log('here');
                 this.settingsChanged?.emit(e.detail);
                 return this.hideSettingsPanel();
               }}

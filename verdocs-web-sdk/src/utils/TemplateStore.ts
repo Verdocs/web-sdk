@@ -1,6 +1,6 @@
 import {createStore} from '@stencil/store';
+import {ObservableMap} from '@stencil/store';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ObservableMap} from '@stencil/store/dist/types';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {ITemplate, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 
