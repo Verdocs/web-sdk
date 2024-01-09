@@ -1,12 +1,12 @@
 import uuidv4 from 'uuid-browser';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {deleteField, updateField} from '@verdocs/js-sdk/Templates/Fields';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {createTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
+import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -72,14 +72,16 @@ export class VerdocsTemplateFieldProperties {
   @State() dirty: boolean = false;
   @State() loading: boolean = true;
 
-  @State() type: TDocumentFieldType = 'signature';
+  // @State() type: TDocumentFieldType = 'signature';
   @State() setting = null as any;
   @State() label = '';
+  @State() type = 'textbox' as TDocumentFieldType;
   @State() name = '';
+  @State() required = false;
   @State() roleName = '';
   @State() group = '';
   @State() fieldType = '';
-  @State() required = false;
+  // @State() required = false;
   @State() options = [];
   @State() placeholder = '';
   @State() value = '';
@@ -88,6 +90,7 @@ export class VerdocsTemplateFieldProperties {
 
   templateStore: TTemplateStore | null = null;
   fieldStore: TTemplateFieldStore | null = null;
+  watcher: any = null;
 
   async componentWillLoad() {
     try {
@@ -114,13 +117,31 @@ export class VerdocsTemplateFieldProperties {
       const field = this.fieldStore.get(this.fieldName);
       if (!field) {
         console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in fields`);
+      } else {
+        console.log('props', field);
       }
 
       createTemplateFieldStore(this.templateStore.state);
 
-      this.fieldStore.onChange(this.fieldName, field => {
+      this.watcher = this.fieldStore.onChange(this.fieldName, field => {
         console.log('Field changed', field);
+        this.type = field.type;
+        this.name = field.name;
+        this.label = field.label;
+        this.group = field.name;
+        this.roleName = field.role_name;
+        this.required = field.required;
+        this.fieldType = field.type;
+        // TODO: Talk about how we want to handle labels/placeholders
+        this.placeholder = field.setting?.placeholder || '';
+        this.value = field.setting?.result || '';
+        this.leading = field.setting?.leading || 0;
+        this.setting = field.setting || {};
+        this.options = field.setting?.options || [];
+        this.dirty = false;
+        this.loading = false;
       });
+      console.log('watcher', this.watcher);
 
       this.type = field.type;
       this.name = field.name;
@@ -266,7 +287,7 @@ export class VerdocsTemplateFieldProperties {
   }
 
   render() {
-    console.log('Rendering field properties', this.fieldStore.get(this.fieldName));
+    // console.log('Rendering field properties', this.fieldStore.get(this.fieldName));
     if (!this.endpoint.session) {
       return (
         <Host>

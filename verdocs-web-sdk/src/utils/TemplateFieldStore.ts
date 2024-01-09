@@ -11,9 +11,10 @@ const templateFieldStores: Record<string, TTemplateFieldStore> = {};
 export const getTemplateFieldStore = (templateId: string) => templateFieldStores[templateId];
 
 export const createTemplateFieldStore = (template: ITemplate) => {
+  console.log('Creating template field store for template: ', template);
   let store = getTemplateFieldStore(template.id);
   if (!store) {
-    store = createStore<TTemplateFieldMap>();
+    store = createStore<TTemplateFieldMap>({});
     templateFieldStores[template.id] = store;
   } else {
     store.reset();

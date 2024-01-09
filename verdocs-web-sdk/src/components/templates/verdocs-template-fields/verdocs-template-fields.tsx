@@ -169,7 +169,8 @@ export class VerdocsTemplateFields {
     this.rerender++;
   }
 
-  handleFieldSettingsChange(pageInfo: any, field: any, roleIndex, el: any, newFieldData: any) {
+  handleFieldSettingsChange(pageInfo: any, field: any, el: any, newFieldData: any) {
+    // handleFieldSettingsChange(pageInfo: any, field: any, roleIndex: number, el: any, newFieldData: any) {
     console.log('[FIELDS] Field settings changed', field.name, newFieldData);
     Object.assign(field, newFieldData);
     el.field = newFieldData;
@@ -182,16 +183,18 @@ export class VerdocsTemplateFields {
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
 
     console.log('[FIELDS] Re-rendering field', field.name, pageInfo.pageNumber);
-    this.reRenderField(field, pageInfo.pageNumber);
-    const newEl = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
-    if (!newEl) {
-      return;
-    }
+    this.fieldStore.set(field.name, field);
+    // this.reRenderField(field, pageInfo.pageNumber);
+    // const newEl = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
+    // if (!newEl) {
+    //   return;
+    // }
   }
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, roleIndex, el, e.detail.field));
+    el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, el, e.detail.field));
+    // el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, roleIndex, el, e.detail.field));
 
     el.addEventListener('deleted', () => {
       console.log('[FIELDS] Deleted', this, field);
@@ -201,6 +204,7 @@ export class VerdocsTemplateFields {
     });
 
     el.setAttribute('templateid', this.templateId);
+    el.setAttribute('fieldname', field.name);
     el.setAttribute('roleindex', roleIndex);
     el.setAttribute('pageNumber', pageInfo.pageNumber);
     el.setAttribute('xScale', pageInfo.xScale);
@@ -316,8 +320,9 @@ export class VerdocsTemplateFields {
     console.log('[FIELDS] Will update', name, option, field);
     const newFieldData = await updateField(this.endpoint, this.templateId, name, field);
     const pageInfo = this.cachedPageInfo[pageNumber];
-    const roleIndex = getRoleIndex(getRoleNames(this.templateStore), field.role_name);
-    this.handleFieldSettingsChange(pageInfo, field, roleIndex, event.target, newFieldData);
+    // const roleIndex = getRoleIndex(getRoleNames(this.templateStore), field.role_name);
+    this.handleFieldSettingsChange(pageInfo, field, event.target, newFieldData);
+    // this.handleFieldSettingsChange(pageInfo, field, roleIndex, event.target, newFieldData);
     event.target.removeAttribute('posX');
     event.target.removeAttribute('posY');
   }

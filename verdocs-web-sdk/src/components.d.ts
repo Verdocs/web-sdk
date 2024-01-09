@@ -677,6 +677,10 @@ export namespace Components {
           * The document or template field to display.
          */
         "field": IEnvelopeField | ITemplateField | null;
+        /**
+          * The name of the field to display.
+         */
+        "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -3062,6 +3066,10 @@ declare namespace LocalJSX {
           * The document or template field to display.
          */
         "field"?: IEnvelopeField | ITemplateField | null;
+        /**
+          * The name of the field to display.
+         */
+        "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
