@@ -116,7 +116,7 @@ export class VerdocsTemplateFieldProperties {
 
       this.fieldStore = await createTemplateFieldStore(this.templateStore.state);
       // console.log('tfs', this.fieldStore?.state);
-      const field = this.fieldStore.get(this.fieldName);
+      const field = this.fieldStore.get(this.fieldName) as ITemplateField;
       // console.log('gf', field);
       if (!field) {
         console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in fields`);
@@ -124,7 +124,7 @@ export class VerdocsTemplateFieldProperties {
         console.log('props', field);
       }
 
-      this.watcher = this.fieldStore.onChange(this.fieldName, field => {
+      this.watcher = this.fieldStore.onChange(this.fieldName, (field: ITemplateField) => {
         console.log('Field changed', field);
         // this.type = field.type;
         // this.name = field.name;
@@ -170,7 +170,7 @@ export class VerdocsTemplateFieldProperties {
   handleCancel(e) {
     e.stopPropagation();
 
-    const field = this.fieldStore.get(this.fieldName);
+    const field = this.fieldStore.get(this.fieldName) as ITemplateField;
     if (field) {
       this.name = field.name;
       this.label = field.label;

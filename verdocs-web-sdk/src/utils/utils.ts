@@ -153,6 +153,8 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       el.field = field;
       el.setAttribute('id', id);
       el.setAttribute('roleIndex', roleIndex);
+      el.setAttribute('fieldname', field.name);
+      el.setAttribute('templateid', 'template_id' in field ? field.template_id : 'PREVIEW');
 
       if (disabled) {
         el.setAttribute('tabindex', -1);

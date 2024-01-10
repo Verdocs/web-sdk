@@ -193,13 +193,7 @@ export class VerdocsTemplateFields {
 
     console.log('[FIELDS] Re-rendering field', field.name, pageInfo.pageNumber, field);
     this.fieldStore.set(field.name, field);
-    // const roleIndex = getRoleIndex(getRoleNames(this.templateStore), field.role_name);
-    // this.attachFieldAttributes(pageInfo, field, roleIndex, el);
     this.reRenderField(field, pageInfo.pageNumber);
-    // const newEl = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
-    // if (!newEl) {
-    //   return;
-    // }
   }
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
@@ -232,8 +226,8 @@ export class VerdocsTemplateFields {
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
-    const fields = Object.values(this.fieldStore.state).filter(field => field.page_sequence === pageInfo.pageNumber);
-    fields.forEach(field => this.reRenderField(field, pageInfo.pageNumber));
+    const fields = Object.values(this.fieldStore.state).filter((field: ITemplateField) => field.page_sequence === pageInfo.pageNumber);
+    fields.forEach((field: ITemplateField) => this.reRenderField(field, pageInfo.pageNumber));
   }
 
   reRenderField(field: ITemplateField, pageNumber: number) {
@@ -279,7 +273,7 @@ export class VerdocsTemplateFields {
   async handleMoveEnd(event: any) {
     const name = event.target.getAttribute('name');
     const option = +(event.target.getAttribute('option') || '0');
-    const field = this.fieldStore.get(name);
+    const field = this.fieldStore.get(name) as ITemplateField;
     if (!field) {
       console.log('[FIELDS] Unable to find field', name);
       return;

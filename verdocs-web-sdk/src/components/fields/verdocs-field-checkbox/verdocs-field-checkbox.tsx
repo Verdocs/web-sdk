@@ -105,6 +105,7 @@ export class VerdocsFieldCheckbox {
 
   async componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
+    console.log('cwl checkbox', this.templateid, this.fieldStore);
   }
 
   render() {

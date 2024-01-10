@@ -8,8 +8,9 @@ import {fullNameToInitials, integerSequence} from '@verdocs/js-sdk/Utils/Primiti
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {IEnvelopeField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/js-sdk/Envelopes/Types';
 import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
-import {throttledGetEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {getEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
+import {createTemplateFieldStoreFromEnvelope} from '../../../utils/TemplateFieldStore';
 import {FORMAT_DATE, IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -154,7 +155,11 @@ export class VerdocsSign {
         this.nextButtonLabel = 'Next';
       }
 
-      this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
+      this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
+
+      const fs = createTemplateFieldStoreFromEnvelope(this.envelope);
+      console.log('made fs', fs);
+
       this.sortedRecipients = [...this.envelope.recipients];
       this.sortedRecipients.sort((a, b) => {
         return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
@@ -258,7 +263,7 @@ export class VerdocsSign {
 
   updateRecipientFieldValue(fieldName: string, updateResult: any) {
     console.log('[SIGN] updateRecipientFieldValue', fieldName);
-    this.recipient.fields.forEach(oldField => {
+    this.getRecipientFields().forEach(oldField => {
       if (oldField.name === fieldName) {
         oldField.settings = updateResult.settings;
         // TODO: When we break out other fields like value, update them here too
@@ -429,7 +434,7 @@ export class VerdocsSign {
     }
 
     // Find and focus the next incomplete required field
-    const requiredFields = this.recipient.fields.filter(field => field.required);
+    const requiredFields = this.getRecipientFields().filter(field => field.required);
     const focusedIndex = requiredFields.findIndex(field => field.name === this.focusedField);
 
     let nextFocusedIndex = focusedIndex + 1;
@@ -462,9 +467,13 @@ export class VerdocsSign {
     }
   }
 
+  getRecipientFields() {
+    return this.envelope.fields.filter(field => field.recipient_role === this.recipient.role_name);
+  }
+
   // See if everything that "needs to be" filled in is, and all "fillable fields" are valid
   checkRecipientFields() {
-    const invalidFields = this.recipient.fields.filter(field => !this.isFieldValid(field));
+    const invalidFields = this.getRecipientFields().filter(field => !this.isFieldValid(field));
     if (invalidFields.length < 1) {
       this.nextButtonLabel = 'Finish';
       if (!this.nextSubmits) {
@@ -501,6 +510,7 @@ export class VerdocsSign {
     el.addEventListener('focusout', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
     el.addEventListener('fieldChange', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
 
+    el.setAttribute('templateid', this.envelope.template_id);
     el.setAttribute('fieldname', field.name);
     el.setAttribute('page', pageInfo.pageNumber);
     el.setAttribute('roleindex', roleIndex);
@@ -513,7 +523,12 @@ export class VerdocsSign {
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
     const roleIndex = getRoleIndex(this.roleNames, this.recipient.role_name);
-    const recipientFields = this.recipient.fields.filter(field => field.page === pageInfo.pageNumber);
+    console.log(
+      'hpr',
+      this.recipient,
+      this.envelope.fields.filter(field => field.recipient_role === this.recipient.role_name),
+    );
+    const recipientFields = this.getRecipientFields().filter(field => field.page === pageInfo.pageNumber);
     // console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
 
     // First render the fields for the signer
@@ -539,7 +554,7 @@ export class VerdocsSign {
       )
       .forEach(recipient => {
         const otherIndex = getRoleIndex(this.roleNames, recipient.role_name);
-        recipient.fields
+        this.getRecipientFields()
           .filter(field => field.page === pageInfo.pageNumber)
           .forEach(field => {
             const el = renderDocumentField(field, pageInfo, otherIndex, {disabled: true, editable: false, draggable: false, done: this.isDone});

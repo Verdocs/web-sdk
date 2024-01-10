@@ -117,6 +117,7 @@ export class VerdocsFieldTextbox {
 
   async componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
+    console.log('fs', this.templateid);
   }
 
   componentDidRender() {
@@ -177,6 +178,7 @@ export class VerdocsFieldTextbox {
 
   render() {
     const field = this.fieldStore.get(this.fieldname);
+    console.log('textbox', this.fieldname, field);
     if (!field) {
       return <Fragment />;
     }
