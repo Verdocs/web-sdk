@@ -66,4 +66,21 @@ verdocs-field-payment {
   &.focused {
     animation: verdocs-field-pulse 0.75s 2;
   }
+
+  .settings-icon {
+    position: absolute;
+    top: -3px;
+    left: -20px;
+    display: inline-block;
+    cursor: pointer;
+    opacity: 0.6;
+
+    svg {
+      fill: $border-color;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }

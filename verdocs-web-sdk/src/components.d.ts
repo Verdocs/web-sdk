@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
-import { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeField, IEnvelopeSummary, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
+import { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
 import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
@@ -303,9 +303,9 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field": IEnvelopeField | ITemplateField | null;
+        "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -348,9 +348,9 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field": IEnvelopeField | ITemplateField | null;
+        "fieldname": string;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
@@ -373,6 +373,14 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldDate {
         /**
@@ -388,9 +396,9 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field": IEnvelopeField | ITemplateField | null;
+        "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -410,6 +418,14 @@ export namespace Components {
           * The template the field is for/from. Only required for the field builder, passed down to the properties component.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -425,9 +441,9 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field": IEnvelopeField | ITemplateField | null;
+        "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -447,6 +463,14 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldInitial {
         /**
@@ -462,9 +486,9 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field": IEnvelopeField | ITemplateField | null;
+        "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -488,6 +512,14 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldPayment {
         "currentInitial": string;
@@ -498,11 +530,11 @@ export namespace Components {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
-        /**
-          * The document or template field to display.
-         */
-        "field": IEnvelopeField | ITemplateField | null;
         "fieldId": string;
+        /**
+          * The name of the field to display.
+         */
+        "fieldname": string;
         "fields": any[];
         "focused": boolean;
         "hideSettingsPanel": () => Promise<void>;
@@ -525,6 +557,14 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldRadioButton {
         /**
@@ -540,9 +580,9 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field": IEnvelopeField | ITemplateField | null;
+        "fieldname": string;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
@@ -565,6 +605,14 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldSignature {
         /**
@@ -580,9 +628,9 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field": IEnvelopeField | ITemplateField | null;
+        "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -606,6 +654,14 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -625,9 +681,9 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field": IEnvelopeField | ITemplateField | null;
+        "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -674,10 +730,6 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
-          * The document or template field to display.
-         */
-        "field": IEnvelopeField | ITemplateField | null;
-        /**
           * The name of the field to display.
          */
         "fieldname": string;
@@ -723,9 +775,9 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field": IEnvelopeField | ITemplateField | null;
+        "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
@@ -745,6 +797,14 @@ export namespace Components {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFileChooser {
         /**
@@ -2609,9 +2669,9 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field"?: IEnvelopeField | ITemplateField | null;
+        "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2663,9 +2723,9 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field"?: IEnvelopeField | ITemplateField | null;
+        "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2694,6 +2754,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldDate {
         /**
@@ -2709,9 +2777,9 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field"?: IEnvelopeField | ITemplateField | null;
+        "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2740,6 +2808,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required for the field builder, passed down to the properties component.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldDropdown {
         /**
@@ -2755,9 +2831,9 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field"?: IEnvelopeField | ITemplateField | null;
+        "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2786,6 +2862,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldInitial {
         /**
@@ -2801,9 +2885,9 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field"?: IEnvelopeField | ITemplateField | null;
+        "fieldname"?: string;
         /**
           * The document or template field to display.
          */
@@ -2848,6 +2932,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldPayment {
         "currentInitial"?: string;
@@ -2858,11 +2950,11 @@ declare namespace LocalJSX {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
-        /**
-          * The document or template field to display.
-         */
-        "field"?: IEnvelopeField | ITemplateField | null;
         "fieldId"?: string;
+        /**
+          * The name of the field to display.
+         */
+        "fieldname"?: string;
         "fields"?: any[];
         "focused"?: boolean;
         /**
@@ -2890,6 +2982,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldRadioButton {
         /**
@@ -2905,9 +3005,9 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field"?: IEnvelopeField | ITemplateField | null;
+        "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2936,6 +3036,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldSignature {
         /**
@@ -2951,9 +3059,9 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field"?: IEnvelopeField | ITemplateField | null;
+        "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -2990,6 +3098,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFieldTextarea {
         /**
@@ -3009,9 +3125,9 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field"?: IEnvelopeField | ITemplateField | null;
+        "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -3063,10 +3179,6 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
-          * The document or template field to display.
-         */
-        "field"?: IEnvelopeField | ITemplateField | null;
-        /**
           * The name of the field to display.
          */
         "fieldname"?: string;
@@ -3117,9 +3229,9 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
-          * The document or template field to display.
+          * The name of the field to display.
          */
-        "field"?: IEnvelopeField | ITemplateField | null;
+        "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
@@ -3144,6 +3256,14 @@ declare namespace LocalJSX {
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
     }
     interface VerdocsFileChooser {
         /**

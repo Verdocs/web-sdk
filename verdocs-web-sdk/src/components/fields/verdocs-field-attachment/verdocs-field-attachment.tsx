@@ -1,7 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, h, Host, Prop, Method, Event, EventEmitter} from '@stencil/core';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment} from '@stencil/core';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 
 const PaperclipIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>`;
@@ -26,9 +26,9 @@ export class VerdocsFieldAttachment {
   @Prop() templateid: string = '';
 
   /**
-   * The document or template field to display.
+   * The name of the field to display.
    */
-  @Prop() field: IEnvelopeField | ITemplateField | null = null;
+  @Prop() fieldname: string = '';
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -86,6 +86,8 @@ export class VerdocsFieldAttachment {
    */
   @Event({composed: true}) attached: EventEmitter<{data: string; lastModified: number; name: string; size: number; type: string}>;
 
+  @State() showingProperties?: boolean = false;
+
   @Method() async focusField() {
     this.handleShow();
   }
@@ -106,7 +108,7 @@ export class VerdocsFieldAttachment {
 
   @Method()
   async showSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.showPanel) {
       settingsPanel.showPanel();
     }
@@ -114,16 +116,27 @@ export class VerdocsFieldAttachment {
 
   @Method()
   async hideSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
   }
 
+  fieldStore: TTemplateFieldStore = null;
+
+  async componentWillLoad() {
+    this.fieldStore = getTemplateFieldStore(this.templateid);
+  }
+
   render() {
-    const settings = getFieldSettings(this.field);
+    const field = this.fieldStore.get(this.fieldname);
+    if (!field) {
+      return <Fragment />;
+    }
+
+    const settings = getFieldSettings(field);
     let disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
+    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
     const {url} = settings;
 
     console.log('Attachment settings', url, settings);
@@ -133,25 +146,37 @@ export class VerdocsFieldAttachment {
         <span innerHTML={url ? AttachedIcon : PaperclipIcon} onClick={() => !disabled && this.handleShow()} />
 
         {this.editable && (
-          <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
-            <verdocs-template-field-properties
-              templateId={this.templateid}
-              fieldName={this.field.name}
-              onClose={() => this.hideSettingsPanel()}
-              onDelete={() => {
-                this.deleted?.emit({fieldName: this.field.name});
-                return this.hideSettingsPanel();
+          <Fragment>
+            <div
+              id={`verdocs-settings-panel-trigger-${field.name}`}
+              style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+              class="settings-icon"
+              innerHTML={settingsIcon}
+              onClick={(e: any) => {
+                e.stopPropagation();
+                this.showingProperties = !this.showingProperties;
               }}
-              onSettingsChanged={e => {
-                console.log('here');
-                this.settingsChanged?.emit(e.detail);
-                return this.hideSettingsPanel();
-              }}
-              helpText={
-                'Attachment fields allow files to be uploaded during signing. Files will be stored for later retrieval via the "name" field.<br /><br />If marked required, the participant must attach a file before proceeding.'
-              }
             />
-          </verdocs-button-panel>
+
+            {this.showingProperties && (
+              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
+                <verdocs-template-field-properties
+                  templateId={this.templateid}
+                  fieldName={field.name}
+                  onClose={() => (this.showingProperties = false)}
+                  onDelete={() => {
+                    this.deleted?.emit({fieldName: field.name});
+                    return this.hideSettingsPanel();
+                  }}
+                  onSettingsChanged={e => {
+                    this.settingsChanged?.emit(e.detail);
+                    return this.hideSettingsPanel();
+                  }}
+                  helpText={'Attachments allow the user to attach their own documents (e.g. resumes or disclosures) to a signing flow.'}
+                />
+              </verdocs-portal>
+            )}
+          </Fragment>
         )}
       </Host>
     );

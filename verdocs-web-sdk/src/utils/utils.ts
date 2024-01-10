@@ -70,6 +70,7 @@ export const defaultHeight = (type: TDocumentFieldType) => {
 export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number, option?: number) => {
   const settings = (field as ITemplateField).setting || (field as IEnvelopeField).settings;
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = settings;
+  // console.log('scs', field, settings, x, y);
 
   const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
   if (optionSettings) {
@@ -115,6 +116,7 @@ export const updateDocumentFieldValue = (field: ITemplateField | IEnvelopeField)
 };
 
 export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docPage: IDocumentPageInfo, roleIndex: number, fieldOptions: IFieldOptions) => {
+  // console.log('rdf', field);
   const {disabled = false, editable = false, draggable = false, done = false} = fieldOptions;
   // console.log('[renderDocumentField]', field, docPage, roleIndex, fieldOptions);
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
@@ -324,14 +326,6 @@ export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvel
   // e.g. "Colorado-Motor-Vehicle-Bill-of-Sale.pdf"
   const date = format(new Date(envelope.updated_at), FORMAT_DATE);
   const fileName = `${envelope.name} - ${date}.pdf`;
-  const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, documentId);
-  downloadBlob(data, fileName);
-};
-
-export const saveCertificate = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {
-  // e.g "Colorado Motor Vehicle Bill of Sale_certificate.pdf"
-  const date = format(new Date(envelope.updated_at), FORMAT_DATE);
-  const fileName = `${envelope.name} - ${date}_certificate.pdf`;
   const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, documentId);
   downloadBlob(data, fileName);
 };

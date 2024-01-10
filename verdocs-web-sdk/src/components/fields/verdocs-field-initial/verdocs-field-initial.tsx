@@ -1,7 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, Event, EventEmitter, h, Host, Method, Prop, State} from '@stencil/core';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 
 const settingsIcon =
@@ -23,9 +23,9 @@ export class VerdocsFieldInitial {
   @Prop() templateid: string = '';
 
   /**
-   * The document or template field to display.
+   * The name of the field to display.
    */
-  @Prop() field: IEnvelopeField | ITemplateField | null = null;
+  @Prop() fieldname: string = '';
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -64,6 +64,16 @@ export class VerdocsFieldInitial {
   @Prop() rerender?: number = 0;
 
   /**
+   * If set, the field will be be scaled horizontally by this factor.
+   */
+  @Prop() xscale?: number = 1;
+
+  /**
+   * If set, the field will be be scaled vertically by this factor.
+   */
+  @Prop() yscale?: number = 1;
+
+  /**
    * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
    */
   @Event({composed: true}) adopt: EventEmitter<string>;
@@ -95,12 +105,20 @@ export class VerdocsFieldInitial {
    */
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
+  @State() showingProperties?: boolean = false;
+
   @Method() async focusField() {
     this.handleShow();
   }
 
   @State()
   tempInitials: string = '';
+
+  fieldStore: TTemplateFieldStore = null;
+
+  async componentWillLoad() {
+    this.fieldStore = getTemplateFieldStore(this.templateid);
+  }
 
   private dialog?: any;
 
@@ -127,7 +145,7 @@ export class VerdocsFieldInitial {
 
   @Method()
   async showSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.showPanel) {
       settingsPanel.showPanel();
     }
@@ -135,7 +153,7 @@ export class VerdocsFieldInitial {
 
   @Method()
   async hideSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
@@ -143,17 +161,22 @@ export class VerdocsFieldInitial {
   }
 
   render() {
-    const settings = getFieldSettings(this.field);
+    const field = this.fieldStore.get(this.fieldname);
+    if (!field) {
+      return <Fragment />;
+    }
+
+    const settings = getFieldSettings(field);
     const value = settings.base64 || this.tempInitials;
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
+    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
       return <Host class={{done: this.done}}>{value && <img src={value} alt="Initials" />}</Host>;
     }
 
     return (
-      <Host class={{required: this.field?.required, disabled}} style={{backgroundColor}}>
+      <Host class={{required: field?.required, disabled}} style={{backgroundColor}}>
         {value ? (
           <img src={value} alt="Initials" />
         ) : (
@@ -163,21 +186,37 @@ export class VerdocsFieldInitial {
         )}
 
         {this.editable && (
-          <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
-            <verdocs-template-field-properties
-              templateId={this.templateid}
-              fieldName={this.field.name}
-              onClose={() => this.hideSettingsPanel()}
-              onDelete={() => {
-                this.deleted?.emit({fieldName: this.field.name});
-                return this.hideSettingsPanel();
-              }}
-              onSettingsChanged={e => {
-                this.settingsChanged?.emit(e.detail);
-                return this.hideSettingsPanel();
+          <Fragment>
+            <div
+              id={`verdocs-settings-panel-trigger-${field.name}`}
+              style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+              class="settings-icon"
+              innerHTML={settingsIcon}
+              onClick={(e: any) => {
+                e.stopPropagation();
+                this.showingProperties = !this.showingProperties;
               }}
             />
-          </verdocs-button-panel>
+
+            {this.showingProperties && (
+              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${this.fieldname}`} onClickAway={() => (this.showingProperties = false)}>
+                <verdocs-template-field-properties
+                  templateId={this.templateid}
+                  fieldName={field.name}
+                  onClose={() => (this.showingProperties = false)}
+                  onDelete={() => {
+                    this.deleted?.emit({fieldName: field.name});
+                    return this.hideSettingsPanel();
+                  }}
+                  onSettingsChanged={e => {
+                    this.settingsChanged?.emit(e.detail);
+                    return this.hideSettingsPanel();
+                  }}
+                  helpText={"initial fields capture the recipient's initials on a clause or page."}
+                />
+              </verdocs-portal>
+            )}
+          </Fragment>
         )}
       </Host>
     );

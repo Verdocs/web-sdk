@@ -112,34 +112,35 @@ export class VerdocsTemplateFieldProperties {
       }
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId);
-      this.fieldStore = await createTemplateFieldStore(this.templateStore.state);
+      createTemplateFieldStore(this.templateStore.state);
 
+      this.fieldStore = await createTemplateFieldStore(this.templateStore.state);
+      // console.log('tfs', this.fieldStore?.state);
       const field = this.fieldStore.get(this.fieldName);
+      // console.log('gf', field);
       if (!field) {
         console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in fields`);
       } else {
         console.log('props', field);
       }
 
-      createTemplateFieldStore(this.templateStore.state);
-
       this.watcher = this.fieldStore.onChange(this.fieldName, field => {
         console.log('Field changed', field);
-        this.type = field.type;
-        this.name = field.name;
-        this.label = field.label;
-        this.group = field.name;
-        this.roleName = field.role_name;
-        this.required = field.required;
-        this.fieldType = field.type;
-        // TODO: Talk about how we want to handle labels/placeholders
-        this.placeholder = field.setting?.placeholder || '';
-        this.value = field.setting?.result || '';
-        this.leading = field.setting?.leading || 0;
-        this.setting = field.setting || {};
-        this.options = field.setting?.options || [];
-        this.dirty = false;
-        this.loading = false;
+        // this.type = field.type;
+        // this.name = field.name;
+        // this.label = field.label;
+        // this.group = field.name;
+        // this.roleName = field.role_name;
+        // this.required = field.required;
+        // this.fieldType = field.type;
+        // // TODO: Talk about how we want to handle labels/placeholders
+        // this.placeholder = field.setting?.placeholder || '';
+        // this.value = field.setting?.result || '';
+        // this.leading = field.setting?.leading || 0;
+        // this.setting = field.setting || {};
+        // this.options = field.setting?.options || [];
+        // this.dirty = false;
+        // this.loading = false;
       });
       console.log('watcher', this.watcher);
 
@@ -209,7 +210,7 @@ export class VerdocsTemplateFieldProperties {
       };
     }
 
-    console.log('FP: Will update', newProperties);
+    console.log('FP: Will update', this.fieldName, newProperties);
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(field => {
         this.dirty = false;
@@ -267,9 +268,8 @@ export class VerdocsTemplateFieldProperties {
 
   updateField(newField) {
     const oldField = this.fieldStore.get(this.fieldName) || {};
-    console.log('Updating field', newField, oldField);
+    console.log('Updating field', this.fieldName, newField);
     Object.assign(oldField, newField);
-    this.fieldStore.set(this.fieldName, newField);
   }
 
   async handleDelete(e) {
@@ -314,6 +314,7 @@ export class VerdocsTemplateFieldProperties {
       );
     }
 
+    // console.log('tfp', this.templateId, this.fieldName);
     return (
       <Host>
         <h6>

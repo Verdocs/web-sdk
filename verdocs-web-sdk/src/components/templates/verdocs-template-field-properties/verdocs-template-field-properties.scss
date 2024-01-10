@@ -1,7 +1,13 @@
 @import '../../../theme.scss';
 
 verdocs-template-field-properties {
+  padding: 20px;
+  display: block;
+  border-radius: 4px;
+  background: #ffffff;
+  border: 1px solid #ccc;
   font-family: $verdocs-primary-font;
+  box-shadow: 2px 2px 10px 0px #0000001f;
 
   .buttons {
     display: flex;
@@ -104,7 +110,6 @@ verdocs-template-field-properties {
   }
 
   .instructions {
-
   }
 
   .row-header {

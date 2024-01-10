@@ -78,4 +78,21 @@ verdocs-field-textbox {
   [data-lastpass-icon-root] {
     display: none !important;
   }
+
+  .settings-icon {
+    position: absolute;
+    top: -4px;
+    left: -20px;
+    display: inline-block;
+    cursor: pointer;
+    opacity: 0.6;
+
+    svg {
+      fill: $border-color;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }

@@ -74,6 +74,23 @@ verdocs-field-date {
       }
     }
   }
+
+  .settings-icon {
+    position: absolute;
+    top: -3px;
+    left: -20px;
+    display: inline-block;
+    cursor: pointer;
+    opacity: 0.6;
+
+    svg {
+      fill: $border-color;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .flatpickr-calendar {
@@ -862,6 +879,7 @@ span.flatpickr-weekday {
 .flatpickr-input[readonly] {
   cursor: pointer;
 }
+
 @-webkit-keyframes fpFadeInDown {
   from {
     opacity: 0;
@@ -874,6 +892,7 @@ span.flatpickr-weekday {
     transform: translate3d(0, 0, 0);
   }
 }
+
 @keyframes fpFadeInDown {
   from {
     opacity: 0;

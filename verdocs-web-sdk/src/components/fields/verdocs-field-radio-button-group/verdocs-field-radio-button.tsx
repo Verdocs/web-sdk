@@ -1,7 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/core';
-import { ITemplateField, ITemplateFieldSetting } from "@verdocs/js-sdk/Templates/Types";
-import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 
 const RadioIconUnselected = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg>`;
@@ -26,9 +26,9 @@ export class VerdocsFieldRadioButton {
   @Prop() templateid: string = '';
 
   /**
-   * The document or template field to display.
+   * The name of the field to display.
    */
-  @Prop() field: IEnvelopeField | ITemplateField | null = null;
+  @Prop() fieldname: string = '';
 
   /**
    * The index of the settings option this particular checkbox is for
@@ -67,6 +67,18 @@ export class VerdocsFieldRadioButton {
   @Prop() rerender?: number = 0;
 
   /**
+   * If set, the field will be be scaled horizontally by this factor.
+   */
+  @Prop() xscale?: number = 1;
+
+  /**
+   * If set, the field will be be scaled vertically by this factor.
+   */
+  @Prop() yscale?: number = 1;
+
+  @State() showingProperties?: boolean = false;
+
+  /**
    * Event fired when the field's settings are changed.
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
@@ -78,7 +90,7 @@ export class VerdocsFieldRadioButton {
 
   @Method()
   async showSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.showPanel) {
       settingsPanel.showPanel();
     }
@@ -86,20 +98,31 @@ export class VerdocsFieldRadioButton {
 
   @Method()
   async hideSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
     // TemplateStore.updateCount++;
   }
 
+  fieldStore: TTemplateFieldStore = null;
+
+  async componentWillLoad() {
+    this.fieldStore = getTemplateFieldStore(this.templateid);
+  }
+
   render() {
-    const settings = getFieldSettings(this.field);
+    const field = this.fieldStore.get(this.fieldname);
+    if (!field) {
+      return <Fragment />;
+    }
+
+    const settings = getFieldSettings(field);
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
-    const required = this.field.required;
+    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
+    const required = field.required;
     const option = settings.options[this.option];
-    const id = `${this.field.name}-${option.id}`;
+    const id = `${field.name}-${option.id}`;
 
     if (this.done) {
       return (
@@ -111,33 +134,41 @@ export class VerdocsFieldRadioButton {
 
     return (
       <Host class={{required, disabled}} style={{backgroundColor}}>
-        <input
-          id={id}
-          type="radio"
-          name={this.field.name}
-          value={option.id}
-          tabIndex={settings.order}
-          checked={!!option.selected}
-          disabled={disabled}
-          required={settings.required}
-        />
+        <input id={id} type="radio" name={field.name} value={option.id} tabIndex={settings.order} checked={!!option.selected} disabled={disabled} required={settings.required} />
         <label htmlFor={id} />
+
         {this.editable && (
-          <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
-            <verdocs-template-field-properties
-              templateId={this.templateid}
-              fieldName={this.field.name}
-              onClose={() => this.hideSettingsPanel()}
-              onDelete={() => {
-                this.deleted?.emit({fieldName: this.field.name});
-                return this.hideSettingsPanel();
-              }}
-              onSettingsChanged={e => {
-                this.settingsChanged?.emit(e.detail);
-                return this.hideSettingsPanel();
+          <Fragment>
+            <div
+              id={`verdocs-settings-panel-trigger-${field.name}`}
+              style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+              class="settings-icon"
+              innerHTML={settingsIcon}
+              onClick={(e: any) => {
+                e.stopPropagation();
+                this.showingProperties = !this.showingProperties;
               }}
             />
-          </verdocs-button-panel>
+
+            {this.showingProperties && (
+              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
+                <verdocs-template-field-properties
+                  templateId={this.templateid}
+                  fieldName={field.name}
+                  onClose={() => (this.showingProperties = false)}
+                  onDelete={() => {
+                    this.deleted?.emit({fieldName: field.name});
+                    return this.hideSettingsPanel();
+                  }}
+                  onSettingsChanged={e => {
+                    this.settingsChanged?.emit(e.detail);
+                    return this.hideSettingsPanel();
+                  }}
+                  helpText={"Radio buttons capture the recipient's selection of just one of several related (exclusive) options."}
+                />
+              </verdocs-portal>
+            )}
+          </Fragment>
         )}
       </Host>
     );

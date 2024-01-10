@@ -60,4 +60,21 @@ verdocs-field-dropdown {
     margin-top: -1px;
     transform: scale(0.7);
   }
+
+  .settings-icon {
+    position: absolute;
+    top: -2px;
+    left: -20px;
+    display: inline-block;
+    cursor: pointer;
+    opacity: 0.6;
+
+    svg {
+      fill: $border-color;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }

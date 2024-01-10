@@ -126,10 +126,8 @@ export class VerdocsTemplateFields {
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId, true);
       this.fieldStore = createTemplateFieldStore(this.templateStore.state);
-      console.log(`[FIELDS] Loaded template ${this.templateId}`, this.templateStore.state, this.fieldStore);
 
       this.selectedRoleName = this.templateStore?.state?.roles?.[0]?.name || '';
-      console.log('[FIELDS] Starting with role', this.selectedRoleName);
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -169,9 +167,9 @@ export class VerdocsTemplateFields {
     this.rerender++;
   }
 
-  handleFieldSettingsChange(pageInfo: any, field: any, el: any, newFieldData: any) {
+  handleFieldSettingsChange(pageInfo: any, field: any, el: any, newFieldData: any, oldName: string) {
     // handleFieldSettingsChange(pageInfo: any, field: any, roleIndex: number, el: any, newFieldData: any) {
-    console.log('[FIELDS] Field settings changed', field.name, newFieldData);
+    console.log('[FIELDS] Field settings changed', oldName, field.name, newFieldData);
     Object.assign(field, newFieldData);
     el.field = newFieldData;
 
@@ -182,9 +180,22 @@ export class VerdocsTemplateFields {
     el.setAttribute('rerender', this.rerender);
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
 
-    console.log('[FIELDS] Re-rendering field', field.name, pageInfo.pageNumber);
+    // We do this to avoid dupes if the field gets renamed.
+    if (field.name !== oldName) {
+      console.log('[FIELDS] Renaming field', oldName, field.name);
+      el.remove();
+      delete this.fieldStore.state[oldName];
+    } else {
+      console.log('[FIELDS] Updating existing field', field.name);
+    }
+
+    // REMINDER: Do not access el past this point! It may have been removed from the DOM.
+
+    console.log('[FIELDS] Re-rendering field', field.name, pageInfo.pageNumber, field);
     this.fieldStore.set(field.name, field);
-    // this.reRenderField(field, pageInfo.pageNumber);
+    // const roleIndex = getRoleIndex(getRoleNames(this.templateStore), field.role_name);
+    // this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+    this.reRenderField(field, pageInfo.pageNumber);
     // const newEl = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
     // if (!newEl) {
     //   return;
@@ -192,8 +203,9 @@ export class VerdocsTemplateFields {
   }
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
+    // console.log('afa', field);
     el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, el, e.detail.field));
+    el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, el, e.detail.field, e.detail.fieldName));
     // el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, roleIndex, el, e.detail.field));
 
     el.addEventListener('deleted', () => {
@@ -215,7 +227,7 @@ export class VerdocsTemplateFields {
   cachedPageInfo: Record<number, IDocumentPageInfo> = {};
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    console.log('[FIELDS] Page rendered', pageInfo.pageNumber, pageInfo);
+    // console.log('[FIELDS] Page rendered', pageInfo.pageNumber, pageInfo);
     this.cachedPageInfo[pageInfo.pageNumber] = pageInfo;
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
@@ -268,7 +280,6 @@ export class VerdocsTemplateFields {
     const name = event.target.getAttribute('name');
     const option = +(event.target.getAttribute('option') || '0');
     const field = this.fieldStore.get(name);
-    console.log('Dropped field', name, field);
     if (!field) {
       console.log('[FIELDS] Unable to find field', name);
       return;
@@ -287,9 +298,7 @@ export class VerdocsTemplateFields {
     // "up" from the bottom (negative displacement).
     const newX = Math.max(clientRect.left - parentRect.left, 0);
     const newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
-    // console.log('Computing coordinates', {naturalWidth, width: event.rect.width, naturalHeight, height: event.rect.height, newX, newY});
     const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - width, naturalHeight - height);
-    // console.log('Drop End', {x, y, newX, newY});
 
     switch (field.type) {
       case 'attachment':
@@ -317,12 +326,10 @@ export class VerdocsTemplateFields {
         break;
     }
 
-    console.log('[FIELDS] Will update', name, option, field);
+    console.log('[FIELDS] Will update', name, y, option, field);
     const newFieldData = await updateField(this.endpoint, this.templateId, name, field);
     const pageInfo = this.cachedPageInfo[pageNumber];
-    // const roleIndex = getRoleIndex(getRoleNames(this.templateStore), field.role_name);
-    this.handleFieldSettingsChange(pageInfo, field, event.target, newFieldData);
-    // this.handleFieldSettingsChange(pageInfo, field, roleIndex, event.target, newFieldData);
+    this.handleFieldSettingsChange(pageInfo, field, event.target, newFieldData, name);
     event.target.removeAttribute('posX');
     event.target.removeAttribute('posY');
   }
@@ -343,7 +350,6 @@ export class VerdocsTemplateFields {
     const {xScale = 1, yScale = 1, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
     const x = Math.floor(Math.min(viewX / xScale, xMax));
     const y = Math.floor(Math.min(Math.max(renderedHeight - viewY, 0) / yScale, yMax));
-    console.log('Computed coordinates', {x, y, viewX, viewY, xMax, yMax});
     return {x, y};
   }
 
@@ -454,7 +460,7 @@ export class VerdocsTemplateFields {
       }
 
       const saved = await createField(this.endpoint, this.templateId, field);
-      console.log('Saved field', saved);
+      console.log('[FIELDS] Saved field', saved);
 
       this.fieldStore.set(saved.name, saved);
       this.placing = null;
@@ -466,8 +472,6 @@ export class VerdocsTemplateFields {
   }
 
   render() {
-    console.log('[FIELDS] Rendering', this.selectedRoleName);
-
     if (!this.endpoint.session) {
       return (
         <Host>
@@ -492,7 +496,7 @@ export class VerdocsTemplateFields {
         class={this.placing ? {[`placing-${this.placing}`]: true} : {}}
         data-r={this.rerender}
         onSubmit={() => {
-          console.log('onSubmit');
+          // console.log('onSubmit');
         }}
       >
         <div id="verdocs-template-fields-toolbar">

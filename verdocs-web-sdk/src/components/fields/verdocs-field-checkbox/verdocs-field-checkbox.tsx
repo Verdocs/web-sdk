@@ -1,7 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {Component, Event, EventEmitter, h, Host, Method, Prop} from '@stencil/core';
-import { ITemplateField, ITemplateFieldSetting } from "@verdocs/js-sdk/Templates/Types";
-import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
+import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {Component, Event, EventEmitter, Fragment, h, Host, Method, Prop, State} from '@stencil/core';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 
 const settingsIcon =
@@ -22,9 +22,9 @@ export class VerdocsFieldCheckbox {
   @Prop() templateid: string = '';
 
   /**
-   * The document or template field to display.
+   * The name of the field to display.
    */
-  @Prop() field: IEnvelopeField | ITemplateField | null = null;
+  @Prop() fieldname: string = '';
 
   /**
    * The index of the settings option this particular checkbox is for
@@ -63,6 +63,16 @@ export class VerdocsFieldCheckbox {
   @Prop() rerender?: number = 0;
 
   /**
+   * If set, the field will be be scaled horizontally by this factor.
+   */
+  @Prop() xscale?: number = 1;
+
+  /**
+   * If set, the field will be be scaled vertically by this factor.
+   */
+  @Prop() yscale?: number = 1;
+
+  /**
    * Event fired when the field's settings are changed.
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
@@ -72,9 +82,11 @@ export class VerdocsFieldCheckbox {
    */
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
+  @State() showingProperties?: boolean = false;
+
   @Method()
   async showSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.showPanel) {
       settingsPanel.showPanel();
     }
@@ -82,18 +94,29 @@ export class VerdocsFieldCheckbox {
 
   @Method()
   async hideSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
     // TemplateStore.updateCount++;
   }
 
+  fieldStore: TTemplateFieldStore = null;
+
+  async componentWillLoad() {
+    this.fieldStore = getTemplateFieldStore(this.templateid);
+  }
+
   render() {
-    const settings = getFieldSettings(this.field);
+    const field = this.fieldStore.get(this.fieldname);
+    if (!field) {
+      return <Fragment />;
+    }
+
+    const settings = getFieldSettings(field);
     const option = settings.options?.[this.option] ?? {checked: false};
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
+    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
       return <Host class={{done: this.done}}>{option.checked ? '✓' : '☐'}</Host>;
@@ -102,24 +125,41 @@ export class VerdocsFieldCheckbox {
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
         <label>
-          <input name={this.field.name} type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} value={option.id} />
+          <input name={field.name} type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} value={option.id} />
           <span />
+
           {this.editable && (
-            <verdocs-button-panel icon={settingsIcon} id={`verdocs-settings-panel-${this.field.name}`}>
-              <verdocs-template-field-properties
-                templateId={this.templateid}
-                fieldName={this.field.name}
-                onClose={() => this.hideSettingsPanel()}
-                onDelete={() => {
-                  this.deleted?.emit({fieldName: this.field.name});
-                  return this.hideSettingsPanel();
-                }}
-                onSettingsChanged={e => {
-                  this.settingsChanged?.emit(e.detail);
-                  return this.hideSettingsPanel();
+            <Fragment>
+              <div
+                id={`verdocs-settings-panel-trigger-${field.name}`}
+                style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+                class="settings-icon"
+                innerHTML={settingsIcon}
+                onClick={(e: any) => {
+                  e.stopPropagation();
+                  this.showingProperties = !this.showingProperties;
                 }}
               />
-            </verdocs-button-panel>
+
+              {this.showingProperties && (
+                <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
+                  <verdocs-template-field-properties
+                    templateId={this.templateid}
+                    fieldName={field.name}
+                    onClose={() => (this.showingProperties = false)}
+                    onDelete={() => {
+                      this.deleted?.emit({fieldName: field.name});
+                      return this.hideSettingsPanel();
+                    }}
+                    onSettingsChanged={e => {
+                      this.settingsChanged?.emit(e.detail);
+                      return this.hideSettingsPanel();
+                    }}
+                    helpText={'Check boxes allow the user to select one or more (non-exclusive) options.'}
+                  />
+                </verdocs-portal>
+              )}
+            </Fragment>
           )}
         </label>
       </Host>

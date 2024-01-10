@@ -1,7 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {IEnvelopeField} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, h, Host, Prop, Event, EventEmitter, State, Method} from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment} from '@stencil/core';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 
 /**
@@ -20,9 +20,9 @@ export class VerdocsFieldPayment {
   @Prop() templateid: string = '';
 
   /**
-   * The document or template field to display.
+   * The name of the field to display.
    */
-  @Prop() field: IEnvelopeField | ITemplateField | null = null;
+  @Prop() fieldname: string = '';
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -42,6 +42,16 @@ export class VerdocsFieldPayment {
   @Prop() currentInitialId: string;
   @Prop() focused: boolean = false;
   @Prop() signed: boolean = false;
+
+  /**
+   * If set, the field will be be scaled horizontally by this factor.
+   */
+  @Prop() xscale?: number = 1;
+
+  /**
+   * If set, the field will be be scaled vertically by this factor.
+   */
+  @Prop() yscale?: number = 1;
 
   /**
    * May be used to force the field to re-render.
@@ -88,17 +98,20 @@ export class VerdocsFieldPayment {
   averageFontWidth = 5;
   requiredFields: any[] = [];
 
+  @State() showingProperties?: boolean = false;
+
   /**
    * Event fired when the field is deleted.
    */
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
+  fieldStore: TTemplateFieldStore = null;
+
   componentWillLoad() {
+    this.fieldStore = getTemplateFieldStore(this.templateid);
     // Load validators
     // Load fields
     // Get role names
-    console.log('sign field', this.field);
-
     if (this.recipients && this.recipients.length > 0) {
       const preparer = this.recipients.find(r => r.type === 'preparer');
       console.log('Found preparer', preparer);
@@ -143,7 +156,7 @@ export class VerdocsFieldPayment {
 
   @Method()
   async showSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.showPanel) {
       settingsPanel.showPanel();
     }
@@ -151,7 +164,7 @@ export class VerdocsFieldPayment {
 
   @Method()
   async hideSettingsPanel() {
-    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.field.name}`) as any;
+    const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
@@ -159,16 +172,21 @@ export class VerdocsFieldPayment {
   }
 
   render() {
-    const settings = getFieldSettings(this.field);
+    const field = this.fieldStore.get(this.fieldname);
+    if (!field) {
+      return <Fragment />;
+    }
+
+    const settings = getFieldSettings(field);
     const disabled = this.disabled ?? settings.disabled ?? false;
     console.log('Payment field', settings);
-    const backgroundColor = this.field['rgba'] || getRGBA(this.roleindex);
+    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{focused: this.focused, disabled}} style={{backgroundColor}}>
         <button class={{hide: this.signed}}>$</button>
         {this.signed ? <div class="frame" /> : <div style={{display: 'none'}} />}
-        <img width="100%" height="100%" src={this.signatureUrl} />
+        <img width="100%" height="100%" src={this.signatureUrl} alt="Payment Icon" />
       </Host>
     );
   }
