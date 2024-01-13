@@ -117,7 +117,6 @@ export class VerdocsFieldTextbox {
 
   async componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
-    console.log('fs', this.templateid);
   }
 
   componentDidRender() {
@@ -169,7 +168,7 @@ export class VerdocsFieldTextbox {
 
     updateField(this.endpoint, this.templateid, this.fieldname, {setting: newSettings})
       .then(field => {
-        console.log('update result', field);
+        console.log('Update result', field);
         this.settingsChanged?.emit({fieldName: field.name, settings: newSettings, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
       })
@@ -178,7 +177,6 @@ export class VerdocsFieldTextbox {
 
   render() {
     const field = this.fieldStore.get(this.fieldname);
-    console.log('textbox', this.fieldname, field);
     if (!field) {
       return <Fragment />;
     }

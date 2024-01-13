@@ -461,7 +461,7 @@ export class VerdocsTemplateFields {
 
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
 
-      this.handlePageRendered({detail: this.cachedPageInfo[pageNumber]});
+      this.reRenderField(saved, pageNumber);
     }
   }
 
