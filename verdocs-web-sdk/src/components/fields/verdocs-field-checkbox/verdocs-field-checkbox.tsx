@@ -98,7 +98,6 @@ export class VerdocsFieldCheckbox {
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
-    // TemplateStore.updateCount++;
   }
 
   fieldStore: TTemplateFieldStore = null;

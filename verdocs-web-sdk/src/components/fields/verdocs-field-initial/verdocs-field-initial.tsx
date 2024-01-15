@@ -157,7 +157,6 @@ export class VerdocsFieldInitial {
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
-    // TemplateStore.updateCount++;
   }
 
   render() {

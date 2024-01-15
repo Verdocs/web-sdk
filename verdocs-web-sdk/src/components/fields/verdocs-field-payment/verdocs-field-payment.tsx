@@ -168,7 +168,6 @@ export class VerdocsFieldPayment {
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
-    // TemplateStore.updateCount++;
   }
 
   render() {

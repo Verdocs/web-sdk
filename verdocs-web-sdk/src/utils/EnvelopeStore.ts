@@ -9,7 +9,6 @@ export interface IEnvelopeStore extends IEnvelope {
   isLoaded: boolean;
   isError: boolean;
   error: any | null;
-  updateCount: number;
   roleNames: string[];
 }
 
@@ -22,7 +21,6 @@ const createEnvelopeStore = (envelopeId: string) => {
     isLoaded: false,
     isError: false,
     error: null,
-    updateCount: 0,
     roleNames: [],
 
     id: envelopeId,
@@ -98,10 +96,7 @@ export const getEnvelopeStore = async (endpoint: VerdocsEndpoint, envelopeId: st
     }
 
     store.state.isLoading = false;
-    store.state.updateCount++;
   }
 
   return store;
 };
-
-export const getRecipientRoleNames = (store?: TEnvelopeStore) => (store?.state?.recipients || []).map(r => r.role_name);

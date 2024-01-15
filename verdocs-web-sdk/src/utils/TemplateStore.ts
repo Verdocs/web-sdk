@@ -11,7 +11,6 @@ export interface ITemplateStore extends ITemplate {
   isLoaded: boolean;
   isError: boolean;
   error: any | null;
-  updateCount: number;
   roleNames: string[];
 }
 
@@ -24,7 +23,6 @@ const createTemplateStore = (templateId: string) => {
     isLoaded: false,
     isError: false,
     error: null,
-    updateCount: 0,
     roleNames: [],
 
     id: templateId,
@@ -106,7 +104,6 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
     }
 
     store.state.isLoading = false;
-    store.state.updateCount++;
   } else {
     // Just make sure they exist
     getTemplateRoleStore(templateId);
