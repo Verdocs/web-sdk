@@ -49,7 +49,7 @@ export class VerdocsPreview {
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
 
       console.log(`[PREVIEW] Loading template ${this.templateId}`, this.endpoint.session);
     } catch (e) {

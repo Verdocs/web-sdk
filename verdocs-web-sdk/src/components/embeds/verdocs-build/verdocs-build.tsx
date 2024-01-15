@@ -101,7 +101,7 @@ export class VerdocsBuild {
   async loadTemplate(templateId: string) {
     if (templateId) {
       console.log('Loading store', templateId);
-      this.store = await getTemplateStore(this.endpoint, templateId, true);
+      this.store = await getTemplateStore(this.endpoint, templateId, false);
       forceUpdate(this.el);
     }
   }

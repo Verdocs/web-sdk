@@ -114,7 +114,7 @@ export class VerdocsSend {
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
       if (!this.store?.state?.is_sendable) {
         console.warn(`[SEND] Template is not sendable`, this.templateId);
       }
