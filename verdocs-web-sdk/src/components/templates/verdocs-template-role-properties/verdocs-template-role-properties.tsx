@@ -119,7 +119,7 @@ export class VerdocsTemplateRoleProperties {
         this.saving = false;
         this.dirty = false;
 
-        this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+        this.store = await getTemplateStore(this.endpoint, this.templateId, false);
         // this.sortTemplateRoles();
         // this.renumberTemplateRoles();
 

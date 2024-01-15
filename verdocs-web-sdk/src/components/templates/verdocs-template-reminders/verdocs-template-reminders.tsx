@@ -67,7 +67,7 @@ export class VerdocsTemplateReminders {
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
 
       this.sendReminders = !!this.store?.state?.reminder_id;
       this.dirty = false;
@@ -95,14 +95,14 @@ export class VerdocsTemplateReminders {
 
         if (!this.store?.state?.reminder_id) {
           await createReminder(this.endpoint, this.templateId, params);
-          this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+          this.store = await getTemplateStore(this.endpoint, this.templateId, false);
         } else {
           await updateReminder(this.endpoint, this.templateId, this.store?.state.reminder_id, params);
-          this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+          this.store = await getTemplateStore(this.endpoint, this.templateId, false);
         }
       } else {
         await deleteReminder(this.endpoint, this.templateId, this.store?.state.reminder_id);
-        this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+        this.store = await getTemplateStore(this.endpoint, this.templateId, false);
       }
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store.state, event: 'attachments'});
     } catch (e) {
@@ -149,6 +149,10 @@ export class VerdocsTemplateReminders {
               }}
             />
           </div>
+
+          <p>
+            <strong>NOTE:</strong> Reminders will only be sent for up to 14 days.
+          </p>
 
           <div class="input-row">
             <label htmlFor="verdocs-first-reminder-days">Days Before First Reminder</label>

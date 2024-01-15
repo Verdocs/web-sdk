@@ -110,7 +110,7 @@ export class VerdocsTemplateRoles {
   }
 
   async reloadStore() {
-    this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+    this.store = await getTemplateStore(this.endpoint, this.templateId, false);
     this.sortTemplateRoles();
     this.renumberTemplateRoles();
   }
@@ -285,7 +285,7 @@ export class VerdocsTemplateRoles {
       .then(async r => {
         console.log('[ROLES] Created role', r);
 
-        this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+        this.store = await getTemplateStore(this.endpoint, this.templateId, false);
         this.sortTemplateRoles();
         this.renumberTemplateRoles();
 
@@ -456,7 +456,7 @@ export class VerdocsTemplateRoles {
               // this.forceRerender++;
             }}
             onDelete={async () => {
-              await getTemplateStore(this.endpoint, this.templateId, true);
+              await getTemplateStore(this.endpoint, this.templateId, false);
 
               this.renumberTemplateRoles();
               this.showingRoleDialog = null;

@@ -107,7 +107,7 @@ export class VerdocsTemplateAttachments {
       const template = await createTemplateDocument(this.endpoint, this.templateId, file, this.handleUploadProgress.bind(this));
       console.log('[ATTACHMENTS] Created attachment', template);
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
       console.log('[ATTACHMENTS] Updated template', this.store.state);
 
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store.state, event: 'attachments'});
@@ -132,7 +132,7 @@ export class VerdocsTemplateAttachments {
 
   async confirmDelete() {
     await deleteTemplateDocument(this.endpoint, this.templateId, this.confirmDeleteDocument.id);
-    this.store = await getTemplateStore(this.endpoint, this.templateId, true);
+    this.store = await getTemplateStore(this.endpoint, this.templateId, false);
     console.log('[ATTACHMENTS] New template', this.store.state);
     this.confirmDeleteDocument = null;
   }
