@@ -2,8 +2,9 @@ import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {createRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
-import {ITemplate, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
+import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
+import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
@@ -78,15 +79,14 @@ export class VerdocsTemplateRoles {
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
+  @Event({composed: true}) rolesUpdated: EventEmitter<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]}>;
 
   @State() showingRoleDialog: string | null = null;
   @State() showingSenderDialog = false;
   @State() sender = null;
 
-  sequences: number[] = [];
-
-  store: TTemplateStore | null = null;
+  templateStore: TTemplateStore | null = null;
+  roleStore: TTemplateRoleStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -102,17 +102,12 @@ export class VerdocsTemplateRoles {
         return;
       }
 
-      await this.reloadStore();
+      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
+      this.roleStore = getTemplateRoleStore(this.templateId);
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
-  }
-
-  async reloadStore() {
-    this.store = await getTemplateStore(this.endpoint, this.templateId, false);
-    this.sortTemplateRoles();
-    this.renumberTemplateRoles();
   }
 
   componentDidRender() {
@@ -124,74 +119,49 @@ export class VerdocsTemplateRoles {
           this.el.classList.add('dragging');
         }.bind(this),
         move: function handleMove(e) {
-          const oldX = +(e.target.getAttribute('posX') || 0);
-          const oldY = +(e.target.getAttribute('posY') || 0);
+          const oldX = +(e.target.getAttribute('dX') || 0);
+          const oldY = +(e.target.getAttribute('dY') || 0);
+          const sequence = +(e.target.dataset['sequence'] || 0);
           const newX = e.dx + oldX;
           const newY = e.dy + oldY;
-          e.target.setAttribute('posX', newX);
-          e.target.setAttribute('posy', newY);
-          e.target.style.transform = `translate(${newX + 100}px, ${newY - 40}px)`;
+          e.target.setAttribute('dX', newX);
+          e.target.setAttribute('dY', newY);
+          const rect = e.target.getBoundingClientRect();
+          // Note: I never did figure out exactly why this is, but if we don't offset the transform
+          // the dragged item is offset from the mouse cursor quite a bit.
+          e.target.style.transform = `translate(${newX + 80}px, ${newY - rect.height * sequence}px)`;
         }.bind(this),
         end: function handleEnd(e) {
           e.target.classList.remove('dragging');
           this.el.classList.remove('dragging');
           // console.log('end', event);
-          e.target.setAttribute('posX', 0);
-          e.target.setAttribute('posy', 0);
-          e.target.style.transform = `translate(0px, 0px)`;
+          e.target.removeAttribute('dX');
+          e.target.removeAttribute('dY');
+          e.target.style.transform = null;
         }.bind(this),
       },
     });
 
     interact('.dropzone').dropzone({
       overlap: 0.05,
-      ondrop: function handleDrop(event) {
+      ondrop: async function handleDrop(event) {
         event.target.classList.remove('active');
-
-        // target will be the recipient e.g. <div class="recipient" data-rolename="Buyer" />
-        // relatedTarget will be the drop zone, e.g. <div class="dropzone" data-order="2" data-sequence="1" />
-        // console.log(event.relatedTarget, ' was dropped into ', event.target);
-
-        // We don't use the role's own order, we rely on the fact that we sorted earlier on the order field. Many legacy
-        // records don't have order fields yet - they're all 1. That doesn't hurt the sort but it would hurt us here if it
-        // went 1..1..1 instead of 1..2..3. By using half values here it's easier to handle the drop event later. We don't
-        // need to do a fancy find/arraymove dance. We just set the dropped element to the half value, sort the result,
-        // then do a final renumber. It's not expensive to do because most flows are typically a small handful (e.g. 1-4)
-        // recipients. They never have hundreds.
 
         const roleName = event.relatedTarget.dataset.rolename;
         const targetSequence = +event.target.dataset.sequence;
         const targetOrder = +event.target.dataset.order;
 
-        const changingRole = this.store?.state?.roles?.find(role => role.name === roleName);
+        const changingRole = this.roleStore.get(roleName);
         if (changingRole) {
           // To handle the renumbering, we update the role being moved to the new values, which will be some half-interval e.g.
-          // sequence 1.5 order 1. Then we
-          changingRole.sequence = targetSequence;
-          changingRole.order = targetOrder;
+          // sequence 1.5 order 1. Then we sort/renumber the roles at each level to determine their final ordering values.
+          const newRole = {...changingRole, sequence: targetSequence, order: targetOrder};
+          this.roleStore.set(changingRole.name, newRole);
 
-          this.sortTemplateRoles();
-          this.renumberTemplateRoles();
-          this.forceRerender++;
+          await this.renumberTemplateRoles();
+          this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles: this.getSortedRoles()});
 
-          // We have to update ALL the roles to be sure each gets new proper sequence/order numbers assigned.
-          // TODO: We could optimize this by tracking "dirty" states and only update the roles that have changed. But it's a LOT more
-          //  code to do right, and since most workflows will typically only have 2-4 recipients max, it may not be worth it.
-
-          Promise.all(
-            this.store?.state?.roles.map(role =>
-              updateRole(this.endpoint, this.templateId, role.name, {
-                sequence: role.sequence,
-                order: role.order,
-              }),
-            ),
-          )
-            .then(() => {
-              console.log('[ROLES] Updated roles');
-              this.templateUpdated?.emit({event: 'updated-role', endpoint: this.endpoint, template: this.store?.state});
-              this.reloadStore().catch(e => console.log('Unknown error', e));
-            })
-            .catch(e => console.log('[ROLES] Role updates failed', e));
+          console.log('[ROLES] Updated roles', this.getSortedRoles());
         }
       }.bind(this),
       ondropactivate: e => {
@@ -217,54 +187,66 @@ export class VerdocsTemplateRoles {
     this.next?.emit();
   }
 
-  sortTemplateRoles() {
-    this.store?.state?.roles.sort((a, b) => {
-      return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
-    });
+  getSortedRoles() {
+    return Object.values(this.roleStore.state)
+      .filter(role => role !== undefined)
+      .sort((a, b) => {
+        return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
+      });
   }
 
-  extractSequenceNumbers() {
-    this.sequences = [];
-    this.store?.state?.roles.forEach(role => {
-      if (!this.sequences.includes(role.sequence)) {
-        this.sequences.push(role.sequence);
+  getSequenceNumbers() {
+    const sequences = [];
+    this.getSortedRoles().forEach(role => {
+      if (!sequences.includes(role.sequence)) {
+        sequences.push(role.sequence);
       }
     });
+    return sequences.sort((a, b) => a - b);
   }
 
-  renumberTemplateRoles() {
-    // Extract the sequence numbers because they may now be something like [2.5, 1, 2]
-    this.extractSequenceNumbers();
+  getRoleNames() {
+    const roles = this.getSortedRoles();
+    return roles.map(role => role.name);
+  }
 
-    // We need to renumber each role only ONE TIME
+  getRolesAtSequence(sequence: number) {
+    // Entries can be undefined when deleted because Stencil has no remove() operator yet for stores.
+    // See https://github.com/ionic-team/stencil-store/issues/23
+    return Object.values(this.roleStore.state).filter(role => role && role.sequence === sequence);
+  }
+
+  // When the user drags a role around, we handle placement "between" items by assigning it a half-order number
+  // e.g. 1.5 to place it between items 1 and 2, 0.5 to place it at the beginning, or last+0.5 to place it at the end.
+  // Then we re-sort the list of roles and renumber them.
+  renumberTemplateRoles() {
+    // Avoid dupe renumber attempts
     const renumbered = [];
 
     // If the user dragged an entry from below a row to above it, we end up here like [1,0]. Make sure it's [0,1] for the next operation.
-    this.sequences.sort((a, b) => a - b);
-    this.sequences.forEach((originalSequence, newSequenceIndex) => {
-      this.store?.state?.roles
-        .filter(role => role.sequence === originalSequence)
-        .forEach((role, newOrderIndex) => {
-          if (!renumbered.includes(role.name)) {
-            role.sequence = newSequenceIndex + 1;
-            role.order = newOrderIndex + 1;
-            renumbered.push(role.name);
-          }
-        });
+    const renumberRequests = [];
+    this.getSequenceNumbers().forEach((originalSequence, newSequenceIndex) => {
+      this.getRolesAtSequence(originalSequence).forEach((role, newOrderIndex) => {
+        if (!renumbered.includes(role.name)) {
+          role.sequence = newSequenceIndex + 1;
+          role.order = newOrderIndex + 1;
+          renumbered.push(role.name);
+          renumberRequests.push(updateRole(this.endpoint, this.templateId, role.name, {sequence: role.sequence, order: role.order}));
+        }
+      });
     });
 
-    // Now re-extract them to get our final result e.g. [1, 2, 3]
-    this.extractSequenceNumbers();
+    return Promise.all(renumberRequests);
   }
 
   // Look for name conflicts, because they're UGC and can be anything, regardless of order.
   getNextRoleName() {
     let name = '';
-    let nextNumber = this.store?.state?.roles.length;
+    let nextNumber = Object.keys(this.roleStore).length;
     do {
       nextNumber++;
       name = `Recipient ${nextNumber}`;
-    } while (!name || this.store?.state?.roles.some(role => role.name === name));
+    } while (!name || Object.values(this.roleStore?.state).some(role => role && role.name === name));
 
     return name;
   }
@@ -284,15 +266,9 @@ export class VerdocsTemplateRoles {
     })
       .then(async r => {
         console.log('[ROLES] Created role', r);
-
-        this.store = await getTemplateStore(this.endpoint, this.templateId, false);
-        this.sortTemplateRoles();
-        this.renumberTemplateRoles();
-
-        // this.store.state.roles = [...this.store?.state.roles, r];
-        // this.renumberTemplateRoles();
-        this.templateUpdated?.emit({event: 'created-role', endpoint: this.endpoint, template: this.store?.state});
-        this.reloadStore().catch(e => console.log('Unknown error', e));
+        this.roleStore.set(r.name, r);
+        await this.renumberTemplateRoles();
+        this.rolesUpdated?.emit({event: 'added', endpoint: this.endpoint, templateId: this.templateId, roles: this.getSortedRoles()});
       })
       .catch(e => {
         console.log('[ROLES] Error creating role', e);
@@ -301,9 +277,7 @@ export class VerdocsTemplateRoles {
 
   handleAddRole(e, sequence: number) {
     e.stopPropagation();
-
-    // We don't need to look for a unique order number because we're already working with a sorted/renumbered set by now.
-    const order = this.store?.state.roles.filter(role => role.sequence === sequence).length + 1;
+    const order = this.getRolesAtSequence(sequence).length + 1;
     const name = this.getNextRoleName();
     this.callCreateRole(name, sequence, order);
   }
@@ -317,8 +291,6 @@ export class VerdocsTemplateRoles {
   }
 
   render() {
-    console.log('[ROLES] Rendering');
-
     if (!this.endpoint.session) {
       return (
         <Host>
@@ -327,7 +299,7 @@ export class VerdocsTemplateRoles {
       );
     }
 
-    if (!this.store?.state.isLoaded) {
+    if (!this.templateStore?.state.isLoaded) {
       return (
         <Host class="loading">
           <verdocs-loader />
@@ -335,11 +307,12 @@ export class VerdocsTemplateRoles {
       );
     }
 
-    const roleNames = (this.store?.state?.roles || []).map(role => role.name);
+    const roleNames = this.getRoleNames();
+    const sequences = this.getSequenceNumbers();
 
     return (
       <Host>
-        <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off" data-r={this.store.state?.updateCount}>
+        <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
           <h5>Roles and Workflow</h5>
 
           <div class="participants">
@@ -348,7 +321,7 @@ export class VerdocsTemplateRoles {
               <div class="icon" innerHTML={startIcon} />
               <div class="row-roles">
                 <div class="sender">
-                  <span class="label">Sender:</span> {senderLabels[this.store?.state?.sender]}{' '}
+                  <span class="label">Sender:</span> {senderLabels[this.templateStore?.state?.sender]}{' '}
                   <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
                 </div>
               </div>
@@ -363,7 +336,7 @@ export class VerdocsTemplateRoles {
               </div>
             </div>
 
-            {this.sequences.map(sequence => (
+            {sequences.map(sequence => (
               <Fragment>
                 <div class="row">
                   <div class="icon" innerHTML={stepIcon} />
@@ -371,38 +344,36 @@ export class VerdocsTemplateRoles {
                     {/* The "start of sequence" drop zone */}
                     <div class="dropzone" data-order={0.5} data-sequence={sequence} />
 
-                    {this.store?.state?.roles
-                      .filter(role => role.sequence === sequence)
-                      .map(role => {
-                        const unknown = !role.email;
-                        return unknown ? (
-                          <Fragment>
-                            <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} data-rolename={role.name}>
-                              <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
-                              {role.name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
-                            </div>
+                    {this.getRolesAtSequence(sequence).map(role => {
+                      const unknown = !role.email;
+                      return unknown ? (
+                        <Fragment>
+                          <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} data-rolename={role.name} data-sequence={sequence}>
+                            <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
+                            {role.name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
+                          </div>
 
-                            {/* The "after this recipient" drop zone */}
-                            <div class="dropzone" data-order={role.order + 0.5} data-sequence={sequence} />
-                          </Fragment>
-                        ) : (
-                          <Fragment>
-                            <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(roleNames, role.name))}} data-rolename={role.name}>
-                              <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
-                              {role.full_name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
-                            </div>
+                          {/* The "after this recipient" drop zone */}
+                          <div class="dropzone" data-order={role.order + 0.5} data-sequence={sequence} />
+                        </Fragment>
+                      ) : (
+                        <Fragment>
+                          <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(roleNames, role.name))}} data-rolename={role.name} data-sequence={sequence}>
+                            <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
+                            {role.full_name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
+                          </div>
 
-                            {/* The "after this recipient" drop zone */}
-                            <div class="dropzone" data-order={role.order + 0.5} data-sequence={sequence} />
-                          </Fragment>
-                        );
-                      })}
+                          {/* The "after this recipient" drop zone */}
+                          <div class="dropzone" data-order={role.order + 0.5} data-sequence={sequence} />
+                        </Fragment>
+                      );
+                    })}
 
                     <button class="add-role" innerHTML={plusIcon} onClick={e => this.handleAddRole(e, sequence)} />
                   </div>
                 </div>
 
-                {this.sequences.length > 0 && (
+                {sequences.length > 0 && (
                   <div class="row add-sequence" data-sequence={sequence}>
                     <div class="row-roles">
                       <div class="icon" innerHTML={plusIcon} />
@@ -415,10 +386,10 @@ export class VerdocsTemplateRoles {
               </Fragment>
             ))}
 
-            <div class="row" data-sequence={this.sequences.length + 1}>
+            <div class="row" data-sequence={sequences.length + 1}>
               <div class="row-roles">
                 <div class="icon" innerHTML={plusIcon} />
-                <button class="add-step" innerHTML={plusIcon} onClick={e => this.handleAddStep(e, this.sequences.length + 1)} />
+                <button class="add-step" innerHTML={plusIcon} onClick={e => this.handleAddStep(e, sequences.length + 1)} />
               </div>
             </div>
 
@@ -453,17 +424,11 @@ export class VerdocsTemplateRoles {
             roleName={this.showingRoleDialog}
             onClose={() => {
               this.showingRoleDialog = null;
-              // this.forceRerender++;
             }}
             onDelete={async () => {
-              await getTemplateStore(this.endpoint, this.templateId, false);
-
-              this.renumberTemplateRoles();
               this.showingRoleDialog = null;
-              // this.forceRerender++;
-
-              this.templateUpdated?.emit({event: 'deleted-role', endpoint: this.endpoint, template: this.store?.state});
-              this.reloadStore().catch(e => console.log('Unknown error', e));
+              await this.renumberTemplateRoles();
+              this.rolesUpdated?.emit({event: 'deleted', endpoint: this.endpoint, templateId: this.templateId, roles: this.getSortedRoles()});
             }}
           />
         )}

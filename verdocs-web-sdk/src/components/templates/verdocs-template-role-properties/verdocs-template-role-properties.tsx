@@ -3,6 +3,8 @@ import {TRecipientType} from '@verdocs/js-sdk/Envelopes/Types';
 import {deleteRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
 import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
 import {TemplateSenderTypes, TTemplateSender} from '@verdocs/js-sdk/Templates/Types';
+import {createTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
@@ -57,12 +59,14 @@ export class VerdocsTemplateRoleProperties {
   @State() saving = false;
   @State() name = '';
   @State() type: TRecipientType = 'signer';
-  @State() fullName = '';
+  @State() full_name = '';
   @State() email = '';
   @State() phone = '';
-  @State() allowDelegation = false;
+  @State() delegator = false;
 
-  store: TTemplateStore | null = null;
+  templateStore: TTemplateStore | null = null;
+  fieldStore: TTemplateFieldStore | null = null;
+  roleStore: TTemplateRoleStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -78,27 +82,38 @@ export class VerdocsTemplateRoleProperties {
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
+      this.fieldStore = getTemplateFieldStore(this.templateId);
+      this.roleStore = createTemplateRoleStore(this.templateStore.state);
 
-      const editingRole = this.store?.state?.roles.find(role => role.name === this.roleName);
+      const editingRole = this.roleStore.get(this.roleName);
       if (editingRole) {
         this.name = editingRole.name;
         this.type = editingRole.type;
-        this.fullName = editingRole.full_name;
+        this.full_name = editingRole.full_name;
         this.email = editingRole.email;
         this.phone = editingRole.phone;
-        this.allowDelegation = editingRole.delegator;
-        console.log('[ROLES] Editing role', editingRole);
+        this.delegator = editingRole.delegator;
+        console.log('[ROLE_PROPERTIES] Editing role', editingRole);
       }
     } catch (e) {
-      console.log('[TEMPLATE ROLE PROPERTIES] Error with preview session', e);
+      console.log('[ROLE_PROPERTIES Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
   handleCancel(e) {
     e.stopPropagation();
-    this.name = this.store?.state?.name;
+    const editingRole = this.roleStore.get(this.roleName);
+    if (editingRole) {
+      this.name = editingRole.name;
+      this.type = editingRole.type;
+      this.full_name = editingRole.full_name;
+      this.email = editingRole.email;
+      this.phone = editingRole.phone;
+      this.delegator = editingRole.delegator;
+    }
+
     this.dirty = false;
     this.close?.emit();
   }
@@ -109,36 +124,23 @@ export class VerdocsTemplateRoleProperties {
     updateRole(this.endpoint, this.templateId, this.roleName, {
       name: this.name,
       type: this.type,
-      full_name: this.fullName,
+      full_name: this.full_name,
       email: this.email,
       phone: this.phone,
-      delegator: this.allowDelegation,
+      delegator: this.delegator,
     })
       .then(async r => {
         console.log('[ROLE_PROPERTIES] Update result', r);
         this.saving = false;
         this.dirty = false;
-
-        this.store = await getTemplateStore(this.endpoint, this.templateId, false);
-        // this.sortTemplateRoles();
-        // this.renumberTemplateRoles();
-
-        // const newRoles = [...this.store.state.roles];
-        // newRoles.forEach(role => {
-        //   if (role.name === this.roleName) {
-        //     role.name = this.name;
-        //     role.type = this.type;
-        //     role.full_name = this.fullName;
-        //     role.email = this.email;
-        //     role.phone = this.phone;
-        //     role.delegator = this.allowDelegation;
-        //   }
-        // });
-        // this.store.state.roles = newRoles;
+        this.roleStore.set(r.name, r);
+        if (this.roleName !== r.name) {
+          this.roleStore.set(this.roleName, undefined);
+        }
         this.close?.emit();
       })
       .catch(e => {
-        console.log('Update error', e);
+        console.log('[ROLE_PROPERTIES Update error', e);
         this.saving = false;
       });
   }
@@ -148,18 +150,17 @@ export class VerdocsTemplateRoleProperties {
     if (window.confirm('Are you sure you wish to remove this role? All associated fields will be removed as well. This action cannot be undone.')) {
       deleteRole(this.endpoint, this.templateId, this.roleName)
         .then(r => {
-          console.log('Role deleted', r);
-          this.store.state.roles = [...this.store.state.roles.filter(role => role.name !== this.roleName)];
+          delete this.roleStore.state[r.name];
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
         })
         .catch(e => {
-          console.log('Deletion error', e);
+          console.log('[ROLE_PROPERTIES Deletion error', e);
         });
     }
   }
 
   render() {
-    const hasFields = (this.store.state.fields || []).findIndex(field => field.role_name === this.roleName) !== -1;
+    const hasFields = Object.values(this.fieldStore).findIndex(field => field.role_name === this.roleName) !== -1;
 
     return (
       <Host>
@@ -167,7 +168,7 @@ export class VerdocsTemplateRoleProperties {
           <div class="dialog">
             <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
               <verdocs-text-input
-                id="verdocs-recipient-name"
+                id="verdocs-role-name"
                 label="Role Name"
                 value={this.name}
                 autocomplete="off"
@@ -177,7 +178,7 @@ export class VerdocsTemplateRoleProperties {
                     ? 'This role has fields assigned and can no longer be renamed.'
                     : 'A unique name to identify the role in the workflow. Submitted data will also be tagged with this value.'
                 }
-                placeholder="Template Name..."
+                placeholder="Role Name..."
                 onInput={(e: any) => {
                   this.name = e.target.value;
                   this.dirty = true;
@@ -204,12 +205,12 @@ export class VerdocsTemplateRoleProperties {
               <verdocs-text-input
                 id="verdocs-recipient-email"
                 label="Full Name"
-                value={this.fullName}
+                value={this.full_name}
                 autocomplete="off"
                 helpText="The recipient's full name, if it will always stay the same. Leave blank to supply this value later, when each new envelope is created from the template."
                 placeholder="Full Name..."
                 onInput={(e: any) => {
-                  this.fullName = e.target.value;
+                  this.full_name = e.target.value;
                   this.dirty = true;
                 }}
               />
@@ -244,9 +245,9 @@ export class VerdocsTemplateRoleProperties {
                 <div class="input-label">May Delegate:</div>
                 <div class="checkbox-wrapper">
                   <verdocs-checkbox
-                    checked={this.allowDelegation}
+                    checked={this.delegator}
                     onInput={(e: any) => {
-                      this.allowDelegation = e.target.checked;
+                      this.delegator = e.target.checked;
                       this.dirty = true;
                     }}
                   />

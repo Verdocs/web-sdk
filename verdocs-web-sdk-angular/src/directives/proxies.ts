@@ -125,7 +125,7 @@ export class VerdocsBuild {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated']);
+    proxyOutputs(this, this.el, ['sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated', 'rolesUpdated']);
   }
 }
 
@@ -135,6 +135,7 @@ import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdo
 import type { ICreateEnvelopeRole as IVerdocsBuildICreateEnvelopeRole } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk';
 import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk';
+import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
 
 export declare interface VerdocsBuild extends Components.VerdocsBuild {
   /**
@@ -158,6 +159,10 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the template is created by the upload step.
    */
   templateCreated: EventEmitter<CustomEvent<IVerdocsBuildIVerdocsBuild{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  /**
+   * Event fired when roles are updated in the roles step.
+   */
+  rolesUpdated: EventEmitter<CustomEvent<IVerdocsBuildIVerdocsBuild{endpoint: [object Object]; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: [object Object][]}>>;
 }
 
 
@@ -2350,14 +2355,14 @@ export class VerdocsTemplateRoles {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit', 'sdkError', 'templateUpdated']);
+    proxyOutputs(this, this.el, ['next', 'exit', 'sdkError', 'rolesUpdated']);
   }
 }
 
 
 import type { SDKError as IVerdocsTemplateRolesSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsTemplateRolesVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { ITemplate as IVerdocsTemplateRolesITemplate } from '@verdocs/web-sdk';
+import type { IRole as IVerdocsTemplateRolesIRole } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateRoles extends Components.VerdocsTemplateRoles {
   /**
@@ -2376,7 +2381,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateRolesIVerdocsTemplateRoles{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  rolesUpdated: EventEmitter<CustomEvent<IVerdocsTemplateRolesIVerdocsTemplateRoles{endpoint: [object Object]; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: [object Object][]}>>;
 }
 
 

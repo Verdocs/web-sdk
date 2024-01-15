@@ -1,5 +1,5 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {ICreateEnvelopeRole} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, Prop, h, Element, Event, EventEmitter, forceUpdate, Host, Watch, State} from '@stencil/core';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -61,6 +61,11 @@ export class VerdocsBuild {
    */
   @Event({composed: true}) templateCreated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
 
+  /**
+   * Event fired when roles are updated in the roles step.
+   */
+  @Event({composed: true}) rolesUpdated: EventEmitter<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]}>;
+
   @Watch('templateId')
   onTemplateIdChanged(newTemplateId: string) {
     console.log('Template ID changed', newTemplateId);
@@ -118,8 +123,11 @@ export class VerdocsBuild {
     this.stepChanged?.emit('roles');
   }
 
+  async handleRolesUpdated(e: any) {
+    this.templateUpdated?.emit(e.detail);
+  }
+
   async handleTemplateUpdated(e: any) {
-    console.log('tup');
     this.templateUpdated?.emit(e.detail);
   }
 
@@ -201,7 +209,7 @@ export class VerdocsBuild {
               endpoint={this.endpoint}
               onExit={e => this.handleCancel(e)}
               onNext={() => this.handleRolesNext()}
-              onTemplateUpdated={e => this.handleTemplateUpdated(e)}
+              onRolesUpdated={e => this.handleRolesUpdated(e)}
             />
           )}
 

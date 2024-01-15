@@ -2,7 +2,7 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, h} from '@stencil/core';
 import {Event, EventEmitter, Host} from '@stencil/core';
 import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
-import { getRoleNames, getTemplateStore, TTemplateStore } from "../../../utils/TemplateStore";
+import {getRoleNames, getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
@@ -60,10 +60,9 @@ export class VerdocsPreview {
 
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    // console.log('[PREVIEW] Page rendered', pageInfo);
 
     const fields = this.store?.state?.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
-    // console.log('[PREVIEW] Fields on page', fields);
+    console.log('[PREVIEW] Page rendered', pageInfo, fields);
     fields.forEach(field => renderDocumentField(field, pageInfo, getRoleIndex(getRoleNames(this.store), field.role_name), {disabled: true, editable: false, draggable: false}));
   }
 

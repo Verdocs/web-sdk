@@ -4,6 +4,7 @@ import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {ITemplate, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {createTemplateFieldStore, getTemplateFieldStore} from './TemplateFieldStore';
+import {createTemplateRoleStore, getTemplateRoleStore} from './TemplateRoleStore';
 
 export interface ITemplateStore extends ITemplate {
   isLoading: boolean;
@@ -92,6 +93,7 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
       store.state.isLoaded = true;
       store.state.isError = false;
       store.state.error = undefined;
+      createTemplateRoleStore(template);
       createTemplateFieldStore(template);
     } catch (e) {
       console.error('[TEMPLATES] Error loading template', e);
@@ -106,7 +108,8 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
     store.state.isLoading = false;
     store.state.updateCount++;
   } else {
-    // Just make sure it exists
+    // Just make sure they exist
+    getTemplateRoleStore(templateId);
     getTemplateFieldStore(templateId);
   }
 

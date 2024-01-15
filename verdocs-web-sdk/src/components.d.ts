@@ -2334,6 +2334,10 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
+          * Event fired when roles are updated in the roles step.
+         */
+        "onRolesUpdated"?: (event: VerdocsBuildCustomEvent<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]}>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsBuildCustomEvent<SDKError>) => void;
@@ -4015,13 +4019,13 @@ declare namespace LocalJSX {
          */
         "onNext"?: (event: VerdocsTemplateRolesCustomEvent<any>) => void;
         /**
+          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onRolesUpdated"?: (event: VerdocsTemplateRolesCustomEvent<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]}>) => void;
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateRolesCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
-         */
-        "onTemplateUpdated"?: (event: VerdocsTemplateRolesCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
          */

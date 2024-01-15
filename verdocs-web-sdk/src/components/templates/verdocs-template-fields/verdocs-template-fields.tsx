@@ -6,8 +6,9 @@ import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
 import {defaultHeight, defaultWidth, getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
-import {createTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getRoleNames, getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
@@ -103,12 +104,12 @@ export class VerdocsTemplateFields {
   @State() placing: TDocumentFieldType | null = null;
   @State() showMustSelectRole = false;
   @State() selectedRoleName = '';
-  @State() rerender = 1;
 
   pageHeights: Record<number, number> = {};
 
   templateStore: TTemplateStore | null = null;
   fieldStore: TTemplateFieldStore | null = null;
+  roleStore: TTemplateRoleStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -125,7 +126,8 @@ export class VerdocsTemplateFields {
       }
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
-      this.fieldStore = createTemplateFieldStore(this.templateStore.state);
+      this.fieldStore = getTemplateFieldStore(this.templateId);
+      this.roleStore = getTemplateRoleStore(this.templateId);
 
       this.selectedRoleName = this.templateStore?.state?.roles?.[0]?.name || '';
     } catch (e) {
@@ -148,7 +150,7 @@ export class VerdocsTemplateFields {
 
   componentWillUpdate() {
     // If a new role was added and there were none yet so far, or the "selected" role was deleted, reset our selection
-    if (!this.selectedRoleName || !(this.templateStore?.state?.roles || []).find(role => role.name === this.selectedRoleName)) {
+    if (!this.selectedRoleName || !Object.values(this.roleStore).find(role => role && role.name === this.selectedRoleName)) {
       this.selectedRoleName = this.templateStore?.state?.roles?.[0]?.name || '';
       console.log('[FIELDS] Selected new role', this.selectedRoleName);
     }
@@ -164,7 +166,6 @@ export class VerdocsTemplateFields {
 
   async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
     console.log('[FIELDS] handleFieldChange', field, e, optionId);
-    this.rerender++;
   }
 
   handleFieldSettingsChange(pageInfo: any, field: any, el: any, newFieldData: any, oldName: string) {
@@ -176,8 +177,6 @@ export class VerdocsTemplateFields {
     this.selectedRoleName = field.role_name;
     el.setAttribute('roleindex', getRoleIndex(getRoleNames(this.templateStore), field.role_name));
     el.field = this.fieldStore.get(field.name);
-    this.rerender++;
-    el.setAttribute('rerender', this.rerender);
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
 
     // We do this to avoid dupes if the field gets renamed.
@@ -197,18 +196,13 @@ export class VerdocsTemplateFields {
   }
 
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
-    // console.log('afa', field);
     el.addEventListener('input', e => this.handleFieldChange(field, e));
     el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, el, e.detail.field, e.detail.fieldName));
-    // el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, roleIndex, el, e.detail.field));
-
     el.addEventListener('deleted', () => {
       console.log('[FIELDS] Deleted', this, field);
       el.remove();
-      this.rerender++;
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
     });
-
     el.setAttribute('templateid', this.templateId);
     el.setAttribute('fieldname', field.name);
     el.setAttribute('roleindex', roleIndex);
@@ -226,7 +220,10 @@ export class VerdocsTemplateFields {
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
-    const fields = Object.values(this.fieldStore.state).filter((field: ITemplateField) => field.page_sequence === pageInfo.pageNumber);
+    // Entries can be undefined when deleted because Stencil has no remove() operator yet for stores.
+    // See https://github.com/ionic-team/stencil-store/issues/23
+    const fields = Object.values(this.fieldStore.state).filter((field: ITemplateField) => field && field.page_sequence === pageInfo.pageNumber);
+    console.log('[FIELDS] Page rendered', pageInfo, fields);
     fields.forEach((field: ITemplateField) => this.reRenderField(field, pageInfo.pageNumber));
   }
 
@@ -334,7 +331,7 @@ export class VerdocsTemplateFields {
     do {
       fieldName = `${type}P${pageNumber}-${i}`;
       i++;
-    } while (Object.values(this.fieldStore.state).some(field => field.name === fieldName));
+    } while (Object.values(this.fieldStore.state).some(field => field && field.name === fieldName));
 
     return fieldName;
   }
@@ -483,16 +480,12 @@ export class VerdocsTemplateFields {
       );
     }
 
-    const selectableRoles = this.templateStore?.state?.roles.map(role => ({value: role.name, label: role.name}));
+    const selectableRoles = Object.values(this.roleStore)
+      .filter(role => role !== undefined)
+      .map(role => ({value: role.name, label: role.name}));
 
     return (
-      <Host
-        class={this.placing ? {[`placing-${this.placing}`]: true} : {}}
-        data-r={this.rerender}
-        onSubmit={() => {
-          // console.log('onSubmit');
-        }}
-      >
+      <Host class={this.placing ? {[`placing-${this.placing}`]: true} : {}} onSubmit={() => {}}>
         <div id="verdocs-template-fields-toolbar">
           <div class="add-for">Add field:</div>
           <verdocs-select-input value={this.selectedRoleName} options={selectableRoles} onInput={(e: any) => (this.selectedRoleName = e.target.value)} />
@@ -552,7 +545,7 @@ export class VerdocsTemplateFields {
         {this.showMustSelectRole && (
           <verdocs-ok-dialog
             heading="Unable to add field"
-            message={this.templateStore?.state?.roles?.length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
+            message={Object.keys(this.roleStore).length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
             onNext={() => (this.showMustSelectRole = false)}
           />
         )}
