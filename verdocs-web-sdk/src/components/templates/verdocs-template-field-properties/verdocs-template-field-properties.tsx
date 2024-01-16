@@ -2,7 +2,8 @@ import uuidv4 from 'uuid-browser';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {deleteField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {createTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
+import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
+import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
@@ -90,6 +91,7 @@ export class VerdocsTemplateFieldProperties {
 
   templateStore: TTemplateStore | null = null;
   fieldStore: TTemplateFieldStore | null = null;
+  roleStore: TTemplateRoleStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -111,9 +113,9 @@ export class VerdocsTemplateFieldProperties {
       }
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId);
-      createTemplateFieldStore(this.templateStore.state);
+      this.fieldStore = await getTemplateFieldStore(this.templateId);
+      this.roleStore = await getTemplateRoleStore(this.templateId);
 
-      this.fieldStore = await createTemplateFieldStore(this.templateStore.state);
       // console.log('tfs', this.fieldStore?.state);
       const field = this.fieldStore.get('fields').find(field => field.name === this.fieldName);
       // console.log('gf', field);
@@ -342,7 +344,7 @@ export class VerdocsTemplateFieldProperties {
             <div class="input-label">Role:</div>
             <verdocs-select-input
               value={this.roleName}
-              options={this.templateStore.state?.roles.map(role => ({label: role.name, value: role.name}))}
+              options={this.roleStore.state?.roles.map(role => ({label: role.name, value: role.name}))}
               onInput={(e: any) => {
                 this.roleName = e.target.value;
                 this.dirty = true;
