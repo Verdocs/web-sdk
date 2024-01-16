@@ -129,7 +129,8 @@ export class VerdocsTemplateFields {
       this.fieldStore = getTemplateFieldStore(this.templateId);
       this.roleStore = getTemplateRoleStore(this.templateId);
 
-      this.selectedRoleName = this.templateStore?.state?.roles?.[0]?.name || '';
+      this.selectedRoleName = this.roleStore.get('roles')?.[0]?.name || '';
+      console.log('Sel role', this.selectedRoleName);
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -150,8 +151,9 @@ export class VerdocsTemplateFields {
 
   componentWillUpdate() {
     // If a new role was added and there were none yet so far, or the "selected" role was deleted, reset our selection
-    if (!this.selectedRoleName || !Object.values(this.roleStore).find(role => role && role.name === this.selectedRoleName)) {
-      this.selectedRoleName = this.templateStore?.state?.roles?.[0]?.name || '';
+    const roles = this.roleStore.get('roles');
+    if (!this.selectedRoleName || !roles.find(role => role && role.name === this.selectedRoleName)) {
+      this.selectedRoleName = roles[0]?.name || '';
       console.log('[FIELDS] Selected new role', this.selectedRoleName);
     }
   }
@@ -426,7 +428,7 @@ export class VerdocsTemplateFields {
       const saved = await createField(this.endpoint, this.templateId, field);
       console.log('[FIELDS] Saved field', saved);
 
-      this.fieldStore.set('fields', [...this.fieldStore.state.fields, saved]);
+      this.fieldStore.set('fields', [...this.fieldStore.get('fields'), saved]);
       this.placing = null;
 
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
@@ -514,7 +516,7 @@ export class VerdocsTemplateFields {
         {this.showMustSelectRole && (
           <verdocs-ok-dialog
             heading="Unable to add field"
-            message={Object.keys(this.roleStore).length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
+            message={this.roleStore.get('roles').length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
             onNext={() => (this.showMustSelectRole = false)}
           />
         )}
