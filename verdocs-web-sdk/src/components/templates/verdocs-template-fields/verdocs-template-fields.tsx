@@ -451,9 +451,7 @@ export class VerdocsTemplateFields {
       );
     }
 
-    const selectableRoles = Object.values(this.roleStore)
-      .filter(role => role !== undefined)
-      .map(role => ({value: role.name, label: role.name}));
+    const selectableRoles = this.roleStore.get('roles').map(role => ({value: role.name, label: role.name}));
 
     return (
       <Host class={this.placing ? {[`placing-${this.placing}`]: true} : {}} onSubmit={() => {}}>
