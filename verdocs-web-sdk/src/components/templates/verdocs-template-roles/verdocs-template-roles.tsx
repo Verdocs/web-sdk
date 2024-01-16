@@ -4,7 +4,7 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {createRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
 import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
-import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import {getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
@@ -122,6 +122,7 @@ export class VerdocsTemplateRoles {
           const oldX = +(e.target.getAttribute('dX') || 0);
           const oldY = +(e.target.getAttribute('dY') || 0);
           const sequence = +(e.target.dataset['sequence'] || 0);
+          const order = +(e.target.dataset['order'] || 0);
           const newX = e.dx + oldX;
           const newY = e.dy + oldY;
           e.target.setAttribute('dX', newX);
@@ -129,7 +130,8 @@ export class VerdocsTemplateRoles {
           const rect = e.target.getBoundingClientRect();
           // Note: I never did figure out exactly why this is, but if we don't offset the transform
           // the dragged item is offset from the mouse cursor quite a bit.
-          e.target.style.transform = `translate(${newX + 80}px, ${newY - rect.height * sequence}px)`;
+          console.log('w', rect.width);
+          e.target.style.transform = `translate(${newX + rect.width - (order + 1)}px, ${newY - rect.height * sequence}px)`;
         }.bind(this),
         end: function handleEnd(e) {
           e.target.classList.remove('dragging');
@@ -144,25 +146,18 @@ export class VerdocsTemplateRoles {
 
     interact('.dropzone').dropzone({
       overlap: 0.05,
-      ondrop: async function handleDrop(event) {
+      ondrop: async function onDrop(event) {
+        console.log('dropped', event.target.classList);
         event.target.classList.remove('active');
 
         const roleName = event.relatedTarget.dataset.rolename;
         const targetSequence = +event.target.dataset.sequence;
         const targetOrder = +event.target.dataset.order;
+        updateStoreRole(this.roleStore, roleName, {sequence: targetSequence, order: targetOrder});
+        await this.renumberTemplateRoles();
 
-        const changingRole = this.roleStore.get(roleName);
-        if (changingRole) {
-          // To handle the renumbering, we update the role being moved to the new values, which will be some half-interval e.g.
-          // sequence 1.5 order 1. Then we sort/renumber the roles at each level to determine their final ordering values.
-          const newRole = {...changingRole, sequence: targetSequence, order: targetOrder};
-          this.roleStore.set(changingRole.name, newRole);
-
-          await this.renumberTemplateRoles();
-          this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles: this.getSortedRoles()});
-
-          console.log('[ROLES] Updated roles', this.getSortedRoles());
-        }
+        console.log('[ROLES] Updated roles', this.getSortedRoles());
+        this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles: this.getSortedRoles()});
       }.bind(this),
       ondropactivate: e => {
         e.target.classList.add('visible');
@@ -188,11 +183,9 @@ export class VerdocsTemplateRoles {
   }
 
   getSortedRoles() {
-    return Object.values(this.roleStore.state)
-      .filter(role => role !== undefined)
-      .sort((a, b) => {
-        return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
-      });
+    return this.roleStore.state.roles.sort((a, b) => {
+      return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
+    });
   }
 
   getSequenceNumbers() {
@@ -213,13 +206,14 @@ export class VerdocsTemplateRoles {
   getRolesAtSequence(sequence: number) {
     // Entries can be undefined when deleted because Stencil has no remove() operator yet for stores.
     // See https://github.com/ionic-team/stencil-store/issues/23
-    return Object.values(this.roleStore.state).filter(role => role && role.sequence === sequence);
+    return this.roleStore.state.roles.filter(role => role && role.sequence === sequence);
   }
 
   // When the user drags a role around, we handle placement "between" items by assigning it a half-order number
   // e.g. 1.5 to place it between items 1 and 2, 0.5 to place it at the beginning, or last+0.5 to place it at the end.
   // Then we re-sort the list of roles and renumber them.
   renumberTemplateRoles() {
+    console.log('Renumbering roles', this.getSequenceNumbers(), JSON.stringify(this.roleStore.state));
     // Avoid dupe renumber attempts
     const renumbered = [];
 
@@ -241,12 +235,13 @@ export class VerdocsTemplateRoles {
 
   // Look for name conflicts, because they're UGC and can be anything, regardless of order.
   getNextRoleName() {
+    console.log('Getting next role name', JSON.stringify(this.roleStore.state));
     let name = '';
-    let nextNumber = Object.keys(this.roleStore).length;
+    let nextNumber = Object.keys(this.roleStore.state).length - 1;
     do {
       nextNumber++;
       name = `Recipient ${nextNumber}`;
-    } while (!name || Object.values(this.roleStore?.state).some(role => role && role.name === name));
+    } while (!name || this.roleStore.state.roles.some(role => role && role.name === name));
 
     return name;
   }
@@ -266,7 +261,7 @@ export class VerdocsTemplateRoles {
     })
       .then(async r => {
         console.log('[ROLES] Created role', r);
-        this.roleStore.set(r.name, r);
+        this.roleStore.set('roles', [...this.roleStore.state.roles, r]);
         await this.renumberTemplateRoles();
         this.rolesUpdated?.emit({event: 'added', endpoint: this.endpoint, templateId: this.templateId, roles: this.getSortedRoles()});
       })
@@ -307,8 +302,10 @@ export class VerdocsTemplateRoles {
       );
     }
 
+    console.log('Rendering roles', this.roleStore.get('roles'));
     const roleNames = this.getRoleNames();
     const sequences = this.getSequenceNumbers();
+    console.log('Rendering', roleNames, sequences);
 
     return (
       <Host>
@@ -348,7 +345,13 @@ export class VerdocsTemplateRoles {
                       const unknown = !role.email;
                       return unknown ? (
                         <Fragment>
-                          <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} data-rolename={role.name} data-sequence={sequence}>
+                          <div
+                            class="recipient"
+                            style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}}
+                            data-rolename={role.name}
+                            data-sequence={sequence}
+                            data-order={role.order}
+                          >
                             <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
                             {role.name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
                           </div>
@@ -358,7 +361,13 @@ export class VerdocsTemplateRoles {
                         </Fragment>
                       ) : (
                         <Fragment>
-                          <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(roleNames, role.name))}} data-rolename={role.name} data-sequence={sequence}>
+                          <div
+                            class="recipient"
+                            style={{borderColor: getRGBA(getRoleIndex(roleNames, role.name))}}
+                            data-rolename={role.name}
+                            data-sequence={sequence}
+                            data-order={role.order}
+                          >
                             <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
                             {role.full_name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
                           </div>

@@ -102,7 +102,7 @@ export class VerdocsFieldDate {
   }
 
   componentDidLoad() {
-    const field = this.fieldStore.get(this.fieldname);
+    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
     const {result} = getFieldSettings(field);
 
     flatpickr('#' + this.containerId, {
@@ -142,7 +142,7 @@ export class VerdocsFieldDate {
 
   // NOTE: We don't use a "date" field here because browsers vary widely in their formatting of it.
   render() {
-    const field = this.fieldStore.get(this.fieldname);
+    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
     if (!field) {
       return <Fragment />;
     }

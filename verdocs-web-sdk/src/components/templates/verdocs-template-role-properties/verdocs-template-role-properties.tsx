@@ -3,7 +3,7 @@ import {TRecipientType} from '@verdocs/js-sdk/Envelopes/Types';
 import {deleteRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
 import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
 import {TemplateSenderTypes, TTemplateSender} from '@verdocs/js-sdk/Templates/Types';
-import {createTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import {createTemplateRoleStore, deleteStoreRole, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
@@ -86,7 +86,7 @@ export class VerdocsTemplateRoleProperties {
       this.fieldStore = getTemplateFieldStore(this.templateId);
       this.roleStore = createTemplateRoleStore(this.templateStore.state);
 
-      const editingRole = this.roleStore.get(this.roleName);
+      const editingRole = this.roleStore.state.roles.find(role => role.name === this.roleName);
       if (editingRole) {
         this.name = editingRole.name;
         this.type = editingRole.type;
@@ -104,7 +104,7 @@ export class VerdocsTemplateRoleProperties {
 
   handleCancel(e) {
     e.stopPropagation();
-    const editingRole = this.roleStore.get(this.roleName);
+    const editingRole = this.roleStore.state.roles.find(role => role.name === this.roleName);
     if (editingRole) {
       this.name = editingRole.name;
       this.type = editingRole.type;
@@ -133,10 +133,7 @@ export class VerdocsTemplateRoleProperties {
         console.log('[ROLE_PROPERTIES] Update result', r);
         this.saving = false;
         this.dirty = false;
-        this.roleStore.set(r.name, r);
-        if (this.roleName !== r.name) {
-          this.roleStore.set(this.roleName, undefined);
-        }
+        updateStoreRole(this.roleStore, this.roleName, r);
         this.close?.emit();
       })
       .catch(e => {
@@ -149,8 +146,8 @@ export class VerdocsTemplateRoleProperties {
     e.stopPropagation();
     if (window.confirm('Are you sure you wish to remove this role? All associated fields will be removed as well. This action cannot be undone.')) {
       deleteRole(this.endpoint, this.templateId, this.roleName)
-        .then(r => {
-          delete this.roleStore.state[r.name];
+        .then(() => {
+          deleteStoreRole(this.roleStore, this.roleName);
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
         })
         .catch(e => {
@@ -160,7 +157,7 @@ export class VerdocsTemplateRoleProperties {
   }
 
   render() {
-    const hasFields = Object.values(this.fieldStore).findIndex(field => field.role_name === this.roleName) !== -1;
+    const hasFields = this.fieldStore.get('fields').some(field => field.role_name === this.roleName);
 
     return (
       <Host>

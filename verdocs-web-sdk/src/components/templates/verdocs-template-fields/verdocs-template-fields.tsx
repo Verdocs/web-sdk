@@ -7,7 +7,7 @@ import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
 import {defaultHeight, defaultWidth, getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
 import {getRoleNames, getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
@@ -168,36 +168,11 @@ export class VerdocsTemplateFields {
     console.log('[FIELDS] handleFieldChange', field, e, optionId);
   }
 
-  handleFieldSettingsChange(pageInfo: any, field: any, el: any, newFieldData: any, oldName: string) {
-    // handleFieldSettingsChange(pageInfo: any, field: any, roleIndex: number, el: any, newFieldData: any) {
-    console.log('[FIELDS] Field settings changed', oldName, field.name, newFieldData);
-    Object.assign(field, newFieldData);
-    el.field = newFieldData;
-
-    this.selectedRoleName = field.role_name;
-    el.setAttribute('roleindex', getRoleIndex(getRoleNames(this.templateStore), field.role_name));
-    el.field = this.fieldStore.get(field.name);
-    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
-
-    // We do this to avoid dupes if the field gets renamed.
-    if (field.name !== oldName) {
-      console.log('[FIELDS] Renaming field', oldName, field.name);
-      el.remove();
-      delete this.fieldStore.state[oldName];
-    } else {
-      console.log('[FIELDS] Updating existing field', field.name);
-    }
-
-    // REMINDER: Do not access el past this point! It may have been removed from the DOM.
-
-    console.log('[FIELDS] Re-rendering field', field.name, pageInfo.pageNumber, field);
-    this.fieldStore.set(field.name, field);
-    this.reRenderField(field, pageInfo.pageNumber);
-  }
-
   attachFieldAttributes(pageInfo, field, roleIndex, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('settingsChanged', e => this.handleFieldSettingsChange(pageInfo, field, el, e.detail.field, e.detail.fieldName));
+    el.addEventListener('settingsChanged', () => {
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
+    });
     el.addEventListener('deleted', () => {
       console.log('[FIELDS] Deleted', this, field);
       el.remove();
@@ -220,9 +195,7 @@ export class VerdocsTemplateFields {
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
-    // Entries can be undefined when deleted because Stencil has no remove() operator yet for stores.
-    // See https://github.com/ionic-team/stencil-store/issues/23
-    const fields = Object.values(this.fieldStore.state).filter((field: ITemplateField) => field && field.page_sequence === pageInfo.pageNumber);
+    const fields = this.fieldStore.get('fields').filter(field => field && field.page_sequence === pageInfo.pageNumber);
     console.log('[FIELDS] Page rendered', pageInfo, fields);
     fields.forEach((field: ITemplateField) => this.reRenderField(field, pageInfo.pageNumber));
   }
@@ -270,7 +243,7 @@ export class VerdocsTemplateFields {
   async handleMoveEnd(event: any) {
     const name = event.target.getAttribute('name');
     const option = +(event.target.getAttribute('option') || '0');
-    const field = this.fieldStore.get(name) as ITemplateField;
+    const field = this.fieldStore.get('fields').find(field => field.name === name);
     if (!field) {
       console.log('[FIELDS] Unable to find field', name);
       return;
@@ -319,10 +292,10 @@ export class VerdocsTemplateFields {
 
     console.log('[FIELDS] Will update', name, y, option, field);
     const newFieldData = await updateField(this.endpoint, this.templateId, name, field);
-    const pageInfo = this.cachedPageInfo[pageNumber];
-    this.handleFieldSettingsChange(pageInfo, field, event.target, newFieldData, name);
+    updateStoreField(this.fieldStore, name, newFieldData);
     event.target.removeAttribute('posX');
     event.target.removeAttribute('posY');
+    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
   }
 
   generateFieldName(type: string, pageNumber: number) {
@@ -331,7 +304,7 @@ export class VerdocsTemplateFields {
     do {
       fieldName = `${type}P${pageNumber}-${i}`;
       i++;
-    } while (Object.values(this.fieldStore.state).some(field => field && field.name === fieldName));
+    } while (this.fieldStore.get('fields').some(field => field && field.name === fieldName));
 
     return fieldName;
   }
@@ -453,12 +426,10 @@ export class VerdocsTemplateFields {
       const saved = await createField(this.endpoint, this.templateId, field);
       console.log('[FIELDS] Saved field', saved);
 
-      this.fieldStore.set(saved.name, saved);
+      this.fieldStore.set('fields', [...this.fieldStore.state.fields, saved]);
       this.placing = null;
 
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
-
-      this.reRenderField(saved, pageNumber);
     }
   }
 

@@ -157,7 +157,7 @@ export class VerdocsFieldTextarea {
   }
 
   handleResizeEnd(e) {
-    const field = this.fieldStore.get(this.fieldname);
+    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
     const newSettings = {...getFieldSettings(field)};
     const [translateX, translateY] = e.target.style.transform.split('(')[1].split(')')[0].split(',').map(parseFloat);
 
@@ -175,7 +175,7 @@ export class VerdocsFieldTextarea {
   }
 
   render() {
-    const field = this.fieldStore.get(this.fieldname);
+    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
     if (!field) {
       return <Fragment />;
     }

@@ -2,11 +2,11 @@ import uuidv4 from 'uuid-browser';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {deleteField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {createTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import {createTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
-import {SDKError} from '../../../utils/errors';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
+import {SDKError} from '../../../utils/errors';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -40,7 +40,7 @@ export class VerdocsTemplateFieldProperties {
   /**
    * The field to configure.
    */
-  @Prop() fieldName: string = '';
+  @Prop({mutable: true}) fieldName: string = '';
 
   /**
    * If specified, the properties card will have a "back" side with the help text as its content.
@@ -90,7 +90,6 @@ export class VerdocsTemplateFieldProperties {
 
   templateStore: TTemplateStore | null = null;
   fieldStore: TTemplateFieldStore | null = null;
-  watcher: any = null;
 
   async componentWillLoad() {
     try {
@@ -116,33 +115,13 @@ export class VerdocsTemplateFieldProperties {
 
       this.fieldStore = await createTemplateFieldStore(this.templateStore.state);
       // console.log('tfs', this.fieldStore?.state);
-      const field = this.fieldStore.get(this.fieldName) as ITemplateField;
+      const field = this.fieldStore.get('fields').find(field => field.name === this.fieldName);
       // console.log('gf', field);
       if (!field) {
         console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in fields`);
       } else {
         console.log('props', field);
       }
-
-      this.watcher = this.fieldStore.onChange(this.fieldName, (field: ITemplateField) => {
-        console.log('Field changed', field);
-        // this.type = field.type;
-        // this.name = field.name;
-        // this.label = field.label;
-        // this.group = field.name;
-        // this.roleName = field.role_name;
-        // this.required = field.required;
-        // this.fieldType = field.type;
-        // // TODO: Talk about how we want to handle labels/placeholders
-        // this.placeholder = field.setting?.placeholder || '';
-        // this.value = field.setting?.result || '';
-        // this.leading = field.setting?.leading || 0;
-        // this.setting = field.setting || {};
-        // this.options = field.setting?.options || [];
-        // this.dirty = false;
-        // this.loading = false;
-      });
-      console.log('watcher', this.watcher);
 
       this.type = field.type;
       this.name = field.name;
@@ -170,7 +149,7 @@ export class VerdocsTemplateFieldProperties {
   handleCancel(e) {
     e.stopPropagation();
 
-    const field = this.fieldStore.get(this.fieldName) as ITemplateField;
+    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldName);
     if (field) {
       this.name = field.name;
       this.label = field.label;
@@ -212,10 +191,18 @@ export class VerdocsTemplateFieldProperties {
 
     console.log('FP: Will update', this.fieldName, newProperties);
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
-      .then(field => {
+      .then(updated => {
         this.dirty = false;
-        this.updateField(field);
-        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field});
+        const newFields = [
+          ...this.fieldStore.get('fields').map(field => {
+            if (field.name !== this.fieldName) {
+              return field;
+            }
+            return {...field, ...updated};
+          }),
+        ];
+        this.fieldStore.set('fields', newFields);
+        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field: updated});
         this.close?.emit();
       })
       .catch(() => {
@@ -255,10 +242,11 @@ export class VerdocsTemplateFieldProperties {
     newProperties.setting.options = [...this.options];
 
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
-      .then(field => {
+      .then(updated => {
         this.dirty = false;
-        this.updateField(field);
-        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field});
+        updateStoreField(this.fieldStore, this.fieldName, updated);
+        this.fieldName = updated.name;
+        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field: updated});
         this.close?.emit();
       })
       .catch(() => {
@@ -266,18 +254,15 @@ export class VerdocsTemplateFieldProperties {
       });
   }
 
-  updateField(newField) {
-    const oldField = this.fieldStore.get(this.fieldName) || {};
-    console.log('Updating field', this.fieldName, newField);
-    Object.assign(oldField, newField);
-  }
-
   async handleDelete(e) {
     e.stopPropagation();
     if (window.confirm('Are you sure you wish to remove this field? This action cannot be undone.')) {
       deleteField(this.endpoint, this.templateId, this.fieldName)
         .then(() => {
-          this.fieldStore.set(this.fieldName, undefined);
+          this.fieldStore.set(
+            'fields',
+            this.fieldStore.get('fields').filter(field => field.name !== this.fieldName),
+          );
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
         })
         .catch(e => {
@@ -297,7 +282,7 @@ export class VerdocsTemplateFieldProperties {
     }
 
     // This is meant to be a companion for larger visual experiences so we just go blank on errors for now.
-    if (!this.endpoint.session || !this.fieldStore.get(this.fieldName)) {
+    if (!this.endpoint.session || !this.fieldStore.get('fields').some(field => field.name === this.fieldName)) {
       return <Host class="empty" />;
     }
 

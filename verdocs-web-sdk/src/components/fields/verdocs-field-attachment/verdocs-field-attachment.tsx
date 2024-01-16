@@ -129,7 +129,7 @@ export class VerdocsFieldAttachment {
   }
 
   render() {
-    const field = this.fieldStore.get(this.fieldname);
+    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
     if (!field) {
       return <Fragment />;
     }
