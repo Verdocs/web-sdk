@@ -1,5 +1,6 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, h} from '@stencil/core';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {renderDocumentField} from '../../../utils/utils';
@@ -35,6 +36,7 @@ export class VerdocsPreview {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   templateStore: TTemplateStore | null = null;
+  fieldStore: TTemplateFieldStore | null = null;
   roleStore: TTemplateRoleStore | null = null;
 
   async componentWillLoad() {
@@ -52,9 +54,10 @@ export class VerdocsPreview {
       }
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
+      this.fieldStore = getTemplateFieldStore(this.templateId);
       this.roleStore = getTemplateRoleStore(this.templateId);
 
-      console.log(`[PREVIEW] Loading template ${this.templateId}`, this.endpoint.session);
+      console.log('[PREVIEW] Loadied template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
     } catch (e) {
       console.log('[PREVIEW] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
