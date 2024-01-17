@@ -106,6 +106,7 @@ export class VerdocsTemplateRoles {
         .then(ts => {
           this.templateStore = ts;
           this.roleStore = getTemplateRoleStore(this.templateId);
+          console.log('RS', this.roleStore?.state);
           this.roleStore.onChange('roles', roles => {
             console.log('[ROLES] Roles changed', {roles});
             this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles});
