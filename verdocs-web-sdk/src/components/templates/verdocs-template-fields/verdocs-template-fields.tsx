@@ -106,6 +106,7 @@ export class VerdocsTemplateFields {
   @State() placing: TDocumentFieldType | null = null;
   @State() showMustSelectRole = false;
   @State() selectedRoleName = '';
+  @State() loading = true;
 
   pageHeights: Record<number, number> = {};
 
@@ -127,17 +128,27 @@ export class VerdocsTemplateFields {
         return;
       }
 
-      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, true);
-      this.fieldStore = getTemplateFieldStore(this.templateId);
-      this.roleStore = getTemplateRoleStore(this.templateId);
+      getTemplateStore(this.endpoint, this.templateId, true)
+        .then(ts => {
+          this.templateStore = ts;
+          console.log('[PREVIEW] Loaded Template Store', ts.state);
+          this.fieldStore = getTemplateFieldStore(this.templateId);
+          this.roleStore = getTemplateRoleStore(this.templateId);
+          this.selectedRoleName = this.roleStore.get('roles')?.[0]?.name || '';
+          console.log('Sel role', this.selectedRoleName);
+          console.log('RS', this.roleStore?.state);
+          console.log('FS', this.fieldStore?.state);
+          console.log('[PREVIEW] Loaded template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
+          this.loading = false;
 
-      this.selectedRoleName = this.roleStore.get('roles')?.[0]?.name || '';
-      console.log('Sel role', this.selectedRoleName);
-
-      this.fieldStore.onChange('fields', fields => {
-        console.log('[FIELDS] Fields changed', {fields});
-        this.fieldsUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, fields});
-      });
+          this.fieldStore.onChange('fields', fields => {
+            console.log('[FIELDS] Fields changed', {fields});
+            this.fieldsUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, fields});
+          });
+        })
+        .catch(e => {
+          console.log(e);
+        });
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -453,8 +464,7 @@ export class VerdocsTemplateFields {
       );
     }
 
-    // TODO: Render a better error
-    if (!this.templateStore?.state.isLoaded) {
+    if (this.loading || !this.templateStore?.state.isLoaded) {
       return (
         <Host>
           <verdocs-loader />
