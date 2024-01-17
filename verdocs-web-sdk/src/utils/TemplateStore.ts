@@ -63,20 +63,11 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
 
   const store = templateStores[templateId];
 
-  // NOTE: If we need it, store.use() returns an unsubcribe function
-  // See https://github.com/ionic-team/stencil-store#storeusesubscriptions
-  store.use({
-    // get: key => console.log(`Someone's reading prop ${key}`),
-    // set: (key, newValue, oldValue) => console.log(`Prop ${key} changed from ${oldValue} to ${newValue}`),
-    reset: () => console.debug('[TEMPLATES] Store got reset'),
-    dispose: () => console.debug('[TEMPLATES] Store got disposed'),
-  });
-
   // TODO: This can create a race condition if two components call this at the same time.
   //  For now we can probably defer doing something smart here because it's only a
   //  double-load issue.
   if (created || forceReload) {
-    console.debug('[TEMPLATES] Reloading template', {templateId, created, forceReload});
+    console.debug('[TEMPLATES] Loading template', {templateId, created, forceReload});
 
     store.state.isLoading = true;
     store.state.isLoaded = false;

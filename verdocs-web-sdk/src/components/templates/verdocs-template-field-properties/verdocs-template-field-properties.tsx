@@ -266,6 +266,7 @@ export class VerdocsTemplateFieldProperties {
             this.fieldStore.get('fields').filter(field => field.name !== this.fieldName),
           );
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
+          document.getElementById('verdocs-template-field-properties')?.remove();
         })
         .catch(e => {
           console.log('[FIELD PROPERTIES] Deletion error', e);
@@ -303,7 +304,7 @@ export class VerdocsTemplateFieldProperties {
 
     // console.log('tfp', this.templateId, this.fieldName);
     return (
-      <Host>
+      <Host id="verdocs-template-field-properties">
         <h6>
           {capitalize(this.fieldType.replace(/_/g, ' '))} Settings <div style={{flex: '1'}} />
           {this.helpText && <div class="help-icon" innerHTML={HelpIcon} onClick={() => (this.showingHelp = true)} />}

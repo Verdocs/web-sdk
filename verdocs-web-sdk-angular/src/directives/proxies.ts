@@ -2196,7 +2196,7 @@ export class VerdocsTemplateFields {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'templateUpdated']);
+    proxyOutputs(this, this.el, ['sdkError', 'templateUpdated', 'fieldsUpdated']);
   }
 }
 
@@ -2204,6 +2204,7 @@ export class VerdocsTemplateFields {
 import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsTemplateFieldsVerdocsEndpoint } from '@verdocs/web-sdk';
 import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsTemplateFieldsITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
   /**
@@ -2215,6 +2216,8 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
   templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateFieldsIVerdocsTemplateFields{endpoint: [object Object]; template: [object Object]; event: string}>>;
+
+  fieldsUpdated: EventEmitter<CustomEvent<IVerdocsTemplateFieldsIVerdocsTemplateFields{endpoint: [object Object]; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: [object Object][]}>>;
 }
 
 

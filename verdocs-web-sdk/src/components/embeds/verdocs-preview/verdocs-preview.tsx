@@ -1,5 +1,5 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, Prop, h} from '@stencil/core';
+import {Component, Prop, h, State} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -35,6 +35,8 @@ export class VerdocsPreview {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
+  @State() loading = true;
+
   templateStore: TTemplateStore | null = null;
   fieldStore: TTemplateFieldStore | null = null;
   roleStore: TTemplateRoleStore | null = null;
@@ -53,13 +55,20 @@ export class VerdocsPreview {
         return;
       }
 
-      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
-      this.fieldStore = getTemplateFieldStore(this.templateId);
-      this.roleStore = getTemplateRoleStore(this.templateId);
-
-      console.log('RS', this.roleStore?.state);
-      console.log('FS', this.fieldStore?.state);
-      console.log('[PREVIEW] Loaded template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
+      getTemplateStore(this.endpoint, this.templateId, false)
+        .then(ts => {
+          this.templateStore = ts;
+          console.log('[PREVIEW] Loaded Template Store', ts.state);
+          this.fieldStore = getTemplateFieldStore(this.templateId);
+          this.roleStore = getTemplateRoleStore(this.templateId);
+          console.log('RS', this.roleStore?.state);
+          console.log('FS', this.fieldStore?.state);
+          console.log('[PREVIEW] Loaded template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
+          this.loading = false;
+        })
+        .catch(e => {
+          console.log(e);
+        });
     } catch (e) {
       console.log('[PREVIEW] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -75,8 +84,7 @@ export class VerdocsPreview {
   }
 
   render() {
-    // TODO: Render a better error
-    if (!this.templateStore?.state?.isLoaded) {
+    if (this.loading) {
       return (
         <Host>
           <verdocs-loader />
