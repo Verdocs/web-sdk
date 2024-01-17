@@ -127,7 +127,7 @@ export class VerdocsTemplateFields {
         return;
       }
 
-      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
+      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, true);
       this.fieldStore = getTemplateFieldStore(this.templateId);
       this.roleStore = getTemplateRoleStore(this.templateId);
 

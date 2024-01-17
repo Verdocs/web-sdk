@@ -55,7 +55,7 @@ export class VerdocsPreview {
         return;
       }
 
-      getTemplateStore(this.endpoint, this.templateId, false)
+      getTemplateStore(this.endpoint, this.templateId, true)
         .then(ts => {
           this.templateStore = ts;
           console.log('[PREVIEW] Loaded Template Store', ts.state);
