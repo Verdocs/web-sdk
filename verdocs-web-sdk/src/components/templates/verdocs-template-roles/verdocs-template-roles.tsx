@@ -83,6 +83,7 @@ export class VerdocsTemplateRoles {
   @State() showingRoleDialog: string | null = null;
   @State() showingSenderDialog = false;
   @State() sender = null;
+  @State() loading = true;
 
   templateStore: TTemplateStore | null = null;
   roleStore: TTemplateRoleStore | null = null;
@@ -101,12 +102,19 @@ export class VerdocsTemplateRoles {
         return;
       }
 
-      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
-      this.roleStore = getTemplateRoleStore(this.templateId);
-      this.roleStore.onChange('roles', roles => {
-        console.log('[ROLES] Roles changed', {roles});
-        this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles});
-      });
+      await getTemplateStore(this.endpoint, this.templateId, false)
+        .then(ts => {
+          this.templateStore = ts;
+          this.roleStore = getTemplateRoleStore(this.templateId);
+          this.roleStore.onChange('roles', roles => {
+            console.log('[ROLES] Roles changed', {roles});
+            this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles});
+            this.loading = false;
+          });
+        })
+        .catch(e => {
+          console.log(e);
+        });
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -297,7 +305,7 @@ export class VerdocsTemplateRoles {
       );
     }
 
-    if (!this.templateStore?.state.isLoaded) {
+    if (this.loading || !this.templateStore?.state.isLoaded) {
       return (
         <Host class="loading">
           <verdocs-loader />
