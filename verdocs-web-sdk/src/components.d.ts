@@ -312,14 +312,6 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -360,14 +352,6 @@ export namespace Components {
           * The index of the settings option this particular checkbox is for
          */
         "option": number;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -405,14 +389,6 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required for the field builder, passed down to the properties component.
@@ -450,14 +426,6 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -499,14 +467,6 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -541,10 +501,6 @@ export namespace Components {
         "pageNum": number;
         "pdfPages": any[];
         "recipients": any;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
         "roleName": string;
         /**
           * If set, the field will be colored using this index value to select the background color.
@@ -592,14 +548,6 @@ export namespace Components {
           * The index of the settings option this particular checkbox is for
          */
         "option": number;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -641,14 +589,6 @@ export namespace Components {
           * If set, the signature creation dialog will be initialized with this text.
          */
         "name"?: string;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -690,14 +630,6 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -739,10 +671,6 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -780,14 +708,6 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -2689,14 +2609,6 @@ declare namespace LocalJSX {
          */
         "onSettingsChanged"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
         /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
-        /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
@@ -2742,14 +2654,6 @@ declare namespace LocalJSX {
           * The index of the settings option this particular checkbox is for
          */
         "option"?: number;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
@@ -2797,14 +2701,6 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldDateCustomEvent<any>) => void;
         /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
-        /**
           * The template the field is for/from. Only required for the field builder, passed down to the properties component.
          */
         "templateid"?: string;
@@ -2850,14 +2746,6 @@ declare namespace LocalJSX {
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
@@ -2921,14 +2809,6 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
-        /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
@@ -2967,10 +2847,6 @@ declare namespace LocalJSX {
         "pageNum"?: number;
         "pdfPages"?: any[];
         "recipients"?: any;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
         "roleName"?: string;
         /**
           * If set, the field will be colored using this index value to select the background color.
@@ -3024,14 +2900,6 @@ declare namespace LocalJSX {
           * The index of the settings option this particular checkbox is for
          */
         "option"?: number;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
@@ -3087,14 +2955,6 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
         /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
-        /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
@@ -3140,14 +3000,6 @@ declare namespace LocalJSX {
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
@@ -3195,10 +3047,6 @@ declare namespace LocalJSX {
          */
         "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
         /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
@@ -3240,14 +3088,6 @@ declare namespace LocalJSX {
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
-        /**
-          * May be used to force the field to re-render.
-         */
-        "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */

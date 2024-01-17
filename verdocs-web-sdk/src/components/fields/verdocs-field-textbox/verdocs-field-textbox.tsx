@@ -70,11 +70,6 @@ export class VerdocsFieldTextbox {
   @Prop() yscale?: number = 1;
 
   /**
-   * May be used to force the field to re-render.
-   */
-  @Prop() rerender?: number = 0;
-
-  /**
    * Event fired when the field's settings are changed.
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
@@ -173,9 +168,9 @@ export class VerdocsFieldTextbox {
 
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    console.log('Rendering tb', this.fieldname, field);
     const roleIndex = getRoleIndex(this.roleStore, field.role_name);
     const backgroundColor = field['rgba'] || getRGBA(roleIndex);
-    console.log('rendering tb', field.name, roleIndex, backgroundColor);
     if (!field) {
       return <Fragment />;
     }

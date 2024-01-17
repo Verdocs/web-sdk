@@ -1,6 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment} from '@stencil/core';
+import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
@@ -50,11 +51,6 @@ export class VerdocsFieldAttachment {
   @Prop() done?: boolean = false;
 
   /**
-   * If set, the field will be colored using this index value to select the background color.
-   */
-  @Prop() roleindex?: number = 0;
-
-  /**
    * If set, the field will be be scaled horizontally by this factor.
    */
   @Prop() xscale?: number = 1;
@@ -63,11 +59,6 @@ export class VerdocsFieldAttachment {
    * If set, the field will be be scaled vertically by this factor.
    */
   @Prop() yscale?: number = 1;
-
-  /**
-   * May be used to force the field to re-render.
-   */
-  @Prop() rerender?: number = 0;
 
   /**
    * Event fired when the field's settings are changed.
@@ -121,23 +112,24 @@ export class VerdocsFieldAttachment {
   }
 
   fieldStore: TTemplateFieldStore = null;
+  roleStore: TTemplateRoleStore = null;
 
   async componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
+    this.roleStore = getTemplateRoleStore(this.templateid);
   }
 
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
+    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
     if (!field) {
       return <Fragment />;
     }
 
     const settings = getFieldSettings(field);
     let disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
     const {url} = settings;
-
-    console.log('Attachment settings', url, settings);
 
     return (
       <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>

@@ -1,6 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment} from '@stencil/core';
+import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 
@@ -53,11 +54,6 @@ export class VerdocsFieldPayment {
    */
   @Prop() yscale?: number = 1;
 
-  /**
-   * May be used to force the field to re-render.
-   */
-  @Prop() rerender?: number = 0;
-
   @Event({composed: true}) signatureComplete: EventEmitter<string>;
 
   @Event({composed: true}) initialComplete: EventEmitter<string>;
@@ -82,9 +78,12 @@ export class VerdocsFieldPayment {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   fieldStore: TTemplateFieldStore = null;
+  roleStore: TTemplateRoleStore = null;
 
   componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
+    this.roleStore = getTemplateRoleStore(this.templateid);
+
     // Load validators
     // Load fields
     // Get role names
@@ -115,14 +114,14 @@ export class VerdocsFieldPayment {
 
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
+    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
     if (!field) {
       return <Fragment />;
     }
 
     const settings = getFieldSettings(field);
     const disabled = this.disabled ?? settings.disabled ?? false;
-    console.log('Payment field', settings);
-    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
 
     return (
       <Host class={{focused: this.focused, disabled}} style={{backgroundColor}}>

@@ -1,6 +1,7 @@
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
+import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
@@ -50,16 +51,6 @@ export class VerdocsFieldInitial {
    * If set, the field is considered "done" and is drawn in a display-final-value state.
    */
   @Prop() done?: boolean = false;
-
-  /**
-   * If set, the field will be colored using this index value to select the background color.
-   */
-  @Prop() roleindex?: number = 0;
-
-  /**
-   * May be used to force the field to re-render.
-   */
-  @Prop() rerender?: number = 0;
 
   /**
    * If set, the field will be be scaled horizontally by this factor.
@@ -113,9 +104,11 @@ export class VerdocsFieldInitial {
   tempInitials: string = '';
 
   fieldStore: TTemplateFieldStore = null;
+  roleStore: TTemplateRoleStore = null;
 
   async componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
+    this.roleStore = getTemplateRoleStore(this.templateid);
   }
 
   private dialog?: any;
@@ -135,7 +128,7 @@ export class VerdocsFieldInitial {
   handleShow() {
     this.dialog = document.createElement('verdocs-initial-dialog');
     this.dialog.setAttribute('initials', this.initials);
-    this.dialog.setAttribute('roleindex', this.roleindex);
+    // this.dialog.setAttribute('roleindex', this.roleindex);
     this.dialog.addEventListener('exit', () => this.hideDialog());
     this.dialog.addEventListener('next', e => this.handleAdopt(e));
     document.body.append(this.dialog);
@@ -159,6 +152,8 @@ export class VerdocsFieldInitial {
 
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
+    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
     if (!field) {
       return <Fragment />;
     }
@@ -166,7 +161,6 @@ export class VerdocsFieldInitial {
     const settings = getFieldSettings(field);
     const value = settings.base64 || this.tempInitials;
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
       return <Host class={{done: this.done}}>{value && <img src={value} alt="Initials" />}</Host>;

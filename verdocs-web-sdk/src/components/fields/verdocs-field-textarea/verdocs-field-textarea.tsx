@@ -5,6 +5,7 @@ import {updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
@@ -59,11 +60,6 @@ export class VerdocsFieldTextarea {
   @Prop() done?: boolean = false;
 
   /**
-   * If set, the field will be colored using this index value to select the background color.
-   */
-  @Prop() roleindex?: number = 0;
-
-  /**
    * If set, the field will be be scaled horizontally by this factor.
    */
   @Prop() xscale?: number = 1;
@@ -72,11 +68,6 @@ export class VerdocsFieldTextarea {
    * If set, the field will be be scaled vertically by this factor.
    */
   @Prop() yscale?: number = 1;
-
-  /**
-   * May be used to force the field to re-render.
-   */
-  @Prop() rerender?: number = 0;
 
   @Method()
   async focusField() {
@@ -112,9 +103,11 @@ export class VerdocsFieldTextarea {
   }
 
   fieldStore: TTemplateFieldStore = null;
+  roleStore: TTemplateRoleStore = null;
 
   async componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
+    this.roleStore = getTemplateRoleStore(this.templateid);
   }
 
   componentDidRender() {
@@ -156,6 +149,10 @@ export class VerdocsFieldTextarea {
 
   handleResizeEnd(e) {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    if (!field) {
+      return <Fragment />;
+    }
+
     const newSettings = {...getFieldSettings(field)};
     const [translateX, translateY] = e.target.style.transform.split('(')[1].split(')')[0].split(',').map(parseFloat);
 
@@ -174,6 +171,8 @@ export class VerdocsFieldTextarea {
 
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
+    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
     if (!field) {
       return <Fragment />;
     }
@@ -181,7 +180,6 @@ export class VerdocsFieldTextarea {
     const settings = getFieldSettings(field);
     const disabled = this.disabled ?? settings.disabled ?? false;
     const value = settings?.result || '';
-    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
       return <Host class={{done: this.done}}>{settings.value}</Host>;

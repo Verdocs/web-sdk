@@ -3,6 +3,7 @@ import flatpickr from 'flatpickr';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
+import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
@@ -51,16 +52,6 @@ export class VerdocsFieldDate {
   @Prop() done?: boolean = false;
 
   /**
-   * If set, the field will be colored using this index value to select the background color.
-   */
-  @Prop() roleindex?: number = 0;
-
-  /**
-   * May be used to force the field to re-render.
-   */
-  @Prop() rerender?: number = 0;
-
-  /**
    * If set, the field will be be scaled horizontally by this factor.
    */
   @Prop() xscale?: number = 1;
@@ -94,9 +85,11 @@ export class VerdocsFieldDate {
   }
 
   fieldStore: TTemplateFieldStore = null;
+  roleStore: TTemplateRoleStore = null;
 
   async componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
+    this.roleStore = getTemplateRoleStore(this.templateid);
   }
 
   componentDidLoad() {
@@ -141,13 +134,14 @@ export class VerdocsFieldDate {
   // NOTE: We don't use a "date" field here because browsers vary widely in their formatting of it.
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
+    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
     if (!field) {
       return <Fragment />;
     }
 
     const settings = getFieldSettings(field);
     const disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
 
     if (this.done) {
       const formatted = settings?.result ? format(new Date(settings?.result), FORMAT_DATE) : '';
