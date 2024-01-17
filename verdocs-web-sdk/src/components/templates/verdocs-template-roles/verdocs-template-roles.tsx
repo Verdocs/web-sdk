@@ -103,6 +103,10 @@ export class VerdocsTemplateRoles {
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
       this.roleStore = getTemplateRoleStore(this.templateId);
+      this.roleStore.onChange('roles', roles => {
+        console.log('[ROLES] Roles changed', {roles});
+        this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles});
+      });
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));

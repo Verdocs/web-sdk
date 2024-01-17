@@ -57,7 +57,9 @@ export class VerdocsPreview {
       this.fieldStore = getTemplateFieldStore(this.templateId);
       this.roleStore = getTemplateRoleStore(this.templateId);
 
-      console.log('[PREVIEW] Loadied template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
+      console.log('RS', this.roleStore?.state);
+      console.log('FS', this.fieldStore?.state);
+      console.log('[PREVIEW] Loaded template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
     } catch (e) {
       console.log('[PREVIEW] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));

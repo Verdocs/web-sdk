@@ -101,6 +101,8 @@ export class VerdocsTemplateFields {
    */
   @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
 
+  @Event({composed: true}) fieldsUpdated: EventEmitter<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: ITemplateField[]}>;
+
   @State() placing: TDocumentFieldType | null = null;
   @State() showMustSelectRole = false;
   @State() selectedRoleName = '';
@@ -131,6 +133,11 @@ export class VerdocsTemplateFields {
 
       this.selectedRoleName = this.roleStore.get('roles')?.[0]?.name || '';
       console.log('Sel role', this.selectedRoleName);
+
+      this.fieldStore.onChange('fields', fields => {
+        console.log('[FIELDS] Fields changed', {fields});
+        this.fieldsUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, fields});
+      });
     } catch (e) {
       console.log('[FIELDS] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
