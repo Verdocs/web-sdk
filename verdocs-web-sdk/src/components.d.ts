@@ -743,10 +743,6 @@ export namespace Components {
           * May be used to force the field to re-render.
          */
         "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -3202,10 +3198,6 @@ declare namespace LocalJSX {
           * May be used to force the field to re-render.
          */
         "rerender"?: number;
-        /**
-          * If set, the field will be colored using this index value to select the background color.
-         */
-        "roleindex"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */

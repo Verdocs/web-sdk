@@ -9,7 +9,7 @@ import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@s
 import {IEnvelopeField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/js-sdk/Envelopes/Types';
 import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
 import {getEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import {getFieldId, getRoleIndex, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
+import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {createTemplateFieldStoreFromEnvelope} from '../../../utils/TemplateFieldStore';
 import {FORMAT_DATE, IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -486,7 +486,7 @@ export class VerdocsSign {
     }
   }
 
-  attachFieldAttributes(pageInfo, field, roleIndex, el) {
+  attachFieldAttributes(pageInfo, field, el) {
     el.addEventListener('input', (e: any) => {
       console.log('[SIGN] onfieldInput', e.detail, e.target.value);
       // These field types don't emit fieldChange. Should we standardize on that? We don't tap "input" for fields like
@@ -513,7 +513,6 @@ export class VerdocsSign {
     el.setAttribute('templateid', this.envelope.template_id);
     el.setAttribute('fieldname', field.name);
     el.setAttribute('page', pageInfo.pageNumber);
-    el.setAttribute('roleindex', roleIndex);
     el.setAttribute('xScale', pageInfo.xScale);
     el.setAttribute('yScale', pageInfo.yScale);
     el.setAttribute('initials', this.recipient ? fullNameToInitials(this.recipient.full_name) : '');
@@ -522,7 +521,7 @@ export class VerdocsSign {
 
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    const roleIndex = getRoleIndex(this.roleNames, this.recipient.role_name);
+    // const roleIndex = getRoleIndex(this.roleStore, this.recipient.role_name);
     console.log(
       'hpr',
       this.recipient,
@@ -535,15 +534,15 @@ export class VerdocsSign {
     recipientFields
       .filter(field => field.page === pageInfo.pageNumber)
       .forEach(field => {
-        const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: false, editable: false, draggable: false, done: this.isDone});
+        const el = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
         if (!el) {
           return;
         }
 
         if (Array.isArray(el)) {
-          el.map(e => this.attachFieldAttributes(pageInfo, field, roleIndex, e));
+          el.map(e => this.attachFieldAttributes(pageInfo, field, e));
         } else {
-          this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+          this.attachFieldAttributes(pageInfo, field, el);
         }
       });
 
@@ -552,20 +551,19 @@ export class VerdocsSign {
       .filter(
         r => r.role_name !== this.recipient.role_name && (r.status === RecipientStates.INVITED || r.status === RecipientStates.OPENED || r.status === RecipientStates.PENDING),
       )
-      .forEach(recipient => {
-        const otherIndex = getRoleIndex(this.roleNames, recipient.role_name);
+      .forEach(() => {
         this.getRecipientFields()
           .filter(field => field.page === pageInfo.pageNumber)
           .forEach(field => {
-            const el = renderDocumentField(field, pageInfo, otherIndex, {disabled: true, editable: false, draggable: false, done: this.isDone});
+            const el = renderDocumentField(field, pageInfo, {disabled: true, editable: false, draggable: false, done: this.isDone});
             if (!el) {
               return;
             }
 
             if (Array.isArray(el)) {
-              el.map(e => this.attachFieldAttributes(pageInfo, field, otherIndex, e));
+              el.map(e => this.attachFieldAttributes(pageInfo, field, e));
             } else {
-              this.attachFieldAttributes(pageInfo, field, otherIndex, el);
+              this.attachFieldAttributes(pageInfo, field, el);
             }
           });
       });

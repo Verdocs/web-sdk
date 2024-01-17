@@ -1,8 +1,9 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, h} from '@stencil/core';
+import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
+import {renderDocumentField} from '../../../utils/utils';
 import {Event, EventEmitter, Host} from '@stencil/core';
-import {getRoleIndex, renderDocumentField} from '../../../utils/utils';
-import {getRoleNames, getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
@@ -33,7 +34,8 @@ export class VerdocsPreview {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  store: TTemplateStore | null = null;
+  templateStore: TTemplateStore | null = null;
+  roleStore: TTemplateRoleStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -49,7 +51,8 @@ export class VerdocsPreview {
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
+      this.roleStore = getTemplateRoleStore(this.templateId);
 
       console.log(`[PREVIEW] Loading template ${this.templateId}`, this.endpoint.session);
     } catch (e) {
@@ -61,14 +64,14 @@ export class VerdocsPreview {
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
 
-    const fields = this.store?.state?.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
+    const fields = this.templateStore?.state?.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
     console.log('[PREVIEW] Page rendered', pageInfo, fields);
-    fields.forEach(field => renderDocumentField(field, pageInfo, getRoleIndex(getRoleNames(this.store), field.role_name), {disabled: true, editable: false, draggable: false}));
+    fields.forEach(field => renderDocumentField(field, pageInfo, {disabled: true, editable: false, draggable: false}));
   }
 
   render() {
     // TODO: Render a better error
-    if (!this.store?.state?.isLoaded) {
+    if (!this.templateStore?.state?.isLoaded) {
       return (
         <Host>
           <verdocs-loader />
@@ -76,7 +79,7 @@ export class VerdocsPreview {
       );
     }
 
-    const pages = [...this.store?.state?.pages];
+    const pages = [...this.templateStore?.state?.pages];
     pages.sort((a, b) => a.sequence - b.sequence);
 
     return (

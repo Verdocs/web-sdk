@@ -4,9 +4,8 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {createRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
 import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
-import {getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
+import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
-import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
 
 const senderLabels: Record<TemplateSenderTypes, string> = {
@@ -347,7 +346,7 @@ export class VerdocsTemplateRoles {
                         <Fragment>
                           <div
                             class="recipient"
-                            style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}}
+                            style={{backgroundColor: getRGBA(getRoleIndex(this.roleStore, role.name))}}
                             data-rolename={role.name}
                             data-sequence={sequence}
                             data-order={role.order}
@@ -363,7 +362,7 @@ export class VerdocsTemplateRoles {
                         <Fragment>
                           <div
                             class="recipient"
-                            style={{borderColor: getRGBA(getRoleIndex(roleNames, role.name))}}
+                            style={{borderColor: getRGBA(getRoleIndex(this.roleStore, role.name))}}
                             data-rolename={role.name}
                             data-sequence={sequence}
                             data-order={role.order}

@@ -40,3 +40,6 @@ export const deleteStoreRole = (store: TTemplateRoleStore, name: string) => {
   const newRoles = [...store.get('roles').filter(field => field.name !== name)];
   store.set('roles', newRoles);
 };
+
+export const getRoleNames = (store: TTemplateRoleStore) => store.get('roles').map(role => role.name);
+export const getRoleIndex = (store: TTemplateRoleStore, name: string) => getRoleNames(store).findIndex(roleName => roleName === name);

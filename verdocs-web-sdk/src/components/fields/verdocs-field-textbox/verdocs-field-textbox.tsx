@@ -4,11 +4,10 @@ import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
+import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
-
-const settingsIcon =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.84 1.804A1 1 0 0 1 8.82 1h2.36a1 1 0 0 1 .98.804l.331 1.652a6.993 6.993 0 0 1 1.929 1.115l1.598-.54a1 1 0 0 1 1.186.447l1.18 2.044a1 1 0 0 1-.205 1.251l-1.267 1.113a7.047 7.047 0 0 1 0 2.228l1.267 1.113a1 1 0 0 1 .206 1.25l-1.18 2.045a1 1 0 0 1-1.187.447l-1.598-.54a6.993 6.993 0 0 1-1.929 1.115l-.33 1.652a1 1 0 0 1-.98.804H8.82a1 1 0 0 1-.98-.804l-.331-1.652a6.993 6.993 0 0 1-1.929-1.115l-1.598.54a1 1 0 0 1-1.186-.447l-1.18-2.044a1 1 0 0 1 .205-1.251l1.267-1.114a7.05 7.05 0 0 1 0-2.227L1.821 7.773a1 1 0 0 1-.206-1.25l1.18-2.045a1 1 0 0 1 1.187-.447l1.598.54A6.992 6.992 0 0 1 7.51 3.456l.33-1.652ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" /></svg>';
+import {SettingsIcon} from '../../../utils/Icons';
 
 /**
  * Display a text input field.
@@ -61,11 +60,6 @@ export class VerdocsFieldTextbox {
   @Prop() done?: boolean = false;
 
   /**
-   * If set, the field will be colored using this index value to select the background color.
-   */
-  @Prop() roleindex?: number = 0;
-
-  /**
    * If set, the field will be be scaled horizontally by this factor.
    */
   @Prop() xscale?: number = 1;
@@ -114,9 +108,11 @@ export class VerdocsFieldTextbox {
   }
 
   fieldStore: TTemplateFieldStore = null;
+  roleStore: TTemplateRoleStore = null;
 
   async componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
+    this.roleStore = getTemplateRoleStore(this.templateid);
   }
 
   componentDidRender() {
@@ -177,13 +173,15 @@ export class VerdocsFieldTextbox {
 
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
+    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
+    console.log('rendering tb', field.name, roleIndex, backgroundColor);
     if (!field) {
       return <Fragment />;
     }
 
     const settings = getFieldSettings(field);
     let disabled = this.disabled ?? settings.disabled ?? false;
-    const backgroundColor = field['rgba'] || getRGBA(this.roleindex);
     const value = settings?.result || '';
     const width = settings.width || 150;
     // TODO: This is an outdated technique from the old system. We should compute it.
@@ -213,7 +211,7 @@ export class VerdocsFieldTextbox {
               id={`verdocs-settings-panel-trigger-${field.name}`}
               style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
               class="settings-icon"
-              innerHTML={settingsIcon}
+              innerHTML={SettingsIcon}
               onClick={(e: any) => {
                 e.stopPropagation();
                 this.showingProperties = !this.showingProperties;

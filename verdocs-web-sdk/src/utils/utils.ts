@@ -115,7 +115,7 @@ export const updateDocumentFieldValue = (field: ITemplateField | IEnvelopeField)
   }
 };
 
-export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docPage: IDocumentPageInfo, roleIndex: number, fieldOptions: IFieldOptions) => {
+export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docPage: IDocumentPageInfo, fieldOptions: IFieldOptions) => {
   // console.log('rdf', field);
   const {disabled = false, editable = false, draggable = false, done = false} = fieldOptions;
   // console.log('[renderDocumentField]', field, docPage, roleIndex, fieldOptions);
@@ -152,7 +152,6 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       const el: any = document.createElement(`verdocs-field-${type}`);
       el.field = field;
       el.setAttribute('id', id);
-      el.setAttribute('roleIndex', roleIndex);
       el.setAttribute('fieldname', field.name);
       el.setAttribute('templateid', 'template_id' in field ? field.template_id : 'PREVIEW');
 
@@ -193,7 +192,6 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       const cbEl: any = document.createElement(`verdocs-field-checkbox`);
       cbEl.field = field;
       cbEl.setAttribute('id', id);
-      cbEl.setAttribute('roleIndex', roleIndex);
       cbEl.setAttribute('option', 0);
       if (disabled) {
         cbEl.setAttribute('disabled', true);
@@ -224,7 +222,6 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
         const cbEl: any = document.createElement(`verdocs-field-checkbox`);
         cbEl.field = field;
         cbEl.setAttribute('id', id);
-        cbEl.setAttribute('roleIndex', roleIndex);
         cbEl.setAttribute('option', checkboxIndex);
         if (disabled) {
           cbEl.setAttribute('disabled', true);
@@ -256,7 +253,6 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
         const radioEl: any = document.createElement(`verdocs-field-radio-button`);
         radioEl.field = field;
         radioEl.setAttribute('id', id);
-        radioEl.setAttribute('roleIndex', roleIndex);
         radioEl.setAttribute('option', buttonIndex);
         if (disabled) {
           radioEl.setAttribute('disabled', true);
@@ -289,8 +285,6 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       return null;
   }
 };
-
-export const getRoleIndex = (roles: string[], role: string) => roles.indexOf(role) || 0;
 
 // TODO: We can clean this up a lot if we alter the API to emit both setting and settings regardless of the source type,
 //   but then merge the SDK types to encourage developers to use just `settings`.
@@ -378,17 +372,6 @@ export const throttle = (f, delay) => {
     timer = setTimeout(() => f.apply(this, args), delay);
   };
 };
-
-/**
- * Convert a browser File object's data into a base64-encoded string.
- */
-export const fileToBase64 = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result?.toString() || '');
-    reader.onerror = error => reject(error);
-  });
 
 /**
  * Compute the rendered width of a given text string, using a given font.

@@ -7,8 +7,8 @@ import {ICreateEnvelopeRole, IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
 import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method} from '@stencil/core';
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
+import {getRoleIndex, getRoleNames, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
-import {getRoleIndex} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
 
 const editIcon =
@@ -98,7 +98,8 @@ export class VerdocsSend {
 
   levels: number[] = [];
 
-  store: TTemplateStore | null = null;
+  templateStore: TTemplateStore | null = null;
+  roleStore: TTemplateRoleStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -114,17 +115,19 @@ export class VerdocsSend {
         return;
       }
 
-      this.store = await getTemplateStore(this.endpoint, this.templateId, false);
-      if (!this.store?.state?.is_sendable) {
+      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
+      this.roleStore = getTemplateRoleStore(this.templateId);
+
+      if (!this.templateStore?.state?.is_sendable) {
         console.warn(`[SEND] Template is not sendable`, this.templateId);
       }
 
-      if (this.store?.state?.roles) {
+      if (this.roleStore.get('roles')) {
         const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
 
         this.rolesCompleted = {};
 
-        this.store?.state?.roles.forEach(role => {
+        this.roleStore.get('roles').forEach(role => {
           const level = role.sequence - 1;
           rolesAtLevel[level] ||= [];
           const id = `r-${level}-${rolesAtLevel[level].length}`;
@@ -190,7 +193,7 @@ export class VerdocsSend {
 
     const details: ICreateEnvelopeRequest = {
       template_id: this.templateId,
-      name: this.store?.state?.name,
+      name: this.templateStore?.state?.name,
       environment: this.environment,
       roles: Object.values(this.rolesCompleted) as ICreateEnvelopeRole[],
       // TODO
@@ -218,12 +221,12 @@ export class VerdocsSend {
   }
 
   render() {
-    const roleNames = (this.store?.state?.roles || []).map(role => role.name) || [];
+    const roleNames = getRoleNames(this.roleStore);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= roleNames.length;
 
     return (
-      <Host class={{sendable: this.store?.state?.is_sendable}}>
+      <Host class={{sendable: this.templateStore?.state?.is_sendable}}>
         <div class="recipients">
           <div class="left-line" />
           <div class={`level level-start`}>
@@ -239,7 +242,7 @@ export class VerdocsSend {
                 const unknown = !role.email;
                 const elId = `verdocs-send-recipient-${role.name}`;
                 return unknown ? (
-                  <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
+                  <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(this.roleStore, role.name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
                     {this.rolesCompleted[role.id]?.full_name ?? role.name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
@@ -255,7 +258,7 @@ export class VerdocsSend {
                     )}
                   </div>
                 ) : (
-                  <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(roleNames, role.name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
+                  <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(this.roleStore, role.name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
                     {this.rolesCompleted[role.id]?.full_name ?? role.full_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (

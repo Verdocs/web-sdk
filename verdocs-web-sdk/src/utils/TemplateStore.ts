@@ -3,8 +3,8 @@ import {ObservableMap} from '@stencil/store';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
 import {ITemplate, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
-import {createTemplateFieldStore, getTemplateFieldStore} from './TemplateFieldStore';
 import {createTemplateRoleStore, getTemplateRoleStore} from './TemplateRoleStore';
+import {createTemplateFieldStore, getTemplateFieldStore} from './TemplateFieldStore';
 
 export interface ITemplateStore extends ITemplate {
   isLoading: boolean;
@@ -112,5 +112,3 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
 
   return store;
 };
-
-export const getRoleNames = (store?: TTemplateStore) => (store?.state?.roles || []).map(role => role.name);

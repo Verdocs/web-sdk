@@ -4,11 +4,11 @@ import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
-import {defaultHeight, defaultWidth, getRoleIndex, renderDocumentField, updateCssTransform} from '../../../utils/utils';
-import {getRoleNames, getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
+import {defaultHeight, defaultWidth, renderDocumentField, updateCssTransform} from '../../../utils/utils';
+import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
@@ -170,7 +170,7 @@ export class VerdocsTemplateFields {
     console.log('[FIELDS] handleFieldChange', field, e, optionId);
   }
 
-  attachFieldAttributes(pageInfo, field, roleIndex, el) {
+  attachFieldAttributes(pageInfo, field, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
     el.addEventListener('settingsChanged', () => {
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
@@ -182,7 +182,6 @@ export class VerdocsTemplateFields {
     });
     el.setAttribute('templateid', this.templateId);
     el.setAttribute('fieldname', field.name);
-    el.setAttribute('roleindex', roleIndex);
     el.setAttribute('pageNumber', pageInfo.pageNumber);
     el.setAttribute('xScale', pageInfo.xScale);
     el.setAttribute('yScale', pageInfo.yScale);
@@ -204,19 +203,19 @@ export class VerdocsTemplateFields {
 
   reRenderField(field: ITemplateField, pageNumber: number) {
     const pageInfo = this.cachedPageInfo[pageNumber];
-    const roleIndex = getRoleIndex(getRoleNames(this.templateStore), field.role_name);
-    const el = renderDocumentField(field, pageInfo, roleIndex, {disabled: true, editable: true, draggable: true});
+    // const roleIndex = getRoleIndex(getRoleNames(this.roleStore), field.role_name);
+    const el = renderDocumentField(field, pageInfo, {disabled: true, editable: true, draggable: true});
     if (!el) {
       return;
     }
 
     if (Array.isArray(el)) {
       el.forEach(childEl => {
-        this.attachFieldAttributes(pageInfo, field, roleIndex, childEl);
+        this.attachFieldAttributes(pageInfo, field, childEl);
         this.makeDraggable(childEl);
       });
     } else {
-      this.attachFieldAttributes(pageInfo, field, roleIndex, el);
+      this.attachFieldAttributes(pageInfo, field, el);
       this.makeDraggable(el);
     }
   }
@@ -297,6 +296,8 @@ export class VerdocsTemplateFields {
     updateStoreField(this.fieldStore, name, newFieldData);
     event.target.removeAttribute('posX');
     event.target.removeAttribute('posY');
+    // this.reRenderField(newFieldData, pageNumber);
+    console.log('[FIELDS] Updated', name, newFieldData);
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
   }
 
