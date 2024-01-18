@@ -7,7 +7,13 @@ export type TTemplateFieldStore = ObservableMap<{fields: ITemplateField[]}>;
 
 const templateFieldStores: Record<string, TTemplateFieldStore> = {};
 
-export const getTemplateFieldStore = (templateId: string) => templateFieldStores[templateId];
+export const getTemplateFieldStore = (templateId: string) => {
+  if (!templateFieldStores[templateId]) {
+    templateFieldStores[templateId] = createStore({fields: []});
+  }
+
+  return templateFieldStores[templateId];
+};
 
 export const createTemplateFieldStore = (template: ITemplate) => {
   let store = getTemplateFieldStore(template.id);

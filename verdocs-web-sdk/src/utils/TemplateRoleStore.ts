@@ -5,7 +5,13 @@ export type TTemplateRoleStore = ObservableMap<{roles: IRole[]}>;
 
 const templateRoleStores: Record<string, TTemplateRoleStore> = {};
 
-export const getTemplateRoleStore = (templateId: string) => templateRoleStores[templateId];
+export const getTemplateRoleStore = (templateId: string) => {
+  if (!templateRoleStores[templateId]) {
+    templateRoleStores[templateId] = createStore({roles: []});
+  }
+
+  return templateRoleStores[templateId];
+};
 
 export const createTemplateRoleStore = (template: ITemplate) => {
   let store = getTemplateRoleStore(template.id);
