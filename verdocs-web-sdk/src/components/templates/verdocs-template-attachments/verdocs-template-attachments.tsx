@@ -228,7 +228,8 @@ export class VerdocsTemplateAttachments {
         {this.showDeleteError && (
           <verdocs-ok-dialog heading="Unable to Delete Attachment" message="Templates must contain at least one attachment." onNext={() => (this.showDeleteError = false)} />
         )}
-        {this.confirmDeleteDocument && (
+
+          {this.confirmDeleteDocument && (
           <verdocs-ok-dialog
             heading="Delete this Attachment?"
             message="This operation cannot be undone. All fields placed<br />on the deleted attachment will also be removed."

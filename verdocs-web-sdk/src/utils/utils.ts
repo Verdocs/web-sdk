@@ -318,6 +318,11 @@ export const updateCssTransform = (el: HTMLElement, key: string, value: string) 
   }
 };
 
+export const removeCssTransform = (el: HTMLElement, key: string) => {
+  const currentTransform = el.style.transform || '';
+  el.style.transform = currentTransform.replace(new RegExp(`${key}\\(.+?\\)`), '');
+};
+
 export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {
   // e.g. "Colorado-Motor-Vehicle-Bill-of-Sale.pdf"
   const date = format(new Date(envelope.updated_at), FORMAT_DATE);

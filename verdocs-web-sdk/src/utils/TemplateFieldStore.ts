@@ -21,9 +21,6 @@ export const createTemplateFieldStore = (template: ITemplate) => {
     console.log('Creating template field store for template', template);
     store = createStore({fields: []});
     templateFieldStores[template.id] = store;
-  } else {
-    console.log('Resetting template field store for template', template);
-    store.reset();
   }
 
   store.set('fields', [...template.fields]);
