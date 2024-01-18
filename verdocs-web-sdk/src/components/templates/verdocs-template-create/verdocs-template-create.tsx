@@ -3,6 +3,7 @@ import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {createTemplatev2} from '@verdocs/js-sdk/Templates/Templates';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
+import {getTemplateStore} from '../../../utils/TemplateStore';
 
 const unicodeNBSP = ' ';
 
@@ -96,12 +97,17 @@ export class VerdocsTemplateCreate {
       });
 
       console.log('[CREATE] Created template', template);
-      this.templateCreated?.emit({endpoint: this.endpoint, template, templateId: template.id});
-      this.next?.emit(template);
-
-      this.creating = false;
-      this.progressLabel = '';
-      this.progressPercent = 0;
+      getTemplateStore(this.endpoint, template.id, true)
+        .then(() => {
+          this.templateCreated?.emit({endpoint: this.endpoint, template, templateId: template.id});
+          this.next?.emit(template);
+          this.creating = false;
+          this.progressLabel = '';
+          this.progressPercent = 0;
+        })
+        .catch(e => {
+          console.log(e);
+        });
     } catch (e) {
       console.log('[CREATE] Error creating template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
