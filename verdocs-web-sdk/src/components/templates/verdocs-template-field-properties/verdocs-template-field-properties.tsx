@@ -165,6 +165,7 @@ export class VerdocsTemplateFieldProperties {
 
     this.dirty = false;
     this.close?.emit();
+    document.getElementById('verdocs-template-field-properties')?.remove();
   }
 
   handleSave(e) {
@@ -206,6 +207,7 @@ export class VerdocsTemplateFieldProperties {
         this.fieldStore.set('fields', newFields);
         this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field: updated});
         this.close?.emit();
+        document.getElementById('verdocs-template-field-properties')?.remove();
       })
       .catch(() => {
         console.log('Field update failed', e);
@@ -250,6 +252,7 @@ export class VerdocsTemplateFieldProperties {
         this.fieldName = updated.name;
         this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field: updated});
         this.close?.emit();
+        document.getElementById('verdocs-template-field-properties')?.remove();
       })
       .catch(() => {
         console.log('Field update failed', e);
