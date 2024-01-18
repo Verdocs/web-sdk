@@ -107,10 +107,10 @@ export class VerdocsTemplateRoles {
           this.templateStore = ts;
           this.roleStore = getTemplateRoleStore(this.templateId);
           console.log('RS', this.roleStore?.state);
+          this.loading = false;
           this.roleStore.onChange('roles', roles => {
             console.log('[ROLES] Roles changed', {roles});
             this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles});
-            this.loading = false;
           });
         })
         .catch(e => {
@@ -307,6 +307,7 @@ export class VerdocsTemplateRoles {
     }
 
     if (this.loading || !this.templateStore?.state.isLoaded) {
+      console.log('Loading', this.loading, this.templateStore?.state.isLoaded);
       return (
         <Host class="loading">
           <verdocs-loader />
