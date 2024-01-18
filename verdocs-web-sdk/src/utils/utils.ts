@@ -320,7 +320,11 @@ export const updateCssTransform = (el: HTMLElement, key: string, value: string) 
 
 export const removeCssTransform = (el: HTMLElement, key: string) => {
   const currentTransform = el.style.transform || '';
-  el.style.transform = currentTransform.replace(new RegExp(`${key}\\(.+?\\)`), '');
+  console.log('ct', key, currentTransform);
+  el.style.transform = el.style.transform.split(')')[0] + ')';
+  // TODO: This is not working
+  // el.style.transform = currentTransform.replace(new RegExp(`\(${key}\\(.+?\\)\)`), '');
+  console.log('nt', el.style.transform);
 };
 
 export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {

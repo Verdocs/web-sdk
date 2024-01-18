@@ -5,7 +5,7 @@ import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
-import {defaultHeight, defaultWidth, removeCssTransform, renderDocumentField, updateCssTransform} from '../../../utils/utils';
+import {defaultHeight, defaultWidth, renderDocumentField, updateCssTransform} from '../../../utils/utils';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -315,8 +315,8 @@ export class VerdocsTemplateFields {
     event.target.removeAttribute('posX');
     event.target.removeAttribute('posY');
     console.log('Will remove CSS transform', event.target.style.transform);
-    // this.reRenderField(newFieldData, pageNumber);
-    removeCssTransform(event.target, 'transform');
+    this.reRenderField(newFieldData, pageNumber);
+    // removeCssTransform(event.target, 'transform');
     console.log('[FIELDS] Updated', name, newFieldData);
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
   }
