@@ -136,6 +136,7 @@ export class VerdocsFieldDate {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
     const roleIndex = getRoleIndex(this.roleStore, field.role_name);
     const backgroundColor = field['rgba'] || getRGBA(roleIndex);
+    console.log('role index', roleIndex, field, backgroundColor);
     if (!field) {
       return <Fragment />;
     }
@@ -151,7 +152,7 @@ export class VerdocsFieldDate {
 
     return (
       <Host class={{required: field?.required, disabled}} style={{backgroundColor}}>
-        <input name={field.name} type="text" value="" id={this.containerId} disabled={disabled} placeholder={settings.placeholder} ref={el => (this.el = el)} />
+        {/*<input name={field.name} type="text" value="" id={this.containerId} disabled={disabled} placeholder={settings.placeholder} ref={el => (this.el = el)} />*/}
 
         {this.editable && (
           <Fragment>
