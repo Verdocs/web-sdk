@@ -522,11 +522,11 @@ export class VerdocsSign {
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
     // const roleIndex = getRoleIndex(this.roleStore, this.recipient.role_name);
-    console.log(
-      'hpr',
-      this.recipient,
-      this.envelope.fields.filter(field => field.recipient_role === this.recipient.role_name),
-    );
+    // console.log(
+    //   'hpr',
+    //   this.recipient,
+    //   this.envelope.fields.filter(field => field.recipient_role === this.recipient.role_name),
+    // );
     const recipientFields = this.getRecipientFields().filter(field => field.page === pageInfo.pageNumber);
     // console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
 

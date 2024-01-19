@@ -1,5 +1,5 @@
 import {format} from 'date-fns';
-import flatpickr from 'flatpickr';
+import AirDatepicker from 'air-datepicker';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
@@ -8,6 +8,7 @@ import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/Templat
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 import {FORMAT_DATE} from '../../../utils/Types';
+import localeEn from 'air-datepicker/locale/en';
 
 /**
  * Displays a date field. When tapped or clicked, the input element will display a date picker component.
@@ -93,22 +94,28 @@ export class VerdocsFieldDate {
   }
 
   componentDidLoad() {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    const {result} = getFieldSettings(field);
+    // const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    // const {result} = getFieldSettings(field);
 
-    flatpickr('#' + this.containerId, {
-      positionElement: this.el,
-      // NOTE: This uses different tokens from date-fns::format().
-      // See https://flatpickr.js.org/formatting/.
-      dateFormat: 'Y-m-d',
-      defaultDate: result,
-      onChange: selectedDate => {
-        console.log('Selected date', selectedDate[0]);
-        this.el.setAttribute('iso', selectedDate[0].toISOString());
-        const event = new window.Event('input');
-        this.el.dispatchEvent(event);
-      },
+    new AirDatepicker(this.containerId, {
+      locale: localeEn,
+      isMobile: true,
+      autoClose: true,
+      // dateFormat: 'Y-m-d',
     });
+    // flatpickr('#' + this.containerId, {
+    //   positionElement: this.el,
+    //   // NOTE: This uses different tokens from date-fns::format().
+    //   // See https://flatpickr.js.org/formatting/.
+    //   dateFormat: 'Y-m-d',
+    //   defaultDate: result,
+    //   onChange: selectedDate => {
+    //     console.log('Selected date', selectedDate[0]);
+    //     this.el.setAttribute('iso', selectedDate[0].toISOString());
+    //     const event = new window.Event('input');
+    //     this.el.dispatchEvent(event);
+    //   },
+    // });
 
     // this.el.addEventListener('changeDate', (e: any) => {
     //   console.log('changeDate', e.detail.date.toISOString());
