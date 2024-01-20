@@ -288,12 +288,12 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
 
 // TODO: We can clean this up a lot if we alter the API to emit both setting and settings regardless of the source type,
 //   but then merge the SDK types to encourage developers to use just `settings`.
-export const getFieldSettings = (field: ITemplateField | IEnvelopeField) => {
-  if ((field as ITemplateField).setting) {
+export const getFieldSettings = (field: ITemplateField | IEnvelopeField | undefined) => {
+  if (field && (field as ITemplateField).setting) {
     return (field as ITemplateField).setting;
   }
 
-  if ((field as IEnvelopeField).settings) {
+  if (field && (field as IEnvelopeField).settings) {
     return (field as IEnvelopeField).settings;
   }
 

@@ -652,7 +652,7 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -660,7 +660,7 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldDate {
   protected el: HTMLElement;

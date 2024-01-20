@@ -1,5 +1,6 @@
 import {format} from 'date-fns';
 import AirDatepicker from 'air-datepicker';
+import localeEn from 'air-datepicker/locale/en';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
@@ -8,7 +9,6 @@ import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/Templat
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 import {FORMAT_DATE} from '../../../utils/Types';
-import localeEn from 'air-datepicker/locale/en';
 
 /**
  * Displays a date field. When tapped or clicked, the input element will display a date picker component.
@@ -63,6 +63,11 @@ export class VerdocsFieldDate {
   @Prop() yscale?: number = 1;
 
   /**
+   * If set, the field will be be scaled vertically by this factor.
+   */
+  @Prop() field?: ITemplateField;
+
+  /**
    * Event fired on every character entered into / deleted from the field.
    */
   @Event({composed: true}) settingsPress: EventEmitter;
@@ -89,37 +94,26 @@ export class VerdocsFieldDate {
   roleStore: TTemplateRoleStore = null;
 
   async componentWillLoad() {
+    if (this.field) {
+      const ts = getTemplateFieldStore(this.templateid);
+      ts.set('fields', [...ts.get('fields'), this.field]);
+    }
+
     this.fieldStore = getTemplateFieldStore(this.templateid);
     this.roleStore = getTemplateRoleStore(this.templateid);
   }
 
   componentDidLoad() {
-    // const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    // const {result} = getFieldSettings(field);
-
-    new AirDatepicker(this.containerId, {
+    new AirDatepicker(`#${this.containerId}`, {
       locale: localeEn,
       isMobile: true,
       autoClose: true,
-      // dateFormat: 'Y-m-d',
+      onSelect: ({date, formattedDate}) => {
+        console.log('Selected date', formattedDate, date);
+        const event = new window.Event('input');
+        this.el.dispatchEvent(event);
+      },
     });
-    // flatpickr('#' + this.containerId, {
-    //   positionElement: this.el,
-    //   // NOTE: This uses different tokens from date-fns::format().
-    //   // See https://flatpickr.js.org/formatting/.
-    //   dateFormat: 'Y-m-d',
-    //   defaultDate: result,
-    //   onChange: selectedDate => {
-    //     console.log('Selected date', selectedDate[0]);
-    //     this.el.setAttribute('iso', selectedDate[0].toISOString());
-    //     const event = new window.Event('input');
-    //     this.el.dispatchEvent(event);
-    //   },
-    // });
-
-    // this.el.addEventListener('changeDate', (e: any) => {
-    //   console.log('changeDate', e.detail.date.toISOString());
-    // });
   }
 
   @Method()
@@ -141,12 +135,8 @@ export class VerdocsFieldDate {
   // NOTE: We don't use a "date" field here because browsers vary widely in their formatting of it.
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
-    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
-    console.log('role index', roleIndex, field, backgroundColor);
-    if (!field) {
-      return <Fragment />;
-    }
+    const roleIndex = getRoleIndex(this.roleStore, field?.role_name);
+    const backgroundColor = field?.['rgba'] || getRGBA(roleIndex);
 
     const settings = getFieldSettings(field);
     const disabled = this.disabled ?? settings.disabled ?? false;
@@ -159,7 +149,7 @@ export class VerdocsFieldDate {
 
     return (
       <Host class={{required: field?.required, disabled}} style={{backgroundColor}}>
-        <input name={field.name} class="input-el" type="text" value="" id={this.containerId} disabled={disabled} placeholder={settings.placeholder} ref={el => (this.el = el)} />
+        <input name={field?.name} class="input-el" type="text" value="" id={this.containerId} disabled={disabled} placeholder={settings.placeholder} ref={el => (this.el = el)} />
 
         {this.editable && (
           <Fragment>
@@ -178,10 +168,10 @@ export class VerdocsFieldDate {
               <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
                   templateId={this.templateid}
-                  fieldName={field.name}
+                  fieldName={field?.name}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {
-                    this.deleted?.emit({fieldName: field.name});
+                    this.deleted?.emit({fieldName: field?.name});
                     return this.hideSettingsPanel();
                   }}
                   onSettingsChanged={e => {

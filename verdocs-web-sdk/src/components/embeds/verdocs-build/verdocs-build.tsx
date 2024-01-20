@@ -1,7 +1,7 @@
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
 import {ICreateEnvelopeRole} from '@verdocs/js-sdk/Envelopes/Types';
-import {Component, Prop, h, Element, Event, EventEmitter, forceUpdate, Host, Watch, State} from '@stencil/core';
+import {Component, Prop, h, Element, Event, EventEmitter, Host, Watch, State} from '@stencil/core';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
@@ -107,7 +107,7 @@ export class VerdocsBuild {
     if (templateId) {
       console.log('Loading store', templateId);
       this.store = await getTemplateStore(this.endpoint, templateId, false);
-      forceUpdate(this.el);
+      // forceUpdate(this.el);
     }
   }
 

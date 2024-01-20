@@ -16,12 +16,10 @@ verdocs-field-date {
     opacity: 0.5;
   }
 
-  .input-el {
-    display: none;
-  }
-
   input {
     position: absolute;
+
+    font-size: 13px;
 
     // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
     cursor: inherit;
@@ -33,7 +31,6 @@ verdocs-field-date {
     height: 100%;
     width: 100%;
     background: none;
-    font-size: 11px;
     border: 1px solid $light-border-color;
     appearance: none;
 

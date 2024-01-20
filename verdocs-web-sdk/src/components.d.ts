@@ -380,6 +380,10 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "field"?: ITemplateField;
+        /**
           * The name of the field to display.
          */
         "fieldname": string;
@@ -2680,6 +2684,10 @@ declare namespace LocalJSX {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "field"?: ITemplateField;
         /**
           * The name of the field to display.
          */

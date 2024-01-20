@@ -44,13 +44,11 @@ export const deleteStoreRole = (store: TTemplateRoleStore, name: string) => {
   store.set('roles', newRoles);
 };
 
-export const getRoleNames = (store: TTemplateRoleStore) => store.get('roles').map(role => role.name);
+export const getRoleNames = (store: TTemplateRoleStore) => (store.get('roles') || []).map(role => role.name);
+
 export const getRoleIndex = (store: TTemplateRoleStore, name: string) => {
-  console.log(
-    'gri',
-    name,
-    getRoleNames(store),
+  return Math.max(
     getRoleNames(store).findIndex(roleName => roleName === name),
+    0,
   );
-  return getRoleNames(store).findIndex(roleName => roleName === name);
 };
