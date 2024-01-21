@@ -111,6 +111,7 @@ export class VerdocsFieldDate {
       onSelect: ({date, formattedDate}) => {
         console.log('Selected date', formattedDate, date);
         const event = new window.Event('input');
+        console.log('Will dispatch', event, this.el);
         this.el.dispatchEvent(event);
       },
     });
