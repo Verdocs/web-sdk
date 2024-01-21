@@ -389,7 +389,7 @@ export class VerdocsSign {
       case 'textarea':
       case 'date':
       case 'attachment':
-        console.log('Date-type field valid', {required, result, output: !required || result !== ''});
+        console.log('Checking date-type field validity', {required, result, output: !required || result !== ''});
         return !required || result !== '';
 
       case 'dropdown':
@@ -498,10 +498,6 @@ export class VerdocsSign {
       } else {
         this.checkRecipientFields();
       }
-    });
-    el.addEventListener('datechange', (e: any) => {
-      console.log('[SIGN] onfieldInput', e.detail, e.target.value);
-      this.checkRecipientFields();
     });
     el.addEventListener('attached', async (e: any) => {
       console.log('[SIGN] onAttached', e.detail, e.target.value);

@@ -3,7 +3,7 @@ import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
 import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
-import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
+import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
@@ -19,6 +19,9 @@ import {FORMAT_DATE} from '../../../utils/Types';
   shadow: false,
 })
 export class VerdocsFieldDate {
+  @Element()
+  private hostEl: HTMLInputElement;
+
   private el: HTMLInputElement;
 
   /**
@@ -110,12 +113,12 @@ export class VerdocsFieldDate {
       autoClose: true,
       onSelect: ({date, formattedDate}) => {
         console.log('Selected date', formattedDate, date);
-        const event = new window.Event('input');
+        const event = new CustomEvent('input', {
+          detail: {date, formattedDate},
+        });
+        // const event = new window.Event('input', {composed: true, bubbles: true, cancelable: true});
         console.log('Will dispatch', event, this.el);
-        this.el.dispatchEvent(event);
-        const event2 = new window.Event('datechange');
-        console.log('Will dispatch 2', event2, this.el);
-        this.el.dispatchEvent(event2);
+        this.hostEl.dispatchEvent(event);
       },
     });
   }
