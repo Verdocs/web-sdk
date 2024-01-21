@@ -346,7 +346,9 @@ export class VerdocsSign {
 
       case 'date':
         const iso = e.target.getAttribute('iso');
+        console.log('iso', iso);
         const formatted = format(new Date(iso), FORMAT_DATE);
+        console.log('f', formatted);
         if (formatted !== '1970-12-31') {
           return this.saveFieldChange(field.name, {prepared: false, value: formatted});
         }
@@ -496,6 +498,10 @@ export class VerdocsSign {
       } else {
         this.checkRecipientFields();
       }
+    });
+    el.addEventListener('datechange', (e: any) => {
+      console.log('[SIGN] onfieldInput', e.detail, e.target.value);
+      this.checkRecipientFields();
     });
     el.addEventListener('attached', async (e: any) => {
       console.log('[SIGN] onAttached', e.detail, e.target.value);

@@ -113,6 +113,9 @@ export class VerdocsFieldDate {
         const event = new window.Event('input');
         console.log('Will dispatch', event, this.el);
         this.el.dispatchEvent(event);
+        const event2 = new window.Event('datechange');
+        console.log('Will dispatch 2', event2, this.el);
+        this.el.dispatchEvent(event2);
       },
     });
   }
