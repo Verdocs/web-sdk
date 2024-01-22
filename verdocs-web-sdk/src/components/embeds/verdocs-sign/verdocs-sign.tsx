@@ -613,7 +613,8 @@ export class VerdocsSign {
           </div>
         </div>
 
-        <div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
+        <div class="document" style={{paddingTop: '15px'}}>
+          {/*<div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>*/}
           {(this.envelope.documents || []).map(envelopeDocument => {
             const pageNumbers = integerSequence(1, envelopeDocument.page_numbers);
 
