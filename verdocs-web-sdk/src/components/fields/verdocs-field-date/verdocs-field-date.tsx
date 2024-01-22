@@ -66,6 +66,11 @@ export class VerdocsFieldDate {
   @Prop() yscale?: number = 1;
 
   /**
+   * The page the field is on
+   */
+  @Prop() pagenumber?: number = 1;
+
+  /**
    * If set, the field will be be scaled vertically by this factor.
    */
   @Prop() field?: ITemplateField;

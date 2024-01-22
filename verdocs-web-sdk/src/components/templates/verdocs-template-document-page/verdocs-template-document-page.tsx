@@ -1,10 +1,11 @@
 // NOTE: This component does not have a story because it's not intended for external use.
 
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Event, EventEmitter, State, Element} from '@stencil/core';
 import {getTemplateDocumentPageDisplayUri} from '@verdocs/js-sdk/Templates/TemplateDocuments';
+import {Component, h, Host, Prop, Event, EventEmitter, State, Element, Fragment} from '@stencil/core';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import {getControlStyles, getFieldId, getFieldOptionId, throttle} from '../../../utils/utils';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
-import {throttle} from '../../../utils/utils';
 
 /**
  * Represents one document page. This is primarily a layout container used to coordinate positions of
@@ -24,6 +25,16 @@ export class VerdocsTemplateDocumentPage {
    * The endpoint to load from.
    */
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+
+  /**
+   * Whether the fields should be editable (Builder)
+   */
+  @Prop() editable = false;
+
+  /**
+   * Whether the field are interactable (done/submitted disables this)
+   */
+  @Prop() done = false;
 
   /**
    * The ID of the template the document is for.
@@ -83,8 +94,14 @@ export class VerdocsTemplateDocumentPage {
 
   @State() pageDisplayUri = '';
 
+  @State() xScale = 1;
+  @State() yScale = 1;
+
+  fieldStore: TTemplateFieldStore | null = null;
+
   async componentWillLoad() {
     this.pageDisplayUri = await getTemplateDocumentPageDisplayUri(this.endpoint, this.templateId, this.documentId, this.pageNumber);
+    this.fieldStore = getTemplateFieldStore(this.templateId);
   }
 
   componentDidLoad() {
@@ -121,6 +138,16 @@ export class VerdocsTemplateDocumentPage {
       return;
     }
 
+    const xScale = this.renderedWidth / this.virtualWidth;
+    if (this.xScale !== xScale) {
+      this.xScale = xScale;
+    }
+
+    const yScale = this.renderedHeight / this.virtualHeight;
+    if (this.yScale !== yScale) {
+      this.yScale = yScale;
+    }
+
     this.pageRendered.emit({
       // container: this.container,
       containerId: this.containerId,
@@ -133,8 +160,8 @@ export class VerdocsTemplateDocumentPage {
       naturalWidth: this.naturalWidth,
       naturalHeight: this.naturalHeight,
       aspectRatio: this.aspectRatio,
-      xScale: this.renderedWidth / this.virtualWidth,
-      yScale: this.renderedHeight / this.virtualHeight,
+      xScale,
+      yScale,
     });
   }
 
@@ -145,7 +172,167 @@ export class VerdocsTemplateDocumentPage {
       <Host id={`${this.containerId}`} style={{height, flex: `0 0 ${height}`}}>
         {this.layers.map(layer =>
           layer.type === 'div' ? (
-            <div class="verdocs-template-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}} />
+            <div class="verdocs-template-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}}>
+              {layer.name === 'controls' &&
+                this.fieldStore
+                  .get('fields')
+                  .filter(field => field && field.page_sequence === this.pageNumber)
+                  .map(field => {
+                    const id = getFieldId(field);
+                    switch (field.type) {
+                      case 'textbox':
+                        return (
+                          <verdocs-field-textbox
+                            id={id}
+                            templateid={this.templateId}
+                            fieldname={field.name}
+                            editable={this.editable}
+                            done={this.done}
+                            xscale={this.xScale}
+                            yscale={this.yScale}
+                            pagenumber={this.pageNumber}
+                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                          />
+                        );
+                      case 'textarea':
+                        return (
+                          <verdocs-field-textarea
+                            id={id}
+                            templateid={this.templateId}
+                            fieldname={field.name}
+                            editable={this.editable}
+                            done={this.done}
+                            xscale={this.xScale}
+                            yscale={this.yScale}
+                            pagenumber={this.pageNumber}
+                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                          />
+                        );
+                      case 'date':
+                        return (
+                          <verdocs-field-date
+                            id={id}
+                            templateid={this.templateId}
+                            fieldname={field.name}
+                            editable={this.editable}
+                            xscale={this.xScale}
+                            yscale={this.yScale}
+                            done={this.done}
+                            pagenumber={this.pageNumber}
+                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                          />
+                        );
+                      case 'attachment':
+                        return (
+                          <verdocs-field-attachment
+                            id={id}
+                            templateid={this.templateId}
+                            fieldname={field.name}
+                            editable={this.editable}
+                            done={this.done}
+                            xscale={this.xScale}
+                            yscale={this.yScale}
+                            pagenumber={this.pageNumber}
+                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                          />
+                        );
+                      case 'dropdown':
+                        return (
+                          <verdocs-field-dropdown
+                            id={id}
+                            templateid={this.templateId}
+                            fieldname={field.name}
+                            editable={this.editable}
+                            done={this.done}
+                            xscale={this.xScale}
+                            yscale={this.yScale}
+                            pagenumber={this.pageNumber}
+                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                          />
+                        );
+                      case 'initial':
+                        return (
+                          <verdocs-field-initial
+                            id={id}
+                            templateid={this.templateId}
+                            fieldname={field.name}
+                            editable={this.editable}
+                            xscale={this.xScale}
+                            yscale={this.yScale}
+                            done={this.done}
+                            pagenumber={this.pageNumber}
+                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                          />
+                        );
+                      case 'signature':
+                        return (
+                          <verdocs-field-signature
+                            id={id}
+                            templateid={this.templateId}
+                            fieldname={field.name}
+                            editable={this.editable}
+                            xscale={this.xScale}
+                            yscale={this.yScale}
+                            done={this.done}
+                            pagenumber={this.pageNumber}
+                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                          />
+                        );
+                      case 'timestamp':
+                        return (
+                          <verdocs-field-timestamp
+                            id={id}
+                            templateid={this.templateId}
+                            fieldname={field.name}
+                            editable={this.editable}
+                            xscale={this.xScale}
+                            yscale={this.yScale}
+                            done={this.done}
+                            pagenumber={this.pageNumber}
+                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                          />
+                        );
+                      case 'checkbox_group':
+                        return ((field as any).settings || (field as any).setting || {}).options.map((_, checkboxIndex) => {
+                          const id = getFieldOptionId(field, checkboxIndex);
+                          return (
+                            <verdocs-field-checkbox
+                              id={id}
+                              templateid={this.templateId}
+                              fieldname={field.name}
+                              editable={this.editable}
+                              xscale={this.xScale}
+                              yscale={this.yScale}
+                              done={this.done}
+                              option={checkboxIndex}
+                              pagenumber={this.pageNumber}
+                              style={getControlStyles(field, this.xScale, this.yScale, checkboxIndex)}
+                            />
+                          );
+                        });
+                      case 'radio_button_group':
+                        return ((field as any).settings || (field as any).setting || {}).options.map((_, checkboxIndex) => {
+                          const id = getFieldOptionId(field, checkboxIndex);
+                          return (
+                            <verdocs-field-radio-button
+                              id={id}
+                              templateid={this.templateId}
+                              fieldname={field.name}
+                              editable={this.editable}
+                              xscale={this.xScale}
+                              yscale={this.yScale}
+                              done={this.done}
+                              option={checkboxIndex}
+                              pagenumber={this.pageNumber}
+                              style={getControlStyles(field, this.xScale, this.yScale, checkboxIndex)}
+                            />
+                          );
+                        });
+                      default:
+                        return <Fragment>{field.name}</Fragment>;
+                    }
+                  })}
+            </div>
           ) : this.pageDisplayUri ? (
             <img
               class="verdocs-template-document-page-layer img"

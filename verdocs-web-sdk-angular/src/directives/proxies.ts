@@ -576,7 +576,7 @@ to the envelope detail view.
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -584,7 +584,7 @@ to the envelope detail view.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLElement;
@@ -616,7 +616,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -624,7 +624,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldCheckbox {
   protected el: HTMLElement;
@@ -652,7 +652,7 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -660,7 +660,7 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldDate {
   protected el: HTMLElement;
@@ -692,7 +692,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -700,7 +700,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldDropdown {
   protected el: HTMLElement;
@@ -734,7 +734,7 @@ keypress.
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'initials', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'initials', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -742,7 +742,7 @@ keypress.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'initials', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'initials', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldInitial {
   protected el: HTMLElement;
@@ -788,7 +788,7 @@ keypress.
 
 
 @ProxyCmp({
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'fieldId', 'fieldname', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'templateid', 'xscale', 'yscale'],
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'fieldId', 'fieldname', 'fields', 'focused', 'pageNum', 'pagenumber', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'templateid', 'xscale', 'yscale'],
   methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -796,7 +796,7 @@ keypress.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'fieldId', 'fieldname', 'fields', 'focused', 'pageNum', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'templateid', 'xscale', 'yscale'],
+  inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'fieldId', 'fieldname', 'fields', 'focused', 'pageNum', 'pagenumber', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldPayment {
   protected el: HTMLElement;
@@ -826,7 +826,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -834,7 +834,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldRadioButton {
   protected el: HTMLElement;
@@ -862,7 +862,7 @@ export declare interface VerdocsFieldRadioButton extends Components.VerdocsField
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'name', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'name', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -870,7 +870,7 @@ export declare interface VerdocsFieldRadioButton extends Components.VerdocsField
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'name', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'name', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldSignature {
   protected el: HTMLElement;
@@ -906,7 +906,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -914,7 +914,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldTextarea {
   protected el: HTMLElement;
@@ -942,7 +942,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -950,7 +950,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLElement;
@@ -978,7 +978,7 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -986,7 +986,7 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldTimestamp {
   protected el: HTMLElement;
@@ -2106,14 +2106,14 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['documentId', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth']
+  inputs: ['documentId', 'done', 'editable', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth']
 })
 @Component({
   selector: 'verdocs-template-document-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['documentId', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth'],
+  inputs: ['documentId', 'done', 'editable', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth'],
 })
 export class VerdocsTemplateDocumentPage {
   protected el: HTMLElement;

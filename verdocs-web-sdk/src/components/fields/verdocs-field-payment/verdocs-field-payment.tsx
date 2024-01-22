@@ -54,6 +54,11 @@ export class VerdocsFieldPayment {
    */
   @Prop() yscale?: number = 1;
 
+  /**
+   * The page the field is on
+   */
+  @Prop() pagenumber?: number = 1;
+
   @Event({composed: true}) signatureComplete: EventEmitter<string>;
 
   @Event({composed: true}) initialComplete: EventEmitter<string>;

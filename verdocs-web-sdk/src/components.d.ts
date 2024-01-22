@@ -312,6 +312,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -352,6 +356,10 @@ export namespace Components {
           * The index of the settings option this particular checkbox is for
          */
         "option": number;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -393,6 +401,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required for the field builder, passed down to the properties component.
@@ -430,6 +442,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -471,6 +487,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -503,6 +523,10 @@ export namespace Components {
         "focused": boolean;
         "hideSettingsPanel": () => Promise<void>;
         "pageNum": number;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "pdfPages": any[];
         "recipients": any;
         "roleName": string;
@@ -552,6 +576,10 @@ export namespace Components {
           * The index of the settings option this particular checkbox is for
          */
         "option": number;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -593,6 +621,10 @@ export namespace Components {
           * If set, the signature creation dialog will be initialized with this text.
          */
         "name"?: string;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -634,6 +666,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -675,6 +711,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -712,6 +752,10 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -1100,6 +1144,14 @@ export namespace Components {
           * The ID of the document to display.
          */
         "documentId": string;
+        /**
+          * Whether the field are interactable (done/submitted disables this)
+         */
+        "done": boolean;
+        /**
+          * Whether the fields should be editable (Builder)
+         */
+        "editable": boolean;
         /**
           * The endpoint to load from.
          */
@@ -2613,6 +2665,10 @@ declare namespace LocalJSX {
          */
         "onSettingsChanged"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
         /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
+        /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
@@ -2658,6 +2714,10 @@ declare namespace LocalJSX {
           * The index of the settings option this particular checkbox is for
          */
         "option"?: number;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
@@ -2709,6 +2769,10 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldDateCustomEvent<any>) => void;
         /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
+        /**
           * The template the field is for/from. Only required for the field builder, passed down to the properties component.
          */
         "templateid"?: string;
@@ -2754,6 +2818,10 @@ declare namespace LocalJSX {
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
@@ -2817,6 +2885,10 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
+        /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
@@ -2853,6 +2925,10 @@ declare namespace LocalJSX {
         "onSettingsChanged"?: (event: VerdocsFieldPaymentCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
         "onSignatureComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
         "pageNum"?: number;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         "pdfPages"?: any[];
         "recipients"?: any;
         "roleName"?: string;
@@ -2909,6 +2985,10 @@ declare namespace LocalJSX {
          */
         "option"?: number;
         /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
+        /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
@@ -2963,6 +3043,10 @@ declare namespace LocalJSX {
          */
         "onSettingsPress"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
         /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
+        /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
@@ -3008,6 +3092,10 @@ declare namespace LocalJSX {
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
@@ -3055,6 +3143,10 @@ declare namespace LocalJSX {
          */
         "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
         /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
+        /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
         "templateid"?: string;
@@ -3096,6 +3188,10 @@ declare namespace LocalJSX {
           * Event fired when the field's settings are changed.
          */
         "onSettingsChanged"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
@@ -3686,6 +3782,14 @@ declare namespace LocalJSX {
           * The ID of the document to display.
          */
         "documentId"?: string;
+        /**
+          * Whether the field are interactable (done/submitted disables this)
+         */
+        "done"?: boolean;
+        /**
+          * Whether the fields should be editable (Builder)
+         */
+        "editable"?: boolean;
         /**
           * The endpoint to load from.
          */

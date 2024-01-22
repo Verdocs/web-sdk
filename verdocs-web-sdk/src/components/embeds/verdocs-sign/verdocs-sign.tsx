@@ -156,9 +156,7 @@ export class VerdocsSign {
 
       this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
 
-      const fs = createTemplateFieldStoreFromEnvelope(this.envelope);
-      console.log('made fs', fs);
-
+      createTemplateFieldStoreFromEnvelope(this.envelope);
       this.sortedRecipients = [...this.envelope.recipients];
       this.sortedRecipients.sort((a, b) => {
         return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
@@ -182,10 +180,6 @@ export class VerdocsSign {
       this.isDone = ['submitted', 'canceled', 'declined'].includes(this.recipient.status);
 
       this.checkRecipientFields();
-
-      // TODO: Fix service to allow this?
-      // const sigs = await getSignatures();
-      // console.log('sigs', sigs);
 
       this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
     } catch (e) {
@@ -386,7 +380,6 @@ export class VerdocsSign {
       case 'textarea':
       case 'date':
       case 'attachment':
-        console.log('Checking date-type field validity', {required, result, output: !required || result !== ''});
         return !required || result !== '';
 
       case 'dropdown':
@@ -479,7 +472,7 @@ export class VerdocsSign {
         this.nextSubmits = true;
       }
     } else {
-      console.log('[SIGN] Remaining invalid fields', invalidFields);
+      console.log('[SIGN] c invalid fields', invalidFields);
       this.nextButtonLabel = 'Next';
       this.nextSubmits = false;
     }

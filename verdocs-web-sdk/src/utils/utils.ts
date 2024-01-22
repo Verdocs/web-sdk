@@ -89,6 +89,29 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvel
   // el.style.backgroundColor = field['rgba'] || getRGBA(roleIndex);
 };
 
+export const getControlStyles = (field: ITemplateField | IEnvelopeField, xScale: number, yScale: number, option?: number) => {
+  const settings = (field as ITemplateField).setting || (field as IEnvelopeField).settings;
+  let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = settings;
+  // console.log('scs', field, settings, x, y);
+
+  const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
+  if (optionSettings) {
+    x = optionSettings.x ?? x;
+    y = optionSettings.y ?? y;
+    width = optionSettings.width ?? width;
+    height = optionSettings.height ?? height;
+  }
+
+  return {
+    width: `${width}px`,
+    height: `${height}px`,
+    position: 'absolute',
+    left: `${rescale(xScale, x)}px`,
+    bottom: `${rescale(yScale, y)}px`,
+    transform: `scale(${xScale}, ${yScale})`,
+  };
+};
+
 export const getFieldId = (field: ITemplateField | IEnvelopeField) => {
   return `verdocs-doc-fld-${field.name}`;
 };
@@ -318,13 +341,11 @@ export const updateCssTransform = (el: HTMLElement, key: string, value: string) 
   }
 };
 
-export const removeCssTransform = (el: HTMLElement, key: string) => {
-  const currentTransform = el.style.transform || '';
-  console.log('ct', key, currentTransform);
+export const removeCssTransform = (el: HTMLElement) => {
+  // const currentTransform = el.style.transform || '';
   el.style.transform = el.style.transform.split(')')[0] + ')';
   // TODO: This is not working
   // el.style.transform = currentTransform.replace(new RegExp(`\(${key}\\(.+?\\)\)`), '');
-  console.log('nt', el.style.transform);
 };
 
 export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {

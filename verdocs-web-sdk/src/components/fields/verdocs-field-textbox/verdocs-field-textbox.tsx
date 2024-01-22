@@ -70,6 +70,11 @@ export class VerdocsFieldTextbox {
   @Prop() yscale?: number = 1;
 
   /**
+   * The page the field is on
+   */
+  @Prop() pagenumber?: number = 1;
+
+  /**
    * Event fired when the field's settings are changed.
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
@@ -138,10 +143,13 @@ export class VerdocsFieldTextbox {
     y = (parseFloat(y) || 0) + e.deltaRect.top;
     h = (parseFloat(h) || 0) + e.deltaRect.height;
 
+    width /= this.xscale;
+    height /= this.yscale;
+
     Object.assign(e.target.style, {
       width: `${width}px`,
       height: `${height}px`,
-      transform: `translate(${x}px, ${y + h}px)`,
+      transform: `scale(${this.xscale}, ${this.yscale}); translate(${x}px, ${y + h}px)`,
     });
 
     Object.assign(e.target.dataset, {x, y, h});
@@ -151,11 +159,12 @@ export class VerdocsFieldTextbox {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
     const newSettings = {...getFieldSettings(field)};
     const [translateX, translateY] = e.target.style.transform.split('(')[1].split(')')[0].split(',').map(parseFloat);
+    console.log({translateX, translateY});
 
-    newSettings.width = Math.round(parseFloat(e.target.style.width) / this.xscale);
-    newSettings.height = Math.round(parseFloat(e.target.style.height) / this.yscale);
-    newSettings.x = Math.round(newSettings.x + translateX / this.xscale);
-    newSettings.y = Math.round(newSettings.y - translateY / this.yscale);
+    newSettings.width = Math.round(parseFloat(e.target.style.width));
+    newSettings.height = Math.round(parseFloat(e.target.style.height));
+    // newSettings.x = Math.round(newSettings.x + translateX / this.xscale);
+    // newSettings.y = Math.round(newSettings.y - translateY / this.yscale);
 
     updateField(this.endpoint, this.templateid, this.fieldname, {setting: newSettings})
       .then(field => {
@@ -168,7 +177,6 @@ export class VerdocsFieldTextbox {
 
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    console.log('Rendering tb', this.fieldname, field);
     const roleIndex = getRoleIndex(this.roleStore, field.role_name);
     const backgroundColor = field['rgba'] || getRGBA(roleIndex);
     if (!field) {

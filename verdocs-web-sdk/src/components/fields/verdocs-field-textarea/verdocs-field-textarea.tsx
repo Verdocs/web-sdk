@@ -69,6 +69,11 @@ export class VerdocsFieldTextarea {
    */
   @Prop() yscale?: number = 1;
 
+  /**
+   * The page the field is on
+   */
+  @Prop() pagenumber?: number = 1;
+
   @Method()
   async focusField() {
     this.inputEl.focus();

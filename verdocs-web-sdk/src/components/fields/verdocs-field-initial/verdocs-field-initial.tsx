@@ -63,6 +63,11 @@ export class VerdocsFieldInitial {
   @Prop() yscale?: number = 1;
 
   /**
+   * The page the field is on
+   */
+  @Prop() pagenumber?: number = 1;
+
+  /**
    * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
    */
   @Event({composed: true}) adopt: EventEmitter<string>;

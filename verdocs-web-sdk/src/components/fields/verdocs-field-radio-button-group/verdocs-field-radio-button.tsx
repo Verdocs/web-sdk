@@ -65,6 +65,11 @@ export class VerdocsFieldRadioButton {
    */
   @Prop() yscale?: number = 1;
 
+  /**
+   * The page the field is on
+   */
+  @Prop() pagenumber?: number = 1;
+
   @State() showingProperties?: boolean = false;
 
   /**

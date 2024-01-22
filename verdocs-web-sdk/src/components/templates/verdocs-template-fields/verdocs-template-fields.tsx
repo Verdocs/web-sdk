@@ -5,7 +5,7 @@ import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
-import {defaultHeight, defaultWidth, renderDocumentField, updateCssTransform} from '../../../utils/utils';
+import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, renderDocumentField, updateCssTransform} from '../../../utils/utils';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -135,9 +135,6 @@ export class VerdocsTemplateFields {
           this.fieldStore = getTemplateFieldStore(this.templateId);
           this.roleStore = getTemplateRoleStore(this.templateId);
           this.selectedRoleName = this.roleStore.get('roles')?.[0]?.name || '';
-          console.log('Sel role', this.selectedRoleName);
-          console.log('RS', this.roleStore?.state);
-          console.log('FS', this.fieldStore?.state);
           console.log('[PREVIEW] Loaded template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
           this.loading = false;
 
@@ -190,7 +187,8 @@ export class VerdocsTemplateFields {
 
   attachFieldAttributes(pageInfo, field, el) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('settingsChanged', () => {
+    el.addEventListener('settingsChanged', e => {
+      console.log('Settings changed', e.detail);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
     });
     el.addEventListener('deleted', () => {
@@ -209,14 +207,24 @@ export class VerdocsTemplateFields {
   cachedPageInfo: Record<number, IDocumentPageInfo> = {};
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    // console.log('[FIELDS] Page rendered', pageInfo.pageNumber, pageInfo);
+    console.log('[FIELDS] Page rendered', pageInfo.pageNumber, pageInfo.xScale, pageInfo.yScale);
     this.cachedPageInfo[pageInfo.pageNumber] = pageInfo;
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
-    const fields = this.fieldStore.get('fields').filter(field => field && field.page_sequence === pageInfo.pageNumber);
-    console.log('[FIELDS] Page rendered', pageInfo, fields);
-    fields.forEach((field: ITemplateField) => this.reRenderField(field, pageInfo.pageNumber));
+    this.fieldStore
+      .get('fields')
+      .filter(field => field && field.page_sequence === pageInfo.pageNumber)
+      .forEach(field => {
+        // TODO: Why isn't the attr already on the element carrying through?
+        const id = getFieldId(field);
+        const el = document.getElementById(id);
+        if (el) {
+          el.setAttribute('fieldname', field.name);
+          el.setAttribute('pagenumber', String(field.page_sequence));
+          this.makeDraggable(el);
+        }
+      });
   }
 
   reRenderField(field: ITemplateField, pageNumber: number) {
@@ -260,15 +268,15 @@ export class VerdocsTemplateFields {
   }
 
   async handleMoveEnd(event: any) {
-    const name = event.target.getAttribute('name');
+    const name = event.target.getAttribute('fieldname');
     const option = +(event.target.getAttribute('option') || '0');
     const field = this.fieldStore.get('fields').find(field => field.name === name);
     if (!field) {
-      console.log('[FIELDS] Unable to find field', name);
+      console.log('[FIELDS] Unable to find field', name, event.target);
       return;
     }
 
-    const pageNumber = event.target.getAttribute('pageNumber');
+    const pageNumber = event.target.getAttribute('pagenumber');
     const {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
     const clientRect = event.target.getBoundingClientRect();
     const parent = event.target.parentElement;
@@ -315,8 +323,8 @@ export class VerdocsTemplateFields {
     event.target.removeAttribute('posX');
     event.target.removeAttribute('posY');
     console.log('Will remove CSS transform', event.target.style.transform);
-    this.reRenderField(newFieldData, pageNumber);
-    // removeCssTransform(event.target, 'transform');
+    // this.reRenderField(newFieldData, pageNumber);
+    removeCssTransform(event.target);
     console.log('[FIELDS] Updated', name, newFieldData);
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
   }
@@ -524,6 +532,8 @@ export class VerdocsTemplateFields {
                 pageNumber={page}
                 virtualWidth={612}
                 virtualHeight={792}
+                editable={true}
+                done={false}
                 onClick={(e: PointerEvent) => this.handleClickPage(e, page)}
                 onPageRendered={e => this.handlePageRendered(e)}
                 layers={[

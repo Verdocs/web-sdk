@@ -44,17 +44,19 @@ export const createTemplateFieldStoreFromEnvelope = (envelope: IEnvelope) => {
   return store;
 };
 
-export const updateStoreField = (store: TTemplateFieldStore, name: string, newFieldData: Record<string, any>) => {
-  const newFields = [
-    ...store.get('fields').map(field => {
-      if (field.name !== name) {
-        return field;
-      }
-      return {...field, ...newFieldData};
-    }),
-  ];
-
-  store.set('fields', newFields);
+export const updateStoreField = (store: TTemplateFieldStore, oldName: string, newFieldData: ITemplateField) => {
+  const oldFields = store.get('fields') || [];
+  if (oldName !== newFieldData.name) {
+    console.log('Renaming', oldName, newFieldData.name);
+    const withoutOldField = oldFields.filter(field => field.name !== oldName);
+    store.set('fields', [...withoutOldField, newFieldData]);
+  } else {
+    console.log('Updating', oldName);
+    store.set(
+      'fields',
+      oldFields.map(field => (field.name === oldName ? {...field, ...newFieldData} : {...field})),
+    );
+  }
 };
 
 export const deleteStoreField = (store: TTemplateFieldStore, name: string) => {

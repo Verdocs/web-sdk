@@ -63,6 +63,11 @@ export class VerdocsFieldSignature {
   @Prop() yscale?: number = 1;
 
   /**
+   * The page the field is on
+   */
+  @Prop() pagenumber?: number = 1;
+
+  /**
    * Event emitted when the field has changed.
    */
   @Event({composed: true}) fieldChange: EventEmitter<string>;

@@ -62,6 +62,11 @@ export class VerdocsFieldCheckbox {
   @Prop() yscale?: number = 1;
 
   /**
+   * The page the field is on
+   */
+  @Prop() pagenumber?: number = 1;
+
+  /**
    * Event fired when the field's settings are changed.
    */
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;

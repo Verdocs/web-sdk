@@ -196,15 +196,11 @@ export class VerdocsTemplateFieldProperties {
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(updated => {
         this.dirty = false;
-        const newFields = [
-          ...this.fieldStore.get('fields').map(field => {
-            if (field.name !== this.fieldName) {
-              return field;
-            }
-            return {...field, ...updated};
-          }),
-        ];
-        this.fieldStore.set('fields', newFields);
+        updateStoreField(this.fieldStore, this.fieldName, updated);
+        // if (this.fieldname !== newSettings.name) {
+        //   this.fieldname = newSettings.name;
+        //   console.log('new name', this.fieldname);
+        // }
         this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field: updated});
         this.close?.emit();
         document.getElementById('verdocs-template-field-properties')?.remove();
