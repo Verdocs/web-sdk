@@ -5,7 +5,7 @@ import {updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
@@ -169,6 +169,7 @@ export class VerdocsFieldTextbox {
     updateField(this.endpoint, this.templateid, this.fieldname, {setting: newSettings})
       .then(field => {
         console.log('Update result', field);
+        updateStoreField(this.fieldStore, this.fieldname, field);
         this.settingsChanged?.emit({fieldName: field.name, settings: newSettings, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
       })
