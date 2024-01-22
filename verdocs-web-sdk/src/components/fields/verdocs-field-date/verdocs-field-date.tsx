@@ -113,7 +113,7 @@ export class VerdocsFieldDate {
       autoClose: true,
       onSelect: ({date, formattedDate}) => {
         console.log('Selected date', formattedDate, date);
-        const event = new CustomEvent('input', {
+        const event = new CustomEvent('fieldChange', {
           detail: {date, formattedDate},
         });
         // const event = new window.Event('input', {composed: true, bubbles: true, cancelable: true});

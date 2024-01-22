@@ -1,4 +1,3 @@
-import {format} from 'date-fns';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Envelopes} from '@verdocs/js-sdk/Envelopes';
 import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
@@ -11,7 +10,7 @@ import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmi
 import {getEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {createTemplateFieldStoreFromEnvelope} from '../../../utils/TemplateFieldStore';
-import {FORMAT_DATE, IDocumentPageInfo} from '../../../utils/Types';
+import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
@@ -345,12 +344,10 @@ export class VerdocsSign {
           });
 
       case 'date':
-        const iso = e.target.getAttribute('iso');
-        console.log('iso', iso);
-        const formatted = format(new Date(iso), FORMAT_DATE);
-        console.log('f', formatted);
-        if (formatted !== '1970-12-31') {
-          return this.saveFieldChange(field.name, {prepared: false, value: formatted});
+        const {date, formattedDate} = e.detail;
+        if (formattedDate) {
+          console.log('dt', {date, formattedDate});
+          return this.saveFieldChange(field.name, {prepared: false, value: formattedDate});
         }
         break;
 
