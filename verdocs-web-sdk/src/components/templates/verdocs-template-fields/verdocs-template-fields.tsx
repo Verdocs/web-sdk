@@ -459,7 +459,7 @@ export class VerdocsTemplateFields {
 
       this.fieldStore.set('fields', [...this.fieldStore.get('fields'), saved]);
       this.placing = null;
-      this.reRenderField(saved, pageNumber);
+      // this.reRenderField(saved, pageNumber);
 
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
     }

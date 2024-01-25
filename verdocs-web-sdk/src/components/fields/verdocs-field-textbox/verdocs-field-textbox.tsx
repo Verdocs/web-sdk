@@ -36,23 +36,23 @@ export class VerdocsFieldTextbox {
   /**
    * The name of the field to display.
    */
-  @Prop() fieldname: string = '';
+  @Prop({reflect: true}) fieldname: string = '';
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
    */
-  @Prop() disabled?: boolean = false;
+  @Prop({reflect: true}) disabled?: boolean = false;
 
   /**
    * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be
    * changed, so it should typically only be enabled in the Builder.
    */
-  @Prop() editable?: boolean = false;
+  @Prop({reflect: true}) editable?: boolean = false;
 
   /**
    * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
    */
-  @Prop() moveable?: boolean = false;
+  @Prop({reflect: true}) moveable?: boolean = false;
 
   /**
    * If set, the field is considered "done" and is drawn in a display-final-value state.

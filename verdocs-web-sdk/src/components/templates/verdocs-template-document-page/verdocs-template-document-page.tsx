@@ -120,6 +120,11 @@ export class VerdocsTemplateDocumentPage {
     this.resizeObserver.observe(this.container);
   }
 
+  componentDidUpdate() {
+    // This is fired when fields are updated and triggers the parent to re-attach behaviors like drag-and-drop
+    this.notifyRenderedSize();
+  }
+
   disconnectedCallback() {
     this.resizeObserver?.disconnect();
   }
