@@ -1141,6 +1141,10 @@ export namespace Components {
     }
     interface VerdocsTemplateDocumentPage {
         /**
+          * Whether the fields should be disabled (Builder)
+         */
+        "disabled": boolean;
+        /**
           * The ID of the document to display.
          */
         "documentId": string;
@@ -3778,6 +3782,10 @@ declare namespace LocalJSX {
         "onTemplateCreated"?: (event: VerdocsTemplateCreateCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; templateId: string}>) => void;
     }
     interface VerdocsTemplateDocumentPage {
+        /**
+          * Whether the fields should be disabled (Builder)
+         */
+        "disabled"?: boolean;
         /**
           * The ID of the document to display.
          */

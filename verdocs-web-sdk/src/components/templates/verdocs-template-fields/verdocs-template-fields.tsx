@@ -207,7 +207,7 @@ export class VerdocsTemplateFields {
   cachedPageInfo: Record<number, IDocumentPageInfo> = {};
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    console.log('[FIELDS] Page rendered', pageInfo.pageNumber, pageInfo.xScale, pageInfo.yScale);
+    // console.log('[FIELDS] Page rendered', pageInfo.pageNumber, pageInfo.xScale, pageInfo.yScale);
     this.cachedPageInfo[pageInfo.pageNumber] = pageInfo;
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
@@ -532,6 +532,7 @@ export class VerdocsTemplateFields {
                 pageNumber={page}
                 virtualWidth={612}
                 virtualHeight={792}
+                disabled={true}
                 editable={true}
                 done={false}
                 onClick={(e: PointerEvent) => this.handleClickPage(e, page)}

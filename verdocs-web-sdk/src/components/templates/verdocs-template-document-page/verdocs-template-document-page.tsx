@@ -32,6 +32,11 @@ export class VerdocsTemplateDocumentPage {
   @Prop() editable = false;
 
   /**
+   * Whether the fields should be disabled (Builder)
+   */
+  @Prop() disabled = false;
+
+  /**
    * Whether the field are interactable (done/submitted disables this)
    */
   @Prop() done = false;
@@ -192,6 +197,7 @@ export class VerdocsTemplateDocumentPage {
                             templateid={this.templateId}
                             fieldname={field.name}
                             editable={this.editable}
+                            disabled={this.disabled}
                             done={this.done}
                             xscale={this.xScale}
                             yscale={this.yScale}
@@ -206,6 +212,7 @@ export class VerdocsTemplateDocumentPage {
                             templateid={this.templateId}
                             fieldname={field.name}
                             editable={this.editable}
+                            disabled={this.disabled}
                             done={this.done}
                             xscale={this.xScale}
                             yscale={this.yScale}
@@ -220,6 +227,7 @@ export class VerdocsTemplateDocumentPage {
                             templateid={this.templateId}
                             fieldname={field.name}
                             editable={this.editable}
+                            disabled={this.disabled}
                             xscale={this.xScale}
                             yscale={this.yScale}
                             done={this.done}
@@ -234,6 +242,7 @@ export class VerdocsTemplateDocumentPage {
                             templateid={this.templateId}
                             fieldname={field.name}
                             editable={this.editable}
+                            disabled={this.disabled}
                             done={this.done}
                             xscale={this.xScale}
                             yscale={this.yScale}
@@ -248,6 +257,7 @@ export class VerdocsTemplateDocumentPage {
                             templateid={this.templateId}
                             fieldname={field.name}
                             editable={this.editable}
+                            disabled={this.disabled}
                             done={this.done}
                             xscale={this.xScale}
                             yscale={this.yScale}
@@ -276,6 +286,7 @@ export class VerdocsTemplateDocumentPage {
                             templateid={this.templateId}
                             fieldname={field.name}
                             editable={this.editable}
+                            disabled={this.disabled}
                             xscale={this.xScale}
                             yscale={this.yScale}
                             done={this.done}
@@ -290,6 +301,7 @@ export class VerdocsTemplateDocumentPage {
                             templateid={this.templateId}
                             fieldname={field.name}
                             editable={this.editable}
+                            disabled={this.disabled}
                             xscale={this.xScale}
                             yscale={this.yScale}
                             done={this.done}
@@ -306,6 +318,7 @@ export class VerdocsTemplateDocumentPage {
                               templateid={this.templateId}
                               fieldname={field.name}
                               editable={this.editable}
+                              disabled={this.disabled}
                               xscale={this.xScale}
                               yscale={this.yScale}
                               done={this.done}
@@ -324,6 +337,7 @@ export class VerdocsTemplateDocumentPage {
                               templateid={this.templateId}
                               fieldname={field.name}
                               editable={this.editable}
+                              disabled={this.disabled}
                               xscale={this.xScale}
                               yscale={this.yScale}
                               done={this.done}
