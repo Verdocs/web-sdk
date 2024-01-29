@@ -522,6 +522,9 @@ export class VerdocsSign {
     // console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
 
     // First render the fields for the signer
+    // Also show field placeholders for other signers who have yet to act
+    // In template list in Beta, show second date being sorted on
+    // Sign top to bottom left to right
     recipientFields
       .filter(field => field.page === pageInfo.pageNumber)
       .forEach(field => {

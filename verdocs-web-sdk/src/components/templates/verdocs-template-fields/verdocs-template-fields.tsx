@@ -5,7 +5,7 @@ import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
 import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
-import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, renderDocumentField, updateCssTransform} from '../../../utils/utils';
+import {defaultHeight, defaultWidth, getFieldId, getFieldOptionId, removeCssTransform, updateCssTransform} from '../../../utils/utils';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -131,11 +131,9 @@ export class VerdocsTemplateFields {
       getTemplateStore(this.endpoint, this.templateId, true)
         .then(ts => {
           this.templateStore = ts;
-          console.log('[PREVIEW] Loaded Template Store', ts.state);
           this.fieldStore = getTemplateFieldStore(this.templateId);
           this.roleStore = getTemplateRoleStore(this.templateId);
           this.selectedRoleName = this.roleStore.get('roles')?.[0]?.name || '';
-          console.log('[PREVIEW] Loaded template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
           this.loading = false;
 
           this.fieldStore.onChange('fields', fields => {
@@ -217,33 +215,30 @@ export class VerdocsTemplateFields {
       .filter(field => field && field.page_sequence === pageInfo.pageNumber)
       .forEach(field => {
         // TODO: Why isn't the attr already on the element carrying through?
-        const id = getFieldId(field);
-        const el = document.getElementById(id);
-        if (el) {
-          el.setAttribute('fieldname', field.name);
-          el.setAttribute('pagenumber', String(field.page_sequence));
-          this.makeDraggable(el);
+        switch (field.type) {
+          case 'checkbox_group':
+          case 'radio_button_group':
+            ((field as any).settings || (field as any).setting || {}).options.map((_, index) => {
+              const id = getFieldOptionId(field, index);
+              const el = document.getElementById(id);
+              if (el) {
+                el.setAttribute('fieldname', field.name);
+                el.setAttribute('pagenumber', String(field.page_sequence));
+                this.makeDraggable(el);
+              }
+            });
+            break;
+          default:
+            const id = getFieldId(field);
+            const el = document.getElementById(id);
+            if (el) {
+              el.setAttribute('fieldname', field.name);
+              el.setAttribute('pagenumber', String(field.page_sequence));
+              this.makeDraggable(el);
+            }
+            break;
         }
       });
-  }
-
-  reRenderField(field: ITemplateField, pageNumber: number) {
-    const pageInfo = this.cachedPageInfo[pageNumber];
-    // const roleIndex = getRoleIndex(getRoleNames(this.roleStore), field.role_name);
-    const el = renderDocumentField(field, pageInfo, {disabled: true, editable: true, draggable: true});
-    if (!el) {
-      return;
-    }
-
-    if (Array.isArray(el)) {
-      el.forEach(childEl => {
-        this.attachFieldAttributes(pageInfo, field, childEl);
-        this.makeDraggable(childEl);
-      });
-    } else {
-      this.attachFieldAttributes(pageInfo, field, el);
-      this.makeDraggable(el);
-    }
   }
 
   makeDraggable(el: HTMLElement) {
@@ -322,10 +317,7 @@ export class VerdocsTemplateFields {
     updateStoreField(this.fieldStore, name, newFieldData);
     event.target.removeAttribute('posX');
     event.target.removeAttribute('posY');
-    console.log('Will remove CSS transform', event.target.style.transform);
-    // this.reRenderField(newFieldData, pageNumber);
     removeCssTransform(event.target);
-    console.log('[FIELDS] Updated', name, newFieldData);
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
   }
 
