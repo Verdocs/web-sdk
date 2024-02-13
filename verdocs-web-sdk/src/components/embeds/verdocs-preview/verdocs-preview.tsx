@@ -103,6 +103,9 @@ export class VerdocsPreview {
               templateId={page.template_id}
               documentId={page.document_id}
               pageNumber={page.sequence}
+              disabled={true}
+              editable={true}
+              done={false}
               virtualWidth={612}
               virtualHeight={792}
               onPageRendered={e => this.handlePageRendered(e)}

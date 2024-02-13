@@ -59,6 +59,11 @@ export class VerdocsSend {
   @Prop() environment: string = 'web';
 
   /**
+   * The user is sending an envelope the form and clicked send.
+   */
+  @Event({composed: true}) sendingEnvelope: EventEmitter<{sending: boolean}>;
+
+  /**
    * The user completed the form and clicked send.
    */
   @Event({composed: true}) send: EventEmitter<{roles: ICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>;
@@ -190,6 +195,7 @@ export class VerdocsSend {
     e.stopPropagation();
 
     this.sending = true;
+    this.sendingEnvelope?.emit({sending: true});
 
     const details: ICreateEnvelopeRequest = {
       template_id: this.templateId,
@@ -206,12 +212,14 @@ export class VerdocsSend {
         console.log('[SEND] Send envelope', r);
         this.reset().catch((e: any) => console.log('Unknown Error', e));
         this.sending = false;
+        this.sendingEnvelope?.emit({sending: false});
         this.send?.emit({...details, envelope_id: r.id, envelope: r});
       })
       .catch(e => {
         console.log('Send error', e);
         // toast.error(e.response?.data?.message || 'Unknown error creating envelope');
         this.sending = false;
+        this.sendingEnvelope?.emit({sending: false});
       });
   }
 

@@ -1547,7 +1547,7 @@ export class VerdocsSend {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['send', 'exit', 'sdkError', 'searchContacts']);
+    proxyOutputs(this, this.el, ['sendingEnvelope', 'send', 'exit', 'sdkError', 'searchContacts']);
   }
 }
 
@@ -1558,6 +1558,10 @@ import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
 import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSend extends Components.VerdocsSend {
+  /**
+   * The user is sending an envelope the form and clicked send.
+   */
+  sendingEnvelope: EventEmitter<CustomEvent<{sending: boolean}>>;
   /**
    * The user completed the form and clicked send.
    */
