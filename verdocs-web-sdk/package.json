@@ -31,7 +31,7 @@
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "@stencil/core": "2.20.0",
-    "@stencil/store": "^2.0.12",
+    "@stencil/store": "^2.0.13",
     "@svgdotjs/svg.js": "^3.2.0",
     "@verdocs/js-sdk": "^3.10.28",
     "choices.js": "^10.2.0",
