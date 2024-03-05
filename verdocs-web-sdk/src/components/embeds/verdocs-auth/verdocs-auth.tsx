@@ -203,13 +203,13 @@ export class VerdocsAuth {
         this.loginAndCheckVerification();
       })
       .catch(e => {
-        console.log('[AUTH] Signup error', e.response, JSON.stringify(e));
+        console.log('[AUTH] Signup error', e.response);
         this.submitting = false;
         this.activeSession = null;
         this.authenticated?.emit({authenticated: false, session: null});
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
 
-        VerdocsToast('Signup failed: ' + e.response?.data, {style: 'error'});
+        VerdocsToast('Signup failed: ' + e.response?.data?.message || 'Unknown Error', {style: 'error'});
       });
   }
 
