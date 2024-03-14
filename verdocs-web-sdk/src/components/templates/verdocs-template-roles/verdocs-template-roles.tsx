@@ -225,7 +225,7 @@ export class VerdocsTemplateRoles {
   // e.g. 1.5 to place it between items 1 and 2, 0.5 to place it at the beginning, or last+0.5 to place it at the end.
   // Then we re-sort the list of roles and renumber them.
   renumberTemplateRoles() {
-    console.log('Renumbering roles', this.getSequenceNumbers(), JSON.stringify(this.roleStore.state));
+    // console.log('Renumbering roles', this.getSequenceNumbers(), JSON.stringify(this.roleStore.state));
     // Avoid dupe renumber attempts
     const renumbered = [];
 
@@ -247,7 +247,6 @@ export class VerdocsTemplateRoles {
 
   // Look for name conflicts, because they're UGC and can be anything, regardless of order.
   getNextRoleName() {
-    console.log('Getting next role name', JSON.stringify(this.roleStore.state));
     let name = '';
     let nextNumber = Object.keys(this.roleStore.state).length - 1;
     do {

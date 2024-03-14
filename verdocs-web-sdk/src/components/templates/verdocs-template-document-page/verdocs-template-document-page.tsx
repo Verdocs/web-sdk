@@ -189,108 +189,114 @@ export class VerdocsTemplateDocumentPage {
                   .filter(field => field && field.page_sequence === this.pageNumber)
                   .map(field => {
                     const id = getFieldId(field);
-                    switch (field.type) {
+                    let {name, type} = field;
+                    const {xScale, yScale, templateId, editable, disabled, done, pageNumber} = this;
+                    if (field['setting']?.leading > 0 || field['settings']?.leading > 0) {
+                      type = 'textarea';
+                    }
+                    switch (type) {
                       case 'textbox':
                         return (
                           <verdocs-field-textbox
                             id={id}
-                            templateid={this.templateId}
-                            fieldname={field.name}
-                            editable={this.editable}
-                            disabled={this.disabled}
-                            done={this.done}
-                            xscale={this.xScale}
-                            yscale={this.yScale}
-                            pagenumber={this.pageNumber}
-                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                            fieldname={name}
+                            templateid={templateId}
+                            editable={editable}
+                            disabled={disabled}
+                            done={done}
+                            xscale={xScale}
+                            yscale={yScale}
+                            pagenumber={pageNumber}
+                            style={getControlStyles(field, xScale, yScale, 0)}
                           />
                         );
                       case 'textarea':
                         return (
                           <verdocs-field-textarea
                             id={id}
-                            templateid={this.templateId}
-                            fieldname={field.name}
-                            editable={this.editable}
-                            disabled={this.disabled}
-                            done={this.done}
-                            xscale={this.xScale}
-                            yscale={this.yScale}
-                            pagenumber={this.pageNumber}
-                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                            fieldname={name}
+                            templateid={templateId}
+                            editable={editable}
+                            disabled={disabled}
+                            done={done}
+                            xscale={xScale}
+                            yscale={yScale}
+                            pagenumber={pageNumber}
+                            style={getControlStyles(field, xScale, yScale, 0)}
                           />
                         );
                       case 'date':
                         return (
                           <verdocs-field-date
                             id={id}
-                            templateid={this.templateId}
-                            fieldname={field.name}
-                            editable={this.editable}
-                            disabled={this.disabled}
-                            xscale={this.xScale}
-                            yscale={this.yScale}
-                            done={this.done}
-                            pagenumber={this.pageNumber}
-                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                            fieldname={name}
+                            templateid={templateId}
+                            editable={editable}
+                            disabled={disabled}
+                            done={done}
+                            xscale={xScale}
+                            yscale={yScale}
+                            pagenumber={pageNumber}
+                            style={getControlStyles(field, xScale, yScale, 0)}
                           />
                         );
                       case 'attachment':
                         return (
                           <verdocs-field-attachment
                             id={id}
-                            templateid={this.templateId}
-                            fieldname={field.name}
-                            editable={this.editable}
-                            disabled={this.disabled}
-                            done={this.done}
-                            xscale={this.xScale}
-                            yscale={this.yScale}
-                            pagenumber={this.pageNumber}
-                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                            fieldname={name}
+                            templateid={templateId}
+                            editable={editable}
+                            disabled={disabled}
+                            done={done}
+                            xscale={xScale}
+                            yscale={yScale}
+                            pagenumber={pageNumber}
+                            style={getControlStyles(field, xScale, yScale, 0)}
                           />
                         );
                       case 'dropdown':
                         return (
                           <verdocs-field-dropdown
                             id={id}
-                            templateid={this.templateId}
-                            fieldname={field.name}
-                            editable={this.editable}
-                            disabled={this.disabled}
-                            done={this.done}
-                            xscale={this.xScale}
-                            yscale={this.yScale}
-                            pagenumber={this.pageNumber}
-                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                            fieldname={name}
+                            templateid={templateId}
+                            editable={editable}
+                            disabled={disabled}
+                            done={done}
+                            xscale={xScale}
+                            yscale={yScale}
+                            pagenumber={pageNumber}
+                            style={getControlStyles(field, xScale, yScale, 0)}
                           />
                         );
                       case 'initial':
                         return (
                           <verdocs-field-initial
                             id={id}
-                            templateid={this.templateId}
-                            fieldname={field.name}
-                            editable={this.editable}
-                            xscale={this.xScale}
-                            yscale={this.yScale}
-                            done={this.done}
-                            pagenumber={this.pageNumber}
-                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                            fieldname={name}
+                            templateid={templateId}
+                            editable={editable}
+                            disabled={disabled}
+                            done={done}
+                            xscale={xScale}
+                            yscale={yScale}
+                            pagenumber={pageNumber}
+                            style={getControlStyles(field, xScale, yScale, 0)}
                           />
                         );
                       case 'signature':
                         return (
                           <verdocs-field-signature
                             id={id}
-                            templateid={this.templateId}
-                            fieldname={field.name}
-                            editable={this.editable}
-                            disabled={this.disabled}
-                            xscale={this.xScale}
-                            yscale={this.yScale}
-                            done={this.done}
-                            pagenumber={this.pageNumber}
+                            fieldname={name}
+                            templateid={templateId}
+                            editable={editable}
+                            disabled={disabled}
+                            done={done}
+                            xscale={xScale}
+                            yscale={yScale}
+                            pagenumber={pageNumber}
                             style={getControlStyles(field, this.xScale, this.yScale, 0)}
                           />
                         );
@@ -298,15 +304,15 @@ export class VerdocsTemplateDocumentPage {
                         return (
                           <verdocs-field-timestamp
                             id={id}
-                            templateid={this.templateId}
-                            fieldname={field.name}
-                            editable={this.editable}
-                            disabled={this.disabled}
-                            xscale={this.xScale}
-                            yscale={this.yScale}
-                            done={this.done}
-                            pagenumber={this.pageNumber}
-                            style={getControlStyles(field, this.xScale, this.yScale, 0)}
+                            fieldname={name}
+                            templateid={templateId}
+                            editable={editable}
+                            disabled={disabled}
+                            done={done}
+                            xscale={xScale}
+                            yscale={yScale}
+                            pagenumber={pageNumber}
+                            style={getControlStyles(field, xScale, yScale, 0)}
                           />
                         );
                       case 'checkbox_group':
@@ -315,16 +321,16 @@ export class VerdocsTemplateDocumentPage {
                           return (
                             <verdocs-field-checkbox
                               id={id}
-                              templateid={this.templateId}
-                              fieldname={field.name}
-                              editable={this.editable}
-                              disabled={this.disabled}
-                              xscale={this.xScale}
-                              yscale={this.yScale}
-                              done={this.done}
+                              fieldname={name}
+                              templateid={templateId}
+                              editable={editable}
+                              disabled={disabled}
+                              done={done}
+                              xscale={xScale}
+                              yscale={yScale}
+                              pagenumber={pageNumber}
                               option={checkboxIndex}
-                              pagenumber={this.pageNumber}
-                              style={getControlStyles(field, this.xScale, this.yScale, checkboxIndex)}
+                              style={getControlStyles(field, xScale, yScale, checkboxIndex)}
                             />
                           );
                         });
@@ -334,21 +340,21 @@ export class VerdocsTemplateDocumentPage {
                           return (
                             <verdocs-field-radio-button
                               id={id}
-                              templateid={this.templateId}
-                              fieldname={field.name}
-                              editable={this.editable}
-                              disabled={this.disabled}
-                              xscale={this.xScale}
-                              yscale={this.yScale}
-                              done={this.done}
+                              fieldname={name}
+                              templateid={templateId}
+                              editable={editable}
+                              disabled={disabled}
+                              done={done}
+                              xscale={xScale}
+                              yscale={yScale}
+                              pagenumber={pageNumber}
                               option={checkboxIndex}
-                              pagenumber={this.pageNumber}
-                              style={getControlStyles(field, this.xScale, this.yScale, checkboxIndex)}
+                              style={getControlStyles(field, xScale, yScale, checkboxIndex)}
                             />
                           );
                         });
                       default:
-                        return <Fragment>{field.name}</Fragment>;
+                        return <Fragment>{name}</Fragment>;
                     }
                   })}
             </div>

@@ -27,6 +27,7 @@ export const createTemplateRoleStore = (template: ITemplate) => {
 };
 
 export const updateStoreRole = (store: TTemplateRoleStore, name: string, newRoleData: Record<string, any>) => {
+  console.log('[ROLES] Updating store role', name, newRoleData);
   const newRoles = [
     ...store.get('roles').map(role => {
       if (role.name !== name) {
@@ -40,6 +41,7 @@ export const updateStoreRole = (store: TTemplateRoleStore, name: string, newRole
 };
 
 export const deleteStoreRole = (store: TTemplateRoleStore, name: string) => {
+  console.log('[ROLES] Deleting store role', name);
   const newRoles = [...store.get('roles').filter(field => field.name !== name)];
   store.set('roles', newRoles);
 };

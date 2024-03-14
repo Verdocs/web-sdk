@@ -63,14 +63,14 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
 to the envelope detail view.
    */
-  viewEnvelope: EventEmitter<CustomEvent<IVerdocsActivityBoxIVerdocsActivityBox{endpoint: [object Object]; entry: [object Object]}>>;
+  viewEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsActivityBoxVerdocsEndpoint; entry: IVerdocsActivityBoxIActivityEntry}>>;
   /**
    * Event fired when the user clicks View All in the title bar. The current view will be included in the event
 details to help the host application navigate the user to the appropriate screen for the request. Note that
 the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass
 this value through directly. This button is not visible if the header is hidden.
    */
-  viewAll: EventEmitter<CustomEvent<IVerdocsActivityBox{endpoint: [object Object]; view: string}>>;
+  viewAll: EventEmitter<CustomEvent<{endpoint: IVerdocsActivityBoxVerdocsEndpoint; view: string}>>;
 }
 
 
@@ -150,19 +150,19 @@ terminate the process, and the calling application should correct the condition 
   /**
    * The user completed the Send form and clicked send.
    */
-  send: EventEmitter<CustomEvent<IVerdocsBuild{roles: [object Object][]; name: string; template_id: string}>>;
+  send: EventEmitter<CustomEvent<{roles: IVerdocsBuildICreateEnvelopeRole[]; name: string; template_id: string}>>;
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  templateUpdated: EventEmitter<CustomEvent<IVerdocsBuildIVerdocsBuild{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: IVerdocsBuildITemplate; event: string}>>;
   /**
    * Event fired when the template is created by the upload step.
    */
-  templateCreated: EventEmitter<CustomEvent<IVerdocsBuildIVerdocsBuild{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  templateCreated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: IVerdocsBuildITemplate; event: string}>>;
   /**
    * Event fired when roles are updated in the roles step.
    */
-  rolesUpdated: EventEmitter<CustomEvent<IVerdocsBuildIVerdocsBuild{endpoint: [object Object]; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: [object Object][]}>>;
+  rolesUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsBuildIRole[]}>>;
 }
 
 
@@ -411,7 +411,7 @@ export declare interface VerdocsEnvelopeRecipientLink extends Components.Verdocs
    * Event fired when the user clicks Done to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  next: EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientLink{envelope: [object Object]}>>;
+  next: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientLinkIEnvelope}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -448,17 +448,17 @@ export declare interface VerdocsEnvelopeRecipientSummary extends Components.Verd
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  another: EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientSummary{envelope: [object Object]}>>;
+  another: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>;
   /**
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  view: EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientSummary{envelope: [object Object]}>>;
+  view: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>;
   /**
    * Event fired when the user clicks Done to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  next: EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientSummary{envelope: [object Object]}>>;
+  next: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -500,7 +500,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  envelopeUpdated: EventEmitter<CustomEvent<IVerdocsEnvelopeSidebarIVerdocsEnvelopeSidebar{endpoint: [object Object]; envelope: [object Object]; event: string}>>;
+  envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopeSidebarVerdocsEndpoint; envelope: IVerdocsEnvelopeSidebarIEnvelope; event: string}>>;
   /**
    * Event fired when the sidebar is opened or closed.
    */
@@ -509,7 +509,7 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks Send Another in the Manage Recipients dialog. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  another: EventEmitter<CustomEvent<IVerdocsEnvelopeSidebar{envelope: [object Object]}>>;
+  another: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeSidebarIEnvelope}>>;
 }
 
 
@@ -567,11 +567,11 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
 to the envelope detail view.
    */
-  viewEnvelope: EventEmitter<CustomEvent<IVerdocsEnvelopesListIVerdocsEnvelopesList{endpoint: [object Object]; envelope: [object Object]}>>;
+  viewEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IVerdocsEnvelopesListIEnvelope}>>;
   /**
    * Event fired when the user clicks to finish the envelope.
    */
-  finishEnvelope: EventEmitter<CustomEvent<IVerdocsEnvelopesListIVerdocsEnvelopesList{endpoint: [object Object]; envelope: [object Object]}>>;
+  finishEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IVerdocsEnvelopesListIEnvelope}>>;
 }
 
 
@@ -603,7 +603,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldAttachmentIVerdocsFieldAttachment{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldAttachmentITemplateFieldSetting; field: IVerdocsFieldAttachmentITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -643,7 +643,7 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldCheckboxIVerdocsFieldCheckbox{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldCheckboxITemplateFieldSetting; field: IVerdocsFieldCheckboxITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -683,7 +683,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldDateIVerdocsFieldDate{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldDateITemplateFieldSetting; field: IVerdocsFieldDateITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -725,7 +725,7 @@ keypress.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldDropdownIVerdocsFieldDropdown{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldDropdownITemplateFieldSetting; field: IVerdocsFieldDropdownITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -775,7 +775,7 @@ keypress.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldInitialIVerdocsFieldInitial{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldInitialITemplateFieldSetting; field: IVerdocsFieldInitialITemplateField}>>;
   /**
    * Event fired on every character entered into / deleted from the field.
    */
@@ -817,7 +817,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
 
   initialComplete: EventEmitter<CustomEvent<string>>;
 
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldPaymentIVerdocsFieldPayment{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldPaymentITemplateFieldSetting; field: IVerdocsFieldPaymentITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -853,7 +853,7 @@ export declare interface VerdocsFieldRadioButton extends Components.VerdocsField
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldRadioButtonIVerdocsFieldRadioButton{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldRadioButtonITemplateFieldSetting; field: IVerdocsFieldRadioButtonITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -897,7 +897,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldSignatureIVerdocsFieldSignature{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldSignatureITemplateFieldSetting; field: IVerdocsFieldSignatureITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -933,7 +933,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldTextareaIVerdocsFieldTextarea{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldTextareaITemplateFieldSetting; field: IVerdocsFieldTextareaITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -969,7 +969,7 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldTextboxIVerdocsFieldTextbox{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldTextboxITemplateFieldSetting; field: IVerdocsFieldTextboxITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -1005,7 +1005,7 @@ export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTi
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsFieldTimestampIVerdocsFieldTimestamp{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldTimestampITemplateFieldSetting; field: IVerdocsFieldTimestampITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -1565,7 +1565,7 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
    * The user completed the form and clicked send.
    */
-  send: EventEmitter<CustomEvent<IVerdocsSendIVerdocsSend{roles: [object Object][]; name: string; template_id: string; envelope_id: string; envelope: [object Object]}>>;
+  send: EventEmitter<CustomEvent<{roles: IVerdocsSendICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>;
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
@@ -1647,15 +1647,15 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberInvited: EventEmitter<CustomEvent<IVerdocsSettingsApiKeysIVerdocsSettingsApiKeys{endpoint: [object Object]; member: [object Object]}>>;
+  memberInvited: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsApiKeysVerdocsEndpoint; member: IVerdocsSettingsApiKeysIProfile}>>;
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberUpdated: EventEmitter<CustomEvent<IVerdocsSettingsApiKeysIVerdocsSettingsApiKeys{endpoint: [object Object]; member: [object Object]}>>;
+  memberUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsApiKeysVerdocsEndpoint; member: IVerdocsSettingsApiKeysIProfile}>>;
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberRemoved: EventEmitter<CustomEvent<IVerdocsSettingsApiKeysIVerdocsSettingsApiKeys{endpoint: [object Object]; member: [object Object]}>>;
+  memberRemoved: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsApiKeysVerdocsEndpoint; member: IVerdocsSettingsApiKeysIProfile}>>;
 }
 
 
@@ -1692,15 +1692,15 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberInvited: EventEmitter<CustomEvent<IVerdocsSettingsMembersIVerdocsSettingsMembers{endpoint: [object Object]; member: [object Object]}>>;
+  memberInvited: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsMembersVerdocsEndpoint; member: IVerdocsSettingsMembersIProfile}>>;
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberUpdated: EventEmitter<CustomEvent<IVerdocsSettingsMembersIVerdocsSettingsMembers{endpoint: [object Object]; member: [object Object]}>>;
+  memberUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsMembersVerdocsEndpoint; member: IVerdocsSettingsMembersIProfile}>>;
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberRemoved: EventEmitter<CustomEvent<IVerdocsSettingsMembersIVerdocsSettingsMembers{endpoint: [object Object]; member: [object Object]}>>;
+  memberRemoved: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsMembersVerdocsEndpoint; member: IVerdocsSettingsMembersIProfile}>>;
 }
 
 
@@ -1737,7 +1737,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user chooses the Edit option from the dropdown menu.
    */
-  organizationUpdated: EventEmitter<CustomEvent<IVerdocsSettingsOrganizationIVerdocsSettingsOrganization{endpoint: [object Object]; organization: [object Object]}>>;
+  organizationUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsOrganizationVerdocsEndpoint; organization: IVerdocsSettingsOrganizationIOrganization}>>;
 }
 
 
@@ -1774,7 +1774,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user chooses the Edit option from the dropdown menu.
    */
-  profileUpdated: EventEmitter<CustomEvent<IVerdocsSettingsProfileIVerdocsSettingsProfile{endpoint: [object Object]; profile: [object Object]}>>;
+  profileUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsProfileVerdocsEndpoint; profile: IVerdocsSettingsProfileIProfile}>>;
 }
 
 
@@ -1811,11 +1811,11 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the envelope is updated in any way.
    */
-  envelopeLoaded: EventEmitter<CustomEvent<IVerdocsSignIVerdocsSign{endpoint: [object Object]; envelope: [object Object]}>>;
+  envelopeLoaded: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope}>>;
   /**
    * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  envelopeUpdated: EventEmitter<CustomEvent<IVerdocsSignIVerdocsSign{endpoint: [object Object]; envelope: [object Object]; event: string}>>;
+  envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope; event: string}>>;
 }
 
 
@@ -1922,7 +1922,7 @@ export declare interface VerdocsTable extends Components.VerdocsTable {
   /**
    * Event fired when the user clicks a column header. This may be used to manage sorting options.
    */
-  colHeaderClick: EventEmitter<CustomEvent<IVerdocsTable{col: [object Object]}>>;
+  colHeaderClick: EventEmitter<CustomEvent<{col: [object Object]}>>;
   /**
    * Event fired when the user clicks a row.
    */
@@ -1957,7 +1957,7 @@ export declare interface VerdocsTabs extends Components.VerdocsTabs {
    * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate
 to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
    */
-  selectTab: EventEmitter<CustomEvent<IVerdocsTabs{tab: [object Object]; index: number}>>;
+  selectTab: EventEmitter<CustomEvent<{tab: [object Object]; index: number}>>;
 }
 
 
@@ -1993,11 +1993,11 @@ export declare interface VerdocsTemplateAttachments extends Components.VerdocsTe
   /**
    * Event fired when the user clicks the next button.
    */
-  next: EventEmitter<CustomEvent<IVerdocsTemplateAttachments{template: [object Object]}>>;
+  next: EventEmitter<CustomEvent<{template: IVerdocsTemplateAttachmentsITemplate}>>;
   /**
    * Event fired when the user updates the template.
    */
-  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateAttachmentsIVerdocsTemplateAttachments{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateAttachmentsVerdocsEndpoint; template: IVerdocsTemplateAttachmentsITemplate; event: string}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -2105,7 +2105,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user updates the template.
    */
-  templateCreated: EventEmitter<CustomEvent<IVerdocsTemplateCreateIVerdocsTemplateCreate{endpoint: [object Object]; template: [object Object]; templateId: string}>>;
+  templateCreated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateCreateVerdocsEndpoint; template: IVerdocsTemplateCreateITemplate; templateId: string}>>;
 }
 
 
@@ -2176,7 +2176,7 @@ the role will have already been deleted server-side.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<IVerdocsTemplateFieldPropertiesIVerdocsTemplateFieldProperties{fieldName: string; settings: [object Object]; field: [object Object]}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsTemplateFieldPropertiesITemplateFieldSetting; field: IVerdocsTemplateFieldPropertiesITemplateField}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -2219,9 +2219,9 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateFieldsIVerdocsTemplateFields{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; template: IVerdocsTemplateFieldsITemplate; event: string}>>;
 
-  fieldsUpdated: EventEmitter<CustomEvent<IVerdocsTemplateFieldsIVerdocsTemplateFields{endpoint: [object Object]; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: [object Object][]}>>;
+  fieldsUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: IVerdocsTemplateFieldsITemplateField[]}>>;
 }
 
 
@@ -2262,7 +2262,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user updates the template.
    */
-  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateNameIVerdocsTemplateName{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateNameVerdocsEndpoint; template: IVerdocsTemplateNameITemplate; event: string}>>;
 }
 
 
@@ -2303,7 +2303,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user updates the template.
    */
-  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateRemindersIVerdocsTemplateReminders{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateRemindersVerdocsEndpoint; template: IVerdocsTemplateRemindersITemplate; event: string}>>;
 }
 
 
@@ -2388,7 +2388,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  rolesUpdated: EventEmitter<CustomEvent<IVerdocsTemplateRolesIVerdocsTemplateRoles{endpoint: [object Object]; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: [object Object][]}>>;
+  rolesUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateRolesVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsTemplateRolesIRole[]}>>;
 }
 
 
@@ -2522,7 +2522,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user updates the template.
    */
-  templateUpdated: EventEmitter<CustomEvent<IVerdocsTemplateVisibilityIVerdocsTemplateVisibility{endpoint: [object Object]; template: [object Object]; event: string}>>;
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateVisibilityVerdocsEndpoint; template: IVerdocsTemplateVisibilityITemplate; event: string}>>;
 }
 
 
@@ -2561,24 +2561,24 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate
 to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
    */
-  viewTemplate: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  viewTemplate: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>;
   /**
    * Event fired when the user clicks to sign a template now.
    */
-  signNow: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  signNow: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>;
   /**
    * Event fired when the user clicks to sign a template now.
    */
-  submittedData: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  submittedData: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>;
   /**
    * Event fired when the user chooses the Edit option from the dropdown menu.
    */
-  editTemplate: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  editTemplate: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>;
   /**
    * Event fired when the user chooses the Delete option from the dropdown menu. When this is fired, the template
 will already have been deleted. The host application should remove it from the list or refresh the list.
    */
-  templateDeleted: EventEmitter<CustomEvent<IVerdocsTemplatesListIVerdocsTemplatesList{endpoint: [object Object]; template: [object Object]}>>;
+  templateDeleted: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>;
   /**
    * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
    */
@@ -2761,7 +2761,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  envelopeUpdated: EventEmitter<CustomEvent<IVerdocsViewIVerdocsView{endpoint: [object Object]; envelope: [object Object]; event: string}>>;
+  envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsViewVerdocsEndpoint; envelope: IVerdocsViewIEnvelope; event: string}>>;
   /**
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.

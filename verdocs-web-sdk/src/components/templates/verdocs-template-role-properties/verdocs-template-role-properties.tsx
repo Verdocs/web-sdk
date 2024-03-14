@@ -3,7 +3,7 @@ import {TRecipientType} from '@verdocs/js-sdk/Envelopes/Types';
 import {deleteRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
 import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
 import {TemplateSenderTypes, TTemplateSender} from '@verdocs/js-sdk/Templates/Types';
-import {createTemplateRoleStore, deleteStoreRole, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
+import {deleteStoreRole, getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
@@ -84,7 +84,13 @@ export class VerdocsTemplateRoleProperties {
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
       this.fieldStore = getTemplateFieldStore(this.templateId);
-      this.roleStore = createTemplateRoleStore(this.templateStore.state);
+      // FIXME: This was createTemplateRoleStore, which it didn't have to be. But that shouldn't break anything,
+      //  and using create() will reload the roles from the TEMPLATE, not the server. Creating/deleting roles
+      //  isn't updating the template, so if you add a role and then pop this dialog the store will be reloaded
+      //  without the newly-added role in place causing the dialog (and future role edits) to break. We should
+      //  a) when creating/updating/deleting roles, update the template/store not just the roles, and b) review
+      //  and confirm that all things that look at roles are mapped to the role store, not the template.
+      this.roleStore = getTemplateRoleStore(this.templateId);
 
       const editingRole = this.roleStore.state.roles.find(role => role.name === this.roleName);
       if (editingRole) {
