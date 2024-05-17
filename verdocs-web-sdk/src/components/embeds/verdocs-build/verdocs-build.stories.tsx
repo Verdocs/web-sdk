@@ -13,4 +13,7 @@ export default {
   },
 } as Meta;
 
-export const Build = ({templateId, step}) => html`<verdocs-build .step=${step} .templateId=${templateId} />`;
+export const Build = ({templateId, step, ...params}) => {
+  console.log('rendering', {templateId, step, params});
+  return html`<verdocs-build .step=${step} .templateId=${templateId} />`;
+};

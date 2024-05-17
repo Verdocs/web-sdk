@@ -100,6 +100,7 @@ export class VerdocsFieldInitial {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
+  @State() focused?: boolean = false;
 
   @Method() async focusField() {
     this.handleShow();
@@ -121,6 +122,7 @@ export class VerdocsFieldInitial {
   hideDialog() {
     this.dialog?.remove();
     this.dialog = null;
+    this.focused = false;
   }
 
   handleAdopt(e: any) {
@@ -137,6 +139,7 @@ export class VerdocsFieldInitial {
     this.dialog.addEventListener('exit', () => this.hideDialog());
     this.dialog.addEventListener('next', e => this.handleAdopt(e));
     document.body.append(this.dialog);
+    this.focused = true;
   }
 
   @Method()
@@ -172,7 +175,7 @@ export class VerdocsFieldInitial {
     }
 
     return (
-      <Host class={{required: field?.required, disabled}} style={{backgroundColor}}>
+      <Host class={{required: field?.required, disabled, focused: this.focused}} style={{backgroundColor}}>
         {value ? (
           <img src={value} alt="Initials" />
         ) : (

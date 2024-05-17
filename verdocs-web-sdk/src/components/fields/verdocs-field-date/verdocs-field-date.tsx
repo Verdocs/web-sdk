@@ -116,6 +116,8 @@ export class VerdocsFieldDate {
       locale: localeEn,
       isMobile: true,
       autoClose: true,
+      onShow: () => (this.focused = true),
+      onHide: () => (this.focused = false),
       onSelect: ({date, formattedDate}) => {
         console.log('Selected date', formattedDate, date);
         const event = new CustomEvent('fieldChange', {
@@ -144,6 +146,8 @@ export class VerdocsFieldDate {
     }
   }
 
+  @State() focused?: boolean = false;
+
   // NOTE: We don't use a "date" field here because browsers vary widely in their formatting of it.
   render() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
@@ -160,8 +164,19 @@ export class VerdocsFieldDate {
     }
 
     return (
-      <Host class={{required: field?.required, disabled}} style={{backgroundColor}}>
-        <input name={field?.name} class="input-el" type="text" value="" id={this.containerId} disabled={disabled} placeholder={settings.placeholder} ref={el => (this.el = el)} />
+      <Host class={{required: field?.required, disabled, focused: this.focused}} style={{backgroundColor}}>
+        <input
+          name={field?.name}
+          class="input-el"
+          type="text"
+          value=""
+          id={this.containerId}
+          disabled={disabled}
+          placeholder={settings.placeholder}
+          ref={el => (this.el = el)}
+          onFocus={() => (this.focused = true)}
+          onBlur={() => (this.focused = false)}
+        />
 
         {this.editable && (
           <Fragment>

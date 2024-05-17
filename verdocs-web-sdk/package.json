@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "2.3.81",
+  "version": "2.3.84",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -34,20 +34,20 @@
     "@stencil/store": "^2.0.14",
     "@svgdotjs/svg.js": "^3.2.0",
     "@verdocs/js-sdk": "^3.10.30",
-    "air-datepicker": "^3.5.0",
+    "air-datepicker": "^3.5.1",
     "choices.js": "^10.2.0",
     "date-fns": "^2.30.0",
     "flatpickr": "^4.6.13",
-    "interactjs": "^1.10.26",
+    "interactjs": "^1.10.27",
     "jszip": "^3.10.1",
     "patch-package": "^8.0.0",
     "uuid": "^9.0.1",
     "workflow-svg.js": "^3.0.2",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
-    "@interactjs/types": "^1.10.26",
+    "@interactjs/types": "^1.10.27",
     "@pxtrn/storybook-addon-docs-stencil": "^6.4.1",
     "@stencil/angular-output-target": "^0.8.4",
     "@stencil/react-output-target": "^0.5.3",
@@ -62,7 +62,7 @@
     "@storybook/web-components": "6.5.16",
     "@types/css-font-loading-module": "^0.0.7",
     "@types/jest": "^29.5.12",
-    "@types/react": "^18.2.65",
+    "@types/react": "^18.3.2",
     "babel-loader": "^8.2.5",
     "copy-webpack-plugin": "^11.0.0",
     "html-webpack-plugin": "^5.6.0",
@@ -80,7 +80,7 @@
     "rollup-plugin-typescript2": "^0.34.1",
     "terser-webpack-plugin": "^5.3.10",
     "tslib": "^2.6.2",
-    "typescript": "^5.4.2",
+    "typescript": "^5.4.5",
     "write-file-webpack-plugin": "^4.5.1"
   }
 }

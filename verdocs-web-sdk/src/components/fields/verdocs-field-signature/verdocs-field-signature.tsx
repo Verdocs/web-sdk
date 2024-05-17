@@ -88,6 +88,7 @@ export class VerdocsFieldSignature {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
+  @State() focused?: boolean = false;
 
   @Method() async focusField() {
     this.handleShow();
@@ -102,6 +103,7 @@ export class VerdocsFieldSignature {
   hideDialog() {
     this.dialog?.remove();
     this.dialog = null;
+    this.focused = false;
   }
 
   handleAdopt(e: any) {
@@ -118,6 +120,7 @@ export class VerdocsFieldSignature {
     this.dialog.addEventListener('exit', () => this.hideDialog());
     this.dialog.addEventListener('next', e => this.handleAdopt(e));
     document.body.append(this.dialog);
+    this.focused = true;
   }
 
   @Method()
@@ -161,7 +164,7 @@ export class VerdocsFieldSignature {
     }
 
     return (
-      <Host class={{required: field?.required, disabled}} style={{backgroundColor}}>
+      <Host class={{required: field?.required, disabled, focused: this.focused}} style={{backgroundColor}}>
         {value ? <img src={value} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
 
         {this.editable && (

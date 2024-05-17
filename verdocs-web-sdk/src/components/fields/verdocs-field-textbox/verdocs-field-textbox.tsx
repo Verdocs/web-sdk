@@ -85,6 +85,7 @@ export class VerdocsFieldTextbox {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
+  @State() focused?: boolean = false;
 
   @Method()
   async focusField() {
@@ -196,7 +197,7 @@ export class VerdocsFieldTextbox {
     }
 
     return (
-      <Host class={{required: field.required, disabled, done: this.done}} style={{backgroundColor}}>
+      <Host class={{required: field.required, disabled, done: this.done, focused: this.focused}} style={{backgroundColor}}>
         <input
           type="text"
           name={field.name}
@@ -207,6 +208,8 @@ export class VerdocsFieldTextbox {
           required={field?.required}
           ref={el => (this.inputEl = el)}
           maxlength={maxlength}
+          onFocus={() => (this.focused = true)}
+          onBlur={() => (this.focused = false)}
         />
 
         {this.editable && (

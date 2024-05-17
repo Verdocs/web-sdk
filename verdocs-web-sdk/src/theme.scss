@@ -1,4 +1,10 @@
-$verdocs-primary-font: 'Inter', -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+$verdocs-primary-font:
+  'Inter',
+  -apple-system,
+  'Segoe UI',
+  'Roboto',
+  'Helvetica Neue',
+  sans-serif;
 
 $verdocs-green: #55bc81;
 $verdocs-green-shade: #2b995b;
@@ -71,3 +77,15 @@ $medium-bg: #33354c;
 $dialog-bg: #f9f9f9;
 $container-bg: #f5f5fa;
 $item-bg: #f5f8f9;
+
+@keyframes verdocs-field-pulse {
+  0% {
+    background-color: rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.35);
+  }
+}

@@ -404,6 +404,9 @@ export class VerdocsSign {
   async handleNext() {
     if (this.nextSubmits) {
       try {
+        // Patches the date picker to be forcibly removed if still showing during submission
+        document.getElementById('air-datepicker-global-container')?.remove();
+
         this.submitting = true;
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
         console.log('[SIGN] Submitted successfully', result);
@@ -427,8 +430,16 @@ export class VerdocsSign {
 
     // Find and focus the next incomplete required field
     const requiredFields = this.getRecipientFields().filter(field => field.required);
-    const focusedIndex = requiredFields.findIndex(field => field.name === this.focusedField);
 
+    requiredFields.sort((a, b) => {
+      const aX = a.settings?.x || 0;
+      const aY = a.settings?.y || 0;
+      const bX = b.settings?.x || 0;
+      const bY = b.settings?.y || 0;
+      return bY !== aY ? bY - aY : bX - aX;
+    });
+
+    const focusedIndex = requiredFields.findIndex(field => field.name === this.focusedField);
     let nextFocusedIndex = focusedIndex + 1;
     if (nextFocusedIndex >= requiredFields.length) {
       nextFocusedIndex = 0;
@@ -609,10 +620,12 @@ export class VerdocsSign {
             <div class="title">{this.envelope.name}</div>
             <div style={{flex: '1'}} />
 
-            {!this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
+            {this.agreed && !this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
 
             <div style={{marginLeft: '10px'}} />
-            <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+            {this.agreed && (
+              <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+            )}
           </div>
         </div>
 

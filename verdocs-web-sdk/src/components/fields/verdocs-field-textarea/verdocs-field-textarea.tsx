@@ -107,6 +107,8 @@ export class VerdocsFieldTextarea {
     }
   }
 
+  @State() focused?: boolean = false;
+
   fieldStore: TTemplateFieldStore = null;
   roleStore: TTemplateRoleStore = null;
 
@@ -191,7 +193,7 @@ export class VerdocsFieldTextarea {
     }
 
     return (
-      <Host class={{required: field?.required, disabled, done: this.done}} style={{backgroundColor}}>
+      <Host class={{required: field?.required, disabled, done: this.done, focused: this.focused}} style={{backgroundColor}}>
         <textarea
           placeholder={settings.placeholder || ''}
           tabIndex={settings.order}
@@ -199,6 +201,8 @@ export class VerdocsFieldTextarea {
           name={field.name}
           required={field?.required}
           ref={el => (this.inputEl = el)}
+          onFocus={() => (this.focused = true)}
+          onBlur={() => (this.focused = false)}
         >
           {value}
         </textarea>

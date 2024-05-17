@@ -61,8 +61,6 @@ export class VerdocsPreview {
           console.log('[PREVIEW] Loaded Template Store', ts.state);
           this.fieldStore = getTemplateFieldStore(this.templateId);
           this.roleStore = getTemplateRoleStore(this.templateId);
-          console.log('RS', this.roleStore?.state);
-          console.log('FS', this.fieldStore?.state);
           console.log('[PREVIEW] Loaded template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
           this.loading = false;
         })
