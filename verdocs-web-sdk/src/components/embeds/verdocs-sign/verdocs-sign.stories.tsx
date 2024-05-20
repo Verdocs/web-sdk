@@ -5,9 +5,9 @@ export default {
   title: 'Embeds/Sign',
   component: 'verdocs-sign',
   args: {
-    envelopeId: '',
-    roleId: '',
-    inviteCode: '',
+    envelopeId: 'dc33e343-6337-4d49-8514-c20c078f4b3f',
+    roleId: 'Recipient 1',
+    inviteCode: 'e5692b0ee6030b74eba3c7e9d685b5e1',
   },
   argTypes: {
     envelopeId: {

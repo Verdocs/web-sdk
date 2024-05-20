@@ -428,8 +428,10 @@ export class VerdocsSign {
       return;
     }
 
-    // Find and focus the next incomplete required field
-    const requiredFields = this.getRecipientFields().filter(field => field.required);
+    // Find and focus the next incomplete required field (that is fillable)
+    const requiredFields = this.getRecipientFields()
+      .filter(field => field.required)
+      .filter(field => field.type !== 'timestamp');
 
     requiredFields.sort((a, b) => {
       const aX = a.settings?.x || 0;
