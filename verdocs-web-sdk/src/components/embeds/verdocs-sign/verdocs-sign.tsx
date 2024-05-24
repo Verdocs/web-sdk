@@ -467,7 +467,9 @@ export class VerdocsSign {
     if (nextRequiredField) {
       const id = getFieldId(nextRequiredField);
       const el = document.getElementById(id) as any;
+      console.log('Jumping to next field', nextRequiredField);
       el?.focusField();
+      el?.scrollTo({behavior: 'smooth', top: 0});
       this.focusedField = nextRequiredField.name;
     }
   }
@@ -485,7 +487,7 @@ export class VerdocsSign {
         this.nextSubmits = true;
       }
     } else {
-      console.log('[SIGN] c invalid fields', invalidFields);
+      console.log('[SIGN] Invalid fields remaining', invalidFields);
       this.nextButtonLabel = 'Next';
       this.nextSubmits = false;
     }
@@ -493,10 +495,10 @@ export class VerdocsSign {
 
   attachFieldAttributes(pageInfo, field, el) {
     el.addEventListener('input', (e: any) => {
-      console.log('[SIGN] onfieldInput', e.detail, e.target.value);
+      // console.log('[SIGN] onfieldInput', e.detail, e.target.value);
       // These field types don't emit fieldChange. Should we standardize on that? We don't tap "input" for fields like
       // text boxes because we'd be updating the field on every keystroke. We do those on blur which fires fieldChange.
-      if (e.target.name.includes('checkbox_group') || e.target.name.includes('radio_button_group')) {
+      if (e.target.name.includes('date') || e.target.name.includes('checkbox_group') || e.target.name.includes('radio_button_group')) {
         this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
       } else {
         this.checkRecipientFields();
