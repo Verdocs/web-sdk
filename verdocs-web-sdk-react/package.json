@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk-react",
-  "version": "2.3.86",
+  "version": "2.3.88",
   "description": "Verdocs Web SDK for React",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -18,7 +18,7 @@
     "rollup": "rollup -c"
   },
   "dependencies": {
-    "@verdocs/web-sdk": "^2.3.86"
+    "@verdocs/web-sdk": "^2.3.88"
   },
   "peerDependencies": {
     "react": "^18.3.1",

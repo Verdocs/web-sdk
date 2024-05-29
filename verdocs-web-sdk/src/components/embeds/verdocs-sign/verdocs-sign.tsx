@@ -355,8 +355,7 @@ export class VerdocsSign {
     }
   }
 
-  isFieldValid(field: IEnvelopeField) {
-    const {required = false} = field;
+  isFieldFilled(field: IEnvelopeField) {
     const {result = '', value = '', base64 = ''} = field.settings || {};
     switch (field.type) {
       case 'textbox':
@@ -366,12 +365,12 @@ export class VerdocsSign {
           case 'phone':
             return isValidPhone(result);
           default:
-            return !required || result !== '';
+            return result !== '';
         }
 
       case 'signature':
       case 'initial':
-        return !required || base64 !== '';
+        return base64 !== '';
 
       // Timestamp fields get automatically filled when the envelope is submitted.
       case 'timestamp':
@@ -380,17 +379,17 @@ export class VerdocsSign {
       case 'textarea':
       case 'date':
       case 'attachment':
-        return !required || result !== '';
+        return result !== '';
 
       case 'dropdown':
-        return !required || value !== '';
+        return value !== '';
 
       case 'checkbox_group':
         const checkedCount = (field.settings?.options?.filter(option => option.checked) || []).length;
-        return !required || (checkedCount >= (field.settings?.minimum_checked || 0) && checkedCount <= (field.settings?.maximum_checked || 999));
+        return checkedCount >= (field.settings?.minimum_checked || 0) && checkedCount <= (field.settings?.maximum_checked || 999);
 
       case 'radio_button_group':
-        return !required || (field.settings?.options?.filter(option => option.selected) || []).length > 0;
+        return (field.settings?.options?.filter(option => option.selected) || []).length > 0;
       // TODO
       // case 'checkbox':
       //   return <verdocs-field-checkbox style={style} value={result || ''} id={id} />;
@@ -399,6 +398,31 @@ export class VerdocsSign {
       default:
         return false;
     }
+  }
+
+  isFieldValid(field: IEnvelopeField) {
+    const {required = false} = field;
+    return !required || this.isFieldFilled(field);
+  }
+
+  getSortedFillableFields() {
+    const recipientFields = this.getRecipientFields().filter(field => field.type !== 'timestamp');
+
+    recipientFields.sort((a, b) => {
+      const aX = a.settings?.x || 0;
+      const aY = a.settings?.y || 0;
+      const bX = b.settings?.x || 0;
+      const bY = b.settings?.y || 0;
+      // NOTE: Logic looks a little strange X vs Y. It's because we go top down,
+      // left to right. But Y coordinates are inverted in PDFs. The reason for
+      // the division is because no human makes perfect templates and frequently
+      // two fields on the "same line" will be slightly offset vertically.
+      const divaY = Math.floor(aY / 5);
+      const divbY = Math.floor(bY / 5);
+      return divbY !== divaY ? divbY - divaY : aX - bX;
+    });
+
+    return recipientFields;
   }
 
   async handleNext() {
@@ -428,39 +452,43 @@ export class VerdocsSign {
       return;
     }
 
-    // Find and focus the next incomplete required field (that is fillable)
-    const requiredFields = this.getRecipientFields()
-      .filter(field => field.required)
-      .filter(field => field.type !== 'timestamp');
+    // Find and focus the next incomplete` field (that is fillable)
+    const emptyFields = this.getSortedFillableFields().filter(field => !this.isFieldFilled(field));
 
-    requiredFields.sort((a, b) => {
+    emptyFields.sort((a, b) => {
       const aX = a.settings?.x || 0;
       const aY = a.settings?.y || 0;
       const bX = b.settings?.x || 0;
       const bY = b.settings?.y || 0;
-      return bY !== aY ? bY - aY : bX - aX;
+      // NOTE: Logic looks a little strange X vs Y. It's because we go top down,
+      // left to right. But Y coordinates are inverted in PDFs. The reason for
+      // the division is because no human makes perfect templates and frequently
+      // two fields on the "same line" will be slightly offset vertically.
+      const divaY = Math.floor(aY / 5);
+      const divbY = Math.floor(bY / 5);
+      return divbY !== divaY ? divbY - divaY : aX - bX;
     });
 
-    const focusedIndex = requiredFields.findIndex(field => field.name === this.focusedField);
+    const focusedIndex = emptyFields.findIndex(field => field.name === this.focusedField);
     let nextFocusedIndex = focusedIndex + 1;
-    if (nextFocusedIndex >= requiredFields.length) {
+    if (nextFocusedIndex >= emptyFields.length) {
       nextFocusedIndex = 0;
     }
 
-    let nextRequiredField = requiredFields[nextFocusedIndex];
+    let nextRequiredField = emptyFields[nextFocusedIndex];
 
     // Skip signature and initial fields that are already filled in. We have to count our "skips" just in case, to avoid infinite loops.
     let skips = 0;
-    if (skips < requiredFields.length && ['signature', 'initial'].includes(nextRequiredField.type) && nextRequiredField.settings?.result === 'signed') {
+    if (skips < emptyFields.length && ['signature', 'initial'].includes(nextRequiredField.type) && nextRequiredField.settings?.result === 'signed') {
       skips++;
       nextFocusedIndex++;
-      if (nextFocusedIndex >= requiredFields.length) {
+      if (nextFocusedIndex >= emptyFields.length) {
         nextFocusedIndex = 0;
       }
-      nextRequiredField = requiredFields[nextFocusedIndex];
+      nextRequiredField = emptyFields[nextFocusedIndex];
     }
 
-    if (skips >= requiredFields.length) {
+    if (skips >= emptyFields.length) {
       nextRequiredField = null;
     }
 
@@ -527,33 +555,32 @@ export class VerdocsSign {
 
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    // const roleIndex = getRoleIndex(this.roleStore, this.recipient.role_name);
-    // console.log(
-    //   'hpr',
-    //   this.recipient,
-    //   this.envelope.fields.filter(field => field.recipient_role === this.recipient.role_name),
-    // );
-    const recipientFields = this.getRecipientFields().filter(field => field.page === pageInfo.pageNumber);
-    // console.log('[SIGN] Page rendered, updating fields', {pageInfo, roleIndex, recipientFields});
+
+    // NOTE: We don't filter on pageNumber here because we need the position in the
+    // entire list to set the tabIndex.
+    const recipientFields = this.getSortedFillableFields();
+    // this.getRecipientFields().filter(field => field.page === pageInfo.pageNumber);
 
     // First render the fields for the signer
     // Also show field placeholders for other signers who have yet to act
     // In template list in Beta, show second date being sorted on
     // Sign top to bottom left to right
-    recipientFields
-      .filter(field => field.page === pageInfo.pageNumber)
-      .forEach(field => {
-        const el = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
-        if (!el) {
-          return;
-        }
+    recipientFields.forEach((field, tabIndex) => {
+      if (field.page !== pageInfo.pageNumber) {
+        return;
+      }
 
-        if (Array.isArray(el)) {
-          el.map(e => this.attachFieldAttributes(pageInfo, field, e));
-        } else {
-          this.attachFieldAttributes(pageInfo, field, el);
-        }
-      });
+      const el = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
+      if (!el) {
+        return;
+      }
+
+      if (Array.isArray(el)) {
+        el.map(e => this.attachFieldAttributes(pageInfo, field, e));
+      } else {
+        this.attachFieldAttributes(pageInfo, field, el);
+      }
+    });
 
     // Now render the fields for other signers who have yet to act
     this.sortedRecipients

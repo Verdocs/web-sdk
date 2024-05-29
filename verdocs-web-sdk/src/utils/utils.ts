@@ -138,10 +138,8 @@ export const updateDocumentFieldValue = (field: ITemplateField | IEnvelopeField)
   }
 };
 
-export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docPage: IDocumentPageInfo, fieldOptions: IFieldOptions) => {
-  // console.log('rdf', field);
+export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docPage: IDocumentPageInfo, fieldOptions: IFieldOptions, tabIndex: number = 1) => {
   const {disabled = false, editable = false, draggable = false, done = false} = fieldOptions;
-  // console.log('[renderDocumentField]', field, docPage, roleIndex, fieldOptions);
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
   if (!controlsDiv) {
     console.log('[renderDocumentField] No controls DIV found', docPage.containerId + '-controls', docPage);
@@ -182,7 +180,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
         el.setAttribute('tabindex', -1);
         el.setAttribute('disabled', true);
       } else {
-        el.setAttribute('tabIndex', 1);
+        el.setAttribute('tabIndex', tabIndex);
       }
 
       if (editable) {
