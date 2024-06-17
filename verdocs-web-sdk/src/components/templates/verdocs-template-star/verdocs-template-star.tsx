@@ -1,6 +1,4 @@
-import {Stars} from '@verdocs/js-sdk/Templates';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {VerdocsEndpoint, toggleStar, ITemplate} from '@verdocs/js-sdk';
 import {Component, Prop, h, Host, Event, EventEmitter, State} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 
@@ -52,7 +50,7 @@ export class VerdocsTemplateStar {
   toggle(e: any) {
     e.stopPropagation();
     this.updating = true;
-    Stars.toggleStar(VerdocsEndpoint.getDefault(), this.template.id)
+    toggleStar(VerdocsEndpoint.getDefault(), this.template.id)
       .then(r => {
         this.updating = false;
         this.template.star_counter = r.star_counter;

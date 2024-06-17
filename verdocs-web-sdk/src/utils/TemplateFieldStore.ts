@@ -1,7 +1,6 @@
 import {createStore} from '@stencil/store';
 import {ObservableMap} from '@stencil/store';
-import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
-import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {IEnvelope,ITemplate, ITemplateField} from '@verdocs/js-sdk';
 
 export type TTemplateFieldStore = ObservableMap<{fields: ITemplateField[]}>;
 

@@ -1,9 +1,7 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {updateTemplate} from '@verdocs/js-sdk/Templates/Templates';
+import {ITemplate, updateTemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
 
 /**
  * Displays an edit form that allows the user to adjust a template's visibility.

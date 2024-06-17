@@ -1,5 +1,5 @@
 import {createStore, ObservableMap} from '@stencil/store';
-import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {IRole, ITemplate} from '@verdocs/js-sdk';
 
 export type TTemplateRoleStore = ObservableMap<{roles: IRole[]}>;
 

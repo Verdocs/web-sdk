@@ -1,7 +1,5 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplate, ITemplateDocument} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Event, EventEmitter, Prop, Host, State} from '@stencil/core';
-import {createTemplateDocument, deleteTemplateDocument} from '@verdocs/js-sdk/Templates/TemplateDocuments';
+import {createTemplateDocument, deleteTemplateDocument, ITemplate, ITemplateDocument, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {DocIcon, FileIcon, JpgIcon, PageCountIcon, PdfIcon, PngIcon, TrashIcon} from '../../../utils/Icons';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
@@ -138,7 +136,7 @@ export class VerdocsTemplateAttachments {
   }
 
   async handleDelete(document: ITemplateDocument) {
-    if (this.store.state?.template_documents.length > 1) {
+    if (this.store.state?.documents.length > 1) {
       this.confirmDeleteDocument = document;
     } else {
       this.showDeleteError = true;
@@ -189,14 +187,14 @@ export class VerdocsTemplateAttachments {
         <h5>Existing Attachments</h5>
 
         <div class="attachments">
-          {this.store?.state.template_documents.map(document => (
+          {this.store?.state.documents.map(document => (
             <div class="attachment">
               <div class="file-icon" innerHTML={this.getFileIcon(document)} />
               <div class="filename" title={document.name}>
                 {document.name}
               </div>
               <div class="pages">
-                <div class="count">{document.page_numbers}</div>
+                <div class="count">{document.pages}</div>
                 <div class="pages-icon" innerHTML={PageCountIcon} />
               </div>
               <div class="trash-icon" innerHTML={TrashIcon} onClick={() => this.handleDelete(document)} />
@@ -222,14 +220,14 @@ export class VerdocsTemplateAttachments {
 
         <div class="buttons">
           <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} disabled={this.uploading} />
-          <verdocs-button label="Next" size="small" onClick={e => this.handleNext(e)} disabled={!this.store?.state.template_documents.length || this.uploading} />
+          <verdocs-button label="Next" size="small" onClick={e => this.handleNext(e)} disabled={!this.store?.state.documents.length || this.uploading} />
         </div>
 
         {this.showDeleteError && (
           <verdocs-ok-dialog heading="Unable to Delete Attachment" message="Templates must contain at least one attachment." onNext={() => (this.showDeleteError = false)} />
         )}
 
-          {this.confirmDeleteDocument && (
+        {this.confirmDeleteDocument && (
           <verdocs-ok-dialog
             heading="Delete this Attachment?"
             message="This operation cannot be undone. All fields placed<br />on the deleted attachment will also be removed."

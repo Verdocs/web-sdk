@@ -1,10 +1,9 @@
 import {createStore} from '@stencil/store';
 import {ObservableMap} from '@stencil/store';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getTemplate} from '@verdocs/js-sdk/Templates/Templates';
-import {ITemplate, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
+import {getTemplate, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {createTemplateRoleStore, getTemplateRoleStore} from './TemplateRoleStore';
 import {createTemplateFieldStore, getTemplateFieldStore} from './TemplateFieldStore';
+import {undefined} from 'zod';
 
 export interface ITemplateStore extends ITemplate {
   isLoading: boolean;
@@ -28,7 +27,7 @@ const createTemplateStore = (templateId: string) => {
     id: templateId,
     name: '',
     description: '',
-    sender: TemplateSenderTypes.CREATOR,
+    sender: 'creator',
     profile_id: '',
     organization_id: '',
     counter: 0,
@@ -39,15 +38,16 @@ const createTemplateStore = (templateId: string) => {
     created_at: now,
     updated_at: now,
     last_used_at: now,
-    token: '',
     reminder_id: '',
-    reminder: undefined,
-    processed: false,
-    organization: undefined,
+    reminder: null,
+    organization: null,
     roles: [],
-    pages: [],
-    template_document: undefined,
-    template_documents: [],
+    data: {},
+    documents: [],
+    fields: [],
+    profile: null,
+    search_key: '',
+    tags: [],
   });
 };
 

@@ -1,5 +1,5 @@
 import {Component, Prop, h, Host} from '@stencil/core';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplate} from '@verdocs/js-sdk';
 
 const ActionsIcon = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>`;
 
@@ -26,7 +26,8 @@ export class VerdocsTemplateCard {
   render() {
     return (
       <Host>
-        <img src={this.template?.template_document?.thumbnail_url || ''} alt="Template Thumbnail" class="thumbnail" />
+        {/* TODO */}
+        {/*<img src={this.template?.documents?.thumbnail_url || ''} alt="Template Thumbnail" class="thumbnail" />*/}
 
         <span class="name">{this.template.name}</span>
         <span class="org-name">{this.template.organization?.name || 'Public'}</span>
@@ -41,7 +42,7 @@ export class VerdocsTemplateCard {
 
           <div class="control secondary">
             <span class="icon" innerHTML={PagesIcon} />
-            <span class="value">{this.template?.template_document?.page_numbers || 1}</span>
+            <span class="value">{this.template?.documents?.[0]?.pages || 1}</span>
           </div>
 
           <div class="control secondary">

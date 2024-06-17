@@ -1,9 +1,5 @@
 import interact from 'interactjs';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
-import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
-import {createField, updateField} from '@verdocs/js-sdk/Templates/Fields';
-import {ITemplate, ITemplateField} from '@verdocs/js-sdk/Templates/Types';
+import {createField, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {defaultHeight, defaultWidth, getFieldId, getFieldOptionId, removeCssTransform, updateCssTransform} from '../../../utils/utils';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
@@ -103,7 +99,7 @@ export class VerdocsTemplateFields {
 
   @Event({composed: true}) fieldsUpdated: EventEmitter<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: ITemplateField[]}>;
 
-  @State() placing: TDocumentFieldType | null = null;
+  @State() placing: TFieldType | null = null;
   @State() showMustSelectRole = false;
   @State() selectedRoleName = '';
   @State() loading = true;
@@ -212,18 +208,18 @@ export class VerdocsTemplateFields {
 
     this.fieldStore
       .get('fields')
-      .filter(field => field && field.page_sequence === pageInfo.pageNumber)
+      .filter(field => field && field.page === pageInfo.pageNumber)
       .forEach(field => {
         // TODO: Why isn't the attr already on the element carrying through?
         switch (field.type) {
           case 'checkbox_group':
           case 'radio_button_group':
-            ((field as any).settings || (field as any).setting || {}).options.map((_, index) => {
+            (field.settings || {}).options.map((_, index) => {
               const id = getFieldOptionId(field, index);
               const el = document.getElementById(id);
               if (el) {
                 el.setAttribute('fieldname', field.name);
-                el.setAttribute('pagenumber', String(field.page_sequence));
+                el.setAttribute('pagenumber', String(field.page));
                 this.makeDraggable(el);
               }
             });
@@ -233,7 +229,7 @@ export class VerdocsTemplateFields {
             const el = document.getElementById(id);
             if (el) {
               el.setAttribute('fieldname', field.name);
-              el.setAttribute('pagenumber', String(field.page_sequence));
+              el.setAttribute('pagenumber', String(field.page));
               this.makeDraggable(el);
             }
             break;
@@ -277,8 +273,8 @@ export class VerdocsTemplateFields {
     const parent = event.target.parentElement;
     const parentRect = parent.getBoundingClientRect();
 
-    const width = field.setting.width || defaultWidth(field.type);
-    const height = field.setting.height || defaultHeight(field.type);
+    const width = field.settings.width || defaultWidth(field.type);
+    const height = field.settings.height || defaultHeight(field.type);
 
     // These two being backwards is not a mistake. Left measures "over" from the left (positive displacement) while bottom measures
     // "up" from the bottom (negative displacement).
@@ -296,14 +292,14 @@ export class VerdocsTemplateFields {
       case 'textarea':
       case 'textbox':
       case 'timestamp':
-        field.setting.x = x;
-        field.setting.y = y;
+        field.settings.x = x;
+        field.settings.y = y;
         break;
 
       case 'checkbox_group':
       case 'radio_button_group':
         {
-          const opt = field.setting.options[option];
+          const opt = field.settings.options[option];
           if (opt) {
             opt.x = x;
             opt.y = y;
@@ -362,12 +358,15 @@ export class VerdocsTemplateFields {
         document_id: cachedPage.documentId,
         type: this.placing,
         required: true,
-        page_sequence: pageNumber,
+        page: pageNumber,
         validator: null,
-        setting: {x, y}, // In the future, this is all we should send, see below
+        label: null,
+        default: null,
+        placeholder: null,
+        group: null,
+        settings: {x, y}, // In the future, this is all we should send, see below
         x,
         y,
-        tabindex: 0,
         width,
         height,
       };
@@ -379,11 +378,11 @@ export class VerdocsTemplateFields {
       switch (field.type) {
         case 'attachment':
         case 'payment':
-          field.setting = {x, y};
+          field.settings = {x, y};
           break;
         case 'initial':
         case 'signature':
-          field.setting = {x, y, result: ''};
+          field.settings = {x, y, result: ''};
           break;
 
         case 'checkbox_group':
@@ -404,12 +403,12 @@ export class VerdocsTemplateFields {
           break;
 
         case 'date':
-          field.setting = {x, y, width, height, result: ''};
+          field.settings = {x, y, width, height, result: ''};
           break;
 
         case 'dropdown':
           field.required = false;
-          field.setting = {x, y, width, height, value: null, placeholder: 'Choose', options: [{id: 'option-1', value: 'Option 1'}]};
+          field.settings = {x, y, width, height, value: null, placeholder: 'Choose', options: [{id: 'option-1', value: 'Option 1'}]};
           break;
 
         case 'radio_button_group':
@@ -431,18 +430,18 @@ export class VerdocsTemplateFields {
         // TODO: What about textareas?
         case 'textarea':
         case 'textbox':
-          field.setting = {x, y, width, height, result: '', leading: 0, alignment: 0, upperCase: false};
+          field.settings = {x, y, width, height, result: '', leading: 0, alignment: 0, upperCase: false};
           break;
 
         case 'timestamp':
-          field.setting = {x, y, width, height};
+          field.settings = {x, y, width, height};
           break;
       }
 
       // TODO: We don't actually have a unique field type for multi-line text. Instead a "text area" is stored
       // as a textbox with a leading>0 (typically 16).
       if (field.type === 'textarea') {
-        field.setting.leading = 16;
+        field.settings.leading = 16;
         field.type = 'textbox';
       }
 
@@ -490,7 +489,7 @@ export class VerdocsTemplateFields {
                 if (option.tooltip) {
                   // We require a role to be selected first
                   if (this.selectedRoleName) {
-                    this.placing = option.id as TDocumentFieldType;
+                    this.placing = option.id as TFieldType;
                   } else {
                     this.showMustSelectRole = true;
                   }
@@ -513,8 +512,8 @@ export class VerdocsTemplateFields {
         {/*</div>*/}
 
         <div class="pages">
-          {(this.templateStore?.state?.template_documents || []).map(document => {
-            const pageNumbers = integerSequence(1, document.page_numbers);
+          {(this.templateStore?.state?.documents || []).map(document => {
+            const pageNumbers = integerSequence(1, document.pages);
 
             return pageNumbers.map(page => (
               <verdocs-template-document-page

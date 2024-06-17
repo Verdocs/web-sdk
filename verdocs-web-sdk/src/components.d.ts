@@ -28,6 +28,29 @@ import { TAllowedTemplateAction } from "./components/templates/verdocs-templates
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
 import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
+export { VerdocsEndpoint } from "@verdocs/js-sdk";
+export { SDKError } from "./utils/errors";
+export { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
+export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
+export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
+export { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
+export { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
+export { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
+export { IDocumentPageInfo, IPageLayer } from "./utils/Types";
+export { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
+export { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
+export { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
+export { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
+export { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
+export { IProfile } from "@verdocs/js-sdk/Users/Types";
+export { IColumn } from "./components/controls/verdocs-table/verdocs-table";
+export { ITab } from "./components/controls/verdocs-tabs/verdocs-tabs";
+export { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/verdocs-template-build-tabs/verdocs-template-build-tabs";
+export { IGetTemplateSummarySortBy } from "@verdocs/js-sdk/Templates/Templates";
+export { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
+export { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
+export { Placement } from "@popperjs/core/lib/enums";
+export { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 export namespace Components {
     interface IpcTest {
         /**
@@ -39,6 +62,11 @@ export namespace Components {
          */
         "templateId": string;
     }
+    /**
+     * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
+     * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
+     * them appear more visually balanced.
+     */
     interface VerdocsActivityBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -57,6 +85,29 @@ export namespace Components {
          */
         "view"?: 'completed' | 'action' | 'waiting';
     }
+    /**
+     * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
+     * occur during the process (especially successful completion). If the user is already authenticated with a valid
+     * session, this component will hide itself and fire the success callback immediately. It is up to the host application
+     * to render the next appropriate view for the application.
+     * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
+     * allows you to susbcribe to notifications from the
+     * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
+     * container to allow sufficient space for the required forms.
+     * As noted below, the primary event is `authenticated`. This will always be fired at least once, immediately after
+     * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
+     * cancels) authentication steps.
+     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+     * embed. This Element will reuse the same session produced by logging in via that Embed.
+     * ```typescript
+     * interface IAuthStatus {
+     *   // If true, the user is authenticated with a valid session
+     *   authenticated: boolean;
+     *   // Details for the user's session
+     *   session: IActiveSession | null;
+     * }
+     * ```
+     */
     interface VerdocsAuth {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -71,6 +122,9 @@ export namespace Components {
          */
         "visible": boolean;
     }
+    /**
+     * Display a template building experience.
+     */
     interface VerdocsBuild {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -85,6 +139,21 @@ export namespace Components {
          */
         "templateId": string | null;
     }
+    /**
+     * Display a simple button.
+     * Three variants are supported. `standard` and `outline` buttons look like traditional form buttons and are ideal candidates for 'Ok' and
+     * 'Cancel' options in most cases. `text` buttons are intended to be used inline in content blocks or for more subtle button options.
+     * (Auth uses text buttons for the Forgot Password and Sign Up options.)
+     * Four sizes are also supported. Most use cases will call for the `normal` size, but a `small` size is ideal for more subtle controls, such
+     * as pagination or other secondary functions. `medium` buttons are slightly larger to provide balance in forms where other items are also
+     * bigger, and `large` buttons are for cases where the page has mostly white-space and the buttons need to fill more space.
+     * Icons may be placed either before ("start") or after ("end") the button label. Icons should be SVG objects passed as strings and will
+     * be rendered as HTML inside the button label area. It is important that the root <SVG> tag contains a default `fill="#ffffff"` setting
+     * for the base color, and that child elements below it do not. This allows the button color to carry into the icon properly.
+     * ```html
+     * <verdocs-button label="OK" onClick={() => (console.log('OK clicked'))} />
+     * ```
+     */
     interface VerdocsButton {
         /**
           * Whether the button should be disabled.
@@ -115,6 +184,15 @@ export namespace Components {
          */
         "variant": 'standard' | 'text' | 'outline';
     }
+    /**
+     * Displays a clickable icon suitable for display in a toolbar. When clicked, a customizable drop-down panel will be
+     * displayed.
+     * ```html
+     * <verdocs-button-panel icon="<svg.../>">
+     *   <div class="content">...</div>
+     * </verdocs-button-panel>
+     * ```
+     */
     interface VerdocsButtonPanel {
         "hidePanel": () => Promise<void>;
         /**
@@ -124,6 +202,21 @@ export namespace Components {
         "showPanel": () => Promise<void>;
         "toggle": () => Promise<void>;
     }
+    /**
+     * Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
+     * to be used in signing experiences and contains settings that connect to template fields. This is just a simple check
+     * box for UI displays e.g. dialog boxes.
+     * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
+     * handler. Sample usage:
+     * ```html
+     * <verdocs-checkbox
+     *    value="on"
+     *    name="thingEnabled"
+     *    checked={this.thingEnabled}
+     *    onInput={(e: any) => (this.thingEnabled = e.target.checked)}
+     * />
+     * ```
+     */
     interface VerdocsCheckbox {
         /**
           * Whether the radio button is currently selected.
@@ -150,12 +243,23 @@ export namespace Components {
          */
         "value": string;
     }
+    /**
+     * Render a simple error message.
+     */
     interface VerdocsComponentError {
         /**
           * The message to display.
          */
         "message": string;
     }
+    /**
+     * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
+     * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
+     * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
+     * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
+     * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
+     * to always display the user's own contact record.
+     */
     interface VerdocsContactPicker {
         /**
           * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
@@ -170,14 +274,37 @@ export namespace Components {
          */
         "templateRole": IRole | null;
     }
+    /**
+     * Display a simple dialog where the contents are provided via slots.
+     */
     interface VerdocsDialog {
     }
+    /**
+     * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
+     * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
+     * ```html
+     * <verdocs-dropdown
+     *   options={[
+     *     {label: 'Option 1', disabled: true},
+     *     {label: 'Option 2', id: '2'}
+     *     {label: ''}
+     *     {label: 'Option 3', id: '2'}
+     *    ]}
+     *   label="OK" onClick={() => (console.log('OK clicked'))}
+     * />
+     * ```
+     */
     interface VerdocsDropdown {
         /**
           * The menu options to display.
          */
         "options": IMenuOption[];
     }
+    /**
+     * Represents one document page. This is primarily a layout container used to coordinate positions of
+     * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
+     * on its own as an individual component.
+     */
     interface VerdocsEnvelopeDocumentPage {
         /**
           * The ID of the document to display.
@@ -209,6 +336,10 @@ export namespace Components {
          */
         "virtualWidth": number;
     }
+    /**
+     * Displays a single recipient from an envelope, with the opportunity to copy an in-person
+     * signing link for that recipient to use.
+     */
     interface VerdocsEnvelopeRecipientLink {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -223,6 +354,9 @@ export namespace Components {
          */
         "roleName": string;
     }
+    /**
+     * Displays a list of recipients with options to get in-person signing links for each one.
+     */
     interface VerdocsEnvelopeRecipientSummary {
         /**
           * Enable or disable the Done button.
@@ -245,6 +379,10 @@ export namespace Components {
          */
         "envelopeId": string;
     }
+    /**
+     * Displays a file upload mechanism suitable for the first step of creating a template.
+     * This is typically the first step in a template creation workflow.
+     */
     interface VerdocsEnvelopeSidebar {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -255,6 +393,9 @@ export namespace Components {
          */
         "envelopeId": string;
     }
+    /**
+     * Displays a list of envelopes matching specified conditions.
+     */
     interface VerdocsEnvelopesList {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -289,6 +430,9 @@ export namespace Components {
          */
         "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
     }
+    /**
+     * Displays an attachment field.
+     */
     interface VerdocsFieldAttachment {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -330,6 +474,9 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a checkbox.
+     */
     interface VerdocsFieldCheckbox {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -374,6 +521,9 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a date field. When tapped or clicked, the input element will display a date picker component.
+     */
     interface VerdocsFieldDate {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -419,6 +569,10 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
+     * input types like text and checkbox.
+     */
     interface VerdocsFieldDropdown {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -460,6 +614,10 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
+     * button will be shown. Clicking the button will show a dialog to adopt an initial.
+     */
     interface VerdocsFieldInitial {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -505,6 +663,10 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
+     * input types like text and checkbox.
+     */
     interface VerdocsFieldPayment {
         "currentInitial": string;
         "currentInitialId": string;
@@ -550,6 +712,9 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a radio button.
+     */
     interface VerdocsFieldRadioButton {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -594,6 +759,10 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
+     * button will be shown. Clicking the button will show a dialog to adopt a signature.
+     */
     interface VerdocsFieldSignature {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -639,6 +808,9 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Display a multi-line text input field.
+     */
     interface VerdocsFieldTextarea {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -684,6 +856,9 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Display a text input field.
+     */
     interface VerdocsFieldTextbox {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -729,6 +904,9 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Display a timestamp field.
+     */
     interface VerdocsFieldTimestamp {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -770,18 +948,30 @@ export namespace Components {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
+     * provide the actual upload functionality.
+     */
     interface VerdocsFileChooser {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
     }
+    /**
+     * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
+     * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
+     * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
+     */
     interface VerdocsFloatingMenu {
         /**
           * The role that this contact will be assigned to.
          */
         "options": IOption[];
     }
+    /**
+     * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     */
     interface VerdocsHelpIcon {
         /**
           * Optional icon to display. If not supplied, a standard help icon will be shown.
@@ -792,12 +982,21 @@ export namespace Components {
          */
         "text": string;
     }
+    /**
+     * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
+     * based on their full name, or by hand-drawing their initials with a mouse or tablet.
+     */
     interface VerdocsInitialDialog {
         /**
           * Initial signature text
          */
         "initials": string;
     }
+    /**
+     * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
+     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+     * It can also be dismissed by clicking the background overlay.
+     */
     interface VerdocsKbaDialog {
         /**
           * For choice challenges, a set of choices to choose from. 6 choices is recommended to fit most screen sizes.
@@ -832,8 +1031,16 @@ export namespace Components {
          */
         "steps": number;
     }
+    /**
+     * Animated loader placeholder. There are currently no configuration options for this control.
+     */
     interface VerdocsLoader {
     }
+    /**
+     * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
+     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+     * It can also be dismissed by clicking the background overlay.
+     */
     interface VerdocsOkDialog {
         /**
           * Override the "OK" button's label
@@ -852,12 +1059,18 @@ export namespace Components {
          */
         "showCancel": boolean;
     }
+    /**
+     * Display a small summary card describing an organization
+     */
     interface VerdocsOrganizationCard {
         /**
           * The organization to display
          */
         "organization": IOrganization;
     }
+    /**
+     * Display a drop-down menu of quick filter options.
+     */
     interface VerdocsPagination {
         /**
           * The total number of items.
@@ -872,6 +1085,14 @@ export namespace Components {
          */
         "selectedPage": number;
     }
+    /**
+     * Display a child component in a "portal", popping it out of the main DOM tree
+     * to allow it to escape the bounds set by its parent.
+     * @credit https://github.com/tomas-teston/stencil-portal for the basic
+     * technique. This has been altered in a few ways to make it more friendly
+     * to cases where there may be multiple portals on the page and provide more
+     * alignment options for the child to be displayed.
+     */
     interface VerdocsPortal {
         /**
           * Horizontal alignment.
@@ -886,6 +1107,11 @@ export namespace Components {
          */
         "voffset": number;
     }
+    /**
+     * Display a template preview experience. This will display the template's attached
+     * documents with signing fields overlaid on each page. Fields will be color-coded
+     * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     */
     interface VerdocsPreview {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -896,6 +1122,9 @@ export namespace Components {
          */
         "templateId": string | null;
     }
+    /**
+     * Displays a summary of a template
+     */
     interface VerdocsProgressBar {
         /**
           * Optional label to display above the bar
@@ -910,6 +1139,9 @@ export namespace Components {
          */
         "showPercent": boolean;
     }
+    /**
+     * Display a drop-down menu of quick filter options.
+     */
     interface VerdocsQuickFilter {
         "label": string;
         /**
@@ -919,12 +1151,33 @@ export namespace Components {
         "placeholder": string;
         "value": string;
     }
+    /**
+     * Display quick-function buttons for creating templates and documents.
+     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+     * embed. This Element will reuse the same session produced by logging in via that Embed.
+     */
     interface VerdocsQuickFunctions {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
     }
+    /**
+     * Displays a radio button. Note that this is different from the `verdocs-field-radio-button` component, which is
+     * designed to be used in signing experiences and contains settings that connect to template fields. This is just a
+     * simple radio button for UI displays e.g. dialog boxes.
+     * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
+     * handler. Sample usage:
+     * ```html
+     * <verdocs-radio-button
+     *    value="val1"
+     *    name="someProperty"
+     *    checked={this.someProperty === 'val1'}
+     *    onInput={(e: any) => { this.someProperty = 'val1' }}
+     *    disabled={false}
+     * />
+     * ```
+     */
     interface VerdocsRadioButton {
         /**
           * Whether the radio button is currently selected.
@@ -949,6 +1202,11 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
     }
+    /**
+     * Displays a customizable input box for search queries.
+     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+     * embed. This Element will reuse the same session produced by logging in via that Embed.
+     */
     interface VerdocsSearchBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -974,6 +1232,11 @@ export namespace Components {
     }
     interface VerdocsSearchTabs {
     }
+    /**
+     * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+     * visual styles of the other components. Note that events "bubble" from the input field to the container,
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     */
     interface VerdocsSelectInput {
         /**
           * Should the field be disabled?
@@ -992,6 +1255,14 @@ export namespace Components {
          */
         "value": string;
     }
+    /**
+     * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
+     * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
+     * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
+     * directly to the `createEnvelope()` call in JS-SDK.
+     * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
+     * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
+     */
     interface VerdocsSend {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1007,36 +1278,68 @@ export namespace Components {
          */
         "templateId": string | null;
     }
+    /**
+     * Display a template preview experience. This will display the template's attached
+     * documents with signing fields overlaid on each page. Fields will be color-coded
+     * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     */
     interface VerdocsSettings {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
     }
+    /**
+     * Displays a settings form that allows the user to manage their API keys.
+     */
     interface VerdocsSettingsApiKeys {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
     }
+    /**
+     * Displays a settings form that allows the user to manage their Verdocs profile.
+     */
     interface VerdocsSettingsMembers {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
     }
+    /**
+     * Displays a settings form that allows the user to manage their Verdocs profile.
+     */
     interface VerdocsSettingsOrganization {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
     }
+    /**
+     * Displays a settings form that allows the user to manage their Verdocs profile.
+     */
     interface VerdocsSettingsProfile {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
     }
+    /**
+     * Display an envelope signing experience. This will display the envelope's attached
+     * documents with signing fields overlaid on each page.
+     * The component will attempt to initiate a signing session and load the specified
+     * envelope. If successful, the recipient's fields will be enabled and the user will
+     * be able to sign the envelope's attached documents. If not, an `sdkError` will be
+     * thrown and the component will be blank/empty. To provide the best user experience,
+     * applications should capture and handle this error to provide the user with
+     * instructions/options for next steps based on the application's design and workflow.
+     * Unlike other components, this will always create its own endpoint to manage the
+     * session session. This endpoint will be included in event callbacks for the
+     * convenience of host applications that may wish to make server calls using the
+     * signer's credentials once signing is complete (e.g. to obtain copies of
+     * the signed attachments.)
+     */
     interface VerdocsSign {
         /**
           * The ID of the envelope to sign.
@@ -1055,16 +1358,30 @@ export namespace Components {
          */
         "roleId": string | null;
     }
+    /**
+     * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
+     * based on their full name, or by hand-drawing their signature with a mouse or tablet.
+     */
     interface VerdocsSignatureDialog {
         /**
           * Initial signature text
          */
         "name": string;
     }
+    /**
+     * Display a small loading spinner.
+     */
     interface VerdocsSpinner {
         "mode": 'light' | 'dark';
         "size": number;
     }
+    /**
+     * Displays an icon and message describing a document's completion status. For convenience, the status may be passed in either
+     * directly as a status field or the whole document object may be passed in.
+     * If the document is provided, the status flag will indicate the document's overall status. This also makes the component clickable
+     * to display a popup panel with per-recipient status data.
+     * If the status is provided as a string it can be either a `TRecipientStatus` or `TDocumentStatus` value.
+     */
     interface VerdocsStatusIndicator {
         /**
           * The document to display status for. Ignored if `status` is set directly.
@@ -1083,6 +1400,10 @@ export namespace Components {
          */
         "theme"?: 'dark' | 'light';
     }
+    /**
+     * Display a simple table of data. Columns and data cells may have custom renderers defined to
+     * support creating interactive table layouts.
+     */
     interface VerdocsTable {
         /**
           * The columns to display
@@ -1093,6 +1414,10 @@ export namespace Components {
          */
         "data": any[];
     }
+    /**
+     * Display a simple row of selectable tabs. This is a controlled element.
+     * The parent must adjust selectedTab as selection events are fired.
+     */
     interface VerdocsTabs {
         /**
           * The index of the tab to show selected.
@@ -1103,6 +1428,10 @@ export namespace Components {
          */
         "tabs": ITab[];
     }
+    /**
+     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
+     * Note that an active session and valid template ID must be supplied.
+     */
     interface VerdocsTemplateAttachments {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1113,6 +1442,9 @@ export namespace Components {
          */
         "templateId": string;
     }
+    /**
+     * Display a set of tabs for the template builder.
+     */
     interface VerdocsTemplateBuildTabs {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1121,24 +1453,36 @@ export namespace Components {
         /**
           * The step in the creation process to display.
          */
-        "step": TVerdocsBuildStep;
+        "step": TVerdocsBuildStep1;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
          */
         "templateId": string | null;
     }
+    /**
+     * Displays a summary of a template
+     */
     interface VerdocsTemplateCard {
         /**
           * The template for which the card will be rendered.
          */
         "template": ITemplate;
     }
+    /**
+     * Displays a file upload mechanism suitable for the first step of creating a template.
+     * This is typically the first step in a template creation workflow.
+     */
     interface VerdocsTemplateCreate {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
     }
+    /**
+     * Represents one document page. This is primarily a layout container used to coordinate positions of
+     * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
+     * on its own as an individual component.
+     */
     interface VerdocsTemplateDocumentPage {
         /**
           * Whether the fields should be disabled (Builder)
@@ -1181,6 +1525,9 @@ export namespace Components {
          */
         "virtualWidth": number;
     }
+    /**
+     * Displays an edit form that allows the user to adjust a field's settings.
+     */
     interface VerdocsTemplateFieldProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1199,6 +1546,10 @@ export namespace Components {
          */
         "templateId": string;
     }
+    /**
+     * Displays a builder experience for laying out fields in a template. Note that this experience requires a large display area to
+     * present all of the required controls, so it is primarily intended to be used in desktop environments.
+     */
     interface VerdocsTemplateFields {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1213,6 +1564,9 @@ export namespace Components {
          */
         "toolbarTargetId": string | null;
     }
+    /**
+     * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
+     */
     interface VerdocsTemplateName {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1223,6 +1577,9 @@ export namespace Components {
          */
         "templateId": string;
     }
+    /**
+     * Displays an edit form that allows the user to adjust a template's reminders.
+     */
     interface VerdocsTemplateReminders {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1233,6 +1590,9 @@ export namespace Components {
          */
         "templateId": string;
     }
+    /**
+     * Display an edit form that allows the user to adjust a role's setitngs.
+     */
     interface VerdocsTemplateRoleProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1251,6 +1611,9 @@ export namespace Components {
          */
         "templateId": string;
     }
+    /**
+     * Displays an edit form that allows the user to adjust a template's roles and workflow.
+     */
     interface VerdocsTemplateRoles {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1261,6 +1624,9 @@ export namespace Components {
          */
         "templateId": string;
     }
+    /**
+     * Display a dialog that allows a template sender to be selected.
+     */
     interface VerdocsTemplateSender {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1275,6 +1641,9 @@ export namespace Components {
          */
         "templateId": string;
     }
+    /**
+     * Displays a clickable star that allows users to mark frequently-used templates.
+     */
     interface VerdocsTemplateStar {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1285,12 +1654,18 @@ export namespace Components {
          */
         "template": ITemplate;
     }
+    /**
+     * Displays a message listing a template's tags.
+     */
     interface VerdocsTemplateTags {
         /**
           * The tags to display
          */
         "tags": any[];
     }
+    /**
+     * Displays an edit form that allows the user to adjust a template's visibility.
+     */
     interface VerdocsTemplateVisibility {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1301,6 +1676,9 @@ export namespace Components {
          */
         "templateId": string;
     }
+    /**
+     * Displays a list of envelopes matching specified conditions.
+     */
     interface VerdocsTemplatesList {
         /**
           * Override the If set, filter templates by the specified name.
@@ -1339,6 +1717,11 @@ export namespace Components {
          */
         "starred": 'all' | 'starred' | 'unstarred';
     }
+    /**
+     * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+     * visual styles of the other components. Note that events "bubble" from the input field to the container,
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     */
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
@@ -1381,6 +1764,9 @@ export namespace Components {
          */
         "value": string;
     }
+    /**
+     * Displays a label and a set of buttons, also allowing a default selection of a button
+     */
     interface VerdocsToggle {
         /**
           * The tags to display
@@ -1391,6 +1777,9 @@ export namespace Components {
          */
         "theme": 'light' | 'dark';
     }
+    /**
+     * Displays a single button that can be toggled on or off by clicking it.
+     */
     interface VerdocsToggleButton {
         "active": boolean;
         /**
@@ -1406,6 +1795,9 @@ export namespace Components {
          */
         "size"?: 'small' | 'normal';
     }
+    /**
+     * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     */
     interface VerdocsToolbarIcon {
         /**
           * SVG icon to display
@@ -1420,8 +1812,16 @@ export namespace Components {
          */
         "text": string;
     }
+    /**
+     * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
+     * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
+     * caller via the onNext event handler.
+     */
     interface VerdocsUploadDialog {
     }
+    /**
+     * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
+     */
     interface VerdocsView {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -1684,246 +2084,476 @@ declare global {
         prototype: HTMLIpcTestElement;
         new (): HTMLIpcTestElement;
     };
+    /**
+     * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
+     * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
+     * them appear more visually balanced.
+     */
     interface HTMLVerdocsActivityBoxElement extends Components.VerdocsActivityBox, HTMLStencilElement {
     }
     var HTMLVerdocsActivityBoxElement: {
         prototype: HTMLVerdocsActivityBoxElement;
         new (): HTMLVerdocsActivityBoxElement;
     };
+    /**
+     * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
+     * occur during the process (especially successful completion). If the user is already authenticated with a valid
+     * session, this component will hide itself and fire the success callback immediately. It is up to the host application
+     * to render the next appropriate view for the application.
+     * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
+     * allows you to susbcribe to notifications from the
+     * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
+     * container to allow sufficient space for the required forms.
+     * As noted below, the primary event is `authenticated`. This will always be fired at least once, immediately after
+     * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
+     * cancels) authentication steps.
+     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+     * embed. This Element will reuse the same session produced by logging in via that Embed.
+     * ```typescript
+     * interface IAuthStatus {
+     *   // If true, the user is authenticated with a valid session
+     *   authenticated: boolean;
+     *   // Details for the user's session
+     *   session: IActiveSession | null;
+     * }
+     * ```
+     */
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
     }
     var HTMLVerdocsAuthElement: {
         prototype: HTMLVerdocsAuthElement;
         new (): HTMLVerdocsAuthElement;
     };
+    /**
+     * Display a template building experience.
+     */
     interface HTMLVerdocsBuildElement extends Components.VerdocsBuild, HTMLStencilElement {
     }
     var HTMLVerdocsBuildElement: {
         prototype: HTMLVerdocsBuildElement;
         new (): HTMLVerdocsBuildElement;
     };
+    /**
+     * Display a simple button.
+     * Three variants are supported. `standard` and `outline` buttons look like traditional form buttons and are ideal candidates for 'Ok' and
+     * 'Cancel' options in most cases. `text` buttons are intended to be used inline in content blocks or for more subtle button options.
+     * (Auth uses text buttons for the Forgot Password and Sign Up options.)
+     * Four sizes are also supported. Most use cases will call for the `normal` size, but a `small` size is ideal for more subtle controls, such
+     * as pagination or other secondary functions. `medium` buttons are slightly larger to provide balance in forms where other items are also
+     * bigger, and `large` buttons are for cases where the page has mostly white-space and the buttons need to fill more space.
+     * Icons may be placed either before ("start") or after ("end") the button label. Icons should be SVG objects passed as strings and will
+     * be rendered as HTML inside the button label area. It is important that the root <SVG> tag contains a default `fill="#ffffff"` setting
+     * for the base color, and that child elements below it do not. This allows the button color to carry into the icon properly.
+     * ```html
+     * <verdocs-button label="OK" onClick={() => (console.log('OK clicked'))} />
+     * ```
+     */
     interface HTMLVerdocsButtonElement extends Components.VerdocsButton, HTMLStencilElement {
     }
     var HTMLVerdocsButtonElement: {
         prototype: HTMLVerdocsButtonElement;
         new (): HTMLVerdocsButtonElement;
     };
+    /**
+     * Displays a clickable icon suitable for display in a toolbar. When clicked, a customizable drop-down panel will be
+     * displayed.
+     * ```html
+     * <verdocs-button-panel icon="<svg.../>">
+     *   <div class="content">...</div>
+     * </verdocs-button-panel>
+     * ```
+     */
     interface HTMLVerdocsButtonPanelElement extends Components.VerdocsButtonPanel, HTMLStencilElement {
     }
     var HTMLVerdocsButtonPanelElement: {
         prototype: HTMLVerdocsButtonPanelElement;
         new (): HTMLVerdocsButtonPanelElement;
     };
+    /**
+     * Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
+     * to be used in signing experiences and contains settings that connect to template fields. This is just a simple check
+     * box for UI displays e.g. dialog boxes.
+     * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
+     * handler. Sample usage:
+     * ```html
+     * <verdocs-checkbox
+     *    value="on"
+     *    name="thingEnabled"
+     *    checked={this.thingEnabled}
+     *    onInput={(e: any) => (this.thingEnabled = e.target.checked)}
+     * />
+     * ```
+     */
     interface HTMLVerdocsCheckboxElement extends Components.VerdocsCheckbox, HTMLStencilElement {
     }
     var HTMLVerdocsCheckboxElement: {
         prototype: HTMLVerdocsCheckboxElement;
         new (): HTMLVerdocsCheckboxElement;
     };
+    /**
+     * Render a simple error message.
+     */
     interface HTMLVerdocsComponentErrorElement extends Components.VerdocsComponentError, HTMLStencilElement {
     }
     var HTMLVerdocsComponentErrorElement: {
         prototype: HTMLVerdocsComponentErrorElement;
         new (): HTMLVerdocsComponentErrorElement;
     };
+    /**
+     * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
+     * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
+     * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
+     * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
+     * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
+     * to always display the user's own contact record.
+     */
     interface HTMLVerdocsContactPickerElement extends Components.VerdocsContactPicker, HTMLStencilElement {
     }
     var HTMLVerdocsContactPickerElement: {
         prototype: HTMLVerdocsContactPickerElement;
         new (): HTMLVerdocsContactPickerElement;
     };
+    /**
+     * Display a simple dialog where the contents are provided via slots.
+     */
     interface HTMLVerdocsDialogElement extends Components.VerdocsDialog, HTMLStencilElement {
     }
     var HTMLVerdocsDialogElement: {
         prototype: HTMLVerdocsDialogElement;
         new (): HTMLVerdocsDialogElement;
     };
+    /**
+     * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
+     * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
+     * ```html
+     * <verdocs-dropdown
+     *   options={[
+     *     {label: 'Option 1', disabled: true},
+     *     {label: 'Option 2', id: '2'}
+     *     {label: ''}
+     *     {label: 'Option 3', id: '2'}
+     *    ]}
+     *   label="OK" onClick={() => (console.log('OK clicked'))}
+     * />
+     * ```
+     */
     interface HTMLVerdocsDropdownElement extends Components.VerdocsDropdown, HTMLStencilElement {
     }
     var HTMLVerdocsDropdownElement: {
         prototype: HTMLVerdocsDropdownElement;
         new (): HTMLVerdocsDropdownElement;
     };
+    /**
+     * Represents one document page. This is primarily a layout container used to coordinate positions of
+     * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
+     * on its own as an individual component.
+     */
     interface HTMLVerdocsEnvelopeDocumentPageElement extends Components.VerdocsEnvelopeDocumentPage, HTMLStencilElement {
     }
     var HTMLVerdocsEnvelopeDocumentPageElement: {
         prototype: HTMLVerdocsEnvelopeDocumentPageElement;
         new (): HTMLVerdocsEnvelopeDocumentPageElement;
     };
+    /**
+     * Displays a single recipient from an envelope, with the opportunity to copy an in-person
+     * signing link for that recipient to use.
+     */
     interface HTMLVerdocsEnvelopeRecipientLinkElement extends Components.VerdocsEnvelopeRecipientLink, HTMLStencilElement {
     }
     var HTMLVerdocsEnvelopeRecipientLinkElement: {
         prototype: HTMLVerdocsEnvelopeRecipientLinkElement;
         new (): HTMLVerdocsEnvelopeRecipientLinkElement;
     };
+    /**
+     * Displays a list of recipients with options to get in-person signing links for each one.
+     */
     interface HTMLVerdocsEnvelopeRecipientSummaryElement extends Components.VerdocsEnvelopeRecipientSummary, HTMLStencilElement {
     }
     var HTMLVerdocsEnvelopeRecipientSummaryElement: {
         prototype: HTMLVerdocsEnvelopeRecipientSummaryElement;
         new (): HTMLVerdocsEnvelopeRecipientSummaryElement;
     };
+    /**
+     * Displays a file upload mechanism suitable for the first step of creating a template.
+     * This is typically the first step in a template creation workflow.
+     */
     interface HTMLVerdocsEnvelopeSidebarElement extends Components.VerdocsEnvelopeSidebar, HTMLStencilElement {
     }
     var HTMLVerdocsEnvelopeSidebarElement: {
         prototype: HTMLVerdocsEnvelopeSidebarElement;
         new (): HTMLVerdocsEnvelopeSidebarElement;
     };
+    /**
+     * Displays a list of envelopes matching specified conditions.
+     */
     interface HTMLVerdocsEnvelopesListElement extends Components.VerdocsEnvelopesList, HTMLStencilElement {
     }
     var HTMLVerdocsEnvelopesListElement: {
         prototype: HTMLVerdocsEnvelopesListElement;
         new (): HTMLVerdocsEnvelopesListElement;
     };
+    /**
+     * Displays an attachment field.
+     */
     interface HTMLVerdocsFieldAttachmentElement extends Components.VerdocsFieldAttachment, HTMLStencilElement {
     }
     var HTMLVerdocsFieldAttachmentElement: {
         prototype: HTMLVerdocsFieldAttachmentElement;
         new (): HTMLVerdocsFieldAttachmentElement;
     };
+    /**
+     * Displays a checkbox.
+     */
     interface HTMLVerdocsFieldCheckboxElement extends Components.VerdocsFieldCheckbox, HTMLStencilElement {
     }
     var HTMLVerdocsFieldCheckboxElement: {
         prototype: HTMLVerdocsFieldCheckboxElement;
         new (): HTMLVerdocsFieldCheckboxElement;
     };
+    /**
+     * Displays a date field. When tapped or clicked, the input element will display a date picker component.
+     */
     interface HTMLVerdocsFieldDateElement extends Components.VerdocsFieldDate, HTMLStencilElement {
     }
     var HTMLVerdocsFieldDateElement: {
         prototype: HTMLVerdocsFieldDateElement;
         new (): HTMLVerdocsFieldDateElement;
     };
+    /**
+     * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
+     * input types like text and checkbox.
+     */
     interface HTMLVerdocsFieldDropdownElement extends Components.VerdocsFieldDropdown, HTMLStencilElement {
     }
     var HTMLVerdocsFieldDropdownElement: {
         prototype: HTMLVerdocsFieldDropdownElement;
         new (): HTMLVerdocsFieldDropdownElement;
     };
+    /**
+     * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
+     * button will be shown. Clicking the button will show a dialog to adopt an initial.
+     */
     interface HTMLVerdocsFieldInitialElement extends Components.VerdocsFieldInitial, HTMLStencilElement {
     }
     var HTMLVerdocsFieldInitialElement: {
         prototype: HTMLVerdocsFieldInitialElement;
         new (): HTMLVerdocsFieldInitialElement;
     };
+    /**
+     * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
+     * input types like text and checkbox.
+     */
     interface HTMLVerdocsFieldPaymentElement extends Components.VerdocsFieldPayment, HTMLStencilElement {
     }
     var HTMLVerdocsFieldPaymentElement: {
         prototype: HTMLVerdocsFieldPaymentElement;
         new (): HTMLVerdocsFieldPaymentElement;
     };
+    /**
+     * Displays a radio button.
+     */
     interface HTMLVerdocsFieldRadioButtonElement extends Components.VerdocsFieldRadioButton, HTMLStencilElement {
     }
     var HTMLVerdocsFieldRadioButtonElement: {
         prototype: HTMLVerdocsFieldRadioButtonElement;
         new (): HTMLVerdocsFieldRadioButtonElement;
     };
+    /**
+     * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
+     * button will be shown. Clicking the button will show a dialog to adopt a signature.
+     */
     interface HTMLVerdocsFieldSignatureElement extends Components.VerdocsFieldSignature, HTMLStencilElement {
     }
     var HTMLVerdocsFieldSignatureElement: {
         prototype: HTMLVerdocsFieldSignatureElement;
         new (): HTMLVerdocsFieldSignatureElement;
     };
+    /**
+     * Display a multi-line text input field.
+     */
     interface HTMLVerdocsFieldTextareaElement extends Components.VerdocsFieldTextarea, HTMLStencilElement {
     }
     var HTMLVerdocsFieldTextareaElement: {
         prototype: HTMLVerdocsFieldTextareaElement;
         new (): HTMLVerdocsFieldTextareaElement;
     };
+    /**
+     * Display a text input field.
+     */
     interface HTMLVerdocsFieldTextboxElement extends Components.VerdocsFieldTextbox, HTMLStencilElement {
     }
     var HTMLVerdocsFieldTextboxElement: {
         prototype: HTMLVerdocsFieldTextboxElement;
         new (): HTMLVerdocsFieldTextboxElement;
     };
+    /**
+     * Display a timestamp field.
+     */
     interface HTMLVerdocsFieldTimestampElement extends Components.VerdocsFieldTimestamp, HTMLStencilElement {
     }
     var HTMLVerdocsFieldTimestampElement: {
         prototype: HTMLVerdocsFieldTimestampElement;
         new (): HTMLVerdocsFieldTimestampElement;
     };
+    /**
+     * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
+     * provide the actual upload functionality.
+     */
     interface HTMLVerdocsFileChooserElement extends Components.VerdocsFileChooser, HTMLStencilElement {
     }
     var HTMLVerdocsFileChooserElement: {
         prototype: HTMLVerdocsFileChooserElement;
         new (): HTMLVerdocsFileChooserElement;
     };
+    /**
+     * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
+     * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
+     * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
+     */
     interface HTMLVerdocsFloatingMenuElement extends Components.VerdocsFloatingMenu, HTMLStencilElement {
     }
     var HTMLVerdocsFloatingMenuElement: {
         prototype: HTMLVerdocsFloatingMenuElement;
         new (): HTMLVerdocsFloatingMenuElement;
     };
+    /**
+     * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     */
     interface HTMLVerdocsHelpIconElement extends Components.VerdocsHelpIcon, HTMLStencilElement {
     }
     var HTMLVerdocsHelpIconElement: {
         prototype: HTMLVerdocsHelpIconElement;
         new (): HTMLVerdocsHelpIconElement;
     };
+    /**
+     * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
+     * based on their full name, or by hand-drawing their initials with a mouse or tablet.
+     */
     interface HTMLVerdocsInitialDialogElement extends Components.VerdocsInitialDialog, HTMLStencilElement {
     }
     var HTMLVerdocsInitialDialogElement: {
         prototype: HTMLVerdocsInitialDialogElement;
         new (): HTMLVerdocsInitialDialogElement;
     };
+    /**
+     * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
+     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+     * It can also be dismissed by clicking the background overlay.
+     */
     interface HTMLVerdocsKbaDialogElement extends Components.VerdocsKbaDialog, HTMLStencilElement {
     }
     var HTMLVerdocsKbaDialogElement: {
         prototype: HTMLVerdocsKbaDialogElement;
         new (): HTMLVerdocsKbaDialogElement;
     };
+    /**
+     * Animated loader placeholder. There are currently no configuration options for this control.
+     */
     interface HTMLVerdocsLoaderElement extends Components.VerdocsLoader, HTMLStencilElement {
     }
     var HTMLVerdocsLoaderElement: {
         prototype: HTMLVerdocsLoaderElement;
         new (): HTMLVerdocsLoaderElement;
     };
+    /**
+     * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
+     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+     * It can also be dismissed by clicking the background overlay.
+     */
     interface HTMLVerdocsOkDialogElement extends Components.VerdocsOkDialog, HTMLStencilElement {
     }
     var HTMLVerdocsOkDialogElement: {
         prototype: HTMLVerdocsOkDialogElement;
         new (): HTMLVerdocsOkDialogElement;
     };
+    /**
+     * Display a small summary card describing an organization
+     */
     interface HTMLVerdocsOrganizationCardElement extends Components.VerdocsOrganizationCard, HTMLStencilElement {
     }
     var HTMLVerdocsOrganizationCardElement: {
         prototype: HTMLVerdocsOrganizationCardElement;
         new (): HTMLVerdocsOrganizationCardElement;
     };
+    /**
+     * Display a drop-down menu of quick filter options.
+     */
     interface HTMLVerdocsPaginationElement extends Components.VerdocsPagination, HTMLStencilElement {
     }
     var HTMLVerdocsPaginationElement: {
         prototype: HTMLVerdocsPaginationElement;
         new (): HTMLVerdocsPaginationElement;
     };
+    /**
+     * Display a child component in a "portal", popping it out of the main DOM tree
+     * to allow it to escape the bounds set by its parent.
+     * @credit https://github.com/tomas-teston/stencil-portal for the basic
+     * technique. This has been altered in a few ways to make it more friendly
+     * to cases where there may be multiple portals on the page and provide more
+     * alignment options for the child to be displayed.
+     */
     interface HTMLVerdocsPortalElement extends Components.VerdocsPortal, HTMLStencilElement {
     }
     var HTMLVerdocsPortalElement: {
         prototype: HTMLVerdocsPortalElement;
         new (): HTMLVerdocsPortalElement;
     };
+    /**
+     * Display a template preview experience. This will display the template's attached
+     * documents with signing fields overlaid on each page. Fields will be color-coded
+     * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     */
     interface HTMLVerdocsPreviewElement extends Components.VerdocsPreview, HTMLStencilElement {
     }
     var HTMLVerdocsPreviewElement: {
         prototype: HTMLVerdocsPreviewElement;
         new (): HTMLVerdocsPreviewElement;
     };
+    /**
+     * Displays a summary of a template
+     */
     interface HTMLVerdocsProgressBarElement extends Components.VerdocsProgressBar, HTMLStencilElement {
     }
     var HTMLVerdocsProgressBarElement: {
         prototype: HTMLVerdocsProgressBarElement;
         new (): HTMLVerdocsProgressBarElement;
     };
+    /**
+     * Display a drop-down menu of quick filter options.
+     */
     interface HTMLVerdocsQuickFilterElement extends Components.VerdocsQuickFilter, HTMLStencilElement {
     }
     var HTMLVerdocsQuickFilterElement: {
         prototype: HTMLVerdocsQuickFilterElement;
         new (): HTMLVerdocsQuickFilterElement;
     };
+    /**
+     * Display quick-function buttons for creating templates and documents.
+     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+     * embed. This Element will reuse the same session produced by logging in via that Embed.
+     */
     interface HTMLVerdocsQuickFunctionsElement extends Components.VerdocsQuickFunctions, HTMLStencilElement {
     }
     var HTMLVerdocsQuickFunctionsElement: {
         prototype: HTMLVerdocsQuickFunctionsElement;
         new (): HTMLVerdocsQuickFunctionsElement;
     };
+    /**
+     * Displays a radio button. Note that this is different from the `verdocs-field-radio-button` component, which is
+     * designed to be used in signing experiences and contains settings that connect to template fields. This is just a
+     * simple radio button for UI displays e.g. dialog boxes.
+     * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
+     * handler. Sample usage:
+     * ```html
+     * <verdocs-radio-button
+     *    value="val1"
+     *    name="someProperty"
+     *    checked={this.someProperty === 'val1'}
+     *    onInput={(e: any) => { this.someProperty = 'val1' }}
+     *    disabled={false}
+     * />
+     * ```
+     */
     interface HTMLVerdocsRadioButtonElement extends Components.VerdocsRadioButton, HTMLStencilElement {
     }
     var HTMLVerdocsRadioButtonElement: {
@@ -1936,6 +2566,11 @@ declare global {
         prototype: HTMLVerdocsSearchElement;
         new (): HTMLVerdocsSearchElement;
     };
+    /**
+     * Displays a customizable input box for search queries.
+     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+     * embed. This Element will reuse the same session produced by logging in via that Embed.
+     */
     interface HTMLVerdocsSearchBoxElement extends Components.VerdocsSearchBox, HTMLStencilElement {
     }
     var HTMLVerdocsSearchBoxElement: {
@@ -1948,210 +2583,352 @@ declare global {
         prototype: HTMLVerdocsSearchTabsElement;
         new (): HTMLVerdocsSearchTabsElement;
     };
+    /**
+     * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+     * visual styles of the other components. Note that events "bubble" from the input field to the container,
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     */
     interface HTMLVerdocsSelectInputElement extends Components.VerdocsSelectInput, HTMLStencilElement {
     }
     var HTMLVerdocsSelectInputElement: {
         prototype: HTMLVerdocsSelectInputElement;
         new (): HTMLVerdocsSelectInputElement;
     };
+    /**
+     * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
+     * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
+     * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
+     * directly to the `createEnvelope()` call in JS-SDK.
+     * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
+     * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
+     */
     interface HTMLVerdocsSendElement extends Components.VerdocsSend, HTMLStencilElement {
     }
     var HTMLVerdocsSendElement: {
         prototype: HTMLVerdocsSendElement;
         new (): HTMLVerdocsSendElement;
     };
+    /**
+     * Display a template preview experience. This will display the template's attached
+     * documents with signing fields overlaid on each page. Fields will be color-coded
+     * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     */
     interface HTMLVerdocsSettingsElement extends Components.VerdocsSettings, HTMLStencilElement {
     }
     var HTMLVerdocsSettingsElement: {
         prototype: HTMLVerdocsSettingsElement;
         new (): HTMLVerdocsSettingsElement;
     };
+    /**
+     * Displays a settings form that allows the user to manage their API keys.
+     */
     interface HTMLVerdocsSettingsApiKeysElement extends Components.VerdocsSettingsApiKeys, HTMLStencilElement {
     }
     var HTMLVerdocsSettingsApiKeysElement: {
         prototype: HTMLVerdocsSettingsApiKeysElement;
         new (): HTMLVerdocsSettingsApiKeysElement;
     };
+    /**
+     * Displays a settings form that allows the user to manage their Verdocs profile.
+     */
     interface HTMLVerdocsSettingsMembersElement extends Components.VerdocsSettingsMembers, HTMLStencilElement {
     }
     var HTMLVerdocsSettingsMembersElement: {
         prototype: HTMLVerdocsSettingsMembersElement;
         new (): HTMLVerdocsSettingsMembersElement;
     };
+    /**
+     * Displays a settings form that allows the user to manage their Verdocs profile.
+     */
     interface HTMLVerdocsSettingsOrganizationElement extends Components.VerdocsSettingsOrganization, HTMLStencilElement {
     }
     var HTMLVerdocsSettingsOrganizationElement: {
         prototype: HTMLVerdocsSettingsOrganizationElement;
         new (): HTMLVerdocsSettingsOrganizationElement;
     };
+    /**
+     * Displays a settings form that allows the user to manage their Verdocs profile.
+     */
     interface HTMLVerdocsSettingsProfileElement extends Components.VerdocsSettingsProfile, HTMLStencilElement {
     }
     var HTMLVerdocsSettingsProfileElement: {
         prototype: HTMLVerdocsSettingsProfileElement;
         new (): HTMLVerdocsSettingsProfileElement;
     };
+    /**
+     * Display an envelope signing experience. This will display the envelope's attached
+     * documents with signing fields overlaid on each page.
+     * The component will attempt to initiate a signing session and load the specified
+     * envelope. If successful, the recipient's fields will be enabled and the user will
+     * be able to sign the envelope's attached documents. If not, an `sdkError` will be
+     * thrown and the component will be blank/empty. To provide the best user experience,
+     * applications should capture and handle this error to provide the user with
+     * instructions/options for next steps based on the application's design and workflow.
+     * Unlike other components, this will always create its own endpoint to manage the
+     * session session. This endpoint will be included in event callbacks for the
+     * convenience of host applications that may wish to make server calls using the
+     * signer's credentials once signing is complete (e.g. to obtain copies of
+     * the signed attachments.)
+     */
     interface HTMLVerdocsSignElement extends Components.VerdocsSign, HTMLStencilElement {
     }
     var HTMLVerdocsSignElement: {
         prototype: HTMLVerdocsSignElement;
         new (): HTMLVerdocsSignElement;
     };
+    /**
+     * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
+     * based on their full name, or by hand-drawing their signature with a mouse or tablet.
+     */
     interface HTMLVerdocsSignatureDialogElement extends Components.VerdocsSignatureDialog, HTMLStencilElement {
     }
     var HTMLVerdocsSignatureDialogElement: {
         prototype: HTMLVerdocsSignatureDialogElement;
         new (): HTMLVerdocsSignatureDialogElement;
     };
+    /**
+     * Display a small loading spinner.
+     */
     interface HTMLVerdocsSpinnerElement extends Components.VerdocsSpinner, HTMLStencilElement {
     }
     var HTMLVerdocsSpinnerElement: {
         prototype: HTMLVerdocsSpinnerElement;
         new (): HTMLVerdocsSpinnerElement;
     };
+    /**
+     * Displays an icon and message describing a document's completion status. For convenience, the status may be passed in either
+     * directly as a status field or the whole document object may be passed in.
+     * If the document is provided, the status flag will indicate the document's overall status. This also makes the component clickable
+     * to display a popup panel with per-recipient status data.
+     * If the status is provided as a string it can be either a `TRecipientStatus` or `TDocumentStatus` value.
+     */
     interface HTMLVerdocsStatusIndicatorElement extends Components.VerdocsStatusIndicator, HTMLStencilElement {
     }
     var HTMLVerdocsStatusIndicatorElement: {
         prototype: HTMLVerdocsStatusIndicatorElement;
         new (): HTMLVerdocsStatusIndicatorElement;
     };
+    /**
+     * Display a simple table of data. Columns and data cells may have custom renderers defined to
+     * support creating interactive table layouts.
+     */
     interface HTMLVerdocsTableElement extends Components.VerdocsTable, HTMLStencilElement {
     }
     var HTMLVerdocsTableElement: {
         prototype: HTMLVerdocsTableElement;
         new (): HTMLVerdocsTableElement;
     };
+    /**
+     * Display a simple row of selectable tabs. This is a controlled element.
+     * The parent must adjust selectedTab as selection events are fired.
+     */
     interface HTMLVerdocsTabsElement extends Components.VerdocsTabs, HTMLStencilElement {
     }
     var HTMLVerdocsTabsElement: {
         prototype: HTMLVerdocsTabsElement;
         new (): HTMLVerdocsTabsElement;
     };
+    /**
+     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
+     * Note that an active session and valid template ID must be supplied.
+     */
     interface HTMLVerdocsTemplateAttachmentsElement extends Components.VerdocsTemplateAttachments, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateAttachmentsElement: {
         prototype: HTMLVerdocsTemplateAttachmentsElement;
         new (): HTMLVerdocsTemplateAttachmentsElement;
     };
+    /**
+     * Display a set of tabs for the template builder.
+     */
     interface HTMLVerdocsTemplateBuildTabsElement extends Components.VerdocsTemplateBuildTabs, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateBuildTabsElement: {
         prototype: HTMLVerdocsTemplateBuildTabsElement;
         new (): HTMLVerdocsTemplateBuildTabsElement;
     };
+    /**
+     * Displays a summary of a template
+     */
     interface HTMLVerdocsTemplateCardElement extends Components.VerdocsTemplateCard, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateCardElement: {
         prototype: HTMLVerdocsTemplateCardElement;
         new (): HTMLVerdocsTemplateCardElement;
     };
+    /**
+     * Displays a file upload mechanism suitable for the first step of creating a template.
+     * This is typically the first step in a template creation workflow.
+     */
     interface HTMLVerdocsTemplateCreateElement extends Components.VerdocsTemplateCreate, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateCreateElement: {
         prototype: HTMLVerdocsTemplateCreateElement;
         new (): HTMLVerdocsTemplateCreateElement;
     };
+    /**
+     * Represents one document page. This is primarily a layout container used to coordinate positions of
+     * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
+     * on its own as an individual component.
+     */
     interface HTMLVerdocsTemplateDocumentPageElement extends Components.VerdocsTemplateDocumentPage, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateDocumentPageElement: {
         prototype: HTMLVerdocsTemplateDocumentPageElement;
         new (): HTMLVerdocsTemplateDocumentPageElement;
     };
+    /**
+     * Displays an edit form that allows the user to adjust a field's settings.
+     */
     interface HTMLVerdocsTemplateFieldPropertiesElement extends Components.VerdocsTemplateFieldProperties, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateFieldPropertiesElement: {
         prototype: HTMLVerdocsTemplateFieldPropertiesElement;
         new (): HTMLVerdocsTemplateFieldPropertiesElement;
     };
+    /**
+     * Displays a builder experience for laying out fields in a template. Note that this experience requires a large display area to
+     * present all of the required controls, so it is primarily intended to be used in desktop environments.
+     */
     interface HTMLVerdocsTemplateFieldsElement extends Components.VerdocsTemplateFields, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateFieldsElement: {
         prototype: HTMLVerdocsTemplateFieldsElement;
         new (): HTMLVerdocsTemplateFieldsElement;
     };
+    /**
+     * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
+     */
     interface HTMLVerdocsTemplateNameElement extends Components.VerdocsTemplateName, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateNameElement: {
         prototype: HTMLVerdocsTemplateNameElement;
         new (): HTMLVerdocsTemplateNameElement;
     };
+    /**
+     * Displays an edit form that allows the user to adjust a template's reminders.
+     */
     interface HTMLVerdocsTemplateRemindersElement extends Components.VerdocsTemplateReminders, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateRemindersElement: {
         prototype: HTMLVerdocsTemplateRemindersElement;
         new (): HTMLVerdocsTemplateRemindersElement;
     };
+    /**
+     * Display an edit form that allows the user to adjust a role's setitngs.
+     */
     interface HTMLVerdocsTemplateRolePropertiesElement extends Components.VerdocsTemplateRoleProperties, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateRolePropertiesElement: {
         prototype: HTMLVerdocsTemplateRolePropertiesElement;
         new (): HTMLVerdocsTemplateRolePropertiesElement;
     };
+    /**
+     * Displays an edit form that allows the user to adjust a template's roles and workflow.
+     */
     interface HTMLVerdocsTemplateRolesElement extends Components.VerdocsTemplateRoles, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateRolesElement: {
         prototype: HTMLVerdocsTemplateRolesElement;
         new (): HTMLVerdocsTemplateRolesElement;
     };
+    /**
+     * Display a dialog that allows a template sender to be selected.
+     */
     interface HTMLVerdocsTemplateSenderElement extends Components.VerdocsTemplateSender, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateSenderElement: {
         prototype: HTMLVerdocsTemplateSenderElement;
         new (): HTMLVerdocsTemplateSenderElement;
     };
+    /**
+     * Displays a clickable star that allows users to mark frequently-used templates.
+     */
     interface HTMLVerdocsTemplateStarElement extends Components.VerdocsTemplateStar, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateStarElement: {
         prototype: HTMLVerdocsTemplateStarElement;
         new (): HTMLVerdocsTemplateStarElement;
     };
+    /**
+     * Displays a message listing a template's tags.
+     */
     interface HTMLVerdocsTemplateTagsElement extends Components.VerdocsTemplateTags, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateTagsElement: {
         prototype: HTMLVerdocsTemplateTagsElement;
         new (): HTMLVerdocsTemplateTagsElement;
     };
+    /**
+     * Displays an edit form that allows the user to adjust a template's visibility.
+     */
     interface HTMLVerdocsTemplateVisibilityElement extends Components.VerdocsTemplateVisibility, HTMLStencilElement {
     }
     var HTMLVerdocsTemplateVisibilityElement: {
         prototype: HTMLVerdocsTemplateVisibilityElement;
         new (): HTMLVerdocsTemplateVisibilityElement;
     };
+    /**
+     * Displays a list of envelopes matching specified conditions.
+     */
     interface HTMLVerdocsTemplatesListElement extends Components.VerdocsTemplatesList, HTMLStencilElement {
     }
     var HTMLVerdocsTemplatesListElement: {
         prototype: HTMLVerdocsTemplatesListElement;
         new (): HTMLVerdocsTemplatesListElement;
     };
+    /**
+     * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+     * visual styles of the other components. Note that events "bubble" from the input field to the container,
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     */
     interface HTMLVerdocsTextInputElement extends Components.VerdocsTextInput, HTMLStencilElement {
     }
     var HTMLVerdocsTextInputElement: {
         prototype: HTMLVerdocsTextInputElement;
         new (): HTMLVerdocsTextInputElement;
     };
+    /**
+     * Displays a label and a set of buttons, also allowing a default selection of a button
+     */
     interface HTMLVerdocsToggleElement extends Components.VerdocsToggle, HTMLStencilElement {
     }
     var HTMLVerdocsToggleElement: {
         prototype: HTMLVerdocsToggleElement;
         new (): HTMLVerdocsToggleElement;
     };
+    /**
+     * Displays a single button that can be toggled on or off by clicking it.
+     */
     interface HTMLVerdocsToggleButtonElement extends Components.VerdocsToggleButton, HTMLStencilElement {
     }
     var HTMLVerdocsToggleButtonElement: {
         prototype: HTMLVerdocsToggleButtonElement;
         new (): HTMLVerdocsToggleButtonElement;
     };
+    /**
+     * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     */
     interface HTMLVerdocsToolbarIconElement extends Components.VerdocsToolbarIcon, HTMLStencilElement {
     }
     var HTMLVerdocsToolbarIconElement: {
         prototype: HTMLVerdocsToolbarIconElement;
         new (): HTMLVerdocsToolbarIconElement;
     };
+    /**
+     * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
+     * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
+     * caller via the onNext event handler.
+     */
     interface HTMLVerdocsUploadDialogElement extends Components.VerdocsUploadDialog, HTMLStencilElement {
     }
     var HTMLVerdocsUploadDialogElement: {
         prototype: HTMLVerdocsUploadDialogElement;
         new (): HTMLVerdocsUploadDialogElement;
     };
+    /**
+     * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
+     */
     interface HTMLVerdocsViewElement extends Components.VerdocsView, HTMLStencilElement {
     }
     var HTMLVerdocsViewElement: {
@@ -2252,6 +3029,11 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    /**
+     * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
+     * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
+     * them appear more visually balanced.
+     */
     interface VerdocsActivityBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2282,6 +3064,29 @@ declare namespace LocalJSX {
          */
         "view"?: 'completed' | 'action' | 'waiting';
     }
+    /**
+     * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
+     * occur during the process (especially successful completion). If the user is already authenticated with a valid
+     * session, this component will hide itself and fire the success callback immediately. It is up to the host application
+     * to render the next appropriate view for the application.
+     * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
+     * allows you to susbcribe to notifications from the
+     * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
+     * container to allow sufficient space for the required forms.
+     * As noted below, the primary event is `authenticated`. This will always be fired at least once, immediately after
+     * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
+     * cancels) authentication steps.
+     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+     * embed. This Element will reuse the same session produced by logging in via that Embed.
+     * ```typescript
+     * interface IAuthStatus {
+     *   // If true, the user is authenticated with a valid session
+     *   authenticated: boolean;
+     *   // Details for the user's session
+     *   session: IActiveSession | null;
+     * }
+     * ```
+     */
     interface VerdocsAuth {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2304,6 +3109,9 @@ declare namespace LocalJSX {
          */
         "visible"?: boolean;
     }
+    /**
+     * Display a template building experience.
+     */
     interface VerdocsBuild {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2342,6 +3150,21 @@ declare namespace LocalJSX {
          */
         "templateId"?: string | null;
     }
+    /**
+     * Display a simple button.
+     * Three variants are supported. `standard` and `outline` buttons look like traditional form buttons and are ideal candidates for 'Ok' and
+     * 'Cancel' options in most cases. `text` buttons are intended to be used inline in content blocks or for more subtle button options.
+     * (Auth uses text buttons for the Forgot Password and Sign Up options.)
+     * Four sizes are also supported. Most use cases will call for the `normal` size, but a `small` size is ideal for more subtle controls, such
+     * as pagination or other secondary functions. `medium` buttons are slightly larger to provide balance in forms where other items are also
+     * bigger, and `large` buttons are for cases where the page has mostly white-space and the buttons need to fill more space.
+     * Icons may be placed either before ("start") or after ("end") the button label. Icons should be SVG objects passed as strings and will
+     * be rendered as HTML inside the button label area. It is important that the root <SVG> tag contains a default `fill="#ffffff"` setting
+     * for the base color, and that child elements below it do not. This allows the button color to carry into the icon properly.
+     * ```html
+     * <verdocs-button label="OK" onClick={() => (console.log('OK clicked'))} />
+     * ```
+     */
     interface VerdocsButton {
         /**
           * Whether the button should be disabled.
@@ -2372,12 +3195,36 @@ declare namespace LocalJSX {
          */
         "variant"?: 'standard' | 'text' | 'outline';
     }
+    /**
+     * Displays a clickable icon suitable for display in a toolbar. When clicked, a customizable drop-down panel will be
+     * displayed.
+     * ```html
+     * <verdocs-button-panel icon="<svg.../>">
+     *   <div class="content">...</div>
+     * </verdocs-button-panel>
+     * ```
+     */
     interface VerdocsButtonPanel {
         /**
           * SVG icon to display
          */
         "icon"?: string;
     }
+    /**
+     * Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
+     * to be used in signing experiences and contains settings that connect to template fields. This is just a simple check
+     * box for UI displays e.g. dialog boxes.
+     * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
+     * handler. Sample usage:
+     * ```html
+     * <verdocs-checkbox
+     *    value="on"
+     *    name="thingEnabled"
+     *    checked={this.thingEnabled}
+     *    onInput={(e: any) => (this.thingEnabled = e.target.checked)}
+     * />
+     * ```
+     */
     interface VerdocsCheckbox {
         /**
           * Whether the radio button is currently selected.
@@ -2404,12 +3251,23 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
+    /**
+     * Render a simple error message.
+     */
     interface VerdocsComponentError {
         /**
           * The message to display.
          */
         "message"?: string;
     }
+    /**
+     * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
+     * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
+     * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
+     * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
+     * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
+     * to always display the user's own contact record.
+     */
     interface VerdocsContactPicker {
         /**
           * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
@@ -2436,12 +3294,30 @@ declare namespace LocalJSX {
          */
         "templateRole"?: IRole | null;
     }
+    /**
+     * Display a simple dialog where the contents are provided via slots.
+     */
     interface VerdocsDialog {
         /**
           * Event fired when the dialog is dismissed by clicking the background overlay.
          */
         "onExit"?: (event: VerdocsDialogCustomEvent<any>) => void;
     }
+    /**
+     * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
+     * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
+     * ```html
+     * <verdocs-dropdown
+     *   options={[
+     *     {label: 'Option 1', disabled: true},
+     *     {label: 'Option 2', id: '2'}
+     *     {label: ''}
+     *     {label: 'Option 3', id: '2'}
+     *    ]}
+     *   label="OK" onClick={() => (console.log('OK clicked'))}
+     * />
+     * ```
+     */
     interface VerdocsDropdown {
         /**
           * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
@@ -2452,6 +3328,11 @@ declare namespace LocalJSX {
          */
         "options"?: IMenuOption[];
     }
+    /**
+     * Represents one document page. This is primarily a layout container used to coordinate positions of
+     * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
+     * on its own as an individual component.
+     */
     interface VerdocsEnvelopeDocumentPage {
         /**
           * The ID of the document to display.
@@ -2487,6 +3368,10 @@ declare namespace LocalJSX {
          */
         "virtualWidth"?: number;
     }
+    /**
+     * Displays a single recipient from an envelope, with the opportunity to copy an in-person
+     * signing link for that recipient to use.
+     */
     interface VerdocsEnvelopeRecipientLink {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2509,6 +3394,9 @@ declare namespace LocalJSX {
          */
         "roleName"?: string;
     }
+    /**
+     * Displays a list of recipients with options to get in-person signing links for each one.
+     */
     interface VerdocsEnvelopeRecipientSummary {
         /**
           * Enable or disable the Done button.
@@ -2547,6 +3435,10 @@ declare namespace LocalJSX {
          */
         "onView"?: (event: VerdocsEnvelopeRecipientSummaryCustomEvent<{envelope: IEnvelope}>) => void;
     }
+    /**
+     * Displays a file upload mechanism suitable for the first step of creating a template.
+     * This is typically the first step in a template creation workflow.
+     */
     interface VerdocsEnvelopeSidebar {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2573,6 +3465,9 @@ declare namespace LocalJSX {
          */
         "onToggle"?: (event: VerdocsEnvelopeSidebarCustomEvent<{open: boolean}>) => void;
     }
+    /**
+     * Displays a list of envelopes matching specified conditions.
+     */
     interface VerdocsEnvelopesList {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -2635,6 +3530,9 @@ declare namespace LocalJSX {
          */
         "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
     }
+    /**
+     * Displays an attachment field.
+     */
     interface VerdocsFieldAttachment {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -2685,6 +3583,9 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a checkbox.
+     */
     interface VerdocsFieldCheckbox {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -2735,6 +3636,9 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a date field. When tapped or clicked, the input element will display a date picker component.
+     */
     interface VerdocsFieldDate {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -2789,6 +3693,10 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
+     * input types like text and checkbox.
+     */
     interface VerdocsFieldDropdown {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -2839,6 +3747,10 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
+     * button will be shown. Clicking the button will show a dialog to adopt an initial.
+     */
     interface VerdocsFieldInitial {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -2905,6 +3817,10 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
+     * input types like text and checkbox.
+     */
     interface VerdocsFieldPayment {
         "currentInitial"?: string;
         "currentInitialId"?: string;
@@ -2955,6 +3871,9 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a radio button.
+     */
     interface VerdocsFieldRadioButton {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -3005,6 +3924,10 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
+     * button will be shown. Clicking the button will show a dialog to adopt a signature.
+     */
     interface VerdocsFieldSignature {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -3063,6 +3986,9 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Display a multi-line text input field.
+     */
     interface VerdocsFieldTextarea {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -3113,6 +4039,9 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Display a text input field.
+     */
     interface VerdocsFieldTextbox {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -3163,6 +4092,9 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Display a timestamp field.
+     */
     interface VerdocsFieldTimestamp {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -3209,6 +4141,10 @@ declare namespace LocalJSX {
          */
         "yscale"?: number;
     }
+    /**
+     * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
+     * provide the actual upload functionality.
+     */
     interface VerdocsFileChooser {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3219,6 +4155,11 @@ declare namespace LocalJSX {
          */
         "onFileSelected"?: (event: VerdocsFileChooserCustomEvent<{file: File | null}>) => void;
     }
+    /**
+     * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
+     * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
+     * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
+     */
     interface VerdocsFloatingMenu {
         /**
           * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
@@ -3229,6 +4170,9 @@ declare namespace LocalJSX {
          */
         "options"?: IOption[];
     }
+    /**
+     * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     */
     interface VerdocsHelpIcon {
         /**
           * Optional icon to display. If not supplied, a standard help icon will be shown.
@@ -3239,6 +4183,10 @@ declare namespace LocalJSX {
          */
         "text"?: string;
     }
+    /**
+     * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
+     * based on their full name, or by hand-drawing their initials with a mouse or tablet.
+     */
     interface VerdocsInitialDialog {
         /**
           * Initial signature text
@@ -3253,6 +4201,11 @@ declare namespace LocalJSX {
          */
         "onNext"?: (event: VerdocsInitialDialogCustomEvent<string>) => void;
     }
+    /**
+     * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
+     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+     * It can also be dismissed by clicking the background overlay.
+     */
     interface VerdocsKbaDialog {
         /**
           * For choice challenges, a set of choices to choose from. 6 choices is recommended to fit most screen sizes.
@@ -3295,8 +4248,16 @@ declare namespace LocalJSX {
          */
         "steps"?: number;
     }
+    /**
+     * Animated loader placeholder. There are currently no configuration options for this control.
+     */
     interface VerdocsLoader {
     }
+    /**
+     * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
+     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+     * It can also be dismissed by clicking the background overlay.
+     */
     interface VerdocsOkDialog {
         /**
           * Override the "OK" button's label
@@ -3323,12 +4284,18 @@ declare namespace LocalJSX {
          */
         "showCancel"?: boolean;
     }
+    /**
+     * Display a small summary card describing an organization
+     */
     interface VerdocsOrganizationCard {
         /**
           * The organization to display
          */
         "organization"?: IOrganization;
     }
+    /**
+     * Display a drop-down menu of quick filter options.
+     */
     interface VerdocsPagination {
         /**
           * The total number of items.
@@ -3347,6 +4314,14 @@ declare namespace LocalJSX {
          */
         "selectedPage"?: number;
     }
+    /**
+     * Display a child component in a "portal", popping it out of the main DOM tree
+     * to allow it to escape the bounds set by its parent.
+     * @credit https://github.com/tomas-teston/stencil-portal for the basic
+     * technique. This has been altered in a few ways to make it more friendly
+     * to cases where there may be multiple portals on the page and provide more
+     * alignment options for the child to be displayed.
+     */
     interface VerdocsPortal {
         /**
           * Horizontal alignment.
@@ -3362,6 +4337,11 @@ declare namespace LocalJSX {
          */
         "voffset"?: number;
     }
+    /**
+     * Display a template preview experience. This will display the template's attached
+     * documents with signing fields overlaid on each page. Fields will be color-coded
+     * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     */
     interface VerdocsPreview {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3376,6 +4356,9 @@ declare namespace LocalJSX {
          */
         "templateId"?: string | null;
     }
+    /**
+     * Displays a summary of a template
+     */
     interface VerdocsProgressBar {
         /**
           * Optional label to display above the bar
@@ -3390,6 +4373,9 @@ declare namespace LocalJSX {
          */
         "showPercent"?: boolean;
     }
+    /**
+     * Display a drop-down menu of quick filter options.
+     */
     interface VerdocsQuickFilter {
         "label"?: string;
         /**
@@ -3403,6 +4389,11 @@ declare namespace LocalJSX {
         "placeholder"?: string;
         "value"?: string;
     }
+    /**
+     * Display quick-function buttons for creating templates and documents.
+     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+     * embed. This Element will reuse the same session produced by logging in via that Embed.
+     */
     interface VerdocsQuickFunctions {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3417,6 +4408,22 @@ declare namespace LocalJSX {
          */
         "onCreateTemplate"?: (event: VerdocsQuickFunctionsCustomEvent<any>) => void;
     }
+    /**
+     * Displays a radio button. Note that this is different from the `verdocs-field-radio-button` component, which is
+     * designed to be used in signing experiences and contains settings that connect to template fields. This is just a
+     * simple radio button for UI displays e.g. dialog boxes.
+     * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
+     * handler. Sample usage:
+     * ```html
+     * <verdocs-radio-button
+     *    value="val1"
+     *    name="someProperty"
+     *    checked={this.someProperty === 'val1'}
+     *    onInput={(e: any) => { this.someProperty = 'val1' }}
+     *    disabled={false}
+     * />
+     * ```
+     */
     interface VerdocsRadioButton {
         /**
           * Whether the radio button is currently selected.
@@ -3441,6 +4448,11 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
     }
+    /**
+     * Displays a customizable input box for search queries.
+     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+     * embed. This Element will reuse the same session produced by logging in via that Embed.
+     */
     interface VerdocsSearchBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3477,6 +4489,11 @@ declare namespace LocalJSX {
     }
     interface VerdocsSearchTabs {
     }
+    /**
+     * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+     * visual styles of the other components. Note that events "bubble" from the input field to the container,
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     */
     interface VerdocsSelectInput {
         /**
           * Should the field be disabled?
@@ -3495,6 +4512,14 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
+    /**
+     * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
+     * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
+     * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
+     * directly to the `createEnvelope()` call in JS-SDK.
+     * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
+     * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
+     */
     interface VerdocsSend {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3529,6 +4554,11 @@ declare namespace LocalJSX {
          */
         "templateId"?: string | null;
     }
+    /**
+     * Display a template preview experience. This will display the template's attached
+     * documents with signing fields overlaid on each page. Fields will be color-coded
+     * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     */
     interface VerdocsSettings {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3539,6 +4569,9 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsSettingsCustomEvent<SDKError>) => void;
     }
+    /**
+     * Displays a settings form that allows the user to manage their API keys.
+     */
     interface VerdocsSettingsApiKeys {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3561,6 +4594,9 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsSettingsApiKeysCustomEvent<SDKError>) => void;
     }
+    /**
+     * Displays a settings form that allows the user to manage their Verdocs profile.
+     */
     interface VerdocsSettingsMembers {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3583,6 +4619,9 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsSettingsMembersCustomEvent<SDKError>) => void;
     }
+    /**
+     * Displays a settings form that allows the user to manage their Verdocs profile.
+     */
     interface VerdocsSettingsOrganization {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3597,6 +4636,9 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsSettingsOrganizationCustomEvent<SDKError>) => void;
     }
+    /**
+     * Displays a settings form that allows the user to manage their Verdocs profile.
+     */
     interface VerdocsSettingsProfile {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3611,6 +4653,21 @@ declare namespace LocalJSX {
          */
         "onSdkError"?: (event: VerdocsSettingsProfileCustomEvent<SDKError>) => void;
     }
+    /**
+     * Display an envelope signing experience. This will display the envelope's attached
+     * documents with signing fields overlaid on each page.
+     * The component will attempt to initiate a signing session and load the specified
+     * envelope. If successful, the recipient's fields will be enabled and the user will
+     * be able to sign the envelope's attached documents. If not, an `sdkError` will be
+     * thrown and the component will be blank/empty. To provide the best user experience,
+     * applications should capture and handle this error to provide the user with
+     * instructions/options for next steps based on the application's design and workflow.
+     * Unlike other components, this will always create its own endpoint to manage the
+     * session session. This endpoint will be included in event callbacks for the
+     * convenience of host applications that may wish to make server calls using the
+     * signer's credentials once signing is complete (e.g. to obtain copies of
+     * the signed attachments.)
+     */
     interface VerdocsSign {
         /**
           * The ID of the envelope to sign.
@@ -3641,6 +4698,10 @@ declare namespace LocalJSX {
          */
         "roleId"?: string | null;
     }
+    /**
+     * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
+     * based on their full name, or by hand-drawing their signature with a mouse or tablet.
+     */
     interface VerdocsSignatureDialog {
         /**
           * Initial signature text
@@ -3655,10 +4716,20 @@ declare namespace LocalJSX {
          */
         "onNext"?: (event: VerdocsSignatureDialogCustomEvent<string>) => void;
     }
+    /**
+     * Display a small loading spinner.
+     */
     interface VerdocsSpinner {
         "mode"?: 'light' | 'dark';
         "size"?: number;
     }
+    /**
+     * Displays an icon and message describing a document's completion status. For convenience, the status may be passed in either
+     * directly as a status field or the whole document object may be passed in.
+     * If the document is provided, the status flag will indicate the document's overall status. This also makes the component clickable
+     * to display a popup panel with per-recipient status data.
+     * If the status is provided as a string it can be either a `TRecipientStatus` or `TDocumentStatus` value.
+     */
     interface VerdocsStatusIndicator {
         /**
           * The document to display status for. Ignored if `status` is set directly.
@@ -3677,6 +4748,10 @@ declare namespace LocalJSX {
          */
         "theme"?: 'dark' | 'light';
     }
+    /**
+     * Display a simple table of data. Columns and data cells may have custom renderers defined to
+     * support creating interactive table layouts.
+     */
     interface VerdocsTable {
         /**
           * The columns to display
@@ -3695,6 +4770,10 @@ declare namespace LocalJSX {
          */
         "onRowClick"?: (event: VerdocsTableCustomEvent<{row: any}>) => void;
     }
+    /**
+     * Display a simple row of selectable tabs. This is a controlled element.
+     * The parent must adjust selectedTab as selection events are fired.
+     */
     interface VerdocsTabs {
         /**
           * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
@@ -3709,6 +4788,10 @@ declare namespace LocalJSX {
          */
         "tabs"?: ITab[];
     }
+    /**
+     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
+     * Note that an active session and valid template ID must be supplied.
+     */
     interface VerdocsTemplateAttachments {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3735,6 +4818,9 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    /**
+     * Display a set of tabs for the template builder.
+     */
     interface VerdocsTemplateBuildTabs {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3747,22 +4833,29 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user selects a different step.
          */
-        "onStepChanged"?: (event: VerdocsTemplateBuildTabsCustomEvent<TVerdocsBuildStep>) => void;
+        "onStepChanged"?: (event: VerdocsTemplateBuildTabsCustomEvent<TVerdocsBuildStep1>) => void;
         /**
           * The step in the creation process to display.
          */
-        "step"?: TVerdocsBuildStep;
+        "step"?: TVerdocsBuildStep1;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
          */
         "templateId"?: string | null;
     }
+    /**
+     * Displays a summary of a template
+     */
     interface VerdocsTemplateCard {
         /**
           * The template for which the card will be rendered.
          */
         "template"?: ITemplate;
     }
+    /**
+     * Displays a file upload mechanism suitable for the first step of creating a template.
+     * This is typically the first step in a template creation workflow.
+     */
     interface VerdocsTemplateCreate {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3785,6 +4878,11 @@ declare namespace LocalJSX {
          */
         "onTemplateCreated"?: (event: VerdocsTemplateCreateCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; templateId: string}>) => void;
     }
+    /**
+     * Represents one document page. This is primarily a layout container used to coordinate positions of
+     * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
+     * on its own as an individual component.
+     */
     interface VerdocsTemplateDocumentPage {
         /**
           * Whether the fields should be disabled (Builder)
@@ -3831,6 +4929,9 @@ declare namespace LocalJSX {
          */
         "virtualWidth"?: number;
     }
+    /**
+     * Displays an edit form that allows the user to adjust a field's settings.
+     */
     interface VerdocsTemplateFieldProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3865,6 +4966,10 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    /**
+     * Displays a builder experience for laying out fields in a template. Note that this experience requires a large display area to
+     * present all of the required controls, so it is primarily intended to be used in desktop environments.
+     */
     interface VerdocsTemplateFields {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3888,6 +4993,9 @@ declare namespace LocalJSX {
          */
         "toolbarTargetId"?: string | null;
     }
+    /**
+     * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
+     */
     interface VerdocsTemplateName {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3910,6 +5018,9 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    /**
+     * Displays an edit form that allows the user to adjust a template's reminders.
+     */
     interface VerdocsTemplateReminders {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3932,6 +5043,9 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    /**
+     * Display an edit form that allows the user to adjust a role's setitngs.
+     */
     interface VerdocsTemplateRoleProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3962,6 +5076,9 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    /**
+     * Displays an edit form that allows the user to adjust a template's roles and workflow.
+     */
     interface VerdocsTemplateRoles {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -3988,6 +5105,9 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    /**
+     * Display a dialog that allows a template sender to be selected.
+     */
     interface VerdocsTemplateSender {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -4010,6 +5130,9 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    /**
+     * Displays a clickable star that allows users to mark frequently-used templates.
+     */
     interface VerdocsTemplateStar {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -4028,12 +5151,18 @@ declare namespace LocalJSX {
          */
         "template"?: ITemplate;
     }
+    /**
+     * Displays a message listing a template's tags.
+     */
     interface VerdocsTemplateTags {
         /**
           * The tags to display
          */
         "tags"?: any[];
     }
+    /**
+     * Displays an edit form that allows the user to adjust a template's visibility.
+     */
     interface VerdocsTemplateVisibility {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -4056,6 +5185,9 @@ declare namespace LocalJSX {
          */
         "templateId"?: string;
     }
+    /**
+     * Displays a list of envelopes matching specified conditions.
+     */
     interface VerdocsTemplatesList {
         /**
           * Override the If set, filter templates by the specified name.
@@ -4134,6 +5266,11 @@ declare namespace LocalJSX {
          */
         "starred"?: 'all' | 'starred' | 'unstarred';
     }
+    /**
+     * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+     * visual styles of the other components. Note that events "bubble" from the input field to the container,
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     */
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
@@ -4176,6 +5313,9 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
+    /**
+     * Displays a label and a set of buttons, also allowing a default selection of a button
+     */
     interface VerdocsToggle {
         /**
           * The tags to display
@@ -4186,6 +5326,9 @@ declare namespace LocalJSX {
          */
         "theme"?: 'light' | 'dark';
     }
+    /**
+     * Displays a single button that can be toggled on or off by clicking it.
+     */
     interface VerdocsToggleButton {
         "active"?: boolean;
         /**
@@ -4205,6 +5348,9 @@ declare namespace LocalJSX {
          */
         "size"?: 'small' | 'normal';
     }
+    /**
+     * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     */
     interface VerdocsToolbarIcon {
         /**
           * SVG icon to display
@@ -4219,6 +5365,11 @@ declare namespace LocalJSX {
          */
         "text"?: string;
     }
+    /**
+     * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
+     * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
+     * caller via the onNext event handler.
+     */
     interface VerdocsUploadDialog {
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -4229,6 +5380,9 @@ declare namespace LocalJSX {
          */
         "onNext"?: (event: VerdocsUploadDialogCustomEvent<FileWithData[]>) => void;
     }
+    /**
+     * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
+     */
     interface VerdocsView {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -4351,84 +5505,461 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "ipc-test": LocalJSX.IpcTest & JSXBase.HTMLAttributes<HTMLIpcTestElement>;
+            /**
+             * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
+             * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
+             * them appear more visually balanced.
+             */
             "verdocs-activity-box": LocalJSX.VerdocsActivityBox & JSXBase.HTMLAttributes<HTMLVerdocsActivityBoxElement>;
+            /**
+             * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
+             * occur during the process (especially successful completion). If the user is already authenticated with a valid
+             * session, this component will hide itself and fire the success callback immediately. It is up to the host application
+             * to render the next appropriate view for the application.
+             * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
+             * allows you to susbcribe to notifications from the
+             * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
+             * container to allow sufficient space for the required forms.
+             * As noted below, the primary event is `authenticated`. This will always be fired at least once, immediately after
+             * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
+             * cancels) authentication steps.
+             * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+             * embed. This Element will reuse the same session produced by logging in via that Embed.
+             * ```typescript
+             * interface IAuthStatus {
+             *   // If true, the user is authenticated with a valid session
+             *   authenticated: boolean;
+             *   // Details for the user's session
+             *   session: IActiveSession | null;
+             * }
+             * ```
+             */
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
+            /**
+             * Display a template building experience.
+             */
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
+            /**
+             * Display a simple button.
+             * Three variants are supported. `standard` and `outline` buttons look like traditional form buttons and are ideal candidates for 'Ok' and
+             * 'Cancel' options in most cases. `text` buttons are intended to be used inline in content blocks or for more subtle button options.
+             * (Auth uses text buttons for the Forgot Password and Sign Up options.)
+             * Four sizes are also supported. Most use cases will call for the `normal` size, but a `small` size is ideal for more subtle controls, such
+             * as pagination or other secondary functions. `medium` buttons are slightly larger to provide balance in forms where other items are also
+             * bigger, and `large` buttons are for cases where the page has mostly white-space and the buttons need to fill more space.
+             * Icons may be placed either before ("start") or after ("end") the button label. Icons should be SVG objects passed as strings and will
+             * be rendered as HTML inside the button label area. It is important that the root <SVG> tag contains a default `fill="#ffffff"` setting
+             * for the base color, and that child elements below it do not. This allows the button color to carry into the icon properly.
+             * ```html
+             * <verdocs-button label="OK" onClick={() => (console.log('OK clicked'))} />
+             * ```
+             */
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
+            /**
+             * Displays a clickable icon suitable for display in a toolbar. When clicked, a customizable drop-down panel will be
+             * displayed.
+             * ```html
+             * <verdocs-button-panel icon="<svg.../>">
+             *   <div class="content">...</div>
+             * </verdocs-button-panel>
+             * ```
+             */
             "verdocs-button-panel": LocalJSX.VerdocsButtonPanel & JSXBase.HTMLAttributes<HTMLVerdocsButtonPanelElement>;
+            /**
+             * Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
+             * to be used in signing experiences and contains settings that connect to template fields. This is just a simple check
+             * box for UI displays e.g. dialog boxes.
+             * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
+             * handler. Sample usage:
+             * ```html
+             * <verdocs-checkbox
+             *    value="on"
+             *    name="thingEnabled"
+             *    checked={this.thingEnabled}
+             *    onInput={(e: any) => (this.thingEnabled = e.target.checked)}
+             * />
+             * ```
+             */
             "verdocs-checkbox": LocalJSX.VerdocsCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsCheckboxElement>;
+            /**
+             * Render a simple error message.
+             */
             "verdocs-component-error": LocalJSX.VerdocsComponentError & JSXBase.HTMLAttributes<HTMLVerdocsComponentErrorElement>;
+            /**
+             * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
+             * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
+             * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
+             * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
+             * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
+             * to always display the user's own contact record.
+             */
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
+            /**
+             * Display a simple dialog where the contents are provided via slots.
+             */
             "verdocs-dialog": LocalJSX.VerdocsDialog & JSXBase.HTMLAttributes<HTMLVerdocsDialogElement>;
+            /**
+             * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
+             * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
+             * ```html
+             * <verdocs-dropdown
+             *   options={[
+             *     {label: 'Option 1', disabled: true},
+             *     {label: 'Option 2', id: '2'}
+             *     {label: ''}
+             *     {label: 'Option 3', id: '2'}
+             *    ]}
+             *   label="OK" onClick={() => (console.log('OK clicked'))}
+             * />
+             * ```
+             */
             "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
+            /**
+             * Represents one document page. This is primarily a layout container used to coordinate positions of
+             * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
+             * on its own as an individual component.
+             */
             "verdocs-envelope-document-page": LocalJSX.VerdocsEnvelopeDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeDocumentPageElement>;
+            /**
+             * Displays a single recipient from an envelope, with the opportunity to copy an in-person
+             * signing link for that recipient to use.
+             */
             "verdocs-envelope-recipient-link": LocalJSX.VerdocsEnvelopeRecipientLink & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientLinkElement>;
+            /**
+             * Displays a list of recipients with options to get in-person signing links for each one.
+             */
             "verdocs-envelope-recipient-summary": LocalJSX.VerdocsEnvelopeRecipientSummary & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientSummaryElement>;
+            /**
+             * Displays a file upload mechanism suitable for the first step of creating a template.
+             * This is typically the first step in a template creation workflow.
+             */
             "verdocs-envelope-sidebar": LocalJSX.VerdocsEnvelopeSidebar & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeSidebarElement>;
+            /**
+             * Displays a list of envelopes matching specified conditions.
+             */
             "verdocs-envelopes-list": LocalJSX.VerdocsEnvelopesList & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopesListElement>;
+            /**
+             * Displays an attachment field.
+             */
             "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
+            /**
+             * Displays a checkbox.
+             */
             "verdocs-field-checkbox": LocalJSX.VerdocsFieldCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;
+            /**
+             * Displays a date field. When tapped or clicked, the input element will display a date picker component.
+             */
             "verdocs-field-date": LocalJSX.VerdocsFieldDate & JSXBase.HTMLAttributes<HTMLVerdocsFieldDateElement>;
+            /**
+             * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
+             * input types like text and checkbox.
+             */
             "verdocs-field-dropdown": LocalJSX.VerdocsFieldDropdown & JSXBase.HTMLAttributes<HTMLVerdocsFieldDropdownElement>;
+            /**
+             * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
+             * button will be shown. Clicking the button will show a dialog to adopt an initial.
+             */
             "verdocs-field-initial": LocalJSX.VerdocsFieldInitial & JSXBase.HTMLAttributes<HTMLVerdocsFieldInitialElement>;
+            /**
+             * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
+             * input types like text and checkbox.
+             */
             "verdocs-field-payment": LocalJSX.VerdocsFieldPayment & JSXBase.HTMLAttributes<HTMLVerdocsFieldPaymentElement>;
+            /**
+             * Displays a radio button.
+             */
             "verdocs-field-radio-button": LocalJSX.VerdocsFieldRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsFieldRadioButtonElement>;
+            /**
+             * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
+             * button will be shown. Clicking the button will show a dialog to adopt a signature.
+             */
             "verdocs-field-signature": LocalJSX.VerdocsFieldSignature & JSXBase.HTMLAttributes<HTMLVerdocsFieldSignatureElement>;
+            /**
+             * Display a multi-line text input field.
+             */
             "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
+            /**
+             * Display a text input field.
+             */
             "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
+            /**
+             * Display a timestamp field.
+             */
             "verdocs-field-timestamp": LocalJSX.VerdocsFieldTimestamp & JSXBase.HTMLAttributes<HTMLVerdocsFieldTimestampElement>;
+            /**
+             * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
+             * provide the actual upload functionality.
+             */
             "verdocs-file-chooser": LocalJSX.VerdocsFileChooser & JSXBase.HTMLAttributes<HTMLVerdocsFileChooserElement>;
+            /**
+             * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
+             * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
+             * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
+             */
             "verdocs-floating-menu": LocalJSX.VerdocsFloatingMenu & JSXBase.HTMLAttributes<HTMLVerdocsFloatingMenuElement>;
+            /**
+             * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+             */
             "verdocs-help-icon": LocalJSX.VerdocsHelpIcon & JSXBase.HTMLAttributes<HTMLVerdocsHelpIconElement>;
+            /**
+             * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
+             * based on their full name, or by hand-drawing their initials with a mouse or tablet.
+             */
             "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
+            /**
+             * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
+             * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+             * It can also be dismissed by clicking the background overlay.
+             */
             "verdocs-kba-dialog": LocalJSX.VerdocsKbaDialog & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;
+            /**
+             * Animated loader placeholder. There are currently no configuration options for this control.
+             */
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
+            /**
+             * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
+             * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+             * It can also be dismissed by clicking the background overlay.
+             */
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
+            /**
+             * Display a small summary card describing an organization
+             */
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
+            /**
+             * Display a drop-down menu of quick filter options.
+             */
             "verdocs-pagination": LocalJSX.VerdocsPagination & JSXBase.HTMLAttributes<HTMLVerdocsPaginationElement>;
+            /**
+             * Display a child component in a "portal", popping it out of the main DOM tree
+             * to allow it to escape the bounds set by its parent.
+             * @credit https://github.com/tomas-teston/stencil-portal for the basic
+             * technique. This has been altered in a few ways to make it more friendly
+             * to cases where there may be multiple portals on the page and provide more
+             * alignment options for the child to be displayed.
+             */
             "verdocs-portal": LocalJSX.VerdocsPortal & JSXBase.HTMLAttributes<HTMLVerdocsPortalElement>;
+            /**
+             * Display a template preview experience. This will display the template's attached
+             * documents with signing fields overlaid on each page. Fields will be color-coded
+             * by recipient, and will be read-only (cannot be filled, moved, or altered).
+             */
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
+            /**
+             * Displays a summary of a template
+             */
             "verdocs-progress-bar": LocalJSX.VerdocsProgressBar & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
+            /**
+             * Display a drop-down menu of quick filter options.
+             */
             "verdocs-quick-filter": LocalJSX.VerdocsQuickFilter & JSXBase.HTMLAttributes<HTMLVerdocsQuickFilterElement>;
+            /**
+             * Display quick-function buttons for creating templates and documents.
+             * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+             * embed. This Element will reuse the same session produced by logging in via that Embed.
+             */
             "verdocs-quick-functions": LocalJSX.VerdocsQuickFunctions & JSXBase.HTMLAttributes<HTMLVerdocsQuickFunctionsElement>;
+            /**
+             * Displays a radio button. Note that this is different from the `verdocs-field-radio-button` component, which is
+             * designed to be used in signing experiences and contains settings that connect to template fields. This is just a
+             * simple radio button for UI displays e.g. dialog boxes.
+             * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
+             * handler. Sample usage:
+             * ```html
+             * <verdocs-radio-button
+             *    value="val1"
+             *    name="someProperty"
+             *    checked={this.someProperty === 'val1'}
+             *    onInput={(e: any) => { this.someProperty = 'val1' }}
+             *    disabled={false}
+             * />
+             * ```
+             */
             "verdocs-radio-button": LocalJSX.VerdocsRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsRadioButtonElement>;
             "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
+            /**
+             * Displays a customizable input box for search queries.
+             * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
+             * embed. This Element will reuse the same session produced by logging in via that Embed.
+             */
             "verdocs-search-box": LocalJSX.VerdocsSearchBox & JSXBase.HTMLAttributes<HTMLVerdocsSearchBoxElement>;
             "verdocs-search-tabs": LocalJSX.VerdocsSearchTabs & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
+            /**
+             * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+             * visual styles of the other components. Note that events "bubble" from the input field to the container,
+             * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+             */
             "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;
+            /**
+             * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
+             * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
+             * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
+             * directly to the `createEnvelope()` call in JS-SDK.
+             * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
+             * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
+             */
             "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
+            /**
+             * Display a template preview experience. This will display the template's attached
+             * documents with signing fields overlaid on each page. Fields will be color-coded
+             * by recipient, and will be read-only (cannot be filled, moved, or altered).
+             */
             "verdocs-settings": LocalJSX.VerdocsSettings & JSXBase.HTMLAttributes<HTMLVerdocsSettingsElement>;
+            /**
+             * Displays a settings form that allows the user to manage their API keys.
+             */
             "verdocs-settings-api-keys": LocalJSX.VerdocsSettingsApiKeys & JSXBase.HTMLAttributes<HTMLVerdocsSettingsApiKeysElement>;
+            /**
+             * Displays a settings form that allows the user to manage their Verdocs profile.
+             */
             "verdocs-settings-members": LocalJSX.VerdocsSettingsMembers & JSXBase.HTMLAttributes<HTMLVerdocsSettingsMembersElement>;
+            /**
+             * Displays a settings form that allows the user to manage their Verdocs profile.
+             */
             "verdocs-settings-organization": LocalJSX.VerdocsSettingsOrganization & JSXBase.HTMLAttributes<HTMLVerdocsSettingsOrganizationElement>;
+            /**
+             * Displays a settings form that allows the user to manage their Verdocs profile.
+             */
             "verdocs-settings-profile": LocalJSX.VerdocsSettingsProfile & JSXBase.HTMLAttributes<HTMLVerdocsSettingsProfileElement>;
+            /**
+             * Display an envelope signing experience. This will display the envelope's attached
+             * documents with signing fields overlaid on each page.
+             * The component will attempt to initiate a signing session and load the specified
+             * envelope. If successful, the recipient's fields will be enabled and the user will
+             * be able to sign the envelope's attached documents. If not, an `sdkError` will be
+             * thrown and the component will be blank/empty. To provide the best user experience,
+             * applications should capture and handle this error to provide the user with
+             * instructions/options for next steps based on the application's design and workflow.
+             * Unlike other components, this will always create its own endpoint to manage the
+             * session session. This endpoint will be included in event callbacks for the
+             * convenience of host applications that may wish to make server calls using the
+             * signer's credentials once signing is complete (e.g. to obtain copies of
+             * the signed attachments.)
+             */
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
+            /**
+             * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
+             * based on their full name, or by hand-drawing their signature with a mouse or tablet.
+             */
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
+            /**
+             * Display a small loading spinner.
+             */
             "verdocs-spinner": LocalJSX.VerdocsSpinner & JSXBase.HTMLAttributes<HTMLVerdocsSpinnerElement>;
+            /**
+             * Displays an icon and message describing a document's completion status. For convenience, the status may be passed in either
+             * directly as a status field or the whole document object may be passed in.
+             * If the document is provided, the status flag will indicate the document's overall status. This also makes the component clickable
+             * to display a popup panel with per-recipient status data.
+             * If the status is provided as a string it can be either a `TRecipientStatus` or `TDocumentStatus` value.
+             */
             "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
+            /**
+             * Display a simple table of data. Columns and data cells may have custom renderers defined to
+             * support creating interactive table layouts.
+             */
             "verdocs-table": LocalJSX.VerdocsTable & JSXBase.HTMLAttributes<HTMLVerdocsTableElement>;
+            /**
+             * Display a simple row of selectable tabs. This is a controlled element.
+             * The parent must adjust selectedTab as selection events are fired.
+             */
             "verdocs-tabs": LocalJSX.VerdocsTabs & JSXBase.HTMLAttributes<HTMLVerdocsTabsElement>;
+            /**
+             * Displays an edit form that allows the user to view, add, or remove a template's attachments.
+             * Note that an active session and valid template ID must be supplied.
+             */
             "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
+            /**
+             * Display a set of tabs for the template builder.
+             */
             "verdocs-template-build-tabs": LocalJSX.VerdocsTemplateBuildTabs & JSXBase.HTMLAttributes<HTMLVerdocsTemplateBuildTabsElement>;
+            /**
+             * Displays a summary of a template
+             */
             "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
+            /**
+             * Displays a file upload mechanism suitable for the first step of creating a template.
+             * This is typically the first step in a template creation workflow.
+             */
             "verdocs-template-create": LocalJSX.VerdocsTemplateCreate & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;
+            /**
+             * Represents one document page. This is primarily a layout container used to coordinate positions of
+             * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
+             * on its own as an individual component.
+             */
             "verdocs-template-document-page": LocalJSX.VerdocsTemplateDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsTemplateDocumentPageElement>;
+            /**
+             * Displays an edit form that allows the user to adjust a field's settings.
+             */
             "verdocs-template-field-properties": LocalJSX.VerdocsTemplateFieldProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldPropertiesElement>;
+            /**
+             * Displays a builder experience for laying out fields in a template. Note that this experience requires a large display area to
+             * present all of the required controls, so it is primarily intended to be used in desktop environments.
+             */
             "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
+            /**
+             * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
+             */
             "verdocs-template-name": LocalJSX.VerdocsTemplateName & JSXBase.HTMLAttributes<HTMLVerdocsTemplateNameElement>;
+            /**
+             * Displays an edit form that allows the user to adjust a template's reminders.
+             */
             "verdocs-template-reminders": LocalJSX.VerdocsTemplateReminders & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRemindersElement>;
+            /**
+             * Display an edit form that allows the user to adjust a role's setitngs.
+             */
             "verdocs-template-role-properties": LocalJSX.VerdocsTemplateRoleProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolePropertiesElement>;
+            /**
+             * Displays an edit form that allows the user to adjust a template's roles and workflow.
+             */
             "verdocs-template-roles": LocalJSX.VerdocsTemplateRoles & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolesElement>;
+            /**
+             * Display a dialog that allows a template sender to be selected.
+             */
             "verdocs-template-sender": LocalJSX.VerdocsTemplateSender & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSenderElement>;
+            /**
+             * Displays a clickable star that allows users to mark frequently-used templates.
+             */
             "verdocs-template-star": LocalJSX.VerdocsTemplateStar & JSXBase.HTMLAttributes<HTMLVerdocsTemplateStarElement>;
+            /**
+             * Displays a message listing a template's tags.
+             */
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
+            /**
+             * Displays an edit form that allows the user to adjust a template's visibility.
+             */
             "verdocs-template-visibility": LocalJSX.VerdocsTemplateVisibility & JSXBase.HTMLAttributes<HTMLVerdocsTemplateVisibilityElement>;
+            /**
+             * Displays a list of envelopes matching specified conditions.
+             */
             "verdocs-templates-list": LocalJSX.VerdocsTemplatesList & JSXBase.HTMLAttributes<HTMLVerdocsTemplatesListElement>;
+            /**
+             * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+             * visual styles of the other components. Note that events "bubble" from the input field to the container,
+             * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+             */
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
+            /**
+             * Displays a label and a set of buttons, also allowing a default selection of a button
+             */
             "verdocs-toggle": LocalJSX.VerdocsToggle & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;
+            /**
+             * Displays a single button that can be toggled on or off by clicking it.
+             */
             "verdocs-toggle-button": LocalJSX.VerdocsToggleButton & JSXBase.HTMLAttributes<HTMLVerdocsToggleButtonElement>;
+            /**
+             * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+             */
             "verdocs-toolbar-icon": LocalJSX.VerdocsToolbarIcon & JSXBase.HTMLAttributes<HTMLVerdocsToolbarIconElement>;
+            /**
+             * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
+             * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
+             * caller via the onNext event handler.
+             */
             "verdocs-upload-dialog": LocalJSX.VerdocsUploadDialog & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
+            /**
+             * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
+             */
             "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
         }
     }

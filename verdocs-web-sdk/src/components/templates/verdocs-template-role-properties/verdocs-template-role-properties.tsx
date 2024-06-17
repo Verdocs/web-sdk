@@ -1,8 +1,5 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {TRecipientType} from '@verdocs/js-sdk/Envelopes/Types';
-import {deleteRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
 import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
-import {TemplateSenderTypes, TTemplateSender} from '@verdocs/js-sdk/Templates/Types';
+import {deleteTemplateRole, TRecipientType, TTemplateSenderType, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {deleteStoreRole, getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -53,7 +50,7 @@ export class VerdocsTemplateRoleProperties {
   /**
    * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
    */
-  @Prop() sender: TTemplateSender = TemplateSenderTypes.EVERYONE;
+  @Prop() sender: TTemplateSenderType = 'everyone';
 
   @State() dirty = false;
   @State() saving = false;
@@ -127,7 +124,7 @@ export class VerdocsTemplateRoleProperties {
   async handleSave(e) {
     e.stopPropagation();
     this.saving = true;
-    updateRole(this.endpoint, this.templateId, this.roleName, {
+    updateTemplateRole(this.endpoint, this.templateId, this.roleName, {
       name: this.name,
       type: this.type,
       full_name: this.full_name,
@@ -151,7 +148,7 @@ export class VerdocsTemplateRoleProperties {
   async handleDelete(e) {
     e.stopPropagation();
     if (window.confirm('Are you sure you wish to remove this role? All associated fields will be removed as well. This action cannot be undone.')) {
-      deleteRole(this.endpoint, this.templateId, this.roleName)
+      deleteTemplateRole(this.endpoint, this.templateId, this.roleName)
         .then(() => {
           deleteStoreRole(this.roleStore, this.roleName);
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});

@@ -1,8 +1,7 @@
 import {createStore} from '@stencil/store';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {getEnvelope, IEnvelope, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {ObservableMap} from '@stencil/store/dist/types';
-import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
-import {getEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {undefined} from 'zod';
 
 export interface IEnvelopeStore extends IEnvelope {
   isLoading: boolean;
@@ -34,16 +33,18 @@ const createEnvelopeStore = (envelopeId: string) => {
     updated_at: now,
     canceled_at: null,
     reminder_id: null,
-    envelope_document_id: '',
-    certificate_document_id: null,
     visibility: 'private',
-    histories: [],
     recipients: [],
-    profile: undefined,
-    certificate: undefined,
-    document: undefined,
-    documents: undefined,
-    fields: undefined,
+    profile: null,
+    access_keys: [],
+    data: undefined,
+    history_entries: [],
+    organization: null,
+    reminder: null,
+    search_key: '',
+    template: null,
+    documents: [],
+    fields: [],
   });
 };
 

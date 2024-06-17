@@ -1,16 +1,22 @@
 import jszip from 'jszip';
 import {format} from 'date-fns';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {rescale} from '@verdocs/js-sdk/Utils/Fields';
-import {downloadBlob} from '@verdocs/js-sdk/Utils/Files';
-import {ITemplateField} from '@verdocs/js-sdk/Templates/Types';
-import {IEnvelopeField, IEnvelope, TDocumentFieldType, IEnvelopeSummary} from '@verdocs/js-sdk/Envelopes/Types';
+import {
+  downloadBlob,
+  getEnvelopeFile,
+  getFieldAttachment,
+  IEnvelope,
+  IEnvelopeField,
+  IEnvelopeSummary,
+  ITemplateField,
+  rescale,
+  TFieldType,
+  VerdocsEndpoint,
+} from '@verdocs/js-sdk';
 import {FORMAT_DATE, IDocumentPageInfo} from './Types';
 
-export const defaultWidth = (type: TDocumentFieldType) => {
+export const defaultWidth = (type: TFieldType) => {
   // checkbox was a legacy field type
-  switch (type as TDocumentFieldType | 'checkbox' | string) {
+  switch (type as TFieldType | 'checkbox' | string) {
     case 'textarea':
       return 150;
     case 'textbox':
@@ -38,8 +44,8 @@ export const defaultWidth = (type: TDocumentFieldType) => {
   return 150;
 };
 
-export const defaultHeight = (type: TDocumentFieldType) => {
-  switch (type as TDocumentFieldType | 'checkbox' | string) {
+export const defaultHeight = (type: TFieldType) => {
+  switch (type as TFieldType | 'checkbox' | string) {
     case 'textarea':
       return 41;
     case 'textbox':
@@ -68,7 +74,7 @@ export const defaultHeight = (type: TDocumentFieldType) => {
 };
 
 export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number, option?: number) => {
-  const settings = (field as ITemplateField).setting || (field as IEnvelopeField).settings;
+  const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = settings;
   // console.log('scs', field, settings, x, y);
 
@@ -90,7 +96,7 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvel
 };
 
 export const getControlStyles = (field: ITemplateField | IEnvelopeField, xScale: number, yScale: number, option?: number) => {
-  const settings = (field as ITemplateField).setting || (field as IEnvelopeField).settings;
+  const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = settings;
   // console.log('scs', field, settings, x, y);
 
@@ -310,8 +316,8 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
 // TODO: We can clean this up a lot if we alter the API to emit both setting and settings regardless of the source type,
 //   but then merge the SDK types to encourage developers to use just `settings`.
 export const getFieldSettings = (field: ITemplateField | IEnvelopeField | undefined) => {
-  if (field && (field as ITemplateField).setting) {
-    return (field as ITemplateField).setting;
+  if (field && (field as ITemplateField).settings) {
+    return (field as ITemplateField).settings;
   }
 
   if (field && (field as IEnvelopeField).settings) {
@@ -350,7 +356,7 @@ export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvel
   // e.g. "Colorado-Motor-Vehicle-Bill-of-Sale.pdf"
   const date = format(new Date(envelope.updated_at), FORMAT_DATE);
   const fileName = `${envelope.name} - ${date}.pdf`;
-  const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, documentId);
+  const data = await getEnvelopeFile(endpoint, envelope.id, documentId);
   downloadBlob(data, fileName);
 };
 
@@ -363,7 +369,7 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: (
     for await (let document of envelope.documents) {
       // TODO: When attachments are added to envelopes, add a field that reflects the full, original filename (including extension)
       const documentFileName = document.type === 'certificate' ? `${envelope.name}_certificate.pdf` : `${document.name}.pdf`;
-      const data = await Envelopes.getEnvelopeFile(endpoint, envelope.id, document.id);
+      const data = await getEnvelopeFile(endpoint, envelope.id, document.id);
 
       if (subFolder) {
         subFolder.file(documentFileName, data, {compression: 'DEFLATE'});
@@ -376,8 +382,8 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: (
       if (attachFields.length > 0) {
         const attachmentsFolder = subFolder ? subFolder.folder('attachments') : zip.folder('attachments');
         for await (let attachField of attachFields) {
-          const attachData = await Envelopes.getFieldAttachment(endpoint, envelope.id, attachField.name);
-          attachmentsFolder.file(attachField.settings.name, attachData, {compression: 'DEFLATE'});
+          const attachData = await getFieldAttachment(endpoint, envelope.id, attachField.name);
+          attachmentsFolder.file(attachField.settings['name'], attachData, {compression: 'DEFLATE'});
         }
       }
     }

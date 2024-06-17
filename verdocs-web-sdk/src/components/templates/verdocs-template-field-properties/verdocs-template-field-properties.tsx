@@ -1,12 +1,9 @@
 import uuidv4 from 'uuid-browser';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {deleteField, updateField} from '@verdocs/js-sdk/Templates/Fields';
+import {deleteField, ITemplateField, ITemplateFieldSetting, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
-import {TDocumentFieldType} from '@verdocs/js-sdk/Envelopes/Types';
 import {SDKError} from '../../../utils/errors';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -76,7 +73,7 @@ export class VerdocsTemplateFieldProperties {
   // @State() type: TDocumentFieldType = 'signature';
   @State() setting = null as any;
   @State() label = '';
-  @State() type = 'textbox' as TDocumentFieldType;
+  @State() type = 'textbox' as TFieldType;
   @State() name = '';
   @State() required = false;
   @State() roleName = '';
@@ -133,11 +130,11 @@ export class VerdocsTemplateFieldProperties {
       this.required = field.required;
       this.fieldType = field.type;
       // TODO: Talk about how we want to handle labels/placeholders
-      this.placeholder = field.setting?.placeholder || '';
-      this.value = field.setting?.result || '';
-      this.leading = field.setting?.leading || 0;
-      this.setting = field.setting || {};
-      this.options = field.setting?.options || [];
+      this.placeholder = field.settings?.placeholder || '';
+      this.value = field.settings?.result || '';
+      this.leading = field.settings?.leading || 0;
+      this.setting = field.settings || {};
+      this.options = field.settings?.options || [];
       this.dirty = false;
       this.loading = false;
       console.log('Displaying settings for', this.setting);
@@ -158,9 +155,9 @@ export class VerdocsTemplateFieldProperties {
       this.roleName = field.role_name;
       this.required = field.required;
       // TODO: Talk about how we want to handle labels/placeholders
-      this.placeholder = field.setting?.placeholder || '';
-      this.value = field.setting?.result || '';
-      this.leading = field.setting?.leading || 0;
+      this.placeholder = field.settings?.placeholder || '';
+      this.value = field.settings?.result || '';
+      this.leading = field.settings?.leading || 0;
     }
 
     this.dirty = false;
@@ -179,13 +176,13 @@ export class VerdocsTemplateFieldProperties {
     } as Partial<ITemplateField>;
 
     if (this.type === 'checkbox_group' || this.type === 'radio_button_group') {
-      newProperties.setting = this.setting;
-      newProperties.setting.options = this.options;
+      newProperties.settings = this.setting;
+      newProperties.settings.options = this.options;
     } else if (this.type === 'textarea' || this.type === 'textbox') {
-      newProperties.setting = {...this.setting};
-      newProperties.setting.result = (this.value || '').trim();
+      newProperties.settings = {...this.setting};
+      newProperties.settings.result = (this.value || '').trim();
     } else if (this.type === 'dropdown') {
-      newProperties.setting = {
+      newProperties.settings = {
         x: this.setting.x,
         y: this.setting.y,
         options: this.options,
@@ -237,9 +234,9 @@ export class VerdocsTemplateFieldProperties {
           },
     );
 
-    newProperties.setting = {...this.setting};
-    delete newProperties.setting.result;
-    newProperties.setting.options = [...this.options];
+    newProperties.settings = {...this.setting};
+    delete newProperties.settings.result;
+    newProperties.settings.options = [...this.options];
 
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(updated => {

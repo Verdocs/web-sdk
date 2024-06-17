@@ -1,10 +1,8 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {createTemplateReminder, deleteTemplateReminder, ICreateTemplateReminderRequest, updateTemplateReminder, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {createReminder, updateReminder, deleteReminder, ICreateTemplateReminderRequest} from '@verdocs/js-sdk/Templates/Reminders';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
-import {SDKError} from '../../../utils/errors';
 import {VerdocsToast} from '../../../utils/Toast';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {SDKError} from '../../../utils/errors';
 
 /**
  * Displays an edit form that allows the user to adjust a template's reminders.
@@ -39,7 +37,7 @@ export class VerdocsTemplateReminders {
   /**
    * Event fired when the user updates the template.
    */
-  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
+  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITsemplate; event: string}>;
 
   @State() showPlanBlocker = false;
   @State() sendReminders = false;
@@ -94,14 +92,14 @@ export class VerdocsTemplateReminders {
         };
 
         if (!this.store?.state?.reminder_id) {
-          await createReminder(this.endpoint, this.templateId, params);
+          await createTemplateReminder(this.endpoint, this.templateId, params);
           this.store = await getTemplateStore(this.endpoint, this.templateId, false);
         } else {
-          await updateReminder(this.endpoint, this.templateId, this.store?.state.reminder_id, params);
+          await updateTemplateReminder(this.endpoint, this.templateId, this.store?.state.reminder_id, params);
           this.store = await getTemplateStore(this.endpoint, this.templateId, false);
         }
       } else {
-        await deleteReminder(this.endpoint, this.templateId, this.store?.state.reminder_id);
+        await deleteTemplateReminder(this.endpoint, this.templateId, this.store?.state.reminder_id);
         this.store = await getTemplateStore(this.endpoint, this.templateId, false);
       }
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.store.state, event: 'attachments'});

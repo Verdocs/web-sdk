@@ -1,19 +1,16 @@
 import interact from 'interactjs';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {createRole, updateRole} from '@verdocs/js-sdk/Templates/Roles';
-import {IRole, TemplateSenderTypes} from '@verdocs/js-sdk/Templates/Types';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
+import {createTemplateRole, getRGBA, IRole, TTemplateSenderType, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
-const senderLabels: Record<TemplateSenderTypes, string> = {
-  [TemplateSenderTypes.EVERYONE]: 'Everyone',
-  [TemplateSenderTypes.EVERYONE_AS_CREATOR]: 'Everyone as Me',
-  [TemplateSenderTypes.ORGANIZATION_MEMBER]: 'Organization member',
-  [TemplateSenderTypes.ORGANIZATION_MEMBER_AS_CREATOR]: 'Organization Member as Me',
-  [TemplateSenderTypes.CREATOR]: 'Me',
+const senderLabels: Record<TTemplateSenderType, string> = {
+  everyone: 'Everyone',
+  everyone_as_creator: 'Everyone as Me',
+  organization_member: 'Organization member',
+  organization_member_as_creator: 'Organization Member as Me',
+  creator: 'Me',
 };
 
 const settingsIcon =
@@ -237,7 +234,7 @@ export class VerdocsTemplateRoles {
           role.sequence = newSequenceIndex + 1;
           role.order = newOrderIndex + 1;
           renumbered.push(role.name);
-          renumberRequests.push(updateRole(this.endpoint, this.templateId, role.name, {sequence: role.sequence, order: role.order}));
+          renumberRequests.push(updateTemplateRole(this.endpoint, this.templateId, role.name, {sequence: role.sequence, order: role.order}));
         }
       });
     });
@@ -259,10 +256,11 @@ export class VerdocsTemplateRoles {
 
   callCreateRole(name: string, sequence: number, order: number) {
     console.log('[ROLES] Will create role', {name, sequence, order});
-    createRole(this.endpoint, this.templateId, {
+    createTemplateRole(this.endpoint, this.templateId, {
       template_id: this.templateId,
       name,
       sequence,
+      message: '',
       order,
       full_name: '',
       email: '',

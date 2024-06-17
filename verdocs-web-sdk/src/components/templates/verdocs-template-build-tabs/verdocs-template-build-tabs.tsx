@@ -101,7 +101,7 @@ export class VerdocsTemplateBuildTabs {
     let canEditRoles = false;
     console.log('[BUILD_TABS] Rendering tabs', this.templateId, this.step);
     if (this.templateId && this.store && this.store.state) {
-      canEditRoles = this.store?.state?.template_documents?.length > 0;
+      canEditRoles = this.store?.state?.documents?.length > 0;
       canEditFields = canEditRoles && this.store?.state?.roles?.length > 0;
       canPreview = canEditFields && this.store?.state?.fields?.length > 0;
       // TODO

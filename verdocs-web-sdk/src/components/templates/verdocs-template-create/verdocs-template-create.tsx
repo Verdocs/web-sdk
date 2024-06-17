@@ -1,9 +1,7 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {createTemplatev2} from '@verdocs/js-sdk/Templates/Templates';
+import {createTemplatev2, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {SDKError} from '../../../utils/errors';
 import {getTemplateStore} from '../../../utils/TemplateStore';
+import {SDKError} from '../../../utils/errors';
 
 const unicodeNBSP = ' ';
 

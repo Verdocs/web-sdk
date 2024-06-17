@@ -1,7 +1,6 @@
 // NOTE: This component does not have a story because it's not intended for external use.
 
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getTemplateDocumentPageDisplayUri} from '@verdocs/js-sdk/Templates/TemplateDocuments';
+import {getTemplateDocumentPageDisplayUri, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Element, Fragment} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getControlStyles, getFieldId, getFieldOptionId, throttle} from '../../../utils/utils';
@@ -186,7 +185,7 @@ export class VerdocsTemplateDocumentPage {
               {layer.name === 'controls' &&
                 this.fieldStore
                   .get('fields')
-                  .filter(field => field && field.page_sequence === this.pageNumber)
+                  .filter(field => field && field.page === this.pageNumber)
                   .map(field => {
                     const id = getFieldId(field);
                     let {name, type} = field;
