@@ -1,9 +1,7 @@
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
 const PaperclipIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>`;
@@ -132,12 +130,15 @@ export class VerdocsFieldAttachment {
       return <Fragment />;
     }
 
-    const settings = getFieldSettings(field);
-    let disabled = this.disabled ?? settings.disabled ?? false;
-    const {url} = settings;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
+    // TODO
+    const url = '';
+    // const {url} = settings;
 
     return (
-      <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
+      <Host class={{required: field.required, disabled}} style={{backgroundColor}}>
         <span innerHTML={url ? AttachedIcon : PaperclipIcon} onClick={() => !disabled && this.handleShow()} />
 
         {this.editable && (

@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { IGetTemplateSummarySortBy, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IProfile, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -22,7 +22,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { IGetTemplateSummarySortBy, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IProfile, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { SDKError } from "./utils/errors";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -3427,7 +3427,7 @@ declare global {
     interface HTMLVerdocsTemplateRemindersElementEventMap {
         "close": any;
         "sdkError": SDKError;
-        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITsemplate; event: string};
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
     }
     /**
      * Displays an edit form that allows the user to adjust a template's reminders.
@@ -3644,7 +3644,7 @@ declare global {
     };
     interface HTMLVerdocsUploadDialogElementEventMap {
         "exit": any;
-        "next": FileWithData[];
+        "next": IFileWithData[];
     }
     /**
      * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
@@ -5791,7 +5791,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user updates the template.
          */
-        "onTemplateUpdated"?: (event: VerdocsTemplateRemindersCustomEvent<{endpoint: VerdocsEndpoint; template: ITsemplate; event: string}>) => void;
+        "onTemplateUpdated"?: (event: VerdocsTemplateRemindersCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
          */
@@ -6132,7 +6132,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the dialog is closed. The event data will contain the file selected.
          */
-        "onNext"?: (event: VerdocsUploadDialogCustomEvent<FileWithData[]>) => void;
+        "onNext"?: (event: VerdocsUploadDialogCustomEvent<IFileWithData[]>) => void;
     }
     /**
      * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.

@@ -51,6 +51,7 @@ export class VerdocsActivityBox {
 
 import type { SDKError as IVerdocsActivityBoxSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsActivityBoxVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IActivityEntry as IVerdocsActivityBoxIActivityEntry } from '@verdocs/web-sdk';
 
 export declare interface VerdocsActivityBox extends Components.VerdocsActivityBox {
   /**
@@ -62,7 +63,7 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
 to the envelope detail view.
    */
-  viewEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsActivityBoxVerdocsEndpoint; entry: IActivityEntry}>>;
+  viewEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsActivityBoxVerdocsEndpoint; entry: IVerdocsActivityBoxIActivityEntry}>>;
   /**
    * Event fired when the user clicks View All in the title bar. The current view will be included in the event
 details to help the host application navigate the user to the appropriate screen for the request. Note that
@@ -131,7 +132,10 @@ export class VerdocsBuild {
 
 import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk';
 import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk';
+import type { ICreateEnvelopeRole as IVerdocsBuildICreateEnvelopeRole } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk';
+import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
 
 export declare interface VerdocsBuild extends Components.VerdocsBuild {
   /**
@@ -146,19 +150,19 @@ terminate the process, and the calling application should correct the condition 
   /**
    * The user completed the Send form and clicked send.
    */
-  send: EventEmitter<CustomEvent<{roles: ICreateEnvelopeRole[]; name: string; template_id: string}>>;
+  send: EventEmitter<CustomEvent<{roles: IVerdocsBuildICreateEnvelopeRole[]; name: string; template_id: string}>>;
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: ITemplate; event: string}>>;
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: IVerdocsBuildITemplate; event: string}>>;
   /**
    * Event fired when the template is created by the upload step.
    */
-  templateCreated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: ITemplate; event: string}>>;
+  templateCreated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: IVerdocsBuildITemplate; event: string}>>;
   /**
    * Event fired when roles are updated in the roles step.
    */
-  rolesUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]}>>;
+  rolesUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsBuildIRole[]}>>;
 }
 
 
@@ -399,6 +403,7 @@ export class VerdocsEnvelopeRecipientLink {
 }
 
 
+import type { IEnvelope as IVerdocsEnvelopeRecipientLinkIEnvelope } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsEnvelopeRecipientLinkSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeRecipientLink extends Components.VerdocsEnvelopeRecipientLink {
@@ -406,7 +411,7 @@ export declare interface VerdocsEnvelopeRecipientLink extends Components.Verdocs
    * Event fired when the user clicks Done to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  next: EventEmitter<CustomEvent<{envelope: IEnvelope}>>;
+  next: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientLinkIEnvelope}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -435,6 +440,7 @@ export class VerdocsEnvelopeRecipientSummary {
 }
 
 
+import type { IEnvelope as IVerdocsEnvelopeRecipientSummaryIEnvelope } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsEnvelopeRecipientSummarySDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeRecipientSummary extends Components.VerdocsEnvelopeRecipientSummary {
@@ -442,17 +448,17 @@ export declare interface VerdocsEnvelopeRecipientSummary extends Components.Verd
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  another: EventEmitter<CustomEvent<{envelope: IEnvelope}>>;
+  another: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>;
   /**
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  view: EventEmitter<CustomEvent<{envelope: IEnvelope}>>;
+  view: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>;
   /**
    * Event fired when the user clicks Done to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  next: EventEmitter<CustomEvent<{envelope: IEnvelope}>>;
+  next: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -483,6 +489,7 @@ export class VerdocsEnvelopeSidebar {
 
 import type { SDKError as IVerdocsEnvelopeSidebarSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsEnvelopeSidebarVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsEnvelopeSidebarIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeSidebar extends Components.VerdocsEnvelopeSidebar {
   /**
@@ -493,7 +500,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopeSidebarVerdocsEndpoint; envelope: IEnvelope; event: string}>>;
+  envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopeSidebarVerdocsEndpoint; envelope: IVerdocsEnvelopeSidebarIEnvelope; event: string}>>;
   /**
    * Event fired when the sidebar is opened or closed.
    */
@@ -502,7 +509,7 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks Send Another in the Manage Recipients dialog. It is up to the host application
 to redirect the user to the appropriate next workflow step.
    */
-  another: EventEmitter<CustomEvent<{envelope: IEnvelope}>>;
+  another: EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeSidebarIEnvelope}>>;
 }
 
 
@@ -526,8 +533,10 @@ export class VerdocsEnvelopesList {
 }
 
 
+import type { TEnvelopeStatus as IVerdocsEnvelopesListTEnvelopeStatus } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsEnvelopesListSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsEnvelopesListVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsEnvelopesListIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopesList extends Components.VerdocsEnvelopesList {
   /**
@@ -537,7 +546,7 @@ export declare interface VerdocsEnvelopesList extends Components.VerdocsEnvelope
   /**
    * Event fired when the user changes their status filter. Host applications can use this to save the user's preferences.
    */
-  changeStatus: EventEmitter<CustomEvent<TEnvelopeStatus | 'all'>>;
+  changeStatus: EventEmitter<CustomEvent<IVerdocsEnvelopesListTEnvelopeStatus | 'all'>>;
   /**
    * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
    */
@@ -558,11 +567,11 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
 to the envelope detail view.
    */
-  viewEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IEnvelope}>>;
+  viewEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IVerdocsEnvelopesListIEnvelope}>>;
   /**
    * Event fired when the user clicks to finish the envelope.
    */
-  finishEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IEnvelope}>>;
+  finishEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IVerdocsEnvelopesListIEnvelope}>>;
 }
 
 
@@ -587,11 +596,14 @@ export class VerdocsFieldAttachment {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldAttachmentITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldAttachmentITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldAttachmentITemplateFieldSetting; field: IVerdocsFieldAttachmentITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -624,11 +636,14 @@ export class VerdocsFieldCheckbox {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldCheckboxITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldCheckboxITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldCheckboxITemplateFieldSetting; field: IVerdocsFieldCheckboxITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -657,6 +672,9 @@ export class VerdocsFieldDate {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldDateITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldDateITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   /**
    * Event fired on every character entered into / deleted from the field.
@@ -665,7 +683,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldDateITemplateFieldSetting; field: IVerdocsFieldDateITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -694,6 +712,9 @@ export class VerdocsFieldDropdown {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldDropdownITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldDropdownITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
   /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
@@ -704,7 +725,7 @@ keypress.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldDropdownITemplateFieldSetting; field: IVerdocsFieldDropdownITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -733,6 +754,9 @@ export class VerdocsFieldInitial {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldInitialITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldInitialITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInitial {
   /**
    * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
@@ -751,7 +775,7 @@ keypress.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldInitialITemplateFieldSetting; field: IVerdocsFieldInitialITemplateField}>>;
   /**
    * Event fired on every character entered into / deleted from the field.
    */
@@ -784,13 +808,16 @@ export class VerdocsFieldPayment {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldPaymentITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldPaymentITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPayment {
 
   signatureComplete: EventEmitter<CustomEvent<string>>;
 
   initialComplete: EventEmitter<CustomEvent<string>>;
 
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldPaymentITemplateFieldSetting; field: IVerdocsFieldPaymentITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -819,11 +846,14 @@ export class VerdocsFieldRadioButton {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldRadioButtonITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldRadioButtonITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldRadioButton extends Components.VerdocsFieldRadioButton {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldRadioButtonITemplateFieldSetting; field: IVerdocsFieldRadioButtonITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -852,6 +882,9 @@ export class VerdocsFieldSignature {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldSignatureITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldSignatureITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSignature {
   /**
    * Event emitted when the field has changed.
@@ -864,7 +897,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldSignatureITemplateFieldSetting; field: IVerdocsFieldSignatureITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -893,11 +926,14 @@ export class VerdocsFieldTextarea {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldTextareaITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldTextareaITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldTextareaITemplateFieldSetting; field: IVerdocsFieldTextareaITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -926,11 +962,14 @@ export class VerdocsFieldTextbox {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldTextboxITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldTextboxITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldTextboxITemplateFieldSetting; field: IVerdocsFieldTextboxITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -959,11 +998,14 @@ export class VerdocsFieldTimestamp {
 }
 
 
+import type { ITemplateFieldSetting as IVerdocsFieldTimestampITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldTimestampITemplateField } from '@verdocs/web-sdk';
+
 export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldTimestampITemplateFieldSetting; field: IVerdocsFieldTimestampITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -1510,6 +1552,8 @@ export class VerdocsSend {
 }
 
 
+import type { ICreateEnvelopeRole as IVerdocsSendICreateEnvelopeRole } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
 import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk';
 
@@ -1521,7 +1565,7 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
    * The user completed the form and clicked send.
    */
-  send: EventEmitter<CustomEvent<{roles: ICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>>;
+  send: EventEmitter<CustomEvent<{roles: IVerdocsSendICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>;
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
@@ -1592,6 +1636,7 @@ export class VerdocsSettingsApiKeys {
 
 import type { SDKError as IVerdocsSettingsApiKeysSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsSettingsApiKeysVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IProfile as IVerdocsSettingsApiKeysIProfile } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSettingsApiKeys extends Components.VerdocsSettingsApiKeys {
   /**
@@ -1602,15 +1647,15 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberInvited: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsApiKeysVerdocsEndpoint; member: IProfile}>>;
+  memberInvited: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsApiKeysVerdocsEndpoint; member: IVerdocsSettingsApiKeysIProfile}>>;
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsApiKeysVerdocsEndpoint; member: IProfile}>>;
+  memberUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsApiKeysVerdocsEndpoint; member: IVerdocsSettingsApiKeysIProfile}>>;
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberRemoved: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsApiKeysVerdocsEndpoint; member: IProfile}>>;
+  memberRemoved: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsApiKeysVerdocsEndpoint; member: IVerdocsSettingsApiKeysIProfile}>>;
 }
 
 
@@ -1636,6 +1681,7 @@ export class VerdocsSettingsMembers {
 
 import type { SDKError as IVerdocsSettingsMembersSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsSettingsMembersVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IProfile as IVerdocsSettingsMembersIProfile } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSettingsMembers extends Components.VerdocsSettingsMembers {
   /**
@@ -1646,15 +1692,15 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberInvited: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsMembersVerdocsEndpoint; member: IProfile}>>;
+  memberInvited: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsMembersVerdocsEndpoint; member: IVerdocsSettingsMembersIProfile}>>;
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsMembersVerdocsEndpoint; member: IProfile}>>;
+  memberUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsMembersVerdocsEndpoint; member: IVerdocsSettingsMembersIProfile}>>;
   /**
    * Event fired when the user chooses to invite a new member.
    */
-  memberRemoved: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsMembersVerdocsEndpoint; member: IProfile}>>;
+  memberRemoved: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsMembersVerdocsEndpoint; member: IVerdocsSettingsMembersIProfile}>>;
 }
 
 
@@ -1680,6 +1726,7 @@ export class VerdocsSettingsOrganization {
 
 import type { SDKError as IVerdocsSettingsOrganizationSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsSettingsOrganizationVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IOrganization as IVerdocsSettingsOrganizationIOrganization } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSettingsOrganization extends Components.VerdocsSettingsOrganization {
   /**
@@ -1690,7 +1737,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user chooses the Edit option from the dropdown menu.
    */
-  organizationUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsOrganizationVerdocsEndpoint; organization: IOrganization}>>;
+  organizationUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsOrganizationVerdocsEndpoint; organization: IVerdocsSettingsOrganizationIOrganization}>>;
 }
 
 
@@ -1716,6 +1763,7 @@ export class VerdocsSettingsProfile {
 
 import type { SDKError as IVerdocsSettingsProfileSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsSettingsProfileVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IProfile as IVerdocsSettingsProfileIProfile } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSettingsProfile extends Components.VerdocsSettingsProfile {
   /**
@@ -1726,7 +1774,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user chooses the Edit option from the dropdown menu.
    */
-  profileUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsProfileVerdocsEndpoint; profile: IProfile}>>;
+  profileUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSettingsProfileVerdocsEndpoint; profile: IVerdocsSettingsProfileIProfile}>>;
 }
 
 
@@ -1752,6 +1800,7 @@ export class VerdocsSign {
 
 import type { SDKError as IVerdocsSignSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsSignVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsSignIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSign extends Components.VerdocsSign {
   /**
@@ -1762,11 +1811,11 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the envelope is updated in any way.
    */
-  envelopeLoaded: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IEnvelope}>>;
+  envelopeLoaded: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope}>>;
   /**
    * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IEnvelope; event: string}>>;
+  envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope; event: string}>>;
 }
 
 
@@ -2239,6 +2288,7 @@ export class VerdocsTemplateReminders {
 
 import type { SDKError as IVerdocsTemplateRemindersSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsTemplateRemindersVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateRemindersITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateReminders extends Components.VerdocsTemplateReminders {
   /**
@@ -2253,7 +2303,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the user updates the template.
    */
-  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateRemindersVerdocsEndpoint; template: ITsemplate; event: string}>>;
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateRemindersVerdocsEndpoint; template: IVerdocsTemplateRemindersITemplate; event: string}>>;
 }
 
 
@@ -2664,6 +2714,8 @@ export class VerdocsUploadDialog {
 }
 
 
+import type { IFileWithData as IVerdocsUploadDialogIFileWithData } from '@verdocs/web-sdk';
+
 export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDialog {
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -2672,7 +2724,7 @@ export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDia
   /**
    * Event fired when the dialog is closed. The event data will contain the file selected.
    */
-  next: EventEmitter<CustomEvent<FileWithData[]>>;
+  next: EventEmitter<CustomEvent<IVerdocsUploadDialogIFileWithData[]>>;
 }
 
 
@@ -2698,6 +2750,7 @@ export class VerdocsView {
 
 import type { SDKError as IVerdocsViewSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsViewVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsViewIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsView extends Components.VerdocsView {
   /**
@@ -2708,7 +2761,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsViewVerdocsEndpoint; envelope: IEnvelope; event: string}>>;
+  envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsViewVerdocsEndpoint; envelope: IVerdocsViewIEnvelope; event: string}>>;
   /**
    * Event fired when the user clicks Send Another to proceed. It is up to the host application
 to redirect the user to the appropriate next workflow step.

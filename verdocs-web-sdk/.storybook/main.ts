@@ -7,12 +7,12 @@ const config: StorybookConfig = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@chromatic-com/storybook',
-    {
-      name: 'storybook-addon-stencil',
-      options: {
-        stencilOptions: {},
-      },
-    },
+    // {
+    //   name: 'storybook-addon-stencil',
+    //   options: {
+    //     stencilOptions: {},
+    //   },
+    // },
   ],
   //     '@pxtrn/storybook-addon-docs-stencil',
   //     '@storybook/addon-webpack5-compiler-swc',

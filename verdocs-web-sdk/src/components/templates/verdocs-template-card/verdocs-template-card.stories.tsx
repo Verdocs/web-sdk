@@ -1,7 +1,6 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
-import {IOrganization} from '@verdocs/js-sdk/Organizations/Types';
-import {ITemplate} from '@verdocs/js-sdk/Templates/Types';
+import {IOrganization, ITemplate} from '@verdocs/js-sdk';
 
 const MockTemplate = {
   counter: 2,
@@ -30,6 +29,15 @@ const MockTemplate = {
     contact_email: null,
     timezone: null,
     envelope_responsible: false,
+
+    slug: 'acme',
+    url: '',
+    full_logo_url: '',
+    thumbnail_url: '',
+    primary_color: '',
+    secondary_color: '',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   } as IOrganization,
 
   template_document: {
@@ -43,6 +51,11 @@ const MockTemplate = {
     mime: 'application/pdf',
     thumbnail_url: 'https://verdocs.com/en/wp-content/uploads/2021/12/Screen-Shot-2021-12-30-at-2.26.08-PM-e1640892536786.png',
   },
+
+  reminder_id: null,
+  is_sendable: true,
+  search_key: '',
+  data: {},
 } as ITemplate;
 
 export default {

@@ -1,5 +1,4 @@
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, Fragment, h, Host, Method, Prop, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
@@ -112,16 +111,18 @@ export class VerdocsFieldCheckbox {
 
     const settings = getFieldSettings(field);
     const option = settings.options?.[this.option] ?? {checked: false};
-    const disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
 
     if (this.done) {
       return <Host class={{done: this.done}}>{option.checked ? '✓' : '☐'}</Host>;
     }
 
     return (
-      <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
+      <Host class={{required: field.required, disabled}} style={{backgroundColor}}>
         <label>
-          <input name={field.name} type="checkbox" tabIndex={settings.order} checked={option.checked} disabled={disabled} required={settings.required} value={option.id} />
+          <input name={field.name} type="checkbox" checked={option.checked} disabled={disabled} required={field.required} value={option.id} />
           <span />
 
           {this.editable && (

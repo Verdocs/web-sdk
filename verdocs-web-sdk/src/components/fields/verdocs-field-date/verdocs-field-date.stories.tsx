@@ -1,6 +1,6 @@
 import {html} from 'lit-html';
+import {IRole} from '@verdocs/js-sdk';
 import {Meta} from '@storybook/web-components';
-import {IRole} from '@verdocs/js-sdk/Templates/Types';
 
 const templateId = 'd501d2df-b604-455d-a2fc-953d947cf79d';
 

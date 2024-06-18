@@ -1,5 +1,6 @@
-import {createTemplateReminder, deleteTemplateReminder, ICreateTemplateReminderRequest, updateTemplateReminder, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {ITemplate, updateTemplateReminder, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
+import {createTemplateReminder, deleteTemplateReminder, ICreateTemplateReminderRequest} from '@verdocs/js-sdk';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -37,7 +38,7 @@ export class VerdocsTemplateReminders {
   /**
    * Event fired when the user updates the template.
    */
-  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITsemplate; event: string}>;
+  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
 
   @State() showPlanBlocker = false;
   @State() sendReminders = false;

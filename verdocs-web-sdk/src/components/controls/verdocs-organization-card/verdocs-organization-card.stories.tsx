@@ -1,6 +1,6 @@
-import {Meta} from '@storybook/web-components';
 import {html} from 'lit-html';
-import {IOrganization} from '@verdocs/js-sdk/Organizations/Types';
+import {IOrganization} from '@verdocs/js-sdk';
+import {Meta} from '@storybook/web-components';
 
 const MockOrganization = {
   id: '21643fd6-4097-47c0-9780-62dc0c01ddce',
@@ -14,7 +14,13 @@ const MockOrganization = {
   contact_email: null,
   timezone: null,
   envelope_responsible: false,
-  created_at: '2022-12-21 20:16:50.262113+00',
+  slug: 'verdocs',
+  primary_color: '',
+  secondary_color: '',
+  full_logo_url: '',
+  thumbnail_url: '',
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
 } as IOrganization;
 
 export default {
