@@ -5,19 +5,24 @@ module.exports = {
   // features: {
   //   babelModeV7: true,
   // },
-  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+
   addons: [
     '@storybook/addon-links',
-    '@pxtrn/storybook-addon-docs-stencil',
-    '@storybook/addon-essentials', // actions, viewport docs, controls, backgrounds, toolbars
+    // '@pxtrn/storybook-addon-docs-stencil',
+    // actions, viewport docs, controls, backgrounds, toolbars
+    '@storybook/addon-essentials',
+    '@storybook/addon-webpack5-compiler-swc',
+    '@chromatic-com/storybook'
   ],
+
   webpackFinal: async (config, {configType}) => {
     config.devtool = 'inline-source-map';
     // config.output.hashFunction = 'xxhash64';
 
     return config;
   },
-  staticDirs: ['../public'],
+
   // webpackFinal: async config => {
   //   // find web-components rule for extra transpilation
   //   const webComponentsRule = config.module.rules.find(rule => rule.use && rule.use.options && rule.use.options.babelrc === false);
@@ -43,4 +48,12 @@ module.exports = {
   //   //   // Return the altered config
   //   return config;
   // },
+  staticDirs: ['../public'],
+
+  framework: {
+    name: '@storybook/web-components-webpack5',
+    options: {}
+  },
+
+  docs: {}
 };

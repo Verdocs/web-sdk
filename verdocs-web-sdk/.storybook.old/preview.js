@@ -62,3 +62,4 @@ function clickDocsButtonOnFirstLoad() {
 }
 
 window.addEventListener('load', clickDocsButtonOnFirstLoad);
+export const tags = ['autodocs'];

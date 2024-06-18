@@ -5,52 +5,40 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { VerdocsEndpoint } from "@verdocs/js-sdk";
+import { IGetTemplateSummarySortBy, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
-import { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
-import { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
-import { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 import { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
-import { IProfile } from "@verdocs/js-sdk/Users/Types";
 import { IColumn } from "./components/controls/verdocs-table/verdocs-table";
 import { ITab } from "./components/controls/verdocs-tabs/verdocs-tabs";
 import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/verdocs-template-build-tabs/verdocs-template-build-tabs";
-import { IGetTemplateSummarySortBy } from "@verdocs/js-sdk/Templates/Templates";
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-import { FileWithData } from "@verdocs/js-sdk/Utils/Files";
-export { VerdocsEndpoint } from "@verdocs/js-sdk";
+export { IGetTemplateSummarySortBy, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { SDKError } from "./utils/errors";
-export { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, TEnvelopeStatus, TRecipientStatus } from "@verdocs/js-sdk/Envelopes/Types";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
-export { IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TTemplateSender } from "@verdocs/js-sdk/Templates/Types";
 export { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 export { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 export { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 export { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
-export { IOrganization } from "@verdocs/js-sdk/Organizations/Types";
 export { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 export { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 export { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
-export { IProfile } from "@verdocs/js-sdk/Users/Types";
 export { IColumn } from "./components/controls/verdocs-table/verdocs-table";
 export { ITab } from "./components/controls/verdocs-tabs/verdocs-tabs";
 export { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/verdocs-template-build-tabs/verdocs-template-build-tabs";
-export { IGetTemplateSummarySortBy } from "@verdocs/js-sdk/Templates/Templates";
 export { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 export { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 export { Placement } from "@popperjs/core/lib/enums";
-export { FileWithData } from "@verdocs/js-sdk/Utils/Files";
 export namespace Components {
     interface IpcTest {
         /**
@@ -1605,7 +1593,7 @@ export namespace Components {
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
-        "sender": TTemplateSender;
+        "sender": TTemplateSenderType;
         /**
           * The template ID to edit.
          */
@@ -1635,7 +1623,7 @@ export namespace Components {
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
-        "sender": TTemplateSender;
+        "sender": TTemplateSenderType;
         /**
           * The template ID to edit.
          */
@@ -2084,17 +2072,34 @@ declare global {
         prototype: HTMLIpcTestElement;
         new (): HTMLIpcTestElement;
     };
+    interface HTMLVerdocsActivityBoxElementEventMap {
+        "sdkError": SDKError;
+        "viewEnvelope": {endpoint: VerdocsEndpoint; entry: IActivityEntry};
+        "viewAll": {endpoint: VerdocsEndpoint; view: string};
+    }
     /**
      * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
      * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
      * them appear more visually balanced.
      */
     interface HTMLVerdocsActivityBoxElement extends Components.VerdocsActivityBox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsActivityBoxElementEventMap>(type: K, listener: (this: HTMLVerdocsActivityBoxElement, ev: VerdocsActivityBoxCustomEvent<HTMLVerdocsActivityBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsActivityBoxElementEventMap>(type: K, listener: (this: HTMLVerdocsActivityBoxElement, ev: VerdocsActivityBoxCustomEvent<HTMLVerdocsActivityBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsActivityBoxElement: {
         prototype: HTMLVerdocsActivityBoxElement;
         new (): HTMLVerdocsActivityBoxElement;
     };
+    interface HTMLVerdocsAuthElementEventMap {
+        "authenticated": IAuthStatus;
+        "sdkError": SDKError;
+    }
     /**
      * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
      * occur during the process (especially successful completion). If the user is already authenticated with a valid
@@ -2119,15 +2124,39 @@ declare global {
      * ```
      */
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsAuthElementEventMap>(type: K, listener: (this: HTMLVerdocsAuthElement, ev: VerdocsAuthCustomEvent<HTMLVerdocsAuthElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsAuthElementEventMap>(type: K, listener: (this: HTMLVerdocsAuthElement, ev: VerdocsAuthCustomEvent<HTMLVerdocsAuthElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsAuthElement: {
         prototype: HTMLVerdocsAuthElement;
         new (): HTMLVerdocsAuthElement;
     };
+    interface HTMLVerdocsBuildElementEventMap {
+        "sdkError": SDKError;
+        "stepChanged": TVerdocsBuildStep;
+        "send": {roles: ICreateEnvelopeRole[]; name: string; template_id: string};
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+        "templateCreated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+        "rolesUpdated": {endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]};
+    }
     /**
      * Display a template building experience.
      */
     interface HTMLVerdocsBuildElement extends Components.VerdocsBuild, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsBuildElementEventMap>(type: K, listener: (this: HTMLVerdocsBuildElement, ev: VerdocsBuildCustomEvent<HTMLVerdocsBuildElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsBuildElementEventMap>(type: K, listener: (this: HTMLVerdocsBuildElement, ev: VerdocsBuildCustomEvent<HTMLVerdocsBuildElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsBuildElement: {
         prototype: HTMLVerdocsBuildElement;
@@ -2199,6 +2228,11 @@ declare global {
         prototype: HTMLVerdocsComponentErrorElement;
         new (): HTMLVerdocsComponentErrorElement;
     };
+    interface HTMLVerdocsContactPickerElementEventMap {
+        "searchContacts": IContactSearchEvent;
+        "exit": any;
+        "next": IContactSelectEvent;
+    }
     /**
      * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
      * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
@@ -2208,20 +2242,42 @@ declare global {
      * to always display the user's own contact record.
      */
     interface HTMLVerdocsContactPickerElement extends Components.VerdocsContactPicker, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsContactPickerElementEventMap>(type: K, listener: (this: HTMLVerdocsContactPickerElement, ev: VerdocsContactPickerCustomEvent<HTMLVerdocsContactPickerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsContactPickerElementEventMap>(type: K, listener: (this: HTMLVerdocsContactPickerElement, ev: VerdocsContactPickerCustomEvent<HTMLVerdocsContactPickerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsContactPickerElement: {
         prototype: HTMLVerdocsContactPickerElement;
         new (): HTMLVerdocsContactPickerElement;
     };
+    interface HTMLVerdocsDialogElementEventMap {
+        "exit": any;
+    }
     /**
      * Display a simple dialog where the contents are provided via slots.
      */
     interface HTMLVerdocsDialogElement extends Components.VerdocsDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsDialogElement, ev: VerdocsDialogCustomEvent<HTMLVerdocsDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsDialogElement, ev: VerdocsDialogCustomEvent<HTMLVerdocsDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsDialogElement: {
         prototype: HTMLVerdocsDialogElement;
         new (): HTMLVerdocsDialogElement;
     };
+    interface HTMLVerdocsDropdownElementEventMap {
+        "optionSelected": IMenuOption;
+    }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
      * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
@@ -2238,179 +2294,420 @@ declare global {
      * ```
      */
     interface HTMLVerdocsDropdownElement extends Components.VerdocsDropdown, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsDropdownElementEventMap>(type: K, listener: (this: HTMLVerdocsDropdownElement, ev: VerdocsDropdownCustomEvent<HTMLVerdocsDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsDropdownElementEventMap>(type: K, listener: (this: HTMLVerdocsDropdownElement, ev: VerdocsDropdownCustomEvent<HTMLVerdocsDropdownElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsDropdownElement: {
         prototype: HTMLVerdocsDropdownElement;
         new (): HTMLVerdocsDropdownElement;
     };
+    interface HTMLVerdocsEnvelopeDocumentPageElementEventMap {
+        "pageRendered": IDocumentPageInfo;
+    }
     /**
      * Represents one document page. This is primarily a layout container used to coordinate positions of
      * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
      * on its own as an individual component.
      */
     interface HTMLVerdocsEnvelopeDocumentPageElement extends Components.VerdocsEnvelopeDocumentPage, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsEnvelopeDocumentPageElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeDocumentPageElement, ev: VerdocsEnvelopeDocumentPageCustomEvent<HTMLVerdocsEnvelopeDocumentPageElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsEnvelopeDocumentPageElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeDocumentPageElement, ev: VerdocsEnvelopeDocumentPageCustomEvent<HTMLVerdocsEnvelopeDocumentPageElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsEnvelopeDocumentPageElement: {
         prototype: HTMLVerdocsEnvelopeDocumentPageElement;
         new (): HTMLVerdocsEnvelopeDocumentPageElement;
     };
+    interface HTMLVerdocsEnvelopeRecipientLinkElementEventMap {
+        "next": {envelope: IEnvelope};
+        "sdkError": SDKError;
+    }
     /**
      * Displays a single recipient from an envelope, with the opportunity to copy an in-person
      * signing link for that recipient to use.
      */
     interface HTMLVerdocsEnvelopeRecipientLinkElement extends Components.VerdocsEnvelopeRecipientLink, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsEnvelopeRecipientLinkElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeRecipientLinkElement, ev: VerdocsEnvelopeRecipientLinkCustomEvent<HTMLVerdocsEnvelopeRecipientLinkElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsEnvelopeRecipientLinkElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeRecipientLinkElement, ev: VerdocsEnvelopeRecipientLinkCustomEvent<HTMLVerdocsEnvelopeRecipientLinkElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsEnvelopeRecipientLinkElement: {
         prototype: HTMLVerdocsEnvelopeRecipientLinkElement;
         new (): HTMLVerdocsEnvelopeRecipientLinkElement;
     };
+    interface HTMLVerdocsEnvelopeRecipientSummaryElementEventMap {
+        "another": {envelope: IEnvelope};
+        "view": {envelope: IEnvelope};
+        "next": {envelope: IEnvelope};
+        "sdkError": SDKError;
+    }
     /**
      * Displays a list of recipients with options to get in-person signing links for each one.
      */
     interface HTMLVerdocsEnvelopeRecipientSummaryElement extends Components.VerdocsEnvelopeRecipientSummary, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsEnvelopeRecipientSummaryElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeRecipientSummaryElement, ev: VerdocsEnvelopeRecipientSummaryCustomEvent<HTMLVerdocsEnvelopeRecipientSummaryElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsEnvelopeRecipientSummaryElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeRecipientSummaryElement, ev: VerdocsEnvelopeRecipientSummaryCustomEvent<HTMLVerdocsEnvelopeRecipientSummaryElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsEnvelopeRecipientSummaryElement: {
         prototype: HTMLVerdocsEnvelopeRecipientSummaryElement;
         new (): HTMLVerdocsEnvelopeRecipientSummaryElement;
     };
+    interface HTMLVerdocsEnvelopeSidebarElementEventMap {
+        "sdkError": SDKError;
+        "envelopeUpdated": {endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string};
+        "toggle": {open: boolean};
+        "another": {envelope: IEnvelope};
+    }
     /**
      * Displays a file upload mechanism suitable for the first step of creating a template.
      * This is typically the first step in a template creation workflow.
      */
     interface HTMLVerdocsEnvelopeSidebarElement extends Components.VerdocsEnvelopeSidebar, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsEnvelopeSidebarElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeSidebarElement, ev: VerdocsEnvelopeSidebarCustomEvent<HTMLVerdocsEnvelopeSidebarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsEnvelopeSidebarElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeSidebarElement, ev: VerdocsEnvelopeSidebarCustomEvent<HTMLVerdocsEnvelopeSidebarElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsEnvelopeSidebarElement: {
         prototype: HTMLVerdocsEnvelopeSidebarElement;
         new (): HTMLVerdocsEnvelopeSidebarElement;
     };
+    interface HTMLVerdocsEnvelopesListElementEventMap {
+        "changeView": 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
+        "changeStatus": TEnvelopeStatus | 'all';
+        "changeSort": 'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status';
+        "changeMatch": string;
+        "sdkError": SDKError;
+        "viewEnvelope": {endpoint: VerdocsEndpoint; envelope: IEnvelope};
+        "finishEnvelope": {endpoint: VerdocsEndpoint; envelope: IEnvelope};
+    }
     /**
      * Displays a list of envelopes matching specified conditions.
      */
     interface HTMLVerdocsEnvelopesListElement extends Components.VerdocsEnvelopesList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsEnvelopesListElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopesListElement, ev: VerdocsEnvelopesListCustomEvent<HTMLVerdocsEnvelopesListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsEnvelopesListElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopesListElement, ev: VerdocsEnvelopesListCustomEvent<HTMLVerdocsEnvelopesListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsEnvelopesListElement: {
         prototype: HTMLVerdocsEnvelopesListElement;
         new (): HTMLVerdocsEnvelopesListElement;
     };
+    interface HTMLVerdocsFieldAttachmentElementEventMap {
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+        "attached": {data: string; lastModified: number; name: string; size: number; type: string};
+    }
     /**
      * Displays an attachment field.
      */
     interface HTMLVerdocsFieldAttachmentElement extends Components.VerdocsFieldAttachment, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldAttachmentElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldAttachmentElement, ev: VerdocsFieldAttachmentCustomEvent<HTMLVerdocsFieldAttachmentElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldAttachmentElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldAttachmentElement, ev: VerdocsFieldAttachmentCustomEvent<HTMLVerdocsFieldAttachmentElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldAttachmentElement: {
         prototype: HTMLVerdocsFieldAttachmentElement;
         new (): HTMLVerdocsFieldAttachmentElement;
     };
+    interface HTMLVerdocsFieldCheckboxElementEventMap {
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
     /**
      * Displays a checkbox.
      */
     interface HTMLVerdocsFieldCheckboxElement extends Components.VerdocsFieldCheckbox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldCheckboxElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldCheckboxElement, ev: VerdocsFieldCheckboxCustomEvent<HTMLVerdocsFieldCheckboxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldCheckboxElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldCheckboxElement, ev: VerdocsFieldCheckboxCustomEvent<HTMLVerdocsFieldCheckboxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldCheckboxElement: {
         prototype: HTMLVerdocsFieldCheckboxElement;
         new (): HTMLVerdocsFieldCheckboxElement;
     };
+    interface HTMLVerdocsFieldDateElementEventMap {
+        "settingsPress": any;
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
     /**
      * Displays a date field. When tapped or clicked, the input element will display a date picker component.
      */
     interface HTMLVerdocsFieldDateElement extends Components.VerdocsFieldDate, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldDateElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldDateElement, ev: VerdocsFieldDateCustomEvent<HTMLVerdocsFieldDateElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldDateElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldDateElement, ev: VerdocsFieldDateCustomEvent<HTMLVerdocsFieldDateElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldDateElement: {
         prototype: HTMLVerdocsFieldDateElement;
         new (): HTMLVerdocsFieldDateElement;
     };
+    interface HTMLVerdocsFieldDropdownElementEventMap {
+        "fieldChange": string;
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
     /**
      * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
      * input types like text and checkbox.
      */
     interface HTMLVerdocsFieldDropdownElement extends Components.VerdocsFieldDropdown, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldDropdownElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldDropdownElement, ev: VerdocsFieldDropdownCustomEvent<HTMLVerdocsFieldDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldDropdownElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldDropdownElement, ev: VerdocsFieldDropdownCustomEvent<HTMLVerdocsFieldDropdownElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldDropdownElement: {
         prototype: HTMLVerdocsFieldDropdownElement;
         new (): HTMLVerdocsFieldDropdownElement;
     };
+    interface HTMLVerdocsFieldInitialElementEventMap {
+        "adopt": string;
+        "exit": any;
+        "fieldChange": string;
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsPress": any;
+        "deleted": {fieldName: string};
+    }
     /**
      * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
      * button will be shown. Clicking the button will show a dialog to adopt an initial.
      */
     interface HTMLVerdocsFieldInitialElement extends Components.VerdocsFieldInitial, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldInitialElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldInitialElement, ev: VerdocsFieldInitialCustomEvent<HTMLVerdocsFieldInitialElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldInitialElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldInitialElement, ev: VerdocsFieldInitialCustomEvent<HTMLVerdocsFieldInitialElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldInitialElement: {
         prototype: HTMLVerdocsFieldInitialElement;
         new (): HTMLVerdocsFieldInitialElement;
     };
+    interface HTMLVerdocsFieldPaymentElementEventMap {
+        "signatureComplete": string;
+        "initialComplete": string;
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
     /**
      * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
      * input types like text and checkbox.
      */
     interface HTMLVerdocsFieldPaymentElement extends Components.VerdocsFieldPayment, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldPaymentElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldPaymentElement, ev: VerdocsFieldPaymentCustomEvent<HTMLVerdocsFieldPaymentElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldPaymentElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldPaymentElement, ev: VerdocsFieldPaymentCustomEvent<HTMLVerdocsFieldPaymentElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldPaymentElement: {
         prototype: HTMLVerdocsFieldPaymentElement;
         new (): HTMLVerdocsFieldPaymentElement;
     };
+    interface HTMLVerdocsFieldRadioButtonElementEventMap {
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
     /**
      * Displays a radio button.
      */
     interface HTMLVerdocsFieldRadioButtonElement extends Components.VerdocsFieldRadioButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldRadioButtonElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldRadioButtonElement, ev: VerdocsFieldRadioButtonCustomEvent<HTMLVerdocsFieldRadioButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldRadioButtonElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldRadioButtonElement, ev: VerdocsFieldRadioButtonCustomEvent<HTMLVerdocsFieldRadioButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldRadioButtonElement: {
         prototype: HTMLVerdocsFieldRadioButtonElement;
         new (): HTMLVerdocsFieldRadioButtonElement;
     };
+    interface HTMLVerdocsFieldSignatureElementEventMap {
+        "fieldChange": string;
+        "settingsPress": any;
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
     /**
      * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
      * button will be shown. Clicking the button will show a dialog to adopt a signature.
      */
     interface HTMLVerdocsFieldSignatureElement extends Components.VerdocsFieldSignature, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldSignatureElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldSignatureElement, ev: VerdocsFieldSignatureCustomEvent<HTMLVerdocsFieldSignatureElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldSignatureElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldSignatureElement, ev: VerdocsFieldSignatureCustomEvent<HTMLVerdocsFieldSignatureElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldSignatureElement: {
         prototype: HTMLVerdocsFieldSignatureElement;
         new (): HTMLVerdocsFieldSignatureElement;
     };
+    interface HTMLVerdocsFieldTextareaElementEventMap {
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
     /**
      * Display a multi-line text input field.
      */
     interface HTMLVerdocsFieldTextareaElement extends Components.VerdocsFieldTextarea, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldTextareaElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldTextareaElement, ev: VerdocsFieldTextareaCustomEvent<HTMLVerdocsFieldTextareaElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldTextareaElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldTextareaElement, ev: VerdocsFieldTextareaCustomEvent<HTMLVerdocsFieldTextareaElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldTextareaElement: {
         prototype: HTMLVerdocsFieldTextareaElement;
         new (): HTMLVerdocsFieldTextareaElement;
     };
+    interface HTMLVerdocsFieldTextboxElementEventMap {
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
     /**
      * Display a text input field.
      */
     interface HTMLVerdocsFieldTextboxElement extends Components.VerdocsFieldTextbox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldTextboxElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldTextboxElement, ev: VerdocsFieldTextboxCustomEvent<HTMLVerdocsFieldTextboxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldTextboxElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldTextboxElement, ev: VerdocsFieldTextboxCustomEvent<HTMLVerdocsFieldTextboxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldTextboxElement: {
         prototype: HTMLVerdocsFieldTextboxElement;
         new (): HTMLVerdocsFieldTextboxElement;
     };
+    interface HTMLVerdocsFieldTimestampElementEventMap {
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
     /**
      * Display a timestamp field.
      */
     interface HTMLVerdocsFieldTimestampElement extends Components.VerdocsFieldTimestamp, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldTimestampElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldTimestampElement, ev: VerdocsFieldTimestampCustomEvent<HTMLVerdocsFieldTimestampElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldTimestampElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldTimestampElement, ev: VerdocsFieldTimestampCustomEvent<HTMLVerdocsFieldTimestampElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFieldTimestampElement: {
         prototype: HTMLVerdocsFieldTimestampElement;
         new (): HTMLVerdocsFieldTimestampElement;
     };
+    interface HTMLVerdocsFileChooserElementEventMap {
+        "fileSelected": {file: File | null};
+    }
     /**
      * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
      * provide the actual upload functionality.
      */
     interface HTMLVerdocsFileChooserElement extends Components.VerdocsFileChooser, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFileChooserElementEventMap>(type: K, listener: (this: HTMLVerdocsFileChooserElement, ev: VerdocsFileChooserCustomEvent<HTMLVerdocsFileChooserElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFileChooserElementEventMap>(type: K, listener: (this: HTMLVerdocsFileChooserElement, ev: VerdocsFileChooserCustomEvent<HTMLVerdocsFileChooserElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFileChooserElement: {
         prototype: HTMLVerdocsFileChooserElement;
         new (): HTMLVerdocsFileChooserElement;
     };
+    interface HTMLVerdocsFloatingMenuElementEventMap {
+        "optionSelected": IOption;
+    }
     /**
      * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
      * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
      * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
      */
     interface HTMLVerdocsFloatingMenuElement extends Components.VerdocsFloatingMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFloatingMenuElementEventMap>(type: K, listener: (this: HTMLVerdocsFloatingMenuElement, ev: VerdocsFloatingMenuCustomEvent<HTMLVerdocsFloatingMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFloatingMenuElementEventMap>(type: K, listener: (this: HTMLVerdocsFloatingMenuElement, ev: VerdocsFloatingMenuCustomEvent<HTMLVerdocsFloatingMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsFloatingMenuElement: {
         prototype: HTMLVerdocsFloatingMenuElement;
@@ -2425,22 +2722,46 @@ declare global {
         prototype: HTMLVerdocsHelpIconElement;
         new (): HTMLVerdocsHelpIconElement;
     };
+    interface HTMLVerdocsInitialDialogElementEventMap {
+        "next": string;
+        "exit": any;
+    }
     /**
      * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
      * based on their full name, or by hand-drawing their initials with a mouse or tablet.
      */
     interface HTMLVerdocsInitialDialogElement extends Components.VerdocsInitialDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsInitialDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsInitialDialogElement, ev: VerdocsInitialDialogCustomEvent<HTMLVerdocsInitialDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsInitialDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsInitialDialogElement, ev: VerdocsInitialDialogCustomEvent<HTMLVerdocsInitialDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsInitialDialogElement: {
         prototype: HTMLVerdocsInitialDialogElement;
         new (): HTMLVerdocsInitialDialogElement;
     };
+    interface HTMLVerdocsKbaDialogElementEventMap {
+        "exit": any;
+        "next": string;
+    }
     /**
      * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
      * box with a message and optional header/title. An OK button is shown that will dismiss the message.
      * It can also be dismissed by clicking the background overlay.
      */
     interface HTMLVerdocsKbaDialogElement extends Components.VerdocsKbaDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsKbaDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsKbaDialogElement, ev: VerdocsKbaDialogCustomEvent<HTMLVerdocsKbaDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsKbaDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsKbaDialogElement, ev: VerdocsKbaDialogCustomEvent<HTMLVerdocsKbaDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsKbaDialogElement: {
         prototype: HTMLVerdocsKbaDialogElement;
@@ -2455,12 +2776,24 @@ declare global {
         prototype: HTMLVerdocsLoaderElement;
         new (): HTMLVerdocsLoaderElement;
     };
+    interface HTMLVerdocsOkDialogElementEventMap {
+        "next": any;
+        "exit": any;
+    }
     /**
      * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
      * box with a message and optional header/title. An OK button is shown that will dismiss the message.
      * It can also be dismissed by clicking the background overlay.
      */
     interface HTMLVerdocsOkDialogElement extends Components.VerdocsOkDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsOkDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsOkDialogElement, ev: VerdocsOkDialogCustomEvent<HTMLVerdocsOkDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsOkDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsOkDialogElement, ev: VerdocsOkDialogCustomEvent<HTMLVerdocsOkDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsOkDialogElement: {
         prototype: HTMLVerdocsOkDialogElement;
@@ -2475,15 +2808,29 @@ declare global {
         prototype: HTMLVerdocsOrganizationCardElement;
         new (): HTMLVerdocsOrganizationCardElement;
     };
+    interface HTMLVerdocsPaginationElementEventMap {
+        "selectPage": {selectedPage: number};
+    }
     /**
      * Display a drop-down menu of quick filter options.
      */
     interface HTMLVerdocsPaginationElement extends Components.VerdocsPagination, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsPaginationElementEventMap>(type: K, listener: (this: HTMLVerdocsPaginationElement, ev: VerdocsPaginationCustomEvent<HTMLVerdocsPaginationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsPaginationElementEventMap>(type: K, listener: (this: HTMLVerdocsPaginationElement, ev: VerdocsPaginationCustomEvent<HTMLVerdocsPaginationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsPaginationElement: {
         prototype: HTMLVerdocsPaginationElement;
         new (): HTMLVerdocsPaginationElement;
     };
+    interface HTMLVerdocsPortalElementEventMap {
+        "clickAway": void;
+    }
     /**
      * Display a child component in a "portal", popping it out of the main DOM tree
      * to allow it to escape the bounds set by its parent.
@@ -2493,17 +2840,36 @@ declare global {
      * alignment options for the child to be displayed.
      */
     interface HTMLVerdocsPortalElement extends Components.VerdocsPortal, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsPortalElementEventMap>(type: K, listener: (this: HTMLVerdocsPortalElement, ev: VerdocsPortalCustomEvent<HTMLVerdocsPortalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsPortalElementEventMap>(type: K, listener: (this: HTMLVerdocsPortalElement, ev: VerdocsPortalCustomEvent<HTMLVerdocsPortalElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsPortalElement: {
         prototype: HTMLVerdocsPortalElement;
         new (): HTMLVerdocsPortalElement;
     };
+    interface HTMLVerdocsPreviewElementEventMap {
+        "sdkError": SDKError;
+    }
     /**
      * Display a template preview experience. This will display the template's attached
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
      */
     interface HTMLVerdocsPreviewElement extends Components.VerdocsPreview, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsPreviewElementEventMap>(type: K, listener: (this: HTMLVerdocsPreviewElement, ev: VerdocsPreviewCustomEvent<HTMLVerdocsPreviewElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsPreviewElementEventMap>(type: K, listener: (this: HTMLVerdocsPreviewElement, ev: VerdocsPreviewCustomEvent<HTMLVerdocsPreviewElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsPreviewElement: {
         prototype: HTMLVerdocsPreviewElement;
@@ -2518,21 +2884,44 @@ declare global {
         prototype: HTMLVerdocsProgressBarElement;
         new (): HTMLVerdocsProgressBarElement;
     };
+    interface HTMLVerdocsQuickFilterElementEventMap {
+        "optionSelected": IFilterOption;
+    }
     /**
      * Display a drop-down menu of quick filter options.
      */
     interface HTMLVerdocsQuickFilterElement extends Components.VerdocsQuickFilter, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsQuickFilterElementEventMap>(type: K, listener: (this: HTMLVerdocsQuickFilterElement, ev: VerdocsQuickFilterCustomEvent<HTMLVerdocsQuickFilterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsQuickFilterElementEventMap>(type: K, listener: (this: HTMLVerdocsQuickFilterElement, ev: VerdocsQuickFilterCustomEvent<HTMLVerdocsQuickFilterElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsQuickFilterElement: {
         prototype: HTMLVerdocsQuickFilterElement;
         new (): HTMLVerdocsQuickFilterElement;
     };
+    interface HTMLVerdocsQuickFunctionsElementEventMap {
+        "createTemplate": any;
+        "createDocument": any;
+    }
     /**
      * Display quick-function buttons for creating templates and documents.
      * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
      * embed. This Element will reuse the same session produced by logging in via that Embed.
      */
     interface HTMLVerdocsQuickFunctionsElement extends Components.VerdocsQuickFunctions, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsQuickFunctionsElementEventMap>(type: K, listener: (this: HTMLVerdocsQuickFunctionsElement, ev: VerdocsQuickFunctionsCustomEvent<HTMLVerdocsQuickFunctionsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsQuickFunctionsElementEventMap>(type: K, listener: (this: HTMLVerdocsQuickFunctionsElement, ev: VerdocsQuickFunctionsCustomEvent<HTMLVerdocsQuickFunctionsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsQuickFunctionsElement: {
         prototype: HTMLVerdocsQuickFunctionsElement;
@@ -2566,12 +2955,25 @@ declare global {
         prototype: HTMLVerdocsSearchElement;
         new (): HTMLVerdocsSearchElement;
     };
+    interface HTMLVerdocsSearchBoxElementEventMap {
+        "searchClicked": ISearchEvent;
+        "typeChanged": TContentType;
+        "queryChanged": string;
+    }
     /**
      * Displays a customizable input box for search queries.
      * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
      * embed. This Element will reuse the same session produced by logging in via that Embed.
      */
     interface HTMLVerdocsSearchBoxElement extends Components.VerdocsSearchBox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSearchBoxElementEventMap>(type: K, listener: (this: HTMLVerdocsSearchBoxElement, ev: VerdocsSearchBoxCustomEvent<HTMLVerdocsSearchBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSearchBoxElementEventMap>(type: K, listener: (this: HTMLVerdocsSearchBoxElement, ev: VerdocsSearchBoxCustomEvent<HTMLVerdocsSearchBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsSearchBoxElement: {
         prototype: HTMLVerdocsSearchBoxElement;
@@ -2594,6 +2996,13 @@ declare global {
         prototype: HTMLVerdocsSelectInputElement;
         new (): HTMLVerdocsSelectInputElement;
     };
+    interface HTMLVerdocsSendElementEventMap {
+        "sendingEnvelope": {sending: boolean};
+        "send": {roles: ICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope};
+        "exit": any;
+        "sdkError": SDKError;
+        "searchContacts": IContactSearchEvent1;
+    }
     /**
      * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
      * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
@@ -2603,58 +3012,134 @@ declare global {
      * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
      */
     interface HTMLVerdocsSendElement extends Components.VerdocsSend, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSendElementEventMap>(type: K, listener: (this: HTMLVerdocsSendElement, ev: VerdocsSendCustomEvent<HTMLVerdocsSendElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSendElementEventMap>(type: K, listener: (this: HTMLVerdocsSendElement, ev: VerdocsSendCustomEvent<HTMLVerdocsSendElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsSendElement: {
         prototype: HTMLVerdocsSendElement;
         new (): HTMLVerdocsSendElement;
     };
+    interface HTMLVerdocsSettingsElementEventMap {
+        "sdkError": SDKError;
+    }
     /**
      * Display a template preview experience. This will display the template's attached
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
      */
     interface HTMLVerdocsSettingsElement extends Components.VerdocsSettings, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSettingsElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsElement, ev: VerdocsSettingsCustomEvent<HTMLVerdocsSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSettingsElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsElement, ev: VerdocsSettingsCustomEvent<HTMLVerdocsSettingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsSettingsElement: {
         prototype: HTMLVerdocsSettingsElement;
         new (): HTMLVerdocsSettingsElement;
     };
+    interface HTMLVerdocsSettingsApiKeysElementEventMap {
+        "sdkError": SDKError;
+        "memberInvited": {endpoint: VerdocsEndpoint; member: IProfile};
+        "memberUpdated": {endpoint: VerdocsEndpoint; member: IProfile};
+        "memberRemoved": {endpoint: VerdocsEndpoint; member: IProfile};
+    }
     /**
      * Displays a settings form that allows the user to manage their API keys.
      */
     interface HTMLVerdocsSettingsApiKeysElement extends Components.VerdocsSettingsApiKeys, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSettingsApiKeysElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsApiKeysElement, ev: VerdocsSettingsApiKeysCustomEvent<HTMLVerdocsSettingsApiKeysElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSettingsApiKeysElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsApiKeysElement, ev: VerdocsSettingsApiKeysCustomEvent<HTMLVerdocsSettingsApiKeysElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsSettingsApiKeysElement: {
         prototype: HTMLVerdocsSettingsApiKeysElement;
         new (): HTMLVerdocsSettingsApiKeysElement;
     };
+    interface HTMLVerdocsSettingsMembersElementEventMap {
+        "sdkError": SDKError;
+        "memberInvited": {endpoint: VerdocsEndpoint; member: IProfile};
+        "memberUpdated": {endpoint: VerdocsEndpoint; member: IProfile};
+        "memberRemoved": {endpoint: VerdocsEndpoint; member: IProfile};
+    }
     /**
      * Displays a settings form that allows the user to manage their Verdocs profile.
      */
     interface HTMLVerdocsSettingsMembersElement extends Components.VerdocsSettingsMembers, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSettingsMembersElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsMembersElement, ev: VerdocsSettingsMembersCustomEvent<HTMLVerdocsSettingsMembersElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSettingsMembersElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsMembersElement, ev: VerdocsSettingsMembersCustomEvent<HTMLVerdocsSettingsMembersElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsSettingsMembersElement: {
         prototype: HTMLVerdocsSettingsMembersElement;
         new (): HTMLVerdocsSettingsMembersElement;
     };
+    interface HTMLVerdocsSettingsOrganizationElementEventMap {
+        "sdkError": SDKError;
+        "organizationUpdated": {endpoint: VerdocsEndpoint; organization: IOrganization};
+    }
     /**
      * Displays a settings form that allows the user to manage their Verdocs profile.
      */
     interface HTMLVerdocsSettingsOrganizationElement extends Components.VerdocsSettingsOrganization, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSettingsOrganizationElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsOrganizationElement, ev: VerdocsSettingsOrganizationCustomEvent<HTMLVerdocsSettingsOrganizationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSettingsOrganizationElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsOrganizationElement, ev: VerdocsSettingsOrganizationCustomEvent<HTMLVerdocsSettingsOrganizationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsSettingsOrganizationElement: {
         prototype: HTMLVerdocsSettingsOrganizationElement;
         new (): HTMLVerdocsSettingsOrganizationElement;
     };
+    interface HTMLVerdocsSettingsProfileElementEventMap {
+        "sdkError": SDKError;
+        "profileUpdated": {endpoint: VerdocsEndpoint; profile: IProfile};
+    }
     /**
      * Displays a settings form that allows the user to manage their Verdocs profile.
      */
     interface HTMLVerdocsSettingsProfileElement extends Components.VerdocsSettingsProfile, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSettingsProfileElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsProfileElement, ev: VerdocsSettingsProfileCustomEvent<HTMLVerdocsSettingsProfileElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSettingsProfileElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsProfileElement, ev: VerdocsSettingsProfileCustomEvent<HTMLVerdocsSettingsProfileElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsSettingsProfileElement: {
         prototype: HTMLVerdocsSettingsProfileElement;
         new (): HTMLVerdocsSettingsProfileElement;
     };
+    interface HTMLVerdocsSignElementEventMap {
+        "sdkError": SDKError;
+        "envelopeLoaded": {endpoint: VerdocsEndpoint; envelope: IEnvelope};
+        "envelopeUpdated": {endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string};
+    }
     /**
      * Display an envelope signing experience. This will display the envelope's attached
      * documents with signing fields overlaid on each page.
@@ -2671,16 +3156,36 @@ declare global {
      * the signed attachments.)
      */
     interface HTMLVerdocsSignElement extends Components.VerdocsSign, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSignElementEventMap>(type: K, listener: (this: HTMLVerdocsSignElement, ev: VerdocsSignCustomEvent<HTMLVerdocsSignElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSignElementEventMap>(type: K, listener: (this: HTMLVerdocsSignElement, ev: VerdocsSignCustomEvent<HTMLVerdocsSignElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsSignElement: {
         prototype: HTMLVerdocsSignElement;
         new (): HTMLVerdocsSignElement;
     };
+    interface HTMLVerdocsSignatureDialogElementEventMap {
+        "next": string;
+        "exit": any;
+    }
     /**
      * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
      * based on their full name, or by hand-drawing their signature with a mouse or tablet.
      */
     interface HTMLVerdocsSignatureDialogElement extends Components.VerdocsSignatureDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSignatureDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsSignatureDialogElement, ev: VerdocsSignatureDialogCustomEvent<HTMLVerdocsSignatureDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSignatureDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsSignatureDialogElement, ev: VerdocsSignatureDialogCustomEvent<HTMLVerdocsSignatureDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsSignatureDialogElement: {
         prototype: HTMLVerdocsSignatureDialogElement;
@@ -2708,40 +3213,89 @@ declare global {
         prototype: HTMLVerdocsStatusIndicatorElement;
         new (): HTMLVerdocsStatusIndicatorElement;
     };
+    interface HTMLVerdocsTableElementEventMap {
+        "colHeaderClick": {col: IColumn};
+        "rowClick": {row: any};
+    }
     /**
      * Display a simple table of data. Columns and data cells may have custom renderers defined to
      * support creating interactive table layouts.
      */
     interface HTMLVerdocsTableElement extends Components.VerdocsTable, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTableElementEventMap>(type: K, listener: (this: HTMLVerdocsTableElement, ev: VerdocsTableCustomEvent<HTMLVerdocsTableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTableElementEventMap>(type: K, listener: (this: HTMLVerdocsTableElement, ev: VerdocsTableCustomEvent<HTMLVerdocsTableElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTableElement: {
         prototype: HTMLVerdocsTableElement;
         new (): HTMLVerdocsTableElement;
     };
+    interface HTMLVerdocsTabsElementEventMap {
+        "selectTab": {tab: ITab; index: number};
+    }
     /**
      * Display a simple row of selectable tabs. This is a controlled element.
      * The parent must adjust selectedTab as selection events are fired.
      */
     interface HTMLVerdocsTabsElement extends Components.VerdocsTabs, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTabsElementEventMap>(type: K, listener: (this: HTMLVerdocsTabsElement, ev: VerdocsTabsCustomEvent<HTMLVerdocsTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTabsElementEventMap>(type: K, listener: (this: HTMLVerdocsTabsElement, ev: VerdocsTabsCustomEvent<HTMLVerdocsTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTabsElement: {
         prototype: HTMLVerdocsTabsElement;
         new (): HTMLVerdocsTabsElement;
     };
+    interface HTMLVerdocsTemplateAttachmentsElementEventMap {
+        "exit": any;
+        "next": {template: ITemplate};
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+        "sdkError": SDKError;
+    }
     /**
      * Displays an edit form that allows the user to view, add, or remove a template's attachments.
      * Note that an active session and valid template ID must be supplied.
      */
     interface HTMLVerdocsTemplateAttachmentsElement extends Components.VerdocsTemplateAttachments, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateAttachmentsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateAttachmentsElement, ev: VerdocsTemplateAttachmentsCustomEvent<HTMLVerdocsTemplateAttachmentsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateAttachmentsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateAttachmentsElement, ev: VerdocsTemplateAttachmentsCustomEvent<HTMLVerdocsTemplateAttachmentsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateAttachmentsElement: {
         prototype: HTMLVerdocsTemplateAttachmentsElement;
         new (): HTMLVerdocsTemplateAttachmentsElement;
     };
+    interface HTMLVerdocsTemplateBuildTabsElementEventMap {
+        "sdkError": SDKError;
+        "stepChanged": TVerdocsBuildStep1;
+    }
     /**
      * Display a set of tabs for the template builder.
      */
     interface HTMLVerdocsTemplateBuildTabsElement extends Components.VerdocsTemplateBuildTabs, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateBuildTabsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateBuildTabsElement, ev: VerdocsTemplateBuildTabsCustomEvent<HTMLVerdocsTemplateBuildTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateBuildTabsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateBuildTabsElement, ev: VerdocsTemplateBuildTabsCustomEvent<HTMLVerdocsTemplateBuildTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateBuildTabsElement: {
         prototype: HTMLVerdocsTemplateBuildTabsElement;
@@ -2756,95 +3310,224 @@ declare global {
         prototype: HTMLVerdocsTemplateCardElement;
         new (): HTMLVerdocsTemplateCardElement;
     };
+    interface HTMLVerdocsTemplateCreateElementEventMap {
+        "exit": any;
+        "next": ITemplate;
+        "sdkError": SDKError;
+        "templateCreated": {endpoint: VerdocsEndpoint; template: ITemplate; templateId: string};
+    }
     /**
      * Displays a file upload mechanism suitable for the first step of creating a template.
      * This is typically the first step in a template creation workflow.
      */
     interface HTMLVerdocsTemplateCreateElement extends Components.VerdocsTemplateCreate, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateCreateElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateCreateElement, ev: VerdocsTemplateCreateCustomEvent<HTMLVerdocsTemplateCreateElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateCreateElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateCreateElement, ev: VerdocsTemplateCreateCustomEvent<HTMLVerdocsTemplateCreateElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateCreateElement: {
         prototype: HTMLVerdocsTemplateCreateElement;
         new (): HTMLVerdocsTemplateCreateElement;
     };
+    interface HTMLVerdocsTemplateDocumentPageElementEventMap {
+        "pageRendered": IDocumentPageInfo;
+    }
     /**
      * Represents one document page. This is primarily a layout container used to coordinate positions of
      * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
      * on its own as an individual component.
      */
     interface HTMLVerdocsTemplateDocumentPageElement extends Components.VerdocsTemplateDocumentPage, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateDocumentPageElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateDocumentPageElement, ev: VerdocsTemplateDocumentPageCustomEvent<HTMLVerdocsTemplateDocumentPageElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateDocumentPageElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateDocumentPageElement, ev: VerdocsTemplateDocumentPageCustomEvent<HTMLVerdocsTemplateDocumentPageElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateDocumentPageElement: {
         prototype: HTMLVerdocsTemplateDocumentPageElement;
         new (): HTMLVerdocsTemplateDocumentPageElement;
     };
+    interface HTMLVerdocsTemplateFieldPropertiesElementEventMap {
+        "close": any;
+        "delete": {templateId: string; roleName: string};
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "sdkError": SDKError;
+    }
     /**
      * Displays an edit form that allows the user to adjust a field's settings.
      */
     interface HTMLVerdocsTemplateFieldPropertiesElement extends Components.VerdocsTemplateFieldProperties, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateFieldPropertiesElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateFieldPropertiesElement, ev: VerdocsTemplateFieldPropertiesCustomEvent<HTMLVerdocsTemplateFieldPropertiesElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateFieldPropertiesElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateFieldPropertiesElement, ev: VerdocsTemplateFieldPropertiesCustomEvent<HTMLVerdocsTemplateFieldPropertiesElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateFieldPropertiesElement: {
         prototype: HTMLVerdocsTemplateFieldPropertiesElement;
         new (): HTMLVerdocsTemplateFieldPropertiesElement;
     };
+    interface HTMLVerdocsTemplateFieldsElementEventMap {
+        "sdkError": SDKError;
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+        "fieldsUpdated": {endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: ITemplateField[]};
+    }
     /**
      * Displays a builder experience for laying out fields in a template. Note that this experience requires a large display area to
      * present all of the required controls, so it is primarily intended to be used in desktop environments.
      */
     interface HTMLVerdocsTemplateFieldsElement extends Components.VerdocsTemplateFields, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateFieldsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateFieldsElement, ev: VerdocsTemplateFieldsCustomEvent<HTMLVerdocsTemplateFieldsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateFieldsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateFieldsElement, ev: VerdocsTemplateFieldsCustomEvent<HTMLVerdocsTemplateFieldsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateFieldsElement: {
         prototype: HTMLVerdocsTemplateFieldsElement;
         new (): HTMLVerdocsTemplateFieldsElement;
     };
+    interface HTMLVerdocsTemplateNameElementEventMap {
+        "close": any;
+        "sdkError": SDKError;
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+    }
     /**
      * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
      */
     interface HTMLVerdocsTemplateNameElement extends Components.VerdocsTemplateName, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateNameElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateNameElement, ev: VerdocsTemplateNameCustomEvent<HTMLVerdocsTemplateNameElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateNameElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateNameElement, ev: VerdocsTemplateNameCustomEvent<HTMLVerdocsTemplateNameElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateNameElement: {
         prototype: HTMLVerdocsTemplateNameElement;
         new (): HTMLVerdocsTemplateNameElement;
     };
+    interface HTMLVerdocsTemplateRemindersElementEventMap {
+        "close": any;
+        "sdkError": SDKError;
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITsemplate; event: string};
+    }
     /**
      * Displays an edit form that allows the user to adjust a template's reminders.
      */
     interface HTMLVerdocsTemplateRemindersElement extends Components.VerdocsTemplateReminders, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateRemindersElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRemindersElement, ev: VerdocsTemplateRemindersCustomEvent<HTMLVerdocsTemplateRemindersElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateRemindersElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRemindersElement, ev: VerdocsTemplateRemindersCustomEvent<HTMLVerdocsTemplateRemindersElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateRemindersElement: {
         prototype: HTMLVerdocsTemplateRemindersElement;
         new (): HTMLVerdocsTemplateRemindersElement;
     };
+    interface HTMLVerdocsTemplateRolePropertiesElementEventMap {
+        "close": any;
+        "delete": {templateId: string; roleName: string};
+        "sdkError": SDKError;
+    }
     /**
      * Display an edit form that allows the user to adjust a role's setitngs.
      */
     interface HTMLVerdocsTemplateRolePropertiesElement extends Components.VerdocsTemplateRoleProperties, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateRolePropertiesElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRolePropertiesElement, ev: VerdocsTemplateRolePropertiesCustomEvent<HTMLVerdocsTemplateRolePropertiesElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateRolePropertiesElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRolePropertiesElement, ev: VerdocsTemplateRolePropertiesCustomEvent<HTMLVerdocsTemplateRolePropertiesElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateRolePropertiesElement: {
         prototype: HTMLVerdocsTemplateRolePropertiesElement;
         new (): HTMLVerdocsTemplateRolePropertiesElement;
     };
+    interface HTMLVerdocsTemplateRolesElementEventMap {
+        "next": any;
+        "exit": any;
+        "sdkError": SDKError;
+        "rolesUpdated": {endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]};
+    }
     /**
      * Displays an edit form that allows the user to adjust a template's roles and workflow.
      */
     interface HTMLVerdocsTemplateRolesElement extends Components.VerdocsTemplateRoles, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateRolesElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRolesElement, ev: VerdocsTemplateRolesCustomEvent<HTMLVerdocsTemplateRolesElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateRolesElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRolesElement, ev: VerdocsTemplateRolesCustomEvent<HTMLVerdocsTemplateRolesElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateRolesElement: {
         prototype: HTMLVerdocsTemplateRolesElement;
         new (): HTMLVerdocsTemplateRolesElement;
     };
+    interface HTMLVerdocsTemplateSenderElementEventMap {
+        "close": any;
+        "sdkError": SDKError;
+    }
     /**
      * Display a dialog that allows a template sender to be selected.
      */
     interface HTMLVerdocsTemplateSenderElement extends Components.VerdocsTemplateSender, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateSenderElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateSenderElement, ev: VerdocsTemplateSenderCustomEvent<HTMLVerdocsTemplateSenderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateSenderElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateSenderElement, ev: VerdocsTemplateSenderCustomEvent<HTMLVerdocsTemplateSenderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateSenderElement: {
         prototype: HTMLVerdocsTemplateSenderElement;
         new (): HTMLVerdocsTemplateSenderElement;
     };
+    interface HTMLVerdocsTemplateStarElementEventMap {
+        "starChange": {templateId: string; starred: boolean; count: number};
+        "sdkError": SDKError;
+    }
     /**
      * Displays a clickable star that allows users to mark frequently-used templates.
      */
     interface HTMLVerdocsTemplateStarElement extends Components.VerdocsTemplateStar, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateStarElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateStarElement, ev: VerdocsTemplateStarCustomEvent<HTMLVerdocsTemplateStarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateStarElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateStarElement, ev: VerdocsTemplateStarCustomEvent<HTMLVerdocsTemplateStarElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateStarElement: {
         prototype: HTMLVerdocsTemplateStarElement;
@@ -2859,19 +3542,52 @@ declare global {
         prototype: HTMLVerdocsTemplateTagsElement;
         new (): HTMLVerdocsTemplateTagsElement;
     };
+    interface HTMLVerdocsTemplateVisibilityElementEventMap {
+        "close": any;
+        "sdkError": SDKError;
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+    }
     /**
      * Displays an edit form that allows the user to adjust a template's visibility.
      */
     interface HTMLVerdocsTemplateVisibilityElement extends Components.VerdocsTemplateVisibility, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateVisibilityElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateVisibilityElement, ev: VerdocsTemplateVisibilityCustomEvent<HTMLVerdocsTemplateVisibilityElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateVisibilityElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateVisibilityElement, ev: VerdocsTemplateVisibilityCustomEvent<HTMLVerdocsTemplateVisibilityElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplateVisibilityElement: {
         prototype: HTMLVerdocsTemplateVisibilityElement;
         new (): HTMLVerdocsTemplateVisibilityElement;
     };
+    interface HTMLVerdocsTemplatesListElementEventMap {
+        "sdkError": SDKError;
+        "viewTemplate": {endpoint: VerdocsEndpoint; template: ITemplate};
+        "signNow": {endpoint: VerdocsEndpoint; template: ITemplate};
+        "submittedData": {endpoint: VerdocsEndpoint; template: ITemplate};
+        "editTemplate": {endpoint: VerdocsEndpoint; template: ITemplate};
+        "templateDeleted": {endpoint: VerdocsEndpoint; template: ITemplate};
+        "changeSort": IGetTemplateSummarySortBy;
+        "changeSharing": 'all' | 'personal' | 'shared' | 'public';
+        "changeStarred": 'all' | 'starred' | 'unstarred';
+        "changeName": string;
+    }
     /**
      * Displays a list of envelopes matching specified conditions.
      */
     interface HTMLVerdocsTemplatesListElement extends Components.VerdocsTemplatesList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplatesListElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplatesListElement, ev: VerdocsTemplatesListCustomEvent<HTMLVerdocsTemplatesListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplatesListElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplatesListElement, ev: VerdocsTemplatesListCustomEvent<HTMLVerdocsTemplatesListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTemplatesListElement: {
         prototype: HTMLVerdocsTemplatesListElement;
@@ -2897,10 +3613,21 @@ declare global {
         prototype: HTMLVerdocsToggleElement;
         new (): HTMLVerdocsToggleElement;
     };
+    interface HTMLVerdocsToggleButtonElementEventMap {
+        "toggle": {active: boolean};
+    }
     /**
      * Displays a single button that can be toggled on or off by clicking it.
      */
     interface HTMLVerdocsToggleButtonElement extends Components.VerdocsToggleButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsToggleButtonElementEventMap>(type: K, listener: (this: HTMLVerdocsToggleButtonElement, ev: VerdocsToggleButtonCustomEvent<HTMLVerdocsToggleButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsToggleButtonElementEventMap>(type: K, listener: (this: HTMLVerdocsToggleButtonElement, ev: VerdocsToggleButtonCustomEvent<HTMLVerdocsToggleButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsToggleButtonElement: {
         prototype: HTMLVerdocsToggleButtonElement;
@@ -2915,21 +3642,48 @@ declare global {
         prototype: HTMLVerdocsToolbarIconElement;
         new (): HTMLVerdocsToolbarIconElement;
     };
+    interface HTMLVerdocsUploadDialogElementEventMap {
+        "exit": any;
+        "next": FileWithData[];
+    }
     /**
      * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
      * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
      * caller via the onNext event handler.
      */
     interface HTMLVerdocsUploadDialogElement extends Components.VerdocsUploadDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsUploadDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsUploadDialogElement, ev: VerdocsUploadDialogCustomEvent<HTMLVerdocsUploadDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsUploadDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsUploadDialogElement, ev: VerdocsUploadDialogCustomEvent<HTMLVerdocsUploadDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsUploadDialogElement: {
         prototype: HTMLVerdocsUploadDialogElement;
         new (): HTMLVerdocsUploadDialogElement;
     };
+    interface HTMLVerdocsViewElementEventMap {
+        "sdkError": SDKError;
+        "envelopeUpdated": {endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string};
+        "another": any;
+        "view": any;
+        "next": any;
+    }
     /**
      * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
      */
     interface HTMLVerdocsViewElement extends Components.VerdocsView, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsViewElementEventMap>(type: K, listener: (this: HTMLVerdocsViewElement, ev: VerdocsViewCustomEvent<HTMLVerdocsViewElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsViewElementEventMap>(type: K, listener: (this: HTMLVerdocsViewElement, ev: VerdocsViewCustomEvent<HTMLVerdocsViewElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsViewElement: {
         prototype: HTMLVerdocsViewElement;
@@ -5037,7 +5791,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user updates the template.
          */
-        "onTemplateUpdated"?: (event: VerdocsTemplateRemindersCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
+        "onTemplateUpdated"?: (event: VerdocsTemplateRemindersCustomEvent<{endpoint: VerdocsEndpoint; template: ITsemplate; event: string}>) => void;
         /**
           * The template ID to edit.
          */
@@ -5070,7 +5824,7 @@ declare namespace LocalJSX {
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
-        "sender"?: TTemplateSender;
+        "sender"?: TTemplateSenderType;
         /**
           * The template ID to edit.
          */
@@ -5124,7 +5878,7 @@ declare namespace LocalJSX {
         /**
           * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
          */
-        "sender"?: TTemplateSender;
+        "sender"?: TTemplateSenderType;
         /**
           * The template ID to edit.
          */
