@@ -1,17 +1,25 @@
-<link rel="preconnect" href="https://fonts.gstatic.com/" />
-<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" />
 
-<style type="text/css">
-  .docs-story {
+<!-- Load your CSS file -->
+<!-- <link rel="stylesheet" href="path/to/your/styles.css" /> -->
+
+<style>
+  #storybook-docs {
     background: #f2f5fa;
   }
 
+  .sbdocs.sbdocs-wrapper {
+    background-color: transparent;
+  }
+
+  /*
   .innerZoomElementWrapper {
     min-height: 500px;
   }
 
-  /* We need this to be wider than the Sign widget's max align-center width of 1028px to be able to see that effect. */
+  /* We need this to be wider than the Sign widget's max align-center width of 1028px to be able to see that effect. * /
   .sbdocs.sbdocs-content {
     max-width: 1000px;
   }
@@ -24,5 +32,63 @@
   #story--controls-button-panel--button-panel {
     background: #4c56cb;
     padding: 20px;
+  }
+*/
+  #storybook-docs .sbdocs > * {
+    font-family: 'Inter', 'Open Sans', sans-serif;
+    font-size: 16px;
+  }
+
+  #storybook-docs .sbdocs > * > * {
+    font-family: 'Inter', 'Open Sans', sans-serif;
+    font-size: 16px;
+  }
+
+  /* Fix up some of the worst of the code formatting issues */
+  #storybook-docs .docblock-source .prismjs .token {
+    /*
+    color: #b6ad9a;
+    color: #063289;
+    color: #b29762;
+    color: #2d2006;
+    color: #896724;
+    color: #728fcb;
+    color: #93abdc;
+    color: #2d2006;
+    color: #896724;
+     */
+    color: #896724;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.punctuation {
+    color: #93abdc;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.selector {
+    color: #063289;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.keyword {
+    color: #2d2006;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.maybe-class-name {
+    color: #375498;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.property {
+    color: #896724;
+  }
+
+  /* Improve Code block readability (inline code e.g. `asdf`) */
+  #storybook-docs  .sbdocs code {
+    line-height: 1;
+    padding: 3px 6px;
+    white-space: nowrap;
+    border-radius: 3px;
+    font-size: 13px;
+    border: 1px solid #654dcb7f;
+    color: #1f1f1f;
+    background-color: #654dcb0f;
   }
 </style>

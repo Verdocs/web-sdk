@@ -40,6 +40,16 @@ export { TAllowedTemplateAction } from "./components/templates/verdocs-templates
 export { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 export { Placement } from "@popperjs/core/lib/enums";
 export namespace Components {
+    interface IpcTest {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
     /**
      * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
      * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
@@ -2056,6 +2066,12 @@ export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
     target: HTMLVerdocsViewElement;
 }
 declare global {
+    interface HTMLIpcTestElement extends Components.IpcTest, HTMLStencilElement {
+    }
+    var HTMLIpcTestElement: {
+        prototype: HTMLIpcTestElement;
+        new (): HTMLIpcTestElement;
+    };
     interface HTMLVerdocsActivityBoxElementEventMap {
         "sdkError": SDKError;
         "viewEnvelope": {endpoint: VerdocsEndpoint; entry: IActivityEntry};
@@ -3674,6 +3690,7 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
+        "ipc-test": HTMLIpcTestElement;
         "verdocs-activity-box": HTMLVerdocsActivityBoxElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
@@ -3756,6 +3773,16 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface IpcTest {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
     /**
      * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
      * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
@@ -6145,6 +6172,7 @@ declare namespace LocalJSX {
         "onView"?: (event: VerdocsViewCustomEvent<any>) => void;
     }
     interface IntrinsicElements {
+        "ipc-test": IpcTest;
         "verdocs-activity-box": VerdocsActivityBox;
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
@@ -6230,6 +6258,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "ipc-test": LocalJSX.IpcTest & JSXBase.HTMLAttributes<HTMLIpcTestElement>;
             /**
              * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
              * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps

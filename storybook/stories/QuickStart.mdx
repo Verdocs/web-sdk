@@ -1,0 +1,32 @@
+import {Meta} from '@storybook/blocks';
+
+import './common.css';
+
+<Meta title="Quick Start" />
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+## Quick Start
+
+    A bare-bones React signing experience is below. To scaffold a project to use this code, simply run
+
+    ```sh
+    mkdir projects
+    cd projects
+    npm create vite@latest my-app --template react-ts
+    cd my-app
+    npm i
+    npm i -S @verdocs/web-sdk
+    ```
+
+    then adust App.tsx as follows:
+
+    ```ts
+import {VerdocsTemplatesList} from '@verdocs/web-sdk-react';
+
+export default function App() {
+  return <VerdocsTemplatesList />;
+}
+```
+  </div>
+</div>

@@ -58,7 +58,5 @@ export const Button = ({label, size, variant, disabled, startIcon, endIcon, clic
     .size=${size}
     .variant=${variant}
     .disabled=${disabled}
-    .startIcon=${startIcon ? CircleIcon : null}
-    .endIcon=${endIcon ? ArrowIcon : null}
     @click=${click}
   />`;

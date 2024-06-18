@@ -1,5 +1,5 @@
 import {withThemeFromJSXProvider} from '@storybook/addon-themes';
-import type {Preview} from '@storybook/web-components';
+import type {Preview} from '@storybook/addon-themes';
 import {ThemeProvider} from '@storybook/theming';
 
 const THEME = {

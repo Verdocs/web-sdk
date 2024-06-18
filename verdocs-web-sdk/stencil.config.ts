@@ -31,6 +31,9 @@ export const config: Config = {
     // before: [typescript()],
     // after: [nodePolyfills()],
   },
+  extras: {
+    enableImportInjection: true,
+  },
   outputTargets: [
     angularOutputTarget({
       componentCorePackage: '@verdocs/web-sdk',

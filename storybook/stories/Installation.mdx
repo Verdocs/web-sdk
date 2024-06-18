@@ -1,0 +1,77 @@
+import {Meta} from '@storybook/blocks';
+
+import SimpleButtonExampleReact from './assets/simple-button-example-react.png';
+import SimpleButtonExampleVue from './assets/simple-button-example-vue.png';
+
+import './common.css';
+
+<Meta title="Installation" />
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+## Overview
+
+    Verdocs' Web SDK provides native Web Components that seamlessly integrate into any modern framework
+    that supports Web Components, including Vue, Angular, React, Svelte, etc. In frameworks that support
+    Web Components directly you can install `@verdocs/web-sdk`, but some frameworks like React should use
+    one of the "wrapper" libraries we provide:
+
+    This will provide helper components that are strongly-typed and assist your IDE in code-completion
+    while building user interfaces with our components:
+
+    <div className="row">
+      <div className="column">
+        <h3>React</h3>
+        <img src={SimpleButtonExampleReact} alt="Code sample for a simple button in React" />
+
+      </div>
+      <div className="column">
+        <h3>VueJS</h3>
+        <img src={SimpleButtonExampleVue} alt="Code sample for a simple button in Vue" />
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+## Installation
+
+    Begin by installing appropriate wrapper (or base package) for your framework, e.g.:
+
+    ```sh
+    $ npm i -S @verdocs/web-sdk-react
+    ```
+
+  </div>
+</div>
+
+<div className="sb-container">
+  <div className='sb-section-title'>
+    ## Styling
+
+    Verdocs components default to pre-defined styles that provide an integrated look and feel throughout the library.
+    Our Web compomnents are not isolated via Shadow DOM, and thus these styles may be easily overridden via CSS, e.g.
+
+    <div className="tip-wrapper">
+      <span className="tip">Tip</span> All Verdocs styles are prefixed with the component name e.g. `verdocs-button .outline`.
+                                       This makes it easier to target them directly, and also avoids namespace conflicts with parent stylesheets.
+    </div>
+
+
+    By making the styles globally accessible in this way, you are not limited to changing just a small set of
+    pre-defined values e.g. via CSS variables. You can override (or even hide) any element in the Verdocs Web SDK.
+
+    ```css dark
+    verdocs-button button.outline { border-color: #ff0000; }
+    ```
+
+    <div className="tip-wrapper">
+      <span className="warning">Warning</span> Component name prefixes cannot avoid conflicts due to descender-selector
+      use, e.g. `.some-parent > * > * { background-color: red }`. If your application's styles make heavy use of these,
+      consider wrapping any Verdocs components in additional `<div>...</div>` wrappers to add a layer of isolation.
+    </div>
+
+  </div>
+</div>
