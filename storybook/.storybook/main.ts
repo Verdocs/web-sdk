@@ -16,6 +16,12 @@ const config: StorybookConfig = {
   ],
   //     '@pxtrn/storybook-addon-docs-stencil',
   //     '@storybook/addon-webpack5-compiler-swc',
+  // webpackFinal: async (config, {configType}) => {
+  //   config.devtool = 'inline-source-map';
+  //   // config.output.hashFunction = 'xxhash64';
+  //
+  //   return config;
+  // },
   framework: {
     name: '@storybook/web-components-webpack5',
     options: {},
