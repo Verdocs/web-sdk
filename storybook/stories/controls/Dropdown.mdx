@@ -1,0 +1,35 @@
+import {Controls, Meta, Primary, Source, Stories} from '@storybook/blocks';
+import * as ComponentStories from './Dropdown.stories';
+
+<Meta of={ComponentStories} />
+
+# Dropdown
+
+Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed.
+The menu will be hidden when the button is pressed again, or an option is selected. Separators may be created
+by supplying an entry with an empty label.
+
+`options` should be an array of entries conforming to the following shape:
+
+```ts
+interface IDropdownItem {
+  // Required. The label to show in the dropown list.
+  label: string;
+
+  // Optional identifier, will be included in the change event. If not set, "label" will be used.
+  id?: any;
+
+  // If true, the option will not be selectable by the uesr.
+  disabled?: boolean;
+}
+```
+
+<div className="tip-wrapper">
+<span className="warning">NOTE</span> This control is meant to be used in application UI's. It is not for document
+signing. Use `<verdocs-field-dropdown />` for that.
+</div>
+
+<Source />
+<Primary />
+<Controls />
+<Stories />

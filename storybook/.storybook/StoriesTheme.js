@@ -12,7 +12,7 @@ export default create({
   colorPrimary: '#654dcb',
   colorSecondary: '#654dcb',
   // colorSecondary: '#55bc81',
-  barSelectedColor:'#cfa',
+  // barSelectedColor:'#cfa',
 
   // Sidebar background color
   appBg: '#292C2E',
@@ -22,22 +22,21 @@ export default create({
 
   // Backgrounds for things like code samples
   appContentBg: '#ffffff',
-  appBorderColor: '#654dcb',
+  appBorderColor: '#654dcb6f',
   appBorderRadius: 4,
 
   // Text colors
   textColor: '#333333',
-  textInverseColor: '#f3a',
+  // textInverseColor: '#f3a',
 
   // Toolbar default and active colors
+  inputBg: '#f1f2f3',
+  inputBorder: '#654dcb5f',
+  inputTextColor: '#999999',
+  inputBorderRadius: 3,
+
   // barTextColor: '#33f',
   // barSelectedColor: '#3f3',
   // barHoverColor: '#f33',
   // barBg: '#f3f',
-
-  // Form colors
-  inputBg: '#ffffff',
-  inputBorder: '#10162F',
-  inputTextColor: '#10162F',
-  inputBorderRadius: 2,
 });

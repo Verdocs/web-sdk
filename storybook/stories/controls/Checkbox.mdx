@@ -1,0 +1,23 @@
+import {Controls, Meta, Primary, Source, Stories} from '@storybook/blocks';
+import * as ComponentStories from './Checkbox.stories';
+
+<Meta of={ComponentStories} />
+
+# Checkbox
+
+Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
+to be used in signing experiences and contains settings that connect to template fields. This is just a simple check
+box for UI displays e.g. dialog boxes.
+
+This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
+handler.
+
+<div className="tip-wrapper">
+<span className="warning">NOTE</span> This control is meant to be used in application UI's. It is not for document
+signing. Use `<verdocs-field-checkbox />` for that.
+</div>
+
+<Source />
+<Primary />
+<Controls />
+<Stories />

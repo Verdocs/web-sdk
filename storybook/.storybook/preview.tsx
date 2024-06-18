@@ -9,6 +9,7 @@ const preview: Preview = {
     docs: {
       theme: StoriesTheme,
     },
+    tags: ['!autodocs'],
     controls: {
       matchers: {
         color: /(background|color)$/i,

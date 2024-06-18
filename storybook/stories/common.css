@@ -85,3 +85,9 @@ img {
   padding: 4px 12px;
   margin-right: 10px;
 }
+
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}

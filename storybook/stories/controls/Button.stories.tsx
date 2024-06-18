@@ -27,14 +27,14 @@ export default {
   },
 } as Meta;
 
-export const Default = {args: {label: 'Click Me'}};
-
-export const Outline = {args: {label: 'Outline', variant: 'outline'}};
-
-export const Text = {args: {label: 'Text', variant: 'text'}};
-
-export const Small = {args: {size: 'small', label: 'Small'}};
-
-export const StartIcon = {args: {size: 'small', label: 'Start Icon', startIcon: Icons.CircleIcon}};
-
-export const EndIcon = {args: {size: 'small', label: 'End Icon', endIcon: Icons.ArrowIcon}};
+export const Button = {args: {label: 'Click Me'}};
+//
+// export const Outline = {args: {label: 'Outline', variant: 'outline'}};
+//
+// export const Text = {args: {label: 'Text', variant: 'text'}};
+//
+// export const Small = {args: {size: 'small', label: 'Small'}};
+//
+// export const StartIcon = {args: {size: 'small', label: 'Start Icon', startIcon: Icons.CircleIcon}};
+//
+// export const EndIcon = {args: {size: 'small', label: 'End Icon', endIcon: Icons.ArrowIcon}};

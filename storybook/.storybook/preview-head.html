@@ -81,14 +81,37 @@
   }
 
   /* Improve Code block readability (inline code e.g. `asdf`) */
-  #storybook-docs  .sbdocs code {
+  #storybook-docs .sbdocs code {
     line-height: 1;
     padding: 3px 6px;
     white-space: nowrap;
     border-radius: 3px;
     font-size: 13px;
-    border: 1px solid #654dcb7f;
+    border: 1px solid #654dcb5f;
     color: #1f1f1f;
     background-color: #654dcb0f;
+  }
+
+  /* Fix up control form fields */
+  .docblock-argstable-body label,
+  .docblock-argstable-body textarea,
+  .docblock-argstable-body select {
+    color: #333333;
+    border: 1px solid #654dcb5f;
+    background-color: #f1f2f3;
+  }
+
+  .docblock-argstable-body label,
+  .docblock-argstable-body label > span {
+    line-height: 15px;
+    color: #999999 !important;
+  }
+
+  .Xdocblock-argstable-body input[role='switch'] {
+    color: #ffffff;
+  }
+
+  #storybook-docs .sb-bar {
+    background-color: #f1f2f3;
   }
 </style>

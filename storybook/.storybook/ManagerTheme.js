@@ -12,7 +12,7 @@ export default create({
   colorPrimary: '#654dcb',
   colorSecondary: '#654dcb',
   // colorSecondary: '#55bc81',
-  barSelectedColor:'#cfa',
+  // barSelectedColor:'#cfa',
 
   // Sidebar background color
   appBg: '#292C2E',
@@ -20,13 +20,13 @@ export default create({
   // Background for story area.
   appPreviewBg: '#f2f5fa',
 
-  appContentBg: '#caf',
-  appBorderColor: '#afa',
+  // appContentBg: '#caf',
+  appBorderColor: '#654dcb6f',
   appBorderRadius: 4,
 
   // Text colors
   textColor: '#ffffff',
-  textInverseColor: '#f3a',
+  // textInverseColor: '#f3a',
 
   // Toolbar default and active colors
   // barTextColor: '#33f',
@@ -35,8 +35,7 @@ export default create({
   // barBg: '#f3f',
 
   // Form colors
-  inputBg: '#ffffff',
-  inputBorder: '#10162F',
-  inputTextColor: '#10162F',
-  inputBorderRadius: 2,
+  // inputBorder: '#10162F',
+  // inputTextColor: '#10162F',
+  // inputBorderRadius: 2,
 });
