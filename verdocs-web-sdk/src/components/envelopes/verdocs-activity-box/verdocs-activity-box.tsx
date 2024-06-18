@@ -1,8 +1,4 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {IActivityEntry} from '@verdocs/js-sdk/Envelopes/Types';
-import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
-import {formatShortTimeAgo} from '@verdocs/js-sdk/Utils/DateTime';
+import {formatShortTimeAgo, getEnvelopesSummary, IActivityEntry, integerSequence, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 
@@ -94,7 +90,7 @@ export class VerdocsActivityBox {
   async loadActivity() {
     this.loading = true;
 
-    const r = await Envelopes.getSummary(this.endpoint, 0);
+    const r = await getEnvelopesSummary(this.endpoint, 0);
 
     let defaultHeader;
     if (this.view === 'action') {

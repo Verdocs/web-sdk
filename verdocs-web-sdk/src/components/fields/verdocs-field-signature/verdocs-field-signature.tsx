@@ -1,5 +1,4 @@
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
@@ -157,7 +156,9 @@ export class VerdocsFieldSignature {
 
     const settings = getFieldSettings(field);
     const value = settings.base64 || this.tempSignature;
-    const disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
 
     if (this.done) {
       return <Host class={{done: this.done}}>{value && <img src={value} alt="Signature" />}</Host>;

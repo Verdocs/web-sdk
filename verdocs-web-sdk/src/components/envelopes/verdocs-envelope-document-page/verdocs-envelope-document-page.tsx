@@ -1,8 +1,7 @@
 // NOTE: This component does not have a story because it's not intended for external use.
 
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {getEnvelopeDocumentPageDisplayUri, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Element} from '@stencil/core';
-import {getEnvelopeDocumentPageDisplayUri} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
 import {throttle} from '../../../utils/utils';
 

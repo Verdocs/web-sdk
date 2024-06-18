@@ -1,8 +1,4 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
-import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
-import {userCanCancelEnvelope} from '@verdocs/js-sdk/Envelopes/Permissions';
-import {cancelEnvelope, getDocumentDownloadLink, throttledGetEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {cancelEnvelope, getDocumentDownloadLink, IEnvelope, integerSequence, throttledGetEnvelope, userCanCancelEnvelope, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {saveEnvelopesAsZip} from '../../../utils/utils';
 // import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
@@ -155,24 +151,24 @@ export class VerdocsView {
         break;
 
       case 'download-attachments':
+        // TODO: Multiple document support
         {
-          const url = await getDocumentDownloadLink(this.endpoint, this.envelopeId, this.envelope.envelope_document_id);
-          window.open(url, '_blank');
+          const firstDoc = this.envelope.documents.find(doc => doc.type === 'attachment');
+          if (firstDoc) {
+            const url = await getDocumentDownloadLink(this.endpoint, this.envelopeId, firstDoc.id);
+            window.open(url, '_blank');
+          }
         }
-        // console.log('url', url);
-        // saveAttachment(this.endpoint, this.envelope, this.envelope.envelope_document_id)
-        //   .then(() => {
-        //     this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
-        //   })
-        //   .catch(e => {
-        //     console.log('Error downloading PDF', e);
-        //   });
         break;
 
       case 'download-certificate':
+        // TODO: Multiple certificate support
         {
-          const url = await getDocumentDownloadLink(this.endpoint, this.envelopeId, this.envelope.certificate_document_id);
-          window.open(url, '_blank');
+          const firstCert = this.envelope.documents.find(doc => doc.type === 'certificate');
+          if (firstCert) {
+            const url = await getDocumentDownloadLink(this.endpoint, this.envelopeId, firstCert.id);
+            window.open(url, '_blank');
+          }
         }
         // saveCertificate(this.endpoint, this.envelope, this.envelope.certificate_document_id)
         //   .then(() => {
@@ -247,7 +243,7 @@ export class VerdocsView {
           {(this.envelope?.documents || [])
             .filter(document => document.type !== 'certificate')
             .map(envelopeDocument => {
-              const pageNumbers = integerSequence(1, envelopeDocument.page_numbers);
+              const pageNumbers = integerSequence(1, envelopeDocument.pages);
 
               return (
                 <Fragment>

@@ -1,10 +1,18 @@
-import {Profiles} from '@verdocs/js-sdk/Users';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {capitalize} from '@verdocs/js-sdk/Utils/Strings';
-import {IProfile, IRole} from '@verdocs/js-sdk/Users/Types';
-import {IInvitation} from '@verdocs/js-sdk/Organizations/Types';
-import {Members, Invitations} from '@verdocs/js-sdk/Organizations';
-import {formatFullName, formatInitials} from '@verdocs/js-sdk/Utils/Primitives';
+import {
+  IOrganizationInvitation,
+  VerdocsEndpoint,
+  getOrganizationInvitations,
+  getOrganizationMembers,
+  IProfile,
+  deleteOrganizationMember,
+  createOrganizationInvitation,
+  deleteOrganizationInvitation,
+  resendOrganizationInvitation,
+  formatFullName,
+  formatInitials,
+  capitalize,
+  TRole,
+} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Prop, State} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -13,14 +21,14 @@ import {format} from 'date-fns';
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>`;
 const ArrowPathIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>`;
 
-const getRoleLabel = (roles: any[]) => {
-  if (roles.find(role => role.name === 'owner') !== undefined) return 'Owner';
-  if (roles.find(role => role.name === 'admin') !== undefined) return 'Admin';
-  if (roles.find(role => role.name === 'member') !== undefined) return 'Member';
-  if (roles.find(role => role.name === 'basic_user') !== undefined) return 'Basic User';
-  if (roles.find(role => role.name === 'contact') !== undefined) return 'Contact';
-};
-
+// const getRoleLabel = (roles: any[]) => {
+//   if (roles.find(role => role.name === 'owner') !== undefined) return 'Owner';
+//   if (roles.find(role => role.name === 'admin') !== undefined) return 'Admin';
+//   if (roles.find(role => role.name === 'member') !== undefined) return 'Member';
+//   if (roles.find(role => role.name === 'basic_user') !== undefined) return 'Basic User';
+//   if (roles.find(role => role.name === 'contact') !== undefined) return 'Contact';
+// };
+//
 const getRoleColor = (roles: any[]) => {
   if (roles.find(role => role.name === 'owner') !== undefined) return '#9333ea';
   if (roles.find(role => role.name === 'admin') !== undefined) return '#2563eb';
@@ -28,6 +36,14 @@ const getRoleColor = (roles: any[]) => {
   if (roles.find(role => role.name === 'basic_user') !== undefined) return '#ea580c';
   if (roles.find(role => role.name === 'contact') !== undefined) return '#52525B';
 };
+
+const roleOptions = [
+  {label: 'Contact', value: 'contact'},
+  {label: 'Basic User', value: 'basic_user'},
+  {label: 'Member', value: 'member'},
+  {label: 'Admin', value: 'admin'},
+  {label: 'Owner', value: 'owner'},
+];
 
 /**
  * Displays a settings form that allows the user to manage their Verdocs profile.
@@ -64,15 +80,15 @@ export class VerdocsSettingsMembers {
   @Event({composed: true}) memberRemoved: EventEmitter<{endpoint: VerdocsEndpoint; member: IProfile}>;
 
   @State() members: IProfile[] = [];
-  @State() invited: IInvitation[] = [];
-  @State() roles: IRole[] = [];
+  @State() invited: IOrganizationInvitation[] = [];
+  // @State() roles: TRole[] = [];
   @State() selectedTab = 0;
   @State() invitingMember = false;
   @State() newEmailAddress = '';
-  @State() newRoleId = '';
+  @State() newRole: TRole = 'member';
   @State() submitting = false;
-  @State() deletingInvitation: IInvitation | null = null;
-  @State() resendingInvitation: IInvitation | null = null;
+  @State() deletingInvitation: IOrganizationInvitation | null = null;
+  @State() resendingInvitation: IOrganizationInvitation | null = null;
   @State() deletingMember: IProfile | null = null;
 
   componentWillLoad() {
@@ -89,15 +105,14 @@ export class VerdocsSettingsMembers {
 
   async loadMembers() {
     try {
-      const [roles, members, invites] = await Promise.all([
-        Profiles.getRoles(this.endpoint),
-        Members.getMembers(this.endpoint, this.endpoint.session.organization_id),
-        Invitations.getInvitations(this.endpoint, this.endpoint.session.organization_id),
+      const [members, invites] = await Promise.all([
+        // getRoles(this.endpoint),
+        getOrganizationMembers(this.endpoint, this.endpoint.session.organization_id),
+        getOrganizationInvitations(this.endpoint, this.endpoint.session.organization_id),
       ]);
-      this.roles = roles;
       this.members = members;
       this.invited = invites;
-      this.newRoleId = roles.find(role => role.name === 'member')?.id || '';
+      this.newRole = 'member';
     } catch (e) {
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       VerdocsToast('Unable to load members. Please try again later');
@@ -106,16 +121,17 @@ export class VerdocsSettingsMembers {
 
   async handleInviteMember() {
     this.submitting = true;
-    Invitations.createInvitation(VerdocsEndpoint.getDefault(), this.endpoint.session.organization_id, {
+    createOrganizationInvitation(VerdocsEndpoint.getDefault(), this.endpoint.session.organization_id, {
       email: this.newEmailAddress,
-      role_id: this.newRoleId,
-      organization_id: this.endpoint.session.organization_id,
+      role: this.newRole,
+      // TODO: Test
+      // organization_id: this.endpoint.session.organization_id,
     })
       .then(r => {
         console.log('[SETTINGS] Invited member', r);
         this.invitingMember = false;
         this.submitting = false;
-        this.newRoleId = '';
+        this.newRole = 'member';
         this.newEmailAddress = '';
         VerdocsToast('Invitation sent!', {style: 'success'});
         this.loadMembers();
@@ -124,7 +140,7 @@ export class VerdocsSettingsMembers {
         console.log('[SETTINGS] Unable to invite member', e);
         this.invitingMember = false;
         this.submitting = false;
-        this.newRoleId = '';
+        this.newRole = 'member';
         this.newEmailAddress = '';
         VerdocsToast('Unable to invite member. Please try again later', {style: 'error'});
       });
@@ -132,7 +148,7 @@ export class VerdocsSettingsMembers {
 
   async handleDeleteMember() {
     this.submitting = true;
-    Members.deleteMember(VerdocsEndpoint.getDefault(), this.deletingMember.organization_id, this.deletingMember.email)
+    deleteOrganizationMember(VerdocsEndpoint.getDefault(), this.deletingMember.organization_id, this.deletingMember.email)
       .then(() => {
         this.submitting = false;
         this.deletingMember = null;
@@ -149,7 +165,7 @@ export class VerdocsSettingsMembers {
 
   async handleDeleteInvitation() {
     this.submitting = true;
-    Invitations.deleteInvitation(VerdocsEndpoint.getDefault(), this.deletingInvitation.organization_id, this.deletingInvitation.email)
+    deleteOrganizationInvitation(VerdocsEndpoint.getDefault(), this.deletingInvitation.organization_id, this.deletingInvitation.email)
       .then(() => {
         this.submitting = false;
         this.deletingInvitation = null;
@@ -166,7 +182,7 @@ export class VerdocsSettingsMembers {
 
   async handleResendInvitation() {
     this.submitting = true;
-    Invitations.resendInvitation(VerdocsEndpoint.getDefault(), this.resendingInvitation.organization_id, this.resendingInvitation.email)
+    resendOrganizationInvitation(VerdocsEndpoint.getDefault(), this.resendingInvitation.organization_id, this.resendingInvitation.email)
       .then(() => {
         this.submitting = false;
         this.resendingInvitation = null;
@@ -186,8 +202,6 @@ export class VerdocsSettingsMembers {
       console.log('[SETTINGS] Must be authenticated');
       return <Host class="authentication-required">Must be authenticated</Host>;
     }
-
-    const roleOptions = this.roles.map(role => ({label: getRoleLabel([{name: role.name}]), value: role.id}));
 
     return (
       <Host>
@@ -214,7 +228,7 @@ export class VerdocsSettingsMembers {
               },
               {id: 'email', header: 'E-mail Address'},
               {id: 'phone', header: 'Phone Number'},
-              {id: 'roles', header: 'Role', renderCell: (_, row) => `${getRoleLabel(row.roles)}`},
+              {id: 'roles', header: 'Role', renderCell: (_, row) => `${row.roles}`},
               {
                 id: 'actions',
                 header: 'Actions',
@@ -230,7 +244,7 @@ export class VerdocsSettingsMembers {
             columns={[
               {id: 'email', header: 'E-mail Address'},
               {id: 'generated_at', header: 'Invited', renderCell: (_, row) => <div>{format(new Date(row.generated_at), 'MMM d, Y')}</div>},
-              {id: 'role_id', header: 'Role', renderCell: (_, row) => <div>{getRoleLabel([{name: this.roles.find(r => r.id === row.role_id)?.name}])}</div>},
+              {id: 'role', header: 'Role', renderCell: (_, row) => <div>{row.role}</div>},
               {id: 'status', header: 'Status', renderCell: (_, row) => <div>{capitalize(row.status)}</div>},
               {
                 id: 'actions',
@@ -273,13 +287,13 @@ export class VerdocsSettingsMembers {
                 options={roleOptions}
                 label="Role"
                 onInput={(e: any) => {
-                  this.newRoleId = e.target.value;
+                  this.newRole = e.target.value;
                 }}
               />
 
               <div class="buttons">
                 <verdocs-button variant="outline" size="small" label="Cancel" disabled={this.submitting} onClick={() => (this.invitingMember = false)} />
-                <verdocs-button size="small" label="OK" disabled={this.submitting || !this.newEmailAddress || !this.newRoleId} onClick={() => this.handleInviteMember()} />
+                <verdocs-button size="small" label="OK" disabled={this.submitting || !this.newEmailAddress || !this.newRole} onClick={() => this.handleInviteMember()} />
               </div>
             </div>
           </verdocs-dialog>

@@ -1,7 +1,4 @@
-import {Token} from '@verdocs/js-sdk/Utils';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Auth, Profiles} from '@verdocs/js-sdk/Users';
-import {TSession} from '@verdocs/js-sdk/Sessions/Types';
+import {TSession, VerdocsEndpoint, createBusinessAccount, authenticateUser, decodeAccessTokenBody, resendVerification, resetPassword} from '@verdocs/js-sdk';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -185,7 +182,7 @@ export class VerdocsAuth {
     this.submitting = true;
     this.accessTokenForVerification = null;
 
-    Profiles.createBusinessAccount(this.endpoint, {
+    createBusinessAccount(this.endpoint, {
       email: this.username,
       password: this.password,
       firstName: this.first,
@@ -217,12 +214,12 @@ export class VerdocsAuth {
     this.submitting = true;
     this.accessTokenForVerification = null;
 
-    Auth.authenticateUser(this.endpoint, {username: this.username, password: this.password})
+    authenticateUser(this.endpoint, {username: this.username, password: this.password})
       .then(r => {
         this.cancelRecheckTimer();
         this.submitting = false;
 
-        const body = Token.decodeAccessTokenBody(r.accessToken);
+        const body = decodeAccessTokenBody(r.accessToken);
         console.log('[AUTH] Got access token body', body);
         if (body?.email_verified) {
           console.log('[AUTH] Email address is verified, completing login');
@@ -269,7 +266,7 @@ export class VerdocsAuth {
       this.resendDisabledTimer = null;
     }, 30000);
 
-    Auth.resendVerification(this.endpoint, this.accessTokenForVerification)
+    resendVerification(this.endpoint, this.accessTokenForVerification)
       .then(r => {
         console.log('[AUTH] Verification request resent', r);
         VerdocsToast('Please check your email for a message with verification instructions.', {style: 'info'});
@@ -281,7 +278,7 @@ export class VerdocsAuth {
 
   handleReset() {
     this.submitting = true;
-    Auth.resetPassword(this.endpoint, {email: this.username})
+    resetPassword(this.endpoint, {email: this.username})
       .then(r => {
         console.log('[AUTH] Reset sent', r);
         this.submitting = false;

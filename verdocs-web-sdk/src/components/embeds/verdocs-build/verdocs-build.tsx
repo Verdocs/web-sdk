@@ -1,6 +1,4 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IRole, ITemplate} from '@verdocs/js-sdk/Templates/Types';
-import {ICreateEnvelopeRole} from '@verdocs/js-sdk/Envelopes/Types';
+import {ICreateEnvelopeRole, IRole, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, h, Element, Event, EventEmitter, Host, Watch, State} from '@stencil/core';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';

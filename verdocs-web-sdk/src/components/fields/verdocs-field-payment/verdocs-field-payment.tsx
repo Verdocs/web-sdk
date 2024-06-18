@@ -1,9 +1,7 @@
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getFieldSettings} from '../../../utils/utils';
 
 /**
  * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
@@ -125,8 +123,10 @@ export class VerdocsFieldPayment {
       return <Fragment />;
     }
 
-    const settings = getFieldSettings(field);
-    const disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const settings = getFieldSettings(field);
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
 
     return (
       <Host class={{focused: this.focused, disabled}} style={{backgroundColor}}>

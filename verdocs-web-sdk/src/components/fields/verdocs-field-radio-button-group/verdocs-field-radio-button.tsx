@@ -1,5 +1,4 @@
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
@@ -115,7 +114,9 @@ export class VerdocsFieldRadioButton {
     }
 
     const settings = getFieldSettings(field);
-    const disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
     const required = field.required;
     const option = settings.options[this.option];
     const id = `${field.name}-${option.id}`;
@@ -130,7 +131,7 @@ export class VerdocsFieldRadioButton {
 
     return (
       <Host class={{required, disabled}} style={{backgroundColor}}>
-        <input id={id} type="radio" name={field.name} value={option.id} tabIndex={settings.order} checked={!!option.selected} disabled={disabled} required={settings.required} />
+        <input id={id} type="radio" name={field.name} value={option.id} checked={!!option.selected} disabled={disabled} required={field.required} />
         <label htmlFor={id} />
 
         {this.editable && (

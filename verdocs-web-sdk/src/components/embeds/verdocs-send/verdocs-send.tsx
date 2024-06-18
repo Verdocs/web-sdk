@@ -1,13 +1,7 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {IRole} from '@verdocs/js-sdk/Templates/Types';
-import {ICreateEnvelopeRequest} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import {ICreateEnvelopeRole, IEnvelope} from '@verdocs/js-sdk/Envelopes/Types';
-import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method} from '@stencil/core';
-import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
+import {createEnvelope, getRGBA, ICreateEnvelopeRequest, ICreateEnvelopeRole, IEnvelope, IRole, isValidEmail, isValidPhone, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRoleIndex, getRoleNames, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
@@ -23,6 +17,7 @@ const stepIcon =
 const doneIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path></svg>';
 
+// We need a local ID to help with ordering and in-progress update operations
 type TAnnotatedRole = IRole & {id: string};
 
 /**
@@ -207,7 +202,7 @@ export class VerdocsSend {
     };
 
     console.log('[SEND] Creating envelope', details);
-    Envelopes.createEnvelope(this.endpoint, details)
+    createEnvelope(this.endpoint, details)
       .then(r => {
         console.log('[SEND] Send envelope', r);
         this.reset().catch((e: any) => console.log('Unknown Error', e));

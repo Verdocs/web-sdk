@@ -1,7 +1,5 @@
 import {z} from 'zod';
-import {Profiles} from '@verdocs/js-sdk/Users';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IProfile} from '@verdocs/js-sdk/Users/Types';
+import {getCurrentProfile, IProfile, updateProfile, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Prop, State} from '@stencil/core';
 import {convertToE164} from '../../../utils/utils';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -56,7 +54,7 @@ export class VerdocsSettingsProfile {
   }
 
   async componentDidLoad() {
-    const profile = await Profiles.getCurrentProfile(this.endpoint);
+    const profile = await getCurrentProfile(this.endpoint);
     console.log('[SETTINGS] Loaded profile', profile);
     this.resetForm(profile);
   }
@@ -74,7 +72,7 @@ export class VerdocsSettingsProfile {
     e.preventDefault();
     e.stopPropagation();
 
-    Profiles.updateProfile(VerdocsEndpoint.getDefault(), this.endpoint.session.profile_id, {
+    updateProfile(VerdocsEndpoint.getDefault(), this.endpoint.session.profile_id, {
       first_name: this.first_name,
       last_name: this.last_name,
       phone: this.phone,

@@ -1,5 +1,4 @@
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
@@ -124,7 +123,9 @@ export class VerdocsFieldDropdown {
     }
 
     const settings = getFieldSettings(field);
-    const disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
     const value = settings?.value || '';
 
     if (this.done) {
@@ -132,8 +133,8 @@ export class VerdocsFieldDropdown {
     }
 
     return (
-      <Host class={{required: settings.required, disabled}} style={{backgroundColor}}>
-        <select tabIndex={settings.order} disabled={disabled} ref={el => (this.el = el)} onChange={e => this.handleChange(e)}>
+      <Host class={{required: field.required, disabled}} style={{backgroundColor}}>
+        <select disabled={disabled} ref={el => (this.el = el)} onChange={e => this.handleChange(e)}>
           <option value="">Select...</option>
           {(settings.options || []).map(option => (
             <option value={option.id} selected={option.value === value}>

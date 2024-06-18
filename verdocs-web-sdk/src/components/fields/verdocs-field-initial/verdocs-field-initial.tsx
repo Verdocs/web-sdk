@@ -1,5 +1,4 @@
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
@@ -168,7 +167,9 @@ export class VerdocsFieldInitial {
 
     const settings = getFieldSettings(field);
     const value = settings.base64 || this.tempInitials;
-    const disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
 
     if (this.done) {
       return <Host class={{done: this.done}}>{value && <img src={value} alt="Initials" />}</Host>;

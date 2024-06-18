@@ -1,6 +1,5 @@
 import {format} from 'date-fns';
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
@@ -114,7 +113,9 @@ export class VerdocsFieldTimestamp {
     }
 
     const settings = getFieldSettings(field);
-    const disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
     const value = settings.value || new Date().toISOString();
 
     const dt = new Date(value);
@@ -128,8 +129,7 @@ export class VerdocsFieldTimestamp {
       <Host class={{required: field?.required, disabled}} style={{backgroundColor}}>
         <input
           type="text"
-          placeholder={settings?.placeholder}
-          tabIndex={settings?.order}
+          placeholder={field.placeholder ?? ''}
           // TODO: It would really make more sense to show the date and time but the default width of 64px for this field
           // is encoded in a ton of existing entries in the database and is hard to change.
           value={formatted}

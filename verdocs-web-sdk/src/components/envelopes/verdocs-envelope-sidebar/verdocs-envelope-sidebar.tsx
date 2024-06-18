@@ -1,9 +1,5 @@
 import {format} from 'date-fns';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {cancelEnvelope} from '@verdocs/js-sdk/Envelopes/Envelopes';
-import {resendInvitation} from '@verdocs/js-sdk/Envelopes/Recipients';
-import {IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
-import {userIsEnvelopeOwner} from '@verdocs/js-sdk/Envelopes/Permissions';
+import {cancelEnvelope, IEnvelope, IRecipient, resendInvitation, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
 import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
@@ -193,7 +189,7 @@ export class VerdocsEnvelopeSidebar {
 
   prepareHistoryEntries() {
     const entries: IHistoryEntry[] = [];
-    const histories = this.store?.state?.histories || [];
+    const histories = this.store?.state?.history_entries || [];
 
     entries.push({icon: 'pencil', message: 'Envelope created.', date: new Date(this.store?.state?.created_at)});
 

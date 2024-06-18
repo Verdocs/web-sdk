@@ -1,11 +1,9 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {updateField} from '@verdocs/js-sdk/Templates/Fields';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, updateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State} from '@stencil/core';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
@@ -168,7 +166,7 @@ export class VerdocsFieldTextarea {
     newSettings.x = Math.round(newSettings.x + translateX / this.xscale);
     newSettings.y = Math.round(newSettings.y - translateY / this.yscale);
 
-    updateField(this.endpoint, this.templateid, this.fieldname, {setting: newSettings})
+    updateField(this.endpoint, this.templateid, this.fieldname, {settings: newSettings})
       .then(field => {
         this.settingsChanged?.emit({fieldName: this.fieldname, settings: newSettings, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
@@ -185,7 +183,9 @@ export class VerdocsFieldTextarea {
     }
 
     const settings = getFieldSettings(field);
-    const disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
     const value = settings?.result || '';
 
     if (this.done) {
@@ -195,8 +195,7 @@ export class VerdocsFieldTextarea {
     return (
       <Host class={{required: field?.required, disabled, done: this.done, focused: this.focused}} style={{backgroundColor}}>
         <textarea
-          placeholder={settings.placeholder || ''}
-          tabIndex={settings.order}
+          placeholder={field.placeholder ?? ''}
           disabled={disabled}
           name={field.name}
           required={field?.required}

@@ -1,8 +1,7 @@
 import {format} from 'date-fns';
 import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
@@ -155,7 +154,9 @@ export class VerdocsFieldDate {
     const backgroundColor = field?.['rgba'] || getRGBA(roleIndex);
 
     const settings = getFieldSettings(field);
-    const disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
 
     if (this.done) {
       const formatted = settings?.result ? format(new Date(settings?.result), FORMAT_DATE) : '';
@@ -172,7 +173,7 @@ export class VerdocsFieldDate {
           value=""
           id={this.containerId}
           disabled={disabled}
-          placeholder={settings.placeholder}
+          placeholder={field.placeholder ?? ''}
           ref={el => (this.el = el)}
           onFocus={() => (this.focused = true)}
           onBlur={() => (this.focused = false)}

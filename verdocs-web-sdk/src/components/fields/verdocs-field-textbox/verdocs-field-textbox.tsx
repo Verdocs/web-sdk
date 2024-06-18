@@ -1,11 +1,8 @@
 import interact from 'interactjs';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getRGBA} from '@verdocs/js-sdk/Utils/Colors';
-import {updateField} from '@verdocs/js-sdk/Templates/Fields';
-import {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk/Templates/Types';
+import {getRGBA, ITemplateField, ITemplateFieldSetting, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
+import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
@@ -167,7 +164,7 @@ export class VerdocsFieldTextbox {
     // newSettings.x = Math.round(newSettings.x + translateX / this.xscale);
     // newSettings.y = Math.round(newSettings.y - translateY / this.yscale);
 
-    updateField(this.endpoint, this.templateid, this.fieldname, {setting: newSettings})
+    updateField(this.endpoint, this.templateid, this.fieldname, {settings: newSettings})
       .then(field => {
         console.log('Update result', field);
         updateStoreField(this.fieldStore, this.fieldname, field);
@@ -186,7 +183,9 @@ export class VerdocsFieldTextbox {
     }
 
     const settings = getFieldSettings(field);
-    let disabled = this.disabled ?? settings.disabled ?? false;
+    // TODO:
+    // const disabled = this.disabled ?? settings.disabled ?? false;
+    const disabled = this.disabled ?? false;
     const value = settings?.result || '';
     const width = settings.width || 150;
     // TODO: This is an outdated technique from the old system. We should compute it.
@@ -201,8 +200,7 @@ export class VerdocsFieldTextbox {
         <input
           type="text"
           name={field.name}
-          placeholder={settings?.placeholder}
-          tabIndex={settings?.order}
+          placeholder={field.placeholder ??''}
           value={value}
           disabled={disabled}
           required={field?.required}

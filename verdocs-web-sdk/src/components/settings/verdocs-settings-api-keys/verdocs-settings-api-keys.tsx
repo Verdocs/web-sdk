@@ -1,9 +1,6 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IProfile} from '@verdocs/js-sdk/Users/Types';
-import {ApiKeys, Members} from '@verdocs/js-sdk/Organizations';
-import {formatFullName} from '@verdocs/js-sdk/Utils/Primitives';
-import {IApiKey, IApiKeyWithSecret} from '@verdocs/js-sdk/Organizations/Types';
+import {IApiKey, formatFullName} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Prop, State} from '@stencil/core';
+import {IProfile, VerdocsEndpoint, deleteApiKey, getApiKeys, getOrganizationMembers, createApiKey, rotateApiKey} from '@verdocs/js-sdk';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
@@ -49,7 +46,7 @@ export class VerdocsSettingsApiKeys {
 
   @State() keys: IApiKey[] = [];
   @State() creatingKey = false;
-  @State() createdKey: IApiKeyWithSecret | null = null;
+  @State() createdKey: IApiKey | null = null;
   @State() deletingKey: IApiKey | null = null;
   @State() rotatingKey: IApiKey | null = null;
   @State() newApiKeyName = '';
@@ -66,7 +63,7 @@ export class VerdocsSettingsApiKeys {
 
   async componentDidLoad() {
     this.newApiKeyProfileId = this.endpoint.session.profile_id;
-    Members.getMembers(this.endpoint, this.endpoint.session.organization_id)
+    getOrganizationMembers(this.endpoint, this.endpoint.session.organization_id)
       .then(mem => {
         this.members = mem;
       })
@@ -80,7 +77,7 @@ export class VerdocsSettingsApiKeys {
   }
 
   loadKeys() {
-    ApiKeys.getKeys(this.endpoint, this.endpoint.session.organization_id)
+    getApiKeys(this.endpoint, this.endpoint.session.organization_id)
       .then(r => {
         this.keys = r;
       })
@@ -92,7 +89,7 @@ export class VerdocsSettingsApiKeys {
   }
 
   async handleDeleteKey() {
-    ApiKeys.deleteKey(this.endpoint, this.deletingKey.organization_id, this.deletingKey.client_id)
+    deleteApiKey(this.endpoint, this.deletingKey.organization_id, this.deletingKey.client_id)
       .then(() => {
         this.deletingKey = null;
         VerdocsToast('API key deleted', {style: 'success'});
@@ -107,7 +104,7 @@ export class VerdocsSettingsApiKeys {
   }
 
   async handleRotateKey() {
-    ApiKeys.rotateKey(this.endpoint, this.rotatingKey.organization_id, this.rotatingKey.client_id)
+    rotateApiKey(this.endpoint, this.rotatingKey.organization_id, this.rotatingKey.client_id)
       .then(r => {
         this.rotatingKey = null;
         VerdocsToast('API key rotated', {style: 'success'});
@@ -123,7 +120,8 @@ export class VerdocsSettingsApiKeys {
   }
 
   async handleCreateKey() {
-    ApiKeys.createKey(this.endpoint, this.endpoint.session.organization_id, {name: this.newApiKeyName, profile_id: this.newApiKeyProfileId})
+    // TODO: Add permission dropdown
+    createApiKey(this.endpoint, this.endpoint.session.organization_id, {permission: 'personal', name: this.newApiKeyName, profile_id: this.newApiKeyProfileId})
       .then(r => {
         this.creatingKey = false;
         this.createdKey = r;

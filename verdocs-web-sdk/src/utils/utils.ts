@@ -315,17 +315,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
 
 // TODO: We can clean this up a lot if we alter the API to emit both setting and settings regardless of the source type,
 //   but then merge the SDK types to encourage developers to use just `settings`.
-export const getFieldSettings = (field: ITemplateField | IEnvelopeField | undefined) => {
-  if (field && (field as ITemplateField).settings) {
-    return (field as ITemplateField).settings;
-  }
-
-  if (field && (field as IEnvelopeField).settings) {
-    return (field as IEnvelopeField).settings;
-  }
-
-  return {x: 0, y: 0, required: false, disabled: false, result: '', value: ''};
-};
+export const getFieldSettings = (field: ITemplateField | IEnvelopeField | undefined) => field.settings;
 
 /**
  * Helper function to safely set/update components in a CSS transform attribute. Transform is normally set as a string of

@@ -1,5 +1,4 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {IRole} from '@verdocs/js-sdk/Templates/Types';
+import {IRole, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 import {convertToE164} from '../../../utils/utils';
 

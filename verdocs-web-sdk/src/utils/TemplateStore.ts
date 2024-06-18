@@ -11,6 +11,8 @@ export interface ITemplateStore extends ITemplate {
   isError: boolean;
   error: any | null;
   roleNames: string[];
+
+  pages: {sequence: number; template_id: string; document_id: string}[];
 }
 
 export type TTemplateStore = ObservableMap<ITemplateStore>;
@@ -48,6 +50,8 @@ const createTemplateStore = (templateId: string) => {
     profile: null,
     search_key: '',
     tags: [],
+
+    pages: [],
   });
 };
 

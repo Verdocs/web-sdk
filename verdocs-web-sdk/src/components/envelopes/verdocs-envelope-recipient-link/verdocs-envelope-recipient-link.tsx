@@ -1,7 +1,5 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getInPersonLink} from '@verdocs/js-sdk/Envelopes/Recipients';
-import {IEnvelope, IRecipient} from '@verdocs/js-sdk/Envelopes/Types';
 import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
+import {getInPersonLink, IEnvelope, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';

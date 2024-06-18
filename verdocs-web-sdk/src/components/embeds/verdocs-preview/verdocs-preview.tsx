@@ -1,5 +1,5 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, Prop, h, State} from '@stencil/core';
+import {integerSequence, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {Component, Prop, h, State, Fragment} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -76,7 +76,7 @@ export class VerdocsPreview {
   handlePageRendered(e) {
     const pageInfo = e.detail as IDocumentPageInfo;
 
-    const fields = this.templateStore?.state?.fields.filter(field => field.page_sequence === pageInfo.pageNumber);
+    const fields = this.templateStore?.state?.fields.filter(field => field.page === pageInfo.pageNumber);
     console.log('[PREVIEW] Page rendered', pageInfo, fields);
     fields.forEach(field => renderDocumentField(field, pageInfo, {disabled: true, editable: false, draggable: false}));
   }
@@ -90,28 +90,30 @@ export class VerdocsPreview {
       );
     }
 
-    const pages = [...this.templateStore?.state?.pages];
-    pages.sort((a, b) => a.sequence - b.sequence);
-
     return (
       <Host>
-        {pages.map(page => {
+        {(this.templateStore?.state?.documents || []).map(document => {
+          const pageNumbers = integerSequence(1, document.pages);
           return (
-            <verdocs-template-document-page
-              templateId={page.template_id}
-              documentId={page.document_id}
-              pageNumber={page.sequence}
-              disabled={true}
-              editable={true}
-              done={false}
-              virtualWidth={612}
-              virtualHeight={792}
-              onPageRendered={e => this.handlePageRendered(e)}
-              layers={[
-                {name: 'page', type: 'canvas'},
-                {name: 'controls', type: 'div'},
-              ]}
-            />
+            <Fragment>
+              {pageNumbers.map(pageNumber => (
+                <verdocs-template-document-page
+                  templateId={document.template_id}
+                  documentId={document.id}
+                  pageNumber={pageNumber}
+                  disabled={true}
+                  editable={true}
+                  done={false}
+                  virtualWidth={612}
+                  virtualHeight={792}
+                  onPageRendered={e => this.handlePageRendered(e)}
+                  layers={[
+                    {name: 'page', type: 'canvas'},
+                    {name: 'controls', type: 'div'},
+                  ]}
+                />
+              ))}
+            </Fragment>
           );
         })}
       </Host>

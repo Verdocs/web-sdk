@@ -1,10 +1,6 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
-import {IEnvelope, TEnvelopeStatus} from '@verdocs/js-sdk/Envelopes/Types';
-import {cancelEnvelope, IListEnvelopesParams} from '@verdocs/js-sdk/Envelopes/Envelopes';
 import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
-import {getRecipientsWithActions, userCanAct, userCanCancelEnvelope} from '@verdocs/js-sdk/Envelopes/Permissions';
+import {userCanCancelEnvelope, userCanAct, cancelEnvelope, integerSequence} from '@verdocs/js-sdk';
+import {IEnvelope, IListEnvelopesParams, TEnvelopeStatus, VerdocsEndpoint, listEnvelopes, getRecipientsWithActions} from '@verdocs/js-sdk';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
 import {saveEnvelopesAsZip} from '../../../utils/utils';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -279,7 +275,7 @@ export class VerdocsEnvelopesList {
       //   queryParams.field_value = this.containing.trim();
       // }
 
-      const response = await Envelopes.listEnvelopes(this.endpoint, queryParams);
+      const response = await listEnvelopes(this.endpoint, queryParams);
       this.envelopes = response.envelopes;
       this.count = response.total;
       this.loading = false;

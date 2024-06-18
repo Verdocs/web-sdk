@@ -1,13 +1,8 @@
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Envelopes} from '@verdocs/js-sdk/Envelopes';
-import {createInitials} from '@verdocs/js-sdk/Envelopes/Initials';
-import {createSignature} from '@verdocs/js-sdk/Envelopes/Signatures';
-import {isValidEmail, isValidPhone} from '@verdocs/js-sdk/Templates/Validators';
-import {fullNameToInitials, integerSequence} from '@verdocs/js-sdk/Utils/Primitives';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {IEnvelopeField, IEnvelope, IRecipient, RecipientStates} from '@verdocs/js-sdk/Envelopes/Types';
-import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk/Envelopes/Recipients';
-import {getEnvelope, updateEnvelopeFieldInitials, updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment} from '@verdocs/js-sdk/Envelopes/Envelopes';
+import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {fullNameToInitials, getEnvelope, getSigningSession, IEnvelope, IEnvelopeField} from '@verdocs/js-sdk';
+import {integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
+import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, updateEnvelopeField} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {createTemplateFieldStoreFromEnvelope} from '../../../utils/TemplateFieldStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -137,7 +132,7 @@ export class VerdocsSign {
 
     try {
       console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
-      const {session, recipient, signerToken} = await Envelopes.getSigningSession(this.endpoint, {
+      const {session, recipient, signerToken} = await getSigningSession(this.endpoint, {
         envelopeId: this.envelopeId,
         roleId: this.roleId,
         inviteCode: this.inviteCode,
@@ -246,10 +241,15 @@ export class VerdocsSign {
         break;
 
       case 'download':
-        saveAttachment(this.endpoint, this.envelope, this.envelope.envelope_document_id).catch(e => {
-          console.log('Error downloading PDF', e);
-        });
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
+        {
+          const firstDoc = this.envelope.documents.find(doc => doc.type === 'attachment');
+          if (firstDoc) {
+            saveAttachment(this.endpoint, this.envelope, firstDoc.id).catch(e => {
+              console.log('Error downloading PDF', e);
+            });
+            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
+          }
+        }
         break;
     }
   }
@@ -268,7 +268,7 @@ export class VerdocsSign {
 
   saveFieldChange(fieldName: string, fields: Record<string, any>) {
     console.log('[SIGN] updateRecipientFieldValue', fieldName);
-    Envelopes.updateEnvelopeField(this.endpoint, this.envelopeId, fieldName, fields) //
+    updateEnvelopeField(this.endpoint, this.envelopeId, fieldName, fields) //
       .then(updateResult => this.updateRecipientFieldValue(fieldName, updateResult))
       .catch(e => {
         if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
@@ -359,7 +359,7 @@ export class VerdocsSign {
     const {result = '', value = '', base64 = ''} = field.settings || {};
     switch (field.type) {
       case 'textbox':
-        switch (field.settings?.validator || '') {
+        switch (field.validator || '') {
           case 'email':
             return isValidEmail(result);
           case 'phone':
@@ -584,9 +584,7 @@ export class VerdocsSign {
 
     // Now render the fields for other signers who have yet to act
     this.sortedRecipients
-      .filter(
-        r => r.role_name !== this.recipient.role_name && (r.status === RecipientStates.INVITED || r.status === RecipientStates.OPENED || r.status === RecipientStates.PENDING),
-      )
+      .filter(r => r.role_name !== this.recipient.role_name && (r.status === 'invited' || r.status === 'opened' || r.status === 'pending'))
       .forEach(() => {
         this.getRecipientFields()
           .filter(field => field.page === pageInfo.pageNumber)
@@ -663,7 +661,7 @@ export class VerdocsSign {
         <div class="document" style={{paddingTop: '15px'}}>
           {/*<div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>*/}
           {(this.envelope.documents || []).map(envelopeDocument => {
-            const pageNumbers = integerSequence(1, envelopeDocument.page_numbers);
+            const pageNumbers = integerSequence(1, envelopeDocument.pages);
 
             return (
               <Fragment>
