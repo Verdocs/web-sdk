@@ -40,6 +40,6 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const OrganizationCardStories = {
+export const OrganizationCard = {
   args: {organization: MockOrganization},
 };

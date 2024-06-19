@@ -1,11 +1,11 @@
 import {Meta} from '@storybook/react';
-import {VerdocsProgressBar} from '@verdocs/web-sdk-react';
+import {VerdocsQuickFilter} from '@verdocs/web-sdk-react';
 
 import '../common.css';
 
 export default {
-  title: 'Controls/Progress Bar',
-  component: VerdocsProgressBar,
+  title: 'Controls/Quick Filter',
+  component: VerdocsQuickFilter,
   parameters: {
     layout: 'centered',
     docs: {
@@ -34,4 +34,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const ProgressBar = {};
+export const QuickFilter = {};

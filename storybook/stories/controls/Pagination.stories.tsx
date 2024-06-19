@@ -35,4 +35,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const PaginationStories = {};
+export const Pagination = {};

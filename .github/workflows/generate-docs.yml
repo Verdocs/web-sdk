@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "verdocs-web-sdk/**"
+      - "storybook/**"
       - "README.md"
       - ".github/workflows/generate-docs.yml"
 
@@ -36,5 +37,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.2.3
         with:
           branch: gh-pages
-          folder: verdocs-web-sdk/storybook-static
+          folder: storybook/storybook-static
           clean: true
