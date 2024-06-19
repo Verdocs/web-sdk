@@ -1,4 +1,3 @@
-import uuidv4 from 'uuid-browser';
 import {deleteField, ITemplateField, ITemplateFieldSetting, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
@@ -12,6 +11,21 @@ const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="
 
 const HelpIcon =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M11.925 18q.55 0 .938-.387.387-.388.387-.938 0-.55-.387-.925-.388-.375-.938-.375-.55 0-.925.375t-.375.925q0 .55.375.938.375.387.925.387Zm-.95-3.85h1.95q0-.8.2-1.287.2-.488 1.025-1.288.65-.625 1.025-1.213.375-.587.375-1.437 0-1.425-1.025-2.175Q13.5 6 12.1 6q-1.425 0-2.35.775t-1.275 1.85l1.775.7q.125-.45.55-.975.425-.525 1.275-.525.725 0 1.1.412.375.413.375.888 0 .475-.287.9-.288.425-.713.775-1.075.95-1.325 1.475-.25.525-.25 1.875ZM12 22.2q-2.125 0-3.988-.8-1.862-.8-3.237-2.175Q3.4 17.85 2.6 15.988 1.8 14.125 1.8 12t.8-3.988q.8-1.862 2.175-3.237Q6.15 3.4 8.012 2.6 9.875 1.8 12 1.8t3.988.8q1.862.8 3.237 2.175Q20.6 6.15 21.4 8.012q.8 1.863.8 3.988t-.8 3.988q-.8 1.862-2.175 3.237Q17.85 20.6 15.988 21.4q-1.863.8-3.988.8Zm0-2.275q3.325 0 5.625-2.3t2.3-5.625q0-3.325-2.3-5.625T12 4.075q-3.325 0-5.625 2.3T4.075 12q0 3.325 2.3 5.625t5.625 2.3ZM12 12Z"/></svg>';
+
+// Credit: https://stackoverflow.com/a/78196510/1812436
+// NOTE: This is NOT safe or cryptographically strong, so it's not part of our core SDK's or Utils modules.
+// It should never be used anywhere a real GUID is required. But we don't need one here, we just need a
+// "GUID-like" value for one step of a field update operation (adding items to lists). There are no security
+// implications in how we use IDs for list items. They only need to be GUID-like for historical reasons that
+// we may change shortly anyway.
+function generateWeakGuid() {
+  const s4 = () => {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  };
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}
 
 /**
  * Displays an edit form that allows the user to adjust a field's settings.
@@ -219,14 +233,14 @@ export class VerdocsTemplateFieldProperties {
     this.options.push(
       this.type === 'radio_button_group'
         ? {
-            id: uuidv4(),
+            id: generateWeakGuid(),
             value: `Option ${this.options.length + 1}`,
             selected: false,
             x: this.options.length > 0 ? this.options[this.options.length - 1].x : 20,
             y: this.options.length > 0 ? this.options[this.options.length - 1].y - 25 : 20,
           }
         : {
-            id: uuidv4(),
+            id: generateWeakGuid(),
             value: `Option ${this.options.length + 1}`,
             checked: false,
             x: this.options.length > 0 ? this.options[this.options.length - 1].x : 20,

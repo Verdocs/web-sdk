@@ -1,8 +1,5 @@
 import {Component, Prop, h, Host} from '@stencil/core';
 
-/**
- * Displays a summary of a template
- */
 @Component({
   tag: 'verdocs-progress-bar',
   styleUrl: 'verdocs-progress-bar.scss',

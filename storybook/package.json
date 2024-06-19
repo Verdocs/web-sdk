@@ -24,7 +24,7 @@
     "@storybook/react-vite": "^8.1.10",
     "@storybook/test": "^8.1.10",
     "@storybook/theming": "^8.1.10",
-    "@verdocs/web-sdk-react": "^4.0.7",
+    "@verdocs/web-sdk-react": "^4.0.8",
     "prop-types": "^15.8.1",
     "storybook": "^8.1.10"
   }

@@ -23,9 +23,6 @@ const PageButton: FunctionalComponent<{page: TPageNumber; selected: number; onCl
   return <div class={`page-button ${page === selected ? 'selected' : ''}`} onClick={() => onClick(page)} innerHTML={label} />;
 };
 
-/**
- * Display a drop-down menu of quick filter options.
- */
 @Component({
   tag: 'verdocs-pagination',
   styleUrl: 'verdocs-pagination.scss',
