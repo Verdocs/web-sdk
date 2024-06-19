@@ -1,5 +1,0 @@
-import{h as t}from"./components-BUY51Sj4.js";/* empty css               */import"./index-CDs2tPxN.js";import"./index-BXagdh-V.js";import"./iframe-BIHgOnMp.js";import"../sb-preview/runtime.js";const e={id:"21643fd6-4097-47c0-9780-62dc0c01ddce",name:"Verdocs, LLC",url:"https://verdocs.com/",address:null,phone:null,business_name:null,is_business:!0,address2:null,contact_email:null,slug:"verdocs",primary_color:"",secondary_color:"",full_logo_url:"",thumbnail_url:"",created_at:new Date().toISOString(),updated_at:new Date().toISOString()},p={title:"Controls/Organization Card",component:t,parameters:{layout:"centered",docs:{description:{component:"Display a small summary card describing an organization."}}},tags:["autodocs","!dev"],args:{},argTypes:{}},r={args:{organization:e}};var a,o,n;r.parameters={...r.parameters,docs:{...(a=r.parameters)==null?void 0:a.docs,source:{originalSource:`{
-  args: {
-    organization: MockOrganization
-  }
-}`,...(n=(o=r.parameters)==null?void 0:o.docs)==null?void 0:n.source}}};const u=["OrganizationCard"];export{r as OrganizationCard,u as __namedExportsOrder,p as default};
