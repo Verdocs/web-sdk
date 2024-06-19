@@ -1,31 +1,34 @@
 import {create} from '@storybook/theming/create';
 
 export default create({
-  base: 'dark',
+  base: 'light',
+  // base: 'dark',
   brandTitle: 'Verdocs Web SDK',
   brandUrl: 'https://verdocs.com',
-  brandImage: 'https://app.verdocs.com/assets/white-logo.svg',
+  brandImage: 'https://app.verdocs.com/assets/blue-logo.svg',
+  // brandImage: 'https://app.verdocs.com/assets/white-logo.svg',
   brandTarget: '_self',
 
   fontBase: '"Inter", "Open Sans", sans-serif',
 
-  colorPrimary: '#654dcb',
-  colorSecondary: '#654dcb',
+  // colorPrimary: '#654dcb',
+  // colorSecondary: '#654dcb',
+  // appBg: '#292C2E',
+  // appPreviewBg: '#f2f5fa',
+  // appBorderColor: '#654dcb6f',
+  // appBorderRadius: 4,
+  // textColor: '#ffffff',
+
   // colorSecondary: '#55bc81',
   // barSelectedColor:'#cfa',
 
   // Sidebar background color
-  appBg: '#292C2E',
 
   // Background for story area.
-  appPreviewBg: '#f2f5fa',
 
   // appContentBg: '#caf',
-  appBorderColor: '#654dcb6f',
-  appBorderRadius: 4,
 
   // Text colors
-  textColor: '#ffffff',
   // textInverseColor: '#f3a',
 
   // Toolbar default and active colors

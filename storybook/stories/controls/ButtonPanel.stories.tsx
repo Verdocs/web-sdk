@@ -8,8 +8,17 @@ import '../common.css';
 export default {
   title: 'Controls/Button Panel',
   component: VerdocsButtonPanel,
+  tags: ['autodocs', '!dev'],
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        story:
+          'Displays a clickable icon suitable for display in a toolbar. When clicked, a customizable drop-down panel will be displayed.' +
+          'Children passed to the component will be displayed in the drop-down, when open. A click-away listener will also be installed,' +
+          'so if the user clicks away from the panel, it will be automatically closed.',
+      },
+    },
   },
   args: {icon: Icons.CalendarIcon},
   argTypes: {
