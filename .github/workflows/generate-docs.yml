@@ -10,6 +10,9 @@ on:
       - "README.md"
       - ".github/workflows/generate-docs.yml"
 
+permissions:
+  contents: write
+
 defaults:
   run:
     shell: bash
@@ -37,7 +40,7 @@ jobs:
           npm run build-storybook
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.2.3
+        uses: JamesIves/github-pages-deploy-action@v4.6.1
         with:
           branch: gh-pages
           folder: storybook/storybook-static
