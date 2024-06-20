@@ -45,6 +45,7 @@ jobs:
           npm ci
           npm run build-storybook
           ls storybook-static/assets
+          echo "<!-- BUST -->" >> storybook-static/index.html
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.6.1
