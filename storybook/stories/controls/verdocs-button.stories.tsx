@@ -1,15 +1,19 @@
 import {fn} from '@storybook/test';
-import {Meta} from '@storybook/react';
-import {VerdocsButton} from '@verdocs/web-sdk-react';
 import {IconOptions} from '../icons';
+
+import {html} from 'lit-html';
+import {Meta} from '@storybook/web-components';
 
 export default {
   title: 'Controls/Button',
-  component: VerdocsButton,
-  tags: ['autodocs', '!dev'],
+  component: 'verdocs-button',
   parameters: {
     layout: 'centered',
     docs: {
+      extractComponentDescription: () => {
+        console.log('a');
+        return 'component description';
+      },
       description: {
         story:
           'Display a simple button.\n' +
@@ -29,11 +33,13 @@ export default {
     },
   },
   args: {
+    label: 'Click Me',
     type: 'button',
-    variant: 'standard',
     size: 'normal',
+    variant: 'standard',
     disabled: false,
-    onClick: fn(),
+    startIcon: null,
+    endIcon: null,
   },
   argTypes: {
     label: {type: 'string'},
@@ -42,18 +48,53 @@ export default {
     variant: {control: 'select', options: ['standard', 'text', 'outline']},
     startIcon: {...IconOptions, description: 'If set to an SVG, will be displayed to the left of the button label'},
     endIcon: {...IconOptions, description: 'If set to an SVG, will be displayed to the right of the button label'},
-    onClick: {action: 'click', description: 'Fired when the user clicks the button.'},
+    click: {action: 'click', description: 'Fired when the user clicks the button.'},
   },
 } as Meta;
 
-export const Button = {args: {label: 'Click Me'}};
+export const Button = ({label, size, variant, disabled, startIcon, endIcon, click}) =>
+  html`<verdocs-button .label=${label} .size=${size} .variant=${variant} .disabled=${disabled} .startIcon=${startIcon} .endIcon=${endIcon} @click=${click} />`;
 
-// export const Outline = {args: {label: 'Outline', variant: 'outline'}};
 //
-// export const Text = {args: {label: 'Text', variant: 'text'}};
 //
-// export const Small = {args: {size: 'small', label: 'Small'}};
 //
-// export const StartIcon = {args: {size: 'small', label: 'Start Icon', startIcon: Icons.CircleIcon}};
 //
-// export const EndIcon = {args: {size: 'small', label: 'End Icon', endIcon: Icons.ArrowIcon}};
+//
+//
+//
+//
+//
+//
+//
+// export default {
+//   title: 'Controls/Button',
+//   args: {
+//     label: 'Click Me',
+//     type: 'button',
+//     variant: 'standard',
+//     size: 'normal',
+//     disabled: false,
+//     onClick: fn(),
+//   },
+// } as Meta;
+//
+// export const Button = ({label, type, size, variant, startIcon, endIcon, onClick}) =>
+//   html`<verdocs-button .label=${label} .type=${type} .size=${size} .variant=${variant} .startIcon=${startIcon} .endIcon=${endIcon} @click="onClick" />`;
+// //
+// // export default {
+// //   title: 'Controls/Button',
+// //   component: VerdocsButton,
+// //   tags: ['autodocs', '!dev'],
+// // } as Meta;
+// //
+// // export const Button = {args: {label: 'Click Me'}};
+// //
+// // // export const Outline = {args: {label: 'Outline', variant: 'outline'}};
+// // //
+// // // export const Text = {args: {label: 'Text', variant: 'text'}};
+// // //
+// // // export const Small = {args: {size: 'small', label: 'Small'}};
+// // //
+// // // export const StartIcon = {args: {size: 'small', label: 'Start Icon', startIcon: Icons.CircleIcon}};
+// // //
+// // // export const EndIcon = {args: {size: 'small', label: 'End Icon', endIcon: Icons.ArrowIcon}};

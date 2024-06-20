@@ -1,26 +1,34 @@
-import {StorybookConfig} from '@storybook/react-vite';
+import remarkGfm from 'remark-gfm';
+import {StorybookConfig} from '@storybook/web-components-vite';
+import {html} from 'lit-html';
 
-const config: StorybookConfig = {
-  stories: [
-    //
-    // '../stories/Installation.mdx',
-    // '../stories/QuickStart.mdx',
-    '../stories/**/*.mdx',
-    '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
-  ],
+const config = {
+  // const config: StorybookConfig = {
+  stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
 
   addons: [
-    '@storybook/addon-onboarding',
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@chromatic-com/storybook',
     '@storybook/addon-interactions',
+    {
+      name: '@storybook/addon-docs',
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: {
+            remarkPlugins: [remarkGfm],
+          },
+        },
+      },
+    },
   ],
 
   framework: {
-    name: '@storybook/react-vite',
+    name: '@storybook/web-components-vite',
     options: {},
   },
+
+  decorators: [(story) => html`<div style="border: 3px dashed red">${story()}</div>`],
 };
 
 export default config;

@@ -1,6 +1,10 @@
 import {Preview} from '@storybook/react';
 import StoriesTheme from './StoriesTheme';
 
+import {defineCustomElements} from '../../verdocs-web-sdk/dist/esm/loader';
+
+defineCustomElements();
+
 const preview: Preview = {
   parameters: {
     options: {
@@ -9,6 +13,11 @@ const preview: Preview = {
     docs: {
       // toc: true, // 👈 Enables the table of contents
       theme: StoriesTheme,
+      extractComponentDescription: () => {
+        console.log('b');
+        return 'component description'
+      },
+
     },
     controls: {
       expanded: true,

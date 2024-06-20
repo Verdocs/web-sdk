@@ -19,8 +19,8 @@
   "scripts": {
     "push": "npm run build && npm publish",
     "build": "stencil build --docs",
-    "serve": "stencil build --dev --watch --serve --es5",
-    "start": "stencil build --dev --watch --docs --es5",
+    "serve": "stencil build --dev --watch --serve",
+    "start": "stencil build --dev --watch --docs",
     "test": "stencil test --spec --e2e --screenshot",
     "test.watch": "stencil test --spec --e2e --watchAll",
     "generate": "stencil generate"

@@ -48,19 +48,32 @@ verdocs-organization-card {
     font-family: sans-serif;
   }
 
+  .popup-header-with-logo {
+    display: flex;
+    flex: 0;
+    gap: 20px;
+    flex-direction: column;
+    margin: 0 0 20px 0;
+    font-size: 21px;
+    line-height: 16px;
+    color: $secondary-color;
+
+    img {
+      max-width: 300px;
+      max-height: 50px;
+    }
+  }
+
   .popup-header {
     display: flex;
     flex: 0;
+    gap: 20px;
     flex-direction: row;
     align-items: flex-end;
     margin: 0 0 20px 0;
     font-size: 21px;
     line-height: 16px;
     color: $secondary-color;
-
-    .status {
-      margin-right: 20px;
-    }
   }
 
   .popup-body {

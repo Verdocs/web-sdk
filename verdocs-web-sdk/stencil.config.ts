@@ -43,7 +43,6 @@ export const config: Config = {
     reactOutputTarget({
       componentCorePackage: '@verdocs/web-sdk',
       proxiesFile: '../verdocs-web-sdk-react/src/components.ts',
-      // includeDefineCustomElements: true,
       includeImportCustomElements: true,
     }),
     {
@@ -52,7 +51,8 @@ export const config: Config = {
     },
     {
       type: 'dist-custom-elements',
-      customElementsExportBehavior: 'auto-define-custom-elements',
+      customElementsExportBehavior: 'bundle',
+      // customElementsExportBehavior: 'auto-define-custom-elements',
       generateTypeDeclarations: true,
     },
     // {

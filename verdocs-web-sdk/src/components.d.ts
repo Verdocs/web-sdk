@@ -1032,6 +1032,9 @@ export namespace Components {
          */
         "templateId": string | null;
     }
+    /**
+     * A simple progress bar.
+     */
     interface VerdocsProgressBar {
         /**
           * Optional label to display above the bar
@@ -2720,6 +2723,9 @@ declare global {
         prototype: HTMLVerdocsPreviewElement;
         new (): HTMLVerdocsPreviewElement;
     };
+    /**
+     * A simple progress bar.
+     */
     interface HTMLVerdocsProgressBarElement extends Components.VerdocsProgressBar, HTMLStencilElement {
     }
     var HTMLVerdocsProgressBarElement: {
@@ -4873,6 +4879,9 @@ declare namespace LocalJSX {
          */
         "templateId"?: string | null;
     }
+    /**
+     * A simple progress bar.
+     */
     interface VerdocsProgressBar {
         /**
           * Optional label to display above the bar
@@ -6189,6 +6198,9 @@ declare module "@stencil/core" {
              * by recipient, and will be read-only (cannot be filled, moved, or altered).
              */
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
+            /**
+             * A simple progress bar.
+             */
             "verdocs-progress-bar": LocalJSX.VerdocsProgressBar & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
             /**
              * Display a drop-down menu of quick filter options.

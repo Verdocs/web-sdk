@@ -1,8 +1,6 @@
-import {Meta} from '@storybook/react';
-import {VerdocsOrganizationCard} from '@verdocs/web-sdk-react';
-
-import '../common.css';
+import {html} from 'lit-html';
 import {IOrganization} from '@verdocs/js-sdk';
+import {Meta} from '@storybook/web-components';
 
 const MockOrganization: IOrganization = {
   id: '21643fd6-4097-47c0-9780-62dc0c01ddce',
@@ -18,28 +16,18 @@ const MockOrganization: IOrganization = {
   primary_color: '',
   secondary_color: '',
   full_logo_url: '',
-  thumbnail_url: '',
+  thumbnail_url: 'https://app.verdocs.com/assets/verdocs-v.svg',
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };
 
 export default {
   title: 'Controls/Organization Card',
-  component: VerdocsOrganizationCard,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component: 'Display a small summary card describing an organization.',
-      },
-    },
+  component: 'verdocs-organization-card',
+  args: {
+    organization: MockOrganization,
   },
-  tags: ['autodocs', '!dev'],
-
-  args: {},
   argTypes: {},
 } as Meta;
 
-export const OrganizationCard = {
-  args: {organization: MockOrganization},
-};
+export const OrganizationCard = ({organization}) => html`<verdocs-organization-card .organization=${organization} />`;
