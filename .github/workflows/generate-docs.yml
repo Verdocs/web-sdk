@@ -45,7 +45,7 @@ jobs:
           npm ci
           npm run build-storybook
           ls storybook-static/assets
-          echo "<!-- BUST3 -->" >> storybook-static/index.html
+#          echo "<!-- BUST3 -->" >> storybook-static/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -54,11 +54,3 @@ jobs:
 
       - name: Deploy 🚀
         uses: actions/deploy-pages@v4
-#        with:
-#          artifact_name: storybook/storybook-static
-#      - name: Deploy 🚀
-#        uses: JamesIves/github-pages-deploy-action@v4.6.1
-#        with:
-#          branch: gh-pages
-#          folder: storybook/storybook-static
-#          clean: true
