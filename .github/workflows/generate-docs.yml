@@ -30,6 +30,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           cd verdocs-web-sdk
+          npm ci
           npm run build
           cd ../storybook
           npm ci
