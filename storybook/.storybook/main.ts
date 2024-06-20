@@ -2,8 +2,7 @@ import remarkGfm from 'remark-gfm';
 import {StorybookConfig} from '@storybook/web-components-vite';
 import {html} from 'lit-html';
 
-const config = {
-  // const config: StorybookConfig = {
+const config: StorybookConfig = {
   stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
 
   addons: [
@@ -28,7 +27,7 @@ const config = {
     options: {},
   },
 
-  decorators: [(story) => html`<div style="border: 3px dashed red">${story()}</div>`],
+  // decorators: [(story) => html`<div style="border: 3px dashed red">${story()}</div>`],
 };
 
 export default config;
