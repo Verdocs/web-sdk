@@ -6,6 +6,7 @@
   "license": "MIT",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
+  "web-types": "dist/types/web-types.json",
   "es2015": "dist/esm/index.mjs",
   "es2017": "dist/esm/index.mjs",
   "types": "dist/types/components.d.ts",
@@ -37,6 +38,7 @@
     "flatpickr": "^4.6.13",
     "interactjs": "^1.10.27",
     "jszip": "^3.10.1",
+    "stenciljs-web-types-generator": "^1.0.4",
     "workflow-svg.js": "^3.0.2",
     "zod": "^3.23.8"
   },

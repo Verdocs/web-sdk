@@ -4,6 +4,7 @@ import {Meta} from '@storybook/web-components';
 export default {
   title: 'Controls/Text Input',
   component: 'verdocs-text-input',
+  parameters: {},
   args: {
     label: 'Name',
     value: '',

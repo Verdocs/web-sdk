@@ -8,6 +8,7 @@ import {VerdocsToast} from '../../../verdocs-web-sdk/src/utils/Toast';
 export default {
   title: 'Controls/Toast',
   component: 'verdocs-toast',
+  parameters: {},
   args: {
     text: 'Test message',
     duration: 3000,

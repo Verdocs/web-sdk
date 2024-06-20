@@ -11,6 +11,9 @@ on:
       - "README.md"
       - ".github/workflows/generate-docs.yml"
 
+env:
+  NODE_ENV: production
+
 permissions:
   contents: write
   pages: write
@@ -45,7 +48,6 @@ jobs:
           npm ci
           npm run build-storybook
           ls storybook-static/assets
-#          echo "<!-- BUST3 -->" >> storybook-static/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

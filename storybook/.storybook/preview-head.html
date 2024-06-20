@@ -45,7 +45,7 @@
   }
 
   /* Fix up some of the worst of the code formatting issues */
-  #storybook-docs .docblock-source .prismjs .token {
+  /*#storybook-docs .docblock-source .prismjs .token {
     /*
     color: #b6ad9a;
     color: #063289;
@@ -56,7 +56,7 @@
     color: #93abdc;
     color: #2d2006;
     color: #896724;
-     */
+     * /
     color: #896724;
   }
 
@@ -80,7 +80,7 @@
     color: #896724;
   }
 
-  /* Improve Code block readability (inline code e.g. `asdf`) */
+  / * Improve Code block readability (inline code e.g. `asdf`) * /
   #storybook-docs .sbdocs code {
     line-height: 1;
     padding: 3px 6px;
@@ -99,6 +99,7 @@
     padding-bottom: 10px;
     border-bottom: 1px solid #dddddd;
   }
+*/
 
   /* Fix up control form fields */
 
@@ -108,5 +109,213 @@
 
   #storybook-docs .docblock-argstable-head {
     background-color: #e6e7e8;
+  }
+
+  /* https://github.com/PrismJS/prism-themes/blob/master/themes/prism-material-dark.css */
+  #storybook-docs .docblock-source code.prismjs,
+  #storybook-docs .docblock-source pre.prismjs {
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    color: #eee;
+    background: #2f2f2f;
+    font-family:
+      Roboto Mono,
+      monospace;
+    font-size: 1em;
+    line-height: 1.5em;
+
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  }
+
+  #storybook-docs .docblock-source .prismjs code[class*='language-']::-moz-selection,
+  #storybook-docs .docblock-source .prismjs pre[class*='language-']::-moz-selection,
+  #storybook-docs .docblock-source .prismjs code[class*='language-'] ::-moz-selection,
+  #storybook-docs .docblock-source .prismjs pre[class*='language-'] ::-moz-selection {
+    background: #363636;
+  }
+
+  #storybook-docs .docblock-source .prismjs code[class*='language-']::selection,
+  #storybook-docs .docblock-source .prismjs pre[class*='language-']::selection,
+  #storybook-docs .docblock-source .prismjs code[class*='language-'] ::selection,
+  #storybook-docs .docblock-source .prismjs pre[class*='language-'] ::selection {
+    background: #363636;
+  }
+
+  #storybook-docs .docblock-source .prismjs :not(pre) > code[class*='language-'] {
+    white-space: normal;
+    border-radius: 0.2em;
+    padding: 0.1em;
+  }
+
+  #storybook-docs .docblock-source .prismjs pre[class*='language-'] {
+    overflow: auto;
+    position: relative;
+    margin: 0.5em 0;
+    padding: 1.25em 1em;
+  }
+
+  #storybook-docs .docblock-source .prismjs .language-css > code,
+  #storybook-docs .docblock-source .prismjs .language-sass > code,
+  #storybook-docs .docblock-source .prismjs .language-scss > code {
+    color: #fd9170;
+  }
+
+  #storybook-docs .docblock-source .prismjs [class*='language-'] .namespace {
+    opacity: 0.7;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.atrule {
+    color: #c792ea;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.attr-name {
+    color: #ffcb6b;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.attr-value {
+    color: #a5e844;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.attribute {
+    color: #a5e844;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.boolean {
+    color: #c792ea;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.builtin {
+    color: #ffcb6b;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.cdata {
+    color: #80cbc4;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.char {
+    color: #80cbc4;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.class {
+    color: #ffcb6b;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.class-name {
+    color: #f2ff00;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.comment {
+    color: #616161;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.constant {
+    color: #c792ea;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.deleted {
+    color: #ff6666;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.doctype {
+    color: #616161;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.entity {
+    color: #ff6666;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.function {
+    color: #c792ea;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.hexcode {
+    color: #f2ff00;
+  }
+  #storybook-docs .docblock-source .prismjs .token.id {
+    color: #c792ea;
+    font-weight: bold;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.important {
+    color: #c792ea;
+    font-weight: bold;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.inserted {
+    color: #80cbc4;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.keyword {
+    color: #c792ea;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.number {
+    color: #fd9170;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.operator {
+    color: #89ddff;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.prolog {
+    color: #616161;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.property {
+    color: #80cbc4;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.pseudo-class {
+    color: #a5e844;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.pseudo-element {
+    color: #a5e844;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.punctuation {
+    color: #89ddff;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.regex {
+    color: #f2ff00;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.selector {
+    color: #ff6666;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.string {
+    color: #a5e844;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.symbol {
+    color: #c792ea;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.tag {
+    color: #c19bff;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.unit {
+    color: #fd9170;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.url {
+    color: #ff6666;
+  }
+
+  #storybook-docs .docblock-source .prismjs .token.variable {
+    color: #ff6666;
   }
 </style>

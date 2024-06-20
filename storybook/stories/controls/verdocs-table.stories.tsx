@@ -4,6 +4,7 @@ import {Meta} from '@storybook/web-components';
 export default {
   title: 'Controls/Table',
   component: 'verdocs-table',
+  parameters: {},
   args: {
     columns: [
       {id: 'id', header: 'ID'},
@@ -19,9 +20,6 @@ export default {
       {id: '123', name: 'Test 1', date: new Date()},
       {id: '456', name: 'Test 2', date: new Date()},
     ],
-  },
-  parameters: {
-    layout: 'fullscreen',
   },
 } as Meta;
 

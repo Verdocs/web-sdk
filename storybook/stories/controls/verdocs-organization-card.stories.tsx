@@ -1,5 +1,5 @@
 import {html} from 'lit-html';
-import {IOrganization} from '@verdocs/js-sdk';
+import type {IOrganization} from '@verdocs/js-sdk';
 import {Meta} from '@storybook/web-components';
 
 const MockOrganization: IOrganization = {

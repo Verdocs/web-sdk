@@ -1,5 +1,12 @@
 import {Component, Prop, h} from '@stencil/core';
 
+/**
+ * A simple button
+ *
+ * ```jsx
+ * <verdocs-button label="Click Me" />
+ * ```
+ */
 @Component({
   tag: 'verdocs-button',
   styleUrl: 'verdocs-button.scss',

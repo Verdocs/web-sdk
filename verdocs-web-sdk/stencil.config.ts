@@ -1,9 +1,11 @@
 import {sass} from '@stencil/sass';
 import {Config} from '@stencil/core';
+// import {WebTypesGenerator} from 'stenciljs-web-types-generator/web-types-generator';
 // import typescript from 'rollup-plugin-typescript2';
 // import nodePolyfills from 'rollup-plugin-node-polyfills';
 import {reactOutputTarget} from '@stencil/react-output-target';
 import {angularOutputTarget, ValueAccessorConfig} from '@stencil/angular-output-target';
+// import {JsonDocs} from '@stencil/core/internal';
 
 const angularValueAccessorBindings: ValueAccessorConfig[] = [
   {
@@ -47,7 +49,7 @@ export const config: Config = {
     }),
     {
       type: 'dist',
-      esmLoaderPath: '../loader',
+      esmLoaderPath: '../dist/esm-loader',
     },
     {
       type: 'dist-custom-elements',
@@ -74,6 +76,16 @@ export const config: Config = {
       type: 'docs-json',
       file: 'dist/docs.json',
     },
+    // {
+    //   type: 'docs-custom',
+    //   generator: (docs: JsonDocs) =>
+    //     new WebTypesGenerator({
+    //       name: '@verdocs/web-sdk',
+    //       version: '4.0.6',
+    //       defaultIconPath: './',
+    //       outputPath: 'dist/types/web-types.json',
+    //     }).generateWebTypesJson,
+    // },
     {
       type: 'www',
       serviceWorker: null, // disable service workers

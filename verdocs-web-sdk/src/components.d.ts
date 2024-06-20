@@ -117,6 +117,12 @@ export namespace Components {
          */
         "templateId": string | null;
     }
+    /**
+     * A simple button
+     * ```jsx
+     * <verdocs-button label="Click Me" />
+     * ```
+     */
     interface VerdocsButton {
         /**
           * Whether the button should be disabled.
@@ -2078,6 +2084,12 @@ declare global {
         prototype: HTMLVerdocsBuildElement;
         new (): HTMLVerdocsBuildElement;
     };
+    /**
+     * A simple button
+     * ```jsx
+     * <verdocs-button label="Click Me" />
+     * ```
+     */
     interface HTMLVerdocsButtonElement extends Components.VerdocsButton, HTMLStencilElement {
     }
     var HTMLVerdocsButtonElement: {
@@ -3741,6 +3753,12 @@ declare namespace LocalJSX {
          */
         "templateId"?: string | null;
     }
+    /**
+     * A simple button
+     * ```jsx
+     * <verdocs-button label="Click Me" />
+     * ```
+     */
     interface VerdocsButton {
         /**
           * Whether the button should be disabled.
@@ -6060,6 +6078,12 @@ declare module "@stencil/core" {
              * Display a template building experience.
              */
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
+            /**
+             * A simple button
+             * ```jsx
+             * <verdocs-button label="Click Me" />
+             * ```
+             */
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
             "verdocs-button-panel": LocalJSX.VerdocsButtonPanel & JSXBase.HTMLAttributes<HTMLVerdocsButtonPanelElement>;
             /**
