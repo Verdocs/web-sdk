@@ -31,6 +31,22 @@ function debounce(func: () => void, wait: number, immediate?: any) {
   };
 }
 
+/**
+ * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
+ * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
+ *
+ * ```html
+ * <verdocs-dropdown
+ *   options={[
+ *     {label: 'Option 1', disabled: true},
+ *     {label: 'Option 2', id: '2'}
+ *     {label: ''}
+ *     {label: 'Option 3', id: '2'}
+ *    ]}
+ *   label="OK" onClick={() => (console.log('OK clicked'))}
+ * />
+ * ```
+ */
 @Component({
   tag: 'verdocs-dropdown',
   styleUrl: 'verdocs-dropdown.scss',

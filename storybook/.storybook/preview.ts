@@ -1,4 +1,3 @@
-import fs from 'fs';
 import {Preview} from '@storybook/react';
 import {setCustomElementsManifest} from '@storybook/web-components';
 import customElements from '../../verdocs-web-sdk/dist/custom-elements.json';
@@ -10,6 +9,8 @@ defineCustomElements();
 setCustomElementsManifest(customElements);
 
 const preview: Preview = {
+  tags: ['autodocs'],
+
   parameters: {
     layout: 'centered',
 

@@ -14,6 +14,7 @@
     //    "jsxFactory": "h",
     //    "skipLibCheck": true,
     //    "preserveConstEnums": true,
+    "allowJs": true,
     "esModuleInterop": true,
     "resolveJsonModule": true
     //    "stripInternal": true,

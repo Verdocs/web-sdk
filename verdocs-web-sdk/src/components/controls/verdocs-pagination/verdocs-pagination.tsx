@@ -23,6 +23,9 @@ const PageButton: FunctionalComponent<{page: TPageNumber; selected: number; onCl
   return <div class={`page-button ${page === selected ? 'selected' : ''}`} onClick={() => onClick(page)} innerHTML={label} />;
 };
 
+/**
+ * Display a simple pagination control with individual buttons to move through the data set.
+ */
 @Component({
   tag: 'verdocs-pagination',
   styleUrl: 'verdocs-pagination.scss',

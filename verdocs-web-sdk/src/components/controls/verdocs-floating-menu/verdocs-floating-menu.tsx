@@ -42,6 +42,11 @@ export interface IOption {
   tooltip: string;
 }
 
+/**
+ * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
+ * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
+ * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
+ */
 @Component({
   tag: 'verdocs-floating-menu',
   styleUrl: 'verdocs-floating-menu.scss',

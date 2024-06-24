@@ -2,6 +2,14 @@ import {Component, EventEmitter, h, Host, Listen, Prop, Event} from '@stencil/co
 
 const Z_INDEX = '10001';
 
+/**
+ * Display a child component in a "portal", popping it out of the main DOM tree
+ * to allow it to escape the bounds set by its parent.
+ * @credit https://github.com/tomas-teston/stencil-portal for the basic
+ * technique. This has been altered in a few ways to make it more friendly
+ * to cases where there may be multiple portals on the page and provide more
+ * alignment options for the child to be displayed.
+ */
 @Component({
   tag: 'verdocs-portal',
   styleUrl: 'verdocs-portal.scss',

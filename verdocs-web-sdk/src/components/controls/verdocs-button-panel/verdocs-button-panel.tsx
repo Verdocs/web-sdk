@@ -1,6 +1,10 @@
 import {createPopper, Instance} from '@popperjs/core';
 import {Component, h, Host, Method, Prop} from '@stencil/core';
 
+/**
+ * Display an icon button that triggers a drop-down panel that can display
+ * arbitrary child content, such as metadata, forms, or other controls.
+ */
 @Component({
   tag: 'verdocs-button-panel',
   styleUrl: 'verdocs-button-panel.scss',

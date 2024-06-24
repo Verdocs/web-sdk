@@ -49,7 +49,7 @@ export const config: Config = {
     }),
     {
       type: 'dist',
-      esmLoaderPath: '../dist/esm-loader',
+      // esmLoaderPath: '../dist/esm-loader',
     },
     {
       type: 'dist-custom-elements',
@@ -72,10 +72,10 @@ export const config: Config = {
       type: 'docs-vscode',
       file: 'dist/custom-elements.json',
     },
-    {
-      type: 'docs-json',
-      file: 'dist/docs.json',
-    },
+    // {
+    //   type: 'docs-json',
+    //   file: 'dist/docs.json',
+    // },
     // {
     //   type: 'docs-custom',
     //   generator: (docs: JsonDocs) =>

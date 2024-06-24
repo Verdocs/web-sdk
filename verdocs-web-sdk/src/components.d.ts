@@ -153,6 +153,10 @@ export namespace Components {
          */
         "variant": 'standard' | 'text' | 'outline';
     }
+    /**
+     * Display an icon button that triggers a drop-down panel that can display
+     * arbitrary child content, such as metadata, forms, or other controls.
+     */
     interface VerdocsButtonPanel {
         "hidePanel": () => Promise<void>;
         /**
@@ -2096,6 +2100,10 @@ declare global {
         prototype: HTMLVerdocsButtonElement;
         new (): HTMLVerdocsButtonElement;
     };
+    /**
+     * Display an icon button that triggers a drop-down panel that can display
+     * arbitrary child content, such as metadata, forms, or other controls.
+     */
     interface HTMLVerdocsButtonPanelElement extends Components.VerdocsButtonPanel, HTMLStencilElement {
     }
     var HTMLVerdocsButtonPanelElement: {
@@ -3789,6 +3797,10 @@ declare namespace LocalJSX {
          */
         "variant"?: 'standard' | 'text' | 'outline';
     }
+    /**
+     * Display an icon button that triggers a drop-down panel that can display
+     * arbitrary child content, such as metadata, forms, or other controls.
+     */
     interface VerdocsButtonPanel {
         /**
           * SVG icon to display
@@ -6085,6 +6097,10 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
+            /**
+             * Display an icon button that triggers a drop-down panel that can display
+             * arbitrary child content, such as metadata, forms, or other controls.
+             */
             "verdocs-button-panel": LocalJSX.VerdocsButtonPanel & JSXBase.HTMLAttributes<HTMLVerdocsButtonPanelElement>;
             /**
              * Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
