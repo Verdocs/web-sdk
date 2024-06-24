@@ -42,10 +42,10 @@ jobs:
       - name: Install and Build 🔧
         run: |
           cd verdocs-web-sdk
-          npm i
+          NODE_ENV=development npm i
           npm run build
           cd ../storybook
-          npm i
+          NODE_ENV=development npm i
           npm run build-storybook
           ls storybook-static/assets
 
