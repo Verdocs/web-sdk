@@ -6,6 +6,10 @@ const helpIcon =
 
 /**
  * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+ *
+ * ```ts
+ * <verdocs-help-icon text="Sample help text" />
+ * ```
  */
 @Component({
   tag: 'verdocs-help-icon',

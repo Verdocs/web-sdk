@@ -1021,37 +1021,6 @@ Host applications should use this event to enable/disable buttons to upload or o
 
 
 @ProxyCmp({
-  inputs: ['options']
-})
-@Component({
-  selector: 'verdocs-floating-menu',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['options'],
-})
-export class VerdocsFloatingMenu {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['optionSelected']);
-  }
-}
-
-
-import type { IOption as IVerdocsFloatingMenuIOption } from '@verdocs/web-sdk';
-
-export declare interface VerdocsFloatingMenu extends Components.VerdocsFloatingMenu {
-  /**
-   * Event fired when a menu option is clicked.
-Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
-   */
-  optionSelected: EventEmitter<CustomEvent<IVerdocsFloatingMenuIOption>>;
-}
-
-
-@ProxyCmp({
   inputs: ['icon', 'text']
 })
 @Component({

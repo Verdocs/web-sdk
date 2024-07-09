@@ -1,5 +1,5 @@
 import {html} from 'lit-html';
-import {IRole} from '@verdocs/js-sdk';
+import type {IRole} from '@verdocs/js-sdk';
 import {Meta} from '@storybook/web-components';
 
 const templateId = 'd501d2df-b604-455d-a2fc-953d947cf79d';
@@ -24,7 +24,15 @@ export default {
       setting: {x: 0, y: 0, required: true},
     },
     disabled: false,
-    roles: [{template_id: templateId, name: 'date', type: 'signer', sequence: 1, order: 1}] as IRole[],
+    roles: [
+      {
+        template_id: templateId,
+        name: 'date',
+        type: 'signer',
+        sequence: 1,
+        order: 1,
+      },
+    ] as IRole[],
   },
   argTypes: {},
 } as Meta;

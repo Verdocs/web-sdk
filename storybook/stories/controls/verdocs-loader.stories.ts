@@ -9,4 +9,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const Loader = ({}) => html`<verdocs-loader />`;
+export const Loader = ({}) => html`<div style="width: 200px; height: 200px;"><verdocs-loader /></div>`;

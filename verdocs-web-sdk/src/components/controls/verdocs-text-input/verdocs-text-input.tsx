@@ -7,7 +7,11 @@ const CopyIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><p
 /**
  * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
  * visual styles of the other components. Note that events "bubble" from the input field to the container,
- * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+ * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
+ *
+ * ```ts
+ * <verdocs-text-input type="text" label="Name" placeholder="Enter your name..." value="" />
+ * ```
  */
 @Component({
   tag: 'verdocs-text-input',

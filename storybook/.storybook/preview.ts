@@ -9,7 +9,7 @@ defineCustomElements();
 setCustomElementsManifest(customElements);
 
 const preview: Preview = {
-  tags: ['autodocs'],
+  tags: ['autodocs', 'autodocs'],
 
   parameters: {
     layout: 'centered',

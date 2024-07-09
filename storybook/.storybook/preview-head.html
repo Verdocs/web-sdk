@@ -1,9 +1,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
-/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" />
 
 <!-- Load your CSS file -->
 <!-- <link rel="stylesheet" href="path/to/your/styles.css" /> -->
@@ -15,6 +12,7 @@
 
   .sbdocs.sbdocs-wrapper {
     background-color: transparent;
+    padding: 1rem 20px;
   }
 
   /*
@@ -38,12 +36,12 @@
   }
 */
   #storybook-docs .sbdocs > * {
-    font-family: "Inter", "Open Sans", sans-serif;
+    font-family: 'Inter', 'Open Sans', sans-serif;
     font-size: 16px;
   }
 
   #storybook-docs .sbdocs > * > * {
-    font-family: "Inter", "Open Sans", sans-serif;
+    font-family: 'Inter', 'Open Sans', sans-serif;
     font-size: 16px;
   }
 
@@ -133,53 +131,27 @@
     hyphens: none;
   }
 
-  #storybook-docs
-    .docblock-source
-    .prismjs
-    code[class*="language-"]::-moz-selection,
-  #storybook-docs
-    .docblock-source
-    .prismjs
-    pre[class*="language-"]::-moz-selection,
-  #storybook-docs
-    .docblock-source
-    .prismjs
-    code[class*="language-"]
-    ::-moz-selection,
-  #storybook-docs
-    .docblock-source
-    .prismjs
-    pre[class*="language-"]
-    ::-moz-selection {
+  #storybook-docs .docblock-source .prismjs code[class*='language-']::-moz-selection,
+  #storybook-docs .docblock-source .prismjs pre[class*='language-']::-moz-selection,
+  #storybook-docs .docblock-source .prismjs code[class*='language-'] ::-moz-selection,
+  #storybook-docs .docblock-source .prismjs pre[class*='language-'] ::-moz-selection {
     background: #363636;
   }
 
-  #storybook-docs .docblock-source .prismjs code[class*="language-"]::selection,
-  #storybook-docs .docblock-source .prismjs pre[class*="language-"]::selection,
-  #storybook-docs
-    .docblock-source
-    .prismjs
-    code[class*="language-"]
-    ::selection,
-  #storybook-docs
-    .docblock-source
-    .prismjs
-    pre[class*="language-"]
-    ::selection {
+  #storybook-docs .docblock-source .prismjs code[class*='language-']::selection,
+  #storybook-docs .docblock-source .prismjs pre[class*='language-']::selection,
+  #storybook-docs .docblock-source .prismjs code[class*='language-'] ::selection,
+  #storybook-docs .docblock-source .prismjs pre[class*='language-'] ::selection {
     background: #363636;
   }
 
-  #storybook-docs
-    .docblock-source
-    .prismjs
-    :not(pre)
-    > code[class*="language-"] {
+  #storybook-docs .docblock-source .prismjs :not(pre) > code[class*='language-'] {
     white-space: normal;
     border-radius: 0.2em;
     padding: 0.1em;
   }
 
-  #storybook-docs .docblock-source .prismjs pre[class*="language-"] {
+  #storybook-docs .docblock-source .prismjs pre[class*='language-'] {
     overflow: auto;
     position: relative;
     margin: 0.5em 0;
@@ -192,7 +164,7 @@
     color: #fd9170;
   }
 
-  #storybook-docs .docblock-source .prismjs [class*="language-"] .namespace {
+  #storybook-docs .docblock-source .prismjs [class*='language-'] .namespace {
     opacity: 0.7;
   }
 
@@ -336,7 +308,7 @@
     color: #50fa7b;
   }
 
-  #storybook-docs .docblock-source .prismjs .token.punctuation  {
+  #storybook-docs .docblock-source .prismjs .token.punctuation {
     color: #ff79c6;
   }
 

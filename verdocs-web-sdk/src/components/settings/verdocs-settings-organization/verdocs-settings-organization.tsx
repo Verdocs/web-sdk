@@ -42,7 +42,6 @@ export class VerdocsSettingsOrganization {
   @State() submitting = false;
 
   @State() name = '';
-  @State() business_name = '';
   @State() contact_email = '';
   @State() phone = '';
   @State() url = '';
@@ -63,7 +62,6 @@ export class VerdocsSettingsOrganization {
 
   resetForm(organization: IOrganization) {
     this.name = organization.name;
-    this.business_name = organization.business_name;
     this.contact_email = organization.contact_email;
     this.phone = organization.phone;
     this.url = organization.url;
@@ -77,7 +75,6 @@ export class VerdocsSettingsOrganization {
 
     updateOrganization(VerdocsEndpoint.getDefault(), this.endpoint.session.organization_id, {
       name: this.name,
-      business_name: this.business_name,
       contact_email: this.contact_email,
       phone: this.phone,
       url: this.url,
@@ -93,7 +90,6 @@ export class VerdocsSettingsOrganization {
   processFields() {
     const validation = schema.safeParse({
       name: this.name,
-      business_name: this.business_name,
       contact_email: this.contact_email,
       phone: this.phone,
       url: this.url,
@@ -132,18 +128,18 @@ export class VerdocsSettingsOrganization {
                 }}
               />
 
-              <verdocs-text-input
-                id="verdocs-organization-business-name"
-                value={this.business_name}
-                autocomplete="off"
-                label="Display Name"
-                placeholder="The name to display on communications..."
-                onInput={(e: any) => (this.business_name = e.target.value)}
-                onFocusout={(e: any) => {
-                  this.business_name = e.target.value.trim();
-                  this.processFields();
-                }}
-              />
+              {/*<verdocs-text-input*/}
+              {/*  id="verdocs-organization-business-name"*/}
+              {/*  value={this.business_name}*/}
+              {/*  autocomplete="off"*/}
+              {/*  label="Display Name"*/}
+              {/*  placeholder="The name to display on communications..."*/}
+              {/*  onInput={(e: any) => (this.business_name = e.target.value)}*/}
+              {/*  onFocusout={(e: any) => {*/}
+              {/*    this.business_name = e.target.value.trim();*/}
+              {/*    this.processFields();*/}
+              {/*  }}*/}
+              {/*/>*/}
 
               <verdocs-text-input
                 id="verdocs-organization-url"

@@ -8,7 +8,7 @@ import {Component, h, Host, Prop} from '@stencil/core';
  * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
  * handler. Sample usage:
  *
- * ```html
+ * ```ts
  * <verdocs-checkbox
  *    value="on"
  *    name="thingEnabled"

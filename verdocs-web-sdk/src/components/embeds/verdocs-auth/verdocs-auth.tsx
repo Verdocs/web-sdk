@@ -1,4 +1,4 @@
-import {TSession, VerdocsEndpoint, createBusinessAccount, authenticateUser, decodeAccessTokenBody, resendVerification, resetPassword} from '@verdocs/js-sdk';
+import {TSession, VerdocsEndpoint, createAccount, authenticateUser, decodeAccessTokenBody, resendVerification, resetPassword} from '@verdocs/js-sdk';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -182,7 +182,7 @@ export class VerdocsAuth {
     this.submitting = true;
     this.accessTokenForVerification = null;
 
-    createBusinessAccount(this.endpoint, {
+    createAccount(this.endpoint, {
       email: this.username,
       password: this.password,
       firstName: this.first,

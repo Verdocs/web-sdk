@@ -1,10 +1,10 @@
 import {Component, Prop, h} from '@stencil/core';
 
 /**
- * A simple button
+ * A simple button, with consistent styling to other controls in the design system.
  *
- * ```jsx
- * <verdocs-button label="Click Me" />
+ * ```ts
+ * <verdocs-button label="Click Me" size="normal" variant="standard" />
  * ```
  */
 @Component({

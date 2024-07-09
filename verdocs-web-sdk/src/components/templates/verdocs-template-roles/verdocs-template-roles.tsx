@@ -267,6 +267,7 @@ export class VerdocsTemplateRoles {
       phone: '',
       type: 'signer',
       delegator: false,
+      kba_method: null,
     })
       .then(async r => {
         console.log('[ROLES] Created role', r);

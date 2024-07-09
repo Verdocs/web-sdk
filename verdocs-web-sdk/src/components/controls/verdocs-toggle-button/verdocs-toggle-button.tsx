@@ -2,6 +2,10 @@ import {Component, Prop, h, State, Event, EventEmitter, Host} from '@stencil/cor
 
 /**
  * Displays a single button that can be toggled on or off by clicking it.
+ *
+ * ```ts
+ * <verdocs-toggle-button icon={MessageIcon} size="normal" active={true} />
+ * ```
  */
 @Component({
   tag: 'verdocs-toggle-button',

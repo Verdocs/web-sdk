@@ -5,6 +5,10 @@ import {Placement} from '@popperjs/core/lib/enums';
 
 /**
  * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+ *
+ * ```ts
+ * <verdocs-toolbar-icon text="Sample tooltip text" icon={CalendarIcon} />
+ * ```
  */
 @Component({
   tag: 'verdocs-toolbar-icon',

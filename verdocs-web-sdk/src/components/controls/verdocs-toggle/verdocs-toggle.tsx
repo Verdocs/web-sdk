@@ -12,7 +12,11 @@ export interface IToggleIconButtons {
 }
 
 /**
- * Displays a label and a set of buttons, also allowing a default selection of a button
+ * Displays a label and a set of buttons, also allowing a default selection of a button.
+ *
+ * ```ts
+ * <verdocs-toggle options={[...options]} theme="light"></verdocs-toggle>
+ * ```
  */
 @Component({
   tag: 'verdocs-toggle',

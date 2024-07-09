@@ -13,6 +13,10 @@ export interface IFilterOption {
 
 /**
  * Display a drop-down menu of quick filter options.
+ *
+ * ```ts
+ * <verdocs-quick-filter options={[...options]} value={1} label="Filter" placeholder="All" />
+ * ```
  */
 @Component({
   tag: 'verdocs-quick-filter',

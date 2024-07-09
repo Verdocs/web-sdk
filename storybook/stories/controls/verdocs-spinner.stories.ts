@@ -7,8 +7,19 @@ export default {
   parameters: {},
   args: {
     size: 32,
-    mode: 'light',
+    mode: 'dark',
+  },
+  argTypes: {
+    mode: {
+      control: 'select',
+      options: ['dark', 'light'],
+      description: 'Use dark spinners on light backgrounds, and vice-versa.',
+    },
   },
 } as Meta;
 
-export const Spinner = ({size, mode}) => html`<verdocs-spinner .size=${size} .mode=${mode} />`;
+export const Spinner = ({size, mode}) => html`
+  <div style="height: 100px; padding: 20px 80px; display: flex; justify-content: center; align-items: center; background-color: ${mode === 'dark' ? '#ffffff' : '#000000'}">
+    <verdocs-spinner .size=${size} .mode=${mode} />
+  </div>
+`;

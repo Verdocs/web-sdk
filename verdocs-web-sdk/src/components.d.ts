@@ -12,7 +12,6 @@ import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-bui
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
-import { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
 import { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
@@ -29,7 +28,6 @@ export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-bui
 export { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 export { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 export { IDocumentPageInfo, IPageLayer } from "./utils/Types";
-export { IOption } from "./components/controls/verdocs-floating-menu/verdocs-floating-menu";
 export { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 export { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 export { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
@@ -118,9 +116,9 @@ export namespace Components {
         "templateId": string | null;
     }
     /**
-     * A simple button
-     * ```jsx
-     * <verdocs-button label="Click Me" />
+     * A simple button, with consistent styling to other controls in the design system.
+     * ```ts
+     * <verdocs-button label="Click Me" size="normal" variant="standard" />
      * ```
      */
     interface VerdocsButton {
@@ -156,6 +154,17 @@ export namespace Components {
     /**
      * Display an icon button that triggers a drop-down panel that can display
      * arbitrary child content, such as metadata, forms, or other controls.
+     * ```ts
+     *   <verdocs-button-panel .icon=${icon}>
+     *     <h6>Field Settings</h6>
+     *     <form>
+     *     <p>
+     *       <label>Field Name</label>
+     *       <input type="text" placeholder="Field Name..." />
+     *     </p>
+     *     </form>
+     *   </verdocs-button-panel>
+     * ```
      */
     interface VerdocsButtonPanel {
         "hidePanel": () => Promise<void>;
@@ -172,7 +181,7 @@ export namespace Components {
      * box for UI displays e.g. dialog boxes.
      * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
      * handler. Sample usage:
-     * ```html
+     * ```ts
      * <verdocs-checkbox
      *    value="on"
      *    name="thingEnabled"
@@ -246,7 +255,7 @@ export namespace Components {
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
      * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
-     * ```html
+     * ```ts
      * <verdocs-dropdown
      *   options={[
      *     {label: 'Option 1', disabled: true},
@@ -915,6 +924,9 @@ export namespace Components {
     /**
      * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
      * provide the actual upload functionality.
+     * ```ts
+     * <verdocs-file-chooser onFileSelected={(e) => console.log('File Selected', e.detail)} />
+     * ```
      */
     interface VerdocsFileChooser {
         /**
@@ -923,18 +935,10 @@ export namespace Components {
         "endpoint": VerdocsEndpoint;
     }
     /**
-     * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
-     * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
-     * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
-     */
-    interface VerdocsFloatingMenu {
-        /**
-          * The role that this contact will be assigned to.
-         */
-        "options": IOption[];
-    }
-    /**
      * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     * ```ts
+     * <verdocs-help-icon text="Sample help text" />
+     * ```
      */
     interface VerdocsHelpIcon {
         /**
@@ -997,6 +1001,9 @@ export namespace Components {
     }
     /**
      * Animated loader placeholder. There are currently no configuration options for this control.
+     * ```ts
+     * <verdocs-loader />
+     * ```
      */
     interface VerdocsLoader {
     }
@@ -1024,7 +1031,10 @@ export namespace Components {
         "showCancel": boolean;
     }
     /**
-     * Display a small summary card describing an organization
+     * Display a small summary card describing an organization.
+     * ```ts
+     * <verdocs-organization-card organization={organization} />
+     * ```
      */
     interface VerdocsOrganizationCard {
         /**
@@ -1034,6 +1044,14 @@ export namespace Components {
     }
     /**
      * Display a simple pagination control with individual buttons to move through the data set.
+     * ```ts
+     * <verdocs-pagination
+     *   selectedPage={1}
+     *   itemCount={50}
+     *   perPage={10}
+     *   onSelectPage={(e) => {setSelectedpage(e.detail.selectedPage)}}
+     * />
+     * ```
      */
     interface VerdocsPagination {
         /**
@@ -1056,6 +1074,16 @@ export namespace Components {
      * technique. This has been altered in a few ways to make it more friendly
      * to cases where there may be multiple portals on the page and provide more
      * alignment options for the child to be displayed.
+     * ```ts
+     * <div style="padding: 40px">
+     * <div id="sample-tooltip" style="border: 1px solid green; padding: 3px 10px;">
+     * Tooltip Anchor
+     * <verdocs-portal anchor="sample-tooltip" .align=${align} .voffset=${voffset}>
+     * <div style="border: 1px solid red; padding: 3px 10px;">Tooltip</div>
+     * </verdocs-portal>
+     * </div>
+     * </div>
+     * ```
      */
     interface VerdocsPortal {
         /**
@@ -1087,7 +1115,10 @@ export namespace Components {
         "templateId": string | null;
     }
     /**
-     * A simple progress bar.
+     * Display a simple progress bar in a style consistent with the design system.
+     * ```ts
+     * <verdocs-progress-bar label="Uploading..." showPercent={true} percent={54} />
+     * ```
      */
     interface VerdocsProgressBar {
         /**
@@ -1105,6 +1136,9 @@ export namespace Components {
     }
     /**
      * Display a drop-down menu of quick filter options.
+     * ```ts
+     * <verdocs-quick-filter options={[...options]} value={1} label="Filter" placeholder="All" />
+     * ```
      */
     interface VerdocsQuickFilter {
         "label": string;
@@ -1132,7 +1166,7 @@ export namespace Components {
      * simple radio button for UI displays e.g. dialog boxes.
      * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
      * handler. Sample usage:
-     * ```html
+     * ```ts
      * <verdocs-radio-button
      *    value="val1"
      *    name="someProperty"
@@ -1199,7 +1233,11 @@ export namespace Components {
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
-     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
+     * ```ts
+     * <verdocs-select-input label="Select:" label="Select" options={[...options]}
+     * @input ={() => {}} />
+     * ```
      */
     interface VerdocsSelectInput {
         /**
@@ -1334,6 +1372,9 @@ export namespace Components {
     }
     /**
      * Display a small loading spinner.
+     * ```ts
+     * <verdocs-spinner />
+     * ```
      */
     interface VerdocsSpinner {
         "mode": 'light' | 'dark';
@@ -1367,6 +1408,9 @@ export namespace Components {
     /**
      * Display a simple table of data. Columns and data cells may have custom renderers defined to
      * support creating interactive table layouts.
+     * ```ts
+     * <verdocs-table columns={[...columns]} data={[...data]} />
+     * ```
      */
     interface VerdocsTable {
         /**
@@ -1381,6 +1425,9 @@ export namespace Components {
     /**
      * Display a simple row of selectable tabs. This is a controlled element.
      * The parent must adjust selectedTab as selection events are fired.
+     * ```ts
+     * <verdocs-tabs tabs={[...tabs]} />
+     * ```
      */
     interface VerdocsTabs {
         /**
@@ -1684,7 +1731,10 @@ export namespace Components {
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
-     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
+     * ```ts
+     * <verdocs-text-input type="text" label="Name" placeholder="Enter your name..." value="" />
+     * ```
      */
     interface VerdocsTextInput {
         /**
@@ -1729,7 +1779,10 @@ export namespace Components {
         "value": string;
     }
     /**
-     * Displays a label and a set of buttons, also allowing a default selection of a button
+     * Displays a label and a set of buttons, also allowing a default selection of a button.
+     * ```ts
+     * <verdocs-toggle options={[...options]} theme="light"></verdocs-toggle>
+     * ```
      */
     interface VerdocsToggle {
         /**
@@ -1743,6 +1796,9 @@ export namespace Components {
     }
     /**
      * Displays a single button that can be toggled on or off by clicking it.
+     * ```ts
+     * <verdocs-toggle-button icon={MessageIcon} size="normal" active={true} />
+     * ```
      */
     interface VerdocsToggleButton {
         "active": boolean;
@@ -1761,6 +1817,9 @@ export namespace Components {
     }
     /**
      * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     * ```ts
+     * <verdocs-toolbar-icon text="Sample tooltip text" icon={CalendarIcon} />
+     * ```
      */
     interface VerdocsToolbarIcon {
         /**
@@ -1892,10 +1951,6 @@ export interface VerdocsFieldTimestampCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsFileChooserCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFileChooserElement;
-}
-export interface VerdocsFloatingMenuCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsFloatingMenuElement;
 }
 export interface VerdocsInitialDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2133,9 +2188,9 @@ declare global {
         new (): HTMLVerdocsBuildElement;
     };
     /**
-     * A simple button
-     * ```jsx
-     * <verdocs-button label="Click Me" />
+     * A simple button, with consistent styling to other controls in the design system.
+     * ```ts
+     * <verdocs-button label="Click Me" size="normal" variant="standard" />
      * ```
      */
     interface HTMLVerdocsButtonElement extends Components.VerdocsButton, HTMLStencilElement {
@@ -2147,6 +2202,17 @@ declare global {
     /**
      * Display an icon button that triggers a drop-down panel that can display
      * arbitrary child content, such as metadata, forms, or other controls.
+     * ```ts
+     *   <verdocs-button-panel .icon=${icon}>
+     *     <h6>Field Settings</h6>
+     *     <form>
+     *     <p>
+     *       <label>Field Name</label>
+     *       <input type="text" placeholder="Field Name..." />
+     *     </p>
+     *     </form>
+     *   </verdocs-button-panel>
+     * ```
      */
     interface HTMLVerdocsButtonPanelElement extends Components.VerdocsButtonPanel, HTMLStencilElement {
     }
@@ -2160,7 +2226,7 @@ declare global {
      * box for UI displays e.g. dialog boxes.
      * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
      * handler. Sample usage:
-     * ```html
+     * ```ts
      * <verdocs-checkbox
      *    value="on"
      *    name="thingEnabled"
@@ -2237,7 +2303,7 @@ declare global {
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
      * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
-     * ```html
+     * ```ts
      * <verdocs-dropdown
      *   options={[
      *     {label: 'Option 1', disabled: true},
@@ -2632,6 +2698,9 @@ declare global {
     /**
      * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
      * provide the actual upload functionality.
+     * ```ts
+     * <verdocs-file-chooser onFileSelected={(e) => console.log('File Selected', e.detail)} />
+     * ```
      */
     interface HTMLVerdocsFileChooserElement extends Components.VerdocsFileChooser, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsFileChooserElementEventMap>(type: K, listener: (this: HTMLVerdocsFileChooserElement, ev: VerdocsFileChooserCustomEvent<HTMLVerdocsFileChooserElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2647,30 +2716,11 @@ declare global {
         prototype: HTMLVerdocsFileChooserElement;
         new (): HTMLVerdocsFileChooserElement;
     };
-    interface HTMLVerdocsFloatingMenuElementEventMap {
-        "optionSelected": IOption;
-    }
-    /**
-     * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
-     * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
-     * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
-     */
-    interface HTMLVerdocsFloatingMenuElement extends Components.VerdocsFloatingMenu, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsFloatingMenuElementEventMap>(type: K, listener: (this: HTMLVerdocsFloatingMenuElement, ev: VerdocsFloatingMenuCustomEvent<HTMLVerdocsFloatingMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsFloatingMenuElementEventMap>(type: K, listener: (this: HTMLVerdocsFloatingMenuElement, ev: VerdocsFloatingMenuCustomEvent<HTMLVerdocsFloatingMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsFloatingMenuElement: {
-        prototype: HTMLVerdocsFloatingMenuElement;
-        new (): HTMLVerdocsFloatingMenuElement;
-    };
     /**
      * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     * ```ts
+     * <verdocs-help-icon text="Sample help text" />
+     * ```
      */
     interface HTMLVerdocsHelpIconElement extends Components.VerdocsHelpIcon, HTMLStencilElement {
     }
@@ -2725,6 +2775,9 @@ declare global {
     };
     /**
      * Animated loader placeholder. There are currently no configuration options for this control.
+     * ```ts
+     * <verdocs-loader />
+     * ```
      */
     interface HTMLVerdocsLoaderElement extends Components.VerdocsLoader, HTMLStencilElement {
     }
@@ -2756,7 +2809,10 @@ declare global {
         new (): HTMLVerdocsOkDialogElement;
     };
     /**
-     * Display a small summary card describing an organization
+     * Display a small summary card describing an organization.
+     * ```ts
+     * <verdocs-organization-card organization={organization} />
+     * ```
      */
     interface HTMLVerdocsOrganizationCardElement extends Components.VerdocsOrganizationCard, HTMLStencilElement {
     }
@@ -2769,6 +2825,14 @@ declare global {
     }
     /**
      * Display a simple pagination control with individual buttons to move through the data set.
+     * ```ts
+     * <verdocs-pagination
+     *   selectedPage={1}
+     *   itemCount={50}
+     *   perPage={10}
+     *   onSelectPage={(e) => {setSelectedpage(e.detail.selectedPage)}}
+     * />
+     * ```
      */
     interface HTMLVerdocsPaginationElement extends Components.VerdocsPagination, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsPaginationElementEventMap>(type: K, listener: (this: HTMLVerdocsPaginationElement, ev: VerdocsPaginationCustomEvent<HTMLVerdocsPaginationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2794,6 +2858,16 @@ declare global {
      * technique. This has been altered in a few ways to make it more friendly
      * to cases where there may be multiple portals on the page and provide more
      * alignment options for the child to be displayed.
+     * ```ts
+     * <div style="padding: 40px">
+     * <div id="sample-tooltip" style="border: 1px solid green; padding: 3px 10px;">
+     * Tooltip Anchor
+     * <verdocs-portal anchor="sample-tooltip" .align=${align} .voffset=${voffset}>
+     * <div style="border: 1px solid red; padding: 3px 10px;">Tooltip</div>
+     * </verdocs-portal>
+     * </div>
+     * </div>
+     * ```
      */
     interface HTMLVerdocsPortalElement extends Components.VerdocsPortal, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsPortalElementEventMap>(type: K, listener: (this: HTMLVerdocsPortalElement, ev: VerdocsPortalCustomEvent<HTMLVerdocsPortalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2832,7 +2906,10 @@ declare global {
         new (): HTMLVerdocsPreviewElement;
     };
     /**
-     * A simple progress bar.
+     * Display a simple progress bar in a style consistent with the design system.
+     * ```ts
+     * <verdocs-progress-bar label="Uploading..." showPercent={true} percent={54} />
+     * ```
      */
     interface HTMLVerdocsProgressBarElement extends Components.VerdocsProgressBar, HTMLStencilElement {
     }
@@ -2845,6 +2922,9 @@ declare global {
     }
     /**
      * Display a drop-down menu of quick filter options.
+     * ```ts
+     * <verdocs-quick-filter options={[...options]} value={1} label="Filter" placeholder="All" />
+     * ```
      */
     interface HTMLVerdocsQuickFilterElement extends Components.VerdocsQuickFilter, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsQuickFilterElementEventMap>(type: K, listener: (this: HTMLVerdocsQuickFilterElement, ev: VerdocsQuickFilterCustomEvent<HTMLVerdocsQuickFilterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2889,7 +2969,7 @@ declare global {
      * simple radio button for UI displays e.g. dialog boxes.
      * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
      * handler. Sample usage:
-     * ```html
+     * ```ts
      * <verdocs-radio-button
      *    value="val1"
      *    name="someProperty"
@@ -2944,7 +3024,11 @@ declare global {
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
-     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
+     * ```ts
+     * <verdocs-select-input label="Select:" label="Select" options={[...options]}
+     * @input ={() => {}} />
+     * ```
      */
     interface HTMLVerdocsSelectInputElement extends Components.VerdocsSelectInput, HTMLStencilElement {
     }
@@ -3149,6 +3233,9 @@ declare global {
     };
     /**
      * Display a small loading spinner.
+     * ```ts
+     * <verdocs-spinner />
+     * ```
      */
     interface HTMLVerdocsSpinnerElement extends Components.VerdocsSpinner, HTMLStencilElement {
     }
@@ -3176,6 +3263,9 @@ declare global {
     /**
      * Display a simple table of data. Columns and data cells may have custom renderers defined to
      * support creating interactive table layouts.
+     * ```ts
+     * <verdocs-table columns={[...columns]} data={[...data]} />
+     * ```
      */
     interface HTMLVerdocsTableElement extends Components.VerdocsTable, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsTableElementEventMap>(type: K, listener: (this: HTMLVerdocsTableElement, ev: VerdocsTableCustomEvent<HTMLVerdocsTableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3197,6 +3287,9 @@ declare global {
     /**
      * Display a simple row of selectable tabs. This is a controlled element.
      * The parent must adjust selectedTab as selection events are fired.
+     * ```ts
+     * <verdocs-tabs tabs={[...tabs]} />
+     * ```
      */
     interface HTMLVerdocsTabsElement extends Components.VerdocsTabs, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsTabsElementEventMap>(type: K, listener: (this: HTMLVerdocsTabsElement, ev: VerdocsTabsCustomEvent<HTMLVerdocsTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3552,7 +3645,10 @@ declare global {
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
-     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
+     * ```ts
+     * <verdocs-text-input type="text" label="Name" placeholder="Enter your name..." value="" />
+     * ```
      */
     interface HTMLVerdocsTextInputElement extends Components.VerdocsTextInput, HTMLStencilElement {
     }
@@ -3561,7 +3657,10 @@ declare global {
         new (): HTMLVerdocsTextInputElement;
     };
     /**
-     * Displays a label and a set of buttons, also allowing a default selection of a button
+     * Displays a label and a set of buttons, also allowing a default selection of a button.
+     * ```ts
+     * <verdocs-toggle options={[...options]} theme="light"></verdocs-toggle>
+     * ```
      */
     interface HTMLVerdocsToggleElement extends Components.VerdocsToggle, HTMLStencilElement {
     }
@@ -3574,6 +3673,9 @@ declare global {
     }
     /**
      * Displays a single button that can be toggled on or off by clicking it.
+     * ```ts
+     * <verdocs-toggle-button icon={MessageIcon} size="normal" active={true} />
+     * ```
      */
     interface HTMLVerdocsToggleButtonElement extends Components.VerdocsToggleButton, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsToggleButtonElementEventMap>(type: K, listener: (this: HTMLVerdocsToggleButtonElement, ev: VerdocsToggleButtonCustomEvent<HTMLVerdocsToggleButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3591,6 +3693,9 @@ declare global {
     };
     /**
      * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     * ```ts
+     * <verdocs-toolbar-icon text="Sample tooltip text" icon={CalendarIcon} />
+     * ```
      */
     interface HTMLVerdocsToolbarIconElement extends Components.VerdocsToolbarIcon, HTMLStencilElement {
     }
@@ -3673,7 +3778,6 @@ declare global {
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
         "verdocs-field-timestamp": HTMLVerdocsFieldTimestampElement;
         "verdocs-file-chooser": HTMLVerdocsFileChooserElement;
-        "verdocs-floating-menu": HTMLVerdocsFloatingMenuElement;
         "verdocs-help-icon": HTMLVerdocsHelpIconElement;
         "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
         "verdocs-kba-dialog": HTMLVerdocsKbaDialogElement;
@@ -3850,9 +3954,9 @@ declare namespace LocalJSX {
         "templateId"?: string | null;
     }
     /**
-     * A simple button
-     * ```jsx
-     * <verdocs-button label="Click Me" />
+     * A simple button, with consistent styling to other controls in the design system.
+     * ```ts
+     * <verdocs-button label="Click Me" size="normal" variant="standard" />
      * ```
      */
     interface VerdocsButton {
@@ -3888,6 +3992,17 @@ declare namespace LocalJSX {
     /**
      * Display an icon button that triggers a drop-down panel that can display
      * arbitrary child content, such as metadata, forms, or other controls.
+     * ```ts
+     *   <verdocs-button-panel .icon=${icon}>
+     *     <h6>Field Settings</h6>
+     *     <form>
+     *     <p>
+     *       <label>Field Name</label>
+     *       <input type="text" placeholder="Field Name..." />
+     *     </p>
+     *     </form>
+     *   </verdocs-button-panel>
+     * ```
      */
     interface VerdocsButtonPanel {
         /**
@@ -3901,7 +4016,7 @@ declare namespace LocalJSX {
      * box for UI displays e.g. dialog boxes.
      * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
      * handler. Sample usage:
-     * ```html
+     * ```ts
      * <verdocs-checkbox
      *    value="on"
      *    name="thingEnabled"
@@ -3991,7 +4106,7 @@ declare namespace LocalJSX {
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
      * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
-     * ```html
+     * ```ts
      * <verdocs-dropdown
      *   options={[
      *     {label: 'Option 1', disabled: true},
@@ -4829,6 +4944,9 @@ declare namespace LocalJSX {
     /**
      * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
      * provide the actual upload functionality.
+     * ```ts
+     * <verdocs-file-chooser onFileSelected={(e) => console.log('File Selected', e.detail)} />
+     * ```
      */
     interface VerdocsFileChooser {
         /**
@@ -4841,22 +4959,10 @@ declare namespace LocalJSX {
         "onFileSelected"?: (event: VerdocsFileChooserCustomEvent<{file: File | null}>) => void;
     }
     /**
-     * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
-     * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
-     * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
-     */
-    interface VerdocsFloatingMenu {
-        /**
-          * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
-         */
-        "onOptionSelected"?: (event: VerdocsFloatingMenuCustomEvent<IOption>) => void;
-        /**
-          * The role that this contact will be assigned to.
-         */
-        "options"?: IOption[];
-    }
-    /**
      * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     * ```ts
+     * <verdocs-help-icon text="Sample help text" />
+     * ```
      */
     interface VerdocsHelpIcon {
         /**
@@ -4935,6 +5041,9 @@ declare namespace LocalJSX {
     }
     /**
      * Animated loader placeholder. There are currently no configuration options for this control.
+     * ```ts
+     * <verdocs-loader />
+     * ```
      */
     interface VerdocsLoader {
     }
@@ -4970,7 +5079,10 @@ declare namespace LocalJSX {
         "showCancel"?: boolean;
     }
     /**
-     * Display a small summary card describing an organization
+     * Display a small summary card describing an organization.
+     * ```ts
+     * <verdocs-organization-card organization={organization} />
+     * ```
      */
     interface VerdocsOrganizationCard {
         /**
@@ -4980,6 +5092,14 @@ declare namespace LocalJSX {
     }
     /**
      * Display a simple pagination control with individual buttons to move through the data set.
+     * ```ts
+     * <verdocs-pagination
+     *   selectedPage={1}
+     *   itemCount={50}
+     *   perPage={10}
+     *   onSelectPage={(e) => {setSelectedpage(e.detail.selectedPage)}}
+     * />
+     * ```
      */
     interface VerdocsPagination {
         /**
@@ -5006,6 +5126,16 @@ declare namespace LocalJSX {
      * technique. This has been altered in a few ways to make it more friendly
      * to cases where there may be multiple portals on the page and provide more
      * alignment options for the child to be displayed.
+     * ```ts
+     * <div style="padding: 40px">
+     * <div id="sample-tooltip" style="border: 1px solid green; padding: 3px 10px;">
+     * Tooltip Anchor
+     * <verdocs-portal anchor="sample-tooltip" .align=${align} .voffset=${voffset}>
+     * <div style="border: 1px solid red; padding: 3px 10px;">Tooltip</div>
+     * </verdocs-portal>
+     * </div>
+     * </div>
+     * ```
      */
     interface VerdocsPortal {
         /**
@@ -5042,7 +5172,10 @@ declare namespace LocalJSX {
         "templateId"?: string | null;
     }
     /**
-     * A simple progress bar.
+     * Display a simple progress bar in a style consistent with the design system.
+     * ```ts
+     * <verdocs-progress-bar label="Uploading..." showPercent={true} percent={54} />
+     * ```
      */
     interface VerdocsProgressBar {
         /**
@@ -5060,6 +5193,9 @@ declare namespace LocalJSX {
     }
     /**
      * Display a drop-down menu of quick filter options.
+     * ```ts
+     * <verdocs-quick-filter options={[...options]} value={1} label="Filter" placeholder="All" />
+     * ```
      */
     interface VerdocsQuickFilter {
         "label"?: string;
@@ -5099,7 +5235,7 @@ declare namespace LocalJSX {
      * simple radio button for UI displays e.g. dialog boxes.
      * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
      * handler. Sample usage:
-     * ```html
+     * ```ts
      * <verdocs-radio-button
      *    value="val1"
      *    name="someProperty"
@@ -5177,7 +5313,11 @@ declare namespace LocalJSX {
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
-     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
+     * ```ts
+     * <verdocs-select-input label="Select:" label="Select" options={[...options]}
+     * @input ={() => {}} />
+     * ```
      */
     interface VerdocsSelectInput {
         /**
@@ -5403,6 +5543,9 @@ declare namespace LocalJSX {
     }
     /**
      * Display a small loading spinner.
+     * ```ts
+     * <verdocs-spinner />
+     * ```
      */
     interface VerdocsSpinner {
         "mode"?: 'light' | 'dark';
@@ -5436,6 +5579,9 @@ declare namespace LocalJSX {
     /**
      * Display a simple table of data. Columns and data cells may have custom renderers defined to
      * support creating interactive table layouts.
+     * ```ts
+     * <verdocs-table columns={[...columns]} data={[...data]} />
+     * ```
      */
     interface VerdocsTable {
         /**
@@ -5458,6 +5604,9 @@ declare namespace LocalJSX {
     /**
      * Display a simple row of selectable tabs. This is a controlled element.
      * The parent must adjust selectedTab as selection events are fired.
+     * ```ts
+     * <verdocs-tabs tabs={[...tabs]} />
+     * ```
      */
     interface VerdocsTabs {
         /**
@@ -5954,7 +6103,10 @@ declare namespace LocalJSX {
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
-     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+     * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
+     * ```ts
+     * <verdocs-text-input type="text" label="Name" placeholder="Enter your name..." value="" />
+     * ```
      */
     interface VerdocsTextInput {
         /**
@@ -5999,7 +6151,10 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     /**
-     * Displays a label and a set of buttons, also allowing a default selection of a button
+     * Displays a label and a set of buttons, also allowing a default selection of a button.
+     * ```ts
+     * <verdocs-toggle options={[...options]} theme="light"></verdocs-toggle>
+     * ```
      */
     interface VerdocsToggle {
         /**
@@ -6013,6 +6168,9 @@ declare namespace LocalJSX {
     }
     /**
      * Displays a single button that can be toggled on or off by clicking it.
+     * ```ts
+     * <verdocs-toggle-button icon={MessageIcon} size="normal" active={true} />
+     * ```
      */
     interface VerdocsToggleButton {
         "active"?: boolean;
@@ -6035,6 +6193,9 @@ declare namespace LocalJSX {
     }
     /**
      * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+     * ```ts
+     * <verdocs-toolbar-icon text="Sample tooltip text" icon={CalendarIcon} />
+     * ```
      */
     interface VerdocsToolbarIcon {
         /**
@@ -6130,7 +6291,6 @@ declare namespace LocalJSX {
         "verdocs-field-textbox": VerdocsFieldTextbox;
         "verdocs-field-timestamp": VerdocsFieldTimestamp;
         "verdocs-file-chooser": VerdocsFileChooser;
-        "verdocs-floating-menu": VerdocsFloatingMenu;
         "verdocs-help-icon": VerdocsHelpIcon;
         "verdocs-initial-dialog": VerdocsInitialDialog;
         "verdocs-kba-dialog": VerdocsKbaDialog;
@@ -6223,15 +6383,26 @@ declare module "@stencil/core" {
              */
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             /**
-             * A simple button
-             * ```jsx
-             * <verdocs-button label="Click Me" />
+             * A simple button, with consistent styling to other controls in the design system.
+             * ```ts
+             * <verdocs-button label="Click Me" size="normal" variant="standard" />
              * ```
              */
             "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
             /**
              * Display an icon button that triggers a drop-down panel that can display
              * arbitrary child content, such as metadata, forms, or other controls.
+             * ```ts
+             *   <verdocs-button-panel .icon=${icon}>
+             *     <h6>Field Settings</h6>
+             *     <form>
+             *     <p>
+             *       <label>Field Name</label>
+             *       <input type="text" placeholder="Field Name..." />
+             *     </p>
+             *     </form>
+             *   </verdocs-button-panel>
+             * ```
              */
             "verdocs-button-panel": LocalJSX.VerdocsButtonPanel & JSXBase.HTMLAttributes<HTMLVerdocsButtonPanelElement>;
             /**
@@ -6240,7 +6411,7 @@ declare module "@stencil/core" {
              * box for UI displays e.g. dialog boxes.
              * This control encapsulates a standard HTML checkbox. To subscribe to change events, connect an `onChange`
              * handler. Sample usage:
-             * ```html
+             * ```ts
              * <verdocs-checkbox
              *    value="on"
              *    name="thingEnabled"
@@ -6270,7 +6441,7 @@ declare module "@stencil/core" {
             /**
              * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
              * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
-             * ```html
+             * ```ts
              * <verdocs-dropdown
              *   options={[
              *     {label: 'Option 1', disabled: true},
@@ -6358,16 +6529,16 @@ declare module "@stencil/core" {
             /**
              * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
              * provide the actual upload functionality.
+             * ```ts
+             * <verdocs-file-chooser onFileSelected={(e) => console.log('File Selected', e.detail)} />
+             * ```
              */
             "verdocs-file-chooser": LocalJSX.VerdocsFileChooser & JSXBase.HTMLAttributes<HTMLVerdocsFileChooserElement>;
             /**
-             * Floating Action Button style menu. For proper placement, this should be added to the DOM inside a container that is set to
-             * `overflow-y: scroll;`. The component will detect that placement and position itself in the bottom-right corner on top of the
-             * container. It will be absolutely positioned so it will be unaffected by scrolling the container.
-             */
-            "verdocs-floating-menu": LocalJSX.VerdocsFloatingMenu & JSXBase.HTMLAttributes<HTMLVerdocsFloatingMenuElement>;
-            /**
              * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+             * ```ts
+             * <verdocs-help-icon text="Sample help text" />
+             * ```
              */
             "verdocs-help-icon": LocalJSX.VerdocsHelpIcon & JSXBase.HTMLAttributes<HTMLVerdocsHelpIconElement>;
             /**
@@ -6383,6 +6554,9 @@ declare module "@stencil/core" {
             "verdocs-kba-dialog": LocalJSX.VerdocsKbaDialog & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;
             /**
              * Animated loader placeholder. There are currently no configuration options for this control.
+             * ```ts
+             * <verdocs-loader />
+             * ```
              */
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             /**
@@ -6392,11 +6566,22 @@ declare module "@stencil/core" {
              */
             "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             /**
-             * Display a small summary card describing an organization
+             * Display a small summary card describing an organization.
+             * ```ts
+             * <verdocs-organization-card organization={organization} />
+             * ```
              */
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
             /**
              * Display a simple pagination control with individual buttons to move through the data set.
+             * ```ts
+             * <verdocs-pagination
+             *   selectedPage={1}
+             *   itemCount={50}
+             *   perPage={10}
+             *   onSelectPage={(e) => {setSelectedpage(e.detail.selectedPage)}}
+             * />
+             * ```
              */
             "verdocs-pagination": LocalJSX.VerdocsPagination & JSXBase.HTMLAttributes<HTMLVerdocsPaginationElement>;
             /**
@@ -6406,6 +6591,16 @@ declare module "@stencil/core" {
              * technique. This has been altered in a few ways to make it more friendly
              * to cases where there may be multiple portals on the page and provide more
              * alignment options for the child to be displayed.
+             * ```ts
+             * <div style="padding: 40px">
+             * <div id="sample-tooltip" style="border: 1px solid green; padding: 3px 10px;">
+             * Tooltip Anchor
+             * <verdocs-portal anchor="sample-tooltip" .align=${align} .voffset=${voffset}>
+             * <div style="border: 1px solid red; padding: 3px 10px;">Tooltip</div>
+             * </verdocs-portal>
+             * </div>
+             * </div>
+             * ```
              */
             "verdocs-portal": LocalJSX.VerdocsPortal & JSXBase.HTMLAttributes<HTMLVerdocsPortalElement>;
             /**
@@ -6415,11 +6610,17 @@ declare module "@stencil/core" {
              */
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
             /**
-             * A simple progress bar.
+             * Display a simple progress bar in a style consistent with the design system.
+             * ```ts
+             * <verdocs-progress-bar label="Uploading..." showPercent={true} percent={54} />
+             * ```
              */
             "verdocs-progress-bar": LocalJSX.VerdocsProgressBar & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
             /**
              * Display a drop-down menu of quick filter options.
+             * ```ts
+             * <verdocs-quick-filter options={[...options]} value={1} label="Filter" placeholder="All" />
+             * ```
              */
             "verdocs-quick-filter": LocalJSX.VerdocsQuickFilter & JSXBase.HTMLAttributes<HTMLVerdocsQuickFilterElement>;
             /**
@@ -6434,7 +6635,7 @@ declare module "@stencil/core" {
              * simple radio button for UI displays e.g. dialog boxes.
              * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
              * handler. Sample usage:
-             * ```html
+             * ```ts
              * <verdocs-radio-button
              *    value="val1"
              *    name="someProperty"
@@ -6456,7 +6657,11 @@ declare module "@stencil/core" {
             /**
              * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
              * visual styles of the other components. Note that events "bubble" from the input field to the container,
-             * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+             * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
+             * ```ts
+             * <verdocs-select-input label="Select:" label="Select" options={[...options]}
+             * @input ={() => {}} />
+             * ```
              */
             "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;
             /**
@@ -6513,6 +6718,9 @@ declare module "@stencil/core" {
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
             /**
              * Display a small loading spinner.
+             * ```ts
+             * <verdocs-spinner />
+             * ```
              */
             "verdocs-spinner": LocalJSX.VerdocsSpinner & JSXBase.HTMLAttributes<HTMLVerdocsSpinnerElement>;
             /**
@@ -6526,11 +6734,17 @@ declare module "@stencil/core" {
             /**
              * Display a simple table of data. Columns and data cells may have custom renderers defined to
              * support creating interactive table layouts.
+             * ```ts
+             * <verdocs-table columns={[...columns]} data={[...data]} />
+             * ```
              */
             "verdocs-table": LocalJSX.VerdocsTable & JSXBase.HTMLAttributes<HTMLVerdocsTableElement>;
             /**
              * Display a simple row of selectable tabs. This is a controlled element.
              * The parent must adjust selectedTab as selection events are fired.
+             * ```ts
+             * <verdocs-tabs tabs={[...tabs]} />
+             * ```
              */
             "verdocs-tabs": LocalJSX.VerdocsTabs & JSXBase.HTMLAttributes<HTMLVerdocsTabsElement>;
             /**
@@ -6605,19 +6819,31 @@ declare module "@stencil/core" {
             /**
              * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
              * visual styles of the other components. Note that events "bubble" from the input field to the container,
-             * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emmit.
+             * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
+             * ```ts
+             * <verdocs-text-input type="text" label="Name" placeholder="Enter your name..." value="" />
+             * ```
              */
             "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
             /**
-             * Displays a label and a set of buttons, also allowing a default selection of a button
+             * Displays a label and a set of buttons, also allowing a default selection of a button.
+             * ```ts
+             * <verdocs-toggle options={[...options]} theme="light"></verdocs-toggle>
+             * ```
              */
             "verdocs-toggle": LocalJSX.VerdocsToggle & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;
             /**
              * Displays a single button that can be toggled on or off by clicking it.
+             * ```ts
+             * <verdocs-toggle-button icon={MessageIcon} size="normal" active={true} />
+             * ```
              */
             "verdocs-toggle-button": LocalJSX.VerdocsToggleButton & JSXBase.HTMLAttributes<HTMLVerdocsToggleButtonElement>;
             /**
              * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
+             * ```ts
+             * <verdocs-toolbar-icon text="Sample tooltip text" icon={CalendarIcon} />
+             * ```
              */
             "verdocs-toolbar-icon": LocalJSX.VerdocsToolbarIcon & JSXBase.HTMLAttributes<HTMLVerdocsToolbarIconElement>;
             /**

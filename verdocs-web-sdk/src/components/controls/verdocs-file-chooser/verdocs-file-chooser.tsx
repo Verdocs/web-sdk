@@ -5,6 +5,10 @@ import {unicodeNBSP} from '../../../utils/Icons';
 /**
  * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
  * provide the actual upload functionality.
+ *
+ * ```ts
+ * <verdocs-file-chooser onFileSelected={(e) => console.log('File Selected', e.detail)} />
+ * ```
  */
 @Component({
   tag: 'verdocs-file-chooser',

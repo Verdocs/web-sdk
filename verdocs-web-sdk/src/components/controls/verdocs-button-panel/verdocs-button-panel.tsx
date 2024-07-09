@@ -4,6 +4,18 @@ import {Component, h, Host, Method, Prop} from '@stencil/core';
 /**
  * Display an icon button that triggers a drop-down panel that can display
  * arbitrary child content, such as metadata, forms, or other controls.
+ *
+ * ```ts
+ *   <verdocs-button-panel .icon=${icon}>
+ *     <h6>Field Settings</h6>
+ *     <form>
+ *     <p>
+ *       <label>Field Name</label>
+ *       <input type="text" placeholder="Field Name..." />
+ *     </p>
+ *     </form>
+ *   </verdocs-button-panel>
+ * ```
  */
 @Component({
   tag: 'verdocs-button-panel',

@@ -9,6 +9,17 @@ const Z_INDEX = '10001';
  * technique. This has been altered in a few ways to make it more friendly
  * to cases where there may be multiple portals on the page and provide more
  * alignment options for the child to be displayed.
+ *
+ * ```ts
+ * <div style="padding: 40px">
+ *     <div id="sample-tooltip" style="border: 1px solid green; padding: 3px 10px;">
+ *       Tooltip Anchor
+ *       <verdocs-portal anchor="sample-tooltip" .align=${align} .voffset=${voffset}>
+ *         <div style="border: 1px solid red; padding: 3px 10px;">Tooltip</div>
+ *       </verdocs-portal>
+ *     </div>
+ *   </div>
+ * ```
  */
 @Component({
   tag: 'verdocs-portal',
@@ -39,7 +50,7 @@ export class VerdocsPortal {
 
   @Listen('scroll', {target: 'window', capture: true})
   handleScroll() {
-    this.calculatePosition();
+    // this.calculatePosition();
   }
 
   @Listen('resize', {target: 'window', capture: true})

@@ -1,10 +1,13 @@
 import {format} from 'date-fns';
+import {getRGBA} from '@verdocs/js-sdk';
 import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
-import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
+import type {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk';
 import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import {getRoleIndex, getTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import type {TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import type {TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import {getTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 import {FORMAT_DATE} from '../../../utils/Types';

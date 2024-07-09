@@ -8,7 +8,7 @@ import {Component, h, Host, Prop} from '@stencil/core';
  * This control encapsulates a standard HTML radio button. To subscribe to change events, connect an `onChange`
  * handler. Sample usage:
  *
- * ```html
+ * ```ts
  * <verdocs-radio-button
  *    value="val1"
  *    name="someProperty"

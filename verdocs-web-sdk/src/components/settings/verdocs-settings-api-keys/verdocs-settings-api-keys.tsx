@@ -63,7 +63,7 @@ export class VerdocsSettingsApiKeys {
 
   async componentDidLoad() {
     this.newApiKeyProfileId = this.endpoint.session.profile_id;
-    getOrganizationMembers(this.endpoint, this.endpoint.session.organization_id)
+    getOrganizationMembers(this.endpoint)
       .then(mem => {
         this.members = mem;
       })
@@ -77,7 +77,7 @@ export class VerdocsSettingsApiKeys {
   }
 
   loadKeys() {
-    getApiKeys(this.endpoint, this.endpoint.session.organization_id)
+    getApiKeys(this.endpoint)
       .then(r => {
         this.keys = r;
       })
@@ -89,7 +89,7 @@ export class VerdocsSettingsApiKeys {
   }
 
   async handleDeleteKey() {
-    deleteApiKey(this.endpoint, this.deletingKey.organization_id, this.deletingKey.client_id)
+    deleteApiKey(this.endpoint, this.deletingKey.client_id)
       .then(() => {
         this.deletingKey = null;
         VerdocsToast('API key deleted', {style: 'success'});
@@ -104,7 +104,7 @@ export class VerdocsSettingsApiKeys {
   }
 
   async handleRotateKey() {
-    rotateApiKey(this.endpoint, this.rotatingKey.organization_id, this.rotatingKey.client_id)
+    rotateApiKey(this.endpoint, this.rotatingKey.client_id)
       .then(r => {
         this.rotatingKey = null;
         VerdocsToast('API key rotated', {style: 'success'});
@@ -121,7 +121,7 @@ export class VerdocsSettingsApiKeys {
 
   async handleCreateKey() {
     // TODO: Add permission dropdown
-    createApiKey(this.endpoint, this.endpoint.session.organization_id, {permission: 'personal', name: this.newApiKeyName, profile_id: this.newApiKeyProfileId})
+    createApiKey(this.endpoint, {permission: 'personal', name: this.newApiKeyName, profile_id: this.newApiKeyProfileId})
       .then(r => {
         this.creatingKey = false;
         this.createdKey = r;

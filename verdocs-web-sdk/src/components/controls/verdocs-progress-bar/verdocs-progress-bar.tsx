@@ -1,7 +1,11 @@
 import {Component, Prop, h, Host} from '@stencil/core';
 
 /**
- * A simple progress bar.
+ * Display a simple progress bar in a style consistent with the design system.
+ *
+ * ```ts
+ * <verdocs-progress-bar label="Uploading..." showPercent={true} percent={54} />
+ * ```
  */
 @Component({
   tag: 'verdocs-progress-bar',

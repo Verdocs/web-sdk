@@ -105,11 +105,7 @@ export class VerdocsSettingsMembers {
 
   async loadMembers() {
     try {
-      const [members, invites] = await Promise.all([
-        // getRoles(this.endpoint),
-        getOrganizationMembers(this.endpoint, this.endpoint.session.organization_id),
-        getOrganizationInvitations(this.endpoint, this.endpoint.session.organization_id),
-      ]);
+      const [members, invites] = await Promise.all([getOrganizationMembers(this.endpoint), getOrganizationInvitations(this.endpoint)]);
       this.members = members;
       this.invited = invites;
       this.newRole = 'member';
@@ -121,11 +117,9 @@ export class VerdocsSettingsMembers {
 
   async handleInviteMember() {
     this.submitting = true;
-    createOrganizationInvitation(VerdocsEndpoint.getDefault(), this.endpoint.session.organization_id, {
+    createOrganizationInvitation(VerdocsEndpoint.getDefault(), {
       email: this.newEmailAddress,
       role: this.newRole,
-      // TODO: Test
-      // organization_id: this.endpoint.session.organization_id,
     })
       .then(r => {
         console.log('[SETTINGS] Invited member', r);
@@ -148,7 +142,7 @@ export class VerdocsSettingsMembers {
 
   async handleDeleteMember() {
     this.submitting = true;
-    deleteOrganizationMember(VerdocsEndpoint.getDefault(), this.deletingMember.organization_id, this.deletingMember.email)
+    deleteOrganizationMember(VerdocsEndpoint.getDefault(), this.deletingMember.email)
       .then(() => {
         this.submitting = false;
         this.deletingMember = null;
@@ -165,7 +159,7 @@ export class VerdocsSettingsMembers {
 
   async handleDeleteInvitation() {
     this.submitting = true;
-    deleteOrganizationInvitation(VerdocsEndpoint.getDefault(), this.deletingInvitation.organization_id, this.deletingInvitation.email)
+    deleteOrganizationInvitation(VerdocsEndpoint.getDefault(), this.deletingInvitation.email)
       .then(() => {
         this.submitting = false;
         this.deletingInvitation = null;
@@ -182,7 +176,7 @@ export class VerdocsSettingsMembers {
 
   async handleResendInvitation() {
     this.submitting = true;
-    resendOrganizationInvitation(VerdocsEndpoint.getDefault(), this.resendingInvitation.organization_id, this.resendingInvitation.email)
+    resendOrganizationInvitation(VerdocsEndpoint.getDefault(), this.resendingInvitation.email)
       .then(() => {
         this.submitting = false;
         this.resendingInvitation = null;

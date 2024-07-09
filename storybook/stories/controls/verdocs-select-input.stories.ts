@@ -7,6 +7,7 @@ export default {
   args: {
     label: 'Name',
     value: '',
+    disabled: false,
     options: [
       {label: 'Option 1', value: '1'},
       {label: 'Option 2', value: '2'},
@@ -21,5 +22,5 @@ export default {
   },
 } as Meta;
 
-export const SelectInput = ({type, label, value, placeholder, options, disabled, input}) =>
-  html`<verdocs-select-input .type=${type} .label=${label} .placeholder=${placeholder} .value=${value} .options=${options} .disabled=${disabled} @input=${input} />`;
+export const SelectInput = ({disabled, label, value, options, input}) =>
+  html`<verdocs-select-input .label=${label} .value=${value} .options=${options} .disabled=${disabled} @input=${input} />`;

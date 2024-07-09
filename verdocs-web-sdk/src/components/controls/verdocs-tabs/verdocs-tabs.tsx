@@ -10,6 +10,10 @@ export interface ITab {
 /**
  * Display a simple row of selectable tabs. This is a controlled element.
  * The parent must adjust selectedTab as selection events are fired.
+ *
+ * ```ts
+ * <verdocs-tabs tabs={[...tabs]} />
+ * ```
  */
 @Component({
   tag: 'verdocs-tabs',

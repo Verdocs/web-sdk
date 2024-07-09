@@ -10,6 +10,10 @@ export interface IColumn {
 /**
  * Display a simple table of data. Columns and data cells may have custom renderers defined to
  * support creating interactive table layouts.
+ *
+ * ```ts
+ * <verdocs-table columns={[...columns]} data={[...data]} />
+ * ```
  */
 @Component({
   tag: 'verdocs-table',
@@ -58,8 +62,11 @@ export class VerdocsTable {
             {this.data.map(row => (
               <tr class="row data-row" onClick={() => this.rowClick?.emit({row})}>
                 {this.columns.map((col, i) => {
-                  return <td class={`col data-col col-${i} col-${col.id}`}>{col.renderCell?.(col, row) || row[col.id]}</td>;
-                  // return <td class={`col data-col col-${i} col-${col.id}`} innerHTML={col.renderCell?.(col, row) || row[col.id]} />;
+                  return col.renderCell ? (
+                    <td class={`col data-col col-${i} col-${col.id}`} innerHTML={col.renderCell(col, row)} />
+                  ) : (
+                    <td class={`col data-col col-${i} col-${col.id}`}>{row[col.id]}</td>
+                  );
                 })}
               </tr>
             ))}

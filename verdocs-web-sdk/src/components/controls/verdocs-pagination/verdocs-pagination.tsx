@@ -25,6 +25,15 @@ const PageButton: FunctionalComponent<{page: TPageNumber; selected: number; onCl
 
 /**
  * Display a simple pagination control with individual buttons to move through the data set.
+ *
+ * ```ts
+ * <verdocs-pagination
+ *   selectedPage={1}
+ *   itemCount={50}
+ *   perPage={10}
+ *   onSelectPage={(e) => {setSelectedpage(e.detail.selectedPage)}}
+ * />
+ * ```
  */
 @Component({
   tag: 'verdocs-pagination',

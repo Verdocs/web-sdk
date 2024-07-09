@@ -1,6 +1,6 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
-import {IOrganization, ITemplate} from '@verdocs/js-sdk';
+import type {IOrganization, ITemplate} from '@verdocs/js-sdk';
 
 const MockTemplate = {
   counter: 2,

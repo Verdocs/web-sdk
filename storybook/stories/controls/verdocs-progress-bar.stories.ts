@@ -3,6 +3,7 @@ import {Meta} from '@storybook/web-components';
 
 export default {
   title: 'Controls/Progress Bar',
+  component: 'verdocs-progress-bar',
   args: {
     label: 'Uploading...',
     showPercent: true,

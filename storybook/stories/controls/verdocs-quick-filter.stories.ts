@@ -16,4 +16,9 @@ export default {
   },
 } as Meta;
 
-export const QuickFilter = ({options, value, label, placeholder}) => html`<verdocs-quick-filter .options=${options} .value=${value} .label=${label} .placeholder=${placeholder} />`;
+// TODO: Wrap the dropdown in a portal
+export const QuickFilter = ({options, value, label, placeholder}) => html`
+  <div style="height: 150px">
+    <verdocs-quick-filter .options=${options} .value=${value} .label=${label} .placeholder=${placeholder} />
+  </div>
+`;
