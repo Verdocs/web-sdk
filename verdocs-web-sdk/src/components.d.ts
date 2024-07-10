@@ -62,26 +62,15 @@ export namespace Components {
         "view"?: 'completed' | 'action' | 'waiting';
     }
     /**
-     * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
-     * occur during the process (especially successful completion). If the user is already authenticated with a valid
-     * session, this component will hide itself and fire the success callback immediately. It is up to the host application
-     * to render the next appropriate view for the application.
-     * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
-     * allows you to susbcribe to notifications from the
+     * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
+     * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
+     * host application to render the next appropriate view for the application.
+     * To simplify UI development, a visibility flag can force this component to never display. This
+     * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
      * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
      * container to allow sufficient space for the required forms.
-     * As noted below, the primary event is `authenticated`. This will always be fired at least once, immediately after
-     * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
-     * cancels) authentication steps.
-     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
-     * embed. This Element will reuse the same session produced by logging in via that Embed.
-     * ```typescript
-     * interface IAuthStatus {
-     *   // If true, the user is authenticated with a valid session
-     *   authenticated: boolean;
-     *   // Details for the user's session
-     *   session: IActiveSession | null;
-     * }
+     * ```ts
+     * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
      * ```
      */
     interface VerdocsAuth {
@@ -100,6 +89,9 @@ export namespace Components {
     }
     /**
      * Display a template building experience.
+     * ```ts
+     * <verdocs-build templateId={templateId} />
+     * ```
      */
     interface VerdocsBuild {
         /**
@@ -1101,6 +1093,9 @@ export namespace Components {
      * Display a template preview experience. This will display the template's attached
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     * ```ts
+     * <verdocs-preview templateId={templateId} />
+     * ```
      */
     interface VerdocsPreview {
         /**
@@ -1256,12 +1251,18 @@ export namespace Components {
         "value": string;
     }
     /**
-     * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
-     * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
-     * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
-     * directly to the `createEnvelope()` call in JS-SDK.
-     * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
-     * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
+     * Display a form to send a template to one or more recipients in an envelope for signing. Note
+     * that because most applications have custom workflow requirements to trigger after sending an
+     * Envelope, this component does not actually perform that operation. Parent applications should
+     * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
+     * `createEnvelope()` call in JS-SDK.
+     * Host applications should ensure the template is "sendable" before displaying this component.
+     * To be sendable, a template must have at least one document attached, at least one participant
+     * defined, and at least one field assigned to every "signer" participant. This component will
+     * hide itself if the template is not sendable.
+     * ```ts
+     * <verdocs-send templateId={templateId} />
+     * ```
      */
     interface VerdocsSend {
         /**
@@ -1282,6 +1283,9 @@ export namespace Components {
      * Display a template preview experience. This will display the template's attached
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     * ```ts
+     * <verdocs-settings />
+     * ```
      */
     interface VerdocsSettings {
         /**
@@ -2124,26 +2128,15 @@ declare global {
         "sdkError": SDKError;
     }
     /**
-     * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
-     * occur during the process (especially successful completion). If the user is already authenticated with a valid
-     * session, this component will hide itself and fire the success callback immediately. It is up to the host application
-     * to render the next appropriate view for the application.
-     * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
-     * allows you to susbcribe to notifications from the
+     * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
+     * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
+     * host application to render the next appropriate view for the application.
+     * To simplify UI development, a visibility flag can force this component to never display. This
+     * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
      * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
      * container to allow sufficient space for the required forms.
-     * As noted below, the primary event is `authenticated`. This will always be fired at least once, immediately after
-     * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
-     * cancels) authentication steps.
-     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
-     * embed. This Element will reuse the same session produced by logging in via that Embed.
-     * ```typescript
-     * interface IAuthStatus {
-     *   // If true, the user is authenticated with a valid session
-     *   authenticated: boolean;
-     *   // Details for the user's session
-     *   session: IActiveSession | null;
-     * }
+     * ```ts
+     * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
      * ```
      */
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
@@ -2170,6 +2163,9 @@ declare global {
     }
     /**
      * Display a template building experience.
+     * ```ts
+     * <verdocs-build templateId={templateId} />
+     * ```
      */
     interface HTMLVerdocsBuildElement extends Components.VerdocsBuild, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsBuildElementEventMap>(type: K, listener: (this: HTMLVerdocsBuildElement, ev: VerdocsBuildCustomEvent<HTMLVerdocsBuildElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2886,6 +2882,9 @@ declare global {
      * Display a template preview experience. This will display the template's attached
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     * ```ts
+     * <verdocs-preview templateId={templateId} />
+     * ```
      */
     interface HTMLVerdocsPreviewElement extends Components.VerdocsPreview, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsPreviewElementEventMap>(type: K, listener: (this: HTMLVerdocsPreviewElement, ev: VerdocsPreviewCustomEvent<HTMLVerdocsPreviewElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3040,12 +3039,18 @@ declare global {
         "searchContacts": IContactSearchEvent1;
     }
     /**
-     * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
-     * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
-     * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
-     * directly to the `createEnvelope()` call in JS-SDK.
-     * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
-     * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
+     * Display a form to send a template to one or more recipients in an envelope for signing. Note
+     * that because most applications have custom workflow requirements to trigger after sending an
+     * Envelope, this component does not actually perform that operation. Parent applications should
+     * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
+     * `createEnvelope()` call in JS-SDK.
+     * Host applications should ensure the template is "sendable" before displaying this component.
+     * To be sendable, a template must have at least one document attached, at least one participant
+     * defined, and at least one field assigned to every "signer" participant. This component will
+     * hide itself if the template is not sendable.
+     * ```ts
+     * <verdocs-send templateId={templateId} />
+     * ```
      */
     interface HTMLVerdocsSendElement extends Components.VerdocsSend, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsSendElementEventMap>(type: K, listener: (this: HTMLVerdocsSendElement, ev: VerdocsSendCustomEvent<HTMLVerdocsSendElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3068,6 +3073,9 @@ declare global {
      * Display a template preview experience. This will display the template's attached
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     * ```ts
+     * <verdocs-settings />
+     * ```
      */
     interface HTMLVerdocsSettingsElement extends Components.VerdocsSettings, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsSettingsElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsElement, ev: VerdocsSettingsCustomEvent<HTMLVerdocsSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3864,26 +3872,15 @@ declare namespace LocalJSX {
         "view"?: 'completed' | 'action' | 'waiting';
     }
     /**
-     * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
-     * occur during the process (especially successful completion). If the user is already authenticated with a valid
-     * session, this component will hide itself and fire the success callback immediately. It is up to the host application
-     * to render the next appropriate view for the application.
-     * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
-     * allows you to susbcribe to notifications from the
+     * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
+     * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
+     * host application to render the next appropriate view for the application.
+     * To simplify UI development, a visibility flag can force this component to never display. This
+     * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
      * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
      * container to allow sufficient space for the required forms.
-     * As noted below, the primary event is `authenticated`. This will always be fired at least once, immediately after
-     * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
-     * cancels) authentication steps.
-     * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
-     * embed. This Element will reuse the same session produced by logging in via that Embed.
-     * ```typescript
-     * interface IAuthStatus {
-     *   // If true, the user is authenticated with a valid session
-     *   authenticated: boolean;
-     *   // Details for the user's session
-     *   session: IActiveSession | null;
-     * }
+     * ```ts
+     * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
      * ```
      */
     interface VerdocsAuth {
@@ -3896,7 +3893,7 @@ declare namespace LocalJSX {
          */
         "logo"?: string;
         /**
-          * Event fired when session authentication process has completed. Check the event contents for completion status.
+          * Event fired when session authentication process has completed. Check the event contents for completion status. This event will always be called at least once, when the component is first rendered.
          */
         "onAuthenticated"?: (event: VerdocsAuthCustomEvent<IAuthStatus>) => void;
         /**
@@ -3910,6 +3907,9 @@ declare namespace LocalJSX {
     }
     /**
      * Display a template building experience.
+     * ```ts
+     * <verdocs-build templateId={templateId} />
+     * ```
      */
     interface VerdocsBuild {
         /**
@@ -5150,6 +5150,9 @@ declare namespace LocalJSX {
      * Display a template preview experience. This will display the template's attached
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     * ```ts
+     * <verdocs-preview templateId={templateId} />
+     * ```
      */
     interface VerdocsPreview {
         /**
@@ -5332,12 +5335,18 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     /**
-     * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
-     * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
-     * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
-     * directly to the `createEnvelope()` call in JS-SDK.
-     * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
-     * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
+     * Display a form to send a template to one or more recipients in an envelope for signing. Note
+     * that because most applications have custom workflow requirements to trigger after sending an
+     * Envelope, this component does not actually perform that operation. Parent applications should
+     * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
+     * `createEnvelope()` call in JS-SDK.
+     * Host applications should ensure the template is "sendable" before displaying this component.
+     * To be sendable, a template must have at least one document attached, at least one participant
+     * defined, and at least one field assigned to every "signer" participant. This component will
+     * hide itself if the template is not sendable.
+     * ```ts
+     * <verdocs-send templateId={templateId} />
+     * ```
      */
     interface VerdocsSend {
         /**
@@ -5377,6 +5386,9 @@ declare namespace LocalJSX {
      * Display a template preview experience. This will display the template's attached
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
+     * ```ts
+     * <verdocs-settings />
+     * ```
      */
     interface VerdocsSettings {
         /**
@@ -6349,31 +6361,23 @@ declare module "@stencil/core" {
              */
             "verdocs-activity-box": LocalJSX.VerdocsActivityBox & JSXBase.HTMLAttributes<HTMLVerdocsActivityBoxElement>;
             /**
-             * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
-             * occur during the process (especially successful completion). If the user is already authenticated with a valid
-             * session, this component will hide itself and fire the success callback immediately. It is up to the host application
-             * to render the next appropriate view for the application.
-             * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
-             * allows you to susbcribe to notifications from the
+             * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
+             * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
+             * host application to render the next appropriate view for the application.
+             * To simplify UI development, a visibility flag can force this component to never display. This
+             * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
              * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
              * container to allow sufficient space for the required forms.
-             * As noted below, the primary event is `authenticated`. This will always be fired at least once, immediately after
-             * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
-             * cancels) authentication steps.
-             * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
-             * embed. This Element will reuse the same session produced by logging in via that Embed.
-             * ```typescript
-             * interface IAuthStatus {
-             *   // If true, the user is authenticated with a valid session
-             *   authenticated: boolean;
-             *   // Details for the user's session
-             *   session: IActiveSession | null;
-             * }
+             * ```ts
+             * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
              * ```
              */
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             /**
              * Display a template building experience.
+             * ```ts
+             * <verdocs-build templateId={templateId} />
+             * ```
              */
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             /**
@@ -6599,6 +6603,9 @@ declare module "@stencil/core" {
              * Display a template preview experience. This will display the template's attached
              * documents with signing fields overlaid on each page. Fields will be color-coded
              * by recipient, and will be read-only (cannot be filled, moved, or altered).
+             * ```ts
+             * <verdocs-preview templateId={templateId} />
+             * ```
              */
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
             /**
@@ -6657,18 +6664,27 @@ declare module "@stencil/core" {
              */
             "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;
             /**
-             * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
-             * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
-             * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
-             * directly to the `createEnvelope()` call in JS-SDK.
-             * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
-             * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
+             * Display a form to send a template to one or more recipients in an envelope for signing. Note
+             * that because most applications have custom workflow requirements to trigger after sending an
+             * Envelope, this component does not actually perform that operation. Parent applications should
+             * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
+             * `createEnvelope()` call in JS-SDK.
+             * Host applications should ensure the template is "sendable" before displaying this component.
+             * To be sendable, a template must have at least one document attached, at least one participant
+             * defined, and at least one field assigned to every "signer" participant. This component will
+             * hide itself if the template is not sendable.
+             * ```ts
+             * <verdocs-send templateId={templateId} />
+             * ```
              */
             "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
             /**
              * Display a template preview experience. This will display the template's attached
              * documents with signing fields overlaid on each page. Fields will be color-coded
              * by recipient, and will be read-only (cannot be filled, moved, or altered).
+             * ```ts
+             * <verdocs-settings />
+             * ```
              */
             "verdocs-settings": LocalJSX.VerdocsSettings & JSXBase.HTMLAttributes<HTMLVerdocsSettingsElement>;
             /**

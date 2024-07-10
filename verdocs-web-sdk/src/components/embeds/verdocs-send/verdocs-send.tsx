@@ -21,13 +21,20 @@ const doneIcon =
 type TAnnotatedRole = IRole & {id: string};
 
 /**
- * Display a form to collect recipient information for a new Envelope. If used anonymously, the specified `templateId` must be public.
- * Because most applications have custom workflow requirements to trigger after sending an Envelope, this component does not actually
- * perform that operation. Parent applications should listen for the `onSend` event, and can pass the contents of `event.detail`
- * directly to the `createEnvelope()` call in JS-SDK.
+ * Display a form to send a template to one or more recipients in an envelope for signing. Note
+ * that because most applications have custom workflow requirements to trigger after sending an
+ * Envelope, this component does not actually perform that operation. Parent applications should
+ * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
+ * `createEnvelope()` call in JS-SDK.
  *
- * Host applications should ensure the template is "sendable" before displaying this component. To be sendable, a template must have
- * at least one document attached, at least one participant defined, and at least one field assigned to every "signer" participant.
+ * Host applications should ensure the template is "sendable" before displaying this component.
+ * To be sendable, a template must have at least one document attached, at least one participant
+ * defined, and at least one field assigned to every "signer" participant. This component will
+ * hide itself if the template is not sendable.
+ *
+ * ```ts
+ * <verdocs-send templateId={templateId} />
+ * ```
  */
 @Component({
   tag: 'verdocs-send',
@@ -103,17 +110,31 @@ export class VerdocsSend {
 
   async componentWillLoad() {
     try {
-      const loadSessionResult = this.endpoint.loadSession();
-
-      if (!this.templateId) {
-        console.log(`[SEND] Missing required template ID ${this.templateId}`);
-        return;
-      }
-
+      this.endpoint.loadSession();
       if (!this.endpoint.session) {
-        console.log('[SEND] Unable to start builder session, must be authenticated');
+        console.log('[SEND] Unable to start Send operation, must be authenticated');
         return;
       }
+
+      return this.reloadTemplateData();
+    } catch (e) {
+      console.log('[SEND] Error with send session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+  }
+
+  async componentWillUpdate() {
+    return this.reloadTemplateData();
+  }
+
+  async reloadTemplateData() {
+    if (!this.templateId) {
+      console.log(`[SEND] Missing required template ID ${this.templateId}`);
+      return;
+    }
+
+    try {
+      const loadSessionResult = this.endpoint.loadSession();
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
       this.roleStore = getTemplateRoleStore(this.templateId);
@@ -224,6 +245,14 @@ export class VerdocsSend {
   }
 
   render() {
+    if (!this.endpoint.session) {
+      return (
+        <Host style={{display: 'flex'}}>
+          <verdocs-component-error message="You must be authenticated to use this module." />
+        </Host>
+      );
+    }
+
     const roleNames = getRoleNames(this.roleStore);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= roleNames.length;

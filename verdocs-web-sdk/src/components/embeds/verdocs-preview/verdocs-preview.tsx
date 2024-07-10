@@ -12,6 +12,10 @@ import {SDKError} from '../../../utils/errors';
  * Display a template preview experience. This will display the template's attached
  * documents with signing fields overlaid on each page. Fields will be color-coded
  * by recipient, and will be read-only (cannot be filled, moved, or altered).
+ *
+ * ```ts
+ * <verdocs-preview templateId={templateId} />
+ * ```
  */
 @Component({
   tag: 'verdocs-preview',
@@ -44,24 +48,34 @@ export class VerdocsPreview {
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
-
-      if (!this.templateId) {
-        console.log(`[PREVIEW] Missing required template ID ${this.templateId}`);
-        return;
-      }
-
       if (!this.endpoint.session) {
         console.log('[PREVIEW] Unable to start builder session, must be authenticated');
         return;
       }
 
+      return this.reloadTemplateData();
+    } catch (e) {
+      console.log('[PREVIEW] Error with preview session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+  }
+
+  async componentWillUpdate() {
+    return this.reloadTemplateData();
+  }
+
+  async reloadTemplateData() {
+    if (!this.templateId) {
+      console.log(`[PREVIEW] Missing required template ID ${this.templateId}`);
+      return;
+    }
+
+    try {
       getTemplateStore(this.endpoint, this.templateId, true)
         .then(ts => {
           this.templateStore = ts;
-          console.log('[PREVIEW] Loaded Template Store', ts.state);
           this.fieldStore = getTemplateFieldStore(this.templateId);
           this.roleStore = getTemplateRoleStore(this.templateId);
-          console.log('[PREVIEW] Loaded template', this.templateStore.state, this.roleStore.get('roles'), this.fieldStore.get('fields'));
           this.loading = false;
         })
         .catch(e => {

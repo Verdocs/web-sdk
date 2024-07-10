@@ -45,8 +45,8 @@ export class VerdocsTemplateBuildTabs {
 
   @Watch('step')
   onStepChanged() {
-    console.log('Step changed', this.step, this.templateId);
-    this.loadTemplate().catch((e: any) => console.log('Unknown Error', e));
+    console.log('[BUILD_TABS] Step changed', this.step, this.templateId);
+    return this.reloadTemplateData();
   }
 
   @State()
@@ -55,27 +55,36 @@ export class VerdocsTemplateBuildTabs {
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
-
       if (!this.endpoint.session) {
         console.log('[BUILD_TABS] Unable to start builder session, must be authenticated');
         return;
       }
 
-      if (!this.templateId) {
-        this.step = 'preview';
-        return;
-      }
-
-      this.loadTemplate().catch(e => console.log('[BUILD_TABS] Unable to load template', e));
+      return this.reloadTemplateData();
     } catch (e) {
       console.log('[BUILD_TABS] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  async loadTemplate() {
-    if (this.templateId) {
+  async componentWillUpdate() {
+    return this.reloadTemplateData();
+  }
+
+  async reloadTemplateData() {
+    console.log('[BUILD_TABS] Reloading', this.step, this.templateId);
+
+    if (!this.templateId) {
+      this.step = 'attachments';
+      console.log('[BUILD_TABS] Missing required template ID, forcing view to attachments');
+      return;
+    }
+
+    try {
       this.store = await getTemplateStore(this.endpoint, this.templateId, false);
+    } catch (e) {
+      console.log('[BUILD_TABS] Error loading template', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
@@ -99,7 +108,7 @@ export class VerdocsTemplateBuildTabs {
     let canPreview = false;
     let canEditFields = false;
     let canEditRoles = false;
-    console.log('[BUILD_TABS] Rendering tabs', this.templateId, this.step);
+    console.log('[BUILD_TABS] Rendering tabs', this.templateId, this.step, JSON.stringify(this.store?.state));
     if (this.templateId && this.store && this.store.state) {
       canEditRoles = this.store?.state?.documents?.length > 0;
       canEditFields = canEditRoles && this.store?.state?.roles?.length > 0;

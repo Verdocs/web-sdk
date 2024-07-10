@@ -54,32 +54,18 @@ export interface IAuthStatus {
 }
 
 /**
- * Display an authentication dialog that allows the user to login or sign up. Callbacks are provided for events that
- * occur during the process (especially successful completion). If the user is already authenticated with a valid
- * session, this component will hide itself and fire the success callback immediately. It is up to the host application
- * to render the next appropriate view for the application.
+ * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
+ * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
+ * host application to render the next appropriate view for the application.
  *
- * To simplify some types of authentication flows, a visibility flag can force this component to never display. This
- * allows you to susbcribe to notifications from the
+ * To simplify UI development, a visibility flag can force this component to never display. This
+ * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
  *
  * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
  * container to allow sufficient space for the required forms.
  *
- * As noted below, the primary event is `authenticated`. This will always be fired at least once, immediately after
- * the widget is rendered and the user's status has been checked. It may be fired again as the user completes (or
- * cancels) authentication steps.
- *
- * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
- * embed. This Element will reuse the same session produced by logging in via that Embed.
- *
- * ```typescript
- * interface IAuthStatus {
- *   // If true, the user is authenticated with a valid session
- *   authenticated: boolean;
- *
- *   // Details for the user's session
- *   session: IActiveSession | null;
- * }
+ * ```ts
+ * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
  * ```
  */
 @Component({
@@ -108,7 +94,9 @@ export class VerdocsAuth {
   @Prop() logo: string = 'https://app.verdocs.com/assets/blue-logo.svg';
 
   /**
-   * Event fired when session authentication process has completed. Check the event contents for completion status.
+   * Event fired when session authentication process has completed. Check the event
+   * contents for completion status. This event will always be called at least once,
+   * when the component is first rendered.
    */
   @Event({composed: true}) authenticated: EventEmitter<IAuthStatus>;
 

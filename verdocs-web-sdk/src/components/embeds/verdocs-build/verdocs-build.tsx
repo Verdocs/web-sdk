@@ -7,6 +7,10 @@ export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' 
 
 /**
  * Display a template building experience.
+ *
+ * ```ts
+ * <verdocs-build templateId={templateId} />
+ * ```
  */
 @Component({
   tag: 'verdocs-build',
@@ -14,6 +18,9 @@ export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' 
   shadow: false,
 })
 export class VerdocsBuild {
+  // Primarily a UX improvement within Storybook
+  private previousTemplateId = '';
+
   @Element() el!: any;
 
   /**
@@ -66,13 +73,13 @@ export class VerdocsBuild {
 
   @Watch('templateId')
   onTemplateIdChanged(newTemplateId: string) {
-    console.log('Template ID changed', newTemplateId);
+    console.log('[BUILD] Template ID changed', newTemplateId);
     this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
   }
 
   @Watch('step')
   onStepChanged(newStep: TVerdocsBuildStep) {
-    console.log('Step changed', newStep);
+    console.log('[BUILD] Step changed', newStep);
     this.loadTemplate(this.templateId).catch((e: any) => console.log('Unknown Error', e));
   }
 
@@ -82,18 +89,36 @@ export class VerdocsBuild {
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
-
-      if (!this.templateId) {
-        console.log(`[BUILD] No template ID, activating upload mode`);
-        this.step = 'attachments';
-        return;
-      }
-
       if (!this.endpoint.session) {
         console.log('[BUILD] Unable to start builder session, must be authenticated');
         return;
       }
 
+      return this.reloadTemplateData();
+    } catch (e) {
+      console.log('[BUILD] Error with builder session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+  }
+
+  async componentWillUpdate() {
+    if (this.templateId !== this.previousTemplateId && this.step === 'attachments') {
+      console.log('[BUILD] Template ID changed, resetting tab to preview');
+      this.previousTemplateId = this.templateId;
+      this.step = 'preview';
+    }
+
+    return this.reloadTemplateData();
+  }
+
+  async reloadTemplateData() {
+    if (!this.templateId) {
+      console.log(`[BUILD] No template ID, activating upload mode`);
+      this.step = 'attachments';
+      return;
+    }
+
+    try {
       this.loadTemplate(this.templateId).catch(e => console.log('[BUILD] Unable to load template', e));
     } catch (e) {
       console.log('[BUILD] Error loading template', e);
@@ -103,14 +128,12 @@ export class VerdocsBuild {
 
   async loadTemplate(templateId: string) {
     if (templateId) {
-      console.log('Loading store', templateId);
       this.store = await getTemplateStore(this.endpoint, templateId, false);
       // forceUpdate(this.el);
     }
   }
 
-  handleCancel(e: any) {
-    console.log('Cancel', e.detail);
+  handleCancel() {
     this.step = 'preview';
   }
 
@@ -140,7 +163,6 @@ export class VerdocsBuild {
   }
 
   handleStepChanged(step: TVerdocsBuildStep) {
-    console.log('osc', step);
     this.step = step;
     this.stepChanged?.emit(step);
   }
@@ -169,7 +191,7 @@ export class VerdocsBuild {
 
             <verdocs-template-create
               endpoint={this.endpoint}
-              onExit={e => this.handleCancel(e)}
+              onExit={() => this.handleCancel()}
               onNext={() => this.handleAttachmentsNext()}
               onTemplateCreated={e => this.handleTemplateCreated(e.detail.templateId)}
             />
@@ -195,7 +217,7 @@ export class VerdocsBuild {
             <verdocs-template-attachments
               templateId={this.templateId}
               endpoint={this.endpoint}
-              onExit={e => this.handleCancel(e)}
+              onExit={() => this.handleCancel()}
               onNext={() => this.handleAttachmentsNext()}
               onTemplateUpdated={e => this.handleTemplateUpdated(e)}
             />
@@ -205,7 +227,7 @@ export class VerdocsBuild {
             <verdocs-template-roles
               templateId={this.templateId}
               endpoint={this.endpoint}
-              onExit={e => this.handleCancel(e)}
+              onExit={() => this.handleCancel()}
               onNext={() => this.handleRolesNext()}
               onRolesUpdated={e => this.handleRolesUpdated(e)}
             />

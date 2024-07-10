@@ -6,6 +6,10 @@ import {SDKError} from '../../../utils/errors';
  * Display a template preview experience. This will display the template's attached
  * documents with signing fields overlaid on each page. Fields will be color-coded
  * by recipient, and will be read-only (cannot be filled, moved, or altered).
+ *
+ * ```ts
+ * <verdocs-settings />
+ * ```
  */
 @Component({
   tag: 'verdocs-settings',
@@ -40,11 +44,10 @@ export class VerdocsSettings {
   }
 
   render() {
-    console.log('sess', this.endpoint.session);
     if (!this.endpoint.session) {
       return (
         <Host>
-          <verdocs-loader />
+          <verdocs-component-error message="You must be authenticated to use this module." />
         </Host>
       );
     }

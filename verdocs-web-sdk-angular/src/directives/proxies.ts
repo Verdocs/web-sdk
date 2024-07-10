@@ -77,7 +77,9 @@ import type { SDKError as IVerdocsAuthSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsAuth extends Components.VerdocsAuth {
   /**
-   * Event fired when session authentication process has completed. Check the event contents for completion status.
+   * Event fired when session authentication process has completed. Check the event
+contents for completion status. This event will always be called at least once,
+when the component is first rendered.
    */
   authenticated: EventEmitter<CustomEvent<IVerdocsAuthIAuthStatus>>;
   /**

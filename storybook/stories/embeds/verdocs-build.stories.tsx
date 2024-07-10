@@ -13,7 +13,7 @@ export default {
   },
 } as Meta;
 
-export const Build = ({templateId, step, ...params}) => {
-  console.log('rendering', {templateId, step, params});
-  return html`<verdocs-build .step=${step} .templateId=${templateId} />`;
-};
+export const Build = ({templateId, step, ...params}) =>
+  html`<div style="width: 100%; height: 500px; padding: 20px; box-sizing: border-box;">
+    <verdocs-build .step=${step} .templateId=${templateId} />
+  </div>`;
