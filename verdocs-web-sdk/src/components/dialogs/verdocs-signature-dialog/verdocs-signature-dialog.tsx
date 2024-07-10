@@ -36,12 +36,11 @@ export class VerdocsSignatureDialog {
   componentWillLoad() {
     this.enteredName = this.name;
 
-    // TODO
-    // const ds = new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v19/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup6hNX6plRP.woff)');
-    // ds.load().then(font => {
-    //   document.fonts.add(font);
-    //   this.fontLoaded = true;
-    // });
+    const ds = new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v19/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup6hNX6plRP.woff)');
+    ds.load().then(font => {
+      document.fonts.add(font);
+      this.fontLoaded = true;
+    });
   }
 
   componentDidLoad() {

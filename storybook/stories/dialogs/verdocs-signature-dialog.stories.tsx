@@ -19,4 +19,7 @@ export default {
   },
 } as Meta;
 
-export const SignatureDialog = ({name, onCancel, onExit}) => html`<verdocs-signature-dialog .name=${name} @cancel=${onCancel} @exit=${onExit} />`;
+export const SignatureDialog = ({name, onCancel, onExit}) =>
+  html`<div style="width: 500px; height: 500px;">
+    <verdocs-signature-dialog .name=${name} @cancel=${onCancel} @exit=${onExit} />
+  </div>`;

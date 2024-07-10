@@ -16,4 +16,7 @@ export default {
   },
 } as Meta;
 
-export const UploadDialog = ({message, open, onExit}) => html`<verdocs-upload-dialog .message=${message} .open=${open} @exit=${onExit} />`;
+export const UploadDialog = ({message, open, onExit}) =>
+  html`<div style="width: 500px; height: 500px;">
+    <verdocs-upload-dialog .message=${message} .open=${open} @exit=${onExit} />
+  </div>`;

@@ -12,10 +12,12 @@ export default {
 } as Meta;
 
 export const Default = ({onExit, onNext}) =>
-  html`<verdocs-dialog @exit=${onExit}>
-    <h1 slot="heading">Test Dialog</h1>
-    <p>Test dialog box.</p>
-    <div class="buttons">
-      <verdocs-button label="OK" size="small" onClick=${onNext} />
-    </div>
-  </verdocs-dialog>`;
+  html`<div style="width: 500px; height: 200px;">
+    <verdocs-dialog @exit=${onExit}>
+      <h1 slot="heading">Test Dialog</h1>
+      <p>Test dialog box.</p>
+      <div class="buttons">
+        <verdocs-button label="OK" size="small" onClick=${onNext} />
+      </div>
+    </verdocs-dialog>
+  </div>`;

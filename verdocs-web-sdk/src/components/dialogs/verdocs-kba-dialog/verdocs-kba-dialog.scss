@@ -75,6 +75,19 @@ verdocs-kba-dialog {
     font-weight: 400;
   }
 
+  .input {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    margin: 16px 0 32px;
+
+    label {
+      line-height: 10px;
+      font-weight: 500;
+    }
+  }
+
   .choices {
     display: grid;
     gap: 15px;

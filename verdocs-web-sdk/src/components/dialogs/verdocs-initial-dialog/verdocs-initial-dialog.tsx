@@ -35,12 +35,11 @@ export class VerdocsInitialDialog {
   componentWillLoad() {
     this.enteredInitials = this.initials.toUpperCase();
 
-    // TODO
-    // const ds = new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v19/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup6hNX6plRP.woff)');
-    // ds.load().then(font => {
-    //   document.fonts.add(font);
-    //   this.fontLoaded = true;
-    // });
+    const ds = new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v19/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup6hNX6plRP.woff)');
+    ds.load().then(font => {
+      document.fonts.add(font);
+      this.fontLoaded = true;
+    });
   }
 
   componentDidLoad() {
@@ -52,11 +51,14 @@ export class VerdocsInitialDialog {
   }
 
   redrawSignature() {
+    console.log('redrawing sig');
     if (!this.canvasElement) {
+      console.log('no canvas');
       return;
     }
 
     const canvasWidth = this.canvasElement.width;
+    console.log('cw', canvasWidth);
 
     const context = this.canvasElement.getContext('2d');
     context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);

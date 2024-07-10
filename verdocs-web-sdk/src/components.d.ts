@@ -961,9 +961,7 @@ export namespace Components {
         "initials": string;
     }
     /**
-     * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
-     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
-     * It can also be dismissed by clicking the background overlay.
+     * Prompt the user to confirm their identity with a series of questions.
      */
     interface VerdocsKbaDialog {
         /**
@@ -2755,9 +2753,7 @@ declare global {
         "next": string;
     }
     /**
-     * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
-     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
-     * It can also be dismissed by clicking the background overlay.
+     * Prompt the user to confirm their identity with a series of questions.
      */
     interface HTMLVerdocsKbaDialogElement extends Components.VerdocsKbaDialog, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsKbaDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsKbaDialogElement, ev: VerdocsKbaDialogCustomEvent<HTMLVerdocsKbaDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4993,9 +4989,7 @@ declare namespace LocalJSX {
         "onNext"?: (event: VerdocsInitialDialogCustomEvent<string>) => void;
     }
     /**
-     * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
-     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
-     * It can also be dismissed by clicking the background overlay.
+     * Prompt the user to confirm their identity with a series of questions.
      */
     interface VerdocsKbaDialog {
         /**
@@ -6547,9 +6541,7 @@ declare module "@stencil/core" {
              */
             "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
             /**
-             * Display a text input field. This adds a partially-transparent overlay and screen-centered dialog
-             * box with a message and optional header/title. An OK button is shown that will dismiss the message.
-             * It can also be dismissed by clicking the background overlay.
+             * Prompt the user to confirm their identity with a series of questions.
              */
             "verdocs-kba-dialog": LocalJSX.VerdocsKbaDialog & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;
             /**

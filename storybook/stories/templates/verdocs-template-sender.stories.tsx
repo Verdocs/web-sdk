@@ -2,7 +2,7 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Dialogs/Sender',
+  title: 'Templates/Sender',
   component: 'verdocs-template-sender',
   args: {
     templateId: '',

@@ -22,4 +22,6 @@ export default {
 } as Meta;
 
 export const OkDialog = ({heading, message, showCancel, onNext, onExit}) =>
-  html`<verdocs-ok-dialog .heading=${heading} .message=${message} .showCancel=${showCancel} @exit=${onExit} @next=${onNext} />`;
+  html`<div style="width: 500px; height: 300px;">
+    <verdocs-ok-dialog .heading=${heading} .message=${message} .showCancel=${showCancel} @exit=${onExit} @next=${onNext} />
+  </div>`;

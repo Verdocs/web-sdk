@@ -30,9 +30,9 @@ export class VerdocsDialog {
               <div class="heading">Please Confirm</div>
             </slot>
 
-            <slot>
-              <div class="content"></div>
-            </slot>
+            <div class="content">
+              <slot></slot>
+            </div>
           </div>
         </div>
       </Host>

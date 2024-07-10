@@ -19,4 +19,7 @@ export default {
   },
 } as Meta;
 
-export const InitialDialog = ({initials, onNext, onExit}) => html`<verdocs-initial-dialog .initials=${initials} @exit=${onExit} @next=${onNext} />`;
+export const InitialDialog = ({initials, onNext, onExit}) =>
+  html`<div style="width: 500px; height: 500px;">
+    <verdocs-initial-dialog .initials=${initials} @exit=${onExit} @next=${onNext} />
+  </div>`;
