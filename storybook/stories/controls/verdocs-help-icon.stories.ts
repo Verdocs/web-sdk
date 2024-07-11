@@ -11,4 +11,4 @@ export default {
   argTypes: {},
 } as Meta;
 
-export const HelpIcon = ({text}) => html`<verdocs-help-icon .text=${text} /> `;
+export const HelpIcon = ({text}) => html`<verdocs-help-icon .text=${text} />`;

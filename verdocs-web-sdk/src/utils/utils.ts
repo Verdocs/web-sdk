@@ -189,17 +189,10 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
         el.setAttribute('tabIndex', tabIndex);
       }
 
-      if (editable) {
-        el.setAttribute('editable', true);
-      }
-
-      if (draggable) {
-        el.setAttribute('draggable', true);
-      }
-
-      if (done) {
-        el.setAttribute('done', true);
-      }
+      console.log(field.name, 'editable', editable);
+      el.setAttribute('editable', editable);
+      el.setAttribute('draggable', draggable);
+      el.setAttribute('done', done);
 
       setControlStyles(el, field, docPage.xScale, docPage.yScale);
       controlsDiv.appendChild(el);
@@ -313,9 +306,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
   }
 };
 
-// TODO: We can clean this up a lot if we alter the API to emit both setting and settings regardless of the source type,
-//   but then merge the SDK types to encourage developers to use just `settings`.
-export const getFieldSettings = (field: ITemplateField | IEnvelopeField | undefined) => field.settings;
+export const getFieldSettings = (field: ITemplateField | IEnvelopeField | undefined) => field?.settings || {};
 
 /**
  * Helper function to safely set/update components in a CSS transform attribute. Transform is normally set as a string of

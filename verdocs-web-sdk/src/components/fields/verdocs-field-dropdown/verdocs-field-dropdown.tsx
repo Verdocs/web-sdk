@@ -6,8 +6,7 @@ import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
 /**
- * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
- * input types like text and checkbox.
+ * Displays a dropdown field that allows the user to choose one of a list of options.
  */
 @Component({
   tag: 'verdocs-field-dropdown',
@@ -20,48 +19,48 @@ export class VerdocsFieldDropdown {
   /**
    * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
    */
-  @Prop() templateid: string = '';
+  @Prop({reflect: true}) templateid: string = '';
 
   /**
    * The name of the field to display.
    */
-  @Prop() fieldname: string = '';
+  @Prop({reflect: true}) fieldname: string = '';
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
    */
-  @Prop() disabled?: boolean = false;
+  @Prop({reflect: true}) disabled?: boolean = false;
 
   /**
    * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be
    * changed, so it should typically only be enabled in the Builder.
    */
-  @Prop() editable?: boolean = false;
+  @Prop({reflect: true}) editable?: boolean = false;
 
   /**
    * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
    */
-  @Prop() moveable?: boolean = false;
+  @Prop({reflect: true}) moveable?: boolean = false;
 
   /**
    * If set, the field is considered "done" and is drawn in a display-final-value state.
    */
-  @Prop() done?: boolean = false;
+  @Prop({reflect: true}) done?: boolean = false;
 
   /**
    * If set, the field will be be scaled horizontally by this factor.
    */
-  @Prop() xscale?: number = 1;
+  @Prop({reflect: true}) xscale?: number = 1;
 
   /**
    * If set, the field will be be scaled vertically by this factor.
    */
-  @Prop() yscale?: number = 1;
+  @Prop({reflect: true}) yscale?: number = 1;
 
   /**
    * The page the field is on
    */
-  @Prop() pagenumber?: number = 1;
+  @Prop({reflect: true}) pagenumber?: number = 1;
 
   /**
    * Event fired when the input field value changes. Note that this will only be fired on blur, tab-out, ENTER key press, etc.
@@ -115,39 +114,34 @@ export class VerdocsFieldDropdown {
   }
 
   render() {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
-    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
-    if (!field) {
-      return <Fragment />;
-    }
+    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
-    const settings = getFieldSettings(field);
-    // TODO:
-    // const disabled = this.disabled ?? settings.disabled ?? false;
-    const disabled = this.disabled ?? false;
-    const value = settings?.value || '';
+    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
+    const {required = false, role_name = ''} = field || {};
+    const {result: value = '', options = []} = getFieldSettings(field);
 
-    if (this.done) {
-      return <Host class={{done: this.done}}>{value}</Host>;
+    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+
+    if (done) {
+      return <Host class={{done}}>{value}</Host>;
     }
 
     return (
-      <Host class={{required: field.required, disabled}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done}} style={{backgroundColor}}>
         <select disabled={disabled} ref={el => (this.el = el)} onChange={e => this.handleChange(e)}>
           <option value="">Select...</option>
-          {(settings.options || []).map(option => (
+          {options.map(option => (
             <option value={option.id} selected={option.value === value}>
               {option.value}
             </option>
           ))}
         </select>
 
-        {this.editable && (
+        {editable && (
           <Fragment>
             <div
-              id={`verdocs-settings-panel-trigger-${field.name}`}
-              style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+              id={`verdocs-settings-panel-trigger-${fieldname}`}
+              style={{transform: `scale(${Math.floor((1 / xscale) * 1000) / 1000}, ${Math.floor((1 / yscale) * 1000) / 1000})`}}
               class="settings-icon"
               innerHTML={SettingsIcon}
               onClick={(e: any) => {
@@ -157,13 +151,13 @@ export class VerdocsFieldDropdown {
             />
 
             {this.showingProperties && (
-              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
+              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={this.templateid}
-                  fieldName={field.name}
+                  templateId={templateid}
+                  fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {
-                    this.deleted?.emit({fieldName: field.name});
+                    this.deleted?.emit({fieldName: fieldname});
                     return this.hideSettingsPanel();
                   }}
                   onSettingsChanged={e => {

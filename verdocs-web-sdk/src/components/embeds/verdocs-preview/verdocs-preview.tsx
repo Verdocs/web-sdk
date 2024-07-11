@@ -1,5 +1,5 @@
 import {integerSequence, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, Prop, h, State, Fragment} from '@stencil/core';
+import {Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -41,6 +41,12 @@ export class VerdocsPreview {
 
   @State() loading = true;
 
+  @Watch('templateId')
+  onTemplateIdChanged(newTemplateId: string) {
+    console.log('[PREVIEW] Template ID changed', newTemplateId);
+    this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
+  }
+
   templateStore: TTemplateStore | null = null;
   fieldStore: TTemplateFieldStore | null = null;
   roleStore: TTemplateRoleStore | null = null;
@@ -53,37 +59,35 @@ export class VerdocsPreview {
         return;
       }
 
-      return this.reloadTemplateData();
+      if (!this.templateId) {
+        console.log(`[PREVIEW] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      try {
+        getTemplateStore(this.endpoint, this.templateId, true)
+          .then(ts => {
+            this.templateStore = ts;
+            this.fieldStore = getTemplateFieldStore(this.templateId);
+            this.roleStore = getTemplateRoleStore(this.templateId);
+            this.loading = false;
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      } catch (e) {
+        console.log('[PREVIEW] Error with preview session', e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      }
     } catch (e) {
       console.log('[PREVIEW] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  async componentWillUpdate() {
-    return this.reloadTemplateData();
-  }
-
-  async reloadTemplateData() {
-    if (!this.templateId) {
-      console.log(`[PREVIEW] Missing required template ID ${this.templateId}`);
-      return;
-    }
-
-    try {
-      getTemplateStore(this.endpoint, this.templateId, true)
-        .then(ts => {
-          this.templateStore = ts;
-          this.fieldStore = getTemplateFieldStore(this.templateId);
-          this.roleStore = getTemplateRoleStore(this.templateId);
-          this.loading = false;
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    } catch (e) {
-      console.log('[PREVIEW] Error with preview session', e);
-      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+  async loadTemplate(templateId: string) {
+    if (templateId) {
+      this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
     }
   }
 
@@ -91,7 +95,7 @@ export class VerdocsPreview {
     const pageInfo = e.detail as IDocumentPageInfo;
 
     const fields = this.templateStore?.state?.fields.filter(field => field.page === pageInfo.pageNumber);
-    console.log('[PREVIEW] Page rendered', pageInfo, fields);
+    // console.log('[PREVIEW] Page rendered', pageInfo, fields);
     fields.forEach(field => renderDocumentField(field, pageInfo, {disabled: true, editable: false, draggable: false}));
   }
 
@@ -116,7 +120,7 @@ export class VerdocsPreview {
                   documentId={document.id}
                   pageNumber={pageNumber}
                   disabled={true}
-                  editable={true}
+                  editable={false}
                   done={false}
                   virtualWidth={612}
                   virtualHeight={792}

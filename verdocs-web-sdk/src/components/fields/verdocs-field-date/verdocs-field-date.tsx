@@ -29,48 +29,48 @@ export class VerdocsFieldDate {
   /**
    * The template the field is for/from. Only required for the field builder, passed down to the properties component.
    */
-  @Prop() templateid: string = '';
+  @Prop({reflect: true}) templateid: string = '';
 
   /**
    * The name of the field to display.
    */
-  @Prop() fieldname: string = '';
+  @Prop({reflect: true}) fieldname: string = '';
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
    */
-  @Prop() disabled?: boolean = false;
+  @Prop({reflect: true}) disabled?: boolean = false;
 
   /**
    * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be
    * changed, so it should typically only be enabled in the Builder.
    */
-  @Prop() editable?: boolean = false;
+  @Prop({reflect: true}) editable?: boolean = false;
 
   /**
    * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
    */
-  @Prop() moveable?: boolean = false;
+  @Prop({reflect: true}) moveable?: boolean = false;
 
   /**
    * If set, the field is considered "done" and is drawn in a display-final-value state.
    */
-  @Prop() done?: boolean = false;
+  @Prop({reflect: true}) done?: boolean = false;
 
   /**
    * If set, the field will be be scaled horizontally by this factor.
    */
-  @Prop() xscale?: number = 1;
+  @Prop({reflect: true}) xscale?: number = 1;
 
   /**
    * If set, the field will be be scaled vertically by this factor.
    */
-  @Prop() yscale?: number = 1;
+  @Prop({reflect: true}) yscale?: number = 1;
 
   /**
    * The page the field is on
    */
-  @Prop() pagenumber?: number = 1;
+  @Prop({reflect: true}) pagenumber?: number = 1;
 
   /**
    * If set, the field will be be scaled vertically by this factor.
@@ -121,12 +121,7 @@ export class VerdocsFieldDate {
       onShow: () => (this.focused = true),
       onHide: () => (this.focused = false),
       onSelect: ({date, formattedDate}) => {
-        console.log('Selected date', formattedDate, date);
-        const event = new CustomEvent('fieldChange', {
-          detail: {date, formattedDate},
-        });
-        // const event = new window.Event('input', {composed: true, bubbles: true, cancelable: true});
-        console.log('Will dispatch', event, this.el);
+        const event = new CustomEvent('fieldChange', {detail: {date, formattedDate}});
         this.hostEl.dispatchEvent(event);
       },
     });
@@ -152,41 +147,40 @@ export class VerdocsFieldDate {
 
   // NOTE: We don't use a "date" field here because browsers vary widely in their formatting of it.
   render() {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    const roleIndex = getRoleIndex(this.roleStore, field?.role_name);
-    const backgroundColor = field?.['rgba'] || getRGBA(roleIndex);
+    const {templateid, fieldname = '', containerId = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
-    const settings = getFieldSettings(field);
-    // TODO:
-    // const disabled = this.disabled ?? settings.disabled ?? false;
-    const disabled = this.disabled ?? false;
+    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
+    const {required = false, role_name = '', placeholder = 'Date...'} = field || {};
+    const {result: value = ''} = getFieldSettings(field);
+
+    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+
+    const formattedValue = value ? format(new Date(value), FORMAT_DATE) : '';
 
     if (this.done) {
-      const formatted = settings?.result ? format(new Date(settings?.result), FORMAT_DATE) : '';
-
-      return <Host class={{done: this.done}}>{formatted}</Host>;
+      return <Host class={{done}}>{formattedValue}</Host>;
     }
 
     return (
-      <Host class={{required: field?.required, disabled, focused: this.focused}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         <input
-          name={field?.name}
+          name={fieldname}
           class="input-el"
           type="text"
-          value=""
-          id={this.containerId}
+          value={formattedValue}
+          id={containerId}
           disabled={disabled}
-          placeholder={field.placeholder ?? ''}
+          placeholder={placeholder}
           ref={el => (this.el = el)}
           onFocus={() => (this.focused = true)}
           onBlur={() => (this.focused = false)}
         />
 
-        {this.editable && (
+        {editable && (
           <Fragment>
             <div
-              id={`verdocs-settings-panel-trigger-${field.name}`}
-              style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+              id={`verdocs-settings-panel-trigger-${fieldname}`}
+              style={{transform: `scale(${Math.floor((1 / xscale) * 1000) / 1000}, ${Math.floor((1 / yscale) * 1000) / 1000})`}}
               class="settings-icon"
               innerHTML={SettingsIcon}
               onClick={(e: any) => {
@@ -198,11 +192,11 @@ export class VerdocsFieldDate {
             {this.showingProperties && (
               <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={this.templateid}
-                  fieldName={field?.name}
+                  templateId={templateid}
+                  fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {
-                    this.deleted?.emit({fieldName: field?.name});
+                    this.deleted?.emit({fieldName: fieldname});
                     return this.hideSettingsPanel();
                   }}
                   onSettingsChanged={e => {

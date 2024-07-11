@@ -556,7 +556,7 @@ to the envelope detail view.
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -564,7 +564,7 @@ to the envelope detail view.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLElement;
@@ -591,7 +591,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
   /**
    * Event fired when the field is deleted.
    */
-  attached: EventEmitter<CustomEvent<{data: string; lastModified: number; name: string; size: number; type: string}>>;
+  attached: EventEmitter<CustomEvent<ISelectedFile>>;
 }
 
 

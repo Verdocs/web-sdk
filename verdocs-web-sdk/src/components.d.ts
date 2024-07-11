@@ -412,6 +412,10 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
           * The name of the field to display.
          */
         "fieldname": string;
@@ -535,8 +539,7 @@ export namespace Components {
         "yscale"?: number;
     }
     /**
-     * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
-     * input types like text and checkbox.
+     * Displays a dropdown field that allows the user to choose one of a list of options.
      */
     interface VerdocsFieldDropdown {
         /**
@@ -580,8 +583,12 @@ export namespace Components {
         "yscale"?: number;
     }
     /**
-     * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
-     * button will be shown. Clicking the button will show a dialog to adopt an initial.
+     * Displays an initial field. If an initial already exists, it will be displayed and the field
+     * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
+     * show a dialog to adopt an initial.
+     * NOTE: When initial fields are completed they will be filled with an initial "stamp".
+     * This requires operation against a live, valid envelope. If you are testing this component
+     * in Storybook, it will not be visible here.
      */
     interface VerdocsFieldInitial {
         /**
@@ -725,8 +732,12 @@ export namespace Components {
         "yscale"?: number;
     }
     /**
-     * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
-     * button will be shown. Clicking the button will show a dialog to adopt a signature.
+     * Displays a signature field. If a signature already exists, it will be displayed and the field
+     * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
+     * show a dialog to adopt a signature.
+     * NOTE: When signature fields are completed they will be filled with a signature "stamp".
+     * This requires operation against a live, valid envelope. If you are testing this component
+     * in Storybook, it will not be visible here.
      */
     interface VerdocsFieldSignature {
         /**
@@ -774,7 +785,8 @@ export namespace Components {
         "yscale"?: number;
     }
     /**
-     * Display a multi-line text input field.
+     * Display a multi-line text input field. Reminder: the "position" of the field is specified
+     * as the BOTTOM-LEFT corner.
      */
     interface VerdocsFieldTextarea {
         /**
@@ -822,7 +834,7 @@ export namespace Components {
         "yscale"?: number;
     }
     /**
-     * Display a text input field.
+     * Display a simple 1-line text input field.
      */
     interface VerdocsFieldTextbox {
         /**
@@ -870,7 +882,8 @@ export namespace Components {
         "yscale"?: number;
     }
     /**
-     * Display a timestamp field.
+     * Display a timestamp. Timestamps are not editable by signers. Instead, they are automatically
+     * filled when the signer submits the document.
      */
     interface VerdocsFieldTimestamp {
         /**
@@ -2443,7 +2456,7 @@ declare global {
     interface HTMLVerdocsFieldAttachmentElementEventMap {
         "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
         "deleted": {fieldName: string};
-        "attached": {data: string; lastModified: number; name: string; size: number; type: string};
+        "attached": ISelectedFile;
     }
     /**
      * Displays an attachment field.
@@ -2511,8 +2524,7 @@ declare global {
         "deleted": {fieldName: string};
     }
     /**
-     * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
-     * input types like text and checkbox.
+     * Displays a dropdown field that allows the user to choose one of a list of options.
      */
     interface HTMLVerdocsFieldDropdownElement extends Components.VerdocsFieldDropdown, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsFieldDropdownElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldDropdownElement, ev: VerdocsFieldDropdownCustomEvent<HTMLVerdocsFieldDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2537,8 +2549,12 @@ declare global {
         "deleted": {fieldName: string};
     }
     /**
-     * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
-     * button will be shown. Clicking the button will show a dialog to adopt an initial.
+     * Displays an initial field. If an initial already exists, it will be displayed and the field
+     * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
+     * show a dialog to adopt an initial.
+     * NOTE: When initial fields are completed they will be filled with an initial "stamp".
+     * This requires operation against a live, valid envelope. If you are testing this component
+     * in Storybook, it will not be visible here.
      */
     interface HTMLVerdocsFieldInitialElement extends Components.VerdocsFieldInitial, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsFieldInitialElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldInitialElement, ev: VerdocsFieldInitialCustomEvent<HTMLVerdocsFieldInitialElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2606,8 +2622,12 @@ declare global {
         "deleted": {fieldName: string};
     }
     /**
-     * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
-     * button will be shown. Clicking the button will show a dialog to adopt a signature.
+     * Displays a signature field. If a signature already exists, it will be displayed and the field
+     * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
+     * show a dialog to adopt a signature.
+     * NOTE: When signature fields are completed they will be filled with a signature "stamp".
+     * This requires operation against a live, valid envelope. If you are testing this component
+     * in Storybook, it will not be visible here.
      */
     interface HTMLVerdocsFieldSignatureElement extends Components.VerdocsFieldSignature, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsFieldSignatureElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldSignatureElement, ev: VerdocsFieldSignatureCustomEvent<HTMLVerdocsFieldSignatureElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2628,7 +2648,8 @@ declare global {
         "deleted": {fieldName: string};
     }
     /**
-     * Display a multi-line text input field.
+     * Display a multi-line text input field. Reminder: the "position" of the field is specified
+     * as the BOTTOM-LEFT corner.
      */
     interface HTMLVerdocsFieldTextareaElement extends Components.VerdocsFieldTextarea, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsFieldTextareaElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldTextareaElement, ev: VerdocsFieldTextareaCustomEvent<HTMLVerdocsFieldTextareaElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2649,7 +2670,7 @@ declare global {
         "deleted": {fieldName: string};
     }
     /**
-     * Display a text input field.
+     * Display a simple 1-line text input field.
      */
     interface HTMLVerdocsFieldTextboxElement extends Components.VerdocsFieldTextbox, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsFieldTextboxElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldTextboxElement, ev: VerdocsFieldTextboxCustomEvent<HTMLVerdocsFieldTextboxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2670,7 +2691,8 @@ declare global {
         "deleted": {fieldName: string};
     }
     /**
-     * Display a timestamp field.
+     * Display a timestamp. Timestamps are not editable by signers. Instead, they are automatically
+     * filled when the signer submits the document.
      */
     interface HTMLVerdocsFieldTimestampElement extends Components.VerdocsFieldTimestamp, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsFieldTimestampElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldTimestampElement, ev: VerdocsFieldTimestampCustomEvent<HTMLVerdocsFieldTimestampElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4343,6 +4365,10 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
           * The name of the field to display.
          */
         "fieldname"?: string;
@@ -4353,7 +4379,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field is deleted.
          */
-        "onAttached"?: (event: VerdocsFieldAttachmentCustomEvent<{data: string; lastModified: number; name: string; size: number; type: string}>) => void;
+        "onAttached"?: (event: VerdocsFieldAttachmentCustomEvent<ISelectedFile>) => void;
         /**
           * Event fired when the field is deleted.
          */
@@ -4490,8 +4516,7 @@ declare namespace LocalJSX {
         "yscale"?: number;
     }
     /**
-     * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
-     * input types like text and checkbox.
+     * Displays a dropdown field that allows the user to choose one of a list of options.
      */
     interface VerdocsFieldDropdown {
         /**
@@ -4544,8 +4569,12 @@ declare namespace LocalJSX {
         "yscale"?: number;
     }
     /**
-     * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
-     * button will be shown. Clicking the button will show a dialog to adopt an initial.
+     * Displays an initial field. If an initial already exists, it will be displayed and the field
+     * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
+     * show a dialog to adopt an initial.
+     * NOTE: When initial fields are completed they will be filled with an initial "stamp".
+     * This requires operation against a live, valid envelope. If you are testing this component
+     * in Storybook, it will not be visible here.
      */
     interface VerdocsFieldInitial {
         /**
@@ -4721,8 +4750,12 @@ declare namespace LocalJSX {
         "yscale"?: number;
     }
     /**
-     * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
-     * button will be shown. Clicking the button will show a dialog to adopt a signature.
+     * Displays a signature field. If a signature already exists, it will be displayed and the field
+     * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
+     * show a dialog to adopt a signature.
+     * NOTE: When signature fields are completed they will be filled with a signature "stamp".
+     * This requires operation against a live, valid envelope. If you are testing this component
+     * in Storybook, it will not be visible here.
      */
     interface VerdocsFieldSignature {
         /**
@@ -4783,7 +4816,8 @@ declare namespace LocalJSX {
         "yscale"?: number;
     }
     /**
-     * Display a multi-line text input field.
+     * Display a multi-line text input field. Reminder: the "position" of the field is specified
+     * as the BOTTOM-LEFT corner.
      */
     interface VerdocsFieldTextarea {
         /**
@@ -4836,7 +4870,7 @@ declare namespace LocalJSX {
         "yscale"?: number;
     }
     /**
-     * Display a text input field.
+     * Display a simple 1-line text input field.
      */
     interface VerdocsFieldTextbox {
         /**
@@ -4889,7 +4923,8 @@ declare namespace LocalJSX {
         "yscale"?: number;
     }
     /**
-     * Display a timestamp field.
+     * Display a timestamp. Timestamps are not editable by signers. Instead, they are automatically
+     * filled when the signer submits the document.
      */
     interface VerdocsFieldTimestamp {
         /**
@@ -6489,13 +6524,16 @@ declare module "@stencil/core" {
              */
             "verdocs-field-date": LocalJSX.VerdocsFieldDate & JSXBase.HTMLAttributes<HTMLVerdocsFieldDateElement>;
             /**
-             * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
-             * input types like text and checkbox.
+             * Displays a dropdown field that allows the user to choose one of a list of options.
              */
             "verdocs-field-dropdown": LocalJSX.VerdocsFieldDropdown & JSXBase.HTMLAttributes<HTMLVerdocsFieldDropdownElement>;
             /**
-             * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
-             * button will be shown. Clicking the button will show a dialog to adopt an initial.
+             * Displays an initial field. If an initial already exists, it will be displayed and the field
+             * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
+             * show a dialog to adopt an initial.
+             * NOTE: When initial fields are completed they will be filled with an initial "stamp".
+             * This requires operation against a live, valid envelope. If you are testing this component
+             * in Storybook, it will not be visible here.
              */
             "verdocs-field-initial": LocalJSX.VerdocsFieldInitial & JSXBase.HTMLAttributes<HTMLVerdocsFieldInitialElement>;
             /**
@@ -6508,20 +6546,26 @@ declare module "@stencil/core" {
              */
             "verdocs-field-radio-button": LocalJSX.VerdocsFieldRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsFieldRadioButtonElement>;
             /**
-             * Displays a signature field. If a signature already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
-             * button will be shown. Clicking the button will show a dialog to adopt a signature.
+             * Displays a signature field. If a signature already exists, it will be displayed and the field
+             * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
+             * show a dialog to adopt a signature.
+             * NOTE: When signature fields are completed they will be filled with a signature "stamp".
+             * This requires operation against a live, valid envelope. If you are testing this component
+             * in Storybook, it will not be visible here.
              */
             "verdocs-field-signature": LocalJSX.VerdocsFieldSignature & JSXBase.HTMLAttributes<HTMLVerdocsFieldSignatureElement>;
             /**
-             * Display a multi-line text input field.
+             * Display a multi-line text input field. Reminder: the "position" of the field is specified
+             * as the BOTTOM-LEFT corner.
              */
             "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
             /**
-             * Display a text input field.
+             * Display a simple 1-line text input field.
              */
             "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
             /**
-             * Display a timestamp field.
+             * Display a timestamp. Timestamps are not editable by signers. Instead, they are automatically
+             * filled when the signer submits the document.
              */
             "verdocs-field-timestamp": LocalJSX.VerdocsFieldTimestamp & JSXBase.HTMLAttributes<HTMLVerdocsFieldTimestampElement>;
             /**

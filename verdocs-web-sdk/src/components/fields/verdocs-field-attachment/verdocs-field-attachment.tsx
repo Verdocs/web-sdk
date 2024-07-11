@@ -1,8 +1,18 @@
-import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment} from '@stencil/core';
+import interact from 'interactjs';
+import {ITemplateField, ITemplateFieldSetting, getRGBA, VerdocsEndpoint, updateField} from '@verdocs/js-sdk';
+import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment, Element} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
+import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
+import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
+
+interface ISelectedFile {
+  lastModified: number;
+  size: number;
+  type: string;
+  name: string;
+  data: string;
+}
 
 const PaperclipIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>`;
 
@@ -17,51 +27,63 @@ const AttachedIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 104.6
   shadow: false,
 })
 export class VerdocsFieldAttachment {
+  @Element() el: HTMLElement;
+  private inputEl: HTMLInputElement;
+
+  private dialog?: any;
+
+  /**
+   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+   * This component self-manages its resize (width) behavior when in edit-template mode, and uses
+   * this endpoint to save changes.
+   */
+  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+
   /**
    * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
    */
-  @Prop() templateid: string = '';
+  @Prop({reflect: true}) templateid: string = '';
 
   /**
    * The name of the field to display.
    */
-  @Prop() fieldname: string = '';
+  @Prop({reflect: true}) fieldname: string = '';
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
    */
-  @Prop() disabled?: boolean = false;
+  @Prop({reflect: true}) disabled?: boolean = false;
 
   /**
    * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be
    * changed, so it should typically only be enabled in the Builder.
    */
-  @Prop() editable?: boolean = false;
+  @Prop({reflect: true}) editable?: boolean = false;
 
   /**
    * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
    */
-  @Prop() moveable?: boolean = false;
+  @Prop({reflect: true}) moveable?: boolean = false;
 
   /**
    * If set, the field is considered "done" and is drawn in a display-final-value state.
    */
-  @Prop() done?: boolean = false;
+  @Prop({reflect: true}) done?: boolean = false;
 
   /**
    * If set, the field will be be scaled horizontally by this factor.
    */
-  @Prop() xscale?: number = 1;
+  @Prop({reflect: true}) xscale?: number = 1;
 
   /**
    * If set, the field will be be scaled vertically by this factor.
    */
-  @Prop() yscale?: number = 1;
+  @Prop({reflect: true}) yscale?: number = 1;
 
   /**
    * The page the field is on
    */
-  @Prop() pagenumber?: number = 1;
+  @Prop({reflect: true}) pagenumber?: number = 1;
 
   /**
    * Event fired when the field's settings are changed.
@@ -76,26 +98,15 @@ export class VerdocsFieldAttachment {
   /**
    * Event fired when the field is deleted.
    */
-  @Event({composed: true}) attached: EventEmitter<{data: string; lastModified: number; name: string; size: number; type: string}>;
+  @Event({composed: true}) attached: EventEmitter<ISelectedFile>;
 
   @State() showingProperties?: boolean = false;
 
-  @Method() async focusField() {
-    this.handleShow();
-  }
+  @State() selectedFile?: ISelectedFile | null = null;
 
-  private dialog?: any;
-
-  handleShow() {
-    this.dialog = document.createElement('verdocs-upload-dialog');
-    this.dialog.open = true;
-    this.dialog.addEventListener('exit', () => this.dialog?.remove());
-    document.addEventListener('next', (e: any) => {
-      console.log('Attachment next', e);
-      this.attached?.emit(e.detail[0]);
-      this.dialog?.remove();
-    });
-    document.body.append(this.dialog);
+  @Method()
+  async focusField() {
+    this.inputEl.focus();
   }
 
   @Method()
@@ -122,30 +133,101 @@ export class VerdocsFieldAttachment {
     this.roleStore = getTemplateRoleStore(this.templateid);
   }
 
-  render() {
+  componentDidRender() {
+    interact.dynamicDrop(true);
+
+    if (this.editable) {
+      interact(this.el).resizable({
+        edges: {top: false, bottom: false, left: true, right: true},
+        listeners: {
+          start: this.handleResizeStart.bind(this),
+          move: this.handleResize.bind(this),
+          end: this.handleResizeEnd.bind(this),
+        },
+      });
+    }
+  }
+
+  handleResizeStart(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  handleResize(e) {
+    let {x = 0, y = 0, h = 0} = e.target.dataset;
+    let {width, height} = e.rect;
+
+    x = (parseFloat(x) || 0) + e.deltaRect.left;
+    y = (parseFloat(y) || 0) + e.deltaRect.top;
+    h = (parseFloat(h) || 0) + e.deltaRect.height;
+
+    width /= this.xscale;
+    height /= this.yscale;
+
+    Object.assign(e.target.style, {
+      width: `${width}px`,
+      height: `${height}px`,
+      transform: `scale(${this.xscale}, ${this.yscale}); translate(${x}px, ${y + h}px)`,
+    });
+
+    Object.assign(e.target.dataset, {x, y, h});
+  }
+
+  handleResizeEnd(e) {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
-    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
-    if (!field) {
-      return <Fragment />;
+    const newSettings = {...getFieldSettings(field)};
+
+    newSettings.width = Math.round(parseFloat(e.target.style.width));
+    newSettings.height = Math.round(parseFloat(e.target.style.height));
+
+    updateField(this.endpoint, this.templateid, this.fieldname, {settings: newSettings})
+      .then(field => {
+        updateStoreField(this.fieldStore, this.fieldname, field);
+        this.settingsChanged?.emit({fieldName: field.name, settings: newSettings, field});
+        Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
+      })
+      .catch(e => console.log('Field update failed', e));
+  }
+
+  handleShow() {
+    this.dialog = document.createElement('verdocs-upload-dialog');
+    this.dialog.open = true;
+    this.dialog.addEventListener('exit', () => this.dialog?.remove());
+    document.addEventListener('next', (e: any) => {
+      this.selectedFile = e.detail[0];
+      this.attached?.emit(e.detail[0]);
+      this.dialog?.remove();
+    });
+    document.body.append(this.dialog);
+  }
+
+  render() {
+    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+
+    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
+    const {required = false, role_name = ''} = field || {};
+    const {result: url = ''} = getFieldSettings(field);
+
+    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+    const hasFile = url || !!this.selectedFile;
+
+    if (done) {
+      return (
+        <Host class={{done}}>
+          <span innerHTML={hasFile ? AttachedIcon : PaperclipIcon} />
+        </Host>
+      );
     }
 
-    // TODO:
-    // const disabled = this.disabled ?? settings.disabled ?? false;
-    const disabled = this.disabled ?? false;
-    // TODO
-    const url = '';
-    // const {url} = settings;
-
     return (
-      <Host class={{required: field.required, disabled}} style={{backgroundColor}}>
-        <span innerHTML={url ? AttachedIcon : PaperclipIcon} onClick={() => !disabled && this.handleShow()} />
+      <Host class={{required, disabled, done}} style={{backgroundColor}}>
+        <span innerHTML={hasFile ? AttachedIcon : PaperclipIcon} onClick={() => !disabled && this.handleShow()} />
 
-        {this.editable && (
+        {editable && (
           <Fragment>
             <div
-              id={`verdocs-settings-panel-trigger-${field.name}`}
-              style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+              id={`verdocs-settings-panel-trigger-${fieldname}`}
+              style={{transform: `scale(${Math.floor((1 / xscale) * 1000) / 1000}, ${Math.floor((1 / yscale) * 1000) / 1000})`}}
               class="settings-icon"
               innerHTML={SettingsIcon}
               onClick={(e: any) => {
@@ -155,13 +237,13 @@ export class VerdocsFieldAttachment {
             />
 
             {this.showingProperties && (
-              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
+              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={this.templateid}
-                  fieldName={field.name}
+                  templateId={templateid}
+                  fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {
-                    this.deleted?.emit({fieldName: field.name});
+                    this.deleted?.emit({fieldName: fieldname});
                     return this.hideSettingsPanel();
                   }}
                   onSettingsChanged={e => {

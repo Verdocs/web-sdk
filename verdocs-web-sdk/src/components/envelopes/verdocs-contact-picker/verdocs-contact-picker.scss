@@ -29,6 +29,16 @@ verdocs-contact-picker {
       color: $verdocs-bg-4;
     }
 
+    .label-with-icon {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      verdocs-help-icon svg {
+        transform: scale(0.8);
+      }
+    }
+
     input {
       border: none;
       font-size: 18px;
@@ -96,7 +106,7 @@ verdocs-contact-picker {
 
   .buttons {
     display: flex;
-    column-gap: 8px;
+    column-gap: 6px;
     margin-top: 16px;
     flex-direction: row;
 

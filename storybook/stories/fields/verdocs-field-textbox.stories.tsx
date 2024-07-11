@@ -6,22 +6,6 @@ export default {
   component: 'verdocs-field-textbox',
   args: {
     disabled: false,
-    editable: true,
-    moveable: true,
-    done: false,
-    roleindex: 0,
-    field: {
-      name: 'textbox-1',
-      role_name: 'Recipient 1',
-      template_id: '0239fe5f-1b89-499a-bd83-098a2e1b4b9c',
-      type: 'textbox',
-      required: false,
-      setting: {
-        x: 0,
-        y: 0,
-      },
-      page_sequence: 1,
-    },
   },
   argTypes: {
     input: {
@@ -31,13 +15,14 @@ export default {
   },
 } as Meta;
 
-export const Textbox = ({field, disabled, editable, moveable, done, roleindex, input}) => html`<verdocs-field-textbox
-  style="transform: scale(1.5); width: 150px; height: 15px;"
-  .field=${field}
-  .disabled=${disabled}
-  .editable=${editable}
-  .moveable=${moveable}
-  .done=${done}
-  .roleindex=${roleindex}
-  @input=${input}
-/>`;
+export const Textbox = ({disabled, input}) =>
+  html`<verdocs-field-textbox
+    style="transform: scale(1.5); width: 150px; height: 15px;"
+    .fieldname=${'storybook-field'}
+    .templateid=${'0239fe5f-1b89-499a-bd83-098a2e1b4b9c'}
+    .disabled=${disabled}
+    .editable=${false}
+    .moveable=${false}
+    .done=${false}
+    @input=${input}
+  />`;

@@ -5,15 +5,24 @@ export default {
   title: 'Fields/Textarea',
   component: 'verdocs-field-textarea',
   args: {
-    field: {
-      settings: {
-        placeholder: 'Email address...',
-        x: 0,
-        y: 0,
-      },
+    disabled: false,
+  },
+  argTypes: {
+    input: {
+      action: 'input',
+      description: 'Fired for each character entered in the field. e.target.value will contain the current text value.',
     },
   },
-  argTypes: {},
 } as Meta;
 
-export const Textarea = ({field}) => html`<verdocs-field-textarea .field=${field} />`;
+export const Textarea = ({disabled, input}) =>
+  html`<verdocs-field-textarea
+    style="transform: scale(1.5); width: 150px; height: 41px;"
+    .fieldname=${'storybook-field'}
+    .templateid=${'0239fe5f-1b89-499a-bd83-098a2e1b4b9c'}
+    .disabled=${disabled}
+    .editable=${false}
+    .moveable=${false}
+    .done=${false}
+    @input=${input}
+  />`;

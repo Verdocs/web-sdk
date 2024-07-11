@@ -67,9 +67,6 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
 
   const store = templateStores[templateId];
 
-  // TODO: This can create a race condition if two components call this at the same time.
-  //  For now we can probably defer doing something smart here because it's only a
-  //  double-load issue.
   if (created || forceReload) {
     console.debug('[TEMPLATES] Loading template', {templateId, created, forceReload});
 
@@ -80,6 +77,28 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
 
     try {
       const template = await getTemplate(endpoint, templateId);
+
+      // Post-process the template to upgrade to new data fields
+      if (!template.documents && template.template_documents) {
+        template.documents = template.template_documents;
+      }
+
+      template.documents?.forEach(document => {
+        if (!document.order) {
+          document.order = 0;
+        }
+
+        if (document.page_numbers) {
+          document.pages = document.page_numbers;
+        }
+      });
+
+      template.fields?.forEach(field => {
+        if (field.setting) {
+          field.settings = field.setting;
+        }
+      });
+
       console.debug('[TEMPLATES] Got template', template);
       Object.assign(store.state, template);
 

@@ -5,16 +5,24 @@ export default {
   title: 'Fields/Checkbox',
   component: 'verdocs-field-checkbox',
   args: {
-    field: {
-      settings: {
-        x: 0,
-        y: 0,
-      },
-    },
-    option: 0,
     disabled: false,
   },
-  argTypes: {},
+  argTypes: {
+    input: {
+      action: 'input',
+      description: 'Fired for each character entered in the field. e.target.value will contain the current text value.',
+    },
+  },
 } as Meta;
 
-export const Checkbox = ({field, option, disabled}) => html`<verdocs-field-checkbox .field=${field} .option=${option} .disabled=${disabled} />`;
+export const Checkbox = ({disabled, input}) =>
+  html`<verdocs-field-checkbox
+    style="transform: scale(1.5);"
+    .fieldname=${'storybook-field'}
+    .templateid=${'0239fe5f-1b89-499a-bd83-098a2e1b4b9c'}
+    .disabled=${disabled}
+    .editable=${false}
+    .moveable=${false}
+    .done=${false}
+    @input=${input}
+  />`;

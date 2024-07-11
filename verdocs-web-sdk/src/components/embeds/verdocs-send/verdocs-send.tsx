@@ -1,4 +1,4 @@
-import {Component, Prop, State, h, Event, EventEmitter, Host, Method} from '@stencil/core';
+import {Component, Prop, State, h, Event, EventEmitter, Host, Method, Watch} from '@stencil/core';
 import {createEnvelope, getRGBA, ICreateEnvelopeRequest, ICreateEnvelopeRole, IEnvelope, IRole, isValidEmail, isValidPhone, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRoleIndex, getRoleNames, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
@@ -50,7 +50,7 @@ export class VerdocsSend {
   /**
    * The ID of the template to create the document from.
    */
-  @Prop() templateId: string | null = null;
+  @Prop({reflect: true}) templateId: string | null = null;
 
   /**
    * The environment the control is being called from, e.g. 'web'. This has an impact on how certain
@@ -103,7 +103,11 @@ export class VerdocsSend {
     this.rolesCompleted = {};
   }
 
-  levels: number[] = [];
+  @Watch('templateId')
+  onTemplateIdChanged(newTemplateId: string) {
+    console.log('[SEND] Template ID changed', newTemplateId);
+    this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
+  }
 
   templateStore: TTemplateStore | null = null;
   roleStore: TTemplateRoleStore | null = null;
@@ -116,52 +120,32 @@ export class VerdocsSend {
         return;
       }
 
-      return this.reloadTemplateData();
+      if (!this.templateId) {
+        console.log(`[SEND] Missing required template ID ${this.templateId}`);
+        return;
+      }
+
+      return this.loadTemplate(this.templateId);
     } catch (e) {
       console.log('[SEND] Error with send session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  async componentWillUpdate() {
-    return this.reloadTemplateData();
-  }
-
-  async reloadTemplateData() {
-    if (!this.templateId) {
-      console.log(`[SEND] Missing required template ID ${this.templateId}`);
+  async loadTemplate(templateId: string) {
+    if (!templateId) {
       return;
     }
 
     try {
       const loadSessionResult = this.endpoint.loadSession();
 
-      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
-      this.roleStore = getTemplateRoleStore(this.templateId);
+      this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
+      this.roleStore = getTemplateRoleStore(templateId);
+      this.recomputeRolesCompleted();
 
       if (!this.templateStore?.state?.is_sendable) {
-        console.warn(`[SEND] Template is not sendable`, this.templateId);
-      }
-
-      if (this.roleStore.get('roles')) {
-        const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
-
-        this.rolesCompleted = {};
-
-        this.roleStore.get('roles').forEach(role => {
-          const level = role.sequence - 1;
-          rolesAtLevel[level] ||= [];
-          const id = `r-${level}-${rolesAtLevel[level].length}`;
-          rolesAtLevel[level].push({...role, id});
-
-          if (role.full_name && (role.email || role.phone)) {
-            this.rolesCompleted[id] = {...role, id};
-          }
-        });
-
-        this.rolesAtLevel = rolesAtLevel;
-        this.levels = Object.keys(rolesAtLevel).map(levelStr => +levelStr);
-        this.levels.sort((a, b) => a - b);
+        console.warn(`[SEND] Template is not sendable`, templateId);
       }
 
       if (loadSessionResult?.session?.profile) {
@@ -178,10 +162,49 @@ export class VerdocsSend {
     }
   }
 
+  recomputeRolesCompleted() {
+    const roles = this.roleStore.get('roles') || [];
+    const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
+
+    this.rolesCompleted = {};
+
+    roles.forEach(role => {
+      const level = role.sequence - 1;
+      rolesAtLevel[level] ||= [];
+      const id = `r-${level}-${rolesAtLevel[level].length}`;
+      rolesAtLevel[level].push({...role, id});
+
+      if (role.full_name && (role.email || role.phone)) {
+        this.rolesCompleted[id] = {...role, id};
+      }
+    });
+  }
+
+  getRoleLevels() {
+    const roles = this.roleStore.get('roles') || [];
+    const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
+
+    this.rolesCompleted = {};
+
+    roles.forEach(role => {
+      const level = role.sequence - 1;
+      rolesAtLevel[level] ||= [];
+      const id = `r-${level}-${rolesAtLevel[level].length}`;
+      rolesAtLevel[level].push({...role, id});
+    });
+
+    this.rolesAtLevel = rolesAtLevel;
+    const levels = Object.keys(rolesAtLevel).map(levelStr => +levelStr);
+    levels.sort((a, b) => a - b);
+
+    return levels;
+  }
+
   getLevelIcon(level: number) {
+    const levels = this.getRoleLevels();
     if (level < 0) {
       return <div class="level-icon" innerHTML={startIcon} />;
-    } else if (level >= this.levels.length) {
+    } else if (level >= levels.length) {
       return <div class="level-icon" innerHTML={doneIcon} />;
     } else {
       return <div class="level-icon" innerHTML={stepIcon} />;
@@ -256,6 +279,7 @@ export class VerdocsSend {
     const roleNames = getRoleNames(this.roleStore);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= roleNames.length;
+    const levels = this.getRoleLevels();
 
     return (
       <Host class={{sendable: this.templateStore?.state?.is_sendable}}>
@@ -266,7 +290,7 @@ export class VerdocsSend {
             <div class="complete">Send Envelope</div>
           </div>
 
-          {this.levels.map(level => (
+          {levels.map(level => (
             <div class={`level level-${level}`}>
               {this.getLevelIcon(level)}
 
@@ -311,7 +335,7 @@ export class VerdocsSend {
           ))}
 
           <div class={`level level-done`}>
-            {this.getLevelIcon(this.levels.length)}
+            {this.getLevelIcon(levels.length)}
             <div class="complete">Signing Complete</div>
           </div>
         </div>

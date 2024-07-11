@@ -5,6 +5,7 @@ verdocs-field-checkbox {
   width: 16px;
   height: 16px;
   padding: 1px;
+  display: block;
   box-sizing: border-box;
   transform-origin: bottom left;
   font-family: $verdocs-primary-font;
@@ -61,7 +62,7 @@ verdocs-field-checkbox {
   }
 
   &.focused {
-    animation: verdocs-field-pulse 0.75s 2;
+    animation: verdocs-field-pulse 0.4s 1;
   }
 
   verdocs-button-panel {

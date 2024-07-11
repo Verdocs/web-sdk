@@ -7,7 +7,7 @@ import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
 /**
- * Display a text input field.
+ * Display a simple 1-line text input field.
  */
 @Component({
   tag: 'verdocs-field-textbox',
@@ -28,7 +28,7 @@ export class VerdocsFieldTextbox {
   /**
    * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
    */
-  @Prop() templateid: string = '';
+  @Prop({reflect: true}) templateid: string = '';
 
   /**
    * The name of the field to display.
@@ -54,22 +54,22 @@ export class VerdocsFieldTextbox {
   /**
    * If set, the field is considered "done" and is drawn in a display-final-value state.
    */
-  @Prop() done?: boolean = false;
+  @Prop({reflect: true}) done?: boolean = false;
 
   /**
    * If set, the field will be be scaled horizontally by this factor.
    */
-  @Prop() xscale?: number = 1;
+  @Prop({reflect: true}) xscale?: number = 1;
 
   /**
    * If set, the field will be be scaled vertically by this factor.
    */
-  @Prop() yscale?: number = 1;
+  @Prop({reflect: true}) yscale?: number = 1;
 
   /**
    * The page the field is on
    */
-  @Prop() pagenumber?: number = 1;
+  @Prop({reflect: true}) pagenumber?: number = 1;
 
   /**
    * Event fired when the field's settings are changed.
@@ -128,12 +128,12 @@ export class VerdocsFieldTextbox {
     }
   }
 
-  handleResizeStart(e) {
+  handleResizeStart(e: any) {
     e.preventDefault();
     e.stopPropagation();
   }
 
-  handleResize(e) {
+  handleResize(e: any) {
     let {x = 0, y = 0, h = 0} = e.target.dataset;
     let {width, height} = e.rect;
 
@@ -153,68 +153,58 @@ export class VerdocsFieldTextbox {
     Object.assign(e.target.dataset, {x, y, h});
   }
 
-  handleResizeEnd(e) {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+  handleResizeEnd(e: any) {
+    const {fieldname = ''} = this;
+    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
     const newSettings = {...getFieldSettings(field)};
-    const [translateX, translateY] = e.target.style.transform.split('(')[1].split(')')[0].split(',').map(parseFloat);
-    console.log({translateX, translateY});
 
     newSettings.width = Math.round(parseFloat(e.target.style.width));
     newSettings.height = Math.round(parseFloat(e.target.style.height));
-    // newSettings.x = Math.round(newSettings.x + translateX / this.xscale);
-    // newSettings.y = Math.round(newSettings.y - translateY / this.yscale);
 
     updateField(this.endpoint, this.templateid, this.fieldname, {settings: newSettings})
       .then(field => {
-        console.log('Update result', field);
         updateStoreField(this.fieldStore, this.fieldname, field);
-        this.settingsChanged?.emit({fieldName: field.name, settings: newSettings, field});
+        this.settingsChanged?.emit({fieldName: fieldname, settings: newSettings, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
       })
       .catch(e => console.log('Field update failed', e));
   }
 
   render() {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
-    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
-    if (!field) {
-      return <Fragment />;
-    }
+    const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
-    const settings = getFieldSettings(field);
-    // TODO:
-    // const disabled = this.disabled ?? settings.disabled ?? false;
-    const disabled = this.disabled ?? false;
-    const value = settings?.result || '';
-    const width = settings.width || 150;
+    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
+    const {required = false, role_name = '', placeholder = ''} = field || {};
+    const {result: value = '', width = 150} = getFieldSettings(field);
+
     // TODO: This is an outdated technique from the old system. We should compute it.
     const maxlength = width / 5;
+    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
-    if (this.done) {
-      return <Host class={{done: this.done}}>{value}</Host>;
+    if (done) {
+      return <Host class={{done}}>{value}</Host>;
     }
 
     return (
-      <Host class={{required: field.required, disabled, done: this.done, focused: this.focused}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         <input
           type="text"
-          name={field.name}
-          placeholder={field.placeholder ??''}
+          name={fieldname}
           value={value}
           disabled={disabled}
-          required={field?.required}
-          ref={el => (this.inputEl = el)}
+          required={required}
+          placeholder={placeholder}
           maxlength={maxlength}
+          ref={el => (this.inputEl = el)}
           onFocus={() => (this.focused = true)}
           onBlur={() => (this.focused = false)}
         />
 
-        {this.editable && (
+        {editable && (
           <Fragment>
             <div
-              id={`verdocs-settings-panel-trigger-${field.name}`}
-              style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+              id={`verdocs-settings-panel-trigger-${fieldname}`}
+              style={{transform: `scale(${Math.floor((1 / xscale) * 1000) / 1000}, ${Math.floor((1 / yscale) * 1000) / 1000})`}}
               class="settings-icon"
               innerHTML={SettingsIcon}
               onClick={(e: any) => {
@@ -224,13 +214,13 @@ export class VerdocsFieldTextbox {
             />
 
             {this.showingProperties && (
-              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
+              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={this.templateid}
-                  fieldName={field.name}
+                  templateId={templateid}
+                  fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {
-                    this.deleted?.emit({fieldName: field.name});
+                    this.deleted?.emit({fieldName: fieldname});
                     return this.hideSettingsPanel();
                   }}
                   onSettingsChanged={e => {

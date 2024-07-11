@@ -8,6 +8,11 @@ export default {
     templateId: '',
     step: 'preview',
   },
+  step: {
+    control: 'select',
+    options: ['attachments', 'roles', 'settings', 'fields', 'preview'],
+    description: 'The step to display.',
+  },
   parameters: {
     layout: 'fullscreen',
   },

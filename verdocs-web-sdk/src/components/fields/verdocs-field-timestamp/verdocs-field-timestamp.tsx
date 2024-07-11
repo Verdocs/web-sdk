@@ -8,7 +8,8 @@ import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {SettingsIcon} from '../../../utils/Icons';
 
 /**
- * Display a timestamp field.
+ * Display a timestamp. Timestamps are not editable by signers. Instead, they are automatically
+ * filled when the signer submits the document.
  */
 @Component({
   tag: 'verdocs-field-timestamp',
@@ -21,43 +22,43 @@ export class VerdocsFieldTimestamp {
   /**
    * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
    */
-  @Prop() templateid: string = '';
+  @Prop({reflect: true}) templateid: string = '';
 
   /**
    * The name of the field to display.
    */
-  @Prop() fieldname: string = '';
+  @Prop({reflect: true}) fieldname: string = '';
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
    */
-  @Prop() disabled?: boolean = false;
+  @Prop({reflect: true}) disabled?: boolean = false;
 
   /**
    * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be
    * changed, so it should typically only be enabled in the Builder.
    */
-  @Prop() editable?: boolean = false;
+  @Prop({reflect: true}) editable?: boolean = false;
 
   /**
    * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
    */
-  @Prop() moveable?: boolean = false;
+  @Prop({reflect: true}) moveable?: boolean = false;
 
   /**
    * If set, the field is considered "done" and is drawn in a display-final-value state.
    */
-  @Prop() done?: boolean = false;
+  @Prop({reflect: true}) done?: boolean = false;
 
   /**
    * If set, the field will be be scaled horizontally by this factor.
    */
-  @Prop() xscale?: number = 1;
+  @Prop({reflect: true}) xscale?: number = 1;
 
   /**
    * If set, the field will be be scaled vertically by this factor.
    */
-  @Prop() yscale?: number = 1;
+  @Prop({reflect: true}) yscale?: number = 1;
 
   /**
    * The page the field is on
@@ -105,43 +106,29 @@ export class VerdocsFieldTimestamp {
   }
 
   render() {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
-    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
-    if (!field) {
-      return <Fragment />;
-    }
+    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
-    const settings = getFieldSettings(field);
-    // TODO:
-    // const disabled = this.disabled ?? settings.disabled ?? false;
-    const disabled = this.disabled ?? false;
-    const value = settings.value || new Date().toISOString();
+    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
+    const {required = false, role_name = '', placeholder = ''} = field || {};
+    const {value = ''} = getFieldSettings(field);
 
-    const dt = new Date(value);
-    const formatted = format(dt, FORMAT_TIMESTAMP);
+    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
-    if (this.done) {
-      return <Host class={{done: this.done}}>{formatted}</Host>;
+    const formatted = format(new Date(value || new Date().toISOString()), FORMAT_TIMESTAMP);
+
+    if (done) {
+      return <Host class={{done}}>{formatted}</Host>;
     }
 
     return (
-      <Host class={{required: field?.required, disabled}} style={{backgroundColor}}>
-        <input
-          type="text"
-          placeholder={field.placeholder ?? ''}
-          // TODO: It would really make more sense to show the date and time but the default width of 64px for this field
-          // is encoded in a ton of existing entries in the database and is hard to change.
-          value={formatted}
-          disabled={true}
-          ref={el => (this.el = el)}
-        />
+      <Host class={{required, disabled, done}} style={{backgroundColor}}>
+        <input type="text" placeholder={placeholder} value={formatted} disabled={true} ref={el => (this.el = el)} />
 
-        {this.editable && (
+        {editable && (
           <Fragment>
             <div
-              id={`verdocs-settings-panel-trigger-${field.name}`}
-              style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+              id={`verdocs-settings-panel-trigger-${fieldname}`}
+              style={{transform: `scale(${Math.floor((1 / xscale) * 1000) / 1000}, ${Math.floor((1 / yscale) * 1000) / 1000})`}}
               class="settings-icon"
               innerHTML={SettingsIcon}
               onClick={(e: any) => {
@@ -151,13 +138,13 @@ export class VerdocsFieldTimestamp {
             />
 
             {this.showingProperties && (
-              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
+              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={this.templateid}
-                  fieldName={field.name}
+                  templateId={templateid}
+                  fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {
-                    this.deleted?.emit({fieldName: field.name});
+                    this.deleted?.emit({fieldName: fieldname});
                     return this.hideSettingsPanel();
                   }}
                   onSettingsChanged={e => {

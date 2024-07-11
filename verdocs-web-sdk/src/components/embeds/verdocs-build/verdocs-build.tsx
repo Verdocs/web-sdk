@@ -18,9 +18,6 @@ export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' 
   shadow: false,
 })
 export class VerdocsBuild {
-  // Primarily a UX improvement within Storybook
-  private previousTemplateId = '';
-
   @Element() el!: any;
 
   /**
@@ -72,19 +69,23 @@ export class VerdocsBuild {
   @Event({composed: true}) rolesUpdated: EventEmitter<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]}>;
 
   @Watch('templateId')
-  onTemplateIdChanged(newTemplateId: string) {
-    console.log('[BUILD] Template ID changed', newTemplateId);
+  onTemplateIdChanged(newTemplateId: string, oldTemplateId: string) {
+    if (!oldTemplateId && newTemplateId && this.step === 'attachments') {
+      this.step = 'preview';
+    }
+
     this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
   }
 
   @Watch('step')
-  onStepChanged(newStep: TVerdocsBuildStep) {
-    console.log('[BUILD] Step changed', newStep);
+  onStepChanged() {
+    // We reload the template here even if only the step changed in case
+    // we were out of sync before
     this.loadTemplate(this.templateId).catch((e: any) => console.log('Unknown Error', e));
   }
 
   @State()
-  store: TTemplateStore | null = null;
+  templateStore: TTemplateStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -94,42 +95,27 @@ export class VerdocsBuild {
         return;
       }
 
-      return this.reloadTemplateData();
+      if (!this.templateId) {
+        console.log(`[BUILD] No template ID, activating upload mode`);
+        this.step = 'attachments';
+        return;
+      }
+
+      try {
+        this.loadTemplate(this.templateId).catch(e => console.log('[BUILD] Unable to load template', e));
+      } catch (e) {
+        console.log('[BUILD] Error loading template', e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      }
     } catch (e) {
       console.log('[BUILD] Error with builder session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  async componentWillUpdate() {
-    if (this.templateId !== this.previousTemplateId && this.step === 'attachments') {
-      console.log('[BUILD] Template ID changed, resetting tab to preview');
-      this.previousTemplateId = this.templateId;
-      this.step = 'preview';
-    }
-
-    return this.reloadTemplateData();
-  }
-
-  async reloadTemplateData() {
-    if (!this.templateId) {
-      console.log(`[BUILD] No template ID, activating upload mode`);
-      this.step = 'attachments';
-      return;
-    }
-
-    try {
-      this.loadTemplate(this.templateId).catch(e => console.log('[BUILD] Unable to load template', e));
-    } catch (e) {
-      console.log('[BUILD] Error loading template', e);
-      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-    }
-  }
-
   async loadTemplate(templateId: string) {
     if (templateId) {
-      this.store = await getTemplateStore(this.endpoint, templateId, false);
-      // forceUpdate(this.el);
+      this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
     }
   }
 
@@ -176,7 +162,7 @@ export class VerdocsBuild {
       );
     }
 
-    if (!this.store) {
+    if (!this.templateStore) {
       console.log('[BUILD] No template ID, rendering created view');
       return (
         <Host>

@@ -6,8 +6,13 @@ import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
 /**
- * Displays an initial field. If an initial already exists, it will be displayed and the field will be disabled. Otherwise, a placeholder
- * button will be shown. Clicking the button will show a dialog to adopt an initial.
+ * Displays an initial field. If an initial already exists, it will be displayed and the field
+ * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
+ * show a dialog to adopt an initial.
+ *
+ * NOTE: When initial fields are completed they will be filled with an initial "stamp".
+ * This requires operation against a live, valid envelope. If you are testing this component
+ * in Storybook, it will not be visible here.
  */
 @Component({
   tag: 'verdocs-field-initial',
@@ -18,53 +23,53 @@ export class VerdocsFieldInitial {
   /**
    * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
    */
-  @Prop() templateid: string = '';
+  @Prop({reflect: true}) templateid: string = '';
 
   /**
    * The name of the field to display.
    */
-  @Prop() fieldname: string = '';
+  @Prop({reflect: true}) fieldname: string = '';
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
    */
-  @Prop() disabled?: boolean = false;
+  @Prop({reflect: true}) disabled?: boolean = false;
 
   /**
    * The document or template field to display.
    */
-  @Prop() initials: string = '';
+  @Prop({reflect: true}) initials: string = '';
 
   /**
    * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be
    * changed, so it should typically only be enabled in the Builder.
    */
-  @Prop() editable?: boolean = false;
+  @Prop({reflect: true}) editable?: boolean = false;
 
   /**
    * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
    */
-  @Prop() moveable?: boolean = false;
+  @Prop({reflect: true}) moveable?: boolean = false;
 
   /**
    * If set, the field is considered "done" and is drawn in a display-final-value state.
    */
-  @Prop() done?: boolean = false;
+  @Prop({reflect: true}) done?: boolean = false;
 
   /**
    * If set, the field will be be scaled horizontally by this factor.
    */
-  @Prop() xscale?: number = 1;
+  @Prop({reflect: true}) xscale?: number = 1;
 
   /**
    * If set, the field will be be scaled vertically by this factor.
    */
-  @Prop() yscale?: number = 1;
+  @Prop({reflect: true}) yscale?: number = 1;
 
   /**
    * The page the field is on
    */
-  @Prop() pagenumber?: number = 1;
+  @Prop({reflect: true}) pagenumber?: number = 1;
 
   /**
    * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
@@ -158,38 +163,27 @@ export class VerdocsFieldInitial {
   }
 
   render() {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    const roleIndex = getRoleIndex(this.roleStore, field.role_name);
-    const backgroundColor = field['rgba'] || getRGBA(roleIndex);
-    if (!field) {
-      return <Fragment />;
-    }
+    const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
-    const settings = getFieldSettings(field);
-    const value = settings.base64 || this.tempInitials;
-    // TODO:
-    // const disabled = this.disabled ?? settings.disabled ?? false;
-    const disabled = this.disabled ?? false;
+    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
+    const {required = false, role_name = ''} = field || {};
+    const {result: value = ''} = getFieldSettings(field);
 
-    if (this.done) {
-      return <Host class={{done: this.done}}>{value && <img src={value} alt="Initials" />}</Host>;
+    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+
+    if (done) {
+      return <Host class={{done}}>{value && <img src={value} alt="Initial" />}</Host>;
     }
 
     return (
-      <Host class={{required: field?.required, disabled, focused: this.focused}} style={{backgroundColor}}>
-        {value ? (
-          <img src={value} alt="Initials" />
-        ) : (
-          <button class={{}} onClick={() => !disabled && this.handleShow()}>
-            Initials
-          </button>
-        )}
+      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+        {value ? <img src={value} alt="Initial" /> : <button onClick={() => !disabled && this.handleShow()}>Initial</button>}
 
-        {this.editable && (
+        {editable && (
           <Fragment>
             <div
-              id={`verdocs-settings-panel-trigger-${field.name}`}
-              style={{transform: `scale(${Math.floor((1 / this.xscale) * 1000) / 1000}, ${Math.floor((1 / this.yscale) * 1000) / 1000})`}}
+              id={`verdocs-settings-panel-trigger-${fieldname}`}
+              style={{transform: `scale(${Math.floor((1 / xscale) * 1000) / 1000}, ${Math.floor((1 / yscale) * 1000) / 1000})`}}
               class="settings-icon"
               innerHTML={SettingsIcon}
               onClick={(e: any) => {
@@ -199,10 +193,10 @@ export class VerdocsFieldInitial {
             />
 
             {this.showingProperties && (
-              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${this.fieldname}`} onClickAway={() => (this.showingProperties = false)}>
+              <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={this.templateid}
-                  fieldName={field.name}
+                  templateId={templateid}
+                  fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {
                     this.deleted?.emit({fieldName: field.name});

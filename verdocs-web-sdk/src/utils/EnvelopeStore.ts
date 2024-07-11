@@ -80,6 +80,18 @@ export const getEnvelopeStore = async (endpoint: VerdocsEndpoint, envelopeId: st
 
     try {
       const envelope = await getEnvelope(endpoint, envelopeId);
+
+      // Post-process the envelope to upgrade to new data fields
+      envelope.documents?.forEach(document => {
+        if (!document.order) {
+          document.order = 0;
+        }
+
+        if (document.page_numbers) {
+          document.pages = document.page_numbers;
+        }
+      });
+
       console.debug('[ENVELOPES] Got envelope', envelope);
       Object.assign(store.state, envelope);
 
