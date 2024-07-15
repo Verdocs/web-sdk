@@ -6,7 +6,7 @@ import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../.
 import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
-interface ISelectedFile {
+export interface ISelectedFile {
   lastModified: number;
   size: number;
   type: string;

@@ -12,6 +12,7 @@ import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-bui
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
+import { ISelectedFile } from "./components/fields/verdocs-field-attachment/verdocs-field-attachment";
 import { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
@@ -28,6 +29,7 @@ export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-bui
 export { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 export { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 export { IDocumentPageInfo, IPageLayer } from "./utils/Types";
+export { ISelectedFile } from "./components/fields/verdocs-field-attachment/verdocs-field-attachment";
 export { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 export { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 export { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";

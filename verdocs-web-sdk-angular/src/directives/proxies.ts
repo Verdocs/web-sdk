@@ -578,6 +578,7 @@ export class VerdocsFieldAttachment {
 
 import type { ITemplateFieldSetting as IVerdocsFieldAttachmentITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldAttachmentITemplateField } from '@verdocs/web-sdk';
+import type { ISelectedFile as IVerdocsFieldAttachmentISelectedFile } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {
   /**
@@ -591,7 +592,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
   /**
    * Event fired when the field is deleted.
    */
-  attached: EventEmitter<CustomEvent<ISelectedFile>>;
+  attached: EventEmitter<CustomEvent<IVerdocsFieldAttachmentISelectedFile>>;
 }
 
 

@@ -80,3 +80,15 @@ as small as possible. To support Barlow in your own app, including the following
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&display=swap" rel="stylesheet">
 ```
+
+## compomnents.ts fixups
+
+Replace
+
+`import type { JSX } from '@verdocs/web-sdk/components';`
+
+with 
+
+`import type { JSX } from '@verdocs/web-sdk/dist/types';`
+
+Replace-all `@verdocs/web-sdk/components` with `@verdocs/web-sdk/dist/components`

@@ -4,9 +4,12 @@ import customElements from '../../verdocs-web-sdk/dist/custom-elements.json';
 // import StoriesTheme from './StoriesTheme';
 
 import {defineCustomElements} from '../../verdocs-web-sdk/dist/esm/loader';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
 defineCustomElements();
 
 setCustomElementsManifest(customElements);
+
+VerdocsEndpoint.getDefault().setBaseURL('https://stage-api.verdocs.com');
 
 const preview: Preview = {
   tags: ['autodocs', 'autodocs'],
@@ -31,7 +34,7 @@ const preview: Preview = {
       // },
 
       extractComponentDescription: (a, b) => {
-        const componentDocs = customElements.tags.find((tag) => tag.name === b.component);
+        const componentDocs = customElements.tags.find(tag => tag.name === b.component);
         if (componentDocs) {
           return componentDocs.description.value;
         }

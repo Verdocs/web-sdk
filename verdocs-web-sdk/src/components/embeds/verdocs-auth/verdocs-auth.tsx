@@ -1,4 +1,4 @@
-import {TSession, VerdocsEndpoint, createAccount, authenticateUser, decodeAccessTokenBody, resendVerification, resetPassword} from '@verdocs/js-sdk';
+import {TSession, VerdocsEndpoint, createProfile, authenticate, decodeAccessTokenBody, resendVerification, resetPassword} from '@verdocs/js-sdk';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -170,16 +170,12 @@ export class VerdocsAuth {
     this.submitting = true;
     this.accessTokenForVerification = null;
 
-    createAccount(this.endpoint, {
+    createProfile(this.endpoint, {
       email: this.username,
       password: this.password,
       firstName: this.first,
       lastName: this.last,
       orgName: this.orgname,
-      // industry: this.industry,
-      // size: this.companySize,
-      // reason: this.reason,
-      // hearabout: this.howHear,
     })
       .then(r => {
         console.log('Result', r);
@@ -202,25 +198,25 @@ export class VerdocsAuth {
     this.submitting = true;
     this.accessTokenForVerification = null;
 
-    authenticateUser(this.endpoint, {username: this.username, password: this.password})
+    authenticate(this.endpoint, {username: this.username, password: this.password, grant_type: 'password'})
       .then(r => {
         this.cancelRecheckTimer();
         this.submitting = false;
 
-        const body = decodeAccessTokenBody(r.accessToken);
+        const body = decodeAccessTokenBody(r.access_token);
         console.log('[AUTH] Got access token body', body);
         if (body?.email_verified) {
           console.log('[AUTH] Email address is verified, completing login');
           this.displayMode = 'login'; // After signing out, this will be the next mode
           this.accessTokenForVerification = null;
-          this.endpoint.setToken(r.accessToken);
+          this.endpoint.setToken(r.access_token);
           this.activeSession = this.endpoint.session;
           this.isAuthenticated = true;
           this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
         } else {
           console.log('[AUTH] Logged in, pending email address verification');
           this.displayMode = 'verify';
-          this.accessTokenForVerification = r.accessToken;
+          this.accessTokenForVerification = r.access_token;
           this.recheckTimer = setTimeout(() => this.loginAndCheckVerification(), RECHECK_INTERVAL);
         }
       })
