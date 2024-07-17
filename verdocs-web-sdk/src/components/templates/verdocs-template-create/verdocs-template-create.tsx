@@ -125,7 +125,7 @@ export class VerdocsTemplateCreate {
     return (
       <Host>
         <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
-          <input type="file" id="verdocs-template-create-file" multiple accept="application/pdf" style={{display: 'none'}} onChange={e => this.handleFileChanged(e)} />
+          <input type="file" id="verdocs-template-create-file" multiple accept=".pdf,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style={{display: 'none'}} onChange={e => this.handleFileChanged(e)} />
 
           {this.creating ? (
             <div class="loader-wrapper">

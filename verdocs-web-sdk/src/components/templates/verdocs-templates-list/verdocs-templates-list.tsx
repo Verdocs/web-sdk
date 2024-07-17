@@ -445,7 +445,7 @@ export class VerdocsTemplatesList {
           // serverless/src/functions/getTemplates.ts:      canPerformTemplateAction(request.session, 'change_visibility_public', record) && record.allowed_operations.push('change_visibility_public');
 
           if (this.allowedActions.includes('send')) {
-            MENU_OPTIONS.push({label: 'Preview / Send', id: 'send', disabled: !canPerformTemplateAction(this.endpoint.session, 'read', template)});
+            MENU_OPTIONS.push({label: 'Preview / Send', id: 'send', disabled: !canPerformTemplateAction(this.endpoint.profile, 'read', template)});
           }
 
           // if (this.allowedActions.includes('createlink')) {
@@ -458,7 +458,7 @@ export class VerdocsTemplatesList {
 
           if (this.allowedActions.includes('submitted')) {
             MENU_OPTIONS.push({label: ''});
-            MENU_OPTIONS.push({label: 'Submissions', id: 'submitted', disabled: !canPerformTemplateAction(this.endpoint.session, 'read', template)});
+            MENU_OPTIONS.push({label: 'Submissions', id: 'submitted', disabled: !canPerformTemplateAction(this.endpoint.profile, 'read', template)});
           }
 
           if (this.allowedActions.includes('link') || this.allowedActions.includes('edit') || this.allowedActions.includes('delete')) {
