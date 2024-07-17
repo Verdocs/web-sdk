@@ -167,11 +167,10 @@ export class VerdocsEnvelopesList {
   }
 
   componentWillLoad() {
+    this.endpoint.onSessionChanged((_, session, profile) => {
+      console.log('[ENVELOPES_LIST] onSessionChanged', session, profile);
+    });
     this.endpoint.loadSession();
-    if (!this.endpoint.session) {
-      console.log('[ENVELOPES] Must be authenticated');
-      return;
-    }
   }
 
   async componentDidLoad() {
@@ -377,7 +376,7 @@ export class VerdocsEnvelopesList {
 
         {this.envelopes.map(envelope => {
           const recipientsWithActions = getRecipientsWithActions(envelope);
-          const userCanCancel = userCanCancelEnvelope(this.endpoint.session, envelope);
+          const userCanCancel = userCanCancelEnvelope(this.endpoint.profile, envelope);
           const userRole = recipientsWithActions.find(recipient => recipient.email === this.endpoint.session?.email || '');
           const userCanFinish = userRole && userCanCancel && userCanAct(this.endpoint.session?.email || '', recipientsWithActions);
 

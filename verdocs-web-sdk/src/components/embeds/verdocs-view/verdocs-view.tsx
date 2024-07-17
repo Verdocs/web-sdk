@@ -206,7 +206,7 @@ export class VerdocsView {
 
     const menuOptions: any[] = [{id: 'print', label: 'Print'}];
 
-    if (userCanCancelEnvelope(this.endpoint.session, this.envelope)) {
+    if (userCanCancelEnvelope(this.endpoint.profile, this.envelope)) {
       menuOptions.push({id: 'cancel', label: 'Cancel'});
     }
 

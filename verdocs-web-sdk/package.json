@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "4.1.14",
+  "version": "4.1.16",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -30,14 +30,13 @@
     "@stencil/core": "4.18.3",
     "@stencil/store": "^2.0.16",
     "@svgdotjs/svg.js": "^3.2.3",
-    "@verdocs/js-sdk": "^4.1.14",
+    "@verdocs/js-sdk": "^4.1.16",
     "air-datepicker": "^3.5.1",
     "choices.js": "^10.2.0",
     "date-fns": "^3.6.0",
     "flatpickr": "^4.6.13",
     "interactjs": "^1.10.27",
     "jszip": "^3.10.1",
-    "stenciljs-web-types-generator": "^1.0.4",
     "workflow-svg.js": "^3.0.2",
     "zod": "^3.23.8"
   },

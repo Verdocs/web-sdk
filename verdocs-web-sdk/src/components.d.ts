@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IProfile, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -22,7 +22,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IProfile, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { SDKError } from "./utils/errors";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -1295,56 +1295,6 @@ export namespace Components {
         "templateId": string | null;
     }
     /**
-     * Display a template preview experience. This will display the template's attached
-     * documents with signing fields overlaid on each page. Fields will be color-coded
-     * by recipient, and will be read-only (cannot be filled, moved, or altered).
-     * ```ts
-     * <verdocs-settings />
-     * ```
-     */
-    interface VerdocsSettings {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-    }
-    /**
-     * Displays a settings form that allows the user to manage their API keys.
-     */
-    interface VerdocsSettingsApiKeys {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-    }
-    /**
-     * Displays a settings form that allows the user to manage their Verdocs profile.
-     */
-    interface VerdocsSettingsMembers {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-    }
-    /**
-     * Displays a settings form that allows the user to manage their Verdocs profile.
-     */
-    interface VerdocsSettingsOrganization {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-    }
-    /**
-     * Displays a settings form that allows the user to manage their Verdocs profile.
-     */
-    interface VerdocsSettingsProfile {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-    }
-    /**
      * Display an envelope signing experience. This will display the envelope's attached
      * documents with signing fields overlaid on each page.
      * The component will attempt to initiate a signing session and load the specified
@@ -2008,26 +1958,6 @@ export interface VerdocsSearchBoxCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsSendCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSendElement;
-}
-export interface VerdocsSettingsCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsSettingsElement;
-}
-export interface VerdocsSettingsApiKeysCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsSettingsApiKeysElement;
-}
-export interface VerdocsSettingsMembersCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsSettingsMembersElement;
-}
-export interface VerdocsSettingsOrganizationCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsSettingsOrganizationElement;
-}
-export interface VerdocsSettingsProfileCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsSettingsProfileElement;
 }
 export interface VerdocsSignCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3090,119 +3020,6 @@ declare global {
         prototype: HTMLVerdocsSendElement;
         new (): HTMLVerdocsSendElement;
     };
-    interface HTMLVerdocsSettingsElementEventMap {
-        "sdkError": SDKError;
-    }
-    /**
-     * Display a template preview experience. This will display the template's attached
-     * documents with signing fields overlaid on each page. Fields will be color-coded
-     * by recipient, and will be read-only (cannot be filled, moved, or altered).
-     * ```ts
-     * <verdocs-settings />
-     * ```
-     */
-    interface HTMLVerdocsSettingsElement extends Components.VerdocsSettings, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsSettingsElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsElement, ev: VerdocsSettingsCustomEvent<HTMLVerdocsSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsSettingsElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsElement, ev: VerdocsSettingsCustomEvent<HTMLVerdocsSettingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsSettingsElement: {
-        prototype: HTMLVerdocsSettingsElement;
-        new (): HTMLVerdocsSettingsElement;
-    };
-    interface HTMLVerdocsSettingsApiKeysElementEventMap {
-        "sdkError": SDKError;
-        "memberInvited": {endpoint: VerdocsEndpoint; member: IProfile};
-        "memberUpdated": {endpoint: VerdocsEndpoint; member: IProfile};
-        "memberRemoved": {endpoint: VerdocsEndpoint; member: IProfile};
-    }
-    /**
-     * Displays a settings form that allows the user to manage their API keys.
-     */
-    interface HTMLVerdocsSettingsApiKeysElement extends Components.VerdocsSettingsApiKeys, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsSettingsApiKeysElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsApiKeysElement, ev: VerdocsSettingsApiKeysCustomEvent<HTMLVerdocsSettingsApiKeysElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsSettingsApiKeysElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsApiKeysElement, ev: VerdocsSettingsApiKeysCustomEvent<HTMLVerdocsSettingsApiKeysElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsSettingsApiKeysElement: {
-        prototype: HTMLVerdocsSettingsApiKeysElement;
-        new (): HTMLVerdocsSettingsApiKeysElement;
-    };
-    interface HTMLVerdocsSettingsMembersElementEventMap {
-        "sdkError": SDKError;
-        "memberInvited": {endpoint: VerdocsEndpoint; member: IProfile};
-        "memberUpdated": {endpoint: VerdocsEndpoint; member: IProfile};
-        "memberRemoved": {endpoint: VerdocsEndpoint; member: IProfile};
-    }
-    /**
-     * Displays a settings form that allows the user to manage their Verdocs profile.
-     */
-    interface HTMLVerdocsSettingsMembersElement extends Components.VerdocsSettingsMembers, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsSettingsMembersElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsMembersElement, ev: VerdocsSettingsMembersCustomEvent<HTMLVerdocsSettingsMembersElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsSettingsMembersElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsMembersElement, ev: VerdocsSettingsMembersCustomEvent<HTMLVerdocsSettingsMembersElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsSettingsMembersElement: {
-        prototype: HTMLVerdocsSettingsMembersElement;
-        new (): HTMLVerdocsSettingsMembersElement;
-    };
-    interface HTMLVerdocsSettingsOrganizationElementEventMap {
-        "sdkError": SDKError;
-        "organizationUpdated": {endpoint: VerdocsEndpoint; organization: IOrganization};
-    }
-    /**
-     * Displays a settings form that allows the user to manage their Verdocs profile.
-     */
-    interface HTMLVerdocsSettingsOrganizationElement extends Components.VerdocsSettingsOrganization, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsSettingsOrganizationElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsOrganizationElement, ev: VerdocsSettingsOrganizationCustomEvent<HTMLVerdocsSettingsOrganizationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsSettingsOrganizationElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsOrganizationElement, ev: VerdocsSettingsOrganizationCustomEvent<HTMLVerdocsSettingsOrganizationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsSettingsOrganizationElement: {
-        prototype: HTMLVerdocsSettingsOrganizationElement;
-        new (): HTMLVerdocsSettingsOrganizationElement;
-    };
-    interface HTMLVerdocsSettingsProfileElementEventMap {
-        "sdkError": SDKError;
-        "profileUpdated": {endpoint: VerdocsEndpoint; profile: IProfile};
-    }
-    /**
-     * Displays a settings form that allows the user to manage their Verdocs profile.
-     */
-    interface HTMLVerdocsSettingsProfileElement extends Components.VerdocsSettingsProfile, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsSettingsProfileElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsProfileElement, ev: VerdocsSettingsProfileCustomEvent<HTMLVerdocsSettingsProfileElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsSettingsProfileElementEventMap>(type: K, listener: (this: HTMLVerdocsSettingsProfileElement, ev: VerdocsSettingsProfileCustomEvent<HTMLVerdocsSettingsProfileElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsSettingsProfileElement: {
-        prototype: HTMLVerdocsSettingsProfileElement;
-        new (): HTMLVerdocsSettingsProfileElement;
-    };
     interface HTMLVerdocsSignElementEventMap {
         "sdkError": SDKError;
         "envelopeLoaded": {endpoint: VerdocsEndpoint; envelope: IEnvelope};
@@ -3824,11 +3641,6 @@ declare global {
         "verdocs-search-tabs": HTMLVerdocsSearchTabsElement;
         "verdocs-select-input": HTMLVerdocsSelectInputElement;
         "verdocs-send": HTMLVerdocsSendElement;
-        "verdocs-settings": HTMLVerdocsSettingsElement;
-        "verdocs-settings-api-keys": HTMLVerdocsSettingsApiKeysElement;
-        "verdocs-settings-members": HTMLVerdocsSettingsMembersElement;
-        "verdocs-settings-organization": HTMLVerdocsSettingsOrganizationElement;
-        "verdocs-settings-profile": HTMLVerdocsSettingsProfileElement;
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-spinner": HTMLVerdocsSpinnerElement;
@@ -5420,108 +5232,6 @@ declare namespace LocalJSX {
         "templateId"?: string | null;
     }
     /**
-     * Display a template preview experience. This will display the template's attached
-     * documents with signing fields overlaid on each page. Fields will be color-coded
-     * by recipient, and will be read-only (cannot be filled, moved, or altered).
-     * ```ts
-     * <verdocs-settings />
-     * ```
-     */
-    interface VerdocsSettings {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsSettingsCustomEvent<SDKError>) => void;
-    }
-    /**
-     * Displays a settings form that allows the user to manage their API keys.
-     */
-    interface VerdocsSettingsApiKeys {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the user chooses to invite a new member.
-         */
-        "onMemberInvited"?: (event: VerdocsSettingsApiKeysCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
-        /**
-          * Event fired when the user chooses to invite a new member.
-         */
-        "onMemberRemoved"?: (event: VerdocsSettingsApiKeysCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
-        /**
-          * Event fired when the user chooses to invite a new member.
-         */
-        "onMemberUpdated"?: (event: VerdocsSettingsApiKeysCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsSettingsApiKeysCustomEvent<SDKError>) => void;
-    }
-    /**
-     * Displays a settings form that allows the user to manage their Verdocs profile.
-     */
-    interface VerdocsSettingsMembers {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the user chooses to invite a new member.
-         */
-        "onMemberInvited"?: (event: VerdocsSettingsMembersCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
-        /**
-          * Event fired when the user chooses to invite a new member.
-         */
-        "onMemberRemoved"?: (event: VerdocsSettingsMembersCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
-        /**
-          * Event fired when the user chooses to invite a new member.
-         */
-        "onMemberUpdated"?: (event: VerdocsSettingsMembersCustomEvent<{endpoint: VerdocsEndpoint; member: IProfile}>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsSettingsMembersCustomEvent<SDKError>) => void;
-    }
-    /**
-     * Displays a settings form that allows the user to manage their Verdocs profile.
-     */
-    interface VerdocsSettingsOrganization {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the user chooses the Edit option from the dropdown menu.
-         */
-        "onOrganizationUpdated"?: (event: VerdocsSettingsOrganizationCustomEvent<{endpoint: VerdocsEndpoint; organization: IOrganization}>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsSettingsOrganizationCustomEvent<SDKError>) => void;
-    }
-    /**
-     * Displays a settings form that allows the user to manage their Verdocs profile.
-     */
-    interface VerdocsSettingsProfile {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the user chooses the Edit option from the dropdown menu.
-         */
-        "onProfileUpdated"?: (event: VerdocsSettingsProfileCustomEvent<{endpoint: VerdocsEndpoint; profile: IProfile}>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsSettingsProfileCustomEvent<SDKError>) => void;
-    }
-    /**
      * Display an envelope signing experience. This will display the envelope's attached
      * documents with signing fields overlaid on each page.
      * The component will attempt to initiate a signing session and load the specified
@@ -6352,11 +6062,6 @@ declare namespace LocalJSX {
         "verdocs-search-tabs": VerdocsSearchTabs;
         "verdocs-select-input": VerdocsSelectInput;
         "verdocs-send": VerdocsSend;
-        "verdocs-settings": VerdocsSettings;
-        "verdocs-settings-api-keys": VerdocsSettingsApiKeys;
-        "verdocs-settings-members": VerdocsSettingsMembers;
-        "verdocs-settings-organization": VerdocsSettingsOrganization;
-        "verdocs-settings-profile": VerdocsSettingsProfile;
         "verdocs-sign": VerdocsSign;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-spinner": VerdocsSpinner;
@@ -6724,31 +6429,6 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
-            /**
-             * Display a template preview experience. This will display the template's attached
-             * documents with signing fields overlaid on each page. Fields will be color-coded
-             * by recipient, and will be read-only (cannot be filled, moved, or altered).
-             * ```ts
-             * <verdocs-settings />
-             * ```
-             */
-            "verdocs-settings": LocalJSX.VerdocsSettings & JSXBase.HTMLAttributes<HTMLVerdocsSettingsElement>;
-            /**
-             * Displays a settings form that allows the user to manage their API keys.
-             */
-            "verdocs-settings-api-keys": LocalJSX.VerdocsSettingsApiKeys & JSXBase.HTMLAttributes<HTMLVerdocsSettingsApiKeysElement>;
-            /**
-             * Displays a settings form that allows the user to manage their Verdocs profile.
-             */
-            "verdocs-settings-members": LocalJSX.VerdocsSettingsMembers & JSXBase.HTMLAttributes<HTMLVerdocsSettingsMembersElement>;
-            /**
-             * Displays a settings form that allows the user to manage their Verdocs profile.
-             */
-            "verdocs-settings-organization": LocalJSX.VerdocsSettingsOrganization & JSXBase.HTMLAttributes<HTMLVerdocsSettingsOrganizationElement>;
-            /**
-             * Displays a settings form that allows the user to manage their Verdocs profile.
-             */
-            "verdocs-settings-profile": LocalJSX.VerdocsSettingsProfile & JSXBase.HTMLAttributes<HTMLVerdocsSettingsProfileElement>;
             /**
              * Display an envelope signing experience. This will display the envelope's attached
              * documents with signing fields overlaid on each page.

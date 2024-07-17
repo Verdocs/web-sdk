@@ -317,8 +317,7 @@ export class VerdocsEnvelopeSidebar {
       return <Host />;
     }
 
-    const session = this.endpoint.getSession();
-    const isEnvelopeOwner = userIsEnvelopeOwner(session, this.store.state);
+    const isEnvelopeOwner = userIsEnvelopeOwner(this.endpoint.profile, this.store.state);
     const historyEntries = this.prepareHistoryEntries();
     const functionsDisabled = this.store?.state?.status !== 'pending' && this.store?.state?.status !== 'in progress';
 

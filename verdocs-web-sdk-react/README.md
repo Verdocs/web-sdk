@@ -21,18 +21,18 @@ created at [Verdocs.com](https://verdocs.com). Most Web applications have some t
 same username/password for access, you can reuse that for this step:
 
 ```typescript
-import { Auth } from "@verdocs/js-sdk/Users";
-import { Transport } from "@verdocs/js-sdk/HTTP";
+import {Auth} from '@verdocs/js-sdk/Users';
+import {Transport} from '@verdocs/js-sdk/HTTP';
 
 try {
-  const { accessToken } = await Auth.authenticateUser({
+  const {accessToken} = await Auth.authenticateUser({
     username: MY_USERNAME,
     password: MY_PASSWORD,
   });
-  console.log("Authenticated to Verdocs", accessToken.substring(0, 10));
+  console.log('Authenticated to Verdocs', accessToken.substring(0, 10));
   Transport.setAuthToken(accessToken);
 } catch (e) {
-  console.error("Unable to authenticate to Verdocs.", e);
+  console.error('Unable to authenticate to Verdocs.', e);
 }
 ```
 
@@ -76,9 +76,9 @@ Most of the widgets in this library specify "Barlow" as the default font, but do
 as small as possible. To support Barlow in your own app, including the following lines of code in your `<head>` tag:
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&display=swap" rel="stylesheet" />
 ```
 
 ## compomnents.ts fixups
@@ -87,8 +87,6 @@ Replace
 
 `import type { JSX } from '@verdocs/web-sdk/components';`
 
-with 
+with
 
 `import type { JSX } from '@verdocs/web-sdk/dist/types';`
-
-Replace-all `@verdocs/web-sdk/components` with `@verdocs/web-sdk/dist/components`

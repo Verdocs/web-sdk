@@ -1,11 +1,7 @@
 import {sass} from '@stencil/sass';
 import {Config} from '@stencil/core';
-// import {WebTypesGenerator} from 'stenciljs-web-types-generator/web-types-generator';
-// import typescript from 'rollup-plugin-typescript2';
-// import nodePolyfills from 'rollup-plugin-node-polyfills';
 import {reactOutputTarget} from '@stencil/react-output-target';
 import {angularOutputTarget, ValueAccessorConfig} from '@stencil/angular-output-target';
-// import {JsonDocs} from '@stencil/core/internal';
 
 const angularValueAccessorBindings: ValueAccessorConfig[] = [
   {
@@ -46,6 +42,7 @@ export const config: Config = {
       componentCorePackage: '@verdocs/web-sdk',
       proxiesFile: '../verdocs-web-sdk-react/src/components.ts',
       includeImportCustomElements: true,
+      customElementsDir: 'dist/components',
     }),
     {
       type: 'dist',

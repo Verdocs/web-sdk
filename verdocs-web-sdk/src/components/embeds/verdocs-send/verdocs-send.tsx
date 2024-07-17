@@ -138,7 +138,17 @@ export class VerdocsSend {
     }
 
     try {
-      const loadSessionResult = this.endpoint.loadSession();
+      this.endpoint.onSessionChanged((_endpoint, _session, profile) => {
+        if (profile) {
+          this.sessionContacts = [];
+          this.sessionContacts.push({
+            id: profile.id,
+            name: `${profile.first_name} ${profile.last_name}`,
+            email: profile.email,
+            phone: profile.phone,
+          });
+        }
+      });
 
       this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
       this.roleStore = getTemplateRoleStore(templateId);
@@ -146,15 +156,6 @@ export class VerdocsSend {
 
       if (!this.templateStore?.state?.is_sendable) {
         console.warn(`[SEND] Template is not sendable`, templateId);
-      }
-
-      if (loadSessionResult?.session?.profile) {
-        this.sessionContacts.push({
-          id: loadSessionResult.session.profile.id,
-          name: `${loadSessionResult.session.profile.first_name} ${loadSessionResult.session.profile.last_name}`,
-          email: loadSessionResult.session.profile.email,
-          phone: loadSessionResult.session.profile.phone,
-        });
       }
     } catch (e) {
       console.log('[SEND] Error with preview session', e);
