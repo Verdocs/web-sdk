@@ -85,6 +85,8 @@ export class VerdocsSettingsMembers {
   @State() selectedTab = 0;
   @State() invitingMember = false;
   @State() newEmailAddress = '';
+  @State() newFirst = '';
+  @State() newLast = '';
   @State() newRole: TRole = 'member';
   @State() submitting = false;
   @State() deletingInvitation: IOrganizationInvitation | null = null;
@@ -119,6 +121,8 @@ export class VerdocsSettingsMembers {
     this.submitting = true;
     createOrganizationInvitation(VerdocsEndpoint.getDefault(), {
       email: this.newEmailAddress,
+      first_name: this.newFirst,
+      last_name: this.newLast,
       role: this.newRole,
     })
       .then(r => {
@@ -127,6 +131,8 @@ export class VerdocsSettingsMembers {
         this.submitting = false;
         this.newRole = 'member';
         this.newEmailAddress = '';
+        this.newFirst = '';
+        this.newLast = '';
         VerdocsToast('Invitation sent!', {style: 'success'});
         this.loadMembers();
       })
@@ -136,6 +142,8 @@ export class VerdocsSettingsMembers {
         this.submitting = false;
         this.newRole = 'member';
         this.newEmailAddress = '';
+        this.newFirst = '';
+        this.newLast = '';
         VerdocsToast('Unable to invite member. Please try again later', {style: 'error'});
       });
   }
@@ -272,6 +280,32 @@ export class VerdocsSettingsMembers {
                 onInput={(e: any) => (this.newEmailAddress = e.target.value)}
                 onFocusout={(e: any) => {
                   this.newEmailAddress = e.target.value.trim();
+                }}
+              />
+
+              <verdocs-text-input
+                label="First"
+                placeholder="First name..."
+                id="verdocs-invite-first"
+                value={this.newFirst}
+                autocomplete="off"
+                required={true}
+                onInput={(e: any) => (this.newFirst = e.target.value)}
+                onFocusout={(e: any) => {
+                  this.newFirst = e.target.value.trim();
+                }}
+              />
+
+              <verdocs-text-input
+                label="Last"
+                placeholder="Enter the user's last name..."
+                id="verdocs-invite-last"
+                value={this.newLast}
+                autocomplete="off"
+                required={true}
+                onInput={(e: any) => (this.newLast = e.target.value)}
+                onFocusout={(e: any) => {
+                  this.newLast = e.target.value.trim();
                 }}
               />
 
