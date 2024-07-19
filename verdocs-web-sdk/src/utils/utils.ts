@@ -1,17 +1,6 @@
 import jszip from 'jszip';
 import {format} from 'date-fns';
-import {
-  downloadBlob,
-  getEnvelopeFile,
-  getFieldAttachment,
-  IEnvelope,
-  IEnvelopeField,
-  IEnvelopeSummary,
-  ITemplateField,
-  rescale,
-  TFieldType,
-  VerdocsEndpoint,
-} from '@verdocs/js-sdk';
+import {downloadBlob, getEnvelopeFile, getFieldAttachment, IEnvelope, IEnvelopeField, ITemplateField, rescale, TFieldType, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {FORMAT_DATE, IDocumentPageInfo} from './Types';
 
 export const defaultWidth = (type: TFieldType) => {
@@ -341,7 +330,7 @@ export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvel
   downloadBlob(data, fileName);
 };
 
-export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: (IEnvelope | IEnvelopeSummary)[]) => {
+export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: IEnvelope[]) => {
   const zip = new jszip();
 
   for await (let envelope of envelopes) {

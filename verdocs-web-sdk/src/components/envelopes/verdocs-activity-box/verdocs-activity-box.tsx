@@ -1,4 +1,4 @@
-import {formatShortTimeAgo, getEnvelopesSummary, IActivityEntry, integerSequence, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {formatShortTimeAgo, getEnvelopesSummary, IEnvelope, integerSequence, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 
@@ -47,7 +47,7 @@ export class VerdocsActivityBox {
    * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
    * to the envelope detail view.
    */
-  @Event({composed: true}) viewEnvelope: EventEmitter<{endpoint: VerdocsEndpoint; entry: IActivityEntry}>;
+  @Event({composed: true}) viewEnvelope: EventEmitter<{endpoint: VerdocsEndpoint; entry: IEnvelope}>;
 
   /**
    * Event fired when the user clicks View All in the title bar. The current view will be included in the event
@@ -60,7 +60,7 @@ export class VerdocsActivityBox {
   @State() title = '';
   @State() count = 0;
   @State() loading = true;
-  @State() entries: IActivityEntry[] = [];
+  @State() entries: IEnvelope[] = [];
 
   async componentWillLoad() {
     try {
@@ -150,7 +150,8 @@ export class VerdocsActivityBox {
             >
               <div class="title">
                 {entry.name}
-                <br /> <strong>{entry.recipient.name}</strong>
+                {/* TODO */}
+                {/*<br /> <strong>{entry.recipient.name}</strong>*/}
               </div>
               <div class="time-ago">{formatShortTimeAgo(entry.updated_at)}</div>
             </div>

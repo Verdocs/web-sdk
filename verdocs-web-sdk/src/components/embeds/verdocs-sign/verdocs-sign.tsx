@@ -93,7 +93,6 @@ export class VerdocsSign {
   @State() roleNames: string[] = [];
   @State() sortedRecipients: IRecipient[] = [];
   @State() recipient: IRecipient | null = null;
-  @State() signerToken = null;
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
   @State() nextSubmits = false;
@@ -132,18 +131,13 @@ export class VerdocsSign {
 
     try {
       console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
-      const {session, recipient, signerToken} = await getSigningSession(this.endpoint, {
-        envelopeId: this.envelopeId,
-        roleId: this.roleId,
-        inviteCode: this.inviteCode,
-      });
 
-      console.log(`[SIGN] Loaded signing session ${session.email} / ${session.profile_id}`);
+      const {envelope, recipient, access_token} = await getSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
+      console.log(`[SIGN] Loaded signing session`, envelope, recipient, access_token);
 
       this.recipient = recipient;
       console.log('[SIGN] We are recipient', this.recipient);
-      this.signerToken = signerToken;
-      this.endpoint.setToken(signerToken);
+      this.endpoint.setToken(access_token);
 
       if (this.agreed) {
         this.nextButtonLabel = 'Next';

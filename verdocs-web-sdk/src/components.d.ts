@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { ICreateEnvelopeRole, IEnvelope, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -22,7 +22,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { IActivityEntry, ICreateEnvelopeRole, IEnvelope, IEnvelopeSummary, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { ICreateEnvelopeRole, IEnvelope, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { SDKError } from "./utils/errors";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -1358,7 +1358,7 @@ export namespace Components {
         /**
           * The document to display status for. Ignored if `status` is set directly.
          */
-        "envelope"?: IEnvelope | IEnvelopeSummary;
+        "envelope"?: IEnvelope;
         /**
           * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
          */
@@ -2046,7 +2046,7 @@ export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
 declare global {
     interface HTMLVerdocsActivityBoxElementEventMap {
         "sdkError": SDKError;
-        "viewEnvelope": {endpoint: VerdocsEndpoint; entry: IActivityEntry};
+        "viewEnvelope": {endpoint: VerdocsEndpoint; entry: IEnvelope};
         "viewAll": {endpoint: VerdocsEndpoint; view: string};
     }
     /**
@@ -3701,7 +3701,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
          */
-        "onViewEnvelope"?: (event: VerdocsActivityBoxCustomEvent<{endpoint: VerdocsEndpoint; entry: IActivityEntry}>) => void;
+        "onViewEnvelope"?: (event: VerdocsActivityBoxCustomEvent<{endpoint: VerdocsEndpoint; entry: IEnvelope}>) => void;
         /**
           * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
          */
@@ -5315,7 +5315,7 @@ declare namespace LocalJSX {
         /**
           * The document to display status for. Ignored if `status` is set directly.
          */
-        "envelope"?: IEnvelope | IEnvelopeSummary;
+        "envelope"?: IEnvelope;
         /**
           * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
          */

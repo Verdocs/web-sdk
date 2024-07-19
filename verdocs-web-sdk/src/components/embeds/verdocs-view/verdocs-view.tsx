@@ -1,4 +1,4 @@
-import {cancelEnvelope, getDocumentDownloadLink, IEnvelope, integerSequence, throttledGetEnvelope, userCanCancelEnvelope, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {cancelEnvelope, getDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, userCanCancelEnvelope, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {saveEnvelopesAsZip} from '../../../utils/utils';
 // import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
@@ -100,13 +100,13 @@ export class VerdocsView {
     console.log('[VIEW] Loading envelope...');
 
     try {
-      this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
+      this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
       console.log('[VIEW] Loaded envelope', this.envelope);
       this.roleNames = this.envelope.recipients.map(r => r.role_name);
 
       setTimeout(async () => {
         console.log('[VIEW] Reloading envelope...');
-        this.envelope = await throttledGetEnvelope(this.endpoint, this.envelopeId);
+        this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
         console.log('[VIEW] Reloaded envelope', this.envelope);
       }, 2000);
     } catch (e) {
@@ -129,7 +129,7 @@ export class VerdocsView {
             .then(r => {
               this.canceling = false;
               console.log('[VIEW] Envelope canceled', r);
-              return throttledGetEnvelope(this.endpoint, this.envelopeId);
+              return getEnvelope(this.endpoint, this.envelopeId);
             })
             .then(env => {
               console.log('[VIEW] Loaded new envelope details', env);

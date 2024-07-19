@@ -1,6 +1,6 @@
 import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
 import {userCanCancelEnvelope, userCanAct, cancelEnvelope, integerSequence} from '@verdocs/js-sdk';
-import {IEnvelope, IListEnvelopesParams, TEnvelopeStatus, VerdocsEndpoint, listEnvelopes, getRecipientsWithActions} from '@verdocs/js-sdk';
+import {IEnvelope, IListEnvelopesParams, TEnvelopeStatus, VerdocsEndpoint, getEnvelopes, getRecipientsWithActions} from '@verdocs/js-sdk';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
 import {saveEnvelopesAsZip} from '../../../utils/utils';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -209,7 +209,8 @@ export class VerdocsEnvelopesList {
         case 'sent':
           queryParams = {
             ...queryParams,
-            is_owner: true,
+            // FIXME
+            // is_owner: true,
             // sort: 'updated_at',
           };
           break;
@@ -227,7 +228,8 @@ export class VerdocsEnvelopesList {
         case 'waiting':
           queryParams = {
             ...queryParams,
-            is_owner: true,
+            // FIXME
+            // is_owner: true,
             // sort: 'updated_at',
             // direction: 'desc',
             status: ['pending', 'in progress'],
@@ -274,9 +276,9 @@ export class VerdocsEnvelopesList {
       //   queryParams.field_value = this.containing.trim();
       // }
 
-      const response = await listEnvelopes(this.endpoint, queryParams);
+      const response = await getEnvelopes(this.endpoint, queryParams);
       this.envelopes = response.envelopes;
-      this.count = response.total;
+      this.count = response.count;
       this.loading = false;
     } catch (e) {
       this.loading = false;
