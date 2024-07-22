@@ -1,4 +1,4 @@
-import {createTemplatev2, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {createTemplate, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {getTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
@@ -85,7 +85,7 @@ export class VerdocsTemplateCreate {
     this.progressLabel = 'Uploading...';
 
     try {
-      const template = await createTemplatev2(this.endpoint, {name: this.file.name, documents: [this.file]}, percent => {
+      const template = await createTemplate(this.endpoint, {name: this.file.name, documents: [this.file]}, percent => {
         if (percent >= 99) {
           this.progressLabel = 'Processing...';
           this.progressPercent = 100;
@@ -125,7 +125,14 @@ export class VerdocsTemplateCreate {
     return (
       <Host>
         <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
-          <input type="file" id="verdocs-template-create-file" multiple accept=".pdf,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style={{display: 'none'}} onChange={e => this.handleFileChanged(e)} />
+          <input
+            type="file"
+            id="verdocs-template-create-file"
+            multiple
+            accept=".pdf,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            style={{display: 'none'}}
+            onChange={e => this.handleFileChanged(e)}
+          />
 
           {this.creating ? (
             <div class="loader-wrapper">

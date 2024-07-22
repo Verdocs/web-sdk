@@ -231,10 +231,17 @@ export class VerdocsTemplateRoles {
     this.getSequenceNumbers().forEach((originalSequence, newSequenceIndex) => {
       this.getRolesAtSequence(originalSequence).forEach((role, newOrderIndex) => {
         if (!renumbered.includes(role.name)) {
-          role.sequence = newSequenceIndex + 1;
-          role.order = newOrderIndex + 1;
-          renumbered.push(role.name);
-          renumberRequests.push(updateTemplateRole(this.endpoint, this.templateId, role.name, {sequence: role.sequence, order: role.order}));
+          if (role.sequence !== newSequenceIndex + 1 || role.order !== newOrderIndex + 1) {
+            role.sequence = newSequenceIndex + 1;
+            role.order = newOrderIndex + 1;
+            renumbered.push(role.name);
+            renumberRequests.push(
+              updateTemplateRole(this.endpoint, this.templateId, role.name, {
+                sequence: role.sequence,
+                order: role.order,
+              }),
+            );
+          }
         }
       });
     });

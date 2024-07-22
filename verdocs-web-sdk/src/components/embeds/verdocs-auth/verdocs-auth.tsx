@@ -5,48 +5,48 @@ import {SDKError} from '../../../utils/errors';
 
 const RECHECK_INTERVAL = 5000;
 
-const Industries = [
-  {value: '', label: ''},
-  {value: 'Accounting & Tax', label: 'Accounting & Tax'},
-  {value: 'Business Services / Consulting', label: 'Business Services / Consulting'},
-  {value: 'Construction', label: 'Construction'},
-  {value: 'Education', label: 'Education'},
-  {value: 'Financial Services', label: 'Financial Services'},
-  {value: 'Government', label: 'Government'},
-  {value: 'Healthcare - Health Plans & Payers', label: 'Healthcare - Health Plans & Payers'},
-  {value: 'Healthcare - Providers', label: 'Healthcare - Providers'},
-  {value: 'Insurance', label: 'Insurance'},
-  {value: 'Legal', label: 'Legal'},
-  {value: 'Life Sciences', label: 'Life Sciences'},
-  {value: 'Manufacturing', label: 'Manufacturing'},
-  {value: 'Mortgage', label: 'Mortgage'},
-  {value: 'Not For Profit', label: 'Not For Profit'},
-  {value: 'Real Estate - Commercial', label: 'Real Estate - Commercial'},
-  {value: 'Real Estate - Residential', label: 'Real Estate - Residential'},
-  {value: 'Retail', label: 'Retail'},
-  {value: 'Technology', label: 'Technology'},
-  {value: 'Other', label: 'Other'},
-];
-
-const Reasons = [
-  {value: '', label: ''},
-  {value: 'I want to send a document for signature.', label: 'I want to send a document for signature.'},
-  {value: 'I just need to sign a document today.', label: 'I just need to sign a document today.'},
-  {value: "I'm evaluating it for my business.", label: "I'm evaluating it for my business."},
-  {value: "I'm evaluating it for my personal use.", label: "I'm evaluating it for my personal use."},
-  {value: "I'm a developer building an integration.", label: "I'm a developer building an integration."},
-];
-
-const CompanySizes = [
-  {value: '', label: ''},
-  {value: 'Solo', label: 'Solo'},
-  {value: '2-10', label: '2-10'},
-  {value: '11-50', label: '11-50'},
-  {value: '51-200', label: '51-200'},
-  {value: '201-500', label: '201-500'},
-  {value: '501-1000', label: '501-1000'},
-  {value: '1000+', label: '1000+'},
-];
+// const Industries = [
+//   {value: '', label: ''},
+//   {value: 'Accounting & Tax', label: 'Accounting & Tax'},
+//   {value: 'Business Services / Consulting', label: 'Business Services / Consulting'},
+//   {value: 'Construction', label: 'Construction'},
+//   {value: 'Education', label: 'Education'},
+//   {value: 'Financial Services', label: 'Financial Services'},
+//   {value: 'Government', label: 'Government'},
+//   {value: 'Healthcare - Health Plans & Payers', label: 'Healthcare - Health Plans & Payers'},
+//   {value: 'Healthcare - Providers', label: 'Healthcare - Providers'},
+//   {value: 'Insurance', label: 'Insurance'},
+//   {value: 'Legal', label: 'Legal'},
+//   {value: 'Life Sciences', label: 'Life Sciences'},
+//   {value: 'Manufacturing', label: 'Manufacturing'},
+//   {value: 'Mortgage', label: 'Mortgage'},
+//   {value: 'Not For Profit', label: 'Not For Profit'},
+//   {value: 'Real Estate - Commercial', label: 'Real Estate - Commercial'},
+//   {value: 'Real Estate - Residential', label: 'Real Estate - Residential'},
+//   {value: 'Retail', label: 'Retail'},
+//   {value: 'Technology', label: 'Technology'},
+//   {value: 'Other', label: 'Other'},
+// ];
+//
+// const Reasons = [
+//   {value: '', label: ''},
+//   {value: 'I want to send a document for signature.', label: 'I want to send a document for signature.'},
+//   {value: 'I just need to sign a document today.', label: 'I just need to sign a document today.'},
+//   {value: "I'm evaluating it for my business.", label: "I'm evaluating it for my business."},
+//   {value: "I'm evaluating it for my personal use.", label: "I'm evaluating it for my personal use."},
+//   {value: "I'm a developer building an integration.", label: "I'm a developer building an integration."},
+// ];
+//
+// const CompanySizes = [
+//   {value: '', label: ''},
+//   {value: 'Solo', label: 'Solo'},
+//   {value: '2-10', label: '2-10'},
+//   {value: '11-50', label: '11-50'},
+//   {value: '51-200', label: '51-200'},
+//   {value: '201-500', label: '201-500'},
+//   {value: '501-1000', label: '501-1000'},
+//   {value: '1000+', label: '1000+'},
+// ];
 
 export interface IAuthStatus {
   authenticated: boolean;
@@ -108,19 +108,18 @@ export class VerdocsAuth {
 
   @State() isAuthenticated: boolean = false;
   @State() displayMode: 'login' | 'forgot' | 'signup' | 'verify' = 'login';
-  @State() orgname: string = '';
-  @State() first: string = '';
-  @State() last: string = '';
+  @State() org_name: string = '';
+  @State() first_name: string = '';
+  @State() last_name: string = '';
   @State() username: string = '';
-  @State() phone: string = '';
   @State() password: string = '';
   @State() submitting: boolean = false;
   @State() activeSession: TSession = null;
   @State() accountType: 'personal' | 'org' = 'org';
-  @State() howHear: string = '';
-  @State() industry: string = '';
-  @State() companySize: string = '';
-  @State() reason: string = '';
+  // @State() howHear: string = '';
+  // @State() industry: string = '';
+  // @State() companySize: string = '';
+  // @State() reason: string = '';
   @State() signupStep = 1;
   @State() resendDisabled = false;
   @State() checkingOrg = false;
@@ -166,21 +165,40 @@ export class VerdocsAuth {
     }
   }
 
+  isPasswordComplex(password: string) {
+    const isUppercase = (ch: string) => /[A-Z]/.test(ch);
+    const isLowercase = (ch: string) => /[a-z]/.test(ch);
+    const isSpecialChar = (ch: string) => /[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~ ]/.test(ch);
+    let countOfUpperCase = 0,
+      countOfLowerCase = 0,
+      countOfSpecialChar = 0;
+    for (let i = 0; i < password.length; i++) {
+      let ch = password.charAt(i);
+      if (isUppercase(ch)) countOfUpperCase++;
+      else if (isLowercase(ch)) countOfLowerCase++;
+      else if (isSpecialChar(ch)) countOfSpecialChar++;
+    }
+    return password.length >= 8 && countOfLowerCase > 0 && countOfUpperCase > 0 && countOfSpecialChar > 0;
+  }
+
   handleSignup() {
     this.submitting = true;
     this.accessTokenForVerification = null;
 
+    if (!this.isPasswordComplex(this.password)) {
+      window.alert('Password must be at least 8 characters long and contain at least one uppercase, one lowercase, and one special character.');
+      return;
+    }
+
     createProfile(this.endpoint, {
       email: this.username,
       password: this.password,
-      firstName: this.first,
-      lastName: this.last,
-      orgName: this.orgname,
+      first_name: this.first_name,
+      last_name: this.last_name,
+      org_name: this.org_name,
     })
       .then(r => {
-        console.log('Result', r);
-        console.log('[AUTH] Created profile', r.profile);
-        console.log('[AUTH] Created organization', r.organization);
+        console.log('Profile creation result', r);
         this.loginAndCheckVerification();
       })
       .catch(e => {
@@ -217,7 +235,7 @@ export class VerdocsAuth {
           console.log('[AUTH] Logged in, pending email address verification');
           this.displayMode = 'verify';
           this.accessTokenForVerification = r.access_token;
-          this.recheckTimer = setTimeout(() => this.loginAndCheckVerification(), RECHECK_INTERVAL);
+          this.recheckTimer = setTimeout(this.loginAndCheckVerification, RECHECK_INTERVAL);
         }
       })
       .catch(e => {
@@ -292,7 +310,7 @@ export class VerdocsAuth {
     }
 
     if (this.displayMode === 'signup') {
-      const step1Invalid = this.submitting || !this.first || !this.last || !this.username || !this.password || !this.orgname;
+      const step1Invalid = this.submitting || !this.first_name || !this.last_name || !this.username || !this.password || !this.org_name;
 
       return (
         <div class="form">
@@ -300,7 +318,7 @@ export class VerdocsAuth {
             <img src={this.logo} alt="Verdocs Logo" class="logo" />
           </a>
 
-          <h3>Sign up for a trial account</h3>
+          <h3>Sign up for a free account</h3>
           <h4>
             Already have an account?
             <verdocs-button label="Log In" variant="text" onClick={() => (this.displayMode = 'login')} disabled={this.submitting} />
@@ -313,28 +331,27 @@ export class VerdocsAuth {
                   label="First Name"
                   autocomplete="first"
                   required={true}
-                  value={this.first}
-                  onInput={(e: any) => (this.first = e.target.value)}
+                  value={this.first_name}
+                  onInput={(e: any) => (this.first_name = e.target.value)}
                   disabled={this.submitting}
                 />
                 <verdocs-text-input
                   label="Last Name"
                   autocomplete="last"
                   required={true}
-                  value={this.last}
-                  onInput={(e: any) => (this.last = e.target.value)}
+                  value={this.last_name}
+                  onInput={(e: any) => (this.last_name = e.target.value)}
                   disabled={this.submitting}
                 />
               </div>
               <verdocs-text-input
-                label="Email"
+                label="Email Address"
                 autocomplete="email"
                 required={true}
                 value={this.username}
                 onInput={(e: any) => (this.username = e.target.value)}
                 disabled={this.submitting}
               />
-              <verdocs-text-input label="Phone #" autocomplete="phone" value={this.phone} onInput={(e: any) => (this.phone = e.target.value)} disabled={this.submitting} />
               <verdocs-text-input
                 label="Password"
                 type="password"
@@ -348,48 +365,15 @@ export class VerdocsAuth {
                 label="Organization Name"
                 autocomplete="org"
                 required={true}
-                value={this.orgname}
-                onInput={(e: any) => (this.orgname = e.target.value)}
+                value={this.org_name}
+                onInput={(e: any) => (this.org_name = e.target.value)}
                 disabled={this.submitting}
                 style={{flex: '1'}}
               />
 
               <div style={{marginTop: '30px'}} />
 
-              <verdocs-button
-                label="Next"
-                disabled={step1Invalid}
-                onClick={() => (this.signupStep = 2)}
-                style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
-              />
-            </form>
-          )}
-
-          {this.signupStep === 2 && (
-            <form onSubmit={() => this.handleSignup()}>
-              <verdocs-text-input label="How did you hear about Verdocs?" value={this.howHear} onInput={(e: any) => (this.howHear = e.target.value)} disabled={this.submitting} />
-              <verdocs-select-input
-                label="Your Industry"
-                options={Industries}
-                value={this.industry}
-                onInput={(e: any) => (this.industry = e.target.value)}
-                disabled={this.submitting}
-              />
-              <verdocs-select-input
-                label="Company Size"
-                options={CompanySizes}
-                value={this.companySize}
-                onInput={(e: any) => (this.companySize = e.target.value)}
-                disabled={this.submitting}
-              />
-              <verdocs-select-input label="Purpose" options={Reasons} value={this.reason} onInput={(e: any) => (this.reason = e.target.value)} disabled={this.submitting} />
-              <div style={{marginTop: '30px'}} />
-              <verdocs-button
-                label="Create Account"
-                disabled={this.submitting}
-                onClick={() => this.handleSignup()}
-                style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
-              />
+              <verdocs-button label="Next" disabled={step1Invalid} onClick={() => this.handleSignup()} style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}} />
             </form>
           )}
 
