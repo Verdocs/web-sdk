@@ -1,52 +1,7 @@
-import {TSession, VerdocsEndpoint, createProfile, authenticate, decodeAccessTokenBody, resendVerification, resetPassword} from '@verdocs/js-sdk';
+import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, getMyUser, IAuthenticateResponse} from '@verdocs/js-sdk';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
-
-const RECHECK_INTERVAL = 5000;
-
-// const Industries = [
-//   {value: '', label: ''},
-//   {value: 'Accounting & Tax', label: 'Accounting & Tax'},
-//   {value: 'Business Services / Consulting', label: 'Business Services / Consulting'},
-//   {value: 'Construction', label: 'Construction'},
-//   {value: 'Education', label: 'Education'},
-//   {value: 'Financial Services', label: 'Financial Services'},
-//   {value: 'Government', label: 'Government'},
-//   {value: 'Healthcare - Health Plans & Payers', label: 'Healthcare - Health Plans & Payers'},
-//   {value: 'Healthcare - Providers', label: 'Healthcare - Providers'},
-//   {value: 'Insurance', label: 'Insurance'},
-//   {value: 'Legal', label: 'Legal'},
-//   {value: 'Life Sciences', label: 'Life Sciences'},
-//   {value: 'Manufacturing', label: 'Manufacturing'},
-//   {value: 'Mortgage', label: 'Mortgage'},
-//   {value: 'Not For Profit', label: 'Not For Profit'},
-//   {value: 'Real Estate - Commercial', label: 'Real Estate - Commercial'},
-//   {value: 'Real Estate - Residential', label: 'Real Estate - Residential'},
-//   {value: 'Retail', label: 'Retail'},
-//   {value: 'Technology', label: 'Technology'},
-//   {value: 'Other', label: 'Other'},
-// ];
-//
-// const Reasons = [
-//   {value: '', label: ''},
-//   {value: 'I want to send a document for signature.', label: 'I want to send a document for signature.'},
-//   {value: 'I just need to sign a document today.', label: 'I just need to sign a document today.'},
-//   {value: "I'm evaluating it for my business.", label: "I'm evaluating it for my business."},
-//   {value: "I'm evaluating it for my personal use.", label: "I'm evaluating it for my personal use."},
-//   {value: "I'm a developer building an integration.", label: "I'm a developer building an integration."},
-// ];
-//
-// const CompanySizes = [
-//   {value: '', label: ''},
-//   {value: 'Solo', label: 'Solo'},
-//   {value: '2-10', label: '2-10'},
-//   {value: '11-50', label: '11-50'},
-//   {value: '51-200', label: '51-200'},
-//   {value: '201-500', label: '201-500'},
-//   {value: '501-1000', label: '501-1000'},
-//   {value: '1000+', label: '1000+'},
-// ];
 
 export interface IAuthStatus {
   authenticated: boolean;
@@ -111,22 +66,20 @@ export class VerdocsAuth {
   @State() org_name: string = '';
   @State() first_name: string = '';
   @State() last_name: string = '';
-  @State() username: string = '';
+  @State() email: string = '';
+  @State() verificationCode: string = '';
   @State() password: string = '';
   @State() submitting: boolean = false;
   @State() activeSession: TSession = null;
-  @State() accountType: 'personal' | 'org' = 'org';
-  // @State() howHear: string = '';
-  // @State() industry: string = '';
-  // @State() companySize: string = '';
-  // @State() reason: string = '';
-  @State() signupStep = 1;
   @State() resendDisabled = false;
-  @State() checkingOrg = false;
 
-  recheckTimer = null;
   resendDisabledTimer = null;
   accessTokenForVerification = null;
+
+  // We can't instantly log in on the default endpoint because other listeners might see
+  // its events and incorrectly trigger before we're done. So we manage our own temp
+  // endpoint and pass the final tokens to the default once we're ready.
+  tempAuthEndpoint = new VerdocsEndpoint();
 
   componentWillLoad() {
     this.endpoint.loadSession();
@@ -138,30 +91,6 @@ export class VerdocsAuth {
     } else {
       console.log('[AUTH] Anonymous');
       this.authenticated?.emit({authenticated: false, session: null});
-    }
-  }
-
-  disconnectedCallback() {
-    this.cancelRecheckTimer();
-  }
-
-  cancelRecheckTimer() {
-    if (this.recheckTimer) {
-      try {
-        clearTimeout(this.recheckTimer);
-      } catch (e) {
-        // NOP
-      }
-      this.recheckTimer = null;
-    }
-
-    if (this.resendDisabledTimer) {
-      try {
-        clearTimeout(this.resendDisabledTimer);
-      } catch (e) {
-        // NOP
-      }
-      this.resendDisabledTimer = null;
     }
   }
 
@@ -191,7 +120,7 @@ export class VerdocsAuth {
     }
 
     createProfile(this.endpoint, {
-      email: this.username,
+      email: this.email,
       password: this.password,
       first_name: this.first_name,
       last_name: this.last_name,
@@ -212,44 +141,55 @@ export class VerdocsAuth {
       });
   }
 
-  loginAndCheckVerification() {
+  async handleVerification() {
     this.submitting = true;
     this.accessTokenForVerification = null;
 
-    authenticate(this.endpoint, {username: this.username, password: this.password, grant_type: 'password'})
-      .then(r => {
-        this.cancelRecheckTimer();
-        this.submitting = false;
+    try {
+      this.submitting = false;
+      const verificationResult = await verifyEmail(this.endpoint, {email: this.email, token: this.verificationCode});
+      console.log('Verification result', verificationResult);
+      if (!this.isPasswordComplex(this.password)) {
+        window.alert('Password must be at least 8 characters long and contain at least one uppercase, one lowercase, and one special character.');
+        return;
+      }
+    } catch (e) {
+      this.submitting = false;
+      console.log('Verification error', e);
+      VerdocsToast('Verification error, please check the code and try again.');
+    }
+  }
 
-        const body = decodeAccessTokenBody(r.access_token);
-        console.log('[AUTH] Got access token body', body);
-        if (body?.email_verified) {
-          console.log('[AUTH] Email address is verified, completing login');
-          this.displayMode = 'login'; // After signing out, this will be the next mode
-          this.accessTokenForVerification = null;
-          this.endpoint.setToken(r.access_token);
-          this.activeSession = this.endpoint.session;
-          this.isAuthenticated = true;
-          this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
-        } else {
-          console.log('[AUTH] Logged in, pending email address verification');
-          this.displayMode = 'verify';
-          this.accessTokenForVerification = r.access_token;
-          this.recheckTimer = setTimeout(this.loginAndCheckVerification, RECHECK_INTERVAL);
-        }
-      })
-      .catch(e => {
-        this.cancelRecheckTimer();
+  completeLogin(result: IAuthenticateResponse) {
+    this.endpoint.setToken(result.access_token);
+    this.activeSession = this.endpoint.session;
+    this.isAuthenticated = true;
+    this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
+  }
 
-        console.log('[AUTH] Authentication error', e.response, JSON.stringify(e));
-        this.displayMode = 'login';
-        this.submitting = false;
-        this.activeSession = null;
-        this.authenticated?.emit({authenticated: false, session: null});
-        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+  async loginAndCheckVerification() {
+    this.submitting = true;
+    this.accessTokenForVerification = null;
 
-        VerdocsToast('Login failed. Please check your username and password and try again.', {style: 'error'});
-      });
+    try {
+      this.submitting = false;
+      const authResult = await authenticate(this.endpoint, {username: this.email, password: this.password, grant_type: 'password'});
+      this.accessTokenForVerification = authResult.access_token;
+
+      const user = await getMyUser(this.endpoint);
+      console.log('Got user', user);
+
+      if (!user.email_verified) {
+        console.log('[AUTH] Logged in, pending email address verification');
+        this.displayMode = 'verify';
+        this.accessTokenForVerification = authResult.access_token;
+      } else {
+        console.log('[AUTH] Email address is verified, completing login');
+        this.completeLogin(authResult);
+      }
+    } catch (e) {
+      this.submitting = false;
+    }
   }
 
   handleLogout() {
@@ -278,19 +218,20 @@ export class VerdocsAuth {
       });
   }
 
-  handleReset() {
+  async handleReset() {
     this.submitting = true;
-    resetPassword(this.endpoint, {email: this.username})
-      .then(r => {
-        console.log('[AUTH] Reset sent', r);
-        this.submitting = false;
-        this.displayMode = 'login';
-        VerdocsToast('If your email address is registered, you will receive instructions on resetting your password shortly.', {style: 'info'});
-      })
-      .catch((e: any) => {
-        console.log('[AUTH] Unable to reset password', e);
-        this.submitting = false;
-      });
+
+    try {
+      const result = await resetPassword(this.endpoint, {email: this.email});
+      console.log('[AUTH] Reset sent', result);
+      this.submitting = false;
+      this.displayMode = 'login';
+      VerdocsToast('If your email address is registered, you will receive instructions on resetting your password shortly.', {style: 'info'});
+    } catch (e) {
+      console.log('[AUTH] Unable to reset password', e);
+      this.submitting = false;
+      VerdocsToast('Unable to reset password. Please check your email address and try again.', {style: 'error'});
+    }
   }
 
   render() {
@@ -310,7 +251,7 @@ export class VerdocsAuth {
     }
 
     if (this.displayMode === 'signup') {
-      const step1Invalid = this.submitting || !this.first_name || !this.last_name || !this.username || !this.password || !this.org_name;
+      const invalid = this.submitting || !this.first_name || !this.last_name || !this.email || !this.password || !this.org_name;
 
       return (
         <div class="form">
@@ -319,93 +260,105 @@ export class VerdocsAuth {
           </a>
 
           <h3>Sign up for a free account</h3>
-          <h4>
+          <h5>
             Already have an account?
             <verdocs-button label="Log In" variant="text" onClick={() => (this.displayMode = 'login')} disabled={this.submitting} />
-          </h4>
+          </h5>
 
-          {this.signupStep === 1 && (
-            <form onSubmit={() => this.handleSignup()}>
-              <div style={{display: 'flex', flexDirection: 'row', columnGap: '20px'}}>
-                <verdocs-text-input
-                  label="First Name"
-                  autocomplete="first"
-                  required={true}
-                  value={this.first_name}
-                  onInput={(e: any) => (this.first_name = e.target.value)}
-                  disabled={this.submitting}
-                />
-                <verdocs-text-input
-                  label="Last Name"
-                  autocomplete="last"
-                  required={true}
-                  value={this.last_name}
-                  onInput={(e: any) => (this.last_name = e.target.value)}
-                  disabled={this.submitting}
-                />
-              </div>
+          <form onSubmit={() => this.handleSignup()}>
+            <div style={{display: 'flex', flexDirection: 'row', columnGap: '20px'}}>
               <verdocs-text-input
-                label="Email Address"
-                autocomplete="email"
+                label="First Name"
+                autocomplete="first"
                 required={true}
-                value={this.username}
-                onInput={(e: any) => (this.username = e.target.value)}
+                value={this.first_name}
+                onInput={(e: any) => (this.first_name = e.target.value)}
                 disabled={this.submitting}
               />
               <verdocs-text-input
-                label="Password"
-                type="password"
+                label="Last Name"
+                autocomplete="last"
                 required={true}
-                autocomplete="current-password"
-                value={this.password}
-                onInput={(e: any) => (this.password = e.target.value)}
+                value={this.last_name}
+                onInput={(e: any) => (this.last_name = e.target.value)}
                 disabled={this.submitting}
               />
-              <verdocs-text-input
-                label="Organization Name"
-                autocomplete="org"
-                required={true}
-                value={this.org_name}
-                onInput={(e: any) => (this.org_name = e.target.value)}
-                disabled={this.submitting}
-                style={{flex: '1'}}
-              />
+            </div>
+            <verdocs-text-input
+              label="Email Address"
+              autocomplete="email"
+              required={true}
+              value={this.email}
+              onInput={(e: any) => (this.email = e.target.value)}
+              disabled={this.submitting}
+            />
+            <verdocs-text-input
+              label="Password"
+              type="password"
+              required={true}
+              autocomplete="current-password"
+              value={this.password}
+              onInput={(e: any) => (this.password = e.target.value)}
+              disabled={this.submitting}
+            />
+            <verdocs-text-input
+              label="Organization Name"
+              autocomplete="org"
+              required={true}
+              value={this.org_name}
+              onInput={(e: any) => (this.org_name = e.target.value)}
+              disabled={this.submitting}
+              style={{flex: '1'}}
+            />
 
-              <div style={{marginTop: '30px'}} />
+            <div style={{marginTop: '30px'}} />
 
-              <verdocs-button label="Next" disabled={step1Invalid} onClick={() => this.handleSignup()} style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}} />
-            </form>
-          )}
-
-          {this.signupStep === 3 && (
-            <form onSubmit={() => this.handleSignup()}>
-              <p>Please check your e-mail inbox for a verification code and follow the instructions provided.</p>
-              <p>
-                <em>
-                  Verification messages may take up to 1 hour to arrive. If you do not receive the invitation, <a href="#">Click Here</a> to resend it. Be sure to check your spam
-                  folder.
-                </em>
-              </p>
-
-              <div style={{display: 'flex', flexDirection: 'row', gap: '20px'}}>
-                <verdocs-button
-                  label="Back"
-                  disabled={this.submitting}
-                  onClick={() => {
-                    this.signupStep = 2;
-                  }}
-                  style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
-                />
-                <verdocs-button
-                  label="Go to Dashboard"
-                  disabled={true}
-                  onClick={() => this.handleSignup()}
-                  style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
-                />
-              </div>
-            </form>
-          )}
+            <verdocs-button label="Next" disabled={invalid} onClick={() => this.handleSignup()} style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}} />
+          </form>
         </div>
+      );
+    }
+
+    if (this.displayMode === 'verify') {
+      return (
+        <form onSubmit={() => this.handleSignup()}>
+          <p>Please check your e-mail inbox for a verification code and follow the instructions provided.</p>
+          <p>
+            <em>
+              Verification messages may take up to 1 hour to arrive. If you do not receive the invitation, <a href="#">Click Here</a> to resend it. Be sure to check your spam
+              folder.
+            </em>
+          </p>
+
+          <verdocs-text-input
+            label="Verification Code"
+            required={true}
+            value={this.verificationCode}
+            onInput={(e: any) => (this.verificationCode = e.target.value)}
+            disabled={this.submitting}
+          />
+
+          <div style={{display: 'flex', flexDirection: 'row', gap: '20px'}}>
+            <verdocs-button
+              label="Verify"
+              disabled={this.submitting}
+              onClick={() => this.handleVerification()}
+              style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}}
+            />
+            <verdocs-button variant="outline" label="Resend Code" disabled={this.resendDisabled} onClick={() => this.handleResend()} />
+            <verdocs-button
+              label="Sign Out"
+              variant="text"
+              disabled={this.submitting}
+              onClick={() => {
+                this.tempAuthEndpoint.clearSession();
+                this.email = '';
+                this.password = '';
+                this.displayMode = 'login';
+              }}
+            />
+          </div>
+        </form>
       );
     }
 
@@ -418,18 +371,18 @@ export class VerdocsAuth {
 
           <h3>Forgot your password?</h3>
 
-          <p>Enter your e-mail address below, and reset instructions will be sent to your Inbox.</p>
           <p>
-            <em>Please allow up to 24 hours for delivery, and check your spam folder if you do not receive the message. </em>
+            Enter your e-mail address below, and reset instructions will be sent to your Inbox. Please allow up to 15 minutes to arrive. Check your spam folder if you do not
+            receive the message.
           </p>
 
           <form onSubmit={() => this.handleSignup()}>
             <verdocs-text-input
-              label="Email"
+              label="Email Address"
               autocomplete="email"
               required={true}
-              value={this.username}
-              onInput={(e: any) => (this.username = e.target.value)}
+              value={this.email}
+              onInput={(e: any) => (this.email = e.target.value)}
               disabled={this.submitting}
             />
 
@@ -444,36 +397,6 @@ export class VerdocsAuth {
       );
     }
 
-    if (this.displayMode === 'verify') {
-      return (
-        <div class="form">
-          <img src={this.logo} alt="Verdocs Logo" class="logo" />
-
-          <h3>Please Verify your Email Address</h3>
-
-          <p>Check your e-mail inbox for a verification email, and follow the instructions provided.</p>
-          <p>
-            <em>Please allow up to 24 hours for delivery, and check your spam folder if you do not receive the message. </em>
-          </p>
-
-          <div class="buttons">
-            <verdocs-button
-              label="Sign Out"
-              variant="outline"
-              disabled={this.submitting}
-              onClick={() => {
-                this.username = '';
-                this.password = '';
-                this.cancelRecheckTimer();
-                this.displayMode = 'login';
-              }}
-            />
-            <verdocs-button label="Resend Email" disabled={this.resendDisabled} onClick={() => this.handleResend()} />
-          </div>
-        </div>
-      );
-    }
-
     return (
       <div class="form">
         <a href="https://verdocs.com/en/">
@@ -483,19 +406,11 @@ export class VerdocsAuth {
         <h3>Log in to your account</h3>
         <h4>
           Don't have an account?
-          <verdocs-button
-            label="Sign Up"
-            variant="text"
-            onClick={() => {
-              this.displayMode = 'signup';
-              this.signupStep = 1;
-            }}
-            disabled={this.submitting}
-          />
+          <verdocs-button label="Sign Up" variant="text" onClick={() => (this.displayMode = 'signup')} disabled={this.submitting} />
         </h4>
 
         <form onSubmit={() => this.loginAndCheckVerification()}>
-          <verdocs-text-input label="Email" autocomplete="username" value={this.username} onInput={(e: any) => (this.username = e.target.value)} disabled={this.submitting} />
+          <verdocs-text-input label="Email" autocomplete="username" value={this.email} onInput={(e: any) => (this.email = e.target.value)} disabled={this.submitting} />
           <verdocs-text-input
             label="Password"
             type="password"

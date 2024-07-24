@@ -14,7 +14,7 @@ verdocs-auth {
     flex-direction: column;
     display: flex;
     padding: 20px;
-    width: 300px;
+    width: 320px;
     max-width: 100%;
   }
 
@@ -44,8 +44,22 @@ verdocs-auth {
     }
   }
 
+  h6 {
+    text-align: center;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.75;
+    margin: 0 0 20px 0;
+  }
+
+  em {
+    font-size: 14px;
+    margin: 15px 0;
+  }
+
   .buttons {
     gap: 20px;
+    margin: 20px 0 0 0;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -78,6 +92,10 @@ verdocs-auth {
     margin: 20px 0 8px 0;
     display: flex;
     flex-direction: row;
+  }
+
+  p {
+    margin: 1em 0 0;
   }
 
   // Our <p>s are in a flex layout which prevents margins from collapsing because each item creates its own row
