@@ -74,7 +74,6 @@ export class VerdocsAuth {
   @State() resendDisabled = false;
 
   resendDisabledTimer = null;
-  accessTokenForVerification = null;
 
   // We can't instantly log in on the default endpoint because other listeners might see
   // its events and incorrectly trigger before we're done. So we manage our own temp
@@ -112,14 +111,14 @@ export class VerdocsAuth {
 
   handleSignup() {
     this.submitting = true;
-    this.accessTokenForVerification = null;
+    this.tempAuthEndpoint.clearSession();
 
     if (!this.isPasswordComplex(this.password)) {
       window.alert('Password must be at least 8 characters long and contain at least one uppercase, one lowercase, and one special character.');
       return;
     }
 
-    createProfile(this.endpoint, {
+    createProfile(this.tempAuthEndpoint, {
       email: this.email,
       password: this.password,
       first_name: this.first_name,
@@ -128,7 +127,8 @@ export class VerdocsAuth {
     })
       .then(r => {
         console.log('Profile creation result', r);
-        this.loginAndCheckVerification();
+        this.tempAuthEndpoint.setToken(r.access_token);
+        this.displayMode = 'verify';
       })
       .catch(e => {
         console.log('[AUTH] Signup error', e.response);
@@ -143,16 +143,12 @@ export class VerdocsAuth {
 
   async handleVerification() {
     this.submitting = true;
-    this.accessTokenForVerification = null;
 
     try {
       this.submitting = false;
       const verificationResult = await verifyEmail(this.endpoint, {email: this.email, token: this.verificationCode});
       console.log('Verification result', verificationResult);
-      if (!this.isPasswordComplex(this.password)) {
-        window.alert('Password must be at least 8 characters long and contain at least one uppercase, one lowercase, and one special character.');
-        return;
-      }
+      this.completeLogin(verificationResult);
     } catch (e) {
       this.submitting = false;
       console.log('Verification error', e);
@@ -169,20 +165,20 @@ export class VerdocsAuth {
 
   async loginAndCheckVerification() {
     this.submitting = true;
-    this.accessTokenForVerification = null;
+    this.tempAuthEndpoint.clearSession();
 
     try {
       this.submitting = false;
       const authResult = await authenticate(this.endpoint, {username: this.email, password: this.password, grant_type: 'password'});
-      this.accessTokenForVerification = authResult.access_token;
+      console.log('[AUTH] Authenticated', authResult.access_token);
+      this.tempAuthEndpoint.setToken(authResult.access_token);
 
-      const user = await getMyUser(this.endpoint);
+      const user = await getMyUser(this.tempAuthEndpoint);
       console.log('Got user', user);
 
       if (!user.email_verified) {
         console.log('[AUTH] Logged in, pending email address verification');
         this.displayMode = 'verify';
-        this.accessTokenForVerification = authResult.access_token;
       } else {
         console.log('[AUTH] Email address is verified, completing login');
         this.completeLogin(authResult);
@@ -194,8 +190,8 @@ export class VerdocsAuth {
 
   handleLogout() {
     this.endpoint.clearSession();
+    this.tempAuthEndpoint.clearSession();
     this.isAuthenticated = false;
-    this.accessTokenForVerification = null;
     this.authenticated?.emit({authenticated: false, session: null});
   }
 
@@ -208,7 +204,7 @@ export class VerdocsAuth {
       this.resendDisabledTimer = null;
     }, 30000);
 
-    resendVerification(this.endpoint, this.accessTokenForVerification)
+    resendVerification(this.tempAuthEndpoint)
       .then(r => {
         console.log('[AUTH] Verification request resent', r);
         VerdocsToast('Please check your email for a message with verification instructions.', {style: 'info'});
