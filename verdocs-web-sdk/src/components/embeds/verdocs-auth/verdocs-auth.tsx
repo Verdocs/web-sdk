@@ -1,4 +1,4 @@
-import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, getMyUser, IAuthenticateResponse} from '@verdocs/js-sdk';
+import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, IAuthenticateResponse, getMyUser} from '@verdocs/js-sdk';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -61,7 +61,6 @@ export class VerdocsAuth {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() isAuthenticated: boolean = false;
   @State() displayMode: 'login' | 'forgot' | 'signup' | 'verify' = 'login';
   @State() org_name: string = '';
   @State() first_name: string = '';
@@ -69,8 +68,8 @@ export class VerdocsAuth {
   @State() email: string = '';
   @State() verificationCode: string = '';
   @State() password: string = '';
+  @State() confirmpass: string = '';
   @State() submitting: boolean = false;
-  @State() activeSession: TSession = null;
   @State() resendDisabled = false;
 
   resendDisabledTimer = null;
@@ -78,14 +77,15 @@ export class VerdocsAuth {
   // We can't instantly log in on the default endpoint because other listeners might see
   // its events and incorrectly trigger before we're done. So we manage our own temp
   // endpoint and pass the final tokens to the default once we're ready.
-  tempAuthEndpoint = new VerdocsEndpoint();
+  tempAuthEndpoint = new VerdocsEndpoint({
+    baseURL: VerdocsEndpoint.getDefault().getBaseURL(),
+    persist: false,
+  });
 
   componentWillLoad() {
     this.endpoint.loadSession();
     if (this.endpoint.session) {
       console.log('[AUTH] Authenticated');
-      this.isAuthenticated = true;
-      this.activeSession = this.endpoint.session;
       this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
     } else {
       console.log('[AUTH] Anonymous');
@@ -110,14 +110,18 @@ export class VerdocsAuth {
   }
 
   handleSignup() {
-    this.submitting = true;
-    this.tempAuthEndpoint.clearSession();
-
     if (!this.isPasswordComplex(this.password)) {
-      window.alert('Password must be at least 8 characters long and contain at least one uppercase, one lowercase, and one special character.');
+      VerdocsToast('Password must be at least 8 characters long and contain at least one uppercase, one lowercase, and one special character.', {style: 'error'});
       return;
     }
 
+    if (this.password !== this.confirmpass) {
+      VerdocsToast('Passwords do not match.', {style: 'error'});
+      return;
+    }
+
+    this.submitting = true;
+    this.tempAuthEndpoint.clearSession();
     createProfile(this.tempAuthEndpoint, {
       email: this.email,
       password: this.password,
@@ -128,12 +132,12 @@ export class VerdocsAuth {
       .then(r => {
         console.log('Profile creation result', r);
         this.tempAuthEndpoint.setToken(r.access_token);
+        this.clearForms();
         this.displayMode = 'verify';
       })
       .catch(e => {
         console.log('[AUTH] Signup error', e.response);
         this.submitting = false;
-        this.activeSession = null;
         this.authenticated?.emit({authenticated: false, session: null});
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
 
@@ -146,8 +150,8 @@ export class VerdocsAuth {
 
     try {
       this.submitting = false;
-      const verificationResult = await verifyEmail(this.endpoint, {email: this.email, token: this.verificationCode});
-      console.log('Verification result', verificationResult);
+      const verificationResult = await verifyEmail(this.tempAuthEndpoint, {email: this.email, token: this.verificationCode});
+      VerdocsToast('Thank you for verifying your email address.', {style: 'success'});
       this.completeLogin(verificationResult);
     } catch (e) {
       this.submitting = false;
@@ -157,9 +161,9 @@ export class VerdocsAuth {
   }
 
   completeLogin(result: IAuthenticateResponse) {
+    this.clearForms();
+    this.tempAuthEndpoint.clearSession();
     this.endpoint.setToken(result.access_token);
-    this.activeSession = this.endpoint.session;
-    this.isAuthenticated = true;
     this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
   }
 
@@ -169,8 +173,8 @@ export class VerdocsAuth {
 
     try {
       this.submitting = false;
-      const authResult = await authenticate(this.endpoint, {username: this.email, password: this.password, grant_type: 'password'});
-      console.log('[AUTH] Authenticated', authResult.access_token);
+      const authResult = await authenticate(this.tempAuthEndpoint, {username: this.email, password: this.password, grant_type: 'password'});
+      console.log('[AUTH] Authenticated, checking email verification');
       this.tempAuthEndpoint.setToken(authResult.access_token);
 
       const user = await getMyUser(this.tempAuthEndpoint);
@@ -185,14 +189,30 @@ export class VerdocsAuth {
       }
     } catch (e) {
       this.submitting = false;
+      console.log('[AUTH] Auth failure', e.response?.data || e);
+      VerdocsToast('Login failed. Please check your credentials and try again.', {style: 'error'});
     }
   }
 
+  clearForms() {
+    this.submitting = false;
+    this.resendDisabled = false;
+    this.email = '';
+    this.password = '';
+    this.confirmpass = '';
+    this.verificationCode = '';
+    this.first_name = '';
+    this.last_name = '';
+    this.org_name = '';
+  }
+
   handleLogout() {
+    console.log('logging out');
     this.endpoint.clearSession();
     this.tempAuthEndpoint.clearSession();
-    this.isAuthenticated = false;
     this.authenticated?.emit({authenticated: false, session: null});
+    this.clearForms();
+    this.displayMode = 'login';
   }
 
   handleResend() {
@@ -207,10 +227,11 @@ export class VerdocsAuth {
     resendVerification(this.tempAuthEndpoint)
       .then(r => {
         console.log('[AUTH] Verification request resent', r);
-        VerdocsToast('Please check your email for a message with verification instructions.', {style: 'info'});
+        VerdocsToast('Please check your email for a verification code.', {style: 'info'});
       })
       .catch((e: any) => {
         console.log('[AUTH] Unable to resend verification', e);
+        VerdocsToast('Unable to resend code. Please try again later.', {style: 'error'});
       });
   }
 
@@ -235,7 +256,7 @@ export class VerdocsAuth {
       return <div style={{display: 'none'}}>Authenticated</div>;
     }
 
-    if (this.isAuthenticated) {
+    if (this.endpoint.session) {
       return (
         <verdocs-button
           label="Sign Out"
@@ -247,7 +268,7 @@ export class VerdocsAuth {
     }
 
     if (this.displayMode === 'signup') {
-      const invalid = this.submitting || !this.first_name || !this.last_name || !this.email || !this.password || !this.org_name;
+      const invalid = this.submitting || !this.first_name || !this.last_name || !this.email || !this.password || !this.confirmpass || !this.org_name;
 
       return (
         <div class="form">
@@ -292,9 +313,18 @@ export class VerdocsAuth {
               label="Password"
               type="password"
               required={true}
-              autocomplete="current-password"
+              autocomplete="new-password"
               value={this.password}
               onInput={(e: any) => (this.password = e.target.value)}
+              disabled={this.submitting}
+            />
+            <verdocs-text-input
+              label="Confirm Password"
+              type="password"
+              required={true}
+              autocomplete="off"
+              value={this.confirmpass}
+              onInput={(e: any) => (this.confirmpass = e.target.value)}
               disabled={this.submitting}
             />
             <verdocs-text-input
@@ -309,7 +339,12 @@ export class VerdocsAuth {
 
             <div style={{marginTop: '30px'}} />
 
-            <verdocs-button label="Next" disabled={invalid} onClick={() => this.handleSignup()} style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}} />
+            <verdocs-button
+              label="Next"
+              disabled={invalid}
+              onClick={invalid ? () => {} : () => this.handleSignup()}
+              style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
+            />
           </form>
         </div>
       );
@@ -317,44 +352,27 @@ export class VerdocsAuth {
 
     if (this.displayMode === 'verify') {
       return (
-        <form onSubmit={() => this.handleSignup()}>
-          <p>Please check your e-mail inbox for a verification code and follow the instructions provided.</p>
-          <p>
-            <em>
-              Verification messages may take up to 1 hour to arrive. If you do not receive the invitation, <a href="#">Click Here</a> to resend it. Be sure to check your spam
-              folder.
-            </em>
-          </p>
+        <div class="form">
+          <form onSubmit={() => this.handleVerification()}>
+            <p>Please check your e-mail inbox for a verification code and enter it below.</p>
 
-          <verdocs-text-input
-            label="Verification Code"
-            required={true}
-            value={this.verificationCode}
-            onInput={(e: any) => (this.verificationCode = e.target.value)}
-            disabled={this.submitting}
-          />
+            <verdocs-text-input
+              label="Verification Code"
+              required={true}
+              value={this.verificationCode}
+              onInput={(e: any) => (this.verificationCode = e.target.value)}
+              disabled={this.submitting}
+            />
 
-          <div style={{display: 'flex', flexDirection: 'row', gap: '20px'}}>
-            <verdocs-button
-              label="Verify"
-              disabled={this.submitting}
-              onClick={() => this.handleVerification()}
-              style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}}
-            />
-            <verdocs-button variant="outline" label="Resend Code" disabled={this.resendDisabled} onClick={() => this.handleResend()} />
-            <verdocs-button
-              label="Sign Out"
-              variant="text"
-              disabled={this.submitting}
-              onClick={() => {
-                this.tempAuthEndpoint.clearSession();
-                this.email = '';
-                this.password = '';
-                this.displayMode = 'login';
-              }}
-            />
-          </div>
-        </form>
+            <div class="buttons">
+              <verdocs-button label="Sign Out" variant="outline" disabled={this.submitting} onClick={() => this.handleLogout()} />
+              <verdocs-button label="Verify" disabled={this.submitting || !this.verificationCode || this.verificationCode.length !== 6} onClick={() => this.handleVerification()} />
+            </div>
+            <div class="buttons">
+              <verdocs-button variant="text" label="Resend Code" disabled={this.resendDisabled || this.submitting} onClick={() => this.handleResend()} />
+            </div>
+          </form>
+        </div>
       );
     }
 

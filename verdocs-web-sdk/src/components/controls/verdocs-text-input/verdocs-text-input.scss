@@ -85,6 +85,21 @@ verdocs-text-input {
     }
   }
 
+  .toggle-pw {
+    top: 5px;
+    right: 7px;
+    width: 18px;
+    height: 18px;
+    stroke: #cccccc;
+    //fill: #cccccc;
+    position: absolute;
+
+    &:hover {
+      fill: $verdocs-purple;
+      cursor: pointer;
+    }
+  }
+
   &.clearable,
   &.copyable {
     .input-element {
