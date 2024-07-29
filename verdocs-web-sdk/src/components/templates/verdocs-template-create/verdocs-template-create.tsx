@@ -158,9 +158,7 @@ export class VerdocsTemplateCreate {
               onDragEnter={(e: any) => e.target.classList.add('drag-over')}
               onDragLeave={(e: any) => e.target.classList.remove('drag-over')}
             >
-              <div>
-                <span innerHTML={FileIcon} />
-              </div>
+              <span innerHTML={FileIcon} style={{display: 'flex', justifyContent: 'center'}} />
               <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold', overflowWrap: 'anywhere'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
               <div
                 style={{
