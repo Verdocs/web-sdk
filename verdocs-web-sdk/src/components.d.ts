@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ICreateEnvelopeRole, IEnvelope, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { ICreateEnvelopeRole, IEnvelope, IFileWithData, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { SDKError } from "./utils/errors";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -22,7 +22,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { ICreateEnvelopeRole, IEnvelope, IFileWithData, IGetTemplateSummarySortBy, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { ICreateEnvelopeRole, IEnvelope, IFileWithData, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { SDKError } from "./utils/errors";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -1689,7 +1689,7 @@ export namespace Components {
         /**
           * The sort order to display.
          */
-        "sort": IGetTemplateSummarySortBy;
+        "sort": string;
         /**
           * The starred settings to filter by.
          */
@@ -3465,7 +3465,7 @@ declare global {
         "submittedData": {endpoint: VerdocsEndpoint; template: ITemplate};
         "editTemplate": {endpoint: VerdocsEndpoint; template: ITemplate};
         "templateDeleted": {endpoint: VerdocsEndpoint; template: ITemplate};
-        "changeSort": IGetTemplateSummarySortBy;
+        "changeSort": string;
         "changeSharing": 'all' | 'personal' | 'shared' | 'public';
         "changeStarred": 'all' | 'starred' | 'unstarred';
         "changeName": string;
@@ -5799,7 +5799,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
          */
-        "onChangeSort"?: (event: VerdocsTemplatesListCustomEvent<IGetTemplateSummarySortBy>) => void;
+        "onChangeSort"?: (event: VerdocsTemplatesListCustomEvent<string>) => void;
         /**
           * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
          */
@@ -5847,7 +5847,7 @@ declare namespace LocalJSX {
         /**
           * The sort order to display.
          */
-        "sort"?: IGetTemplateSummarySortBy;
+        "sort"?: string;
         /**
           * The starred settings to filter by.
          */

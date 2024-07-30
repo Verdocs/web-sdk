@@ -1,6 +1,6 @@
 import {format} from 'date-fns';
-import {deleteTemplate, listTemplates, TTemplateAction, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {integerSequence, ITemplate, IGetTemplateSummarySortBy, ITemplateListParams, canPerformTemplateAction} from '@verdocs/js-sdk';
+import {deleteTemplate, getTemplates, TTemplateAction, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {integerSequence, ITemplate, IGetTemplatesParams, canPerformTemplateAction} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Prop, State, Watch} from '@stencil/core';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
 import {IMenuOption} from '../../controls/verdocs-dropdown/verdocs-dropdown';
@@ -64,7 +64,7 @@ export class VerdocsTemplatesList {
   /**
    * The sort order to display.
    */
-  @Prop({reflect: true, mutable: true}) sort: IGetTemplateSummarySortBy = 'updated_at';
+  @Prop({reflect: true, mutable: true}) sort: string = 'updated_at';
 
   /**
    * If set, filter templates by the specified name.
@@ -134,7 +134,7 @@ export class VerdocsTemplatesList {
   /**
    * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
    */
-  @Event({composed: true}) changeSort: EventEmitter<IGetTemplateSummarySortBy>;
+  @Event({composed: true}) changeSort: EventEmitter<string>;
 
   /**
    * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
@@ -203,7 +203,7 @@ export class VerdocsTemplatesList {
     console.log('[TEMPLATES] Querying templates');
     this.loading = true;
     try {
-      let queryParams: ITemplateListParams = {
+      let queryParams: IGetTemplatesParams = {
         // sharing: this.sharing,
         // starred: this.starred,
         page: this.selectedPage,
@@ -216,9 +216,9 @@ export class VerdocsTemplatesList {
         queryParams.q = this.name.trim();
       }
 
-      const response = await listTemplates(this.endpoint, queryParams);
+      const response = await getTemplates(this.endpoint, queryParams);
       this.templates = response.templates;
-      this.count = response.total;
+      this.count = response.count;
       this.loading = false;
     } catch (e) {
       this.loading = false;
