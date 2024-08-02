@@ -2304,7 +2304,6 @@ export class VerdocsTemplatesList {
 import type { SDKError as IVerdocsTemplatesListSDKError } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsTemplatesListVerdocsEndpoint } from '@verdocs/web-sdk';
 import type { ITemplate as IVerdocsTemplatesListITemplate } from '@verdocs/web-sdk';
-import type { IGetTemplateSummarySortBy as IVerdocsTemplatesListIGetTemplateSummarySortBy } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplatesList extends Components.VerdocsTemplatesList {
   /**
@@ -2337,7 +2336,7 @@ will already have been deleted. The host application should remove it from the l
   /**
    * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
    */
-  changeSort: EventEmitter<CustomEvent<IVerdocsTemplatesListIGetTemplateSummarySortBy>>;
+  changeSort: EventEmitter<CustomEvent<string>>;
   /**
    * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
    */
