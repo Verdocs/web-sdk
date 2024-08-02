@@ -63,9 +63,8 @@ export const defaultHeight = (type: TFieldType) => {
 };
 
 export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number, option?: number) => {
+  let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = field;
   const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
-  let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = settings;
-  // console.log('scs', field, settings, x, y);
 
   const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
   if (optionSettings) {
@@ -85,9 +84,8 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvel
 };
 
 export const getControlStyles = (field: ITemplateField | IEnvelopeField, xScale: number, yScale: number, option?: number) => {
+  let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = field;
   const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
-  let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = settings;
-  // console.log('scs', field, settings, x, y);
 
   const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
   if (optionSettings) {

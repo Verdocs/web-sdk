@@ -273,8 +273,8 @@ export class VerdocsTemplateFields {
     const parent = event.target.parentElement;
     const parentRect = parent.getBoundingClientRect();
 
-    const width = field.settings.width || defaultWidth(field.type);
-    const height = field.settings.height || defaultHeight(field.type);
+    const width = field.width || defaultWidth(field.type);
+    const height = field.height || defaultHeight(field.type);
 
     // These two being backwards is not a mistake. Left measures "over" from the left (positive displacement) while bottom measures
     // "up" from the bottom (negative displacement).
@@ -292,8 +292,6 @@ export class VerdocsTemplateFields {
       case 'textarea':
       case 'textbox':
       case 'timestamp':
-        field.settings.x = x;
-        field.settings.y = y;
         break;
 
       case 'checkbox_group':
