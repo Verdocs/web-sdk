@@ -1,4 +1,4 @@
-import {format} from 'date-fns';
+import {format} from 'date-fns/format';
 import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';

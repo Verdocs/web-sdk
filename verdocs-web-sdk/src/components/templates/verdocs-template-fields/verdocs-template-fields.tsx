@@ -34,22 +34,25 @@ const iconTimestamp =
 const iconDropdown =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" stroke-width="1.5" stroke="currentColor"><path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" /></svg>';
 
+const iconAttachment =
+  '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>';
+
 const separator = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.707 14.707"><g><rect x="6.275" y="0" fill="#ffffff7f" width="1" height="15"/></g></svg>';
 
 const menuOptions = [
-  {id: 'signature', tooltip: 'Signature', icon: iconSignature},
-  {id: 'initial', tooltip: 'Initials', icon: iconInitial},
-  {id: 'sep1', tooltip: '', icon: separator},
-  {id: 'textbox', tooltip: 'Text Box', icon: iconTextbox},
-  {id: 'textarea', tooltip: 'Text Area', icon: iconTextarea},
-  {id: 'checkbox_group', tooltip: 'Check Box', icon: iconCheck},
-  {id: 'radio_button_group', tooltip: 'Radio Button', icon: iconRadio},
-  {id: 'dropdown', tooltip: 'Dropdown', icon: iconDropdown},
-  {id: 'sep2', tooltip: '', icon: separator},
-  {id: 'date', tooltip: 'Date', icon: iconDatepicker},
-  {id: 'timestamp', tooltip: 'Timestamp', icon: iconTimestamp},
+  {id: 'signature', tooltip: 'Signature', icon: iconSignature, class: 'signature'},
+  {id: 'initial', tooltip: 'Initials', icon: iconInitial, class: 'initial'},
+  {id: 'sep1', tooltip: '', icon: separator, class: 'separator'},
+  {id: 'textbox', tooltip: 'Text Box', icon: iconTextbox, class: 'textbox'},
+  {id: 'textarea', tooltip: 'Text Area', icon: iconTextarea, class: 'textarea'},
+  {id: 'checkbox_group', tooltip: 'Check Box', icon: iconCheck, class: 'checkbox'},
+  {id: 'radio_button_group', tooltip: 'Radio Button', icon: iconRadio, class: 'radio'},
+  {id: 'dropdown', tooltip: 'Dropdown', icon: iconDropdown, class: 'dropdown'},
+  {id: 'sep2', tooltip: '', icon: separator, class: 'separator'},
+  {id: 'date', tooltip: 'Date', icon: iconDatepicker, class: 'date'},
+  {id: 'timestamp', tooltip: 'Timestamp', icon: iconTimestamp, class: 'timestamp'},
   // {id: 'sep3', tooltip: '', icon: separator},
-  // {id: 'attachment', tooltip: 'Attachment', icon: 'A'},
+  {id: 'attachment', tooltip: 'Attachment', icon: iconAttachment, class: 'attachment'},
   // {id: 'payment', tooltip: 'Payment', icon: 'P'},
 ];
 
@@ -306,8 +309,10 @@ export class VerdocsTemplateFields {
         break;
     }
 
-    console.log('[FIELDS] Will update', name, y, option, field);
-    const newFieldData = await updateField(this.endpoint, this.templateId, name, field);
+    const params = {x, y};
+    console.log('[FIELDS] Will update', name, y, option, params);
+    const newFieldData = await updateField(this.endpoint, this.templateId, name, params);
+    console.log('[FIELDS] Updated', newFieldData);
     updateStoreField(this.fieldStore, name, newFieldData);
     event.target.removeAttribute('posX');
     event.target.removeAttribute('posY');
@@ -482,6 +487,7 @@ export class VerdocsTemplateFields {
             <verdocs-toolbar-icon
               text={option.tooltip}
               icon={option.icon}
+              class={option.class}
               onClick={() => {
                 // We ignore empty-tooltip entries because they're separators
                 if (option.tooltip) {
