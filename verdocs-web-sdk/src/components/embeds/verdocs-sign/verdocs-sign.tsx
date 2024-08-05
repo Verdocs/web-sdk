@@ -280,15 +280,17 @@ export class VerdocsSign {
   async handleFieldChange(field: IEnvelopeField, e: any) {
     const {value, checked} = e.target;
 
-    switch (field.type) {
+    switch (field.type as any) {
       case 'textbox':
         return this.saveFieldChange(field.name, {prepared: false, value});
 
+      case 'checkbox':
       case 'checkbox_group': {
         const options = field.settings.options.map(option => ({id: option.id, checked: e.target.checked}));
         return this.saveFieldChange(field.name, {prepared: false, value: {options}});
       }
 
+      case 'radio':
       case 'radio_button_group': {
         const options = field.settings.options.map(option => ({id: option.id, selected: e.target.value === option.id}));
         return this.saveFieldChange(field.name, {prepared: false, value: {options}});
@@ -351,7 +353,7 @@ export class VerdocsSign {
 
   isFieldFilled(field: IEnvelopeField) {
     const {result = '', value = '', base64 = ''} = field.settings || {};
-    switch (field.type) {
+    switch (field.type as any) {
       case 'textbox':
         switch (field.validator || '') {
           case 'email':
@@ -378,10 +380,12 @@ export class VerdocsSign {
       case 'dropdown':
         return value !== '';
 
+      case 'checkbox':
       case 'checkbox_group':
         const checkedCount = (field.settings?.options?.filter(option => option.checked) || []).length;
         return checkedCount >= (field.settings?.minimum_checked || 0) && checkedCount <= (field.settings?.maximum_checked || 999);
 
+      case 'radio':
       case 'radio_button_group':
         return (field.settings?.options?.filter(option => option.selected) || []).length > 0;
       // TODO

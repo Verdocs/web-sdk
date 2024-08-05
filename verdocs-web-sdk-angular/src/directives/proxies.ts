@@ -811,6 +811,42 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
   methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
+  selector: 'verdocs-field-radio',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+})
+export class VerdocsFieldRadio {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
+  }
+}
+
+
+import type { ITemplateFieldSetting as IVerdocsFieldRadioITemplateFieldSetting } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldRadioITemplateField } from '@verdocs/web-sdk';
+
+export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio {
+  /**
+   * Event fired when the field's settings are changed.
+   */
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldRadioITemplateFieldSetting; field: IVerdocsFieldRadioITemplateField}>>;
+  /**
+   * Event fired when the field is deleted.
+   */
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  methods: ['showSettingsPanel', 'hideSettingsPanel']
+})
+@Component({
   selector: 'verdocs-field-radio-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',

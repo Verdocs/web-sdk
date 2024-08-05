@@ -12,21 +12,6 @@ const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="
 const HelpIcon =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M11.925 18q.55 0 .938-.387.387-.388.387-.938 0-.55-.387-.925-.388-.375-.938-.375-.55 0-.925.375t-.375.925q0 .55.375.938.375.387.925.387Zm-.95-3.85h1.95q0-.8.2-1.287.2-.488 1.025-1.288.65-.625 1.025-1.213.375-.587.375-1.437 0-1.425-1.025-2.175Q13.5 6 12.1 6q-1.425 0-2.35.775t-1.275 1.85l1.775.7q.125-.45.55-.975.425-.525 1.275-.525.725 0 1.1.412.375.413.375.888 0 .475-.287.9-.288.425-.713.775-1.075.95-1.325 1.475-.25.525-.25 1.875ZM12 22.2q-2.125 0-3.988-.8-1.862-.8-3.237-2.175Q3.4 17.85 2.6 15.988 1.8 14.125 1.8 12t.8-3.988q.8-1.862 2.175-3.237Q6.15 3.4 8.012 2.6 9.875 1.8 12 1.8t3.988.8q1.862.8 3.237 2.175Q20.6 6.15 21.4 8.012q.8 1.863.8 3.988t-.8 3.988q-.8 1.862-2.175 3.237Q17.85 20.6 15.988 21.4q-1.863.8-3.988.8Zm0-2.275q3.325 0 5.625-2.3t2.3-5.625q0-3.325-2.3-5.625T12 4.075q-3.325 0-5.625 2.3T4.075 12q0 3.325 2.3 5.625t5.625 2.3ZM12 12Z"/></svg>';
 
-// Credit: https://stackoverflow.com/a/78196510/1812436
-// NOTE: This is NOT safe or cryptographically strong, so it's not part of our core SDK's or Utils modules.
-// It should never be used anywhere a real GUID is required. But we don't need one here, we just need a
-// "GUID-like" value for one step of a field update operation (adding items to lists). There are no security
-// implications in how we use IDs for list items. They only need to be GUID-like for historical reasons that
-// we may change shortly anyway.
-function generateWeakGuid() {
-  const s4 = () => {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  };
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-}
-
 /**
  * Displays an edit form that allows the user to adjust a field's settings.
  */
@@ -37,7 +22,7 @@ function generateWeakGuid() {
 })
 export class VerdocsTemplateFieldProperties {
   @Element()
-  el;
+  el: any;
 
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -84,8 +69,6 @@ export class VerdocsTemplateFieldProperties {
   @State() dirty: boolean = false;
   @State() loading: boolean = true;
 
-  // @State() type: TDocumentFieldType = 'signature';
-  @State() setting = null as any;
   @State() label = '';
   @State() type = 'textbox' as TFieldType;
   @State() name = '';
@@ -93,11 +76,10 @@ export class VerdocsTemplateFieldProperties {
   @State() roleName = '';
   @State() group = '';
   @State() fieldType = '';
-  // @State() required = false;
   @State() options = [];
   @State() placeholder = '';
-  @State() value = '';
-  @State() leading = 0;
+  @State() multiline = false;
+  @State() defaultValue = '';
   @State() showingHelp = false;
 
   templateStore: TTemplateStore | null = null;
@@ -124,34 +106,10 @@ export class VerdocsTemplateFieldProperties {
       }
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId);
-      this.fieldStore = await getTemplateFieldStore(this.templateId);
-      this.roleStore = await getTemplateRoleStore(this.templateId);
+      this.fieldStore = getTemplateFieldStore(this.templateId);
+      this.roleStore = getTemplateRoleStore(this.templateId);
 
-      // console.log('tfs', this.fieldStore?.state);
-      const field = this.fieldStore.get('fields').find(field => field.name === this.fieldName);
-      // console.log('gf', field);
-      if (!field) {
-        console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in fields`);
-      } else {
-        console.log('props', field);
-      }
-
-      this.type = field.type;
-      this.name = field.name;
-      this.label = field.label;
-      this.group = field.name;
-      this.roleName = field.role_name;
-      this.required = field.required;
-      this.fieldType = field.type;
-      // TODO: Talk about how we want to handle labels/placeholders
-      this.placeholder = field.settings?.placeholder || '';
-      this.value = field.settings?.result || '';
-      this.leading = field.settings?.leading || 0;
-      this.setting = field.settings || {};
-      this.options = field.settings?.options || [];
-      this.dirty = false;
-      this.loading = false;
-      console.log('Displaying settings for', this.setting);
+      this.resetForm();
     } catch (e) {
       console.log('[FIELD PROPERTIES] Error loading template', e);
       this.loading = false;
@@ -159,129 +117,79 @@ export class VerdocsTemplateFieldProperties {
     }
   }
 
-  handleCancel(e) {
-    e.stopPropagation();
-
+  resetForm() {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldName);
-    if (field) {
-      this.name = field.name;
-      this.label = field.label;
-      this.roleName = field.role_name;
-      this.required = field.required;
-      // TODO: Talk about how we want to handle labels/placeholders
-      this.placeholder = field.settings?.placeholder || '';
-      this.value = field.settings?.result || '';
-      this.leading = field.settings?.leading || 0;
+    if (!field) {
+      console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in fields`);
+    } else {
+      console.log('[FIELD PROPERTIES]', field);
     }
 
+    this.type = field.type;
+    this.name = field.name;
+    this.label = field.label;
+    this.group = field.name;
+    this.roleName = field.role_name;
+    this.required = field.required;
+    this.fieldType = field.type;
+    this.options = field.options;
+    this.placeholder = field.placeholder || '';
+    this.defaultValue = field.default || '';
+    this.multiline = field.multiline || false;
     this.dirty = false;
+    this.loading = false;
+  }
+
+  handleCancel(e: any) {
+    e.stopPropagation();
+
+    this.resetForm();
     this.close?.emit();
     document.getElementById('verdocs-template-field-properties')?.remove();
   }
 
-  handleSave(e) {
+  handleSave(e: any) {
     e.stopPropagation();
     const newProperties = {
       name: this.name,
-      label: this.label || null,
-      required: this.required,
       role_name: this.roleName,
-      // TODO: Default value in setting?
+      required: this.required,
+      label: this.label,
+      group: this.group,
+      multiline: this.multiline,
+      placeholder: this.placeholder,
+      default: this.defaultValue,
+      options: this.options,
     } as Partial<ITemplateField>;
 
-    if (this.type === 'checkbox_group' || this.type === 'radio_button_group') {
-      newProperties.settings = this.setting;
-      newProperties.settings.options = this.options;
-    } else if (this.type === 'textarea' || this.type === 'textbox') {
-      newProperties.settings = {...this.setting};
-      newProperties.settings.result = (this.value || '').trim();
-    } else if (this.type === 'dropdown') {
-      newProperties.settings = {
-        x: this.setting.x,
-        y: this.setting.y,
-        options: this.options,
-      };
-    }
-
-    console.log('FP: Will update', this.fieldName, newProperties);
+    console.log('[FIELD PROPERTIES] Will update', this.fieldName, newProperties);
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(updated => {
-        this.dirty = false;
         updateStoreField(this.fieldStore, this.fieldName, updated);
-        // if (this.fieldname !== newSettings.name) {
-        //   this.fieldname = newSettings.name;
-        //   console.log('new name', this.fieldname);
-        // }
+        this.resetForm();
         this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field: updated});
         this.close?.emit();
         document.getElementById('verdocs-template-field-properties')?.remove();
       })
       .catch(() => {
-        console.log('Field update failed', e);
+        console.log('[FIELD PROPERTIES] Update failed', e);
       });
   }
 
-  handleAddOption(e) {
+  async handleDelete(e: any) {
     e.stopPropagation();
-    const newProperties = {
-      name: this.name,
-      required: this.required,
-      role_name: this.roleName,
-      // TODO: Default value in setting?
-    } as Partial<ITemplateField>;
-
-    this.options.push(
-      this.type === 'radio_button_group'
-        ? {
-            id: generateWeakGuid(),
-            value: `Option ${this.options.length + 1}`,
-            selected: false,
-            x: this.options.length > 0 ? this.options[this.options.length - 1].x : 20,
-            y: this.options.length > 0 ? this.options[this.options.length - 1].y - 25 : 20,
-          }
-        : {
-            id: generateWeakGuid(),
-            value: `Option ${this.options.length + 1}`,
-            checked: false,
-            x: this.options.length > 0 ? this.options[this.options.length - 1].x : 20,
-            y: this.options.length > 0 ? this.options[this.options.length - 1].y - 25 : 20,
-          },
-    );
-
-    newProperties.settings = {...this.setting};
-    delete newProperties.settings.result;
-    newProperties.settings.options = [...this.options];
-
-    updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
-      .then(updated => {
-        this.dirty = false;
-        updateStoreField(this.fieldStore, this.fieldName, updated);
-        this.fieldName = updated.name;
-        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field: updated});
-        this.close?.emit();
+    deleteField(this.endpoint, this.templateId, this.fieldName)
+      .then(() => {
+        this.fieldStore.set(
+          'fields',
+          this.fieldStore.get('fields').filter(field => field.name !== this.fieldName),
+        );
+        this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
         document.getElementById('verdocs-template-field-properties')?.remove();
       })
-      .catch(() => {
-        console.log('Field update failed', e);
+      .catch(e => {
+        console.log('[FIELD PROPERTIES] Deletion error', e);
       });
-  }
-
-  async handleDelete(e) {
-    e.stopPropagation();
-    if (window.confirm('Are you sure you wish to remove this field? This action cannot be undone.')) {
-      deleteField(this.endpoint, this.templateId, this.fieldName)
-        .then(() => {
-          this.fieldStore.set(
-            'fields',
-            this.fieldStore.get('fields').filter(field => field.name !== this.fieldName),
-          );
-          this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
-          document.getElementById('verdocs-template-field-properties')?.remove();
-        })
-        .catch(e => {
-          console.log('[FIELD PROPERTIES] Deletion error', e);
-        });
-    }
   }
 
   render() {
@@ -312,7 +220,6 @@ export class VerdocsTemplateFieldProperties {
       );
     }
 
-    // console.log('tfp', this.templateId, this.fieldName);
     return (
       <Host id="verdocs-template-field-properties">
         <h6>
@@ -368,12 +275,12 @@ export class VerdocsTemplateFieldProperties {
             <div class="row" style={{marginTop: '10px', marginBottom: '10px'}}>
               <verdocs-text-input
                 id="verdocs-field-value"
-                label="Value"
-                value={this.value}
+                label="Default Value"
+                value={this.defaultValue}
                 autocomplete="off"
-                placeholder="Pre-defined value..."
+                placeholder="Pre-filled value..."
                 onInput={(e: any) => {
-                  this.value = e.target.value;
+                  this.defaultValue = e.target.value;
                   this.dirty = true;
                 }}
               />
@@ -412,8 +319,6 @@ export class VerdocsTemplateFieldProperties {
               }}
             />
           </div>
-
-          {['checkbox_group', 'radio_button_group'].includes(this.type) && <verdocs-button size="small" onClick={e => this.handleAddOption(e)} label="Add Option" />}
 
           {['dropdown'].includes(this.type) && (
             <div class="options">

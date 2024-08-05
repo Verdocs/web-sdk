@@ -64,21 +64,7 @@ export class VerdocsPreview {
         return;
       }
 
-      try {
-        getTemplateStore(this.endpoint, this.templateId, true)
-          .then(ts => {
-            this.templateStore = ts;
-            this.fieldStore = getTemplateFieldStore(this.templateId);
-            this.roleStore = getTemplateRoleStore(this.templateId);
-            this.loading = false;
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      } catch (e) {
-        console.log('[PREVIEW] Error with preview session', e);
-        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      }
+      return this.loadTemplate(this.templateId);
     } catch (e) {
       console.log('[PREVIEW] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -87,7 +73,18 @@ export class VerdocsPreview {
 
   async loadTemplate(templateId: string) {
     if (templateId) {
-      this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
+      console.log('lt', templateId);
+      getTemplateStore(this.endpoint, templateId, false)
+        .then(ts => {
+          this.templateStore = ts;
+          this.fieldStore = getTemplateFieldStore(this.templateId);
+          this.roleStore = getTemplateRoleStore(this.templateId);
+          this.loading = false;
+        })
+        .catch(e => {
+          console.log('Unable to load template', e);
+          throw e;
+        });
     }
   }
 

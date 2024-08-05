@@ -193,7 +193,7 @@ export class VerdocsTemplateDocumentPage {
                     if (field['setting']?.leading > 0 || field['settings']?.leading > 0) {
                       type = 'textarea';
                     }
-                    switch (type) {
+                    switch (type as any) {
                       case 'textbox':
                         return (
                           <verdocs-field-textbox
@@ -314,6 +314,7 @@ export class VerdocsTemplateDocumentPage {
                             style={getControlStyles(field, xScale, yScale, 0)}
                           />
                         );
+                      case 'checkbox':
                       case 'checkbox_group':
                         return ((field as any).settings || (field as any).setting || {}).options.map((_, checkboxIndex) => {
                           const id = getFieldOptionId(field, checkboxIndex);
@@ -333,6 +334,7 @@ export class VerdocsTemplateDocumentPage {
                             />
                           );
                         });
+                      case 'radio':
                       case 'radio_button_group':
                         return ((field as any).settings || (field as any).setting || {}).options.map((_, checkboxIndex) => {
                           const id = getFieldOptionId(field, checkboxIndex);

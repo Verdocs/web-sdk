@@ -1,8 +1,8 @@
 import interact from 'interactjs';
-import {createField, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
-import {defaultHeight, defaultWidth, getFieldId, getFieldOptionId, removeCssTransform, updateCssTransform} from '../../../utils/utils';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
+import {createField, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, updateCssTransform} from '../../../utils/utils';
+import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -182,9 +182,9 @@ export class VerdocsTemplateFields {
     console.log('[FIELDS] handleFieldChange', field, e, optionId);
   }
 
-  attachFieldAttributes(pageInfo, field, el) {
+  attachFieldAttributes(pageInfo: IDocumentPageInfo, field: ITemplateField, el: HTMLInputElement) {
     el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('settingsChanged', e => {
+    el.addEventListener('settingsChanged', (e: any) => {
       console.log('Settings changed', e.detail);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
     });
@@ -195,14 +195,14 @@ export class VerdocsTemplateFields {
     });
     el.setAttribute('templateid', this.templateId);
     el.setAttribute('fieldname', field.name);
-    el.setAttribute('pageNumber', pageInfo.pageNumber);
-    el.setAttribute('xScale', pageInfo.xScale);
-    el.setAttribute('yScale', pageInfo.yScale);
+    el.setAttribute('pageNumber', String(pageInfo.pageNumber));
+    el.setAttribute('xScale', String(pageInfo.xScale));
+    el.setAttribute('yScale', String(pageInfo.yScale));
     el.setAttribute('name', field.name);
   }
 
   cachedPageInfo: Record<number, IDocumentPageInfo> = {};
-  handlePageRendered(e) {
+  handlePageRendered(e: any) {
     const pageInfo = e.detail as IDocumentPageInfo;
     // console.log('[FIELDS] Page rendered', pageInfo.pageNumber, pageInfo.xScale, pageInfo.yScale);
     this.cachedPageInfo[pageInfo.pageNumber] = pageInfo;
@@ -213,20 +213,19 @@ export class VerdocsTemplateFields {
       .get('fields')
       .filter(field => field && field.page === pageInfo.pageNumber)
       .forEach(field => {
-        // TODO: Why isn't the attr already on the element carrying through?
         switch (field.type) {
-          case 'checkbox_group':
-          case 'radio_button_group':
-            (field.settings || {}).options.map((_, index) => {
-              const id = getFieldOptionId(field, index);
-              const el = document.getElementById(id);
-              if (el) {
-                el.setAttribute('fieldname', field.name);
-                el.setAttribute('pagenumber', String(field.page));
-                this.makeDraggable(el);
-              }
-            });
-            break;
+          // case 'checkbox_group':
+          // case 'radio_button_group':
+          //   (field.settings || {}).options.map((_, index) => {
+          //     const id = getFieldOptionId(field, index);
+          //     const el = document.getElementById(id);
+          //     if (el) {
+          //       el.setAttribute('fieldname', field.name);
+          //       el.setAttribute('pagenumber', String(field.page));
+          //       this.makeDraggable(el);
+          //     }
+          //   });
+          //   break;
           default:
             const id = getFieldId(field);
             const el = document.getElementById(id);
@@ -285,30 +284,6 @@ export class VerdocsTemplateFields {
     const newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
     const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - width, naturalHeight - height);
 
-    switch (field.type) {
-      case 'attachment':
-      case 'payment':
-      case 'initial':
-      case 'signature':
-      case 'date':
-      case 'dropdown':
-      case 'textarea':
-      case 'textbox':
-      case 'timestamp':
-        break;
-
-      case 'checkbox_group':
-      case 'radio_button_group':
-        {
-          const opt = field.settings.options[option];
-          if (opt) {
-            opt.x = x;
-            opt.y = y;
-          }
-        }
-        break;
-    }
-
     const params = {x, y};
     console.log('[FIELDS] Will update', name, y, option, params);
     const newFieldData = await updateField(this.endpoint, this.templateId, name, params);
@@ -322,7 +297,7 @@ export class VerdocsTemplateFields {
 
   generateFieldName(type: string, pageNumber: number) {
     let i = 1;
-    let fieldName;
+    let fieldName: string;
     do {
       fieldName = `${type}P${pageNumber}-${i}`;
       i++;
@@ -360,98 +335,27 @@ export class VerdocsTemplateFields {
         template_id: this.templateId,
         document_id: cachedPage.documentId,
         type: this.placing,
-        required: true,
+        required: this.placing === 'radio' ? false : true,
         page: pageNumber,
         validator: null,
         label: null,
         default: null,
         placeholder: null,
         group: null,
-        settings: {x, y}, // In the future, this is all we should send, see below
+        settings: {},
         x,
         y,
         width,
         height,
+        multiline: false,
+        options: this.placing === 'radio' ? [{value: 'option-1', label: 'Option 1'}] : [],
       };
       console.log('[FIELDS] Will save new field', field);
-
-      // TODO: Fix how the server validates all this. It uses a JSON schema and is very particular about shapes for each field type.
-      //  That makes it harder for third party developers to create fields via API calls. It would be better to always set X/Y and
-      //  let the server normalize the rest, discarding properties that are invalid and back-filling defaults as needed.
-      switch (field.type) {
-        case 'attachment':
-        case 'payment':
-          field.settings = {x, y};
-          break;
-        case 'initial':
-        case 'signature':
-          field.settings = {x, y, result: ''};
-          break;
-
-        case 'checkbox_group':
-          // @ts-ignore
-          field.setting = {
-            minimum_checked: 0,
-            maximum_checked: 1000,
-            options: [
-              {
-                id: `${field.name}-1`,
-                value: 'Option 1',
-                checked: false,
-                x,
-                y,
-              },
-            ],
-          };
-          break;
-
-        case 'date':
-          field.settings = {x, y, width, height, result: ''};
-          break;
-
-        case 'dropdown':
-          field.required = false;
-          field.settings = {x, y, width, height, value: null, placeholder: 'Choose', options: [{id: 'option-1', value: 'Option 1'}]};
-          break;
-
-        case 'radio_button_group':
-          // @ts-ignore
-          field.setting = {
-            options: [
-              {
-                id: `${field.name}-1`,
-                value: 'Option 1',
-                selected: false,
-                x,
-                y,
-              },
-            ],
-          };
-
-          break;
-
-        // TODO: What about textareas?
-        case 'textarea':
-        case 'textbox':
-          field.settings = {x, y, width, height, result: '', leading: 0, alignment: 0, upperCase: false};
-          break;
-
-        case 'timestamp':
-          field.settings = {x, y, width, height};
-          break;
-      }
-
-      // TODO: We don't actually have a unique field type for multi-line text. Instead a "text area" is stored
-      // as a textbox with a leading>0 (typically 16).
-      if (field.type === 'textarea') {
-        field.settings.leading = 16;
-        field.type = 'textbox';
-      }
 
       const saved = await createField(this.endpoint, this.templateId, field);
       console.log('[FIELDS] Saved field', saved);
 
-      this.fieldStore.set('fields', [...this.fieldStore.get('fields'), saved]);
+      this.fieldStore.set('fields', [...this.fieldStore.get('fields'), saved] as any);
       this.placing = null;
 
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});

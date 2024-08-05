@@ -1,0 +1,132 @@
+@import '../../../theme.scss';
+
+// See https://www.sliderrevolution.com/resources/styling-radio-buttons/
+verdocs-field-radio-button {
+  font-family: $verdocs-primary-font;
+  width: 12px;
+  height: 12px;
+  display: block;
+  font-size: 11px;
+  position: relative;
+  background-color: transparent;
+  transform-origin: bottom left;
+  border-radius: 100%;
+
+  svg {
+    margin-top: 4px;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+  }
+
+  &.disabled.done {
+    opacity: 1;
+  }
+
+  input {
+    // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
+    cursor: inherit;
+  }
+
+  &.done input[type='radio'] {
+    margin: 0;
+    padding: 0;
+    width: 10px;
+    height: 10px;
+  }
+
+  &:not(.done) input[type='radio'] {
+    position: absolute;
+    opacity: 0;
+
+    + label {
+      &:before {
+        content: '';
+        //background: $verdocs-grey-3;
+        border-radius: 100%;
+        border: 1px solid rgba(0, 0, 0, 0.6);
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        left: 1px;
+        top: 1px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 250ms ease;
+      }
+    }
+
+    &:checked {
+      + label {
+        &:before {
+          background-color: $verdocs-green;
+          box-shadow: inset 0 0 0 2px $verdocs-grey-3;
+        }
+      }
+    }
+
+    &:focus {
+      + label {
+        &:before {
+          outline: none;
+          border-color: $verdocs-green;
+        }
+      }
+    }
+
+    &:disabled {
+      + label {
+        &:before {
+          box-shadow: inset 0 0 0 4px $verdocs-grey-3;
+          border-color: darken($verdocs-grey-3, 25%);
+          background: darken($verdocs-grey-3, 25%);
+        }
+      }
+    }
+
+    + label {
+      &:empty {
+        &:before {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  &.required {
+    border: 1px solid $verdocs-red-1;
+  }
+
+  &.hide {
+    display: none;
+  }
+
+  &.focused {
+    animation: verdocs-field-pulse 0.4s 1;
+  }
+
+  verdocs-button-panel {
+    margin-left: -20px;
+    margin-top: -7px;
+    transform: scale(0.7);
+  }
+
+  .settings-icon {
+    position: absolute;
+    top: -6px;
+    left: -20px;
+    display: inline-block;
+    cursor: pointer;
+    opacity: 0.3;
+
+    svg {
+      fill: $border-color;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

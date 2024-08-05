@@ -5,7 +5,7 @@ import {FORMAT_DATE, IDocumentPageInfo} from './Types';
 
 export const defaultWidth = (type: TFieldType) => {
   // checkbox was a legacy field type
-  switch (type as TFieldType | 'checkbox' | string) {
+  switch (type as any) {
     case 'textarea':
       return 150;
     case 'textbox':
@@ -19,6 +19,7 @@ export const defaultWidth = (type: TFieldType) => {
     case 'attachment':
     case 'payment':
       return 24;
+    case 'radio':
     case 'checkbox':
     case 'checkbox_group':
     case 'radio_button_group':
@@ -34,7 +35,7 @@ export const defaultWidth = (type: TFieldType) => {
 };
 
 export const defaultHeight = (type: TFieldType) => {
-  switch (type as TFieldType | 'checkbox' | string) {
+  switch (type as any) {
     case 'textarea':
       return 41;
     case 'textbox':
@@ -48,6 +49,7 @@ export const defaultHeight = (type: TFieldType) => {
     case 'attachment':
     case 'payment':
       return 24;
+    case 'radio':
     case 'checkbox':
     case 'checkbox_group':
     case 'radio_button_group':
@@ -139,7 +141,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
     return;
   }
 
-  switch (field.type) {
+  switch (field.type as any) {
     case 'attachment':
     case 'date':
     case 'dropdown':
@@ -187,8 +189,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       return el;
     }
 
-    // @ts-ignore
-    case 'checkbox':
+    case 'checkbox': {
       const id = getFieldOptionId(field, 0);
       const existingField = document.getElementById(id);
       if (existingField) {
@@ -216,6 +217,37 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       controlsDiv.appendChild(cbEl);
 
       return cbEl;
+    }
+
+    case 'radio': {
+      const id = getFieldOptionId(field, 0);
+      const existingField = document.getElementById(id);
+      if (existingField) {
+        setControlStyles(existingField, field, docPage.xScale, docPage.yScale, 0);
+        return existingField;
+      }
+
+      const radioEl: any = document.createElement(`verdocs-field-radio`);
+      radioEl.field = field;
+      radioEl.setAttribute('id', id);
+      radioEl.setAttribute('option', 0);
+      if (disabled) {
+        radioEl.setAttribute('disabled', true);
+      }
+      if (done) {
+        radioEl.setAttribute('done', true);
+      }
+      if (editable) {
+        radioEl.setAttribute('editable', true);
+      }
+      if (draggable) {
+        radioEl.setAttribute('draggable', true);
+      }
+      setControlStyles(radioEl, field, docPage.xScale, docPage.yScale, 0);
+      controlsDiv.appendChild(radioEl);
+
+      return radioEl;
+    }
 
     case 'checkbox_group':
       return ((field as any).settings || (field as any).setting || {}).options.map((_, checkboxIndex) => {
@@ -280,13 +312,6 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
         return radioEl;
       });
 
-    // case 'attachment':
-    //   el = document.createElement('verdocs-field-attachment');
-    //   el.setAttribute('value', result || '');
-    //   break;
-    // case 'payment':
-    //   el = document.createElement('verdocs-field-payment');
-    //   break;
     default:
       console.log('[PREVIEW] Skipping unsupported field type', field);
       return null;

@@ -3,20 +3,20 @@ import {Meta} from '@storybook/web-components';
 
 export default {
   title: 'Fields/Radio Button',
-  component: 'verdocs-field-radio-button',
+  component: 'verdocs-field-radio',
   args: {
     disabled: false,
   },
   argTypes: {
     input: {
       action: 'input',
-      description: 'Fired for each character entered in the field. e.target.value will contain the current text value.',
+      description: 'Fired when the option is selected.',
     },
   },
 } as Meta;
 
 export const RadioButton = ({disabled, input}) =>
-  html`<verdocs-field-radio-button
+  html`<verdocs-field-radio
     style="transform: scale(1.5);"
     .fieldname=${'storybook-field'}
     .templateid=${'0239fe5f-1b89-499a-bd83-098a2e1b4b9c'}

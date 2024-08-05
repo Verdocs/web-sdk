@@ -689,6 +689,53 @@ export namespace Components {
     /**
      * Displays a radio button.
      */
+    interface VerdocsFieldRadio {
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
+          * The name of the field to display.
+         */
+        "fieldname": string;
+        "hideSettingsPanel": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
+        /**
+          * The index of the settings option this particular checkbox is for
+         */
+        "option": number;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
+        "showSettingsPanel": () => Promise<void>;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid": string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
+    }
+    /**
+     * Displays a radio button.
+     */
     interface VerdocsFieldRadioButton {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -1895,6 +1942,10 @@ export interface VerdocsFieldPaymentCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldPaymentElement;
 }
+export interface VerdocsFieldRadioCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFieldRadioElement;
+}
 export interface VerdocsFieldRadioButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldRadioButtonElement;
@@ -2525,6 +2576,27 @@ declare global {
     var HTMLVerdocsFieldPaymentElement: {
         prototype: HTMLVerdocsFieldPaymentElement;
         new (): HTMLVerdocsFieldPaymentElement;
+    };
+    interface HTMLVerdocsFieldRadioElementEventMap {
+        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "deleted": {fieldName: string};
+    }
+    /**
+     * Displays a radio button.
+     */
+    interface HTMLVerdocsFieldRadioElement extends Components.VerdocsFieldRadio, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFieldRadioElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldRadioElement, ev: VerdocsFieldRadioCustomEvent<HTMLVerdocsFieldRadioElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFieldRadioElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldRadioElement, ev: VerdocsFieldRadioCustomEvent<HTMLVerdocsFieldRadioElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsFieldRadioElement: {
+        prototype: HTMLVerdocsFieldRadioElement;
+        new (): HTMLVerdocsFieldRadioElement;
     };
     interface HTMLVerdocsFieldRadioButtonElementEventMap {
         "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
@@ -3617,6 +3689,7 @@ declare global {
         "verdocs-field-dropdown": HTMLVerdocsFieldDropdownElement;
         "verdocs-field-initial": HTMLVerdocsFieldInitialElement;
         "verdocs-field-payment": HTMLVerdocsFieldPaymentElement;
+        "verdocs-field-radio": HTMLVerdocsFieldRadioElement;
         "verdocs-field-radio-button": HTMLVerdocsFieldRadioButtonElement;
         "verdocs-field-signature": HTMLVerdocsFieldSignatureElement;
         "verdocs-field-textarea": HTMLVerdocsFieldTextareaElement;
@@ -4497,6 +4570,59 @@ declare namespace LocalJSX {
         "roleindex"?: number;
         "selectedRoleName"?: string;
         "signed"?: boolean;
+        /**
+          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+         */
+        "templateid"?: string;
+        /**
+          * If set, the field will be be scaled horizontally by this factor.
+         */
+        "xscale"?: number;
+        /**
+          * If set, the field will be be scaled vertically by this factor.
+         */
+        "yscale"?: number;
+    }
+    /**
+     * Displays a radio button.
+     */
+    interface VerdocsFieldRadio {
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
+        /**
+          * The name of the field to display.
+         */
+        "fieldname"?: string;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
+        /**
+          * Event fired when the field is deleted.
+         */
+        "onDeleted"?: (event: VerdocsFieldRadioCustomEvent<{fieldName: string}>) => void;
+        /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldRadioCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        /**
+          * The index of the settings option this particular checkbox is for
+         */
+        "option"?: number;
+        /**
+          * The page the field is on
+         */
+        "pagenumber"?: number;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */
@@ -6038,6 +6164,7 @@ declare namespace LocalJSX {
         "verdocs-field-dropdown": VerdocsFieldDropdown;
         "verdocs-field-initial": VerdocsFieldInitial;
         "verdocs-field-payment": VerdocsFieldPayment;
+        "verdocs-field-radio": VerdocsFieldRadio;
         "verdocs-field-radio-button": VerdocsFieldRadioButton;
         "verdocs-field-signature": VerdocsFieldSignature;
         "verdocs-field-textarea": VerdocsFieldTextarea;
@@ -6248,6 +6375,10 @@ declare module "@stencil/core" {
              * input types like text and checkbox.
              */
             "verdocs-field-payment": LocalJSX.VerdocsFieldPayment & JSXBase.HTMLAttributes<HTMLVerdocsFieldPaymentElement>;
+            /**
+             * Displays a radio button.
+             */
+            "verdocs-field-radio": LocalJSX.VerdocsFieldRadio & JSXBase.HTMLAttributes<HTMLVerdocsFieldRadioElement>;
             /**
              * Displays a radio button.
              */
