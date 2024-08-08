@@ -89,8 +89,6 @@ export class VerdocsSend {
 
   @State() containerId = `verdocs-send-${Math.random().toString(36).substring(2, 11)}`;
 
-  @State() rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
-
   @State() showPickerForId = '';
 
   @State() sessionContacts = [];
@@ -109,12 +107,29 @@ export class VerdocsSend {
     this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
   }
 
+  @State()
   templateStore: TTemplateStore | null = null;
+
+  @State()
   roleStore: TTemplateRoleStore | null = null;
 
   async componentWillLoad() {
     try {
+      this.endpoint.onSessionChanged((_endpoint, _session, profile) => {
+        if (profile) {
+          console.log('setting sc', profile);
+          this.sessionContacts = [];
+          this.sessionContacts.push({
+            id: profile.id,
+            name: `${profile.first_name} ${profile.last_name}`,
+            email: profile.email,
+            phone: profile.phone,
+          });
+        }
+      });
+
       this.endpoint.loadSession();
+
       if (!this.endpoint.session) {
         console.log('[SEND] Unable to start Send operation, must be authenticated');
         return;
@@ -138,18 +153,6 @@ export class VerdocsSend {
     }
 
     try {
-      this.endpoint.onSessionChanged((_endpoint, _session, profile) => {
-        if (profile) {
-          this.sessionContacts = [];
-          this.sessionContacts.push({
-            id: profile.id,
-            name: `${profile.first_name} ${profile.last_name}`,
-            email: profile.email,
-            phone: profile.phone,
-          });
-        }
-      });
-
       this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
       this.roleStore = getTemplateRoleStore(templateId);
       this.recomputeRolesCompleted();
@@ -164,7 +167,7 @@ export class VerdocsSend {
   }
 
   recomputeRolesCompleted() {
-    const roles = this.roleStore.get('roles') || [];
+    const roles = this.roleStore?.get('roles') || [];
     const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
 
     this.rolesCompleted = {};
@@ -179,13 +182,34 @@ export class VerdocsSend {
         this.rolesCompleted[id] = {...role, id};
       }
     });
+
+    console.log('Roles completed', this.rolesCompleted);
+  }
+
+  getLevels() {
+    const roles = this.roleStore?.get('roles') || [];
+    const levels = [...new Set(roles.map(role => role.sequence - 1))];
+    levels.sort((a, b) => a - b);
+    return levels;
+  }
+
+  getRolesAtLevel(level: number) {
+    const roles = this.roleStore?.get('roles') || [];
+    const rolesAtLevel = roles
+      .filter(role => role.sequence - 1 === level)
+      .map((role, index) => ({
+        ...role,
+        id: `r-${level}-${index}`,
+      }));
+    rolesAtLevel.sort((a, b) => a.order - b.order);
+    return rolesAtLevel as TAnnotatedRole[];
   }
 
   getRoleLevels() {
-    const roles = this.roleStore.get('roles') || [];
+    const roles = this.roleStore?.get('roles') || [];
     const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
 
-    this.rolesCompleted = {};
+    // this.rolesCompleted = {};
 
     roles.forEach(role => {
       const level = role.sequence - 1;
@@ -194,7 +218,6 @@ export class VerdocsSend {
       rolesAtLevel[level].push({...role, id});
     });
 
-    this.rolesAtLevel = rolesAtLevel;
     const levels = Object.keys(rolesAtLevel).map(levelStr => +levelStr);
     levels.sort((a, b) => a - b);
 
@@ -202,7 +225,7 @@ export class VerdocsSend {
   }
 
   getLevelIcon(level: number) {
-    const levels = this.getRoleLevels();
+    const levels = this.getLevels();
     if (level < 0) {
       return <div class="level-icon" innerHTML={startIcon} />;
     } else if (level >= levels.length) {
@@ -277,10 +300,10 @@ export class VerdocsSend {
       );
     }
 
+    const levels = this.getLevels();
     const roleNames = getRoleNames(this.roleStore);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= roleNames.length;
-    const levels = this.getRoleLevels();
 
     return (
       <Host class={{sendable: this.templateStore?.state?.is_sendable}}>
@@ -295,7 +318,7 @@ export class VerdocsSend {
             <div class={`level level-${level}`}>
               {this.getLevelIcon(level)}
 
-              {this.rolesAtLevel[level].map(role => {
+              {this.getRolesAtLevel(level).map(role => {
                 const unknown = !role.email;
                 const elId = `verdocs-send-recipient-${role.name}`;
                 return unknown ? (

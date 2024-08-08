@@ -87,17 +87,12 @@ export class VerdocsAuth {
 
   componentWillLoad() {
     this.endpoint.loadSession();
-  }
-
-  componentDidRender() {
     VerdocsEndpoint.getDefault().onSessionChanged((_endpoint, session, profile) => {
       this.session = session;
       this.profile = profile;
       if (session) {
-        console.log('[AUTH] Authenticated', profile);
         this.authenticated?.emit({authenticated: true, session, profile});
       } else {
-        console.log('[AUTH] Anonymous');
         this.authenticated?.emit({authenticated: false, session, profile});
       }
     });
@@ -173,7 +168,6 @@ export class VerdocsAuth {
   completeLogin(result: IAuthenticateResponse) {
     this.clearForms();
     this.tempAuthEndpoint.clearSession();
-    console.log('lc', result.access_token);
     this.endpoint.setToken(result.access_token);
   }
 

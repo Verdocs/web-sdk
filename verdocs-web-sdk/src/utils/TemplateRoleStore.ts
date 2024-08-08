@@ -7,6 +7,7 @@ const templateRoleStores: Record<string, TTemplateRoleStore> = {};
 
 export const getTemplateRoleStore = (templateId: string) => {
   if (!templateRoleStores[templateId]) {
+    console.log('Creating role store', templateId);
     templateRoleStores[templateId] = createStore({roles: []});
   }
 
@@ -14,6 +15,7 @@ export const getTemplateRoleStore = (templateId: string) => {
 };
 
 export const createTemplateRoleStore = (template: ITemplate) => {
+  console.log('creating role store', template);
   let store = getTemplateRoleStore(template.id);
   store.set('roles', [...template.roles]);
 
@@ -23,7 +25,7 @@ export const createTemplateRoleStore = (template: ITemplate) => {
 export const updateStoreRole = (store: TTemplateRoleStore, name: string, newRoleData: Record<string, any>) => {
   console.log('[ROLES] Updating store role', name, newRoleData);
   const newRoles = [
-    ...store.get('roles').map(role => {
+    ...(store.get('roles') || []).map(role => {
       if (role.name !== name) {
         return role;
       }
@@ -36,11 +38,11 @@ export const updateStoreRole = (store: TTemplateRoleStore, name: string, newRole
 
 export const deleteStoreRole = (store: TTemplateRoleStore, name: string) => {
   console.log('[ROLES] Deleting store role', name);
-  const newRoles = [...store.get('roles').filter(field => field.name !== name)];
+  const newRoles = [...(store?.get('roles') || []).filter(field => field.name !== name)];
   store.set('roles', newRoles);
 };
 
-export const getRoleNames = (store: TTemplateRoleStore) => (store.get('roles') || []).map(role => role.name);
+export const getRoleNames = (store: TTemplateRoleStore) => (store?.get('roles') || []).map(role => role.name);
 
 export const getRoleIndex = (store: TTemplateRoleStore, name: string) => {
   return Math.max(
