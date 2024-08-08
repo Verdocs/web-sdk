@@ -188,10 +188,11 @@ export class VerdocsTemplateDocumentPage {
                   .filter(field => field && field.page === this.pageNumber)
                   .map(field => {
                     const id = getFieldId(field);
-                    let {name, type} = field;
+                    let {name, type, multiline} = field;
                     const {xScale, yScale, templateId, editable, disabled, done, pageNumber} = this;
                     if (field['setting']?.leading > 0 || field['settings']?.leading > 0) {
                       type = 'textarea';
+                      multiline = true;
                     }
                     switch (type as any) {
                       case 'textbox':
@@ -201,6 +202,7 @@ export class VerdocsTemplateDocumentPage {
                             fieldname={name}
                             templateid={templateId}
                             editable={editable}
+                            multiline={multiline}
                             disabled={disabled}
                             done={done}
                             xscale={xScale}

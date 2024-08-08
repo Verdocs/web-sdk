@@ -68,7 +68,7 @@ export const VerdocsToast = (text: string, config: IVerdocsToastConfig = {}) => 
   toast.innerHTML = toastBody;
   toast.style.cssText = `
 display: flex; flex-direction: row; gap: 10px; align-items: center;
-position: fixed; top: 20px; right: 20px; z-index: 2147483647; width: 80%; max-width: calc(100% - 40px);
+position: fixed; top: 20px; right: 20px; z-index: 2147483647; width: 50%; max-width: calc(100% - 40px);
 color: #ffffff; background: ${color}; font-family: 'Barlow', sans-serif;
 border-radius: 2px; padding-left: 10px;
 box-shadow: 0 3px 7px 2px rgba(0, 0, 0, 0.12), 0 10px 36px -4px rgba(77, 96, 232, 0.3);`;

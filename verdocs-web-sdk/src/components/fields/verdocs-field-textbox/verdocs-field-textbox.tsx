@@ -41,6 +41,11 @@ export class VerdocsFieldTextbox {
   @Prop({reflect: true}) disabled?: boolean = false;
 
   /**
+   * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+   */
+  @Prop({reflect: true}) multiline?: boolean = false;
+
+  /**
    * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be
    * changed, so it should typically only be enabled in the Builder.
    */
@@ -174,8 +179,11 @@ export class VerdocsFieldTextbox {
     const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', placeholder = ''} = field || {};
-    const {result: value = '', width = 150} = getFieldSettings(field);
+    let {required = false, role_name = '', placeholder = '', width = 150, height = 15, default: value = ''} = field || {};
+    // TODO: Consolidate value/defaultValue handling between template and envelope fields
+    if ((field as any).value) {
+      value = (field as any).value;
+    }
 
     // TODO: This is an outdated technique from the old system. We should compute it.
     const maxlength = width / 5;
@@ -185,6 +193,7 @@ export class VerdocsFieldTextbox {
       return <Host class={{done}}>{value}</Host>;
     }
 
+    console.log('text field', {multiline: this.multiline, value, placeholder, maxlength, width, height});
     return (
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         <input

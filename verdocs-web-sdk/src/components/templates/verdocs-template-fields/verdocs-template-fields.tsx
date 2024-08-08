@@ -7,6 +7,7 @@ import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateR
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
+import {VerdocsToast} from '../../../utils/Toast';
 
 const iconTextbox = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
@@ -144,7 +145,7 @@ export class VerdocsTemplateFields {
           console.log(e);
         });
     } catch (e) {
-      console.log('[FIELDS] Error with preview session', e);
+      console.log('[FIELDS] Error with fields session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -283,16 +284,24 @@ export class VerdocsTemplateFields {
     const newX = Math.max(clientRect.left - parentRect.left, 0);
     const newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
     const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - width, naturalHeight - height);
-
-    const params = {x, y};
-    console.log('[FIELDS] Will update', name, y, option, params);
-    const newFieldData = await updateField(this.endpoint, this.templateId, name, params);
-    console.log('[FIELDS] Updated', newFieldData);
-    updateStoreField(this.fieldStore, name, newFieldData);
-    event.target.removeAttribute('posX');
-    event.target.removeAttribute('posY');
-    removeCssTransform(event.target);
-    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
+    try {
+      const params = {x, y};
+      console.log('[FIELDS] Will update', name, y, option, params);
+      const newFieldData = await updateField(this.endpoint, this.templateId, name, params);
+      console.log('[FIELDS] Updated', newFieldData);
+      updateStoreField(this.fieldStore, name, newFieldData);
+      event.target.removeAttribute('posX');
+      event.target.removeAttribute('posY');
+      removeCssTransform(event.target);
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
+    } catch (e) {
+      VerdocsToast('Error updating field, please try again later', {style: 'error'});
+      console.log('[FIELDS] Error updating field', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      event.target.removeAttribute('posX');
+      event.target.removeAttribute('posY');
+      removeCssTransform(event.target);
+    }
   }
 
   generateFieldName(type: string, pageNumber: number) {

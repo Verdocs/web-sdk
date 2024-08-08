@@ -1,4 +1,4 @@
-import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, IAuthenticateResponse, getMyUser} from '@verdocs/js-sdk';
+import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, IAuthenticateResponse, getMyUser, IProfile} from '@verdocs/js-sdk';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -6,6 +6,7 @@ import {SDKError} from '../../../utils/errors';
 export interface IAuthStatus {
   authenticated: boolean;
   session: TSession;
+  profile: IProfile | null;
 }
 
 /**
@@ -71,6 +72,8 @@ export class VerdocsAuth {
   @State() confirmpass: string = '';
   @State() submitting: boolean = false;
   @State() resendDisabled = false;
+  @State() session: TSession = null;
+  @State() profile: IProfile | null = null;
 
   resendDisabledTimer = null;
 
@@ -84,13 +87,20 @@ export class VerdocsAuth {
 
   componentWillLoad() {
     this.endpoint.loadSession();
-    if (this.endpoint.session) {
-      console.log('[AUTH] Authenticated');
-      this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
-    } else {
-      console.log('[AUTH] Anonymous');
-      this.authenticated?.emit({authenticated: false, session: null});
-    }
+  }
+
+  componentDidRender() {
+    VerdocsEndpoint.getDefault().onSessionChanged((_endpoint, session, profile) => {
+      this.session = session;
+      this.profile = profile;
+      if (session) {
+        console.log('[AUTH] Authenticated', profile);
+        this.authenticated?.emit({authenticated: true, session, profile});
+      } else {
+        console.log('[AUTH] Anonymous');
+        this.authenticated?.emit({authenticated: false, session, profile});
+      }
+    });
   }
 
   isPasswordComplex(password: string) {
@@ -130,7 +140,7 @@ export class VerdocsAuth {
       org_name: this.org_name,
     })
       .then(r => {
-        console.log('Profile creation result', r);
+        console.log('[AUTH] Profile creation result', r);
         this.tempAuthEndpoint.setToken(r.access_token);
         this.clearForms();
         this.displayMode = 'verify';
@@ -138,7 +148,7 @@ export class VerdocsAuth {
       .catch(e => {
         console.log('[AUTH] Signup error', e.response);
         this.submitting = false;
-        this.authenticated?.emit({authenticated: false, session: null});
+        this.authenticated?.emit({authenticated: false, profile: null, session: null});
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
 
         VerdocsToast('Signup failed: ' + e.response?.data?.message || 'Unknown Error', {style: 'error'});
@@ -163,11 +173,15 @@ export class VerdocsAuth {
   completeLogin(result: IAuthenticateResponse) {
     this.clearForms();
     this.tempAuthEndpoint.clearSession();
+    console.log('lc', result.access_token);
     this.endpoint.setToken(result.access_token);
-    this.authenticated?.emit({authenticated: true, session: this.endpoint.session});
   }
 
   async loginAndCheckVerification() {
+    if (this.submitting) {
+      return;
+    }
+
     this.submitting = true;
     this.tempAuthEndpoint.clearSession();
 
@@ -210,7 +224,6 @@ export class VerdocsAuth {
     console.log('logging out');
     this.endpoint.clearSession();
     this.tempAuthEndpoint.clearSession();
-    this.authenticated?.emit({authenticated: false, session: null});
     this.clearForms();
     this.displayMode = 'login';
   }
@@ -256,7 +269,7 @@ export class VerdocsAuth {
       return <div style={{display: 'none'}}>Authenticated</div>;
     }
 
-    if (this.endpoint.session) {
+    if (this.session) {
       return (
         <verdocs-button
           label="Sign Out"

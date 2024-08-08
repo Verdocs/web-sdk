@@ -959,7 +959,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'multiline', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -967,7 +967,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'endpoint', 'fieldname', 'moveable', 'multiline', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLElement;

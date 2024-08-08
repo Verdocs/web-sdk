@@ -913,6 +913,10 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "multiline"?: boolean;
+        /**
           * The page the field is on
          */
         "pagenumber"?: number;
@@ -4837,6 +4841,10 @@ declare namespace LocalJSX {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
+        /**
+          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+         */
+        "multiline"?: boolean;
         /**
           * Event fired when the field is deleted.
          */
