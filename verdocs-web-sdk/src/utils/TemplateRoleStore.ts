@@ -7,7 +7,6 @@ const templateRoleStores: Record<string, TTemplateRoleStore> = {};
 
 export const getTemplateRoleStore = (templateId: string) => {
   if (!templateRoleStores[templateId]) {
-    console.log('Creating role store', templateId);
     templateRoleStores[templateId] = createStore({roles: []});
   }
 
@@ -17,7 +16,15 @@ export const getTemplateRoleStore = (templateId: string) => {
 export const createTemplateRoleStore = (template: ITemplate) => {
   console.log('creating role store', template);
   let store = getTemplateRoleStore(template.id);
-  store.set('roles', [...template.roles]);
+
+  const roles = [...(template.roles || [])];
+  roles.sort((a, b) => {
+    if (a.sequence !== b.sequence) {
+      return a.sequence - b.sequence;
+    }
+    return a.order - b.order;
+  });
+  store.set('roles', roles);
 
   return store;
 };

@@ -8,7 +8,6 @@ const templateFieldStores: Record<string, TTemplateFieldStore> = {};
 
 export const getTemplateFieldStore = (templateId: string) => {
   if (!templateFieldStores[templateId]) {
-    console.log('Creating template field store', templateId);
     templateFieldStores[templateId] = createStore({fields: []});
   }
 

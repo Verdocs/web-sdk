@@ -182,8 +182,6 @@ export class VerdocsSend {
         this.rolesCompleted[id] = {...role, id};
       }
     });
-
-    console.log('Roles completed', this.rolesCompleted);
   }
 
   getLevels() {
@@ -201,27 +199,7 @@ export class VerdocsSend {
         ...role,
         id: `r-${level}-${index}`,
       }));
-    rolesAtLevel.sort((a, b) => a.order - b.order);
     return rolesAtLevel as TAnnotatedRole[];
-  }
-
-  getRoleLevels() {
-    const roles = this.roleStore?.get('roles') || [];
-    const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
-
-    // this.rolesCompleted = {};
-
-    roles.forEach(role => {
-      const level = role.sequence - 1;
-      rolesAtLevel[level] ||= [];
-      const id = `r-${level}-${rolesAtLevel[level].length}`;
-      rolesAtLevel[level].push({...role, id});
-    });
-
-    const levels = Object.keys(rolesAtLevel).map(levelStr => +levelStr);
-    levels.sort((a, b) => a - b);
-
-    return levels;
   }
 
   getLevelIcon(level: number) {
@@ -247,7 +225,7 @@ export class VerdocsSend {
     this.showPickerForId = role.id;
   }
 
-  handleSend(e) {
+  handleSend(e: any) {
     if (this.sending) {
       console.log('Skipping duplicate send', e);
       return;
@@ -286,7 +264,7 @@ export class VerdocsSend {
       });
   }
 
-  handleCancel(e) {
+  handleCancel(e: any) {
     e.stopPropagation();
     this.exit?.emit();
   }
@@ -304,6 +282,7 @@ export class VerdocsSend {
     const roleNames = getRoleNames(this.roleStore);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= roleNames.length;
+    console.log('[SEND] Roles completed', this.rolesCompleted);
 
     return (
       <Host class={{sendable: this.templateStore?.state?.is_sendable}}>
@@ -322,7 +301,14 @@ export class VerdocsSend {
                 const unknown = !role.email;
                 const elId = `verdocs-send-recipient-${role.name}`;
                 return unknown ? (
-                  <div class="recipient" style={{backgroundColor: getRGBA(getRoleIndex(this.roleStore, role.name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
+                  <div
+                    class="recipient"
+                    data-ri={getRoleIndex(this.roleStore, role.name)}
+                    data-rn={role.name}
+                    style={{backgroundColor: getRGBA(getRoleIndex(this.roleStore, role.name))}}
+                    onClick={e => this.handleClickRole(e, role)}
+                    id={elId}
+                  >
                     {this.rolesCompleted[role.id]?.full_name ?? role.name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
