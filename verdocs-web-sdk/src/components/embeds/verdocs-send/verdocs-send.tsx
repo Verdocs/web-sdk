@@ -242,7 +242,7 @@ export class VerdocsSend {
       template_id: this.templateId,
       name: this.templateStore?.state?.name,
       environment: this.environment,
-      roles: Object.values(this.rolesCompleted) as ICreateEnvelopeRole[],
+      recipients: Object.values(this.rolesCompleted) as ICreateEnvelopeRole[],
       // TODO
       prepared_fields: [],
     };

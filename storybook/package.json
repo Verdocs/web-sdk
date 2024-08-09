@@ -23,7 +23,7 @@
     "@storybook/test": "^8.2.8",
     "@storybook/theming": "^8.2.8",
     "@storybook/web-components-vite": "^8.2.8",
-    "@verdocs/js-sdk": "^4.2.39",
+    "@verdocs/js-sdk": "^4.2.40",
     "lit-html": "^3.2.0",
     "prop-types": "^15.8.1",
     "remark-gfm": "^4.0.0",

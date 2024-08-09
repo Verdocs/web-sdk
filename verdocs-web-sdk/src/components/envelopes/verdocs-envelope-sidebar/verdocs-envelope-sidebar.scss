@@ -28,6 +28,9 @@ verdocs-envelope-sidebar {
     display: flex;
 
     button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 50px;
       outline: none;
       border: none;
