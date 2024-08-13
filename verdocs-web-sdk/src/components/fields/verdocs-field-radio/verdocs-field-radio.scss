@@ -16,17 +16,31 @@ verdocs-field-radio-button {
     margin-top: 4px;
   }
 
-  &.disabled {
-    opacity: 0.5;
-  }
-
   &.disabled.done {
     opacity: 1;
+  }
+
+  label {
+    top: -14px;
+    left: -1px;
+    height: 14px;
+    color: white;
+    padding: 0 4px;
+    font-size: 9px;
+    line-height: 13px;
+    position: absolute;
+    background: #4a4a99;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
   }
 
   input {
     // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
     cursor: inherit;
+  }
+
+  &.disabled input {
+    opacity: 0.5;
   }
 
   &.done input[type='radio'] {

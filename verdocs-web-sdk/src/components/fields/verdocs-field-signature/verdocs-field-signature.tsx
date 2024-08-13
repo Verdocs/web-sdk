@@ -153,7 +153,7 @@ export class VerdocsFieldSignature {
     const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', value = ''} = field || {};
+    const {required = false, role_name = '', value = '', label = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
@@ -163,6 +163,8 @@ export class VerdocsFieldSignature {
 
     return (
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+        {label && <label>{label}</label>}
+
         {value ? <img src={value} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
 
         {editable && (

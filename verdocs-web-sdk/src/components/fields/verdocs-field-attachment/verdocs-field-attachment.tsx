@@ -201,7 +201,7 @@ export class VerdocsFieldAttachment {
     const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', value = ''} = field || {};
+    const {required = false, role_name = '', value = '', label = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
     const hasFile = value || !!this.selectedFile;
@@ -209,14 +209,16 @@ export class VerdocsFieldAttachment {
     if (done) {
       return (
         <Host class={{done}}>
-          <span innerHTML={hasFile ? AttachedIcon : PaperclipIcon} />
+          <div class="attach" innerHTML={hasFile ? AttachedIcon : PaperclipIcon} />
         </Host>
       );
     }
 
     return (
       <Host class={{required, disabled, done}} style={{backgroundColor}}>
-        <span innerHTML={hasFile ? AttachedIcon : PaperclipIcon} onClick={() => !disabled && this.handleShow()} />
+        {label && <label>{label}</label>}
+
+        <div class="attach" innerHTML={hasFile ? AttachedIcon : PaperclipIcon} onClick={() => !disabled && this.handleShow()} />
 
         {editable && (
           <Fragment>

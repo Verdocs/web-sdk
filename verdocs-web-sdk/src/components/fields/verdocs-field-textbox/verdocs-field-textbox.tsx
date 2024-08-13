@@ -176,7 +176,7 @@ export class VerdocsFieldTextbox {
     const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    let {required = false, role_name = '', placeholder = '', width = 150, height = 15, default: value = ''} = field || {};
+    let {required = false, role_name = '', placeholder = '', label = '', width = 150, default: value = ''} = field || {};
     // TODO: Consolidate value/defaultValue handling between template and envelope fields
     if ((field as any).value) {
       value = (field as any).value;
@@ -190,9 +190,10 @@ export class VerdocsFieldTextbox {
       return <Host class={{done}}>{value}</Host>;
     }
 
-    console.log('text field', {multiline: this.multiline, value, placeholder, maxlength, width, height});
     return (
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+        {label && <label>{label}</label>}
+
         <input
           type="text"
           name={fieldname}

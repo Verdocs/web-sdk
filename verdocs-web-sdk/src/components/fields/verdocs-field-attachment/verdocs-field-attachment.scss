@@ -3,20 +3,34 @@
 verdocs-field-attachment {
   font-family: $verdocs-primary-font;
   box-sizing: border-box;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   display: block;
   font-size: 11px;
   position: relative;
   background-color: transparent;
   transform-origin: bottom left;
 
+  label {
+    top: -14px;
+    left: -1px;
+    height: 14px;
+    color: white;
+    padding: 0 4px;
+    font-size: 9px;
+    line-height: 13px;
+    position: absolute;
+    background: #4a4a99;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+  }
+
   svg {
     width: 16px;
     height: 16px;
   }
 
-  &.disabled {
+  &.disabled svg {
     opacity: 0.5;
 
     span {
@@ -24,15 +38,18 @@ verdocs-field-attachment {
     }
   }
 
-  span {
+  .attach {
     // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
     cursor: inherit;
-
-    width: 20px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &.required {
-    span {
+    .attach {
       border: 1px solid $verdocs-red-1;
     }
   }

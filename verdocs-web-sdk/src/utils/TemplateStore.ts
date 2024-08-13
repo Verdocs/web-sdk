@@ -93,12 +93,6 @@ export const getTemplateStore = async (endpoint: VerdocsEndpoint, templateId: st
         }
       });
 
-      template.fields?.forEach(field => {
-        if ((field as any).setting) {
-          field.settings = (field as any).setting;
-        }
-      });
-
       console.debug('[TEMPLATES] Got template', template);
       Object.assign(store.state, template);
 

@@ -116,7 +116,7 @@ export class VerdocsFieldDropdown {
     const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', value = ''} = field || {};
+    const {required = false, role_name = '', value = '', label = ''} = field || {};
 
     // TODO:
     const options = [];
@@ -129,6 +129,8 @@ export class VerdocsFieldDropdown {
 
     return (
       <Host class={{required, disabled, done}} style={{backgroundColor}}>
+        {label && <label>{label}</label>}
+
         <select disabled={disabled} ref={el => (this.el = el)} onChange={e => this.handleChange(e)}>
           <option value="">Select...</option>
           {options.map(option => (

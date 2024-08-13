@@ -531,7 +531,6 @@ export class VerdocsFieldAttachment {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldAttachmentITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldAttachmentITemplateField } from '@verdocs/web-sdk';
 import type { ISelectedFile as IVerdocsFieldAttachmentISelectedFile } from '@verdocs/web-sdk';
 
@@ -539,7 +538,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldAttachmentITemplateFieldSetting; field: IVerdocsFieldAttachmentITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldAttachmentITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -552,7 +551,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -560,7 +559,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldCheckbox {
   protected el: HTMLElement;
@@ -572,14 +571,13 @@ export class VerdocsFieldCheckbox {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldCheckboxITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldCheckboxITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldCheckboxITemplateFieldSetting; field: IVerdocsFieldCheckboxITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldCheckboxITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -608,7 +606,6 @@ export class VerdocsFieldDate {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldDateITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldDateITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
@@ -619,7 +616,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldDateITemplateFieldSetting; field: IVerdocsFieldDateITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldDateITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -648,7 +645,6 @@ export class VerdocsFieldDropdown {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldDropdownITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldDropdownITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
@@ -661,7 +657,7 @@ keypress.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldDropdownITemplateFieldSetting; field: IVerdocsFieldDropdownITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldDropdownITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -690,7 +686,6 @@ export class VerdocsFieldInitial {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldInitialITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldInitialITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInitial {
@@ -711,7 +706,7 @@ keypress.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldInitialITemplateFieldSetting; field: IVerdocsFieldInitialITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldInitialITemplateField}>>;
   /**
    * Event fired on every character entered into / deleted from the field.
    */
@@ -762,7 +757,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
   methods: ['showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -770,7 +765,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldRadio {
   protected el: HTMLElement;
@@ -782,50 +777,13 @@ export class VerdocsFieldRadio {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldRadioITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldRadioITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldRadioITemplateFieldSetting; field: IVerdocsFieldRadioITemplateField}>>;
-  /**
-   * Event fired when the field is deleted.
-   */
-  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
-}
-
-
-@ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
-  methods: ['showSettingsPanel', 'hideSettingsPanel']
-})
-@Component({
-  selector: 'verdocs-field-radio-button',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'option', 'pagenumber', 'templateid', 'xscale', 'yscale'],
-})
-export class VerdocsFieldRadioButton {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
-  }
-}
-
-
-import type { ITemplateFieldSetting as IVerdocsFieldRadioButtonITemplateFieldSetting } from '@verdocs/web-sdk';
-import type { ITemplateField as IVerdocsFieldRadioButtonITemplateField } from '@verdocs/web-sdk';
-
-export declare interface VerdocsFieldRadioButton extends Components.VerdocsFieldRadioButton {
-  /**
-   * Event fired when the field's settings are changed.
-   */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldRadioButtonITemplateFieldSetting; field: IVerdocsFieldRadioButtonITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldRadioITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -854,7 +812,6 @@ export class VerdocsFieldSignature {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldSignatureITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldSignatureITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSignature {
@@ -869,7 +826,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldSignatureITemplateFieldSetting; field: IVerdocsFieldSignatureITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldSignatureITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -898,14 +855,13 @@ export class VerdocsFieldTextarea {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldTextareaITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldTextareaITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldTextareaITemplateFieldSetting; field: IVerdocsFieldTextareaITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldTextareaITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -934,14 +890,13 @@ export class VerdocsFieldTextbox {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldTextboxITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldTextboxITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldTextboxITemplateFieldSetting; field: IVerdocsFieldTextboxITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldTextboxITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -970,14 +925,13 @@ export class VerdocsFieldTimestamp {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsFieldTimestampITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsFieldTimestampITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsFieldTimestampITemplateFieldSetting; field: IVerdocsFieldTimestampITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldTimestampITemplateField}>>;
   /**
    * Event fired when the field is deleted.
    */
@@ -1905,7 +1859,6 @@ export class VerdocsTemplateFieldProperties {
 }
 
 
-import type { ITemplateFieldSetting as IVerdocsTemplateFieldPropertiesITemplateFieldSetting } from '@verdocs/web-sdk';
 import type { ITemplateField as IVerdocsTemplateFieldPropertiesITemplateField } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsTemplateFieldPropertiesSDKError } from '@verdocs/web-sdk';
 
@@ -1922,7 +1875,7 @@ the role will have already been deleted server-side.
   /**
    * Event fired when the field's settings are changed.
    */
-  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; settings: IVerdocsTemplateFieldPropertiesITemplateFieldSetting; field: IVerdocsTemplateFieldPropertiesITemplateField}>>;
+  settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsTemplateFieldPropertiesITemplateField}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.

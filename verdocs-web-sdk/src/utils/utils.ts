@@ -137,6 +137,8 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
     return;
   }
 
+  console.log('[renderDocumentField] Rendering field', field);
+
   switch (field.type as any) {
     case 'attachment':
     case 'date':

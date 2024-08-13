@@ -149,7 +149,7 @@ export class VerdocsFieldDate {
     const {templateid, fieldname = '', containerId = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', placeholder = 'Date...', value = ''} = field || {};
+    const {required = false, role_name = '', placeholder = 'Date...', value = '', label = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
@@ -161,6 +161,8 @@ export class VerdocsFieldDate {
 
     return (
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+        {label && <label>{label}</label>}
+
         <input
           name={fieldname}
           class="input-el"

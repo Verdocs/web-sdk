@@ -103,7 +103,7 @@ export class VerdocsFieldRadio {
     const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = ''} = field || {};
+    const {required = false, role_name = '', label = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
     // TODO
@@ -121,6 +121,8 @@ export class VerdocsFieldRadio {
 
     return (
       <Host class={{required, disabled, done}} style={{backgroundColor}}>
+        {label && <label>{label}</label>}
+
         <input id={fieldId} type="radio" name={fieldname} value={id} checked={!!selected} disabled={disabled} required={required} />
         <label htmlFor={fieldId} />
 

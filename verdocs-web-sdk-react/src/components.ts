@@ -26,7 +26,6 @@ import { defineCustomElement as defineVerdocsFieldDropdown } from '@verdocs/web-
 import { defineCustomElement as defineVerdocsFieldInitial } from '@verdocs/web-sdk/dist/components/verdocs-field-initial.js';
 import { defineCustomElement as defineVerdocsFieldPayment } from '@verdocs/web-sdk/dist/components/verdocs-field-payment.js';
 import { defineCustomElement as defineVerdocsFieldRadio } from '@verdocs/web-sdk/dist/components/verdocs-field-radio.js';
-import { defineCustomElement as defineVerdocsFieldRadioButton } from '@verdocs/web-sdk/dist/components/verdocs-field-radio-button.js';
 import { defineCustomElement as defineVerdocsFieldSignature } from '@verdocs/web-sdk/dist/components/verdocs-field-signature.js';
 import { defineCustomElement as defineVerdocsFieldTextarea } from '@verdocs/web-sdk/dist/components/verdocs-field-textarea.js';
 import { defineCustomElement as defineVerdocsFieldTextbox } from '@verdocs/web-sdk/dist/components/verdocs-field-textbox.js';
@@ -100,7 +99,6 @@ export const VerdocsFieldDropdown = /*@__PURE__*/createReactComponent<JSX.Verdoc
 export const VerdocsFieldInitial = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldInitial, HTMLVerdocsFieldInitialElement>('verdocs-field-initial', undefined, undefined, defineVerdocsFieldInitial);
 export const VerdocsFieldPayment = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldPayment, HTMLVerdocsFieldPaymentElement>('verdocs-field-payment', undefined, undefined, defineVerdocsFieldPayment);
 export const VerdocsFieldRadio = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldRadio, HTMLVerdocsFieldRadioElement>('verdocs-field-radio', undefined, undefined, defineVerdocsFieldRadio);
-export const VerdocsFieldRadioButton = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldRadioButton, HTMLVerdocsFieldRadioButtonElement>('verdocs-field-radio-button', undefined, undefined, defineVerdocsFieldRadioButton);
 export const VerdocsFieldSignature = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldSignature, HTMLVerdocsFieldSignatureElement>('verdocs-field-signature', undefined, undefined, defineVerdocsFieldSignature);
 export const VerdocsFieldTextarea = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldTextarea, HTMLVerdocsFieldTextareaElement>('verdocs-field-textarea', undefined, undefined, defineVerdocsFieldTextarea);
 export const VerdocsFieldTextbox = /*@__PURE__*/createReactComponent<JSX.VerdocsFieldTextbox, HTMLVerdocsFieldTextboxElement>('verdocs-field-textbox', undefined, undefined, defineVerdocsFieldTextbox);

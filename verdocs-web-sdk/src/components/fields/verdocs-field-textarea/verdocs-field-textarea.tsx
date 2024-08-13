@@ -177,7 +177,7 @@ export class VerdocsFieldTextarea {
     const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', placeholder = '', value = ''} = field || {};
+    const {required = false, role_name = '', placeholder = '', value = '', label = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
@@ -187,6 +187,8 @@ export class VerdocsFieldTextarea {
 
     return (
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+        {label && <label>{label}</label>}
+
         <textarea
           name={fieldname}
           disabled={disabled}

@@ -14,5 +14,5 @@ export default {
 
 export const Preview = ({templateId}) =>
   !templateId
-    ? html`<img src="https://verdocs-public-assets.s3.amazonaws.com/billofsale-signed.png" alt="Signed document sample" style="display: flex; row-gap: 15px; padding: 15px;" />`
+    ? html`<img src="https://public-assets.verdocs.com/billofsale-signed.png" alt="Signed document sample" style="display: flex; row-gap: 15px; padding: 15px;" />`
     : html`<verdocs-preview .templateId=${templateId} />`;

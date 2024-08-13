@@ -10,8 +10,19 @@ verdocs-field-checkbox {
   transform-origin: bottom left;
   font-family: $verdocs-primary-font;
 
-  &.disabled {
-    opacity: 0.5;
+  // To avoid conflicting with the use of a label for the checkbox itself
+  div.label {
+    top: -14px;
+    left: -1px;
+    height: 14px;
+    color: white;
+    padding: 0 4px;
+    font-size: 9px;
+    line-height: 13px;
+    position: absolute;
+    background: #4a4a99;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
   }
 
   label {
@@ -22,6 +33,10 @@ verdocs-field-checkbox {
     height: 14px;
     display: block;
     box-sizing: border-box;
+  }
+
+  &.disabled label {
+    opacity: 0.5;
   }
 
   label > input[type='checkbox'] {

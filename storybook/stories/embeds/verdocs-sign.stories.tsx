@@ -27,5 +27,5 @@ export default {
 
 export const Sign = ({envelopeId, roleId, inviteCode}) =>
   !envelopeId || !roleId || !inviteCode
-    ? html`<img src="https://verdocs-public-assets.s3.amazonaws.com/sample-signing-envelope.png" alt="Document sample" />`
+    ? html`<img src="https://public-assets.verdocs.com/sample-signing-envelope.png" alt="Document sample" />`
     : html`<verdocs-sign .envelopeId=${envelopeId} .roleId=${roleId} .inviteCode=${inviteCode} />`;
