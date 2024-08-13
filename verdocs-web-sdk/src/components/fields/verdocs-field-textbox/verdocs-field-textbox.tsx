@@ -15,7 +15,7 @@ import {SettingsIcon} from '../../../utils/Icons';
 })
 export class VerdocsFieldTextbox {
   @Element() el: HTMLElement;
-  private inputEl: HTMLInputElement;
+  private inputEl: HTMLInputElement | HTMLTextAreaElement;
 
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -176,7 +176,7 @@ export class VerdocsFieldTextbox {
     const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    let {required = false, role_name = '', placeholder = '', label = '', width = 150, default: value = ''} = field || {};
+    let {required = false, role_name = '', placeholder = '', label = '', width = 150, default: value = '', multiline = false} = field || {};
     // TODO: Consolidate value/defaultValue handling between template and envelope fields
     if ((field as any).value) {
       value = (field as any).value;
@@ -194,18 +194,32 @@ export class VerdocsFieldTextbox {
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
 
-        <input
-          type="text"
-          name={fieldname}
-          value={value}
-          disabled={disabled}
-          required={required}
-          placeholder={placeholder}
-          maxlength={maxlength}
-          ref={el => (this.inputEl = el)}
-          onFocus={() => (this.focused = true)}
-          onBlur={() => (this.focused = false)}
-        />
+        {multiline ? (
+          <textarea
+            name={fieldname}
+            disabled={disabled}
+            required={required}
+            placeholder={placeholder}
+            ref={el => (this.inputEl = el)}
+            onFocus={() => (this.focused = true)}
+            onBlur={() => (this.focused = false)}
+          >
+            {value}
+          </textarea>
+        ) : (
+          <input
+            type="text"
+            name={fieldname}
+            value={value}
+            disabled={disabled}
+            required={required}
+            placeholder={placeholder}
+            maxlength={maxlength}
+            ref={el => (this.inputEl = el)}
+            onFocus={() => (this.focused = true)}
+            onBlur={() => (this.focused = false)}
+          />
+        )}
 
         {editable && (
           <Fragment>

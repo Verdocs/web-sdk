@@ -132,7 +132,7 @@ export class VerdocsTemplateFieldProperties {
     this.roleName = field.role_name;
     this.required = field.required;
     this.fieldType = field.type;
-    this.options = field.options;
+    this.options = field.options || [];
     this.placeholder = field.placeholder || '';
     this.defaultValue = field.default || '';
     this.multiline = field.multiline || false;

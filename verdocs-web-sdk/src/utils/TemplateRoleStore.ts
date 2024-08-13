@@ -14,7 +14,6 @@ export const getTemplateRoleStore = (templateId: string) => {
 };
 
 export const createTemplateRoleStore = (template: ITemplate) => {
-  console.log('creating role store', template);
   let store = getTemplateRoleStore(template.id);
 
   const roles = [...(template.roles || [])];

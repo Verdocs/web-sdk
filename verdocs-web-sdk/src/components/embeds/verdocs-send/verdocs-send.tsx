@@ -124,7 +124,6 @@ export class VerdocsSend {
     try {
       this.endpoint.onSessionChanged((_endpoint, _session, profile) => {
         if (profile) {
-          console.log('setting sc', profile);
           this.sessionContacts = [];
           this.sessionContacts.push({
             id: profile.id,

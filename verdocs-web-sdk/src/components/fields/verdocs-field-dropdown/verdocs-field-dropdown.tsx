@@ -116,11 +116,7 @@ export class VerdocsFieldDropdown {
     const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', value = '', label = ''} = field || {};
-
-    // TODO:
-    const options = [];
-
+    const {required = false, role_name = '', value = '', label = '', options = []} = field || {};
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
     if (done) {
@@ -133,9 +129,9 @@ export class VerdocsFieldDropdown {
 
         <select disabled={disabled} ref={el => (this.el = el)} onChange={e => this.handleChange(e)}>
           <option value="">Select...</option>
-          {options.map(option => (
-            <option value={option.id} selected={option.value === value}>
-              {option.value}
+          {(options || []).map(option => (
+            <option value={option.value} selected={option.value === value}>
+              {option.label}
             </option>
           ))}
         </select>
