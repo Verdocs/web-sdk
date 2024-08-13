@@ -153,6 +153,27 @@ verdocs-template-field-properties {
     }
   }
 
+  .options-header {
+    gap: 10px;
+    margin: 0 0 5px 0;
+    display: flex;
+    color: #ffffff;
+    font-size: 14px;
+    padding: 5px 8px;
+    font-weight: 700;
+    text-align: center;
+    flex-direction: row;
+    justify-content: center;
+    background-color: #333333;
+  }
+
+  .options-header-label {
+    display: flex;
+    flex: 1;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
   .option-row {
     margin: 15px 0;
 
@@ -186,7 +207,7 @@ verdocs-template-field-properties {
 
   .options {
     background: #f3f3f3;
-    padding: 0 0 10px 0;
+    padding: 0 0 1px 0;
 
     .row-header,
     .option-row {

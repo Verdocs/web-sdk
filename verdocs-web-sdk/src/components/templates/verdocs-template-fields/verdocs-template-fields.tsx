@@ -11,9 +11,6 @@ import {SDKError} from '../../../utils/errors';
 
 const iconTextbox = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
-const iconTextarea =
-  '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M3.225 20.725v-3.15h11.55v3.15Zm0-4.775V12.8h17.55v3.15Zm0-4.75V8.05h17.55v3.15Zm0-4.775v-3.15h17.55v3.15Z"/></svg>';
-
 const iconCheck =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="m10.55 16.55 7.275-7.275L16.05 7.5l-5.5 5.45-2.675-2.65L6.1 12.075Zm-5.375 4.925q-1.125 0-1.887-.763-.763-.762-.763-1.887V5.175q0-1.125.763-1.888.762-.762 1.887-.762h13.65q1.125 0 1.888.762.762.763.762 1.888v13.65q0 1.125-.762 1.887-.763.763-1.888.763Zm0-2.65h13.65V5.175H5.175v13.65Zm0-13.65v13.65-13.65Z"/></svg>';
 
@@ -45,7 +42,6 @@ const menuOptions = [
   {id: 'initial', tooltip: 'Initials', icon: iconInitial, class: 'initial'},
   {id: 'sep1', tooltip: '', icon: separator, class: 'separator'},
   {id: 'textbox', tooltip: 'Text Box', icon: iconTextbox, class: 'textbox'},
-  {id: 'textarea', tooltip: 'Text Area', icon: iconTextarea, class: 'textarea'},
   {id: 'checkbox', tooltip: 'Check Box', icon: iconCheck, class: 'checkbox'},
   {id: 'radio', tooltip: 'Radio Button', icon: iconRadio, class: 'radio'},
   {id: 'dropdown', tooltip: 'Dropdown', icon: iconDropdown, class: 'dropdown'},

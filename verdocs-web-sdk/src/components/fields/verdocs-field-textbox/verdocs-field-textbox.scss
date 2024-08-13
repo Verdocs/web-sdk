@@ -39,6 +39,32 @@ verdocs-field-textbox {
     opacity: 0.5;
   }
 
+  textarea {
+    // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
+    cursor: inherit;
+
+    width: 100%;
+    height: 100%;
+    resize: none;
+    border: none;
+    outline: none;
+    padding: 0 3px;
+    font-size: 11px;
+    background: none;
+    font-weight: 500;
+    transform-origin: 0 0;
+    box-sizing: border-box;
+    color: rgba(0, 0, 0, 0.87);
+
+    &.hide {
+      display: none;
+    }
+  }
+
+  &.disabled textarea {
+    opacity: 0.5;
+  }
+
   label {
     top: -14px;
     left: -1px;

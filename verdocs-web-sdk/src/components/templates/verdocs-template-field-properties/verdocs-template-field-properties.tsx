@@ -1,5 +1,5 @@
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {deleteField, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {DEFAULT_FIELD_HEIGHTS, DEFAULT_FIELD_WIDTHS, deleteField, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -73,12 +73,12 @@ export class VerdocsTemplateFieldProperties {
   @State() type = 'textbox' as TFieldType;
   @State() name = '';
   @State() required = false;
+  @State() multiline = false;
   @State() roleName = '';
   @State() group = '';
   @State() fieldType = '';
   @State() options = [];
   @State() placeholder = '';
-  @State() multiline = false;
   @State() defaultValue = '';
   @State() showingHelp = false;
 
@@ -128,7 +128,7 @@ export class VerdocsTemplateFieldProperties {
     this.type = field.type;
     this.name = field.name;
     this.label = field.label;
-    this.group = field.name;
+    this.group = field.group;
     this.roleName = field.role_name;
     this.required = field.required;
     this.fieldType = field.type;
@@ -138,6 +138,7 @@ export class VerdocsTemplateFieldProperties {
     this.multiline = field.multiline || false;
     this.dirty = false;
     this.loading = false;
+    this.cleanupOptions();
   }
 
   handleCancel(e: any) {
@@ -161,6 +162,13 @@ export class VerdocsTemplateFieldProperties {
       default: this.defaultValue,
       options: this.options,
     } as Partial<ITemplateField>;
+
+    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldName);
+    if (!newProperties.multiline && field.multiline) {
+      console.log('Switching off multiline');
+      newProperties.width = DEFAULT_FIELD_WIDTHS.textbox;
+      newProperties.height = DEFAULT_FIELD_HEIGHTS.textbox;
+    }
 
     console.log('[FIELD PROPERTIES] Will update', this.fieldName, newProperties);
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
@@ -190,6 +198,13 @@ export class VerdocsTemplateFieldProperties {
       .catch(e => {
         console.log('[FIELD PROPERTIES] Deletion error', e);
       });
+  }
+
+  cleanupOptions() {
+    this.options = [...this.options.filter(opt => (opt.id || '').trim() !== '' || (opt.value || '').trim() !== '')];
+    if (!this.options.find(opt => !opt.id && !opt.value)) {
+      this.options = [...this.options, {id: '', value: ''}];
+    }
   }
 
   render() {
@@ -287,6 +302,26 @@ export class VerdocsTemplateFieldProperties {
             </div>
           )}
 
+          {this.type === 'radio' && (
+            <div class="row">
+              <verdocs-text-input
+                id="verdocs-field-label"
+                label="Group"
+                value={this.group}
+                autocomplete="off"
+                helpText="Enable exclusive selections. Only one option within the same group may be selected at a time."
+                placeholder="Group..."
+                onInput={(e: any) => {
+                  this.group = (e.target.value || '')
+                    .trim()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]/g, '');
+                  this.dirty = true;
+                }}
+              />
+            </div>
+          )}
+
           {['textbox', 'textarea'].includes(this.type) && (
             <div class="row" style={{marginTop: '10px', marginBottom: '10px'}}>
               <verdocs-text-input
@@ -320,30 +355,37 @@ export class VerdocsTemplateFieldProperties {
             />
           </div>
 
-          {['dropdown'].includes(this.type) && (
-            <div class="options">
-              <div
-                class="row"
-                style={{
-                  marginTop: '15px',
-                  marginBottom: '15px',
-                  textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: '14px',
-                  justifyContent: 'center',
-                  backgroundColor: '#333333',
-                  padding: '5px 8px',
-                  color: '#ffffff',
+          {this.type === 'textbox' && (
+            <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
+              <label htmlFor="verdocs-is-multline" class="input-label">
+                Multi-Line
+              </label>
+              <verdocs-checkbox
+                id="verdocs-is-multiline"
+                name="is-multiline"
+                checked={this.multiline}
+                value="on"
+                onInput={(e: any) => {
+                  this.multiline = e.target.checked;
+                  this.dirty = true;
                 }}
-              >
-                Options
-                {/*<verdocs-help-icon text="Each option requires a unique ID and value. The ID will be stored when the user selects an option." />*/}
-              </div>
+              />
+            </div>
+          )}
 
-              <div class="row-header">
-                <h6>ID</h6>
-                <h6>Label</h6>
-                <div style={{width: '34px'}} />
+          {this.type === 'dropdown' && (
+            <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
+              <label htmlFor="verdocs-is-required" class="input-label">
+                Options
+              </label>
+            </div>
+          )}
+
+          {this.type === 'dropdown' && (
+            <div class="options">
+              <div class="options-header">
+                <div class="options-header-label">ID</div>
+                <dev class="options-header-label">Label</dev>
               </div>
 
               {this.options.map((option, index) => (
@@ -355,6 +397,7 @@ export class VerdocsTemplateFieldProperties {
                     onInput={(e: any) => {
                       this.options[index].id = e.target.value;
                       this.dirty = true;
+                      this.cleanupOptions();
                     }}
                   />
                   <verdocs-text-input
@@ -364,6 +407,7 @@ export class VerdocsTemplateFieldProperties {
                     onInput={(e: any) => {
                       this.options[index].value = e.target.value;
                       this.dirty = true;
+                      this.cleanupOptions();
                     }}
                   />
                   <button
@@ -372,22 +416,11 @@ export class VerdocsTemplateFieldProperties {
                     onClick={() => {
                       this.options = this.options.filter(opt => opt.id !== option.id);
                       this.dirty = true;
+                      this.cleanupOptions();
                     }}
                   />
                 </div>
               ))}
-
-              <div class="row-header">
-                <button
-                  class="add-option-button"
-                  onClick={() => {
-                    this.options = [...this.options, {id: `option-${this.options.length + 1}`, value: `Option ${this.options.length + 1}`}];
-                    this.dirty = true;
-                  }}
-                >
-                  Add Option
-                </button>
-              </div>
             </div>
           )}
 

@@ -4,7 +4,7 @@ import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/Templat
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {Event, EventEmitter, Host} from '@stencil/core';
-import {IDocumentPageInfo} from '../../../utils/Types';
+// import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -87,10 +87,10 @@ export class VerdocsPreview {
     }
   }
 
-  handlePageRendered(e) {
-    const pageInfo = e.detail as IDocumentPageInfo;
-    const fields = this.templateStore?.state?.fields.filter(field => field.page === pageInfo.pageNumber);
-    console.log('[PREVIEW] Page rendered', pageInfo, fields);
+  handlePageRendered(_e: any) {
+    // const pageInfo = e.detail as IDocumentPageInfo;
+    // const fields = this.templateStore?.state?.fields.filter(field => field.page === pageInfo.pageNumber);
+    // console.log('[PREVIEW] Page rendered', pageInfo, fields);
     // fields.forEach(field => renderDocumentField(field, pageInfo, {disabled: true, editable: false, draggable: false}));
   }
 

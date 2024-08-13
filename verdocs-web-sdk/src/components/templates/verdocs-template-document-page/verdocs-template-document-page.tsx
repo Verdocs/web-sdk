@@ -189,7 +189,6 @@ export class VerdocsTemplateDocumentPage {
                   .filter(field => field && field.page === this.pageNumber)
                   .map(field => {
                     const id = getFieldId(field);
-                    console.log('Will render field', field);
                     let {name, type, multiline} = field;
                     const {xScale, yScale, templateId, editable, disabled, done, pageNumber} = this;
                     if (field['setting']?.leading > 0 || field['settings']?.leading > 0) {
@@ -335,7 +334,7 @@ export class VerdocsTemplateDocumentPage {
                         );
                       case 'radio':
                         return (
-                          <verdocs-field-radio-button
+                          <verdocs-field-radio
                             id={id}
                             fieldname={name}
                             templateid={templateId}

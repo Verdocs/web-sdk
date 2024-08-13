@@ -120,9 +120,12 @@ export class VerdocsFieldTextbox {
   componentDidRender() {
     interact.dynamicDrop(true);
 
+    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    let {multiline = false} = field || {};
+
     if (this.editable) {
       interact(this.el).resizable({
-        edges: {top: false, bottom: false, left: true, right: true},
+        edges: {top: multiline, bottom: multiline, left: true, right: true},
         listeners: {
           start: this.handleResizeStart.bind(this),
           move: this.handleResize.bind(this),

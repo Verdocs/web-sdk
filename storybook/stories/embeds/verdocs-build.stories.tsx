@@ -5,7 +5,7 @@ export default {
   title: 'Embeds/Build',
   component: 'verdocs-build',
   args: {
-    templateId: '',
+    templateId: 'be608ff6-5a57-4b5e-8e3a-40fec5a7f7e1',
     step: 'preview',
   },
   step: {
