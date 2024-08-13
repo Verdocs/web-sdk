@@ -253,7 +253,6 @@ export class VerdocsSign {
     console.log('[SIGN] updateRecipientFieldValue', fieldName);
     this.getRecipientFields().forEach(oldField => {
       if (oldField.name === fieldName) {
-        oldField.settings = updateResult.settings;
         oldField.value = updateResult.value;
         updateDocumentFieldValue(oldField);
         this.checkRecipientFields();
@@ -285,16 +284,12 @@ export class VerdocsSign {
       case 'textbox':
         return this.saveFieldChange(field.name, {prepared: false, value});
 
-      case 'checkbox':
-      case 'checkbox_group': {
-        const options = field.settings.options.map(option => ({id: option.id, checked: e.target.checked}));
-        return this.saveFieldChange(field.name, {prepared: false, value: {options}});
+      case 'checkbox': {
+        return this.saveFieldChange(field.name, {prepared: false, value: e.target.checked});
       }
 
-      case 'radio':
-      case 'radio_button_group': {
-        const options = field.settings.options.map(option => ({id: option.id, selected: e.target.value === option.id}));
-        return this.saveFieldChange(field.name, {prepared: false, value: {options}});
+      case 'radio': {
+        return this.saveFieldChange(field.name, {prepared: false, value: e.target.value === e.target.checked});
       }
 
       case 'dropdown':
@@ -353,21 +348,21 @@ export class VerdocsSign {
   }
 
   isFieldFilled(field: IEnvelopeField) {
-    const {result = '', value = '', base64 = ''} = field.settings || {};
+    const {value = ''} = field;
     switch (field.type as any) {
       case 'textbox':
         switch (field.validator || '') {
           case 'email':
-            return isValidEmail(result);
+            return isValidEmail(value);
           case 'phone':
-            return isValidPhone(result);
+            return isValidPhone(value);
           default:
-            return result !== '';
+            return value !== '';
         }
 
       case 'signature':
       case 'initial':
-        return base64 !== '';
+        return value !== '';
 
       // Timestamp fields get automatically filled when the envelope is submitted.
       case 'timestamp':
@@ -376,24 +371,17 @@ export class VerdocsSign {
       case 'textarea':
       case 'date':
       case 'attachment':
-        return result !== '';
+        return value !== '';
 
       case 'dropdown':
         return value !== '';
 
       case 'checkbox':
-      case 'checkbox_group':
-        const checkedCount = (field.settings?.options?.filter(option => option.checked) || []).length;
-        return checkedCount >= (field.settings?.minimum_checked || 0) && checkedCount <= (field.settings?.maximum_checked || 999);
+        return !!value;
 
       case 'radio':
-      case 'radio_button_group':
-        return (field.settings?.options?.filter(option => option.selected) || []).length > 0;
-      // TODO
-      // case 'checkbox':
-      //   return <verdocs-field-checkbox style={style} value={result || ''} id={id} />;
-      // case 'payment':
-      //   return <verdocs-field-payment style={style} field={field} id={id} />;
+        return !!value;
+
       default:
         return false;
     }
@@ -408,10 +396,10 @@ export class VerdocsSign {
     const recipientFields = this.getRecipientFields().filter(field => field.type !== 'timestamp');
 
     recipientFields.sort((a, b) => {
-      const aX = a.settings?.x || 0;
-      const aY = a.settings?.y || 0;
-      const bX = b.settings?.x || 0;
-      const bY = b.settings?.y || 0;
+      const aX = a.x || 0;
+      const aY = a.y || 0;
+      const bX = b.x || 0;
+      const bY = b.y || 0;
       // NOTE: Logic looks a little strange X vs Y. It's because we go top down,
       // left to right. But Y coordinates are inverted in PDFs. The reason for
       // the division is because no human makes perfect templates and frequently
@@ -455,10 +443,10 @@ export class VerdocsSign {
     const emptyFields = this.getSortedFillableFields().filter(field => !this.isFieldFilled(field));
 
     emptyFields.sort((a, b) => {
-      const aX = a.settings?.x || 0;
-      const aY = a.settings?.y || 0;
-      const bX = b.settings?.x || 0;
-      const bY = b.settings?.y || 0;
+      const aX = a.x || 0;
+      const aY = a.y || 0;
+      const bX = b.x || 0;
+      const bY = b.y || 0;
       // NOTE: Logic looks a little strange X vs Y. It's because we go top down,
       // left to right. But Y coordinates are inverted in PDFs. The reason for
       // the division is because no human makes perfect templates and frequently
@@ -502,7 +490,7 @@ export class VerdocsSign {
   }
 
   getRecipientFields() {
-    return this.envelope.fields.filter(field => field.recipient_role === this.recipient.role_name);
+    return this.envelope.fields.filter(field => field.role_name === this.recipient.role_name);
   }
 
   // See if everything that "needs to be" filled in is, and all "fillable fields" are valid
@@ -525,7 +513,7 @@ export class VerdocsSign {
       // console.log('[SIGN] onfieldInput', e.detail, e.target.value);
       // These field types don't emit fieldChange. Should we standardize on that? We don't tap "input" for fields like
       // text boxes because we'd be updating the field on every keystroke. We do those on blur which fires fieldChange.
-      if (e.target.name.includes('date') || e.target.name.includes('checkbox_group') || e.target.name.includes('radio_button_group')) {
+      if (e.target.name.includes('date') || e.target.name.includes('checkbox') || e.target.name.includes('radio')) {
         this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
       } else {
         this.checkRecipientFields();
@@ -552,7 +540,7 @@ export class VerdocsSign {
     el.setAttribute('name', this.recipient?.full_name || '');
   }
 
-  handlePageRendered(e) {
+  handlePageRendered(e: any) {
     const pageInfo = e.detail as IDocumentPageInfo;
 
     // NOTE: We don't filter on pageNumber here because we need the position in the

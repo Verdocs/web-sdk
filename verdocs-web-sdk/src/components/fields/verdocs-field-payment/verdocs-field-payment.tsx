@@ -91,7 +91,7 @@ export class VerdocsFieldPayment {
     // Load fields
     // Get role names
     if (this.recipients && this.recipients.length > 0) {
-      const preparer = this.recipients.find(r => r.type === 'preparer');
+      const preparer = this.recipients.find((r: any) => r.type === 'preparer');
       console.log('Found preparer', preparer);
       if (preparer) {
         this.preparedMessage = `Prepared by ${preparer['full_name']}`;

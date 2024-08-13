@@ -1,9 +1,8 @@
 import {format} from 'date-fns/format';
-import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
+import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getFieldSettings} from '../../../utils/utils';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {SettingsIcon} from '../../../utils/Icons';
 
@@ -68,7 +67,7 @@ export class VerdocsFieldTimestamp {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -109,8 +108,7 @@ export class VerdocsFieldTimestamp {
     const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', placeholder = ''} = field || {};
-    const {value = ''} = getFieldSettings(field);
+    const {required = false, role_name = '', placeholder = '', value = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 

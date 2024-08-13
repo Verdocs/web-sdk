@@ -1,8 +1,7 @@
-import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
+import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
 /**
@@ -84,7 +83,7 @@ export class VerdocsFieldSignature {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -121,7 +120,7 @@ export class VerdocsFieldSignature {
     this.dialog.setAttribute('name', this.name);
     // this.dialog.setAttribute('roleindex', this.roleindex);
     this.dialog.addEventListener('exit', () => this.hideDialog());
-    this.dialog.addEventListener('next', e => this.handleAdopt(e));
+    this.dialog.addEventListener('next', (e: any) => this.handleAdopt(e));
     document.body.append(this.dialog);
     this.focused = true;
   }
@@ -154,8 +153,7 @@ export class VerdocsFieldSignature {
     const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = ''} = field || {};
-    const {result: value = ''} = getFieldSettings(field);
+    const {required = false, role_name = '', value = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 

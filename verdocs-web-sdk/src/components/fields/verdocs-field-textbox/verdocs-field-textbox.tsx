@@ -1,9 +1,8 @@
 import interact from 'interactjs';
-import {getRGBA, ITemplateField, ITemplateFieldSetting, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {getRGBA, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
 /**
@@ -79,7 +78,7 @@ export class VerdocsFieldTextbox {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -160,16 +159,14 @@ export class VerdocsFieldTextbox {
 
   handleResizeEnd(e: any) {
     const {fieldname = ''} = this;
-    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const newSettings = {...getFieldSettings(field)};
 
-    newSettings.width = Math.round(parseFloat(e.target.style.width));
-    newSettings.height = Math.round(parseFloat(e.target.style.height));
+    const width = Math.round(parseFloat(e.target.style.width));
+    const height = Math.round(parseFloat(e.target.style.height));
 
-    updateField(this.endpoint, this.templateid, this.fieldname, {settings: newSettings})
+    updateField(this.endpoint, this.templateid, this.fieldname, {width, height})
       .then(field => {
         updateStoreField(this.fieldStore, this.fieldname, field);
-        this.settingsChanged?.emit({fieldName: fieldname, settings: newSettings, field});
+        this.settingsChanged?.emit({fieldName: fieldname, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
       })
       .catch(e => console.log('Field update failed', e));

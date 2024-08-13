@@ -1,10 +1,9 @@
 import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplateField, ITemplateFieldSetting, updateField, getRGBA} from '@verdocs/js-sdk';
+import {ITemplateField, updateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
 /**
@@ -81,7 +80,7 @@ export class VerdocsFieldTextarea {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -131,7 +130,7 @@ export class VerdocsFieldTextarea {
     }
   }
 
-  handleResizeStart(e) {
+  handleResizeStart(e: any) {
     e.preventDefault();
     e.stopPropagation();
   }
@@ -159,17 +158,16 @@ export class VerdocsFieldTextarea {
       return <Fragment />;
     }
 
-    const newSettings = {...getFieldSettings(field)};
     const [translateX, translateY] = e.target.style.transform.split('(')[1].split(')')[0].split(',').map(parseFloat);
 
-    newSettings.width = Math.round(parseFloat(e.target.style.width) / this.xscale);
-    newSettings.height = Math.round(parseFloat(e.target.style.height) / this.yscale);
-    newSettings.x = Math.round(newSettings.x + translateX / this.xscale);
-    newSettings.y = Math.round(newSettings.y - translateY / this.yscale);
+    const width = Math.round(parseFloat(e.target.style.width) / this.xscale);
+    const height = Math.round(parseFloat(e.target.style.height) / this.yscale);
+    const x = Math.round(field.x + translateX / this.xscale);
+    const y = Math.round(field.y - translateY / this.yscale);
 
-    updateField(this.endpoint, this.templateid, this.fieldname, {settings: newSettings})
+    updateField(this.endpoint, this.templateid, this.fieldname, {x, y, width, height})
       .then(field => {
-        this.settingsChanged?.emit({fieldName: this.fieldname, settings: newSettings, field});
+        this.settingsChanged?.emit({fieldName: this.fieldname, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
       })
       .catch(e => console.log('Field update failed', e));
@@ -179,8 +177,7 @@ export class VerdocsFieldTextarea {
     const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', placeholder = ''} = field || {};
-    const {result: value = ''} = getFieldSettings(field);
+    const {required = false, role_name = '', placeholder = '', value = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 

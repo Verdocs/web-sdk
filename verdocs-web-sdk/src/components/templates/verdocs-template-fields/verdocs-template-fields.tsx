@@ -6,8 +6,8 @@ import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../.
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
-import {SDKError} from '../../../utils/errors';
 import {VerdocsToast} from '../../../utils/Toast';
+import {SDKError} from '../../../utils/errors';
 
 const iconTextbox = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
@@ -46,8 +46,8 @@ const menuOptions = [
   {id: 'sep1', tooltip: '', icon: separator, class: 'separator'},
   {id: 'textbox', tooltip: 'Text Box', icon: iconTextbox, class: 'textbox'},
   {id: 'textarea', tooltip: 'Text Area', icon: iconTextarea, class: 'textarea'},
-  {id: 'checkbox_group', tooltip: 'Check Box', icon: iconCheck, class: 'checkbox'},
-  {id: 'radio_button_group', tooltip: 'Radio Button', icon: iconRadio, class: 'radio'},
+  {id: 'checkbox', tooltip: 'Check Box', icon: iconCheck, class: 'checkbox'},
+  {id: 'radio', tooltip: 'Radio Button', icon: iconRadio, class: 'radio'},
   {id: 'dropdown', tooltip: 'Dropdown', icon: iconDropdown, class: 'dropdown'},
   {id: 'sep2', tooltip: '', icon: separator, class: 'separator'},
   {id: 'date', tooltip: 'Date', icon: iconDatepicker, class: 'date'},
@@ -214,28 +214,12 @@ export class VerdocsTemplateFields {
       .get('fields')
       .filter(field => field && field.page === pageInfo.pageNumber)
       .forEach(field => {
-        switch (field.type) {
-          // case 'checkbox_group':
-          // case 'radio_button_group':
-          //   (field.settings || {}).options.map((_, index) => {
-          //     const id = getFieldOptionId(field, index);
-          //     const el = document.getElementById(id);
-          //     if (el) {
-          //       el.setAttribute('fieldname', field.name);
-          //       el.setAttribute('pagenumber', String(field.page));
-          //       this.makeDraggable(el);
-          //     }
-          //   });
-          //   break;
-          default:
-            const id = getFieldId(field);
-            const el = document.getElementById(id);
-            if (el) {
-              el.setAttribute('fieldname', field.name);
-              el.setAttribute('pagenumber', String(field.page));
-              this.makeDraggable(el);
-            }
-            break;
+        const id = getFieldId(field);
+        const el = document.getElementById(id);
+        if (el) {
+          el.setAttribute('fieldname', field.name);
+          el.setAttribute('pagenumber', String(field.page));
+          this.makeDraggable(el);
         }
       });
   }
@@ -344,7 +328,7 @@ export class VerdocsTemplateFields {
         template_id: this.templateId,
         document_id: cachedPage.documentId,
         type: this.placing,
-        required: this.placing === 'radio' ? false : true,
+        required: this.placing !== 'radio',
         page: pageNumber,
         validator: null,
         label: null,

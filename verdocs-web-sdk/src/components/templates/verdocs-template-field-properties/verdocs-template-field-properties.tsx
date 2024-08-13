@@ -1,5 +1,5 @@
-import {deleteField, ITemplateField, ITemplateFieldSetting, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
+import {deleteField, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -58,7 +58,7 @@ export class VerdocsTemplateFieldProperties {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -167,7 +167,7 @@ export class VerdocsTemplateFieldProperties {
       .then(updated => {
         updateStoreField(this.fieldStore, this.fieldName, updated);
         this.resetForm();
-        this.settingsChanged?.emit({fieldName: this.fieldName, settings: newProperties, field: updated});
+        this.settingsChanged?.emit({fieldName: this.fieldName, field: updated});
         this.close?.emit();
         document.getElementById('verdocs-template-field-properties')?.remove();
       })

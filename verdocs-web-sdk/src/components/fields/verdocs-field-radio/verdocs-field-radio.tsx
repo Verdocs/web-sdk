@@ -1,8 +1,7 @@
-import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
+import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
 const RadioIconUnselected = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg>`;
@@ -27,11 +26,6 @@ export class VerdocsFieldRadio {
    * The name of the field to display.
    */
   @Prop({reflect: true}) fieldname: string = '';
-
-  /**
-   * The index of the settings option this particular checkbox is for
-   */
-  @Prop({reflect: true}) option: number = 0;
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -74,7 +68,7 @@ export class VerdocsFieldRadio {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -106,14 +100,15 @@ export class VerdocsFieldRadio {
   }
 
   render() {
-    const {templateid, fieldname = '', option, editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
     const {required = false, role_name = ''} = field || {};
-    const {options = []} = getFieldSettings(field);
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
-    const {id = 'option1', selected = false} = options[option] || {};
+    // TODO
+    const {id = 'option1', selected = false} = {};
+    // const {id = 'option1', selected = false} = options[option] || {};
     const fieldId = `${fieldname}-${id}`;
 
     if (done) {

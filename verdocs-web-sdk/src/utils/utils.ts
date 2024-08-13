@@ -21,8 +21,6 @@ export const defaultWidth = (type: TFieldType) => {
       return 24;
     case 'radio':
     case 'checkbox':
-    case 'checkbox_group':
-    case 'radio_button_group':
       return 14;
     case 'signature':
     case 'initial':
@@ -51,8 +49,6 @@ export const defaultHeight = (type: TFieldType) => {
       return 24;
     case 'radio':
     case 'checkbox':
-    case 'checkbox_group':
-    case 'radio_button_group':
       return 14;
     case 'signature':
     case 'initial':
@@ -64,17 +60,17 @@ export const defaultHeight = (type: TFieldType) => {
   return 50;
 };
 
-export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number, option?: number) => {
+export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number) => {
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = field;
-  const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
+  // const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
 
-  const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
-  if (optionSettings) {
-    x = optionSettings.x ?? x;
-    y = optionSettings.y ?? y;
-    width = optionSettings.width ?? width;
-    height = optionSettings.height ?? height;
-  }
+  // const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
+  // if (optionSettings) {
+  //   x = optionSettings.x ?? x;
+  //   y = optionSettings.y ?? y;
+  //   width = optionSettings.width ?? width;
+  //   height = optionSettings.height ?? height;
+  // }
 
   el.style.width = `${width}px`;
   el.style.height = `${height}px`;
@@ -85,17 +81,17 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvel
   // el.style.backgroundColor = field['rgba'] || getRGBA(roleIndex);
 };
 
-export const getControlStyles = (field: ITemplateField | IEnvelopeField, xScale: number, yScale: number, option?: number) => {
+export const getControlStyles = (field: ITemplateField | IEnvelopeField, xScale: number, yScale: number) => {
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = field;
-  const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
+  // const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
 
-  const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
-  if (optionSettings) {
-    x = optionSettings.x ?? x;
-    y = optionSettings.y ?? y;
-    width = optionSettings.width ?? width;
-    height = optionSettings.height ?? height;
-  }
+  // const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
+  // if (optionSettings) {
+  //   x = optionSettings.x ?? x;
+  //   y = optionSettings.y ?? y;
+  //   width = optionSettings.width ?? width;
+  //   height = optionSettings.height ?? height;
+  // }
 
   return {
     width: `${width}px`,
@@ -193,7 +189,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       const id = getFieldOptionId(field, 0);
       const existingField = document.getElementById(id);
       if (existingField) {
-        setControlStyles(existingField, field, docPage.xScale, docPage.yScale, 0);
+        setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
         return existingField;
       }
 
@@ -213,7 +209,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       if (draggable) {
         cbEl.setAttribute('draggable', true);
       }
-      setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, 0);
+      setControlStyles(cbEl, field, docPage.xScale, docPage.yScale);
       controlsDiv.appendChild(cbEl);
 
       return cbEl;
@@ -223,7 +219,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       const id = getFieldOptionId(field, 0);
       const existingField = document.getElementById(id);
       if (existingField) {
-        setControlStyles(existingField, field, docPage.xScale, docPage.yScale, 0);
+        setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
         return existingField;
       }
 
@@ -243,74 +239,11 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       if (draggable) {
         radioEl.setAttribute('draggable', true);
       }
-      setControlStyles(radioEl, field, docPage.xScale, docPage.yScale, 0);
+      setControlStyles(radioEl, field, docPage.xScale, docPage.yScale);
       controlsDiv.appendChild(radioEl);
 
       return radioEl;
     }
-
-    case 'checkbox_group':
-      return ((field as any).settings || (field as any).setting || {}).options.map((_, checkboxIndex) => {
-        const id = getFieldOptionId(field, checkboxIndex);
-        const existingField = document.getElementById(id);
-        if (existingField) {
-          setControlStyles(existingField, field, docPage.xScale, docPage.yScale, checkboxIndex);
-          return existingField;
-        }
-
-        const cbEl: any = document.createElement(`verdocs-field-checkbox`);
-        cbEl.field = field;
-        cbEl.setAttribute('id', id);
-        cbEl.setAttribute('option', checkboxIndex);
-        if (disabled) {
-          cbEl.setAttribute('disabled', true);
-        }
-        if (done) {
-          cbEl.setAttribute('done', true);
-        }
-        if (editable) {
-          cbEl.setAttribute('editable', true);
-        }
-        if (draggable) {
-          cbEl.setAttribute('draggable', true);
-        }
-        setControlStyles(cbEl, field, docPage.xScale, docPage.yScale, checkboxIndex);
-        controlsDiv.appendChild(cbEl);
-
-        return cbEl;
-      });
-
-    case 'radio_button_group':
-      return ((field as any).settings || (field as any).setting || {}).options.map((_, buttonIndex) => {
-        const id = getFieldOptionId(field, buttonIndex);
-        const existingField = document.getElementById(id);
-        if (existingField) {
-          setControlStyles(existingField, field, docPage.xScale, docPage.yScale, buttonIndex);
-          return existingField;
-        }
-
-        const radioEl: any = document.createElement(`verdocs-field-radio-button`);
-        radioEl.field = field;
-        radioEl.setAttribute('id', id);
-        radioEl.setAttribute('option', buttonIndex);
-        if (disabled) {
-          radioEl.setAttribute('disabled', true);
-        }
-        if (done) {
-          radioEl.setAttribute('done', true);
-        }
-        if (editable) {
-          radioEl.setAttribute('editable', true);
-        }
-        if (draggable) {
-          radioEl.setAttribute('draggable', true);
-        }
-
-        setControlStyles(radioEl, field, docPage.xScale, docPage.yScale, buttonIndex);
-        controlsDiv.appendChild(radioEl);
-
-        return radioEl;
-      });
 
     default:
       console.log('[PREVIEW] Skipping unsupported field type', field);
@@ -318,7 +251,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
   }
 };
 
-export const getFieldSettings = (field: ITemplateField | IEnvelopeField | undefined) => field?.settings || {};
+// export const getFieldSettings = (field: ITemplateField | IEnvelopeField | undefined) => field?.settings || {};
 
 /**
  * Helper function to safely set/update components in a CSS transform attribute. Transform is normally set as a string of
@@ -392,7 +325,7 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: I
 /**
  * Throttle a given function by a delay value. Useful for things like resizeObserver.
  */
-export const throttle = (f, delay) => {
+export const throttle = (f: Function, delay: number) => {
   let timer: any = 0;
   return function (...args) {
     clearTimeout(timer);

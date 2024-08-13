@@ -1,9 +1,8 @@
 import interact from 'interactjs';
-import {ITemplateField, ITemplateFieldSetting, getRGBA, VerdocsEndpoint, updateField} from '@verdocs/js-sdk';
+import {ITemplateField, getRGBA, VerdocsEndpoint, updateField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment, Element} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
-import {getFieldSettings} from '../../../utils/utils';
+import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {SettingsIcon} from '../../../utils/Icons';
 
 export interface ISelectedFile {
@@ -88,7 +87,7 @@ export class VerdocsFieldAttachment {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -148,12 +147,12 @@ export class VerdocsFieldAttachment {
     }
   }
 
-  handleResizeStart(e) {
+  handleResizeStart(e: any) {
     e.preventDefault();
     e.stopPropagation();
   }
 
-  handleResize(e) {
+  handleResize(e: any) {
     let {x = 0, y = 0, h = 0} = e.target.dataset;
     let {width, height} = e.rect;
 
@@ -173,17 +172,14 @@ export class VerdocsFieldAttachment {
     Object.assign(e.target.dataset, {x, y, h});
   }
 
-  handleResizeEnd(e) {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    const newSettings = {...getFieldSettings(field)};
+  handleResizeEnd(e: any) {
+    const width = Math.round(parseFloat(e.target.style.width));
+    const height = Math.round(parseFloat(e.target.style.height));
 
-    newSettings.width = Math.round(parseFloat(e.target.style.width));
-    newSettings.height = Math.round(parseFloat(e.target.style.height));
-
-    updateField(this.endpoint, this.templateid, this.fieldname, {settings: newSettings})
+    updateField(this.endpoint, this.templateid, this.fieldname, {width, height})
       .then(field => {
         updateStoreField(this.fieldStore, this.fieldname, field);
-        this.settingsChanged?.emit({fieldName: field.name, settings: newSettings, field});
+        this.settingsChanged?.emit({fieldName: field.name, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
       })
       .catch(e => console.log('Field update failed', e));
@@ -205,11 +201,10 @@ export class VerdocsFieldAttachment {
     const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = ''} = field || {};
-    const {result: url = ''} = getFieldSettings(field);
+    const {required = false, role_name = '', value = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
-    const hasFile = url || !!this.selectedFile;
+    const hasFile = value || !!this.selectedFile;
 
     if (done) {
       return (

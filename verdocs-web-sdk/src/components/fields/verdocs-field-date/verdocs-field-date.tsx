@@ -2,13 +2,12 @@ import {format} from 'date-fns';
 import {getRGBA} from '@verdocs/js-sdk';
 import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
-import type {ITemplateField, ITemplateFieldSetting} from '@verdocs/js-sdk';
+import type {ITemplateField} from '@verdocs/js-sdk';
 import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import type {TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import type {TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 import {FORMAT_DATE} from '../../../utils/Types';
 
@@ -85,7 +84,7 @@ export class VerdocsFieldDate {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -150,8 +149,7 @@ export class VerdocsFieldDate {
     const {templateid, fieldname = '', containerId = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', placeholder = 'Date...'} = field || {};
-    const {result: value = ''} = getFieldSettings(field);
+    const {required = false, role_name = '', placeholder = 'Date...', value = ''} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 

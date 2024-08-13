@@ -1,8 +1,7 @@
-import {ITemplateField, ITemplateFieldSetting, getRGBA} from '@verdocs/js-sdk';
+import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, Fragment, h, Host, Method, Prop, State} from '@stencil/core';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getFieldSettings} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 
 /**
@@ -23,11 +22,6 @@ export class VerdocsFieldCheckbox {
    * The name of the field to display.
    */
   @Prop({reflect: true}) fieldname: string = '';
-
-  /**
-   * The index of the settings option this particular checkbox is for
-   */
-  @Prop({reflect: true}) option: number = 0;
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -68,7 +62,7 @@ export class VerdocsFieldCheckbox {
   /**
    * Event fired when the field's settings are changed.
    */
-  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>;
+  @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
    * Event fired when the field is deleted.
@@ -102,15 +96,16 @@ export class VerdocsFieldCheckbox {
   }
 
   render() {
-    const {templateid, fieldname = '', option, editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
     const {required = false, role_name = ''} = field || {};
-    const {options = []} = getFieldSettings(field);
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
-    const {id = 'option1', checked = false} = options[option] || {};
+    // TODO
+    const {id = 'option1', checked = false} = {};
+    // const {id = 'option1', checked = false} = options[option] || {};
     const fieldId = `${fieldname}-${id}`;
 
     if (done) {

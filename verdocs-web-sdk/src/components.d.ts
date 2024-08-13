@@ -448,10 +448,6 @@ export namespace Components {
          */
         "moveable"?: boolean;
         /**
-          * The index of the settings option this particular checkbox is for
-         */
-        "option": number;
-        /**
           * The page the field is on
          */
         "pagenumber"?: number;
@@ -688,57 +684,6 @@ export namespace Components {
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
          */
         "moveable"?: boolean;
-        /**
-          * The index of the settings option this particular checkbox is for
-         */
-        "option": number;
-        /**
-          * The page the field is on
-         */
-        "pagenumber"?: number;
-        "showSettingsPanel": () => Promise<void>;
-        /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
-         */
-        "templateid": string;
-        /**
-          * If set, the field will be be scaled horizontally by this factor.
-         */
-        "xscale"?: number;
-        /**
-          * If set, the field will be be scaled vertically by this factor.
-         */
-        "yscale"?: number;
-    }
-    /**
-     * Displays a radio button.
-     */
-    interface VerdocsFieldRadioButton {
-        /**
-          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
-         */
-        "disabled"?: boolean;
-        /**
-          * If set, the field is considered "done" and is drawn in a display-final-value state.
-         */
-        "done"?: boolean;
-        /**
-          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
-         */
-        "editable"?: boolean;
-        /**
-          * The name of the field to display.
-         */
-        "fieldname": string;
-        "hideSettingsPanel": () => Promise<void>;
-        /**
-          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
-         */
-        "moveable"?: boolean;
-        /**
-          * The index of the settings option this particular checkbox is for
-         */
-        "option": number;
         /**
           * The page the field is on
          */
@@ -1923,10 +1868,6 @@ export interface VerdocsFieldRadioCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldRadioElement;
 }
-export interface VerdocsFieldRadioButtonCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsFieldRadioButtonElement;
-}
 export interface VerdocsFieldSignatureCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFieldSignatureElement;
@@ -2390,7 +2331,7 @@ declare global {
         new (): HTMLVerdocsEnvelopesListElement;
     };
     interface HTMLVerdocsFieldAttachmentElementEventMap {
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
         "attached": ISelectedFile;
     }
@@ -2412,7 +2353,7 @@ declare global {
         new (): HTMLVerdocsFieldAttachmentElement;
     };
     interface HTMLVerdocsFieldCheckboxElementEventMap {
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
     }
     /**
@@ -2434,7 +2375,7 @@ declare global {
     };
     interface HTMLVerdocsFieldDateElementEventMap {
         "settingsPress": any;
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
     }
     /**
@@ -2456,7 +2397,7 @@ declare global {
     };
     interface HTMLVerdocsFieldDropdownElementEventMap {
         "fieldChange": string;
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
     }
     /**
@@ -2480,7 +2421,7 @@ declare global {
         "adopt": string;
         "exit": any;
         "fieldChange": string;
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "settingsPress": any;
         "deleted": {fieldName: string};
     }
@@ -2531,7 +2472,7 @@ declare global {
         new (): HTMLVerdocsFieldPaymentElement;
     };
     interface HTMLVerdocsFieldRadioElementEventMap {
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
     }
     /**
@@ -2551,31 +2492,10 @@ declare global {
         prototype: HTMLVerdocsFieldRadioElement;
         new (): HTMLVerdocsFieldRadioElement;
     };
-    interface HTMLVerdocsFieldRadioButtonElementEventMap {
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
-        "deleted": {fieldName: string};
-    }
-    /**
-     * Displays a radio button.
-     */
-    interface HTMLVerdocsFieldRadioButtonElement extends Components.VerdocsFieldRadioButton, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsFieldRadioButtonElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldRadioButtonElement, ev: VerdocsFieldRadioButtonCustomEvent<HTMLVerdocsFieldRadioButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsFieldRadioButtonElementEventMap>(type: K, listener: (this: HTMLVerdocsFieldRadioButtonElement, ev: VerdocsFieldRadioButtonCustomEvent<HTMLVerdocsFieldRadioButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsFieldRadioButtonElement: {
-        prototype: HTMLVerdocsFieldRadioButtonElement;
-        new (): HTMLVerdocsFieldRadioButtonElement;
-    };
     interface HTMLVerdocsFieldSignatureElementEventMap {
         "fieldChange": string;
         "settingsPress": any;
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
     }
     /**
@@ -2601,7 +2521,7 @@ declare global {
         new (): HTMLVerdocsFieldSignatureElement;
     };
     interface HTMLVerdocsFieldTextareaElementEventMap {
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
     }
     /**
@@ -2623,7 +2543,7 @@ declare global {
         new (): HTMLVerdocsFieldTextareaElement;
     };
     interface HTMLVerdocsFieldTextboxElementEventMap {
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
     }
     /**
@@ -2644,7 +2564,7 @@ declare global {
         new (): HTMLVerdocsFieldTextboxElement;
     };
     interface HTMLVerdocsFieldTimestampElementEventMap {
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
     }
     /**
@@ -3278,7 +3198,7 @@ declare global {
     interface HTMLVerdocsTemplateFieldPropertiesElementEventMap {
         "close": any;
         "delete": {templateId: string; roleName: string};
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "sdkError": SDKError;
     }
     /**
@@ -3642,7 +3562,6 @@ declare global {
         "verdocs-field-initial": HTMLVerdocsFieldInitialElement;
         "verdocs-field-payment": HTMLVerdocsFieldPaymentElement;
         "verdocs-field-radio": HTMLVerdocsFieldRadioElement;
-        "verdocs-field-radio-button": HTMLVerdocsFieldRadioButtonElement;
         "verdocs-field-signature": HTMLVerdocsFieldSignatureElement;
         "verdocs-field-textarea": HTMLVerdocsFieldTextareaElement;
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
@@ -4191,7 +4110,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
          */
@@ -4240,11 +4159,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldCheckboxCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
-        /**
-          * The index of the settings option this particular checkbox is for
-         */
-        "option"?: number;
+        "onSettingsChanged"?: (event: VerdocsFieldCheckboxCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
          */
@@ -4297,7 +4212,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldDateCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldDateCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
@@ -4354,7 +4269,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
          */
@@ -4424,7 +4339,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldInitialCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldInitialCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
@@ -4531,64 +4446,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldRadioCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
-        /**
-          * The index of the settings option this particular checkbox is for
-         */
-        "option"?: number;
-        /**
-          * The page the field is on
-         */
-        "pagenumber"?: number;
-        /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
-         */
-        "templateid"?: string;
-        /**
-          * If set, the field will be be scaled horizontally by this factor.
-         */
-        "xscale"?: number;
-        /**
-          * If set, the field will be be scaled vertically by this factor.
-         */
-        "yscale"?: number;
-    }
-    /**
-     * Displays a radio button.
-     */
-    interface VerdocsFieldRadioButton {
-        /**
-          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
-         */
-        "disabled"?: boolean;
-        /**
-          * If set, the field is considered "done" and is drawn in a display-final-value state.
-         */
-        "done"?: boolean;
-        /**
-          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
-         */
-        "editable"?: boolean;
-        /**
-          * The name of the field to display.
-         */
-        "fieldname"?: string;
-        /**
-          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
-         */
-        "moveable"?: boolean;
-        /**
-          * Event fired when the field is deleted.
-         */
-        "onDeleted"?: (event: VerdocsFieldRadioButtonCustomEvent<{fieldName: string}>) => void;
-        /**
-          * Event fired when the field's settings are changed.
-         */
-        "onSettingsChanged"?: (event: VerdocsFieldRadioButtonCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
-        /**
-          * The index of the settings option this particular checkbox is for
-         */
-        "option"?: number;
+        "onSettingsChanged"?: (event: VerdocsFieldRadioCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
          */
@@ -4650,7 +4508,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldSignatureCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldSignatureCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * Event fired on every character entered into / deleted from the field.
          */
@@ -4708,7 +4566,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
          */
@@ -4765,7 +4623,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
          */
@@ -4815,7 +4673,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        "onSettingsChanged"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
          */
@@ -5594,7 +5452,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the field's settings are changed.
          */
-        "onSettingsChanged"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
+        "onSettingsChanged"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The template ID to edit.
          */
@@ -6085,7 +5943,6 @@ declare namespace LocalJSX {
         "verdocs-field-initial": VerdocsFieldInitial;
         "verdocs-field-payment": VerdocsFieldPayment;
         "verdocs-field-radio": VerdocsFieldRadio;
-        "verdocs-field-radio-button": VerdocsFieldRadioButton;
         "verdocs-field-signature": VerdocsFieldSignature;
         "verdocs-field-textarea": VerdocsFieldTextarea;
         "verdocs-field-textbox": VerdocsFieldTextbox;
@@ -6293,10 +6150,6 @@ declare module "@stencil/core" {
              * Displays a radio button.
              */
             "verdocs-field-radio": LocalJSX.VerdocsFieldRadio & JSXBase.HTMLAttributes<HTMLVerdocsFieldRadioElement>;
-            /**
-             * Displays a radio button.
-             */
-            "verdocs-field-radio-button": LocalJSX.VerdocsFieldRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsFieldRadioButtonElement>;
             /**
              * Displays a signature field. If a signature already exists, it will be displayed and the field
              * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
