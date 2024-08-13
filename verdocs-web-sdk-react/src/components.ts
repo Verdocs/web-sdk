@@ -3,9 +3,8 @@
 /* auto-generated react proxies */
 import { createReactComponent } from './react-component-lib';
 
-import type { JSX } from '@verdocs/web-sdk/dist/types';
+import type { JSX } from '@verdocs/web-sdk/dist/components';
 
-import { defineCustomElement as defineVerdocsActivityBox } from '@verdocs/web-sdk/dist/components/verdocs-activity-box.js';
 import { defineCustomElement as defineVerdocsAuth } from '@verdocs/web-sdk/dist/components/verdocs-auth.js';
 import { defineCustomElement as defineVerdocsBuild } from '@verdocs/web-sdk/dist/components/verdocs-build.js';
 import { defineCustomElement as defineVerdocsButton } from '@verdocs/web-sdk/dist/components/verdocs-button.js';
@@ -80,7 +79,6 @@ import { defineCustomElement as defineVerdocsToolbarIcon } from '@verdocs/web-sd
 import { defineCustomElement as defineVerdocsUploadDialog } from '@verdocs/web-sdk/dist/components/verdocs-upload-dialog.js';
 import { defineCustomElement as defineVerdocsView } from '@verdocs/web-sdk/dist/components/verdocs-view.js';
 
-export const VerdocsActivityBox = /*@__PURE__*/createReactComponent<JSX.VerdocsActivityBox, HTMLVerdocsActivityBoxElement>('verdocs-activity-box', undefined, undefined, defineVerdocsActivityBox);
 export const VerdocsAuth = /*@__PURE__*/createReactComponent<JSX.VerdocsAuth, HTMLVerdocsAuthElement>('verdocs-auth', undefined, undefined, defineVerdocsAuth);
 export const VerdocsBuild = /*@__PURE__*/createReactComponent<JSX.VerdocsBuild, HTMLVerdocsBuildElement>('verdocs-build', undefined, undefined, defineVerdocsBuild);
 export const VerdocsButton = /*@__PURE__*/createReactComponent<JSX.VerdocsButton, HTMLVerdocsButtonElement>('verdocs-button', undefined, undefined, defineVerdocsButton);

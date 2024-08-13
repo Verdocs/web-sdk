@@ -8,51 +8,6 @@ import { Components } from '@verdocs/web-sdk';
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'header', 'items', 'view']
-})
-@Component({
-  selector: 'verdocs-activity-box',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'header', 'items', 'view'],
-})
-export class VerdocsActivityBox {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewEnvelope', 'viewAll']);
-  }
-}
-
-
-import type { SDKError as IVerdocsActivityBoxSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsActivityBoxVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IEnvelope as IVerdocsActivityBoxIEnvelope } from '@verdocs/web-sdk';
-
-export declare interface VerdocsActivityBox extends Components.VerdocsActivityBox {
-  /**
-   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
-terminate the process, and the calling application should correct the condition and re-render the component.
-   */
-  sdkError: EventEmitter<CustomEvent<IVerdocsActivityBoxSDKError>>;
-  /**
-   * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate
-to the envelope detail view.
-   */
-  viewEnvelope: EventEmitter<CustomEvent<{endpoint: IVerdocsActivityBoxVerdocsEndpoint; entry: IVerdocsActivityBoxIEnvelope}>>;
-  /**
-   * Event fired when the user clicks View All in the title bar. The current view will be included in the event
-details to help the host application navigate the user to the appropriate screen for the request. Note that
-the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass
-this value through directly. This button is not visible if the header is hidden.
-   */
-  viewAll: EventEmitter<CustomEvent<{endpoint: IVerdocsActivityBoxVerdocsEndpoint; view: string}>>;
-}
-
-
-@ProxyCmp({
   inputs: ['endpoint', 'logo', 'visible']
 })
 @Component({
@@ -112,7 +67,7 @@ export class VerdocsBuild {
 
 import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk';
 import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk';
-import type { ICreateEnvelopeRole as IVerdocsBuildICreateEnvelopeRole } from '@verdocs/web-sdk';
+import type { ICreateEnvelopeRecipient as IVerdocsBuildICreateEnvelopeRecipient } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk';
 import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk';
 import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
@@ -130,7 +85,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * The user completed the Send form and clicked send.
    */
-  send: EventEmitter<CustomEvent<{roles: IVerdocsBuildICreateEnvelopeRole[]; name: string; template_id: string}>>;
+  send: EventEmitter<CustomEvent<{recipients: IVerdocsBuildICreateEnvelopeRecipient[]; name: string; template_id: string}>>;
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
@@ -1538,7 +1493,7 @@ export class VerdocsSend {
 }
 
 
-import type { ICreateEnvelopeRole as IVerdocsSendICreateEnvelopeRole } from '@verdocs/web-sdk';
+import type { ICreateEnvelopeRecipient as IVerdocsSendICreateEnvelopeRecipient } from '@verdocs/web-sdk';
 import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
 import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk';
@@ -1551,7 +1506,7 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
    * The user completed the form and clicked send.
    */
-  send: EventEmitter<CustomEvent<{roles: IVerdocsSendICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>;
+  send: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>;
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */

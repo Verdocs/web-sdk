@@ -1,5 +1,15 @@
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method, Watch} from '@stencil/core';
-import {createEnvelope, getRGBA, ICreateEnvelopeRequest, ICreateEnvelopeRole, IEnvelope, IRole, isValidEmail, isValidPhone, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {
+  createEnvelope,
+  getRGBA,
+  ICreateEnvelopeFromTemplateRequest,
+  ICreateEnvelopeRecipient,
+  IEnvelope,
+  IRecipient,
+  isValidEmail,
+  isValidPhone,
+  VerdocsEndpoint,
+} from '@verdocs/js-sdk';
 import {getRoleIndex, getRoleNames, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -16,9 +26,6 @@ const stepIcon =
 
 const doneIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path></svg>';
-
-// We need a local ID to help with ordering and in-progress update operations
-type TAnnotatedRole = IRole & {id: string};
 
 /**
  * Display a form to send a template to one or more recipients in an envelope for signing. Note
@@ -68,7 +75,7 @@ export class VerdocsSend {
   /**
    * The user completed the form and clicked send.
    */
-  @Event({composed: true}) send: EventEmitter<{roles: ICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>;
+  @Event({composed: true}) send: EventEmitter<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>;
 
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -95,7 +102,7 @@ export class VerdocsSend {
 
   @State() sending = false;
 
-  @State() rolesCompleted: Record<string, TAnnotatedRole> = {};
+  @State() rolesCompleted: Record<string, Partial<IRecipient>> = {};
 
   @Method() async reset() {
     this.rolesCompleted = {};
@@ -168,7 +175,7 @@ export class VerdocsSend {
 
   recomputeRolesCompleted() {
     const roles = this.roleStore?.get('roles') || [];
-    const rolesAtLevel: Record<number, TAnnotatedRole[]> = {};
+    const rolesAtLevel: Record<number, Partial<IRecipient>[]> = {};
 
     this.rolesCompleted = {};
 
@@ -176,10 +183,10 @@ export class VerdocsSend {
       const level = role.sequence - 1;
       rolesAtLevel[level] ||= [];
       const id = `r-${level}-${rolesAtLevel[level].length}`;
-      rolesAtLevel[level].push({...role, id});
+      rolesAtLevel[level].push({...role, id, role_name: role.name, first_name: '', last_name: ''});
 
       if (role.full_name && (role.email || role.phone)) {
-        this.rolesCompleted[id] = {...role, id};
+        this.rolesCompleted[id] = {...role, id, role_name: role.name, first_name: '', last_name: ''};
       }
     });
   }
@@ -198,8 +205,11 @@ export class VerdocsSend {
       .map((role, index) => ({
         ...role,
         id: `r-${level}-${index}`,
+        role_name: role.name,
+        first_name: '',
+        last_name: '',
       }));
-    return rolesAtLevel as TAnnotatedRole[];
+    return rolesAtLevel as Partial<IRecipient>[];
   }
 
   getLevelIcon(level: number) {
@@ -213,14 +223,14 @@ export class VerdocsSend {
     }
   }
 
-  handleSelectContact(e: any, role: TAnnotatedRole) {
+  handleSelectContact(e: any, role: Partial<IRecipient>) {
     e.preventDefault();
     e.detail; // IContactSelectEvent
     this.rolesCompleted[role.id] = {...role, ...e.detail};
     this.showPickerForId = '';
   }
 
-  handleClickRole(e: any, role: TAnnotatedRole) {
+  handleClickRole(e: any, role: Partial<IRecipient>) {
     e.stopPropagation();
     this.showPickerForId = role.id;
   }
@@ -238,13 +248,13 @@ export class VerdocsSend {
     this.sending = true;
     this.sendingEnvelope?.emit({sending: true});
 
-    const details: ICreateEnvelopeRequest = {
+    const details: ICreateEnvelopeFromTemplateRequest = {
       template_id: this.templateId,
       name: this.templateStore?.state?.name,
       environment: this.environment,
-      recipients: Object.values(this.rolesCompleted) as ICreateEnvelopeRole[],
+      recipients: Object.values(this.rolesCompleted) as ICreateEnvelopeRecipient[],
       // TODO
-      prepared_fields: [],
+      fields: [],
     };
 
     console.log('[SEND] Creating envelope', details);
@@ -299,17 +309,17 @@ export class VerdocsSend {
 
               {this.getRolesAtLevel(level).map(role => {
                 const unknown = !role.email;
-                const elId = `verdocs-send-recipient-${role.name}`;
+                const elId = `verdocs-send-recipient-${role.role_name}`;
                 return unknown ? (
                   <div
                     class="recipient"
-                    data-ri={getRoleIndex(this.roleStore, role.name)}
-                    data-rn={role.name}
-                    style={{backgroundColor: getRGBA(getRoleIndex(this.roleStore, role.name))}}
+                    data-ri={getRoleIndex(this.roleStore, role.role_name)}
+                    data-rn={role.role_name}
+                    style={{backgroundColor: getRGBA(getRoleIndex(this.roleStore, role.role_name))}}
                     onClick={e => this.handleClickRole(e, role)}
                     id={elId}
                   >
-                    {this.rolesCompleted[role.id]?.full_name ?? role.name}
+                    {this.rolesCompleted[role.id]?.full_name ?? role.role_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
                       <verdocs-portal anchor={elId} onClickAway={() => (this.showPickerForId = '')}>
@@ -324,7 +334,7 @@ export class VerdocsSend {
                     )}
                   </div>
                 ) : (
-                  <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(this.roleStore, role.name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
+                  <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(this.roleStore, role.role_name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
                     {this.rolesCompleted[role.id]?.full_name ?? role.full_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
@@ -333,7 +343,7 @@ export class VerdocsSend {
                           onExit={() => (this.showPickerForId = '')}
                           onNext={e => this.handleSelectContact(e, role)}
                           contactSuggestions={this.sessionContacts}
-                          templateRole={this.rolesCompleted[role.id] ?? role}
+                          templateRole={(this.rolesCompleted[role.id] ?? role) as IRecipient}
                           onSearchContacts={e => this.searchContacts?.emit(e.detail)}
                         />
                       </verdocs-portal>

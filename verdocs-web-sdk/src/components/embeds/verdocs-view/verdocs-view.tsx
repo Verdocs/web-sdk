@@ -114,12 +114,12 @@ export class VerdocsView {
     }
   }
 
-  handlePageRendered(e) {
+  handlePageRendered(e: any) {
     const pageInfo = e.detail as IDocumentPageInfo;
     console.log('[VIEW] Page rendered', pageInfo);
   }
 
-  async handleOptionSelected(e) {
+  async handleOptionSelected(e: any) {
     switch (e.detail.id) {
       case 'cancel':
         // TODO: Better option for inline-flow confirmation and alert dialogs.

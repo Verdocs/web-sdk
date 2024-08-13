@@ -86,10 +86,6 @@ export const getEnvelopeStore = async (endpoint: VerdocsEndpoint, envelopeId: st
         if (!document.order) {
           document.order = 0;
         }
-
-        if (document.page_numbers) {
-          document.pages = document.page_numbers;
-        }
       });
 
       console.debug('[ENVELOPES] Got envelope', envelope);

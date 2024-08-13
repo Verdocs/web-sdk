@@ -3,8 +3,9 @@
 import {getTemplateDocumentPageDisplayUri, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Element, Fragment} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getControlStyles, getFieldId, getFieldOptionId, throttle} from '../../../utils/utils';
+import {getControlStyles, getFieldId, getFieldOptionId} from '../../../utils/utils';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
+import {throttle} from '../../../utils/utils';
 
 /**
  * Represents one document page. This is primarily a layout container used to coordinate positions of

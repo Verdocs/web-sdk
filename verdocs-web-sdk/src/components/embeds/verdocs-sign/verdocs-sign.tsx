@@ -132,7 +132,8 @@ export class VerdocsSign {
     try {
       console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
 
-      const {envelope, recipient, access_token} = await getSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
+      const {envelope, access_token} = await getSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
+      const recipient = envelope.recipients.find(r => r.role_name === this.roleId);
       console.log(`[SIGN] Loaded signing session`, envelope, recipient, access_token);
 
       this.recipient = recipient;
@@ -205,7 +206,7 @@ export class VerdocsSign {
       });
   }
 
-  async handleOptionSelected(e) {
+  async handleOptionSelected(e: any) {
     switch (e.detail.id) {
       case 'later':
         this.finishLater = true;
@@ -253,7 +254,7 @@ export class VerdocsSign {
     this.getRecipientFields().forEach(oldField => {
       if (oldField.name === fieldName) {
         oldField.settings = updateResult.settings;
-        // TODO: When we break out other fields like value, update them here too
+        oldField.value = updateResult.value;
         updateDocumentFieldValue(oldField);
         this.checkRecipientFields();
       }

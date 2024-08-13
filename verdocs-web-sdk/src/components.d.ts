@@ -5,9 +5,9 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ICreateEnvelopeRole, IEnvelope, IFileWithData, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
-import { SDKError } from "./utils/errors";
+import { ICreateEnvelopeRecipient, IEnvelope, IFileWithData, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
+import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
 import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
@@ -22,9 +22,9 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { ICreateEnvelopeRole, IEnvelope, IFileWithData, IOrganization, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
-export { SDKError } from "./utils/errors";
+export { ICreateEnvelopeRecipient, IEnvelope, IFileWithData, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
+export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
 export { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 export { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
@@ -40,29 +40,6 @@ export { TAllowedTemplateAction } from "./components/templates/verdocs-templates
 export { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 export { Placement } from "@popperjs/core/lib/enums";
 export namespace Components {
-    /**
-     * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
-     * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
-     * them appear more visually balanced.
-     */
-    interface VerdocsActivityBox {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * The title to display on the box ("title" is a reserved word). This is optional, and if not set, the title will be derived from the view. Set this to an empty string to hide the header.
-         */
-        "header"?: string | undefined;
-        /**
-          * The number of items to display.
-         */
-        "items": number;
-        /**
-          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
-         */
-        "view"?: 'completed' | 'action' | 'waiting';
-    }
     /**
      * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
      * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
@@ -239,7 +216,7 @@ export namespace Components {
         /**
           * The role that this contact will be assigned to.
          */
-        "templateRole": IRole | null;
+        "templateRole": Partial<IRecipient> | null;
     }
     /**
      * Display a simple dialog where the contents are provided via slots.
@@ -1878,10 +1855,6 @@ export namespace Components {
         "headerTargetId": string | null;
     }
 }
-export interface VerdocsActivityBoxCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsActivityBoxElement;
-}
 export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsAuthElement;
@@ -2099,30 +2072,6 @@ export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
     target: HTMLVerdocsViewElement;
 }
 declare global {
-    interface HTMLVerdocsActivityBoxElementEventMap {
-        "sdkError": SDKError;
-        "viewEnvelope": {endpoint: VerdocsEndpoint; entry: IEnvelope};
-        "viewAll": {endpoint: VerdocsEndpoint; view: string};
-    }
-    /**
-     * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
-     * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
-     * them appear more visually balanced.
-     */
-    interface HTMLVerdocsActivityBoxElement extends Components.VerdocsActivityBox, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsActivityBoxElementEventMap>(type: K, listener: (this: HTMLVerdocsActivityBoxElement, ev: VerdocsActivityBoxCustomEvent<HTMLVerdocsActivityBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsActivityBoxElementEventMap>(type: K, listener: (this: HTMLVerdocsActivityBoxElement, ev: VerdocsActivityBoxCustomEvent<HTMLVerdocsActivityBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsActivityBoxElement: {
-        prototype: HTMLVerdocsActivityBoxElement;
-        new (): HTMLVerdocsActivityBoxElement;
-    };
     interface HTMLVerdocsAuthElementEventMap {
         "authenticated": IAuthStatus;
         "sdkError": SDKError;
@@ -2156,7 +2105,7 @@ declare global {
     interface HTMLVerdocsBuildElementEventMap {
         "sdkError": SDKError;
         "stepChanged": TVerdocsBuildStep;
-        "send": {roles: ICreateEnvelopeRole[]; name: string; template_id: string};
+        "send": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string};
         "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
         "templateCreated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
         "rolesUpdated": {endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]};
@@ -3063,7 +3012,7 @@ declare global {
     };
     interface HTMLVerdocsSendElementEventMap {
         "sendingEnvelope": {sending: boolean};
-        "send": {roles: ICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope};
+        "send": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope};
         "exit": any;
         "sdkError": SDKError;
         "searchContacts": IContactSearchEvent1;
@@ -3672,7 +3621,6 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
-        "verdocs-activity-box": HTMLVerdocsActivityBoxElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-button": HTMLVerdocsButtonElement;
@@ -3750,41 +3698,6 @@ declare global {
 }
 declare namespace LocalJSX {
     /**
-     * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
-     * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
-     * them appear more visually balanced.
-     */
-    interface VerdocsActivityBox {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * The title to display on the box ("title" is a reserved word). This is optional, and if not set, the title will be derived from the view. Set this to an empty string to hide the header.
-         */
-        "header"?: string | undefined;
-        /**
-          * The number of items to display.
-         */
-        "items"?: number;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsActivityBoxCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the user clicks View All in the title bar. The current view will be included in the event details to help the host application navigate the user to the appropriate screen for the request. Note that the verdocs-envelopes-list control uses the same "view" parameter, so host applications can typically pass this value through directly. This button is not visible if the header is hidden.
-         */
-        "onViewAll"?: (event: VerdocsActivityBoxCustomEvent<{endpoint: VerdocsEndpoint; view: string}>) => void;
-        /**
-          * Event fired when the user clicks an activity entry. Typically the host application will use this to navigate to the envelope detail view.
-         */
-        "onViewEnvelope"?: (event: VerdocsActivityBoxCustomEvent<{endpoint: VerdocsEndpoint; entry: IEnvelope}>) => void;
-        /**
-          * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
-         */
-        "view"?: 'completed' | 'action' | 'waiting';
-    }
-    /**
      * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
      * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
      * host application to render the next appropriate view for the application.
@@ -3840,7 +3753,7 @@ declare namespace LocalJSX {
         /**
           * The user completed the Send form and clicked send.
          */
-        "onSend"?: (event: VerdocsBuildCustomEvent<{roles: ICreateEnvelopeRole[]; name: string; template_id: string}>) => void;
+        "onSend"?: (event: VerdocsBuildCustomEvent<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string}>) => void;
         /**
           * Event fired when the user selects a different step.
          */
@@ -4001,7 +3914,7 @@ declare namespace LocalJSX {
         /**
           * The role that this contact will be assigned to.
          */
-        "templateRole"?: IRole | null;
+        "templateRole"?: Partial<IRecipient> | null;
     }
     /**
      * Display a simple dialog where the contents are provided via slots.
@@ -5355,7 +5268,7 @@ declare namespace LocalJSX {
         /**
           * The user completed the form and clicked send.
          */
-        "onSend"?: (event: VerdocsSendCustomEvent<{roles: ICreateEnvelopeRole[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>) => void;
+        "onSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>) => void;
         /**
           * The user is sending an envelope the form and clicked send.
          */
@@ -6151,7 +6064,6 @@ declare namespace LocalJSX {
         "onView"?: (event: VerdocsViewCustomEvent<any>) => void;
     }
     interface IntrinsicElements {
-        "verdocs-activity-box": VerdocsActivityBox;
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
         "verdocs-button": VerdocsButton;
@@ -6231,12 +6143,6 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            /**
-             * Displays a box showing summaries of envelopes matching specified conditions. Activity Boxes show a fixed number
-             * of items because they are meant to be laid out horizontally (if the user's screen is large enough) and this helps
-             * them appear more visually balanced.
-             */
-            "verdocs-activity-box": LocalJSX.VerdocsActivityBox & JSXBase.HTMLAttributes<HTMLVerdocsActivityBoxElement>;
             /**
              * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
              * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the

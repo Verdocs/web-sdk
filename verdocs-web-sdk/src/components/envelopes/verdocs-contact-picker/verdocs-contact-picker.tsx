@@ -1,4 +1,4 @@
-import {IRole, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 import {convertToE164} from '../../../utils/utils';
 
@@ -21,6 +21,8 @@ export interface IContactSearchEvent {
 
 export interface IContactSelectEvent {
   full_name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   message: string;
@@ -37,6 +39,12 @@ export interface IEmailContact {
 
   // The recipient's name, as it should be displayed to the user.
   name: string;
+
+  // The recipient's first name, as it should be displayed to the user.
+  first_name: string;
+
+  // The recipient's last name, as it should be displayed to the user.
+  last_name: string;
 
   // The email address for the contact.
   email: string;
@@ -58,6 +66,12 @@ export interface IPhoneContact {
 
   // The recipient's name, as it should be displayed to the user.
   name: string;
+
+  // The recipient's first name, as it should be displayed to the user.
+  first_name: string;
+
+  // The recipient's last name, as it should be displayed to the user.
+  last_name: string;
 
   // The email address for the contact.
   email?: string;
@@ -92,7 +106,7 @@ export class VerdocsContactPicker {
   /**
    * The role that this contact will be assigned to.
    */
-  @Prop() templateRole: IRole | null = null;
+  @Prop() templateRole: Partial<IRecipient> | null = null;
 
   /**
    * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number
@@ -117,6 +131,8 @@ export class VerdocsContactPicker {
   @Event({composed: true}) next: EventEmitter<IContactSelectEvent>;
 
   @State() name: string;
+  @State() first_name: string;
+  @State() last_name: string;
   @State() email: string;
   @State() phone: string;
   @State() message: string;
@@ -128,12 +144,20 @@ export class VerdocsContactPicker {
   @State() pinCode: string = '';
 
   @State() nameFieldId = `verdocs-contact-picker-name-${Math.random().toString(36).substring(2, 11)}`;
+  @State() firstNameFieldId = `verdocs-contact-picker-firstname-${Math.random().toString(36).substring(2, 11)}`;
+  @State() lastNameFieldId = `verdocs-contact-picker-lastname-${Math.random().toString(36).substring(2, 11)}`;
   @State() emailFieldId = `verdocs-contact-picker-email-${Math.random().toString(36).substring(2, 11)}`;
   @State() phoneFieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
 
   componentWillLoad() {
     if (this.templateRole) {
+      const nameComponents = (this.templateRole.full_name || '').split(' ');
+      const firstName = nameComponents.shift() || '';
+      const lastName = nameComponents.join(' ');
+
       this.name = this.templateRole.full_name || '';
+      this.first_name = firstName;
+      this.last_name = lastName;
       this.email = this.templateRole.email || '';
       this.phone = this.templateRole.phone || '';
       this.delegator = this.templateRole.delegator || false;
@@ -163,18 +187,20 @@ export class VerdocsContactPicker {
     this.message = e.target.value;
   }
 
-  handleCancel(e) {
+  handleCancel(e: any) {
     e.stopPropagation();
     this.showSuggestions = false;
     this.exit?.emit();
   }
 
-  handleSubmit(e) {
+  handleSubmit(e: any) {
     e.stopPropagation();
 
     this.showSuggestions = false;
     this.next?.emit({
       full_name: this.name,
+      first_name: this.first_name,
+      last_name: this.last_name,
       email: this.email,
       phone: this.phone,
       message: this.message,
@@ -186,6 +212,8 @@ export class VerdocsContactPicker {
     e.stopPropagation();
 
     this.name = suggestion.name;
+    this.first_name = suggestion.first_name;
+    this.last_name = suggestion.last_name;
     this.email = suggestion.email;
     this.phone = suggestion.phone;
     this.showSuggestions = false;
@@ -198,18 +226,30 @@ export class VerdocsContactPicker {
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <div class="row">
           <label htmlFor={this.nameFieldId}>Name:</label>
-          <input
-            id={this.nameFieldId}
-            name={this.nameFieldId}
-            type="text"
-            data-lpignore="true"
-            autocomplete="blocked"
-            value={this.name}
-            placeholder="Recipient Name..."
-            onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
-            // onBlur={() => (this.showSuggestions = false)}
-            onInput={e => this.handleNameChange(e)}
-          />
+          <div style={{display: 'flex', flexDirection: 'row', gap: '8px;'}}>
+            <input
+              id={this.firstNameFieldId}
+              name={this.firstNameFieldId}
+              type="text"
+              data-lpignore="true"
+              autocomplete="blocked"
+              value={this.first_name}
+              placeholder="First Name..."
+              onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
+              onInput={e => this.handleNameChange(e)}
+            />
+            <input
+              id={this.lastNameFieldId}
+              name={this.lastNameFieldId}
+              type="text"
+              data-lpignore="true"
+              autocomplete="blocked"
+              value={this.last_name}
+              placeholder="Last Name..."
+              onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
+              onInput={e => this.handleNameChange(e)}
+            />
+          </div>
 
           {this.showSuggestions && (
             <div class="dropdown">
