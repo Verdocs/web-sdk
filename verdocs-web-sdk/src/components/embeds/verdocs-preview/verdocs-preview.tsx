@@ -72,7 +72,6 @@ export class VerdocsPreview {
 
   async loadTemplate(templateId: string) {
     if (templateId) {
-      console.log('lt', templateId);
       getTemplateStore(this.endpoint, templateId, false)
         .then(ts => {
           this.templateStore = ts;

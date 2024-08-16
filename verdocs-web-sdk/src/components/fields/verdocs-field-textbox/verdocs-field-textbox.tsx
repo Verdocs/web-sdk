@@ -120,12 +120,14 @@ export class VerdocsFieldTextbox {
   componentDidRender() {
     interact.dynamicDrop(true);
 
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
-    let {multiline = false} = field || {};
-
     if (this.editable) {
       interact(this.el).resizable({
-        edges: {top: multiline, bottom: multiline, left: true, right: true},
+        edges: {top: true, bottom: true, left: true, right: true},
+        modifiers: [
+          interact.modifiers.restrictSize({
+            min: {width: 30, height: 15},
+          }),
+        ],
         listeners: {
           start: this.handleResizeStart.bind(this),
           move: this.handleResize.bind(this),
@@ -164,9 +166,14 @@ export class VerdocsFieldTextbox {
     const {fieldname = ''} = this;
 
     const width = Math.round(parseFloat(e.target.style.width));
-    const height = Math.round(parseFloat(e.target.style.height));
+    let height = Math.round(parseFloat(e.target.style.height));
 
-    updateField(this.endpoint, this.templateid, this.fieldname, {width, height})
+    if (height < 20) {
+      height = 15;
+    }
+    const multiline = height > 15;
+
+    updateField(this.endpoint, this.templateid, this.fieldname, {width, height, multiline})
       .then(field => {
         updateStoreField(this.fieldStore, this.fieldname, field);
         this.settingsChanged?.emit({fieldName: fieldname, field});

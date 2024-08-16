@@ -1,5 +1,5 @@
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {DEFAULT_FIELD_HEIGHTS, DEFAULT_FIELD_WIDTHS, deleteField, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {deleteField, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -73,7 +73,6 @@ export class VerdocsTemplateFieldProperties {
   @State() type = 'textbox' as TFieldType;
   @State() name = '';
   @State() required = false;
-  @State() multiline = false;
   @State() roleName = '';
   @State() group = '';
   @State() fieldType = '';
@@ -135,7 +134,6 @@ export class VerdocsTemplateFieldProperties {
     this.options = field.options || [];
     this.placeholder = field.placeholder || '';
     this.defaultValue = field.default || '';
-    this.multiline = field.multiline || false;
     this.dirty = false;
     this.loading = false;
     this.cleanupOptions();
@@ -157,18 +155,10 @@ export class VerdocsTemplateFieldProperties {
       required: this.required,
       label: this.label,
       group: this.group,
-      multiline: this.multiline,
       placeholder: this.placeholder,
       default: this.defaultValue,
       options: this.options,
     } as Partial<ITemplateField>;
-
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldName);
-    if (!newProperties.multiline && field.multiline) {
-      console.log('Switching off multiline');
-      newProperties.width = DEFAULT_FIELD_WIDTHS.textbox;
-      newProperties.height = DEFAULT_FIELD_HEIGHTS.textbox;
-    }
 
     console.log('[FIELD PROPERTIES] Will update', this.fieldName, newProperties);
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
@@ -354,24 +344,6 @@ export class VerdocsTemplateFieldProperties {
               }}
             />
           </div>
-
-          {this.type === 'textbox' && (
-            <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
-              <label htmlFor="verdocs-is-multline" class="input-label">
-                Multi-Line
-              </label>
-              <verdocs-checkbox
-                id="verdocs-is-multiline"
-                name="is-multiline"
-                checked={this.multiline}
-                value="on"
-                onInput={(e: any) => {
-                  this.multiline = e.target.checked;
-                  this.dirty = true;
-                }}
-              />
-            </div>
-          )}
 
           {this.type === 'dropdown' && (
             <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
