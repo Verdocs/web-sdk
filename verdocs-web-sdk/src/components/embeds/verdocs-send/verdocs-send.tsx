@@ -184,7 +184,7 @@ export class VerdocsSend {
       const id = `r-${level}-${rolesAtLevel[level].length}`;
       rolesAtLevel[level].push({...role, id, role_name: role.name, first_name: '', last_name: ''});
 
-      if (role.full_name && (role.email || role.phone)) {
+      if (role.first_name && (role.email || role.phone)) {
         this.rolesCompleted[id] = {...role, id, role_name: role.name, first_name: '', last_name: ''};
       }
     });
@@ -318,7 +318,7 @@ export class VerdocsSend {
                     onClick={e => this.handleClickRole(e, role)}
                     id={elId}
                   >
-                    {this.rolesCompleted[role.id]?.full_name ?? role.role_name}
+                    {this.rolesCompleted[role.id]?.first_name ?? role.role_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
                       <verdocs-portal anchor={elId} onClickAway={() => (this.showPickerForId = '')}>
@@ -334,7 +334,7 @@ export class VerdocsSend {
                   </div>
                 ) : (
                   <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(this.roleStore, role.role_name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
-                    {this.rolesCompleted[role.id]?.full_name ?? role.full_name}
+                    {this.rolesCompleted[role.id]?.first_name ?? role.first_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
                       <verdocs-portal anchor={elId} onClickAway={() => (this.showPickerForId = '')}>
