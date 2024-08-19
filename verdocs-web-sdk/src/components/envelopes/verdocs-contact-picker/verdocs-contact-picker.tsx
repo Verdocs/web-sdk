@@ -20,7 +20,6 @@ export interface IContactSearchEvent {
 }
 
 export interface IContactSelectEvent {
-  full_name: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -130,7 +129,6 @@ export class VerdocsContactPicker {
    */
   @Event({composed: true}) next: EventEmitter<IContactSelectEvent>;
 
-  @State() name: string;
   @State() first_name: string;
   @State() last_name: string;
   @State() email: string;
@@ -151,13 +149,13 @@ export class VerdocsContactPicker {
 
   componentWillLoad() {
     if (this.templateRole) {
+      // TODO: For backwards compatibility, may be removed once templateRole no longer has a full_name
       const nameComponents = (this.templateRole.full_name || '').split(' ');
-      const firstName = nameComponents.shift() || '';
-      const lastName = nameComponents.join(' ');
-
-      this.name = this.templateRole.full_name || '';
+      const firstName = this.templateRole.first_name || nameComponents.shift() || '';
+      const lastName = this.templateRole.last_name || nameComponents.join(' ') || '';
       this.first_name = firstName;
       this.last_name = lastName;
+
       this.email = this.templateRole.email || '';
       this.phone = this.templateRole.phone || '';
       this.delegator = this.templateRole.delegator || false;
@@ -170,9 +168,14 @@ export class VerdocsContactPicker {
     }
   }
 
-  handleNameChange(e: any) {
-    this.name = e.target.value;
-    this.searchContacts?.emit({query: this.name});
+  handleFirstNameChange(e: any) {
+    this.first_name = e.target.value;
+    this.searchContacts?.emit({query: this.first_name});
+  }
+
+  handleLastNameChange(e: any) {
+    this.last_name = e.target.value;
+    this.searchContacts?.emit({query: this.last_name});
   }
 
   handleEmailChange(e: any) {
@@ -198,7 +201,6 @@ export class VerdocsContactPicker {
 
     this.showSuggestions = false;
     this.next?.emit({
-      full_name: this.name,
       first_name: this.first_name,
       last_name: this.last_name,
       email: this.email,
@@ -211,7 +213,7 @@ export class VerdocsContactPicker {
   handleSelectSuggestion(e: any, suggestion: IEmailContact | IPhoneContact) {
     e.stopPropagation();
 
-    this.name = suggestion.name;
+    console.log('Selected', suggestion);
     this.first_name = suggestion.first_name;
     this.last_name = suggestion.last_name;
     this.email = suggestion.email;
@@ -226,7 +228,7 @@ export class VerdocsContactPicker {
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <div class="row">
           <label htmlFor={this.nameFieldId}>Name:</label>
-          <div style={{display: 'flex', flexDirection: 'row', gap: '8px;'}}>
+          <div class="names-row">
             <input
               id={this.firstNameFieldId}
               name={this.firstNameFieldId}
@@ -236,7 +238,7 @@ export class VerdocsContactPicker {
               value={this.first_name}
               placeholder="First Name..."
               onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
-              onInput={e => this.handleNameChange(e)}
+              onInput={e => this.handleFirstNameChange(e)}
             />
             <input
               id={this.lastNameFieldId}
@@ -247,7 +249,7 @@ export class VerdocsContactPicker {
               value={this.last_name}
               placeholder="Last Name..."
               onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
-              onInput={e => this.handleNameChange(e)}
+              onInput={e => this.handleLastNameChange(e)}
             />
           </div>
 

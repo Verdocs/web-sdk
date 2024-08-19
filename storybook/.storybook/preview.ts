@@ -12,7 +12,7 @@ setCustomElementsManifest(customElements);
 VerdocsEndpoint.getDefault().setBaseURL('https://stage-api.verdocs.com');
 
 const preview: Preview = {
-  tags: ['autodocs', 'autodocs'],
+  tags: ['autodocs', 'autodocs', 'autodocs'],
 
   parameters: {
     layout: 'centered',

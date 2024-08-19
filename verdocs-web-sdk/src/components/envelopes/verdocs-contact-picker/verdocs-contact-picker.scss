@@ -21,6 +21,17 @@ verdocs-contact-picker {
       flex-direction: column;
     }
 
+    .names-row {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+
+      > input {
+        // Dirty hack for old CSS input-grows-too-wide issue
+        min-width: 0;
+      }
+    }
+
     label {
       display: block;
       font-size: 14px;

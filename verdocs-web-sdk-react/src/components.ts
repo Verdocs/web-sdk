@@ -3,7 +3,7 @@
 /* auto-generated react proxies */
 import { createReactComponent } from './react-component-lib';
 
-import type { JSX } from '@verdocs/web-sdk/dist/components';
+import type { JSX } from '@verdocs/web-sdk/dist/types';
 
 import { defineCustomElement as defineVerdocsAuth } from '@verdocs/web-sdk/dist/components/verdocs-auth.js';
 import { defineCustomElement as defineVerdocsBuild } from '@verdocs/web-sdk/dist/components/verdocs-build.js';

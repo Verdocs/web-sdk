@@ -16,10 +16,10 @@ export default {
       message: '',
     },
     contactSuggestions: [
-      {name: 'Me', email: 'myuser@nomail.com', phone: '212-555-6664'},
-      {name: 'Will Power', email: 'will.power@nomail.com', avatar: 'https://i.pravatar.cc/48?img=59'},
-      {name: 'Paige Turner', email: 'paige.turner@nomail.com', phone: '212-555-6664', avatar: 'https://i.pravatar.cc/48?img=41'},
-      {name: 'Bill Board', phone: '212-555-6664'},
+      {first_name: 'Me', last_name: '', email: 'myuser@nomail.com', phone: '212-555-6664'},
+      {first_name: 'Will', last_name: 'Power', email: 'will.power@nomail.com', avatar: 'https://i.pravatar.cc/48?img=59'},
+      {first_name: 'Paige', last_name: 'Turner', email: 'paige.turner@nomail.com', phone: '212-555-6664', avatar: 'https://i.pravatar.cc/48?img=41'},
+      {first_name: 'Bill', last_name: 'Board', phone: '212-555-6664'},
     ],
   },
   argTypes: {

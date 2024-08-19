@@ -122,7 +122,7 @@ export class VerdocsFieldTextbox {
 
     if (this.editable) {
       interact(this.el).resizable({
-        edges: {top: true, bottom: true, left: true, right: true},
+        edges: {top: true, bottom: false, left: true, right: true},
         modifiers: [
           interact.modifiers.restrictSize({
             min: {width: 30, height: 15},
