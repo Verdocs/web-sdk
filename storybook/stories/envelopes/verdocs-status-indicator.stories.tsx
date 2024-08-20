@@ -6,10 +6,10 @@ const SampleDocument = {
   id: '1234',
   status: 'complete',
   recipients: [
-    {role_name: 'Tax Preparer', status: 'submitted', full_name: 'Bill Board', sequence: 1, type: 'signer'},
-    {role_name: 'Recipient 1', status: 'submitted', full_name: 'Ante Bellum', sequence: 2, type: 'signer'},
-    {role_name: 'Recipient 2', status: 'opened', full_name: 'Sarah Bellum', sequence: 2, type: 'signer'},
-    {role_name: 'Office Manager', status: 'pending', full_name: 'Paige Turner', sequence: 3, type: 'approver'},
+    {role_name: 'Tax Preparer', status: 'submitted', first_name: 'Bill', last_name: 'Board', sequence: 1, type: 'signer'},
+    {role_name: 'Recipient 1', status: 'submitted', first_name: 'Ante', last_name: 'Bellum', sequence: 2, type: 'signer'},
+    {role_name: 'Recipient 2', status: 'opened', first_name: 'Sarah', last_name: 'Bellum', sequence: 2, type: 'signer'},
+    {role_name: 'Office Manager', status: 'pending', first_name: 'Paige', last_name: 'Turner', sequence: 3, type: 'approver'},
   ],
 };
 

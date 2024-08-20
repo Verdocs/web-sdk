@@ -269,7 +269,9 @@ export class VerdocsTemplateRoles {
       sequence,
       message: '',
       order,
-      full_name: '',
+      full_name: null,
+      first_name: '',
+      last_name: '',
       email: '',
       phone: '',
       type: 'signer',
@@ -361,6 +363,7 @@ export class VerdocsTemplateRoles {
 
                     {this.getRolesAtSequence(sequence).map(role => {
                       const unknown = !role.email;
+                      console.log('ras', sequence, role);
                       return unknown ? (
                         <Fragment>
                           <div
@@ -387,7 +390,7 @@ export class VerdocsTemplateRoles {
                             data-order={role.order}
                           >
                             <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
-                            {role.full_name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
+                            {role.first_name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
                           </div>
 
                           {/* The "after this recipient" drop zone */}

@@ -408,7 +408,8 @@ export class VerdocsEnvelopesList {
                 <span innerHTML={DocumentIcon} class="envelope-icon" />
 
                 <div class="envelope-name">
-                  {envelope.name}:&nbsp; <div class="envelope-recipients">{envelope.recipients.map(r => r.full_name).join(', ')}</div>
+                  {envelope.name}:&nbsp;{' '}
+                  <div class="envelope-recipients">{envelope.recipients.map(r => `${r.first_name || ''} ${r.last_name || ''}`.trim() || r.full_name || '').join(', ')}</div>
                 </div>
 
                 <div class="vert-spacer" />

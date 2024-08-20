@@ -116,6 +116,7 @@ export class VerdocsEnvelopeRecipientLink {
     // const recipientsWithActions = getRecipientsWithActions(this.store.state); const showLinkButton = recipientCanAct(recipient, recipientsWithActions); const link =
     //   this.links[recipient.role_name]; const gettingLink = this.gettingLinks[recipient.role_name]; return (
 
+    const fullName = `${this.recipient.first_name || ''} ${this.recipient.last_name || ''}`.trim() || this.recipient.full_name || '';
     return (
       <Host>
         <div class="summary-content">
@@ -126,7 +127,7 @@ export class VerdocsEnvelopeRecipientLink {
               <div class="role-details">
                 <div class="role-info">
                   <div class="role-full-name">
-                    {this.recipient.full_name} ({this.recipient.email || this.recipient.phone})
+                    {fullName} ({this.recipient.email || this.recipient.phone})
                   </div>
                   {!this.link && (
                     <verdocs-button

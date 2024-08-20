@@ -536,8 +536,10 @@ export class VerdocsSign {
     el.setAttribute('page', pageInfo.pageNumber);
     el.setAttribute('xScale', pageInfo.xScale);
     el.setAttribute('yScale', pageInfo.yScale);
-    el.setAttribute('initials', this.recipient ? fullNameToInitials(this.recipient.full_name) : '');
-    el.setAttribute('name', this.recipient?.full_name || '');
+
+    const fullName = `${this.recipient?.first_name || ''} ${this.recipient?.last_name || ''}`.trim() || this.recipient?.full_name || '';
+    el.setAttribute('initials', fullNameToInitials(fullName));
+    el.setAttribute('name', fullName);
   }
 
   handlePageRendered(e: any) {

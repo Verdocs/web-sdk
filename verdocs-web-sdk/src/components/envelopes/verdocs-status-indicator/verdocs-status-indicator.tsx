@@ -109,8 +109,7 @@ export class VerdocsStatusIndicator {
         const leftOffset = ENTRY_PADDING / 2 + leftoverSpace / 2;
 
         recipients.forEach((recipient, index) => {
-          const [first, last] = (recipient.full_name || 'Unknown').toUpperCase().split(' ');
-          const name = `${first} ${last?.substring(0, 1)}`;
+          const name = `${recipient.first_name || ''} ${recipient.last_name || ''?.substring(0, 1)}`;
           const entity = {
             id: recipient.id,
             text: name,

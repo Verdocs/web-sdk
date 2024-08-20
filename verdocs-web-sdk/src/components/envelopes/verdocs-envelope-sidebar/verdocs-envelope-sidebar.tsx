@@ -203,76 +203,76 @@ export class VerdocsEnvelopeSidebar {
     }
 
     histories.forEach(history => {
-      const user = this.store.state?.recipients.find(recipient => recipient.role_name === history.role_name);
-      const name = user?.full_name || '';
+      const recipient = this.store.state?.recipients.find(recipient => recipient.role_name === history.role_name);
+      const fullName = `${recipient.first_name || ''} ${recipient.last_name || ''}`.trim() || recipient.full_name || '';
 
       switch (history.event.toLowerCase()) {
         case 'recipient:signed':
-          entries.push({icon: 'gesture', message: `Signed by ${name}.`, date: new Date(history.created_at)});
+          entries.push({icon: 'gesture', message: `Signed by ${fullName}.`, date: new Date(history.created_at)});
           break;
         case 'recipient:declined':
-          entries.push({icon: 'clear', message: `Declined by ${name}.`, date: new Date(history.created_at)});
+          entries.push({icon: 'clear', message: `Declined by ${fullName}.`, date: new Date(history.created_at)});
           break;
         case 'recipient:opened':
           switch (history.event_detail) {
             // TODO: Sync these up with reality
             case 'email':
             case 'mail':
-              entries.push({icon: 'visibility', message: `Opened by ${name}, via email.`, date: new Date(history.created_at)});
+              entries.push({icon: 'visibility', message: `Opened by ${fullName}, via email.`, date: new Date(history.created_at)});
               break;
             case 'sms':
-              entries.push({icon: 'visibility', message: `Opened by ${name}, via SMS.`, date: new Date(history.created_at)});
+              entries.push({icon: 'visibility', message: `Opened by ${fullName}, via SMS.`, date: new Date(history.created_at)});
               break;
             case 'in_person_link':
-              entries.push({icon: 'visibility', message: `Opened by ${name}, via In-person link.`, date: new Date(history.created_at)});
+              entries.push({icon: 'visibility', message: `Opened by ${fullName}, via In-person link.`, date: new Date(history.created_at)});
               break;
             case 'in_app':
-              entries.push({icon: 'visibility', message: `Opened by ${name}, via dashboard.`, date: new Date(history.created_at)});
+              entries.push({icon: 'visibility', message: `Opened by ${fullName}, via dashboard.`, date: new Date(history.created_at)});
               break;
             default:
-              entries.push({icon: 'visibility', message: `Opened by ${name}.`, date: new Date(history.created_at)});
+              entries.push({icon: 'visibility', message: `Opened by ${fullName}.`, date: new Date(history.created_at)});
           }
           break;
         case 'recipient:submitted':
           switch (history.event_detail) {
             // TODO: Sync up
             case 'approver':
-              entries.push({icon: 'check_circle', message: `Approved by ${name}.`, date: new Date(history.created_at)});
+              entries.push({icon: 'check_circle', message: `Approved by ${fullName}.`, date: new Date(history.created_at)});
               break;
             default:
-              entries.push({icon: 'send', message: `Submitted by ${name}.`, date: new Date(history.created_at)});
+              entries.push({icon: 'send', message: `Submitted by ${fullName}.`, date: new Date(history.created_at)});
               break;
           }
           break;
         case 'recipient:prepared':
-          entries.push({icon: 'send', message: `Prepared by ${name}.`, date: new Date(history.created_at)});
+          entries.push({icon: 'send', message: `Prepared by ${fullName}.`, date: new Date(history.created_at)});
           break;
         case 'recipient:claimed':
           if (history.event_detail === 'guest') {
-            entries.push({icon: 'account_circle', message: `${name} claimed the Verdoc as a guest.`, date: new Date(history.created_at)});
+            entries.push({icon: 'account_circle', message: `${fullName} claimed the Verdoc as a guest.`, date: new Date(history.created_at)});
           } else if (history.event_detail === 'profile') {
-            entries.push({icon: 'verified_user', message: `${name} claimed the Verdoc as a verified user.`, date: new Date(history.created_at)});
+            entries.push({icon: 'verified_user', message: `${fullName} claimed the Verdoc as a verified user.`, date: new Date(history.created_at)});
           }
           break;
         case 'recipient:agreed':
-          entries.push({icon: 'done', message: `${name} agreed to use electronic records and signatures.`, date: new Date(history.created_at)});
+          entries.push({icon: 'done', message: `${fullName} agreed to use electronic records and signatures.`, date: new Date(history.created_at)});
           break;
         case 'recipient:invited':
           if (history.event_detail === 'sms') {
-            entries.push({icon: 'textsms', message: `${name} has been invited via SMS.`, date: new Date(history.created_at)});
+            entries.push({icon: 'textsms', message: `${fullName} has been invited via SMS.`, date: new Date(history.created_at)});
           } else {
-            entries.push({icon: 'mail', message: `${name} has been invited via email.`, date: new Date(history.created_at)});
+            entries.push({icon: 'mail', message: `${fullName} has been invited via email.`, date: new Date(history.created_at)});
           }
           break;
         case 'invitation:resent':
           entries.push({
             icon: 'mail',
-            message: `Invitation was resent to ${name} ${history.event_detail === 'reminder' ? ' by reminder' : ''}.`,
+            message: `Invitation was resent to ${fullName} ${history.event_detail === 'reminder' ? ' by reminder' : ''}.`,
             date: new Date(history.created_at),
           });
           break;
         case 'envelope:cc':
-          entries.push({icon: 'contact_mail', message: `A copy has been sent to ${name}.`, date: new Date(history.created_at)});
+          entries.push({icon: 'contact_mail', message: `A copy has been sent to ${fullName}.`, date: new Date(history.created_at)});
           break;
         case 'recipient:delegated':
           entries.push({icon: 'people', message: history.event_detail, date: new Date(history.created_at)});
@@ -294,7 +294,7 @@ export class VerdocsEnvelopeSidebar {
           entries.push({icon: 'cancel', message: `Envelope was canceled by the creator.`, date: new Date(history.created_at)});
           break;
         case 'owner:get_in_person_link':
-          entries.push({icon: 'link', message: `Owner accessed the In-person link for ${user}.`, date: new Date(history.created_at)});
+          entries.push({icon: 'link', message: `Owner accessed the In-person link for ${recipient}.`, date: new Date(history.created_at)});
           break;
         default:
           console.log('[SIDEBAR] Unknown history type', history);
@@ -364,6 +364,8 @@ export class VerdocsEnvelopeSidebar {
             {this.store?.state?.recipients.map((recipient, index) => {
               const canGetInPersonLink = recipient.status !== 'submitted' && recipient.status !== 'canceled' && recipient.status !== 'declined';
               const canSendReminder = this.canResendRecipient(recipient);
+              const fullName = `${recipient.first_name || ''} ${recipient.last_name || ''}`.trim() || recipient.full_name || '';
+
               return (
                 <div class="recipient-detail">
                   <div class="recipient-header">
@@ -385,7 +387,7 @@ export class VerdocsEnvelopeSidebar {
                   </div>
 
                   <dic class="recipient-content">
-                    <div class="recipient-name">{recipient.full_name}</div>
+                    <div class="recipient-name">{fullName}</div>
                     <div class="recipient-name">{recipient.email}</div>
                     <div class="recipient-name">{recipient.phone}</div>
                   </dic>

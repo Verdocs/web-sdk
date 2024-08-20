@@ -1,4 +1,4 @@
-import {IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {IProfile, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 import {convertToE164} from '../../../utils/utils';
 
@@ -11,8 +11,7 @@ const messageIcon =
 const kbaIcon =
   '<svg focusable="false" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm4.125 3a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Zm-3.873 8.703a4.126 4.126 0 0 1 7.746 0 .75.75 0 0 1-.351.92 7.47 7.47 0 0 1-3.522.877 7.47 7.47 0 0 1-3.522-.877.75.75 0 0 1-.351-.92ZM15 8.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15ZM14.25 12a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15Z" clip-rule="evenodd" /></svg>';
 
-const placeholderIcon =
-  '<svg focusable="false" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"></path></svg>';
+const addrBookIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-user"><path d="M15 13a3 3 0 1 0-6 0"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><circle cx="12" cy="8" r="2"/></svg>`;
 
 export interface IContactSearchEvent {
   // The text the user has entered in the search field
@@ -28,59 +27,7 @@ export interface IContactSelectEvent {
   delegator: boolean;
 }
 
-export interface IEmailContact {
-  // Optional but recommended. An internal identifier used to identify the contact in the calling system.
-  id?: any;
-
-  // The user's avatar. If not set, a placeholder will be shown. To hide avatars entirely, use CSS to set
-  // `verdocs-contact-picker .avatar { display: none; }`
-  avatar?: string;
-
-  // The recipient's name, as it should be displayed to the user.
-  name: string;
-
-  // The recipient's first name, as it should be displayed to the user.
-  first_name: string;
-
-  // The recipient's last name, as it should be displayed to the user.
-  last_name: string;
-
-  // The email address for the contact.
-  email: string;
-
-  // An optional phone number for the contact. This number must be able SMS messages. If both email and phone are provided,
-  // notifications will be sent to both locations.
-  phone?: string;
-
-  [key: string]: any;
-}
-
-export interface IPhoneContact {
-  // Optional but recommended. An internal identifier used to identify the contact in the calling system.
-  id?: any;
-
-  // The user's avatar. If not set, a placeholder will be shown. To hide avatars entirely, use CSS to set
-  // `verdocs-contact-picker .avatar { display: none; }`
-  avatar?: string;
-
-  // The recipient's name, as it should be displayed to the user.
-  name: string;
-
-  // The recipient's first name, as it should be displayed to the user.
-  first_name: string;
-
-  // The recipient's last name, as it should be displayed to the user.
-  last_name: string;
-
-  // The email address for the contact.
-  email?: string;
-
-  // An optional phone number for the contact. This number must be able SMS messages. If both email and phone are provided,
-  // notifications will be sent to both locations.
-  phone: string;
-
-  [key: string]: any;
-}
+export type TPickerContact = Partial<IProfile>;
 
 /**
  * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
@@ -111,7 +58,7 @@ export class VerdocsContactPicker {
    * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number
    * of suggestions be limited to the 5 best matching records.
    */
-  @Prop() contactSuggestions: (IEmailContact | IPhoneContact)[] = [];
+  @Prop() contactSuggestions: TPickerContact[] = [];
 
   /**
    * Event fired when the user enters text in the search field. The calling application may use this to update
@@ -150,7 +97,8 @@ export class VerdocsContactPicker {
   componentWillLoad() {
     if (this.templateRole) {
       // TODO: For backwards compatibility, may be removed once templateRole no longer has a full_name
-      const nameComponents = (this.templateRole.full_name || '').split(' ');
+      const fullName = `${this.templateRole.first_name || ''} ${this.templateRole.last_name || ''}`.trim() || this.templateRole.full_name || '';
+      const nameComponents = fullName.split(' ');
       const firstName = this.templateRole.first_name || nameComponents.shift() || '';
       const lastName = this.templateRole.last_name || nameComponents.join(' ') || '';
       this.first_name = firstName;
@@ -210,7 +158,7 @@ export class VerdocsContactPicker {
     });
   }
 
-  handleSelectSuggestion(e: any, suggestion: IEmailContact | IPhoneContact) {
+  handleSelectSuggestion(e: any, suggestion: TPickerContact) {
     e.stopPropagation();
 
     console.log('Selected', suggestion);
@@ -248,23 +196,27 @@ export class VerdocsContactPicker {
               autocomplete="blocked"
               value={this.last_name}
               placeholder="Last Name..."
-              onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
+              onFocus={() => (this.showSuggestions = false)}
               onInput={e => this.handleLastNameChange(e)}
             />
           </div>
 
           {this.showSuggestions && (
             <div class="dropdown">
-              {this.contactSuggestions.map(suggestion => (
-                <div key={suggestion.id ?? suggestion.name} class="suggestion" onClick={e => this.handleSelectSuggestion(e, suggestion)}>
-                  {suggestion.avatar ? <img alt="Avatar" class="avatar" src={suggestion.avatar} /> : <div class="avatar" innerHTML={placeholderIcon} />}
-                  <div class="details">
-                    <div class="name">{suggestion.name}</div>
-                    {suggestion.email && <div class="destination">{suggestion.email}</div>}
-                    {suggestion.phone && <div class="destination">{suggestion.phone}</div>}
+              {this.contactSuggestions
+                .filter(suggestion => !this.first_name || suggestion.first_name.toLowerCase().includes(this.first_name.toLowerCase()))
+                .map(suggestion => (
+                  <div key={suggestion.id ?? suggestion.email} class="suggestion" onClick={e => this.handleSelectSuggestion(e, suggestion)}>
+                    {suggestion.picture ? <img alt="Avatar" class="avatar" src={suggestion.picture} /> : <div class="avatar" innerHTML={addrBookIcon} />}
+                    <div class="details">
+                      <div class="name">
+                        {suggestion.first_name} {suggestion.last_name}
+                      </div>
+                      {suggestion.email && <div class="destination">{suggestion.email}</div>}
+                      {suggestion.phone && <div class="destination">{suggestion.phone}</div>}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>
@@ -370,15 +322,6 @@ export class VerdocsContactPicker {
               this.showSuggestions = false;
             }}
           />
-          {/*<verdocs-toggle-button*/}
-          {/*  icon={delegateIcon}*/}
-          {/*  size="small"*/}
-          {/*  active={this.delegator}*/}
-          {/*  onToggle={e => {*/}
-          {/*    this.delegator = e.detail.active;*/}
-          {/*    this.showSuggestions = false;*/}
-          {/*  }}*/}
-          {/*/>*/}
 
           <div class="flex-fill" />
 

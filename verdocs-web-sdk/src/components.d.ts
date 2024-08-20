@@ -9,7 +9,7 @@ import { ICreateEnvelopeRecipient, IEnvelope, IFileWithData, IOrganization, IRec
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
-import { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
+import { IContactSearchEvent, IContactSelectEvent, TPickerContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { ISelectedFile } from "./components/fields/verdocs-field-attachment/verdocs-field-attachment";
@@ -26,7 +26,7 @@ export { ICreateEnvelopeRecipient, IEnvelope, IFileWithData, IOrganization, IRec
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
-export { IContactSearchEvent, IContactSelectEvent, IEmailContact, IPhoneContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
+export { IContactSearchEvent, IContactSelectEvent, TPickerContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 export { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 export { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 export { ISelectedFile } from "./components/fields/verdocs-field-attachment/verdocs-field-attachment";
@@ -208,7 +208,7 @@ export namespace Components {
         /**
           * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
          */
-        "contactSuggestions": (IEmailContact | IPhoneContact)[];
+        "contactSuggestions": TPickerContact[];
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
@@ -3813,7 +3813,7 @@ declare namespace LocalJSX {
         /**
           * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
          */
-        "contactSuggestions"?: (IEmailContact | IPhoneContact)[];
+        "contactSuggestions"?: TPickerContact[];
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */

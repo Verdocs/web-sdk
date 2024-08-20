@@ -158,6 +158,7 @@ export class VerdocsEnvelopeRecipientSummary {
               const showLinkButton = recipientCanAct(recipient, recipientsWithActions);
               const link = this.links[recipient.role_name];
               const gettingLink = this.gettingLinks[recipient.role_name];
+              const fullName = `${recipient.first_name || ''} ${recipient.last_name || ''}`.trim() || recipient.full_name || '';
 
               return (
                 <div class="summary-recipient">
@@ -165,7 +166,7 @@ export class VerdocsEnvelopeRecipientSummary {
                   <div class="role-details">
                     <div class="role-info">
                       <div class="role-full-name">
-                        {recipient.full_name} ({recipient.email || recipient.phone})
+                        {fullName} ({recipient.email || recipient.phone})
                       </div>
                       {showLinkButton && !link && <verdocs-button size="small" variant="outline" label="Get Link" disabled={gettingLink} onClick={() => this.getLink(recipient)} />}
                     </div>

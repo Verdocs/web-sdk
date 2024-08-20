@@ -56,7 +56,8 @@ export class VerdocsTemplateRoleProperties {
   @State() saving = false;
   @State() name = '';
   @State() type: TRecipientType = 'signer';
-  @State() full_name = '';
+  @State() first_name = '';
+  @State() last_name = '';
   @State() email = '';
   @State() phone = '';
   @State() delegator = false;
@@ -81,19 +82,14 @@ export class VerdocsTemplateRoleProperties {
 
       this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
       this.fieldStore = getTemplateFieldStore(this.templateId);
-      // FIXME: This was createTemplateRoleStore, which it didn't have to be. But that shouldn't break anything,
-      //  and using create() will reload the roles from the TEMPLATE, not the server. Creating/deleting roles
-      //  isn't updating the template, so if you add a role and then pop this dialog the store will be reloaded
-      //  without the newly-added role in place causing the dialog (and future role edits) to break. We should
-      //  a) when creating/updating/deleting roles, update the template/store not just the roles, and b) review
-      //  and confirm that all things that look at roles are mapped to the role store, not the template.
       this.roleStore = getTemplateRoleStore(this.templateId);
 
       const editingRole = this.roleStore.state.roles.find(role => role.name === this.roleName);
       if (editingRole) {
         this.name = editingRole.name;
         this.type = editingRole.type;
-        this.full_name = editingRole.full_name;
+        this.first_name = editingRole.first_name;
+        this.last_name = editingRole.last_name;
         this.email = editingRole.email;
         this.phone = editingRole.phone;
         this.delegator = editingRole.delegator;
@@ -111,7 +107,8 @@ export class VerdocsTemplateRoleProperties {
     if (editingRole) {
       this.name = editingRole.name;
       this.type = editingRole.type;
-      this.full_name = editingRole.full_name;
+      this.first_name = editingRole.first_name;
+      this.last_name = editingRole.last_name;
       this.email = editingRole.email;
       this.phone = editingRole.phone;
       this.delegator = editingRole.delegator;
@@ -127,7 +124,8 @@ export class VerdocsTemplateRoleProperties {
     updateTemplateRole(this.endpoint, this.templateId, this.roleName, {
       name: this.name,
       type: this.type,
-      full_name: this.full_name,
+      first_name: this.first_name,
+      last_name: this.last_name,
       email: this.email,
       phone: this.phone,
       delegator: this.delegator,
@@ -203,14 +201,27 @@ export class VerdocsTemplateRoleProperties {
               </div>
 
               <verdocs-text-input
-                id="verdocs-recipient-email"
-                label="Full Name"
-                value={this.full_name}
+                id="verdocs-recipient-first"
+                label="First Name"
+                value={this.first_name}
                 autocomplete="off"
-                helpText="The recipient's full name, if it will always stay the same. Leave blank to supply this value later, when each new envelope is created from the template."
-                placeholder="Full Name..."
+                helpText="The recipient's first name, if it will always stay the same. Leave blank to supply this value later, when each new envelope is created from the template."
+                placeholder="First Name..."
                 onInput={(e: any) => {
-                  this.full_name = e.target.value;
+                  this.first_name = e.target.value;
+                  this.dirty = true;
+                }}
+              />
+
+              <verdocs-text-input
+                id="verdocs-recipient-first"
+                label="Last Name"
+                value={this.last_name}
+                autocomplete="off"
+                helpText="The recipient's last name, if it will always stay the same. Leave blank to supply this value later, when each new envelope is created from the template."
+                placeholder="Last Name..."
+                onInput={(e: any) => {
+                  this.last_name = e.target.value;
                   this.dirty = true;
                 }}
               />

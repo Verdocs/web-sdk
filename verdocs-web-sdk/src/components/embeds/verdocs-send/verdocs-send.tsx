@@ -1,6 +1,7 @@
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method, Watch} from '@stencil/core';
 import {
   createEnvelope,
+  getOrganizationContacts,
   getRGBA,
   ICreateEnvelopeFromTemplateRequest,
   ICreateEnvelopeRecipient,
@@ -123,14 +124,25 @@ export class VerdocsSend {
   async componentWillLoad() {
     try {
       this.endpoint.onSessionChanged((_endpoint, _session, profile) => {
+        const me = {
+          id: profile.id,
+          first_name: profile.first_name,
+          last_name: profile.last_name,
+          email: profile.email,
+          phone: profile.phone,
+        };
+
         if (profile) {
-          this.sessionContacts = [];
-          this.sessionContacts.push({
-            id: profile.id,
-            name: `${profile.first_name} ${profile.last_name}`,
-            email: profile.email,
-            phone: profile.phone,
-          });
+          this.sessionContacts = [me];
+
+          getOrganizationContacts(this.endpoint)
+            .then(contacts => {
+              console.log('Got contacts', contacts);
+              this.sessionContacts = [...contacts, me];
+            })
+            .catch(e => {
+              console.log('Error getting contacts', e);
+            });
         }
       });
 
@@ -182,10 +194,10 @@ export class VerdocsSend {
       const level = role.sequence - 1;
       rolesAtLevel[level] ||= [];
       const id = `r-${level}-${rolesAtLevel[level].length}`;
-      rolesAtLevel[level].push({...role, id, role_name: role.name, first_name: '', last_name: ''});
+      rolesAtLevel[level].push({...role, id, role_name: role.name, first_name: role.first_name, last_name: role.last_name});
 
       if (role.first_name && (role.email || role.phone)) {
-        this.rolesCompleted[id] = {...role, id, role_name: role.name, first_name: '', last_name: ''};
+        this.rolesCompleted[id] = {...role, id, role_name: role.name, first_name: role.first_name, last_name: role.last_name};
       }
     });
   }
@@ -223,8 +235,8 @@ export class VerdocsSend {
   }
 
   handleSelectContact(e: any, role: Partial<IRecipient>) {
+    console.log('selc', e.detail);
     e.preventDefault();
-    e.detail; // IContactSelectEvent
     this.rolesCompleted[role.id] = {...role, ...e.detail};
     this.showPickerForId = '';
   }
