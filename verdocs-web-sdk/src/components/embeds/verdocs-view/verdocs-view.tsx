@@ -70,33 +70,14 @@ export class VerdocsView {
   @State() roleNames: string[] = [];
   @State() showCancelDone = false;
 
-  componentWillLoad() {
+  async componentWillLoad() {
     this.endpoint.loadSession();
-  }
 
-  // TODO: Handling signing vs preview-as-user cases
-  // TODO: Handle anonymous case and failure to load due to not being logged in
-  async componentWillRender() {
     if (!this.envelopeId) {
       console.error(`[VIEW] Missing required envelopeId`);
       return;
     }
 
-    return this.reloadEnvelope();
-  }
-
-  componentDidRender() {
-    const headerTarget = this.headerTargetId ? document.getElementById(this.headerTargetId) : null;
-    const headerEl = document.getElementById('verdocs-view-header');
-    if (headerTarget && headerEl) {
-      console.log('[VIEW] Moving header');
-      headerEl.remove();
-      headerTarget.append(headerEl);
-    }
-  }
-
-  // TODO: Move this to the page renderer once the EnvelopePage model is deployed and envelope pages are individually processed
-  async reloadEnvelope() {
     console.log('[VIEW] Loading envelope...');
 
     try {
@@ -111,6 +92,16 @@ export class VerdocsView {
       }, 2000);
     } catch (e) {
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+  }
+
+  componentDidRender() {
+    const headerTarget = this.headerTargetId ? document.getElementById(this.headerTargetId) : null;
+    const headerEl = document.getElementById('verdocs-view-header');
+    if (headerTarget && headerEl) {
+      console.log('[VIEW] Moving header');
+      headerEl.remove();
+      headerTarget.append(headerEl);
     }
   }
 
