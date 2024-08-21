@@ -66,7 +66,7 @@ export class VerdocsSend {
    * their invitations. Setting this to unknown values may produce unexpected/incorrect behaviors.
    * If environment is not known, do this set this property.
    */
-  @Prop() environment: string = 'web';
+  @Prop() environment: string = '';
 
   /**
    * The user is sending an envelope the form and clicked send.
