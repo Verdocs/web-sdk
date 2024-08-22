@@ -87,7 +87,7 @@ export class VerdocsEnvelopeRecipientLink {
       .catch(e => {
         console.warn('[RECIPIENT_LINK] Error copying to clipboard', e);
         VerdocsToast(`Unable to copy to clipboard: ${e.message}`, {style: 'error'});
-      });
+      });w
   }
 
   getLink(recipient: IRecipient) {

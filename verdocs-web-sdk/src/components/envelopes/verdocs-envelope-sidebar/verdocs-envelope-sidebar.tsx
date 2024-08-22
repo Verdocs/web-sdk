@@ -1,5 +1,5 @@
 import {format} from 'date-fns';
-import {cancelEnvelope, IEnvelope, IRecipient, resendInvitation, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {cancelEnvelope, capitalize, IEnvelope, IRecipient, resendInvitation, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
 import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
@@ -343,7 +343,7 @@ export class VerdocsEnvelopeSidebar {
             <div class="value">{format(new Date(this.store?.state?.updated_at), FORMAT_TIMESTAMP)}</div>
 
             <div class="label">Status</div>
-            <div class="value">{this.store?.state?.status}</div>
+            <div class="value">{capitalize(this.store?.state?.status)}</div>
 
             <div class="label">Verdoc Owner ID</div>
             <div class="value">{this.store?.state?.profile_id}</div>
