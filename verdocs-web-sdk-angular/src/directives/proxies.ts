@@ -1322,28 +1322,6 @@ export declare interface VerdocsRadioButton extends Components.VerdocsRadioButto
 
 
 @ProxyCmp({
-  inputs: ['endpoint']
-})
-@Component({
-  selector: 'verdocs-search',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint'],
-})
-export class VerdocsSearch {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-  }
-}
-
-
-export declare interface VerdocsSearch extends Components.VerdocsSearch {}
-
-
-@ProxyCmp({
   inputs: ['endpoint', 'grabsFocus', 'placeholder', 'query', 'type'],
   methods: ['focusField']
 })

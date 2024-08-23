@@ -41,15 +41,24 @@ export { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs
 export { Placement } from "@popperjs/core/lib/enums";
 export namespace Components {
     /**
-     * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
-     * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
-     * host application to render the next appropriate view for the application.
+     * Display an authentication dialog that allows the user to login or sign up. If the user is
+     * already authenticated with a valid session, this component will hide itself and fire the
+     * success callback immediately. It is up to the host application to render the next appropriate
+     * view for the application.
      * To simplify UI development, a visibility flag can force this component to never display. This
-     * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
-     * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
-     * container to allow sufficient space for the required forms.
+     * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
+     * This embed is responsive / mobile-friendly, but the calling application should provide at
+     * least a 300px wide container to allow sufficient space for the required forms.
      * ```ts
-     * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
+     * interface IAuthStatus {
+     *   authenticated: boolean;
+     *   session: TSession;
+     *   profile: IProfile | null;
+     * }
+     * <verdocs-auth
+     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface VerdocsAuth {
@@ -67,9 +76,35 @@ export namespace Components {
         "visible": boolean;
     }
     /**
-     * Display a template building experience.
+     * Display a template building experience. Several event callbacks provide status updates to the
+     * parent application to support interface updates.
      * ```ts
-     * <verdocs-build templateId={templateId} />
+     * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
+     * interface IEnvelopeSent {
+     *   name: string;
+     *   template_id: string
+     *   recipients: ICreateEnvelopeRecipient[];
+     * }
+     * interface ITemplateEvent {
+     *   event: string
+     *   template: ITemplate;
+     * }
+     * interface IRolesEvent {
+     *   event: string
+     *   templateId: string;
+     *   roles: ITemplateRole[];
+     * }
+     * <verdocs-build
+     *   templateId={templateId}
+     *   step="preview"
+     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
+     *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
+     *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
+     *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
+     *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
+     *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
+     *   />
      * ```
      */
     interface VerdocsBuild {
@@ -1082,7 +1117,10 @@ export namespace Components {
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
      * ```ts
-     * <verdocs-preview templateId={templateId} />
+     * <verdocs-preview
+     *   templateId={templateId}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface VerdocsPreview {
@@ -1175,12 +1213,6 @@ export namespace Components {
          */
         "value": string;
     }
-    interface VerdocsSearch {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-    }
     /**
      * Displays a customizable input box for search queries.
      * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
@@ -1239,17 +1271,19 @@ export namespace Components {
         "value": string;
     }
     /**
-     * Display a form to send a template to one or more recipients in an envelope for signing. Note
-     * that because most applications have custom workflow requirements to trigger after sending an
-     * Envelope, this component does not actually perform that operation. Parent applications should
-     * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
-     * `createEnvelope()` call in JS-SDK.
+     * Display a form to send a template to one or more recipients in an envelope for signing.
      * Host applications should ensure the template is "sendable" before displaying this component.
      * To be sendable, a template must have at least one document attached, at least one participant
      * defined, and at least one field assigned to every "signer" participant. This component will
      * hide itself if the template is not sendable.
      * ```ts
-     * <verdocs-send templateId={templateId} />
+     * <verdocs-send
+     *   templateId={templateId}
+     *   onSend={({ detail }) => { console.log('Sent!', detail) }
+     *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+     *   onExit={(e) => { console.log('Send cancelled.', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface VerdocsSend {
@@ -1783,7 +1817,14 @@ export namespace Components {
     interface VerdocsUploadDialog {
     }
     /**
-     * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
+     * Render the documents attached to an envelope in read-only (view) mode. All documents are
+     * displayed in order.
+     * ```ts
+     * <verdocs-view
+     *   envelopeId={envelopeId}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
+     * ```
      */
     interface VerdocsView {
         /**
@@ -2018,15 +2059,24 @@ declare global {
         "sdkError": SDKError;
     }
     /**
-     * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
-     * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
-     * host application to render the next appropriate view for the application.
+     * Display an authentication dialog that allows the user to login or sign up. If the user is
+     * already authenticated with a valid session, this component will hide itself and fire the
+     * success callback immediately. It is up to the host application to render the next appropriate
+     * view for the application.
      * To simplify UI development, a visibility flag can force this component to never display. This
-     * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
-     * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
-     * container to allow sufficient space for the required forms.
+     * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
+     * This embed is responsive / mobile-friendly, but the calling application should provide at
+     * least a 300px wide container to allow sufficient space for the required forms.
      * ```ts
-     * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
+     * interface IAuthStatus {
+     *   authenticated: boolean;
+     *   session: TSession;
+     *   profile: IProfile | null;
+     * }
+     * <verdocs-auth
+     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface HTMLVerdocsAuthElement extends Components.VerdocsAuth, HTMLStencilElement {
@@ -2052,9 +2102,35 @@ declare global {
         "rolesUpdated": {endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]};
     }
     /**
-     * Display a template building experience.
+     * Display a template building experience. Several event callbacks provide status updates to the
+     * parent application to support interface updates.
      * ```ts
-     * <verdocs-build templateId={templateId} />
+     * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
+     * interface IEnvelopeSent {
+     *   name: string;
+     *   template_id: string
+     *   recipients: ICreateEnvelopeRecipient[];
+     * }
+     * interface ITemplateEvent {
+     *   event: string
+     *   template: ITemplate;
+     * }
+     * interface IRolesEvent {
+     *   event: string
+     *   templateId: string;
+     *   roles: ITemplateRole[];
+     * }
+     * <verdocs-build
+     *   templateId={templateId}
+     *   step="preview"
+     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
+     *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
+     *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
+     *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
+     *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
+     *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
+     *   />
      * ```
      */
     interface HTMLVerdocsBuildElement extends Components.VerdocsBuild, HTMLStencilElement {
@@ -2782,7 +2858,10 @@ declare global {
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
      * ```ts
-     * <verdocs-preview templateId={templateId} />
+     * <verdocs-preview
+     *   templateId={templateId}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface HTMLVerdocsPreviewElement extends Components.VerdocsPreview, HTMLStencilElement {
@@ -2879,12 +2958,6 @@ declare global {
         prototype: HTMLVerdocsRadioButtonElement;
         new (): HTMLVerdocsRadioButtonElement;
     };
-    interface HTMLVerdocsSearchElement extends Components.VerdocsSearch, HTMLStencilElement {
-    }
-    var HTMLVerdocsSearchElement: {
-        prototype: HTMLVerdocsSearchElement;
-        new (): HTMLVerdocsSearchElement;
-    };
     interface HTMLVerdocsSearchBoxElementEventMap {
         "searchClicked": ISearchEvent;
         "typeChanged": TContentType;
@@ -2938,17 +3011,19 @@ declare global {
         "searchContacts": IContactSearchEvent1;
     }
     /**
-     * Display a form to send a template to one or more recipients in an envelope for signing. Note
-     * that because most applications have custom workflow requirements to trigger after sending an
-     * Envelope, this component does not actually perform that operation. Parent applications should
-     * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
-     * `createEnvelope()` call in JS-SDK.
+     * Display a form to send a template to one or more recipients in an envelope for signing.
      * Host applications should ensure the template is "sendable" before displaying this component.
      * To be sendable, a template must have at least one document attached, at least one participant
      * defined, and at least one field assigned to every "signer" participant. This component will
      * hide itself if the template is not sendable.
      * ```ts
-     * <verdocs-send templateId={templateId} />
+     * <verdocs-send
+     *   templateId={templateId}
+     *   onSend={({ detail }) => { console.log('Sent!', detail) }
+     *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+     *   onExit={(e) => { console.log('Send cancelled.', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface HTMLVerdocsSendElement extends Components.VerdocsSend, HTMLStencilElement {
@@ -3524,7 +3599,14 @@ declare global {
         "next": any;
     }
     /**
-     * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
+     * Render the documents attached to an envelope in read-only (view) mode. All documents are
+     * displayed in order.
+     * ```ts
+     * <verdocs-view
+     *   envelopeId={envelopeId}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
+     * ```
      */
     interface HTMLVerdocsViewElement extends Components.VerdocsView, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsViewElementEventMap>(type: K, listener: (this: HTMLVerdocsViewElement, ev: VerdocsViewCustomEvent<HTMLVerdocsViewElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3580,7 +3662,6 @@ declare global {
         "verdocs-quick-filter": HTMLVerdocsQuickFilterElement;
         "verdocs-quick-functions": HTMLVerdocsQuickFunctionsElement;
         "verdocs-radio-button": HTMLVerdocsRadioButtonElement;
-        "verdocs-search": HTMLVerdocsSearchElement;
         "verdocs-search-box": HTMLVerdocsSearchBoxElement;
         "verdocs-search-tabs": HTMLVerdocsSearchTabsElement;
         "verdocs-select-input": HTMLVerdocsSelectInputElement;
@@ -3617,15 +3698,24 @@ declare global {
 }
 declare namespace LocalJSX {
     /**
-     * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
-     * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
-     * host application to render the next appropriate view for the application.
+     * Display an authentication dialog that allows the user to login or sign up. If the user is
+     * already authenticated with a valid session, this component will hide itself and fire the
+     * success callback immediately. It is up to the host application to render the next appropriate
+     * view for the application.
      * To simplify UI development, a visibility flag can force this component to never display. This
-     * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
-     * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
-     * container to allow sufficient space for the required forms.
+     * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
+     * This embed is responsive / mobile-friendly, but the calling application should provide at
+     * least a 300px wide container to allow sufficient space for the required forms.
      * ```ts
-     * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
+     * interface IAuthStatus {
+     *   authenticated: boolean;
+     *   session: TSession;
+     *   profile: IProfile | null;
+     * }
+     * <verdocs-auth
+     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface VerdocsAuth {
@@ -3651,9 +3741,35 @@ declare namespace LocalJSX {
         "visible"?: boolean;
     }
     /**
-     * Display a template building experience.
+     * Display a template building experience. Several event callbacks provide status updates to the
+     * parent application to support interface updates.
      * ```ts
-     * <verdocs-build templateId={templateId} />
+     * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
+     * interface IEnvelopeSent {
+     *   name: string;
+     *   template_id: string
+     *   recipients: ICreateEnvelopeRecipient[];
+     * }
+     * interface ITemplateEvent {
+     *   event: string
+     *   template: ITemplate;
+     * }
+     * interface IRolesEvent {
+     *   event: string
+     *   templateId: string;
+     *   roles: ITemplateRole[];
+     * }
+     * <verdocs-build
+     *   templateId={templateId}
+     *   step="preview"
+     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
+     *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
+     *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
+     *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
+     *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
+     *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
+     *   />
      * ```
      */
     interface VerdocsBuild {
@@ -4905,7 +5021,10 @@ declare namespace LocalJSX {
      * documents with signing fields overlaid on each page. Fields will be color-coded
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
      * ```ts
-     * <verdocs-preview templateId={templateId} />
+     * <verdocs-preview
+     *   templateId={templateId}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface VerdocsPreview {
@@ -5014,12 +5133,6 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
-    interface VerdocsSearch {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-    }
     /**
      * Displays a customizable input box for search queries.
      * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
@@ -5089,17 +5202,19 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     /**
-     * Display a form to send a template to one or more recipients in an envelope for signing. Note
-     * that because most applications have custom workflow requirements to trigger after sending an
-     * Envelope, this component does not actually perform that operation. Parent applications should
-     * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
-     * `createEnvelope()` call in JS-SDK.
+     * Display a form to send a template to one or more recipients in an envelope for signing.
      * Host applications should ensure the template is "sendable" before displaying this component.
      * To be sendable, a template must have at least one document attached, at least one participant
      * defined, and at least one field assigned to every "signer" participant. This component will
      * hide itself if the template is not sendable.
      * ```ts
-     * <verdocs-send templateId={templateId} />
+     * <verdocs-send
+     *   templateId={templateId}
+     *   onSend={({ detail }) => { console.log('Sent!', detail) }
+     *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+     *   onExit={(e) => { console.log('Send cancelled.', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface VerdocsSend {
@@ -5885,7 +6000,14 @@ declare namespace LocalJSX {
         "onNext"?: (event: VerdocsUploadDialogCustomEvent<IFileWithData[]>) => void;
     }
     /**
-     * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
+     * Render the documents attached to an envelope in read-only (view) mode. All documents are
+     * displayed in order.
+     * ```ts
+     * <verdocs-view
+     *   envelopeId={envelopeId}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
+     * ```
      */
     interface VerdocsView {
         /**
@@ -5961,7 +6083,6 @@ declare namespace LocalJSX {
         "verdocs-quick-filter": VerdocsQuickFilter;
         "verdocs-quick-functions": VerdocsQuickFunctions;
         "verdocs-radio-button": VerdocsRadioButton;
-        "verdocs-search": VerdocsSearch;
         "verdocs-search-box": VerdocsSearchBox;
         "verdocs-search-tabs": VerdocsSearchTabs;
         "verdocs-select-input": VerdocsSelectInput;
@@ -6001,22 +6122,57 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             /**
-             * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
-             * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
-             * host application to render the next appropriate view for the application.
+             * Display an authentication dialog that allows the user to login or sign up. If the user is
+             * already authenticated with a valid session, this component will hide itself and fire the
+             * success callback immediately. It is up to the host application to render the next appropriate
+             * view for the application.
              * To simplify UI development, a visibility flag can force this component to never display. This
-             * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
-             * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
-             * container to allow sufficient space for the required forms.
+             * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
+             * This embed is responsive / mobile-friendly, but the calling application should provide at
+             * least a 300px wide container to allow sufficient space for the required forms.
              * ```ts
-             * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
+             * interface IAuthStatus {
+             *   authenticated: boolean;
+             *   session: TSession;
+             *   profile: IProfile | null;
+             * }
+             * <verdocs-auth
+             *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+             *   />
              * ```
              */
             "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             /**
-             * Display a template building experience.
+             * Display a template building experience. Several event callbacks provide status updates to the
+             * parent application to support interface updates.
              * ```ts
-             * <verdocs-build templateId={templateId} />
+             * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
+             * interface IEnvelopeSent {
+             *   name: string;
+             *   template_id: string
+             *   recipients: ICreateEnvelopeRecipient[];
+             * }
+             * interface ITemplateEvent {
+             *   event: string
+             *   template: ITemplate;
+             * }
+             * interface IRolesEvent {
+             *   event: string
+             *   templateId: string;
+             *   roles: ITemplateRole[];
+             * }
+             * <verdocs-build
+             *   templateId={templateId}
+             *   step="preview"
+             *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
+             *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
+             *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
+             *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
+             *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
+             *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
+             *   />
              * ```
              */
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
@@ -6253,7 +6409,10 @@ declare module "@stencil/core" {
              * documents with signing fields overlaid on each page. Fields will be color-coded
              * by recipient, and will be read-only (cannot be filled, moved, or altered).
              * ```ts
-             * <verdocs-preview templateId={templateId} />
+             * <verdocs-preview
+             *   templateId={templateId}
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+             *   />
              * ```
              */
             "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
@@ -6294,7 +6453,6 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-radio-button": LocalJSX.VerdocsRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsRadioButtonElement>;
-            "verdocs-search": LocalJSX.VerdocsSearch & JSXBase.HTMLAttributes<HTMLVerdocsSearchElement>;
             /**
              * Displays a customizable input box for search queries.
              * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
@@ -6313,17 +6471,19 @@ declare module "@stencil/core" {
              */
             "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;
             /**
-             * Display a form to send a template to one or more recipients in an envelope for signing. Note
-             * that because most applications have custom workflow requirements to trigger after sending an
-             * Envelope, this component does not actually perform that operation. Parent applications should
-             * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
-             * `createEnvelope()` call in JS-SDK.
+             * Display a form to send a template to one or more recipients in an envelope for signing.
              * Host applications should ensure the template is "sendable" before displaying this component.
              * To be sendable, a template must have at least one document attached, at least one participant
              * defined, and at least one field assigned to every "signer" participant. This component will
              * hide itself if the template is not sendable.
              * ```ts
-             * <verdocs-send templateId={templateId} />
+             * <verdocs-send
+             *   templateId={templateId}
+             *   onSend={({ detail }) => { console.log('Sent!', detail) }
+             *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+             *   onExit={(e) => { console.log('Send cancelled.', detail) }
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+             *   />
              * ```
              */
             "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
@@ -6485,7 +6645,14 @@ declare module "@stencil/core" {
              */
             "verdocs-upload-dialog": LocalJSX.VerdocsUploadDialog & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
             /**
-             * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
+             * Render the documents attached to an envelope in read-only (view) mode. All documents are
+             * displayed in order.
+             * ```ts
+             * <verdocs-view
+             *   envelopeId={envelopeId}
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+             *   />
+             * ```
              */
             "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
         }

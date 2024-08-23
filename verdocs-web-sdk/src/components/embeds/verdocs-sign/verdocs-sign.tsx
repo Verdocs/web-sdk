@@ -45,7 +45,10 @@ const doneMenuOptions = [
   shadow: false,
 })
 export class VerdocsSign {
-  endpoint: VerdocsEndpoint = null;
+  /**
+   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+   */
+  @Prop() endpoint: VerdocsEndpoint = null;
 
   /**
    * The ID of the envelope to sign.
@@ -110,7 +113,10 @@ export class VerdocsSign {
   recipientIndex: number = -1;
 
   componentWillLoad() {
-    this.endpoint = new VerdocsEndpoint({sessionType: 'signing'});
+    if (!this.endpoint) {
+      console.log('[SIGN] Creating signing endpoint');
+      this.endpoint = new VerdocsEndpoint({sessionType: 'signing'});
+    }
   }
 
   async componentWillRender() {

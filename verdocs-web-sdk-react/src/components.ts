@@ -44,7 +44,6 @@ import { defineCustomElement as defineVerdocsProgressBar } from '@verdocs/web-sd
 import { defineCustomElement as defineVerdocsQuickFilter } from '@verdocs/web-sdk/dist/components/verdocs-quick-filter.js';
 import { defineCustomElement as defineVerdocsQuickFunctions } from '@verdocs/web-sdk/dist/components/verdocs-quick-functions.js';
 import { defineCustomElement as defineVerdocsRadioButton } from '@verdocs/web-sdk/dist/components/verdocs-radio-button.js';
-import { defineCustomElement as defineVerdocsSearch } from '@verdocs/web-sdk/dist/components/verdocs-search.js';
 import { defineCustomElement as defineVerdocsSearchBox } from '@verdocs/web-sdk/dist/components/verdocs-search-box.js';
 import { defineCustomElement as defineVerdocsSearchTabs } from '@verdocs/web-sdk/dist/components/verdocs-search-tabs.js';
 import { defineCustomElement as defineVerdocsSelectInput } from '@verdocs/web-sdk/dist/components/verdocs-select-input.js';
@@ -117,7 +116,6 @@ export const VerdocsProgressBar = /*@__PURE__*/createReactComponent<JSX.VerdocsP
 export const VerdocsQuickFilter = /*@__PURE__*/createReactComponent<JSX.VerdocsQuickFilter, HTMLVerdocsQuickFilterElement>('verdocs-quick-filter', undefined, undefined, defineVerdocsQuickFilter);
 export const VerdocsQuickFunctions = /*@__PURE__*/createReactComponent<JSX.VerdocsQuickFunctions, HTMLVerdocsQuickFunctionsElement>('verdocs-quick-functions', undefined, undefined, defineVerdocsQuickFunctions);
 export const VerdocsRadioButton = /*@__PURE__*/createReactComponent<JSX.VerdocsRadioButton, HTMLVerdocsRadioButtonElement>('verdocs-radio-button', undefined, undefined, defineVerdocsRadioButton);
-export const VerdocsSearch = /*@__PURE__*/createReactComponent<JSX.VerdocsSearch, HTMLVerdocsSearchElement>('verdocs-search', undefined, undefined, defineVerdocsSearch);
 export const VerdocsSearchBox = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchBox, HTMLVerdocsSearchBoxElement>('verdocs-search-box', undefined, undefined, defineVerdocsSearchBox);
 export const VerdocsSearchTabs = /*@__PURE__*/createReactComponent<JSX.VerdocsSearchTabs, HTMLVerdocsSearchTabsElement>('verdocs-search-tabs', undefined, undefined, defineVerdocsSearchTabs);
 export const VerdocsSelectInput = /*@__PURE__*/createReactComponent<JSX.VerdocsSelectInput, HTMLVerdocsSelectInputElement>('verdocs-select-input', undefined, undefined, defineVerdocsSelectInput);
