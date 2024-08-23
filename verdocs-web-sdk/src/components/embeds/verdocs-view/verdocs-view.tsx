@@ -1,12 +1,19 @@
 import {cancelEnvelope, getDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, userCanCancelEnvelope, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {saveEnvelopesAsZip} from '../../../utils/utils';
-// import {saveAttachment, saveCertificate, saveEnvelopesAsZip} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
 /**
- * Render the documents attached to an envelope in read-only (view) mode. All documents are displayed in order.
+ * Render the documents attached to an envelope in read-only (view) mode. All documents are
+ * displayed in order.
+ *
+ * ```ts
+ * <verdocs-view
+ *   envelopeId={envelopeId}
+ *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+ *   />
+ * ```
  */
 @Component({
   tag: 'verdocs-view',

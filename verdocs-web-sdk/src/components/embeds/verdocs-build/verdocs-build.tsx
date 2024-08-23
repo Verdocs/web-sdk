@@ -6,10 +6,40 @@ import {SDKError} from '../../../utils/errors';
 export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview';
 
 /**
- * Display a template building experience.
+ * Display a template building experience. Several event callbacks provide status updates to the
+ * parent application to support interface updates.
  *
  * ```ts
- * <verdocs-build templateId={templateId} />
+ * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
+ *
+ * interface IEnvelopeSent {
+ *   name: string;
+ *   template_id: string
+ *   recipients: ICreateEnvelopeRecipient[];
+ * }
+ *
+ * interface ITemplateEvent {
+ *   event: string
+ *   template: ITemplate;
+ * }
+ *
+ * interface IRolesEvent {
+ *   event: string
+ *   templateId: string;
+ *   roles: ITemplateRole[];
+ * }
+ *
+ * <verdocs-build
+ *   templateId={templateId}
+ *   step="preview"
+ *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
+ *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
+ *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
+ *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
+ *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
+ *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
+ *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
+ *   />
  * ```
  */
 @Component({

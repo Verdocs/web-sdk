@@ -1,8 +1,8 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {fullNameToInitials, getEnvelope, getSigningSession, IEnvelope, IEnvelopeField} from '@verdocs/js-sdk';
+import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
+import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
 import {integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
-import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, updateEnvelopeField} from '@verdocs/js-sdk';
+import {fullNameToInitials, getEnvelope, startSigningSession, IEnvelope, IEnvelopeField} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {createTemplateFieldStoreFromEnvelope} from '../../../utils/TemplateFieldStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -132,7 +132,7 @@ export class VerdocsSign {
     try {
       console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
 
-      const {envelope, access_token} = await getSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
+      const {envelope, access_token} = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
       const recipient = envelope.recipients.find(r => r.role_name === this.roleId);
       console.log(`[SIGN] Loaded signing session`, envelope, recipient, access_token);
 
@@ -266,7 +266,6 @@ export class VerdocsSign {
       .then(updateResult => this.updateRecipientFieldValue(fieldName, updateResult))
       .catch(e => {
         if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
-          // TODO: Do we want to improve the instructions here?
           console.log('[SIGN] Signing session expired');
           this.errorMessage = 'Signing session expired. Please reload your browser to continue.';
         } else {
@@ -424,13 +423,6 @@ export class VerdocsSign {
         this.recipient.status = 'submitted';
         this.showDone = true;
         this.isDone = true;
-
-        // TODO: This is a temporary hack. After submitting, if we immediately show the View component it won't have re-renedered the
-        //  pages yet with our submitted data.
-        // setTimeout(() => {
-        //   console.log('[SIGN] Reloading');
-        //   window.location.reload();
-        // }, 250);
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
       }

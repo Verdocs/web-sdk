@@ -10,18 +10,28 @@ export interface IAuthStatus {
 }
 
 /**
- * Display an authentication dialog that allows the user to login or sign up. If the user is already authenticated
- * with a valid session, this component will hide itself and fire the success callback immediately. It is up to the
- * host application to render the next appropriate view for the application.
+ * Display an authentication dialog that allows the user to login or sign up. If the user is
+ * already authenticated with a valid session, this component will hide itself and fire the
+ * success callback immediately. It is up to the host application to render the next appropriate
+ * view for the application.
  *
  * To simplify UI development, a visibility flag can force this component to never display. This
- * allows you to susbcribe to notifications from client apps without calling the lower-level JS SDK.
+ * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
  *
- * This embed is responsive / mobile-friendly, but the calling application should provide at least a 300px wide
- * container to allow sufficient space for the required forms.
+ * This embed is responsive / mobile-friendly, but the calling application should provide at
+ * least a 300px wide container to allow sufficient space for the required forms.
  *
  * ```ts
- * <verdocs-auth onAuthenticated={e => console.log('Authentication state:', e.detail)} />
+ * interface IAuthStatus {
+ *   authenticated: boolean;
+ *   session: TSession;
+ *   profile: IProfile | null;
+ * }
+ *
+ * <verdocs-auth
+ *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+ *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+ *   />
  * ```
  */
 @Component({

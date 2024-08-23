@@ -29,19 +29,20 @@ const doneIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path></svg>';
 
 /**
- * Display a form to send a template to one or more recipients in an envelope for signing. Note
- * that because most applications have custom workflow requirements to trigger after sending an
- * Envelope, this component does not actually perform that operation. Parent applications should
- * listen for the `onSend` event, and can pass the contents of `event.detail` directly to the
- * `createEnvelope()` call in JS-SDK.
- *
+ * Display a form to send a template to one or more recipients in an envelope for signing.
  * Host applications should ensure the template is "sendable" before displaying this component.
  * To be sendable, a template must have at least one document attached, at least one participant
  * defined, and at least one field assigned to every "signer" participant. This component will
  * hide itself if the template is not sendable.
  *
  * ```ts
- * <verdocs-send templateId={templateId} />
+ * <verdocs-send
+ *   templateId={templateId}
+ *   onSend={({ detail }) => { console.log('Sent!', detail) }
+ *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+ *   onExit={(e) => { console.log('Send cancelled.', detail) }
+ *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+ *   />
  * ```
  */
 @Component({

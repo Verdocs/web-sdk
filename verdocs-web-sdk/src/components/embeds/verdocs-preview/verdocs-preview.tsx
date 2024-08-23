@@ -1,10 +1,8 @@
 import {integerSequence, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
+import {Event, EventEmitter, Host, Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
-import {Event, EventEmitter, Host} from '@stencil/core';
-// import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -13,7 +11,10 @@ import {SDKError} from '../../../utils/errors';
  * by recipient, and will be read-only (cannot be filled, moved, or altered).
  *
  * ```ts
- * <verdocs-preview templateId={templateId} />
+ * <verdocs-preview
+ *   templateId={templateId}
+ *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+ *   />
  * ```
  */
 @Component({
