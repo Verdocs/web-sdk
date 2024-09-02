@@ -1,4 +1,4 @@
-import {IProfile, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {formatFullName, IProfile, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
 import {convertToE164} from '../../../utils/utils';
 
@@ -97,7 +97,7 @@ export class VerdocsContactPicker {
   componentWillLoad() {
     if (this.templateRole) {
       // TODO: For backwards compatibility, may be removed once templateRole no longer has a full_name
-      const fullName = `${this.templateRole.first_name || ''} ${this.templateRole.last_name || ''}`.trim() || this.templateRole.full_name || '';
+      const fullName = formatFullName(this.templateRole);
       const nameComponents = fullName.split(' ');
       const firstName = this.templateRole.first_name || nameComponents.shift() || '';
       const lastName = this.templateRole.last_name || nameComponents.join(' ') || '';
@@ -161,7 +161,6 @@ export class VerdocsContactPicker {
   handleSelectSuggestion(e: any, suggestion: TPickerContact) {
     e.stopPropagation();
 
-    console.log('Selected', suggestion);
     this.first_name = suggestion.first_name;
     this.last_name = suggestion.last_name;
     this.email = suggestion.email;
@@ -209,9 +208,7 @@ export class VerdocsContactPicker {
                   <div key={suggestion.id ?? suggestion.email} class="suggestion" onClick={e => this.handleSelectSuggestion(e, suggestion)}>
                     {suggestion.picture ? <img alt="Avatar" class="avatar" src={suggestion.picture} /> : <div class="avatar" innerHTML={addrBookIcon} />}
                     <div class="details">
-                      <div class="name">
-                        {suggestion.first_name} {suggestion.last_name}
-                      </div>
+                      <div class="name">{formatFullName(suggestion)}</div>
                       {suggestion.email && <div class="destination">{suggestion.email}</div>}
                       {suggestion.phone && <div class="destination">{suggestion.phone}</div>}
                     </div>

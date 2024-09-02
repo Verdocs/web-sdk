@@ -138,11 +138,11 @@ export class VerdocsSend {
 
           getOrganizationContacts(this.endpoint)
             .then(contacts => {
-              console.log('Got contacts', contacts);
+              console.log('[SEND] Got contacts', contacts);
               this.sessionContacts = [...contacts, me];
             })
             .catch(e => {
-              console.log('Error getting contacts', e);
+              console.log('[SEND] Error getting contacts', e);
             });
         }
       });
@@ -236,7 +236,6 @@ export class VerdocsSend {
   }
 
   handleSelectContact(e: any, role: Partial<IRecipient>) {
-    console.log('selc', e.detail);
     e.preventDefault();
     this.rolesCompleted[role.id] = {...role, ...e.detail};
     this.showPickerForId = '';
@@ -249,11 +248,11 @@ export class VerdocsSend {
 
   handleSend(e: any) {
     if (this.sending) {
-      console.log('Skipping duplicate send', e);
+      console.log('[SEND] Skipping duplicate send', e);
       return;
     }
 
-    console.log('Sending', e);
+    console.log('[SEND] Sending', e);
     e.preventDefault();
     e.stopPropagation();
 

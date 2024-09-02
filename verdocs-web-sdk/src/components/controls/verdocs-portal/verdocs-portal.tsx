@@ -50,15 +50,15 @@ export class VerdocsPortal {
 
   @Listen('scroll', {target: 'window', capture: true})
   handleScroll() {
-    // this.calculatePosition();
+    this.calculatePosition();
   }
 
-  @Listen('resize', {target: 'window', capture: true})
+  @Listen('resize', {target: 'window'})
   handleResize() {
     this.calculatePosition();
   }
 
-  @Listen('click', {target: 'window', capture: true})
+  @Listen('click', {target: 'document'})
   handleClick(e) {
     if (!this.element.contains(e.target)) {
       this.clickAway?.emit();
@@ -86,7 +86,7 @@ export class VerdocsPortal {
     if (!anchorEl) return 0;
 
     const anchorRect = anchorEl.getBoundingClientRect();
-    return anchorRect.bottom + this.voffset;
+    return anchorRect.bottom + this.voffset + document.documentElement.scrollTop;
   }
 
   private calculatePosition() {
@@ -103,6 +103,13 @@ export class VerdocsPortal {
     this.portal.style.zIndex = Z_INDEX;
     this.portal.style.position = 'absolute';
     document.body.append(this.portal);
+
+    // function debounce(method, delay) {
+    //   clearTimeout(method._tId);
+    //   method._tId = setTimeout(function () {
+    //     method();
+    //   }, delay);
+    // }
   }
 
   componentDidLoad() {

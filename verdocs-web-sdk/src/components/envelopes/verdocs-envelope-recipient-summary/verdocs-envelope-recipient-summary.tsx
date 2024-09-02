@@ -1,4 +1,4 @@
-import {getInPersonLink, getRecipientsWithActions, IEnvelope, IRecipient, recipientCanAct, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {formatFullName, getInPersonLink, getRecipientsWithActions, IEnvelope, IRecipient, recipientCanAct, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
 import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
 // import {VerdocsToast} from '../../../utils/Toast';
@@ -158,7 +158,7 @@ export class VerdocsEnvelopeRecipientSummary {
               const showLinkButton = recipientCanAct(recipient, recipientsWithActions);
               const link = this.links[recipient.role_name];
               const gettingLink = this.gettingLinks[recipient.role_name];
-              const fullName = `${recipient.first_name || ''} ${recipient.last_name || ''}`.trim() || recipient.full_name || '';
+              const fullName = formatFullName(recipient);
 
               return (
                 <div class="summary-recipient">

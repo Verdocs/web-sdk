@@ -1,5 +1,5 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
+import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
 import {integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {fullNameToInitials, getEnvelope, startSigningSession, IEnvelope, IEnvelopeField} from '@verdocs/js-sdk';
@@ -535,7 +535,7 @@ export class VerdocsSign {
     el.setAttribute('xScale', pageInfo.xScale);
     el.setAttribute('yScale', pageInfo.yScale);
 
-    const fullName = `${this.recipient?.first_name || ''} ${this.recipient?.last_name || ''}`.trim() || this.recipient?.full_name || '';
+    const fullName = formatFullName(this.recipient);
     el.setAttribute('initials', fullNameToInitials(fullName));
     el.setAttribute('name', fullName);
   }

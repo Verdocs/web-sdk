@@ -1318,6 +1318,10 @@ export namespace Components {
      */
     interface VerdocsSign {
         /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
           * The ID of the envelope to sign.
          */
         "envelopeId": string | null;
@@ -5267,6 +5271,10 @@ declare namespace LocalJSX {
      * the signed attachments.)
      */
     interface VerdocsSign {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
         /**
           * The ID of the envelope to sign.
          */

@@ -1,5 +1,5 @@
 import {format} from 'date-fns';
-import {cancelEnvelope, capitalize, IEnvelope, IRecipient, resendInvitation, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {cancelEnvelope, capitalize, formatFullName, IEnvelope, IRecipient, resendInvitation, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
 import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
@@ -204,7 +204,7 @@ export class VerdocsEnvelopeSidebar {
 
     histories.forEach(history => {
       const recipient = this.store.state?.recipients.find(recipient => recipient.role_name === history.role_name);
-      const fullName = `${recipient.first_name || ''} ${recipient.last_name || ''}`.trim() || recipient.full_name || '';
+      const fullName = formatFullName(recipient);
 
       switch (history.event.toLowerCase()) {
         case 'recipient:signed':
@@ -349,9 +349,7 @@ export class VerdocsEnvelopeSidebar {
             <div class="value">{this.store?.state?.profile_id}</div>
 
             <div class="label">Verdoc Owner Name</div>
-            <div class="value">
-              {this.store?.state?.profile?.first_name} {this.store?.state?.profile?.last_name}
-            </div>
+            <div class="value">{formatFullName(this.store?.state?.profile)}</div>
 
             <div class="label">Verdoc Owner Email</div>
             <div class="value">{this.store?.state?.profile?.email}</div>
@@ -364,7 +362,7 @@ export class VerdocsEnvelopeSidebar {
             {this.store?.state?.recipients.map((recipient, index) => {
               const canGetInPersonLink = recipient.status !== 'submitted' && recipient.status !== 'canceled' && recipient.status !== 'declined';
               const canSendReminder = this.canResendRecipient(recipient);
-              const fullName = `${recipient.first_name || ''} ${recipient.last_name || ''}`.trim() || recipient.full_name || '';
+              const fullName = formatFullName(recipient);
 
               return (
                 <div class="recipient-detail">

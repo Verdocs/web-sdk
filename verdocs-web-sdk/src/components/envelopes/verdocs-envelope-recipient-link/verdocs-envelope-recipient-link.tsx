@@ -1,5 +1,5 @@
 import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
-import {getInPersonLink, IEnvelope, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {formatFullName, getInPersonLink, IEnvelope, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -116,7 +116,7 @@ export class VerdocsEnvelopeRecipientLink {
     // const recipientsWithActions = getRecipientsWithActions(this.store.state); const showLinkButton = recipientCanAct(recipient, recipientsWithActions); const link =
     //   this.links[recipient.role_name]; const gettingLink = this.gettingLinks[recipient.role_name]; return (
 
-    const fullName = `${this.recipient.first_name || ''} ${this.recipient.last_name || ''}`.trim() || this.recipient.full_name || '';
+    const fullName = formatFullName(this.recipient);
     return (
       <Host>
         <div class="summary-content">

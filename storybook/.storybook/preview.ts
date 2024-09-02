@@ -26,15 +26,10 @@ const preview: Preview = {
         // With lit-html and web-components it doesn't show args, just <verdocs-button><.verdocs-button>.
         sourceState: 'none',
       },
-      // toc: true, // 👈 Enables the table of contents
-      // theme: StoriesTheme,
-      // extractComponentDescription: () => {
-      //   console.log('b');
-      //   return 'component description';
-      // },
 
       extractComponentDescription: (a, b) => {
         const componentDocs = customElements.tags.find(tag => tag.name === b.component);
+        console.log('cd', b.component, componentDocs);
         if (componentDocs) {
           return componentDocs.description.value;
         }
@@ -63,11 +58,6 @@ const preview: Preview = {
       ],
     },
   },
-
-  // TODO:
-  // https://storybook.js.org/docs/essentials/viewport#parameters
-  // https://storybook.js.org/docs/essentials/interactions#parameters
-  // https://storybook.js.org/docs/essentials/controls#parameters
 };
 
 export default preview;

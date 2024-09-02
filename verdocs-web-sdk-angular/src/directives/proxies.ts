@@ -1457,14 +1457,14 @@ the `contactSuggestions` property.
 
 
 @ProxyCmp({
-  inputs: ['envelopeId', 'headerTargetId', 'inviteCode', 'roleId']
+  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId']
 })
 @Component({
   selector: 'verdocs-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['envelopeId', 'headerTargetId', 'inviteCode', 'roleId'],
+  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId'],
 })
 export class VerdocsSign {
   protected el: HTMLElement;

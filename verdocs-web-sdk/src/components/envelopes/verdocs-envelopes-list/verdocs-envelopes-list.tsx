@@ -1,5 +1,5 @@
 import {Component, Prop, Host, h, State, Event, EventEmitter, Watch} from '@stencil/core';
-import {userCanCancelEnvelope, userCanAct, cancelEnvelope, integerSequence} from '@verdocs/js-sdk';
+import {userCanCancelEnvelope, userCanAct, cancelEnvelope, integerSequence, formatFullName} from '@verdocs/js-sdk';
 import {IEnvelope, IListEnvelopesParams, TEnvelopeStatus, VerdocsEndpoint, getEnvelopes, getRecipientsWithActions} from '@verdocs/js-sdk';
 import {IFilterOption} from '../../controls/verdocs-quick-filter/verdocs-quick-filter';
 import {saveEnvelopesAsZip} from '../../../utils/utils';
@@ -408,8 +408,7 @@ export class VerdocsEnvelopesList {
                 <span innerHTML={DocumentIcon} class="envelope-icon" />
 
                 <div class="envelope-name">
-                  {envelope.name}:&nbsp;{' '}
-                  <div class="envelope-recipients">{envelope.recipients.map(r => `${r.first_name || ''} ${r.last_name || ''}`.trim() || r.full_name || '').join(', ')}</div>
+                  {envelope.name}:&nbsp; <div class="envelope-recipients">{envelope.recipients.map(r => formatFullName(r))}</div>
                 </div>
 
                 <div class="vert-spacer" />
