@@ -28,29 +28,9 @@ verdocs-auth {
   h3 {
     text-align: center;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1.75;
     margin: 0;
-  }
-
-  h4 {
-    text-align: center;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 1.43;
-    margin: 0;
-
-    verdocs-button button.normal .button-label {
-      padding: 0;
-    }
-  }
-
-  h6 {
-    text-align: center;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 1.75;
-    margin: 0 0 20px 0;
   }
 
   em {
@@ -96,7 +76,8 @@ verdocs-auth {
   }
 
   p {
-    margin: 0 0 1em 0;
+    margin: 1em 0;
+    font-size: 14px;
   }
 
   // Our <p>s are in a flex layout which prevents margins from collapsing because each item creates its own row
@@ -110,5 +91,10 @@ verdocs-auth {
     width: 32px;
     height: 32px;
     flex: 0 0 32px;
+  }
+
+  .already-have {
+    margin: 0.5em 0;
+    font-size: 14px;
   }
 }

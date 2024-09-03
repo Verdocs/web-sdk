@@ -72,12 +72,13 @@ export class VerdocsAuth {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() displayMode: 'login' | 'forgot' | 'signup' | 'verify' = 'login';
+  @State() displayMode: 'login' | 'forgot' | 'reset' | 'signup' | 'verify' = 'login';
   @State() org_name: string = '';
   @State() first_name: string = '';
   @State() last_name: string = '';
   @State() email: string = '';
   @State() verificationCode: string = '';
+  @State() newPassword: string = '';
   @State() password: string = '';
   @State() confirmpass: string = '';
   @State() submitting: boolean = false;
@@ -217,6 +218,7 @@ export class VerdocsAuth {
     this.resendDisabled = false;
     this.email = '';
     this.password = '';
+    this.newPassword = '';
     this.confirmpass = '';
     this.verificationCode = '';
     this.first_name = '';
@@ -232,7 +234,7 @@ export class VerdocsAuth {
     this.displayMode = 'login';
   }
 
-  handleResend() {
+  handleResendVerification() {
     // Avoid the user just click-spamming this pathway. The server rate-limits this anyway so it's not a
     // security issue but it's a poor user experience to allow it.
     this.resendDisabled = true;
@@ -250,6 +252,76 @@ export class VerdocsAuth {
         console.log('[AUTH] Unable to resend verification', e);
         VerdocsToast('Unable to resend code. Please try again later.', {style: 'error'});
       });
+  }
+
+  handleResendReset() {
+    // Avoid the user just click-spamming this pathway. The server rate-limits this anyway so it's not a
+    // security issue but it's a poor user experience to allow it.
+    this.resendDisabled = true;
+    this.resendDisabledTimer = setTimeout(() => {
+      this.resendDisabled = false;
+      this.resendDisabledTimer = null;
+    }, 30000);
+
+    resetPassword(this.tempAuthEndpoint, {email: this.email})
+      .then(r => {
+        console.log('[AUTH] Resend-code request resent', r);
+        VerdocsToast('Please check your email again for a verification code.', {style: 'info'});
+      })
+      .catch((e: any) => {
+        console.log('[AUTH] Unable to resend reset request', e);
+        VerdocsToast('Unable to resend code. Please try again later.', {style: 'error'});
+      });
+  }
+
+  async handleResetGetCode() {
+    this.submitting = true;
+    this.confirmpass = '';
+    this.newPassword = '';
+
+    try {
+      this.submitting = false;
+      const result = await resetPassword(this.endpoint, {email: this.email});
+      console.log('[AUTH] Reset result', result);
+      VerdocsToast('Please check your email inbox for a password reset code.', {style: 'success'});
+      this.verificationCode = '';
+      this.confirmpass = '';
+      this.newPassword = '';
+      this.displayMode = 'reset';
+    } catch (e) {
+      this.submitting = false;
+      console.log('Reset request error', e);
+      VerdocsToast('Request failed. Please check your email address and try again.');
+    }
+  }
+
+  async handleResetPassword() {
+    if (!this.isPasswordComplex(this.newPassword)) {
+      VerdocsToast('Password must be at least 8 characters long and contain at least one uppercase, one lowercase, and one special character.', {style: 'error'});
+      return;
+    }
+
+    if (this.newPassword !== this.confirmpass) {
+      VerdocsToast('Passwords do not match.', {style: 'error'});
+      return;
+    }
+
+    this.submitting = true;
+    try {
+      this.submitting = false;
+      const resetResult = await resetPassword(this.endpoint, {email: this.email, code: this.verificationCode, new_password: this.newPassword});
+      console.log('reset result', resetResult);
+      VerdocsToast('Your password has been reset. You may now use your new password to login.', {style: 'success'});
+      this.verificationCode = '';
+      this.confirmpass = '';
+      this.newPassword = '';
+      this.password = '';
+      this.displayMode = 'login';
+    } catch (e) {
+      this.submitting = false;
+      console.log('Verification error', e);
+      VerdocsToast('Verification error, please check the code and try again.');
+    }
   }
 
   async handleReset() {
@@ -294,10 +366,10 @@ export class VerdocsAuth {
           </a>
 
           <h3>Sign up for a free account</h3>
-          <h5>
+          <div class="already-have">
             Already have an account?
             <verdocs-button label="Log In" variant="text" onClick={() => (this.displayMode = 'login')} disabled={this.submitting} />
-          </h5>
+          </div>
 
           <form onSubmit={() => this.handleSignup()}>
             <div style={{display: 'flex', flexDirection: 'row', columnGap: '20px'}}>
@@ -386,7 +458,7 @@ export class VerdocsAuth {
               <verdocs-button label="Verify" disabled={this.submitting || !this.verificationCode || this.verificationCode.length !== 6} onClick={() => this.handleVerification()} />
             </div>
             <div class="buttons">
-              <verdocs-button variant="text" label="Resend Code" disabled={this.resendDisabled || this.submitting} onClick={() => this.handleResend()} />
+              <verdocs-button variant="text" label="Resend Code" disabled={this.resendDisabled || this.submitting} onClick={() => this.handleResendVerification()} />
             </div>
           </form>
         </div>
@@ -403,11 +475,11 @@ export class VerdocsAuth {
           <h3>Forgot your password?</h3>
 
           <p>
-            Enter your e-mail address below, and reset instructions will be sent to your Inbox. Please allow up to 15 minutes to arrive. Check your spam folder if you do not
-            receive the message.
+            Enter your e-mail address below. If the e-mail address is valid, a password reset code will be sent to your inbox. Please allow up to 15 minutes to arrive, and check
+            your spam folder if you do not receive the message.
           </p>
 
-          <form onSubmit={() => this.handleSignup()}>
+          <form onSubmit={() => this.handleResetGetCode()}>
             <verdocs-text-input
               label="Email Address"
               autocomplete="email"
@@ -421,7 +493,63 @@ export class VerdocsAuth {
 
             <div class="buttons">
               <verdocs-button label="Cancel" variant="outline" disabled={this.submitting} onClick={() => (this.displayMode = 'login')} />
-              <verdocs-button label="Reset" disabled={this.submitting} onClick={() => this.handleReset()} />
+              <verdocs-button label="Request Code" disabled={this.submitting} onClick={() => this.handleResetGetCode()} />
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+    if (this.displayMode === 'reset') {
+      return (
+        <div class="form">
+          <a href="https://verdocs.com/en/">
+            <img src={this.logo} alt="Verdocs Logo" class="logo" />
+          </a>
+
+          <h3>Forgot your password?</h3>
+
+          <p>
+            Enter your e-mail address below, and reset instructions will be sent to your Inbox. Please allow up to 15 minutes to arrive. Check your spam folder if you do not
+            receive the message.
+          </p>
+
+          <form onSubmit={() => this.handleResetPassword()}>
+            <verdocs-text-input
+              label="Verification Code"
+              required={true}
+              value={this.verificationCode}
+              onInput={(e: any) => (this.verificationCode = e.target.value)}
+              disabled={this.submitting}
+            />
+            <verdocs-text-input
+              label="Password"
+              type="password"
+              required={true}
+              autocomplete="off"
+              value={this.newPassword}
+              onInput={(e: any) => (this.newPassword = e.target.value)}
+              disabled={this.submitting}
+            />
+            <verdocs-text-input
+              label="Confirm Password"
+              type="password"
+              required={true}
+              autocomplete="off"
+              value={this.confirmpass}
+              onInput={(e: any) => (this.confirmpass = e.target.value)}
+              disabled={this.submitting}
+            />
+
+            <div style={{marginTop: '30px'}} />
+
+            <div class="buttons">
+              <verdocs-button label="Cancel" variant="outline" disabled={this.submitting} onClick={() => (this.displayMode = 'login')} />
+              <verdocs-button label="Reset" disabled={this.submitting} onClick={() => this.handleResetPassword()} />
+            </div>
+
+            <div class="buttons">
+              <verdocs-button variant="text" label="Resend Code" disabled={this.resendDisabled || this.submitting} onClick={() => this.handleResendReset()} />
             </div>
           </form>
         </div>
@@ -435,10 +563,10 @@ export class VerdocsAuth {
         </a>
 
         <h3>Log in to your account</h3>
-        <h4>
+        <div class="already-have">
           Don't have an account?
           <verdocs-button label="Sign Up" variant="text" onClick={() => (this.displayMode = 'signup')} disabled={this.submitting} />
-        </h4>
+        </div>
 
         <form onSubmit={() => this.loginAndCheckVerification()}>
           <verdocs-text-input label="Email" autocomplete="username" value={this.email} onInput={(e: any) => (this.email = e.target.value)} disabled={this.submitting} />
