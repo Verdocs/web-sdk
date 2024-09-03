@@ -125,6 +125,10 @@ export class VerdocsSend {
   async componentWillLoad() {
     try {
       this.endpoint.onSessionChanged((_endpoint, _session, profile) => {
+        if (!profile) {
+          return;
+        }
+
         const me = {
           id: profile.id,
           first_name: profile.first_name,
