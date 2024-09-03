@@ -156,7 +156,7 @@ export class VerdocsAuth {
         this.authenticated?.emit({authenticated: false, profile: null, session: null});
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
 
-        VerdocsToast('Signup failed: ' + e.response?.data?.message || 'Unknown Error', {style: 'error'});
+        VerdocsToast('Signup failed: ' + e.response?.data?.error || 'Unknown Error', {style: 'error'});
       });
   }
 
