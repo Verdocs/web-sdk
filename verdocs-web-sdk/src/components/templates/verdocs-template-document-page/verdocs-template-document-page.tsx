@@ -105,7 +105,7 @@ export class VerdocsTemplateDocumentPage {
   fieldStore: TTemplateFieldStore | null = null;
 
   async componentWillLoad() {
-    this.pageDisplayUri = await getTemplateDocumentPageDisplayUri(this.endpoint, this.templateId, this.documentId, this.pageNumber);
+    this.pageDisplayUri = await getTemplateDocumentPageDisplayUri(this.endpoint, this.documentId, this.pageNumber);
     this.fieldStore = getTemplateFieldStore(this.templateId);
   }
 

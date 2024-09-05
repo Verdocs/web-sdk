@@ -85,7 +85,7 @@ export class VerdocsEnvelopeDocumentPage {
   @State() pageDisplayUri = 'https://verdocs-public-assets.s3.amazonaws.com/page-loading-placeholder.png';
 
   async componentWillLoad() {
-    this.pageDisplayUri = await getEnvelopeDocumentPageDisplayUri(this.endpoint, this.envelopeId, this.documentId, this.pageNumber, this.type);
+    this.pageDisplayUri = await getEnvelopeDocumentPageDisplayUri(this.endpoint, this.documentId, this.pageNumber, this.type);
   }
 
   componentDidLoad() {
