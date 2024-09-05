@@ -85,14 +85,24 @@ export class VerdocsTemplateCreate {
     this.progressLabel = 'Uploading...';
 
     try {
-      const template = await createTemplate(this.endpoint, {name: this.file.name, documents: [this.file]}, percent => {
-        if (percent >= 99) {
-          this.progressLabel = 'Processing...';
-          this.progressPercent = 100;
-        } else {
-          this.progressPercent = percent;
-        }
-      });
+      const template = await createTemplate(
+        this.endpoint,
+        {
+          name: this.file.name,
+          // TODO: Make optional in the SDK
+          initial_reminder: 0,
+          followup_reminders: 0,
+          documents: [this.file],
+        },
+        percent => {
+          if (percent >= 99) {
+            this.progressLabel = 'Processing...';
+            this.progressPercent = 100;
+          } else {
+            this.progressPercent = percent;
+          }
+        },
+      );
 
       console.log('[CREATE] Created template', template);
       getTemplateStore(this.endpoint, template.id, true)

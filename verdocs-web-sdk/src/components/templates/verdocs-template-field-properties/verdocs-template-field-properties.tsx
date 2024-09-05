@@ -120,6 +120,7 @@ export class VerdocsTemplateFieldProperties {
     const field = this.fieldStore.get('fields').find(field => field.name === this.fieldName);
     if (!field) {
       console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in fields`);
+      return;
     } else {
       console.log('[FIELD PROPERTIES]', field);
     }
@@ -163,8 +164,8 @@ export class VerdocsTemplateFieldProperties {
     console.log('[FIELD PROPERTIES] Will update', this.fieldName, newProperties);
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(updated => {
+        console.log('[FIELD PROPERTIES] Updated', updated);
         updateStoreField(this.fieldStore, this.fieldName, updated);
-        this.resetForm();
         this.settingsChanged?.emit({fieldName: this.fieldName, field: updated});
         this.close?.emit();
         document.getElementById('verdocs-template-field-properties')?.remove();

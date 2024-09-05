@@ -1944,47 +1944,6 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'templateId']
-})
-@Component({
-  selector: 'verdocs-template-reminders',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'templateId'],
-})
-export class VerdocsTemplateReminders {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'sdkError', 'templateUpdated']);
-  }
-}
-
-
-import type { SDKError as IVerdocsTemplateRemindersSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsTemplateRemindersVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { ITemplate as IVerdocsTemplateRemindersITemplate } from '@verdocs/web-sdk';
-
-export declare interface VerdocsTemplateReminders extends Components.VerdocsTemplateReminders {
-  /**
-   * Event fired when the user cancels the dialog.
-   */
-  close: EventEmitter<CustomEvent<any>>;
-  /**
-   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
-terminate the process, and the calling application should correct the condition and re-render the component.
-   */
-  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateRemindersSDKError>>;
-  /**
-   * Event fired when the user updates the template.
-   */
-  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateRemindersVerdocsEndpoint; template: IVerdocsTemplateRemindersITemplate; event: string}>>;
-}
-
-
-@ProxyCmp({
   inputs: ['endpoint', 'roleName', 'sender', 'templateId']
 })
 @Component({

@@ -267,6 +267,9 @@ export class VerdocsSend {
       template_id: this.templateId,
       name: this.templateStore?.state?.name,
       environment: this.environment,
+      // TODO: Make optional in the SDK
+      initial_reminder: 0,
+      followup_reminders: 0,
       recipients: Object.values(this.rolesCompleted) as ICreateEnvelopeRecipient[],
       // TODO
       fields: [],

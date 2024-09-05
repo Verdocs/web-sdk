@@ -29,7 +29,6 @@ const preview: Preview = {
 
       extractComponentDescription: (a, b) => {
         const componentDocs = customElements.tags.find(tag => tag.name === b.component);
-        console.log('cd', b.component, componentDocs);
         if (componentDocs) {
           return componentDocs.description.value;
         }

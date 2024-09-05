@@ -1567,19 +1567,6 @@ export namespace Components {
         "templateId": string;
     }
     /**
-     * Displays an edit form that allows the user to adjust a template's reminders.
-     */
-    interface VerdocsTemplateReminders {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId": string;
-    }
-    /**
      * Display an edit form that allows the user to adjust a role's setitngs.
      */
     interface VerdocsTemplateRoleProperties {
@@ -2016,10 +2003,6 @@ export interface VerdocsTemplateFieldsCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsTemplateNameCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateNameElement;
-}
-export interface VerdocsTemplateRemindersCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsTemplateRemindersElement;
 }
 export interface VerdocsTemplateRolePropertiesCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3342,28 +3325,6 @@ declare global {
         prototype: HTMLVerdocsTemplateNameElement;
         new (): HTMLVerdocsTemplateNameElement;
     };
-    interface HTMLVerdocsTemplateRemindersElementEventMap {
-        "close": any;
-        "sdkError": SDKError;
-        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
-    }
-    /**
-     * Displays an edit form that allows the user to adjust a template's reminders.
-     */
-    interface HTMLVerdocsTemplateRemindersElement extends Components.VerdocsTemplateReminders, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsTemplateRemindersElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRemindersElement, ev: VerdocsTemplateRemindersCustomEvent<HTMLVerdocsTemplateRemindersElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsTemplateRemindersElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRemindersElement, ev: VerdocsTemplateRemindersCustomEvent<HTMLVerdocsTemplateRemindersElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsTemplateRemindersElement: {
-        prototype: HTMLVerdocsTemplateRemindersElement;
-        new (): HTMLVerdocsTemplateRemindersElement;
-    };
     interface HTMLVerdocsTemplateRolePropertiesElementEventMap {
         "close": any;
         "delete": {templateId: string; roleName: string};
@@ -3684,7 +3645,6 @@ declare global {
         "verdocs-template-field-properties": HTMLVerdocsTemplateFieldPropertiesElement;
         "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
         "verdocs-template-name": HTMLVerdocsTemplateNameElement;
-        "verdocs-template-reminders": HTMLVerdocsTemplateRemindersElement;
         "verdocs-template-role-properties": HTMLVerdocsTemplateRolePropertiesElement;
         "verdocs-template-roles": HTMLVerdocsTemplateRolesElement;
         "verdocs-template-sender": HTMLVerdocsTemplateSenderElement;
@@ -5634,31 +5594,6 @@ declare namespace LocalJSX {
         "templateId"?: string;
     }
     /**
-     * Displays an edit form that allows the user to adjust a template's reminders.
-     */
-    interface VerdocsTemplateReminders {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the user cancels the dialog.
-         */
-        "onClose"?: (event: VerdocsTemplateRemindersCustomEvent<any>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsTemplateRemindersCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the user updates the template.
-         */
-        "onTemplateUpdated"?: (event: VerdocsTemplateRemindersCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
-        /**
-          * The template ID to edit.
-         */
-        "templateId"?: string;
-    }
-    /**
      * Display an edit form that allows the user to adjust a role's setitngs.
      */
     interface VerdocsTemplateRoleProperties {
@@ -6109,7 +6044,6 @@ declare namespace LocalJSX {
         "verdocs-template-field-properties": VerdocsTemplateFieldProperties;
         "verdocs-template-fields": VerdocsTemplateFields;
         "verdocs-template-name": VerdocsTemplateName;
-        "verdocs-template-reminders": VerdocsTemplateReminders;
         "verdocs-template-role-properties": VerdocsTemplateRoleProperties;
         "verdocs-template-roles": VerdocsTemplateRoles;
         "verdocs-template-sender": VerdocsTemplateSender;
@@ -6584,10 +6518,6 @@ declare module "@stencil/core" {
              * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
              */
             "verdocs-template-name": LocalJSX.VerdocsTemplateName & JSXBase.HTMLAttributes<HTMLVerdocsTemplateNameElement>;
-            /**
-             * Displays an edit form that allows the user to adjust a template's reminders.
-             */
-            "verdocs-template-reminders": LocalJSX.VerdocsTemplateReminders & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRemindersElement>;
             /**
              * Display an edit form that allows the user to adjust a role's setitngs.
              */

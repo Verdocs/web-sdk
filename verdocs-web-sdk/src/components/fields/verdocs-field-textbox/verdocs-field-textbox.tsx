@@ -107,6 +107,7 @@ export class VerdocsFieldTextbox {
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
     }
+    this.showingProperties = false;
   }
 
   fieldStore: TTemplateFieldStore = null;
@@ -249,7 +250,7 @@ export class VerdocsFieldTextbox {
                 <verdocs-template-field-properties
                   templateId={templateid}
                   fieldName={fieldname}
-                  onClose={() => (this.showingProperties = false)}
+                  onClose={() => this.hideSettingsPanel()}
                   onDelete={() => {
                     this.deleted?.emit({fieldName: fieldname});
                     return this.hideSettingsPanel();
