@@ -1,8 +1,8 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
-import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
+import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField} from '@verdocs/js-sdk';
 import {integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
-import {fullNameToInitials, getEnvelope, startSigningSession, IEnvelope, IEnvelopeField} from '@verdocs/js-sdk';
+import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
+import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {createTemplateFieldStoreFromEnvelope} from '../../../utils/TemplateFieldStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -48,7 +48,7 @@ export class VerdocsSign {
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
-  @Prop() endpoint: VerdocsEndpoint = null;
+  @Prop({mutable: true}) endpoint: VerdocsEndpoint = null;
 
   /**
    * The ID of the envelope to sign.
@@ -119,7 +119,7 @@ export class VerdocsSign {
     }
   }
 
-  async componentWillRender() {
+  async componentDidLoad() {
     if (!this.envelopeId) {
       this.sdkError?.emit(new SDKError('[SIGN] Missing required envelopId', 500, ''));
       return;
@@ -138,19 +138,15 @@ export class VerdocsSign {
     try {
       console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
 
-      const {envelope, access_token} = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
-      const recipient = envelope.recipients.find(r => r.role_name === this.roleId);
-      console.log(`[SIGN] Loaded signing session`, envelope, recipient, access_token);
+      const {envelope, recipient} = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
+      console.log(`[SIGN] Loaded signing session`, envelope, recipient);
 
       this.recipient = recipient;
-      console.log('[SIGN] We are recipient', this.recipient);
-      this.endpoint.setToken(access_token);
+      this.envelope = envelope;
 
       if (this.agreed) {
         this.nextButtonLabel = 'Next';
       }
-
-      this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
 
       createTemplateFieldStoreFromEnvelope(this.envelope);
       this.sortedRecipients = [...this.envelope.recipients];
@@ -168,9 +164,8 @@ export class VerdocsSign {
       if (this.recipientIndex > -1) {
         this.recipient = this.sortedRecipients[this.recipientIndex];
         this.agreed = this.recipient.agreed;
-        console.log('[SIGN] Found our recipient in the envelope', this.recipientIndex, this.recipient);
       } else {
-        console.log('[SIGN] Could not find our recipient record', this.roleId, this.sortedRecipients);
+        console.warn('[SIGN] Could not find our recipient record', this.roleId, this.sortedRecipients);
       }
 
       this.isDone = ['submitted', 'canceled', 'declined'].includes(this.recipient.status);
@@ -260,6 +255,7 @@ export class VerdocsSign {
     this.getRecipientFields().forEach(oldField => {
       if (oldField.name === fieldName) {
         oldField.value = updateResult.value;
+        oldField.settings = updateResult.settings;
         updateDocumentFieldValue(oldField);
         this.checkRecipientFields();
       }
@@ -367,7 +363,7 @@ export class VerdocsSign {
 
       case 'signature':
       case 'initial':
-        return value !== '';
+        return value && value !== '';
 
       // Timestamp fields get automatically filled when the envelope is submitted.
       case 'timestamp':
@@ -546,6 +542,7 @@ export class VerdocsSign {
     // NOTE: We don't filter on pageNumber here because we need the position in the
     // entire list to set the tabIndex.
     const recipientFields = this.getSortedFillableFields();
+    console.log('Recipient fields', recipientFields);
     // this.getRecipientFields().filter(field => field.page === pageInfo.pageNumber);
 
     // First render the fields for the signer
@@ -557,6 +554,9 @@ export class VerdocsSign {
         return;
       }
 
+      if (field.type === 'signature') {
+        console.log('rendering', field);
+      }
       const el = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
       if (!el) {
         return;
@@ -645,43 +645,44 @@ export class VerdocsSign {
           </div>
         </div>
 
-        <div class="document" style={{paddingTop: '15px'}}>
-          {/*<div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>*/}
-          {(this.envelope.documents || []).map(envelopeDocument => {
-            const pageNumbers = integerSequence(1, envelopeDocument.pages);
+        {this.agreed && (
+          <div class="document" style={{paddingTop: '15px'}}>
+            {(this.envelope.documents || []).map(envelopeDocument => {
+              const pageNumbers = integerSequence(1, envelopeDocument.pages);
 
-            return (
-              <Fragment>
-                {pageNumbers.map(pageNumber => {
-                  // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
-                  // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
-                  // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
-                  // field vales (so far) stamped into them.
-                  // const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
-                  // TODO: Confirm that a pure page-number match is good enough to find the matching template page. We need to make sure
-                  //  we either don't reset our page numbers for additional attachments, or add match-on identifiers to work around that.
-                  // console.log('tp', templatePage, page);
-                  return (
-                    <verdocs-envelope-document-page
-                      envelopeId={this.envelopeId}
-                      documentId={envelopeDocument.id}
-                      endpoint={this.endpoint}
-                      virtualWidth={612}
-                      virtualHeight={792}
-                      pageNumber={pageNumber}
-                      onPageRendered={e => this.handlePageRendered(e)}
-                      type="filled"
-                      layers={[
-                        {name: 'page', type: 'canvas'},
-                        {name: 'controls', type: 'div'},
-                      ]}
-                    />
-                  );
-                })}
-              </Fragment>
-            );
-          })}
-        </div>
+              return (
+                <Fragment>
+                  {pageNumbers.map(pageNumber => {
+                    // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
+                    // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
+                    // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
+                    // field vales (so far) stamped into them.
+                    // const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
+                    // TODO: Confirm that a pure page-number match is good enough to find the matching template page. We need to make sure
+                    //  we either don't reset our page numbers for additional attachments, or add match-on identifiers to work around that.
+                    // console.log('tp', templatePage, page);
+                    return (
+                      <verdocs-envelope-document-page
+                        envelopeId={this.envelopeId}
+                        documentId={envelopeDocument.id}
+                        endpoint={this.endpoint}
+                        virtualWidth={612}
+                        virtualHeight={792}
+                        pageNumber={pageNumber}
+                        onPageRendered={e => this.handlePageRendered(e)}
+                        type="filled"
+                        layers={[
+                          {name: 'page', type: 'canvas'},
+                          {name: 'controls', type: 'div'},
+                        ]}
+                      />
+                    );
+                  })}
+                </Fragment>
+              );
+            })}
+          </div>
+        )}
 
         {this.showFinishLater && (
           <verdocs-ok-dialog

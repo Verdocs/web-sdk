@@ -28,7 +28,6 @@ export const createTemplateFieldStoreFromEnvelope = (envelope: IEnvelope) => {
     store = createStore({fields: [] as ITemplateField[]});
     templateFieldStores[envelope.template_id] = store;
   } else {
-    console.log('Resetting field store for envelope', envelope.id, envelope.template_id);
     store.reset();
   }
 

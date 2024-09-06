@@ -264,6 +264,13 @@ export class VerdocsEnvelopeSidebar {
             entries.push({icon: 'mail', message: `${fullName} has been invited via email.`, date: new Date(history.created_at)});
           }
           break;
+        case 'recipient:reminder':
+          if (history.event_detail === 'sms') {
+            entries.push({icon: 'textsms', message: `${fullName} sent a reminder via SMS.`, date: new Date(history.created_at)});
+          } else {
+            entries.push({icon: 'mail', message: `${fullName} sent a reminder via email.`, date: new Date(history.created_at)});
+          }
+          break;
         case 'invitation:resent':
           entries.push({
             icon: 'mail',

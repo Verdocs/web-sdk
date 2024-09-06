@@ -155,8 +155,11 @@ export class VerdocsFieldSignature {
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
     const {required = false, role_name = '', value = '', label = ''} = field || {};
+    const {base64} = field.settings || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+
+    console.log('sig', field, value, base64);
 
     if (done) {
       return <Host class={{done}}>{value && <img src={value} alt="Signature" />}</Host>;
@@ -166,7 +169,7 @@ export class VerdocsFieldSignature {
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
 
-        {value ? <img src={value} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
+        {base64 ? <img src={base64} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
 
         {editable && (
           <Fragment>

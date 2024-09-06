@@ -62,15 +62,6 @@ export const defaultHeight = (type: TFieldType) => {
 
 export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number) => {
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = field;
-  // const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
-
-  // const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
-  // if (optionSettings) {
-  //   x = optionSettings.x ?? x;
-  //   y = optionSettings.y ?? y;
-  //   width = optionSettings.width ?? width;
-  //   height = optionSettings.height ?? height;
-  // }
 
   el.style.width = `${width}px`;
   el.style.height = `${height}px`;
@@ -78,20 +69,10 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvel
   el.style.left = `${rescale(xScale, x)}px`;
   el.style.bottom = `${rescale(yScale, y)}px`;
   el.style.transform = `scale(${xScale}, ${yScale})`;
-  // el.style.backgroundColor = field['rgba'] || getRGBA(roleIndex);
 };
 
 export const getControlStyles = (field: ITemplateField | IEnvelopeField, xScale: number, yScale: number) => {
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = field;
-  // const settings = (field as ITemplateField).settings || (field as IEnvelopeField).settings;
-
-  // const optionSettings = settings.options && option !== undefined && settings.options[option] ? settings.options[option] : null;
-  // if (optionSettings) {
-  //   x = optionSettings.x ?? x;
-  //   y = optionSettings.y ?? y;
-  //   width = optionSettings.width ?? width;
-  //   height = optionSettings.height ?? height;
-  // }
 
   return {
     width: `${width}px`,
@@ -137,7 +118,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
     return;
   }
 
-  console.log('[renderDocumentField] Rendering field', field);
+  // console.log('[renderDocumentField] Rendering field', field);
 
   switch (field.type as any) {
     case 'attachment':

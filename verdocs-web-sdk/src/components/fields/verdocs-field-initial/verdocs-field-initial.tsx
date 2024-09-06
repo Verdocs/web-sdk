@@ -166,6 +166,7 @@ export class VerdocsFieldInitial {
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
     const {required = false, role_name = '', value = '', label = ''} = field || {};
+    const {base64} = field.settings || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
@@ -177,7 +178,7 @@ export class VerdocsFieldInitial {
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
 
-        {value ? <img src={value} alt="Initial" /> : <button onClick={() => !disabled && this.handleShow()}>Initial</button>}
+        {base64 ? <img src={base64} alt="Initial" /> : <button onClick={() => !disabled && this.handleShow()}>Initial</button>}
 
         {editable && (
           <Fragment>
