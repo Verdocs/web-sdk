@@ -1158,14 +1158,14 @@ export declare interface VerdocsPagination extends Components.VerdocsPagination 
 
 
 @ProxyCmp({
-  inputs: ['align', 'anchor', 'voffset']
+  inputs: ['anchor', 'voffset']
 })
 @Component({
   selector: 'verdocs-portal',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['align', 'anchor', 'voffset'],
+  inputs: ['anchor', 'voffset'],
 })
 export class VerdocsPortal {
   protected el: HTMLElement;

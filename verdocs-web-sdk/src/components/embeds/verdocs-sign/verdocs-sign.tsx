@@ -362,8 +362,10 @@ export class VerdocsSign {
         }
 
       case 'signature':
+        return value === 'signed';
+
       case 'initial':
-        return value && value !== '';
+        return value === 'initialed';
 
       // Timestamp fields get automatically filled when the envelope is submitted.
       case 'timestamp':

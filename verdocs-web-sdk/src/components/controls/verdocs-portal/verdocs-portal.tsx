@@ -41,11 +41,6 @@ export class VerdocsPortal {
    */
   @Prop() voffset: number = 0;
 
-  /**
-   * Horizontal alignment.
-   */
-  @Prop() align: 'left' | 'center' | 'right' = 'left';
-
   @Event() clickAway: EventEmitter<void>;
 
   @Listen('scroll', {target: 'window', capture: true})
@@ -70,15 +65,18 @@ export class VerdocsPortal {
     if (!anchorEl) return 0;
 
     const anchorRect = anchorEl.getBoundingClientRect();
-    if (this.align === 'left') {
-      return Math.max(anchorRect.left, 0);
-    }
 
-    if (this.align === 'right') {
-      return Math.max(anchorRect.left + anchorRect.width - this.portal.offsetWidth, 0);
-    }
+    const rightOfViewportWithScroll = document.documentElement.clientWidth + document.documentElement.scrollLeft;
+    const leftOfPopup = Math.max(anchorRect.left, 0);
+    // Old centering logic, disabled temporarily
+    //    Math.max(anchorRect.left - this.portal.offsetWidth / 2 + anchorRect.width / 2, 0);
+    // Old right-align logic, disabled temporarily
+    //    Math.max(anchorRect.left + anchorRect.width - this.portal.offsetWidth, 0);
+    const popupWidth = this.element?.offsetWidth || 400;
+    const offRightEdge = leftOfPopup + popupWidth > rightOfViewportWithScroll;
+    console.log('Portal', {leftOfPopup, offRightEdge, popupWidth, rightOfViewportWithScroll});
 
-    return Math.max(anchorRect.left - this.portal.offsetWidth / 2 + anchorRect.width / 2, 0);
+    return offRightEdge ? leftOfPopup - popupWidth : leftOfPopup;
   }
 
   private calculateTop() {
@@ -86,7 +84,13 @@ export class VerdocsPortal {
     if (!anchorEl) return 0;
 
     const anchorRect = anchorEl.getBoundingClientRect();
-    return anchorRect.bottom + this.voffset + document.documentElement.scrollTop;
+
+    const bottomOfViewportWithScroll = document.documentElement.clientHeight + document.documentElement.scrollTop;
+    const topOfPopup = anchorRect.bottom + this.voffset + document.documentElement.scrollTop;
+    const popupHeight = this.element?.offsetHeight || 300;
+    const offBottomEdge = topOfPopup + popupHeight > bottomOfViewportWithScroll;
+
+    return offBottomEdge ? topOfPopup - popupHeight - anchorRect.height : topOfPopup;
   }
 
   private calculatePosition() {
@@ -103,13 +107,6 @@ export class VerdocsPortal {
     this.portal.style.zIndex = Z_INDEX;
     this.portal.style.position = 'absolute';
     document.body.append(this.portal);
-
-    // function debounce(method, delay) {
-    //   clearTimeout(method._tId);
-    //   method._tId = setTimeout(function () {
-    //     method();
-    //   }, delay);
-    // }
   }
 
   componentDidLoad() {

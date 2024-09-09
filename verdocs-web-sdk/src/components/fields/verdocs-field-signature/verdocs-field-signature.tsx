@@ -159,10 +159,8 @@ export class VerdocsFieldSignature {
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
-    console.log('sig', field, value, base64);
-
     if (done) {
-      return <Host class={{done}}>{value && <img src={value} alt="Signature" />}</Host>;
+      return <Host class={{done}}>{value && <img src={base64} alt="Signature" />}</Host>;
     }
 
     return (

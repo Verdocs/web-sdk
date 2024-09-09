@@ -1100,10 +1100,6 @@ export namespace Components {
      */
     interface VerdocsPortal {
         /**
-          * Horizontal alignment.
-         */
-        "align": 'left' | 'center' | 'right';
-        /**
           * Unique ID of the parent element to anchor to.
          */
         "anchor": string;
@@ -4966,10 +4962,6 @@ declare namespace LocalJSX {
      * ```
      */
     interface VerdocsPortal {
-        /**
-          * Horizontal alignment.
-         */
-        "align"?: 'left' | 'center' | 'right';
         /**
           * Unique ID of the parent element to anchor to.
          */
