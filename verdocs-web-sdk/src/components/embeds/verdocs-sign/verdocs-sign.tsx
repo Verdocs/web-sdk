@@ -290,7 +290,7 @@ export class VerdocsSign {
       }
 
       case 'radio': {
-        return this.saveFieldChange(field.name, {prepared: false, value: e.target.value === e.target.checked});
+        return this.saveFieldChange(field.name, {prepared: false, value: e.target.checked});
       }
 
       case 'dropdown':
@@ -331,9 +331,8 @@ export class VerdocsSign {
           });
 
       case 'date':
-        const {date, formattedDate} = e.detail;
+        const {formattedDate} = e.detail;
         if (formattedDate) {
-          console.log('dt', {date, formattedDate});
           return this.saveFieldChange(field.name, {prepared: false, value: formattedDate});
         }
         break;
@@ -373,8 +372,10 @@ export class VerdocsSign {
 
       case 'textarea':
       case 'date':
-      case 'attachment':
         return value !== '';
+
+      case 'attachment':
+        return value === 'attached';
 
       case 'dropdown':
         return value !== '';
@@ -509,7 +510,9 @@ export class VerdocsSign {
       // console.log('[SIGN] onfieldInput', e.detail, e.target.value);
       // These field types don't emit fieldChange. Should we standardize on that? We don't tap "input" for fields like
       // text boxes because we'd be updating the field on every keystroke. We do those on blur which fires fieldChange.
-      if (e.target.name.includes('date') || e.target.name.includes('checkbox') || e.target.name.includes('radio')) {
+      console.log('onInput', e.target.type, e.target.name);
+      if (e.target.type === 'radio' || e.target.type === 'checkbox') {
+        // if (e.target.type === 'radio' || e.target.name.includes('date') || e.target.name.includes('checkbox')) {
         this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
       } else {
         this.checkRecipientFields();
@@ -517,7 +520,7 @@ export class VerdocsSign {
     });
     el.addEventListener('attached', async (e: any) => {
       console.log('[SIGN] onAttached', e.detail, e.target.value);
-      const r = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, this.roleId, field.name, e.detail);
+      const r = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name, e.detail);
       console.log('upload result', r);
       this.checkRecipientFields();
     });

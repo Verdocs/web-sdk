@@ -103,13 +103,13 @@ export class VerdocsFieldRadio {
     const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', label = '', group = ''} = field || {};
+    const {name, required = false, role_name = '', label = '', group = '', value = false} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
-    // TODO
-    const {id = 'option1', selected = false} = {};
-    // const {id = 'option1', selected = false} = options[option] || {};
-    const fieldId = `${fieldname}-${id}`;
+    const fieldId = `${fieldname}`;
+    // const fieldId = `${fieldname}-${id}`;
+    const selected = value === 'true';
+    console.log('r', selected, value, typeof value);
 
     if (done) {
       return (
@@ -124,7 +124,7 @@ export class VerdocsFieldRadio {
         {label && <div class="label">{label}</div>}
         {editable && group && <div class="group">{group}</div>}
 
-        <input id={fieldId} type="radio" name={fieldname} value={id} checked={!!selected} disabled={disabled} required={required} />
+        <input id={fieldId} type="radio" name={group || fieldname} value={name} checked={!!selected} disabled={disabled} required={required} />
         <label htmlFor={fieldId} />
 
         {editable && (

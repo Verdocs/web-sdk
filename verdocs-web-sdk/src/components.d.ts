@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ICreateEnvelopeRecipient, IEnvelope, IFileWithData, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -22,7 +22,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { ICreateEnvelopeRecipient, IEnvelope, IFileWithData, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -3531,7 +3531,7 @@ declare global {
     };
     interface HTMLVerdocsUploadDialogElementEventMap {
         "exit": any;
-        "next": IFileWithData[];
+        "next": File[];
     }
     /**
      * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
@@ -5932,7 +5932,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the dialog is closed. The event data will contain the file selected.
          */
-        "onNext"?: (event: VerdocsUploadDialogCustomEvent<IFileWithData[]>) => void;
+        "onNext"?: (event: VerdocsUploadDialogCustomEvent<File[]>) => void;
     }
     /**
      * Render the documents attached to an envelope in read-only (view) mode. All documents are

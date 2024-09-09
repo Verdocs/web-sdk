@@ -136,6 +136,7 @@ export class VerdocsFieldAttachment {
     this.dialog.open = true;
     this.dialog.addEventListener('exit', () => this.dialog?.remove());
     document.addEventListener('next', (e: any) => {
+      console.log('attach onNext', e.detail[0]);
       this.selectedFile = e.detail[0];
       this.attached?.emit(e.detail[0]);
       this.dialog?.remove();

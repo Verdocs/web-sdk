@@ -99,14 +99,13 @@ export class VerdocsFieldCheckbox {
     const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', label = ''} = field || {};
+    const {required = false, role_name = '', label = '', value = false} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
-    // TODO
-    const {id = 'option1', checked = false} = {};
-    // const {id = 'option1', checked = false} = options[option] || {};
-    const fieldId = `${fieldname}-${id}`;
+    const fieldId = `${fieldname}`;
+    // const fieldId = `${fieldname}-${id}`;
+    const checked = value === 'true';
 
     if (done) {
       return <Host class={{done}}>{checked ? '✓' : '☐'}</Host>;
@@ -117,7 +116,7 @@ export class VerdocsFieldCheckbox {
         {label && <div class="label">{label}</div>}
 
         <label htmlFor={fieldId}>
-          <input id={fieldId} name={fieldname} type="checkbox" checked={checked} disabled={disabled} required={required} value={id} />
+          <input id={fieldId} name={fieldname} type="checkbox" checked={checked} disabled={disabled} required={required} />
           <span />
 
           {editable && (

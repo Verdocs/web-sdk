@@ -2349,8 +2349,6 @@ export class VerdocsUploadDialog {
 }
 
 
-import type { IFileWithData as IVerdocsUploadDialogIFileWithData } from '@verdocs/web-sdk';
-
 export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDialog {
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -2359,7 +2357,7 @@ export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDia
   /**
    * Event fired when the dialog is closed. The event data will contain the file selected.
    */
-  next: EventEmitter<CustomEvent<IVerdocsUploadDialogIFileWithData[]>>;
+  next: EventEmitter<CustomEvent<File[]>>;
 }
 
 

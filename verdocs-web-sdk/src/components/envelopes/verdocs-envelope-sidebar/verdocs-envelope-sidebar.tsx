@@ -296,6 +296,7 @@ export class VerdocsEnvelopeSidebar {
         case 'completed':
           entries.push({icon: 'done_all', message: `Envelope was completed.`, date: new Date(history.created_at)});
           break;
+        case 'envelope_canceled':
         case 'canceled':
         case 'owner:canceled':
           entries.push({icon: 'cancel', message: `Envelope was canceled by the creator.`, date: new Date(history.created_at)});
