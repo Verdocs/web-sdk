@@ -552,7 +552,7 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
 
 @ProxyCmp({
   inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
-  methods: ['showSettingsPanel', 'hideSettingsPanel']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-checkbox',

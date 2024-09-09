@@ -70,6 +70,18 @@ export class VerdocsFieldCheckbox {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
+  @State() focused?: boolean = false;
+
+  @Method()
+  async focusField() {
+    // We don't have a visible input that we can actually focus on, so we fake it
+    console.log('Focusing me', this.fieldname);
+    this.focused = false;
+    this.focused = true;
+    setTimeout(() => {
+      this.focused = false;
+    }, 500);
+  }
 
   @Method()
   async showSettingsPanel() {
@@ -96,7 +108,7 @@ export class VerdocsFieldCheckbox {
   }
 
   render() {
-    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1, focused} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
     const {required = false, role_name = '', label = '', value = false} = field || {};
@@ -112,7 +124,7 @@ export class VerdocsFieldCheckbox {
     }
 
     return (
-      <Host class={{required, disabled, done}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <div class="label">{label}</div>}
 
         <label htmlFor={fieldId}>

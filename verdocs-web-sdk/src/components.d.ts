@@ -477,6 +477,7 @@ export namespace Components {
           * The name of the field to display.
          */
         "fieldname": string;
+        "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.

@@ -174,7 +174,7 @@ export class VerdocsSign {
 
       this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
     } catch (e) {
-      console.log('Error with signing session', e);
+      console.log('[SIGN] Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       this.showLoadError = true;
     }
@@ -201,7 +201,7 @@ export class VerdocsSign {
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'agreed'});
       })
       .catch(e => {
-        console.log('Update failure', e);
+        console.log('[SIGN] Update failure', e);
         this.submitting = false;
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
@@ -224,7 +224,7 @@ export class VerdocsSign {
         {
           this.submitting = true;
           const declineResult = await envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId);
-          console.log('Decline result', declineResult);
+          console.log('[SIGN] Decline result', declineResult);
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
           this.submitting = false;
           this.isDone = true;
@@ -241,7 +241,7 @@ export class VerdocsSign {
           const firstDoc = this.envelope.documents.find(doc => doc.type === 'attachment');
           if (firstDoc) {
             saveAttachment(this.endpoint, this.envelope, firstDoc.id).catch(e => {
-              console.log('Error downloading PDF', e);
+              console.log('[SIGN] Error downloading PDF', e);
             });
             this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
           }
@@ -327,7 +327,7 @@ export class VerdocsSign {
             this.updateRecipientFieldValue(field.name, updateResult);
           })
           .catch(e => {
-            console.warn('Error updating signature', e);
+            console.warn('[SIGN] Error updating signature', e);
           });
 
       case 'date':
@@ -338,11 +338,11 @@ export class VerdocsSign {
         break;
 
       case 'timestamp':
-        console.log('Updating timestamp', {value, ts: e.target.getAttribute('timestamp')});
+        console.log('[SIGN] Updating timestamp', {value, ts: e.target.getAttribute('timestamp')});
         break;
 
       default:
-        console.log('Unhandled field update', {value, checked}, field);
+        console.log('[SIGN] Unhandled field update', {value, checked}, field);
         break;
     }
   }
@@ -381,10 +381,16 @@ export class VerdocsSign {
         return value !== '';
 
       case 'checkbox':
-        return !!value;
+        return value === 'true';
 
       case 'radio':
-        return !!value;
+        if (!!field.group) {
+          return this.getRecipientFields()
+            .filter(f => f.group === field.group)
+            .some(field => field.value === 'true');
+        }
+
+        return field.value === 'true';
 
       default:
         return false;
@@ -392,8 +398,7 @@ export class VerdocsSign {
   }
 
   isFieldValid(field: IEnvelopeField) {
-    const {required = false} = field;
-    return !required || this.isFieldFilled(field);
+    return !field.required || this.isFieldFilled(field);
   }
 
   getSortedFillableFields() {
@@ -479,7 +484,6 @@ export class VerdocsSign {
     if (nextRequiredField) {
       const id = getFieldId(nextRequiredField);
       const el = document.getElementById(id) as any;
-      console.log('Jumping to next field', nextRequiredField);
       el?.focusField();
       el?.scrollTo({behavior: 'smooth', top: 0});
       this.focusedField = nextRequiredField.name;
@@ -559,9 +563,6 @@ export class VerdocsSign {
         return;
       }
 
-      if (field.type === 'signature') {
-        console.log('rendering', field);
-      }
       const el = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
       if (!el) {
         return;

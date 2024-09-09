@@ -88,10 +88,6 @@ export const getFieldId = (field: ITemplateField | IEnvelopeField) => {
   return `verdocs-doc-fld-${field.name}`;
 };
 
-export const getFieldOptionId = (field: ITemplateField | IEnvelopeField, index: number) => {
-  return `verdocs-doc-fld-${field.name}-${index}`;
-};
-
 interface IFieldOptions {
   disabled?: boolean;
   editable?: boolean;
@@ -157,7 +153,6 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
         el.setAttribute('tabIndex', tabIndex);
       }
 
-      console.log(field.name, 'editable', editable);
       el.setAttribute('editable', editable);
       el.setAttribute('draggable', draggable);
       el.setAttribute('done', done);
@@ -169,7 +164,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
     }
 
     case 'checkbox': {
-      const id = getFieldOptionId(field, 0);
+      const id = getFieldId(field);
       const existingField = document.getElementById(id);
       if (existingField) {
         setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
@@ -199,7 +194,7 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
     }
 
     case 'radio': {
-      const id = getFieldOptionId(field, 0);
+      const id = getFieldId(field);
       const existingField = document.getElementById(id);
       if (existingField) {
         setControlStyles(existingField, field, docPage.xScale, docPage.yScale);

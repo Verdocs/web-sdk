@@ -109,7 +109,6 @@ export class VerdocsFieldRadio {
     const fieldId = `${fieldname}`;
     // const fieldId = `${fieldname}-${id}`;
     const selected = value === 'true';
-    console.log('r', selected, value, typeof value);
 
     if (done) {
       return (
