@@ -95,8 +95,11 @@ verdocs-envelope-recipient-summary {
         display: flex;
         font-size: 16px;
         padding: 0 12px;
+        overflow: hidden;
         border-radius: 4px;
         align-items: center;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         border: 1px solid #cccccc;
         background: rgb(249, 250, 251);
       }

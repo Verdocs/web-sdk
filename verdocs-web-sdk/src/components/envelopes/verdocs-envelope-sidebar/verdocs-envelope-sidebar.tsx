@@ -197,7 +197,9 @@ export class VerdocsEnvelopeSidebar {
       entries.push({icon: 'pencil', message: 'Envelope completed.', date: new Date(this.store?.state?.updated_at)});
     }
 
-    const ownerCanceled = histories.some(history => history.event === 'owner:canceled');
+    // TODO: Shift back to server-side generating these events? We'll still need
+    // to tolerate both cases here for a while.
+    const ownerCanceled = histories.some(history => history.event as any === 'owner:canceled');
     if (this.store?.state?.status === 'canceled' && !ownerCanceled) {
       entries.push({icon: 'pencil', message: 'Envelope Cancelled.', date: new Date(this.store?.state?.canceled_at)});
     }

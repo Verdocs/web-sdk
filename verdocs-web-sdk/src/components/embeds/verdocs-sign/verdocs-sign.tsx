@@ -294,6 +294,8 @@ export class VerdocsSign {
       }
 
       case 'dropdown':
+        // TODO: Set prepared to false server-side.
+        console.log('Saving dropdown', field.name, e.detail);
         return this.saveFieldChange(field.name, {prepared: false, value: e.detail});
 
       case 'initial':
@@ -531,8 +533,14 @@ export class VerdocsSign {
     el.addEventListener('removed', (e: any) => {
       console.log('[SIGN] onRemoved', e.detail, e.target.value);
     });
-    el.addEventListener('focusout', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
-    el.addEventListener('fieldChange', e => this.handleFieldChange(field, e).finally(() => this.checkRecipientFields()));
+    el.addEventListener('focusout', e => {
+      if (field.type !== 'dropdown') {
+        this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
+      }
+    });
+    el.addEventListener('fieldChange', e => {
+      this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
+    });
 
     el.setAttribute('templateid', this.envelope.template_id);
     el.setAttribute('fieldname', field.name);

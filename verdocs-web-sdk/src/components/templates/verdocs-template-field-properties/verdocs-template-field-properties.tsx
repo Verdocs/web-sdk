@@ -192,9 +192,9 @@ export class VerdocsTemplateFieldProperties {
   }
 
   cleanupOptions() {
-    this.options = [...this.options.filter(opt => (opt.id || '').trim() !== '' || (opt.value || '').trim() !== '')];
-    if (!this.options.find(opt => !opt.id && !opt.value)) {
-      this.options = [...this.options, {id: '', value: ''}];
+    this.options = [...this.options.filter(opt => (opt.id || '').trim() !== '' || (opt.label || '').trim() !== '')];
+    if (!this.options.find(opt => !opt.id && !opt.label)) {
+      this.options = [...this.options, {id: '', label: ''}];
     }
   }
 
@@ -320,7 +320,6 @@ export class VerdocsTemplateFieldProperties {
                 label="Placeholder"
                 value={this.placeholder}
                 autocomplete="off"
-                // helpText="Placeholder to display if the field is empty."
                 placeholder="Placeholder..."
                 onInput={(e: any) => {
                   this.placeholder = e.target.value;
@@ -374,11 +373,11 @@ export class VerdocsTemplateFieldProperties {
                     }}
                   />
                   <verdocs-text-input
-                    id={`verdocs-option-value-${option.id}`}
+                    id={`verdocs-option-label-${option.id}`}
                     value={option.value}
-                    placeholder="Display value"
+                    placeholder="Display label"
                     onInput={(e: any) => {
-                      this.options[index].value = e.target.value;
+                      this.options[index].label = e.target.label;
                       this.dirty = true;
                       this.cleanupOptions();
                     }}

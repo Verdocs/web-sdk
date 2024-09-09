@@ -123,14 +123,15 @@ export class VerdocsFieldDropdown {
       return <Host class={{done}}>{value}</Host>;
     }
 
+    // TODO: Remove as any when JS SDK is updated
     return (
       <Host class={{required, disabled, done}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
 
         <select disabled={disabled} ref={el => (this.el = el)} onChange={e => this.handleChange(e)}>
           <option value="">Select...</option>
-          {(options || []).map(option => (
-            <option value={option.value} selected={option.value === value}>
+          {(options || ([] as any[])).map(option => (
+            <option value={option.id} selected={option.id === value}>
               {option.label}
             </option>
           ))}

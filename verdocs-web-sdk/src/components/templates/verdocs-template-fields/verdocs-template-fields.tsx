@@ -337,7 +337,7 @@ export class VerdocsTemplateFields {
         width,
         height,
         multiline: false,
-        options: this.placing === 'radio' ? [{value: 'option-1', label: 'Option 1'}] : [],
+        options: this.placing === 'radio' ? [{id: 'option-1', label: 'Option 1'}] : [],
       };
       console.log('[FIELDS] Will save new field', field);
 
