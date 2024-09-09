@@ -1,7 +1,6 @@
-import interact from 'interactjs';
-import {ITemplateField, getRGBA, VerdocsEndpoint, updateField} from '@verdocs/js-sdk';
+import {ITemplateField, getRGBA, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment, Element} from '@stencil/core';
-import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
+import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {SettingsIcon} from '../../../utils/Icons';
 
@@ -130,59 +129,6 @@ export class VerdocsFieldAttachment {
   async componentWillLoad() {
     this.fieldStore = getTemplateFieldStore(this.templateid);
     this.roleStore = getTemplateRoleStore(this.templateid);
-  }
-
-  componentDidRender() {
-    interact.dynamicDrop(true);
-
-    if (this.editable) {
-      interact(this.el).resizable({
-        edges: {top: false, bottom: false, left: true, right: true},
-        listeners: {
-          start: this.handleResizeStart.bind(this),
-          move: this.handleResize.bind(this),
-          end: this.handleResizeEnd.bind(this),
-        },
-      });
-    }
-  }
-
-  handleResizeStart(e: any) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  handleResize(e: any) {
-    let {x = 0, y = 0, h = 0} = e.target.dataset;
-    let {width, height} = e.rect;
-
-    x = (parseFloat(x) || 0) + e.deltaRect.left;
-    y = (parseFloat(y) || 0) + e.deltaRect.top;
-    h = (parseFloat(h) || 0) + e.deltaRect.height;
-
-    width /= this.xscale;
-    height /= this.yscale;
-
-    Object.assign(e.target.style, {
-      width: `${width}px`,
-      height: `${height}px`,
-      transform: `scale(${this.xscale}, ${this.yscale}); translate(${x}px, ${y + h}px)`,
-    });
-
-    Object.assign(e.target.dataset, {x, y, h});
-  }
-
-  handleResizeEnd(e: any) {
-    const width = Math.round(parseFloat(e.target.style.width));
-    const height = Math.round(parseFloat(e.target.style.height));
-
-    updateField(this.endpoint, this.templateid, this.fieldname, {width, height})
-      .then(field => {
-        updateStoreField(this.fieldStore, this.fieldname, field);
-        this.settingsChanged?.emit({fieldName: field.name, field});
-        Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
-      })
-      .catch(e => console.log('Field update failed', e));
   }
 
   handleShow() {
