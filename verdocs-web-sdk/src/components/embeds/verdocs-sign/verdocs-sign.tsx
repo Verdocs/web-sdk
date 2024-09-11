@@ -286,11 +286,11 @@ export class VerdocsSign {
         return this.saveFieldChange(field.name, {prepared: false, value});
 
       case 'checkbox': {
-        return this.saveFieldChange(field.name, {prepared: false, value: e.target.checked});
+        return this.saveFieldChange(field.name, {prepared: false, value: String(e.target.checked)});
       }
 
       case 'radio': {
-        return this.saveFieldChange(field.name, {prepared: false, value: e.target.checked});
+        return this.saveFieldChange(field.name, {prepared: false, value: String(e.target.checked)});
       }
 
       case 'dropdown':
@@ -534,7 +534,7 @@ export class VerdocsSign {
     });
     el.addEventListener('remove', (e: any) => {
       console.log('[SIGN] onRemoved', e.detail, e.target.value);
-      deleteEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name, null as any)
+      deleteEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name)
         .then(r => {
           console.log('[SIGN] Deleted attachment', r);
           // this.updateRecipientFieldValue(fieldName, updateResult)

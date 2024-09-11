@@ -1580,6 +1580,32 @@ export declare interface VerdocsStatusIndicator extends Components.VerdocsStatus
 
 
 @ProxyCmp({
+  inputs: ['checked', 'disabled', 'style']
+})
+@Component({
+  selector: 'verdocs-switch',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['checked', 'disabled', 'style'],
+})
+export class VerdocsSwitch {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['checkedChange']);
+  }
+}
+
+
+export declare interface VerdocsSwitch extends Components.VerdocsSwitch {
+
+  checkedChange: EventEmitter<CustomEvent<boolean>>;
+}
+
+
+@ProxyCmp({
   inputs: ['columns', 'data']
 })
 @Component({
@@ -2256,11 +2282,15 @@ export class VerdocsTextInput {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['blur']);
   }
 }
 
 
-export declare interface VerdocsTextInput extends Components.VerdocsTextInput {}
+export declare interface VerdocsTextInput extends Components.VerdocsTextInput {
+
+  blur: EventEmitter<CustomEvent<any>>;
+}
 
 
 @ProxyCmp({

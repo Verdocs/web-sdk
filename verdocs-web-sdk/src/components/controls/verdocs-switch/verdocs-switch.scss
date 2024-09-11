@@ -1,0 +1,63 @@
+@import '../../../theme.scss';
+
+verdocs-switch {
+  font-family: $primary-font;
+
+  .switch {
+    display: inline-flex;
+    height: 24px;
+    width: 44px;
+    flex-shrink: 0;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 12px;
+    border: transparent;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  .switch.primary[data-state='checked'] {
+    background: $primary-color;
+  }
+
+  .switch.primary[data-state='unchecked'] {
+    background: $extra-light-border-color;
+  }
+
+  .switch.secondary[data-state='checked'] {
+    background: $secondary-color;
+  }
+
+  .switch.secondary[data-state='unchecked'] {
+    background: $extra-light-border-color;
+  }
+
+  .slider {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  .slider[data-state='checked'] {
+    transform: translateX(16px);
+  }
+
+  .slider[data-state='unchecked'] {
+    transform: translateX(-4px);
+  }
+
+  .switch.disabled.primary,
+  .switch.disabled.secondary {
+    cursor: not-allowed;
+    background: $dark-disabled-color;
+  }
+}

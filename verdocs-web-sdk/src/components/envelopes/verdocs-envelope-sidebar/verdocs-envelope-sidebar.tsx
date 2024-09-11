@@ -1,10 +1,12 @@
 import {format} from 'date-fns';
-import {cancelEnvelope, capitalize, formatFullName, IEnvelope, IRecipient, resendInvitation, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
-import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
+import {Component, h, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
+import {cancelEnvelope, capitalize, formatFullName, IEnvelope, IRecipient, resendInvitation, updateEnvelope, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {getEnvelopeStore, TEnvelopeStore, updateStoreEnvelope} from '../../../utils/EnvelopeStore';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+
+const MS_PER_HOUR = 60 * 60 * 1000;
 
 const InformationCircle = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>`;
 
@@ -88,10 +90,14 @@ export class VerdocsEnvelopeSidebar {
   // @State() roleNames: string[] = [];
   @State() activeTab: number = 1;
   @State() panelOpen = false;
-  @State() showManageDialog = false;
   @State() showRecipientDialog = '';
   @State() showCancelDialog = false;
   @State() loading = true;
+
+  @State() remindersEnabled = false;
+  @State() updatingReminders = false;
+  @State() initialReminder: number | null = null;
+  @State() followupReminders: number | null = null;
 
   store: TEnvelopeStore | null = null;
 
@@ -111,6 +117,10 @@ export class VerdocsEnvelopeSidebar {
 
       this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
       this.sortEnvelopeRecipients();
+      this.initialReminder = this.store?.state?.initial_reminder;
+      this.followupReminders = this.store?.state?.followup_reminders;
+      this.remindersEnabled = !!this.initialReminder;
+
       this.loading = false;
     } catch (e) {
       console.log('[SIDEBAR] Error loading envelope', e);
@@ -199,7 +209,7 @@ export class VerdocsEnvelopeSidebar {
 
     // TODO: Shift back to server-side generating these events? We'll still need
     // to tolerate both cases here for a while.
-    const ownerCanceled = histories.some(history => history.event as any === 'owner:canceled');
+    const ownerCanceled = histories.some(history => (history.event as any) === 'owner:canceled');
     if (this.store?.state?.status === 'canceled' && !ownerCanceled) {
       entries.push({icon: 'pencil', message: 'Envelope Cancelled.', date: new Date(this.store?.state?.canceled_at)});
     }
@@ -251,9 +261,9 @@ export class VerdocsEnvelopeSidebar {
           break;
         case 'recipient:claimed':
           if (history.event_detail === 'guest') {
-            entries.push({icon: 'account_circle', message: `${fullName} claimed the Verdoc as a guest.`, date: new Date(history.created_at)});
+            entries.push({icon: 'account_circle', message: `${fullName} claimed the Envelope as a guest.`, date: new Date(history.created_at)});
           } else if (history.event_detail === 'profile') {
-            entries.push({icon: 'verified_user', message: `${fullName} claimed the Verdoc as a verified user.`, date: new Date(history.created_at)});
+            entries.push({icon: 'verified_user', message: `${fullName} claimed the Envelope as a verified user.`, date: new Date(history.created_at)});
           }
           break;
         case 'recipient:agreed':
@@ -322,6 +332,37 @@ export class VerdocsEnvelopeSidebar {
   //   return recipient.claimed !== true && invalidRecipientStatus.indexOf(recipient.status) === -1 && invalidEnvelopeStatus.indexOf(this.store?.state?.status) === -1;
   // }
 
+  handleToggleReminders() {
+    if (this.remindersEnabled) {
+      return this.handleSetReminders(null, null);
+    } else {
+      return this.handleSetReminders(24 * MS_PER_HOUR, 48 * MS_PER_HOUR);
+    }
+  }
+
+  handleSetReminders(initial_reminder: number | null, followup_reminders: number | null) {
+    console.log('Updating reminders...');
+    this.updatingReminders = true;
+
+    updateEnvelope(this.endpoint, this.envelopeId, {initial_reminder, followup_reminders})
+      .then(envelope => {
+        console.log('Updated', envelope);
+        updateStoreEnvelope(this.store, envelope);
+        this.initialReminder = this.store?.state?.initial_reminder;
+        this.followupReminders = this.store?.state?.followup_reminders;
+        this.remindersEnabled = !!envelope.initial_reminder;
+        this.updatingReminders = false;
+      })
+      .catch(e => {
+        console.log('Error updating envelope', e);
+        this.initialReminder = this.store?.state?.initial_reminder;
+        this.followupReminders = this.store?.state?.followup_reminders;
+        this.remindersEnabled = !!this.store?.state?.initial_reminder;
+        this.updatingReminders = false;
+        alert(e.response.data.error);
+      });
+  }
+
   render() {
     if (!this.store.state) {
       return <Host />;
@@ -330,6 +371,7 @@ export class VerdocsEnvelopeSidebar {
     const isEnvelopeOwner = userIsEnvelopeOwner(this.endpoint.profile, this.store.state);
     const historyEntries = this.prepareHistoryEntries();
     const functionsDisabled = this.store?.state?.status !== 'pending' && this.store?.state?.status !== 'in progress';
+    console.log('re', this.remindersEnabled);
 
     return (
       <Host class={this.panelOpen ? 'open' : ''}>
@@ -355,13 +397,13 @@ export class VerdocsEnvelopeSidebar {
             <div class="label">Status</div>
             <div class="value">{capitalize(this.store?.state?.status)}</div>
 
-            <div class="label">Verdoc Owner ID</div>
+            <div class="label">Owner ID</div>
             <div class="value">{this.store?.state?.profile_id}</div>
 
-            <div class="label">Verdoc Owner Name</div>
+            <div class="label">Owner Name</div>
             <div class="value">{formatFullName(this.store?.state?.profile)}</div>
 
-            <div class="label">Verdoc Owner Email</div>
+            <div class="label">Owner Email</div>
             <div class="value">{this.store?.state?.profile?.email}</div>
           </div>
         )}
@@ -378,7 +420,7 @@ export class VerdocsEnvelopeSidebar {
                 <div class="recipient-detail">
                   <div class="recipient-header">
                     <div class="recipient-number">{index + 1}</div>
-                    <div class="recipient-type">{recipient.role_name}</div>
+                    <div class="recipient-name">{recipient.role_name}</div>
                     <div class={{'recipient-status': true, [recipient.status]: true}}>{recipient.status}</div>
                     {isEnvelopeOwner && !functionsDisabled && (
                       <verdocs-dropdown
@@ -403,7 +445,47 @@ export class VerdocsEnvelopeSidebar {
               );
             })}
 
-            {/*{isEnvelopeOwner && (*/}
+            {isEnvelopeOwner && (
+              <div class="reminders">
+                <div class="form-row">
+                  <div class="reminders-label">Reminders</div>
+                  <verdocs-switch disabled={this.updatingReminders} checked={this.remindersEnabled} onCheckedChange={() => this.handleToggleReminders()} />
+                </div>
+
+                {this.remindersEnabled && (
+                  <Fragment>
+                    <div class="form-row">
+                      <div class="form-label">Initial Reminder:</div>
+                      <verdocs-text-input
+                        placeholder="In hours..."
+                        disabled={this.updatingReminders}
+                        value={String(Math.floor(this.initialReminder / MS_PER_HOUR))}
+                        onBlur={(e: any) => {
+                          this.initialReminder = Number(e.target.value) * MS_PER_HOUR;
+                          this.handleSetReminders(this.initialReminder, this.followupReminders);
+                        }}
+                      />
+                    </div>
+                    <div class="form-row">
+                      <div class="form-label">Follow-up Reminders:</div>
+                      <verdocs-text-input
+                        placeholder="In hours..."
+                        disabled={this.updatingReminders}
+                        value={String(Math.floor(this.followupReminders / MS_PER_HOUR))}
+                        onBlur={(e: any) => {
+                          this.followupReminders = Number(e.target.value) * MS_PER_HOUR;
+                          this.handleSetReminders(this.initialReminder, this.followupReminders);
+                        }}
+                      />
+                    </div>
+                    <div class="form-row">
+                      <div class="form-label">Next Reminder:</div>
+                      <div style={{color: '#dddddd'}}>{format(new Date(this.store?.state?.next_reminder), 'P p')}</div>
+                    </div>
+                  </Fragment>
+                )}
+              </div>
+            )}
             {/*  <verdocs-button*/}
             {/*    class="manage-recipients-button"*/}
             {/*    variant="standard"*/}
@@ -411,13 +493,12 @@ export class VerdocsEnvelopeSidebar {
             {/*    onClick={() => (this.showManageDialog = !functionsDisabled)}*/}
             {/*    disabled={functionsDisabled}*/}
             {/*  />*/}
-            {/*)}*/}
 
             {isEnvelopeOwner && (
               <verdocs-button
                 class="manage-recipients-button"
                 variant="standard"
-                label="Cancel Verdoc"
+                label="Cancel Envelope"
                 onClick={() => (this.showCancelDialog = !functionsDisabled)}
                 disabled={functionsDisabled}
               />
@@ -444,18 +525,6 @@ export class VerdocsEnvelopeSidebar {
 
         {this.showRecipientDialog && (
           <verdocs-envelope-recipient-link envelopeId={this.envelopeId} roleName={this.showRecipientDialog} onNext={() => (this.showRecipientDialog = '')} />
-        )}
-
-        {this.showManageDialog && (
-          <verdocs-envelope-recipient-summary
-            envelopeId={this.envelopeId}
-            canView={false}
-            onAnother={() => {
-              this.showManageDialog = false;
-              this.another?.emit({envelope: this.store.state});
-            }}
-            onNext={() => (this.showManageDialog = false)}
-          />
         )}
 
         {this.showCancelDialog && (

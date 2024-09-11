@@ -19,8 +19,9 @@ verdocs-text-input {
     outline: none;
 
     &:disabled {
-      border: 1px solid $verdocs-grey-2;
-      background: $verdocs-grey-3;
+      cursor: not-allowed;
+      background: $verdocs-grey-2;
+      border: 1px solid $verdocs-grey-1;
     }
 
     &::placeholder {

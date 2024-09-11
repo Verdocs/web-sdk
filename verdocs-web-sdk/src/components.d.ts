@@ -977,7 +977,7 @@ export namespace Components {
         "initials": string;
     }
     /**
-     * Prompt the user to confirm their identity with a series of questions.
+     * Prompt the user to confirm their identity with a PIN or a series of questions.
      */
     interface VerdocsKbaDialog {
         /**
@@ -1379,6 +1379,23 @@ export namespace Components {
           * The theme to use for diplay.
          */
         "theme"?: 'dark' | 'light';
+    }
+    /**
+     * Displays a toggle switch.
+     * ```ts
+     * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />
+     * ```
+     */
+    interface VerdocsSwitch {
+        "checked": boolean;
+        /**
+          * Should the field be disabled?
+         */
+        "disabled": boolean;
+        /**
+          * Select purple or green treatments.
+         */
+        "style": 'primary' | 'secondary';
     }
     /**
      * Display a simple table of data. Columns and data cells may have custom renderers defined to
@@ -1966,6 +1983,10 @@ export interface VerdocsSignatureDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSignatureDialogElement;
 }
+export interface VerdocsSwitchCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSwitchElement;
+}
 export interface VerdocsTableCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTableElement;
@@ -2025,6 +2046,10 @@ export interface VerdocsTemplateVisibilityCustomEvent<T> extends CustomEvent<T> 
 export interface VerdocsTemplatesListCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplatesListElement;
+}
+export interface VerdocsTextInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTextInputElement;
 }
 export interface VerdocsToggleButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2710,7 +2735,7 @@ declare global {
         "next": string;
     }
     /**
-     * Prompt the user to confirm their identity with a series of questions.
+     * Prompt the user to confirm their identity with a PIN or a series of questions.
      */
     interface HTMLVerdocsKbaDialogElement extends Components.VerdocsKbaDialog, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsKbaDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsKbaDialogElement, ev: VerdocsKbaDialogCustomEvent<HTMLVerdocsKbaDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3107,6 +3132,29 @@ declare global {
         prototype: HTMLVerdocsStatusIndicatorElement;
         new (): HTMLVerdocsStatusIndicatorElement;
     };
+    interface HTMLVerdocsSwitchElementEventMap {
+        "checkedChange": boolean;
+    }
+    /**
+     * Displays a toggle switch.
+     * ```ts
+     * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />
+     * ```
+     */
+    interface HTMLVerdocsSwitchElement extends Components.VerdocsSwitch, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSwitchElementEventMap>(type: K, listener: (this: HTMLVerdocsSwitchElement, ev: VerdocsSwitchCustomEvent<HTMLVerdocsSwitchElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSwitchElementEventMap>(type: K, listener: (this: HTMLVerdocsSwitchElement, ev: VerdocsSwitchCustomEvent<HTMLVerdocsSwitchElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsSwitchElement: {
+        prototype: HTMLVerdocsSwitchElement;
+        new (): HTMLVerdocsSwitchElement;
+    };
     interface HTMLVerdocsTableElementEventMap {
         "colHeaderClick": {col: IColumn};
         "rowClick": {row: any};
@@ -3471,6 +3519,9 @@ declare global {
         prototype: HTMLVerdocsTemplatesListElement;
         new (): HTMLVerdocsTemplatesListElement;
     };
+    interface HTMLVerdocsTextInputElementEventMap {
+        "blur": any;
+    }
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
@@ -3480,6 +3531,14 @@ declare global {
      * ```
      */
     interface HTMLVerdocsTextInputElement extends Components.VerdocsTextInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTextInputElementEventMap>(type: K, listener: (this: HTMLVerdocsTextInputElement, ev: VerdocsTextInputCustomEvent<HTMLVerdocsTextInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTextInputElementEventMap>(type: K, listener: (this: HTMLVerdocsTextInputElement, ev: VerdocsTextInputCustomEvent<HTMLVerdocsTextInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTextInputElement: {
         prototype: HTMLVerdocsTextInputElement;
@@ -3635,6 +3694,7 @@ declare global {
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-spinner": HTMLVerdocsSpinnerElement;
         "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
+        "verdocs-switch": HTMLVerdocsSwitchElement;
         "verdocs-table": HTMLVerdocsTableElement;
         "verdocs-tabs": HTMLVerdocsTabsElement;
         "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
@@ -4827,7 +4887,7 @@ declare namespace LocalJSX {
         "onNext"?: (event: VerdocsInitialDialogCustomEvent<string>) => void;
     }
     /**
-     * Prompt the user to confirm their identity with a series of questions.
+     * Prompt the user to confirm their identity with a PIN or a series of questions.
      */
     interface VerdocsKbaDialog {
         /**
@@ -5316,6 +5376,24 @@ declare namespace LocalJSX {
           * The theme to use for diplay.
          */
         "theme"?: 'dark' | 'light';
+    }
+    /**
+     * Displays a toggle switch.
+     * ```ts
+     * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />
+     * ```
+     */
+    interface VerdocsSwitch {
+        "checked"?: boolean;
+        /**
+          * Should the field be disabled?
+         */
+        "disabled"?: boolean;
+        "onCheckedChange"?: (event: VerdocsSwitchCustomEvent<boolean>) => void;
+        /**
+          * Select purple or green treatments.
+         */
+        "style"?: 'primary' | 'secondary';
     }
     /**
      * Display a simple table of data. Columns and data cells may have custom renderers defined to
@@ -5849,6 +5927,7 @@ declare namespace LocalJSX {
           * The label for the field.
          */
         "label"?: string;
+        "onBlur"?: (event: VerdocsTextInputCustomEvent<any>) => void;
         /**
           * The placeholder for the field.
          */
@@ -6039,6 +6118,7 @@ declare namespace LocalJSX {
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-spinner": VerdocsSpinner;
         "verdocs-status-indicator": VerdocsStatusIndicator;
+        "verdocs-switch": VerdocsSwitch;
         "verdocs-table": VerdocsTable;
         "verdocs-tabs": VerdocsTabs;
         "verdocs-template-attachments": VerdocsTemplateAttachments;
@@ -6297,7 +6377,7 @@ declare module "@stencil/core" {
              */
             "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
             /**
-             * Prompt the user to confirm their identity with a series of questions.
+             * Prompt the user to confirm their identity with a PIN or a series of questions.
              */
             "verdocs-kba-dialog": LocalJSX.VerdocsKbaDialog & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;
             /**
@@ -6470,6 +6550,13 @@ declare module "@stencil/core" {
              * If the status is provided as a string it can be either a `TRecipientStatus` or `TDocumentStatus` value.
              */
             "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
+            /**
+             * Displays a toggle switch.
+             * ```ts
+             * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />
+             * ```
+             */
+            "verdocs-switch": LocalJSX.VerdocsSwitch & JSXBase.HTMLAttributes<HTMLVerdocsSwitchElement>;
             /**
              * Display a simple table of data. Columns and data cells may have custom renderers defined to
              * support creating interactive table layouts.
