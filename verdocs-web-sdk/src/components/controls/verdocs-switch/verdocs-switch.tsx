@@ -17,7 +17,7 @@ export class VerdocsSwitch {
   /**
    * Select purple or green treatments.
    */
-  @Prop() style: 'primary' | 'secondary' = 'primary';
+  @Prop() theme: 'primary' | 'secondary' = 'primary';
 
   /**
    * Should the field be disabled?
@@ -32,7 +32,7 @@ export class VerdocsSwitch {
         value="on"
         type="button"
         role="switch"
-        class={`switch ${this.style} ${this.disabled ? 'disabled' : ''}`}
+        class={`switch ${this.theme} ${this.disabled ? 'disabled' : ''}`}
         data-state={this.checked ? 'checked' : 'unchecked'}
         aria-checked={this.checked ? 'checked' : 'unchecked'}
         onClick={() => {

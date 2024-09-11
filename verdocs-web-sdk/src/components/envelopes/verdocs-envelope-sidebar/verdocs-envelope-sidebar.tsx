@@ -188,6 +188,7 @@ export class VerdocsEnvelopeSidebar {
         this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
         this.sortEnvelopeRecipients();
         this.loading = false;
+        this.panelOpen = false;
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.store?.state, event: 'canceled'});
       })
       .catch(e => {
@@ -348,8 +349,8 @@ export class VerdocsEnvelopeSidebar {
       .then(envelope => {
         console.log('Updated', envelope);
         updateStoreEnvelope(this.store, envelope);
-        this.initialReminder = this.store?.state?.initial_reminder;
-        this.followupReminders = this.store?.state?.followup_reminders;
+        this.initialReminder = envelope.initial_reminder;
+        this.followupReminders = envelope.followup_reminders;
         this.remindersEnabled = !!envelope.initial_reminder;
         this.updatingReminders = false;
       })
@@ -371,7 +372,6 @@ export class VerdocsEnvelopeSidebar {
     const isEnvelopeOwner = userIsEnvelopeOwner(this.endpoint.profile, this.store.state);
     const historyEntries = this.prepareHistoryEntries();
     const functionsDisabled = this.store?.state?.status !== 'pending' && this.store?.state?.status !== 'in progress';
-    console.log('re', this.remindersEnabled);
 
     return (
       <Host class={this.panelOpen ? 'open' : ''}>
@@ -449,7 +449,7 @@ export class VerdocsEnvelopeSidebar {
               <div class="reminders">
                 <div class="form-row">
                   <div class="reminders-label">Reminders</div>
-                  <verdocs-switch disabled={this.updatingReminders} checked={this.remindersEnabled} onCheckedChange={() => this.handleToggleReminders()} />
+                  <verdocs-switch disabled={functionsDisabled || this.updatingReminders} checked={this.remindersEnabled} onCheckedChange={() => this.handleToggleReminders()} />
                 </div>
 
                 {this.remindersEnabled && (
@@ -458,7 +458,7 @@ export class VerdocsEnvelopeSidebar {
                       <div class="form-label">Initial Reminder:</div>
                       <verdocs-text-input
                         placeholder="In hours..."
-                        disabled={this.updatingReminders}
+                        disabled={functionsDisabled || this.updatingReminders}
                         value={String(Math.floor(this.initialReminder / MS_PER_HOUR))}
                         onBlur={(e: any) => {
                           this.initialReminder = Number(e.target.value) * MS_PER_HOUR;
@@ -470,7 +470,7 @@ export class VerdocsEnvelopeSidebar {
                       <div class="form-label">Follow-up Reminders:</div>
                       <verdocs-text-input
                         placeholder="In hours..."
-                        disabled={this.updatingReminders}
+                        disabled={functionsDisabled || this.updatingReminders}
                         value={String(Math.floor(this.followupReminders / MS_PER_HOUR))}
                         onBlur={(e: any) => {
                           this.followupReminders = Number(e.target.value) * MS_PER_HOUR;

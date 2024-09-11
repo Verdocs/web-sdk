@@ -1395,7 +1395,7 @@ export namespace Components {
         /**
           * Select purple or green treatments.
          */
-        "style": 'primary' | 'secondary';
+        "theme": 'primary' | 'secondary';
     }
     /**
      * Display a simple table of data. Columns and data cells may have custom renderers defined to
@@ -5393,7 +5393,7 @@ declare namespace LocalJSX {
         /**
           * Select purple or green treatments.
          */
-        "style"?: 'primary' | 'secondary';
+        "theme"?: 'primary' | 'secondary';
     }
     /**
      * Display a simple table of data. Columns and data cells may have custom renderers defined to

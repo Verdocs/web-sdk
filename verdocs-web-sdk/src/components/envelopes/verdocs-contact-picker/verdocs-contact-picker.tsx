@@ -126,18 +126,6 @@ export class VerdocsContactPicker {
     this.searchContacts?.emit({query: this.last_name});
   }
 
-  handleEmailChange(e: any) {
-    this.email = e.target.value;
-  }
-
-  handlePhoneChange(e: any) {
-    this.phone = convertToE164(e.target.value);
-  }
-
-  handleMessageChange(e: any) {
-    this.message = e.target.value;
-  }
-
   handleCancel(e: any) {
     e.stopPropagation();
     this.showSuggestions = false;
@@ -229,7 +217,7 @@ export class VerdocsContactPicker {
             value={this.email}
             placeholder="Email Address..."
             onFocus={() => (this.showSuggestions = false)}
-            onInput={e => this.handleEmailChange(e)}
+            onInput={(e: any) => (this.email = e.target.value)}
           />
         </div>
 
@@ -244,7 +232,7 @@ export class VerdocsContactPicker {
             value={this.phone}
             placeholder="Phone Number..."
             onFocus={() => (this.showSuggestions = false)}
-            onInput={e => this.handlePhoneChange(e)}
+            onInput={(e: any) => convertToE164(e.target.value)}
           />
         </div>
 
@@ -273,7 +261,7 @@ export class VerdocsContactPicker {
                 value={this.pinCode}
                 placeholder="KBA PIN Code..."
                 onFocus={() => (this.showSuggestions = false)}
-                onInput={e => this.handleMessageChange(e)}
+                onInput={(e: any) => (this.pinCode = e.target.value)}
               />
             )}
           </div>
@@ -291,7 +279,7 @@ export class VerdocsContactPicker {
               value={this.message}
               placeholder="Invitation Message..."
               onFocus={() => (this.showSuggestions = false)}
-              onInput={e => this.handleMessageChange(e)}
+              onInput={(e: any) => (this.message = e.target.value)}
             />
           </div>
         )}

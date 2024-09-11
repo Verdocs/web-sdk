@@ -1580,14 +1580,14 @@ export declare interface VerdocsStatusIndicator extends Components.VerdocsStatus
 
 
 @ProxyCmp({
-  inputs: ['checked', 'disabled', 'style']
+  inputs: ['checked', 'disabled', 'theme']
 })
 @Component({
   selector: 'verdocs-switch',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['checked', 'disabled', 'style'],
+  inputs: ['checked', 'disabled', 'theme'],
 })
 export class VerdocsSwitch {
   protected el: HTMLElement;

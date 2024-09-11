@@ -48,11 +48,11 @@ verdocs-switch {
   }
 
   .slider[data-state='checked'] {
-    transform: translateX(16px);
+    transform: translateX(22px);
   }
 
   .slider[data-state='unchecked'] {
-    transform: translateX(-4px);
+    transform: translateX(-2px);
   }
 
   .switch.disabled.primary,
