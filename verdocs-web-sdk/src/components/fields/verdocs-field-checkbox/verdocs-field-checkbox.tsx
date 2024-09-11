@@ -75,8 +75,6 @@ export class VerdocsFieldCheckbox {
   @Method()
   async focusField() {
     // We don't have a visible input that we can actually focus on, so we fake it
-    console.log('Focusing me', this.fieldname);
-    this.focused = false;
     this.focused = true;
     setTimeout(() => {
       this.focused = false;

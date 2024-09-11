@@ -76,6 +76,7 @@ export class VerdocsView {
   @State() envelope: IEnvelope | null = null;
   @State() roleNames: string[] = [];
   @State() showCancelDone = false;
+  @State() showLoadError = false;
 
   async componentWillLoad() {
     this.endpoint.loadSession();
@@ -98,6 +99,7 @@ export class VerdocsView {
         console.log('[VIEW] Reloaded envelope', this.envelope);
       }, 2000);
     } catch (e) {
+      this.showLoadError = true;
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -190,11 +192,26 @@ export class VerdocsView {
   }
 
   render() {
+    if (this.showLoadError) {
+      return (
+        <Host>
+          <verdocs-ok-dialog
+            heading="Unable to View Envelope"
+            message={`Sorry, that envelope is not valid.`}
+            buttonLabel="OK"
+            onNext={() => {
+              this.showLoadError = false;
+            }}
+          />
+        </Host>
+      );
+    }
+
     if (!this.envelope) {
       return (
         <Host>
           <img
-            src="https://verdocs-public-assets.s3.amazonaws.com/loading-placeholder.png"
+            src="https://public-assets.verdocs.com/loading-placeholder.png"
             style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
             alt="Placeholder page"
           />

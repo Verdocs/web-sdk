@@ -1,5 +1,5 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField} from '@verdocs/js-sdk';
+import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment} from '@verdocs/js-sdk';
 import {integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
@@ -525,13 +525,21 @@ export class VerdocsSign {
       }
     });
     el.addEventListener('attached', async (e: any) => {
+      // TODO: Show a spinner and/or progress bar
       console.log('[SIGN] onAttached', e.detail, e.target.value);
       const r = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name, e.detail);
       console.log('upload result', r);
+      // this.updateRecipientFieldValue(fieldName, updateResult)
       this.checkRecipientFields();
     });
-    el.addEventListener('removed', (e: any) => {
+    el.addEventListener('remove', (e: any) => {
       console.log('[SIGN] onRemoved', e.detail, e.target.value);
+      deleteEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name, null as any)
+        .then(r => {
+          console.log('[SIGN] Deleted attachment', r);
+          // this.updateRecipientFieldValue(fieldName, updateResult)
+        })
+        .catch(e => console.log('[SIGN] Error deleting attachment', e));
     });
     el.addEventListener('focusout', e => {
       if (field.type !== 'dropdown') {
@@ -607,6 +615,21 @@ export class VerdocsSign {
   }
 
   render() {
+    if (this.showLoadError) {
+      return (
+        <Host>
+          <verdocs-ok-dialog
+            heading="Unable to Start Signing"
+            message={`Sorry, your invite code is invalid or has expired. Please check your email for an updated invitation, or contact the sender.`}
+            buttonLabel="OK"
+            onNext={() => {
+              window.location.reload();
+            }}
+          />
+        </Host>
+      );
+    }
+
     if (!this.envelope) {
       return (
         <Host>
@@ -659,7 +682,7 @@ export class VerdocsSign {
           </div>
         </div>
 
-        {this.agreed && (
+        {this.agreed ? (
           <div class="document" style={{paddingTop: '15px'}}>
             {(this.envelope.documents || []).map(envelopeDocument => {
               const pageNumbers = integerSequence(1, envelopeDocument.pages);
@@ -696,6 +719,14 @@ export class VerdocsSign {
               );
             })}
           </div>
+        ) : (
+          <div class="document" style={{paddingTop: '15px'}}>
+            <img
+              src="https://public-assets.verdocs.com/loading-placeholder.png"
+              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              alt="Placeholder page"
+            />
+          </div>
         )}
 
         {this.showFinishLater && (
@@ -715,18 +746,6 @@ export class VerdocsSign {
             onNext={() => {
               this.showDone = false;
               this.isDone = true;
-            }}
-          />
-        )}
-
-        {this.showLoadError && (
-          <verdocs-ok-dialog
-            heading="Error Loading Document"
-            message={`Please check with the sender to ensure it has not been canceled, and try again later.`}
-            buttonLabel="Retry"
-            onNext={() => {
-              this.showLoadError = false;
-              window.location.reload();
             }}
           />
         )}

@@ -89,14 +89,20 @@ export class VerdocsFieldAttachment {
   @Event({composed: true}) settingsChanged: EventEmitter<{fieldName: string; field: ITemplateField}>;
 
   /**
-   * Event fired when the field is deleted.
+   * Event fired when the field is deleted. Note that this is for the FIELD (e.g. in
+   * Build) not for any attachments (during signing).
    */
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   /**
-   * Event fired when the field is deleted.
+   * Event fired when a file is attached by the signer.
    */
   @Event({composed: true}) attached: EventEmitter<ISelectedFile>;
+
+  /**
+   * Event fired when a file attachment is removed by the signer.
+   */
+  @Event({composed: true}) remove: EventEmitter;
 
   @State() showingProperties?: boolean = false;
 
@@ -134,7 +140,9 @@ export class VerdocsFieldAttachment {
   handleShow() {
     this.dialog = document.createElement('verdocs-upload-dialog');
     this.dialog.open = true;
+    this.dialog.existingFile = {name: 'image.png', size: 1000, type: 'image/png', lastModified: Date.now(), data: ''};
     this.dialog.addEventListener('exit', () => this.dialog?.remove());
+    this.dialog.addEventListener('remove', () => this.remove?.emit());
     document.addEventListener('next', (e: any) => {
       console.log('attach onNext', e.detail[0]);
       this.selectedFile = e.detail[0];

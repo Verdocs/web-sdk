@@ -23,8 +23,6 @@ export class VerdocsFieldDate {
   @Element()
   private hostEl: HTMLInputElement;
 
-  private el: HTMLInputElement;
-
   /**
    * The template the field is for/from. Only required for the field builder, passed down to the properties component.
    */
@@ -96,7 +94,11 @@ export class VerdocsFieldDate {
   @State() showingProperties?: boolean = false;
 
   @Method() async focusField() {
-    this.el.focus();
+    // Our input field is fake, so we fake the flash too
+    this.focused = true;
+    setTimeout(() => {
+      this.focused = false;
+    }, 500);
   }
 
   fieldStore: TTemplateFieldStore = null;
@@ -171,7 +173,6 @@ export class VerdocsFieldDate {
           id={containerId}
           disabled={disabled}
           placeholder={placeholder}
-          ref={el => (this.el = el)}
           onFocus={() => (this.focused = true)}
           onBlur={() => (this.focused = false)}
         />

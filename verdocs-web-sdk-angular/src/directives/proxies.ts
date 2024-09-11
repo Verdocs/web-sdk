@@ -526,7 +526,7 @@ export class VerdocsFieldAttachment {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted', 'attached']);
+    proxyOutputs(this, this.el, ['settingsChanged', 'deleted', 'attached', 'remove']);
   }
 }
 
@@ -540,13 +540,18 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldAttachmentITemplateField}>>;
   /**
-   * Event fired when the field is deleted.
+   * Event fired when the field is deleted. Note that this is for the FIELD (e.g. in
+Build) not for any attachments (during signing).
    */
   deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
   /**
-   * Event fired when the field is deleted.
+   * Event fired when a file is attached by the signer.
    */
   attached: EventEmitter<CustomEvent<IVerdocsFieldAttachmentISelectedFile>>;
+  /**
+   * Event fired when a file attachment is removed by the signer.
+   */
+  remove: EventEmitter<CustomEvent<any>>;
 }
 
 
@@ -2331,20 +2336,21 @@ export declare interface VerdocsToolbarIcon extends Components.VerdocsToolbarIco
 
 
 @ProxyCmp({
+  inputs: ['existingFile']
 })
 @Component({
   selector: 'verdocs-upload-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
+  inputs: ['existingFile'],
 })
 export class VerdocsUploadDialog {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next']);
+    proxyOutputs(this, this.el, ['exit', 'next', 'remove']);
   }
 }
 
@@ -2358,6 +2364,11 @@ export declare interface VerdocsUploadDialog extends Components.VerdocsUploadDia
    * Event fired when the dialog is closed. The event data will contain the file selected.
    */
   next: EventEmitter<CustomEvent<File[]>>;
+  /**
+   * Event fired when an existing attachment is deleted. The parent component is
+responsible for the actual removal.
+   */
+  remove: EventEmitter<CustomEvent<any>>;
 }
 
 
