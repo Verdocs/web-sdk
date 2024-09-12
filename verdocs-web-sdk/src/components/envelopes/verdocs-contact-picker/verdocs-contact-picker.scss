@@ -18,7 +18,7 @@ verdocs-contact-picker {
 
     .row {
       gap: 8px;
-      width: 300px;
+      width: 276px;
       display: flex;
       position: relative;
       flex-direction: row;
@@ -40,6 +40,7 @@ verdocs-contact-picker {
       flex-direction: row;
 
       > input {
+        font-size: 14px;
         width: 110px;
       }
     }
@@ -51,6 +52,7 @@ verdocs-contact-picker {
       flex-direction: row;
 
       > input {
+        font-size: 14px;
         width: 110px;
       }
 
@@ -88,7 +90,7 @@ verdocs-contact-picker {
     input {
       flex: 1;
       border: none;
-      font-size: 16px;
+      font-size: 14px;
       padding: 3px 6px 3px 0;
       background: transparent;
       border-bottom: 1px solid $verdocs-dark-blue;

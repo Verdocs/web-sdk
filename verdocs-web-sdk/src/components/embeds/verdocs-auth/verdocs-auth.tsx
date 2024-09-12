@@ -148,7 +148,11 @@ export class VerdocsAuth {
       .then(r => {
         console.log('[AUTH] Profile creation result', r);
         this.tempAuthEndpoint.setToken(r.access_token);
-        this.clearForms();
+        // We can't clearForms because we need email to stick around
+        this.password = '';
+        this.first_name = '';
+        this.last_name = '';
+        this.org_name = '';
         this.displayMode = 'verify';
       })
       .catch(e => {

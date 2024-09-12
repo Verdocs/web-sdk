@@ -1,5 +1,5 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment} from '@verdocs/js-sdk';
+import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
 import {integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
@@ -143,6 +143,12 @@ export class VerdocsSign {
 
       this.recipient = recipient;
       this.envelope = envelope;
+
+      getKbaStep(this.endpoint, this.envelopeId, this.roleId)
+        .then(r => {
+          console.log('KBA Step', r);
+        })
+        .catch(e => console.log('Error getting KBA step', e));
 
       if (this.agreed) {
         this.nextButtonLabel = 'Next';
