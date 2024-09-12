@@ -232,9 +232,9 @@ export namespace Components {
         "message": string;
     }
     /**
-     * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
+     * Display a contact picker suitable for filling out Recipient objects when sending Envelopes.
      * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
-     * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
+     * user interacts with the component, the text entered in the name fields is sent back to the parent via the `searchContacts` event.
      * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
      * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
      * to always display the user's own contact record.
@@ -2226,9 +2226,9 @@ declare global {
         "next": IContactSelectEvent;
     }
     /**
-     * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
+     * Display a contact picker suitable for filling out Recipient objects when sending Envelopes.
      * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
-     * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
+     * user interacts with the component, the text entered in the name fields is sent back to the parent via the `searchContacts` event.
      * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
      * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
      * to always display the user's own contact record.
@@ -3942,9 +3942,9 @@ declare namespace LocalJSX {
         "message"?: string;
     }
     /**
-     * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
+     * Display a contact picker suitable for filling out Recipient objects when sending Envelopes.
      * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
-     * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
+     * user interacts with the component, the text entered in the name fields is sent back to the parent via the `searchContacts` event.
      * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
      * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
      * to always display the user's own contact record.
@@ -6247,9 +6247,9 @@ declare module "@stencil/core" {
              */
             "verdocs-component-error": LocalJSX.VerdocsComponentError & JSXBase.HTMLAttributes<HTMLVerdocsComponentErrorElement>;
             /**
-             * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
+             * Display a contact picker suitable for filling out Recipient objects when sending Envelopes.
              * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
-             * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
+             * user interacts with the component, the text entered in the name fields is sent back to the parent via the `searchContacts` event.
              * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
              * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
              * to always display the user's own contact record.

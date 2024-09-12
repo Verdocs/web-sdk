@@ -1,5 +1,5 @@
 import {formatFullName, IProfile, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Event, EventEmitter, Prop, State} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Fragment, Prop, State} from '@stencil/core';
 import {convertToE164} from '../../../utils/utils';
 
 const messageIcon =
@@ -14,7 +14,6 @@ const kbaIcon =
 const addrBookIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-user"><path d="M15 13a3 3 0 1 0-6 0"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><circle cx="12" cy="8" r="2"/></svg>`;
 
 export interface IContactSearchEvent {
-  // The text the user has entered in the search field
   query: string;
 }
 
@@ -30,10 +29,10 @@ export interface IContactSelectEvent {
 export type TPickerContact = Partial<IProfile>;
 
 /**
- * Displays a contact picker suitable for filling out Recipient objects when sending Documents.
+ * Display a contact picker suitable for filling out Recipient objects when sending Envelopes.
  *
  * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
- * user interacts with the component, the text entered in the name field is sent back to the parent via the `searchContacts` event.
+ * user interacts with the component, the text entered in the name fields is sent back to the parent via the `searchContacts` event.
  * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
  * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
  * to always display the user's own contact record.
@@ -171,7 +170,7 @@ export class VerdocsContactPicker {
               data-lpignore="true"
               autocomplete="blocked"
               value={this.first_name}
-              placeholder="First Name..."
+              placeholder="First..."
               onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
               onInput={e => this.handleFirstNameChange(e)}
             />
@@ -182,7 +181,7 @@ export class VerdocsContactPicker {
               data-lpignore="true"
               autocomplete="blocked"
               value={this.last_name}
-              placeholder="Last Name..."
+              placeholder="Last..."
               onFocus={() => (this.showSuggestions = false)}
               onInput={e => this.handleLastNameChange(e)}
             />
@@ -215,7 +214,7 @@ export class VerdocsContactPicker {
             data-lpignore="true"
             autoComplete="blocked"
             value={this.email}
-            placeholder="Email Address..."
+            placeholder="Email address..."
             onFocus={() => (this.showSuggestions = false)}
             onInput={(e: any) => (this.email = e.target.value)}
           />
@@ -230,45 +229,50 @@ export class VerdocsContactPicker {
             data-lpignore="true"
             autoComplete="blocked"
             value={this.phone}
-            placeholder="Phone Number..."
+            placeholder="Phone (SMS)..."
             onFocus={() => (this.showSuggestions = false)}
             onInput={(e: any) => convertToE164(e.target.value)}
           />
         </div>
 
         {this.showKba && (
-          <div class="row">
-            <div class="label-with-icon">
+          <Fragment>
+            <div class="kba-row">
+              {/*<div class="label-with-icon">*/}
               <label>KBA:</label>
+              <verdocs-select-input
+                value={this.kbaMethod}
+                onInput={(e: any) => (this.kbaMethod = e.target.value)}
+                options={[
+                  {label: 'None', value: ''},
+                  {label: 'PIN Code', value: 'pin'},
+                  {label: 'Full Verification', value: 'kba'},
+                ]}
+              />
+              <div style={{flex: '1'}}></div>
               <verdocs-help-icon text="Knowledge-Based Authentication adds additional authentication for this user either via a simple PIN code or full address validation. NOTE: There may be a fee for using this feature." />
             </div>
-            <verdocs-select-input
-              value={this.kbaMethod}
-              onInput={(e: any) => (this.kbaMethod = e.target.value)}
-              options={[
-                {label: 'None', value: ''},
-                {label: 'PIN Code', value: 'pin'},
-                {label: 'Full Verification', value: 'kba'},
-              ]}
-            />
+
             {this.kbaMethod === 'pin' && (
-              <input
-                id="verdocs-pin-code"
-                name="verdocs-pin-code"
-                type="text"
-                data-lpignore="true"
-                autocomplete="blocked"
-                value={this.pinCode}
-                placeholder="KBA PIN Code..."
-                onFocus={() => (this.showSuggestions = false)}
-                onInput={(e: any) => (this.pinCode = e.target.value)}
-              />
+              <div class="row pin-code">
+                <input
+                  id="verdocs-pin-code"
+                  name="verdocs-pin-code"
+                  type="text"
+                  data-lpignore="true"
+                  autocomplete="blocked"
+                  value={this.pinCode}
+                  placeholder="KBA PIN Code..."
+                  onFocus={() => (this.showSuggestions = false)}
+                  onInput={(e: any) => (this.pinCode = e.target.value)}
+                />
+              </div>
             )}
-          </div>
+          </Fragment>
         )}
 
         {this.showMessage && (
-          <div class="row">
+          <div class="row message">
             <label htmlFor="verdocs-contact-picker-message">Message:</label>
             <input
               id="verdocs-contact-picker-message"
@@ -277,7 +281,7 @@ export class VerdocsContactPicker {
               data-lpignore="true"
               autocomplete="blocked"
               value={this.message}
-              placeholder="Invitation Message..."
+              placeholder="Message shown in invitation..."
               onFocus={() => (this.showSuggestions = false)}
               onInput={(e: any) => (this.message = e.target.value)}
             />

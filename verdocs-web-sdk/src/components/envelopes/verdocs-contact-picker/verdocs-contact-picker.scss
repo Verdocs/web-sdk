@@ -8,51 +8,87 @@ verdocs-contact-picker {
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);
 
   form {
-    background-color: $verdocs-grey-3;
+    display: flex;
+    gap: 14px;
+    width: 300px;
     padding: 12px;
     display: flex;
     flex-direction: column;
+    background-color: $verdocs-grey-3;
 
     .row {
+      gap: 8px;
       width: 300px;
       display: flex;
       position: relative;
-      margin: 0 0 20px 0;
-      flex-direction: column;
+      flex-direction: row;
+      align-items: center;
+
+      &.message {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      &.pin-code {
+        //margin-top: 10px;
+      }
     }
 
     .names-row {
+      gap: 8px;
       display: flex;
       flex-direction: row;
-      gap: 8px;
 
       > input {
-        // Dirty hack for old CSS input-grows-too-wide issue
-        min-width: 0;
+        width: 110px;
+      }
+    }
+
+    .kba-row {
+      gap: 8px;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+
+      > input {
+        width: 110px;
+      }
+
+      verdocs-select-input {
+        margin: 0;
       }
     }
 
     label {
-      display: block;
+      display: flex;
+      flex: 0 0 50px;
       font-size: 14px;
       font-weight: 500;
-      margin: 0 0 4px 0;
       color: $verdocs-bg-4;
     }
 
-    .label-with-icon {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-
-      verdocs-help-icon svg {
-        transform: scale(0.8);
-      }
+    .row.message label {
+      flex: 0;
     }
 
+    .row.message input {
+      width: 100%;
+    }
+
+    //.label-with-icon {
+    //  display: flex;
+    //  flex-direction: row;
+    //  justify-content: space-between;
+    //
+    //  verdocs-help-icon svg {
+    //    transform: scale(0.8);
+    //  }
+    //}
+
     input {
+      flex: 1;
       border: none;
-      font-size: 18px;
+      font-size: 16px;
       padding: 3px 6px 3px 0;
       background: transparent;
       border-bottom: 1px solid $verdocs-dark-blue;
