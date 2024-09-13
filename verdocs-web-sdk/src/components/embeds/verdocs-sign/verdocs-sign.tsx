@@ -1,5 +1,5 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
+import {getEnvelope, integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
@@ -240,8 +240,17 @@ export class VerdocsSign {
           console.log('[SIGN] Decline result', declineResult);
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
           this.submitting = false;
-          this.isDone = true;
           this.declined = true;
+          console.log('[SIGN] Reloading envelope');
+          getEnvelope(this.endpoint, this.envelopeId)
+            .then(envelope => {
+              this.envelope = envelope;
+              this.isDone = true;
+            })
+            .catch(e => {
+              this.isDone = true;
+              console.log('[SIGN] Error reloading envelope', e);
+            });
         }
         break;
 
@@ -448,7 +457,17 @@ export class VerdocsSign {
         console.log('[SIGN] Submitted successfully', result);
         this.recipient.status = 'submitted';
         this.showDone = true;
-        this.isDone = true;
+        console.log('[SIGN] Reloading envelope');
+        getEnvelope(this.endpoint, this.envelopeId)
+          .then(envelope => {
+            this.envelope = envelope;
+            // The show-done dialog does this
+            // this.isDone = true;
+          })
+          .catch(e => {
+            // this.isDone = true;
+            console.log('[SIGN] Error reloading envelope', e);
+          });
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
       }

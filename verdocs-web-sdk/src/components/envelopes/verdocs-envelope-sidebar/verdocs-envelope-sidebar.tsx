@@ -287,7 +287,7 @@ export class VerdocsEnvelopeSidebar {
         case 'invitation:resent':
           entries.push({
             icon: 'mail',
-            message: `Invitation was resent to ${fullName} ${history.event_detail === 'reminder' ? ' by reminder' : ''}.`,
+            message: `Invitation was resent to ${fullName}${history.event_detail === 'reminder' ? ' by reminder' : ''}.`,
             date: new Date(history.created_at),
           });
           break;

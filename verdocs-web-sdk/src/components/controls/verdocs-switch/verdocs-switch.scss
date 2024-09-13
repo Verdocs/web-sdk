@@ -52,7 +52,7 @@ verdocs-switch {
   }
 
   .slider[data-state='unchecked'] {
-    transform: translateX(-2px);
+    transform: translateX(2px);
   }
 
   .switch.disabled.primary,
