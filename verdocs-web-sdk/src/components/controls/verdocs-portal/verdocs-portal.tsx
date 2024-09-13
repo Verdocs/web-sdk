@@ -74,9 +74,8 @@ export class VerdocsPortal {
     //    Math.max(anchorRect.left + anchorRect.width - this.portal.offsetWidth, 0);
     const popupWidth = this.element?.offsetWidth || 400;
     const offRightEdge = leftOfPopup + popupWidth > rightOfViewportWithScroll;
-    console.log('Portal', {leftOfPopup, offRightEdge, popupWidth, rightOfViewportWithScroll});
 
-    return offRightEdge ? leftOfPopup - popupWidth : leftOfPopup;
+    return offRightEdge ? leftOfPopup + anchorRect.width - popupWidth : leftOfPopup;
   }
 
   private calculateTop() {

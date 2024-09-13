@@ -1,7 +1,7 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
 import {integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
+import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {createTemplateFieldStoreFromEnvelope} from '../../../utils/TemplateFieldStore';
@@ -102,6 +102,9 @@ export class VerdocsSign {
   @State() errorMessage = '';
   @State() focusedField = '';
   @State() submitting = false;
+  @State() submitted = false;
+  @State() canceled = false;
+  @State() declined = false;
   @State() isDone = false;
   @State() showDone = false;
   @State() showLoadError = false;
@@ -144,16 +147,6 @@ export class VerdocsSign {
       this.recipient = recipient;
       this.envelope = envelope;
 
-      getKbaStep(this.endpoint, this.envelopeId, this.roleId)
-        .then(r => {
-          console.log('KBA Step', r);
-        })
-        .catch(e => console.log('Error getting KBA step', e));
-
-      if (this.agreed) {
-        this.nextButtonLabel = 'Next';
-      }
-
       createTemplateFieldStoreFromEnvelope(this.envelope);
       this.sortedRecipients = [...this.envelope.recipients];
       this.sortedRecipients.sort((a, b) => {
@@ -174,11 +167,25 @@ export class VerdocsSign {
         console.warn('[SIGN] Could not find our recipient record', this.roleId, this.sortedRecipients);
       }
 
-      this.isDone = ['submitted', 'canceled', 'declined'].includes(this.recipient.status);
+      this.submitted = this.recipient.status === 'submitted';
+      this.declined = this.recipient.status === 'declined';
+      this.canceled = this.envelope.status === 'canceled';
+      this.isDone = this.submitted || this.declined || this.canceled;
+
+      if (this.agreed) {
+        this.nextButtonLabel = 'Next';
+      }
 
       this.checkRecipientFields();
-
       this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
+
+      if (!this.isDone) {
+        getKbaStep(this.endpoint, this.envelopeId, this.roleId)
+          .then(r => {
+            console.log('[SIGN] KBA Step', r);
+          })
+          .catch(e => console.log('Error getting KBA step', e));
+      }
     } catch (e) {
       console.log('[SIGN] Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -234,6 +241,7 @@ export class VerdocsSign {
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
           this.submitting = false;
           this.isDone = true;
+          this.declined = true;
         }
         break;
 
@@ -647,7 +655,7 @@ export class VerdocsSign {
     if (this.isDone) {
       return (
         <Host class={{agreed: this.agreed}}>
-          <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
+          <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} envelope={this.envelope} onSdkError={e => this.sdkError?.emit(e.detail)} />
 
           {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
 

@@ -2403,14 +2403,14 @@ responsible for the actual removal.
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'envelopeId', 'headerTargetId']
+  inputs: ['endpoint', 'envelope', 'envelopeId', 'headerTargetId']
 })
 @Component({
   selector: 'verdocs-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'envelopeId', 'headerTargetId'],
+  inputs: ['endpoint', 'envelope', 'envelopeId', 'headerTargetId'],
 })
 export class VerdocsView {
   protected el: HTMLElement;

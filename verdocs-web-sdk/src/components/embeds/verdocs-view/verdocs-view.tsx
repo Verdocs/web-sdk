@@ -26,12 +26,17 @@ export class VerdocsView {
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
-  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+  @Prop() endpoint: VerdocsEndpoint | null = null;
 
   /**
    * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
    */
   @Prop() envelopeId: string = '';
+
+  /**
+   * If the envelope is already loaded, the parent may pass it in directly.
+   */
+  @Prop({mutable: true}) envelope: IEnvelope | null = null;
 
   /**
    * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this
@@ -73,34 +78,31 @@ export class VerdocsView {
    */
   @Event({composed: true}) next: EventEmitter;
   @State() canceling = false;
-  @State() envelope: IEnvelope | null = null;
   @State() roleNames: string[] = [];
   @State() showCancelDone = false;
   @State() showLoadError = false;
 
   async componentWillLoad() {
-    this.endpoint.loadSession();
+    if (!this.endpoint) {
+      this.endpoint = VerdocsEndpoint.getDefault();
+      this.endpoint.loadSession();
+    }
 
     if (!this.envelopeId) {
       console.error(`[VIEW] Missing required envelopeId`);
       return;
     }
 
-    console.log('[VIEW] Loading envelope...');
-
-    try {
-      this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
-      console.log('[VIEW] Loaded envelope', this.envelope);
-      this.roleNames = this.envelope.recipients.map(r => r.role_name);
-
-      setTimeout(async () => {
-        console.log('[VIEW] Reloading envelope...');
+    if (!this.envelope) {
+      try {
+        console.log('[VIEW] Loading envelope...');
         this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
-        console.log('[VIEW] Reloaded envelope', this.envelope);
-      }, 2000);
-    } catch (e) {
-      this.showLoadError = true;
-      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+        console.log('[VIEW] Loaded envelope', this.envelope);
+        this.roleNames = this.envelope.recipients.map(r => r.role_name);
+      } catch (e) {
+        this.showLoadError = true;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      }
     }
   }
 

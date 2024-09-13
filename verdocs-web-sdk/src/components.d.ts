@@ -1836,7 +1836,11 @@ export namespace Components {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
-        "endpoint": VerdocsEndpoint;
+        "endpoint": VerdocsEndpoint | null;
+        /**
+          * If the envelope is already loaded, the parent may pass it in directly.
+         */
+        "envelope": IEnvelope | null;
         /**
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
          */
@@ -6040,7 +6044,11 @@ declare namespace LocalJSX {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
-        "endpoint"?: VerdocsEndpoint;
+        "endpoint"?: VerdocsEndpoint | null;
+        /**
+          * If the envelope is already loaded, the parent may pass it in directly.
+         */
+        "envelope"?: IEnvelope | null;
         /**
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
          */

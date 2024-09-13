@@ -106,7 +106,6 @@ export class VerdocsEnvelopeDocumentPage {
 
   disconnectedCallback() {
     this.resizeObserver?.disconnect();
-    console.log('[PAGE] Disconnected', this.containerId);
   }
 
   // Left here for documentation purposes in case we find an edge case where this isn't true. But we apparently don't need this.

@@ -154,6 +154,7 @@ export class VerdocsAuth {
         this.last_name = '';
         this.org_name = '';
         this.displayMode = 'verify';
+        this.submitting = false;
       })
       .catch(e => {
         console.log('[AUTH] Signup error', e.response);
