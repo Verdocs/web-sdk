@@ -24,6 +24,8 @@ export interface IContactSelectEvent {
   phone: string;
   message: string;
   delegator: boolean;
+  kba_method: string;
+  kba_pin: string;
 }
 
 export type TPickerContact = Partial<IProfile>;
@@ -109,9 +111,8 @@ export class VerdocsContactPicker {
       this.message = this.templateRole.message || '';
       this.showMessage = this.message !== '';
       this.kbaMethod = this.templateRole.kba_method || '';
+      this.pinCode = this.templateRole.kba_pin || '';
       this.showKba = !!this.kbaMethod;
-      // TODO
-      this.pinCode = '';
     }
   }
 
@@ -142,6 +143,8 @@ export class VerdocsContactPicker {
       phone: this.phone,
       message: this.message,
       delegator: this.delegator,
+      kba_method: this.kbaMethod,
+      kba_pin: this.pinCode,
     });
   }
 
