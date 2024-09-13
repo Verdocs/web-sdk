@@ -1,5 +1,5 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {getEnvelope, integerSequence, IRecipient, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
+import {getEnvelope, integerSequence, IRecipient, isValidEmail, isValidPhone, submitKbaPin, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
@@ -112,6 +112,7 @@ export class VerdocsSign {
   @State() showFinishLater = false;
   @State() agreed = false;
   @State() documentsSingularPlural = 'document';
+  @State() kbaStep = '';
 
   recipientIndex: number = -1;
 
@@ -183,6 +184,7 @@ export class VerdocsSign {
         getKbaStep(this.endpoint, this.envelopeId, this.roleId)
           .then(r => {
             console.log('[SIGN] KBA Step', r);
+            this.kbaStep = r.kba_step;
           })
           .catch(e => console.log('Error getting KBA step', e));
       }
@@ -698,61 +700,16 @@ export class VerdocsSign {
       );
     }
 
-    return (
-      <Host class={{agreed: this.agreed}}>
-        <div id="verdocs-sign-header">
-          <div class="inner">
-            <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-            <div class="title">{this.envelope.name}</div>
-            <div style={{flex: '1'}} />
-
-            {this.agreed && !this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
-
-            <div style={{marginLeft: '10px'}} />
-            {this.agreed && (
-              <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
-            )}
+    if (!this.agreed) {
+      return (
+        <Host class="agreed">
+          <div id="verdocs-sign-header">
+            <div class="inner">
+              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+              <div class="title">{this.envelope.name}</div>
+            </div>
           </div>
-        </div>
 
-        {this.agreed ? (
-          <div class="document" style={{paddingTop: '15px'}}>
-            {(this.envelope.documents || []).map(envelopeDocument => {
-              const pageNumbers = integerSequence(1, envelopeDocument.pages);
-
-              return (
-                <Fragment>
-                  {pageNumbers.map(pageNumber => {
-                    // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
-                    // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
-                    // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
-                    // field vales (so far) stamped into them.
-                    // const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
-                    // TODO: Confirm that a pure page-number match is good enough to find the matching template page. We need to make sure
-                    //  we either don't reset our page numbers for additional attachments, or add match-on identifiers to work around that.
-                    // console.log('tp', templatePage, page);
-                    return (
-                      <verdocs-envelope-document-page
-                        envelopeId={this.envelopeId}
-                        documentId={envelopeDocument.id}
-                        endpoint={this.endpoint}
-                        virtualWidth={612}
-                        virtualHeight={792}
-                        pageNumber={pageNumber}
-                        onPageRendered={e => this.handlePageRendered(e)}
-                        type="filled"
-                        layers={[
-                          {name: 'page', type: 'canvas'},
-                          {name: 'controls', type: 'div'},
-                        ]}
-                      />
-                    );
-                  })}
-                </Fragment>
-              );
-            })}
-          </div>
-        ) : (
           <div class="document" style={{paddingTop: '15px'}}>
             <img
               src="https://public-assets.verdocs.com/loading-placeholder.png"
@@ -760,7 +717,134 @@ export class VerdocsSign {
               alt="Placeholder page"
             />
           </div>
-        )}
+
+          <div class="cover">
+            <div class="agree">
+              <verdocs-checkbox name="agree" label="By checking this box, you:" onInput={() => this.handleClickAgree()} />
+              <ul>
+                <li>
+                  Agree to use electronic records and signatures, and confirm you have read the{' '}
+                  <a href="https://verdocs.com/en/electronic-record-signature-disclosure/" target="_blank">
+                    Electronic Record and Signatures Disclosure
+                  </a>
+                  .
+                </li>
+                <li>
+                  Agree to Verdocs'{' '}
+                  <a href="https://verdocs.com/en/eula" target="_blank">
+                    End User License Agreement
+                  </a>{' '}
+                  and confirm you have read Verdocs'{' '}
+                  <a href="https://verdocs.com/en/privacy-policy/" target="_blank">
+                    Privacy Policy
+                  </a>
+                  .
+                </li>
+              </ul>
+            </div>
+          </div>
+        </Host>
+      );
+    }
+
+    if (this.kbaStep === 'pin') {
+      return (
+        <Host class="kba">
+          <div id="verdocs-sign-header">
+            <div class="inner">
+              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+              <div class="title">{this.envelope.name}</div>
+            </div>
+          </div>
+
+          <div class="document" style={{paddingTop: '15px'}}>
+            <img
+              src="https://public-assets.verdocs.com/loading-placeholder.png"
+              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              alt="Placeholder page"
+            />
+          </div>
+
+          <div class="cover">
+            <div class="kba">
+              <verdocs-kba-dialog
+                mode="text"
+                step={1}
+                steps={1}
+                helptitle="Document is protected by a PIN code"
+                helptext="Please enter your PIN code to proceed. If you do not have one, please contact the sender."
+                label="PIN Code"
+                onNext={async e => {
+                  submitKbaPin(this.endpoint, this.envelopeId, this.roleId, e.detail)
+                    .then(r => {
+                      console.log('[SIGN] PIN code submission result', r);
+                      if (r.kba_step === 'complete') {
+                        this.kbaStep = '';
+                      }
+                    })
+                    .catch(e => {
+                      console.log('[SIGN] Error submitting PIN', e);
+                      VerdocsToast(e.response?.data?.error || 'Unable to verify PIN code. Please try again.', {style: 'error'});
+                    });
+                }}
+              />
+            </div>
+          </div>
+        </Host>
+      );
+    }
+
+    return (
+      <Host>
+        <div id="verdocs-sign-header">
+          <div class="inner">
+            <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+            <div class="title">{this.envelope.name}</div>
+            <div style={{flex: '1'}} />
+
+            {!this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
+
+            <div style={{marginLeft: '10px'}} />
+            <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+          </div>
+        </div>
+
+        <div class="document" style={{paddingTop: '15px'}}>
+          {(this.envelope.documents || []).map(envelopeDocument => {
+            const pageNumbers = integerSequence(1, envelopeDocument.pages);
+
+            return (
+              <Fragment>
+                {pageNumbers.map(pageNumber => {
+                  // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
+                  // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
+                  // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
+                  // field vales (so far) stamped into them.
+                  // const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
+                  // TODO: Confirm that a pure page-number match is good enough to find the matching template page. We need to make sure
+                  //  we either don't reset our page numbers for additional attachments, or add match-on identifiers to work around that.
+                  // console.log('tp', templatePage, page);
+                  return (
+                    <verdocs-envelope-document-page
+                      envelopeId={this.envelopeId}
+                      documentId={envelopeDocument.id}
+                      endpoint={this.endpoint}
+                      virtualWidth={612}
+                      virtualHeight={792}
+                      pageNumber={pageNumber}
+                      onPageRendered={e => this.handlePageRendered(e)}
+                      type="filled"
+                      layers={[
+                        {name: 'page', type: 'canvas'},
+                        {name: 'controls', type: 'div'},
+                      ]}
+                    />
+                  );
+                })}
+              </Fragment>
+            );
+          })}
+        </div>
 
         {this.showFinishLater && (
           <verdocs-ok-dialog
@@ -786,34 +870,6 @@ export class VerdocsSign {
         {this.submitting && (
           <div class="loading-indicator">
             <verdocs-loader />
-          </div>
-        )}
-
-        {!this.agreed && (
-          <div class="cover">
-            <div class="agree">
-              <verdocs-checkbox name="agree" label="By checking this box, you:" onInput={() => this.handleClickAgree()} />
-              <ul>
-                <li>
-                  Agree to use electronic records and signatures, and confirm you have read the{' '}
-                  <a href="https://verdocs.com/en/electronic-record-signature-disclosure/" target="_blank">
-                    Electronic Record and Signatures Disclosure
-                  </a>
-                  .
-                </li>
-                <li>
-                  Agree to Verdocs{' '}
-                  <a href="https://verdocs.com/en/eula" target="_blank">
-                    End User License Agreement
-                  </a>{' '}
-                  and confirm you have read Verdocs'{' '}
-                  <a href="https://verdocs.com/en/privacy-policy/" target="_blank">
-                    Privacy Policy
-                  </a>
-                  .
-                </li>
-              </ul>
-            </div>
           </div>
         )}
       </Host>

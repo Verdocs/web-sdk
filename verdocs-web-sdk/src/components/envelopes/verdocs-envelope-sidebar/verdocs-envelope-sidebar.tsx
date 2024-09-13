@@ -6,7 +6,7 @@ import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
-const MS_PER_HOUR = 60 * 60 * 1000;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const InformationCircle = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>`;
 
@@ -337,7 +337,7 @@ export class VerdocsEnvelopeSidebar {
     if (this.remindersEnabled) {
       return this.handleSetReminders(null, null);
     } else {
-      return this.handleSetReminders(24 * MS_PER_HOUR, 48 * MS_PER_HOUR);
+      return this.handleSetReminders(24 * MS_PER_DAY, 48 * MS_PER_DAY);
     }
   }
 
@@ -454,14 +454,15 @@ export class VerdocsEnvelopeSidebar {
 
                 {this.remindersEnabled && (
                   <Fragment>
+                    <div class="form-row">NOTE: Reminders will only be sent for up to 14 days.</div>
                     <div class="form-row">
                       <div class="form-label">Initial Reminder:</div>
                       <verdocs-text-input
                         placeholder="In hours..."
                         disabled={functionsDisabled || this.updatingReminders}
-                        value={String(Math.floor(this.initialReminder / MS_PER_HOUR))}
+                        value={String(Math.floor(this.initialReminder / MS_PER_DAY))}
                         onBlur={(e: any) => {
-                          this.initialReminder = Number(e.target.value) * MS_PER_HOUR;
+                          this.initialReminder = Number(e.target.value) * MS_PER_DAY;
                           this.handleSetReminders(this.initialReminder, this.followupReminders);
                         }}
                       />
@@ -471,9 +472,9 @@ export class VerdocsEnvelopeSidebar {
                       <verdocs-text-input
                         placeholder="In hours..."
                         disabled={functionsDisabled || this.updatingReminders}
-                        value={String(Math.floor(this.followupReminders / MS_PER_HOUR))}
+                        value={String(Math.floor(this.followupReminders / MS_PER_DAY))}
                         onBlur={(e: any) => {
-                          this.followupReminders = Number(e.target.value) * MS_PER_HOUR;
+                          this.followupReminders = Number(e.target.value) * MS_PER_DAY;
                           this.handleSetReminders(this.initialReminder, this.followupReminders);
                         }}
                       />

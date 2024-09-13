@@ -60,6 +60,11 @@ export class VerdocsAuth {
   @Prop() logo: string = 'https://app.verdocs.com/assets/blue-logo.svg';
 
   /**
+   * The display mode to start in.
+   */
+  @Prop({mutable: true}) displayMode: 'login' | 'forgot' | 'reset' | 'signup' | 'verify' = 'login';
+
+  /**
    * Event fired when session authentication process has completed. Check the event
    * contents for completion status. This event will always be called at least once,
    * when the component is first rendered.
@@ -72,7 +77,6 @@ export class VerdocsAuth {
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
-  @State() displayMode: 'login' | 'forgot' | 'reset' | 'signup' | 'verify' = 'login';
   @State() org_name: string = '';
   @State() first_name: string = '';
   @State() last_name: string = '';
