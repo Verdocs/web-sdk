@@ -162,6 +162,7 @@ export class VerdocsTemplateFieldProperties {
     } as Partial<ITemplateField>;
 
     console.log('[FIELD PROPERTIES] Will update', this.fieldName, newProperties);
+    this.cleanupOptions();
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(updated => {
         console.log('[FIELD PROPERTIES] Updated', updated);
@@ -255,7 +256,6 @@ export class VerdocsTemplateFieldProperties {
               label="Optional Label"
               value={this.label}
               autocomplete="off"
-              //              helpText="The internal name of the field. Must be unique, and contain only letters, numbers, and dashes. After an envelope is completed, the value entered by the signer will be tagged with this key."
               placeholder="Optional Label..."
               onInput={(e: any) => {
                 this.label = e.target.value;
@@ -274,7 +274,6 @@ export class VerdocsTemplateFieldProperties {
                 this.dirty = true;
               }}
             />
-            {/*<verdocs-help-icon text="The participant who will complete this field." />*/}
           </div>
 
           {['textbox', 'textarea'].includes(this.type) && (
@@ -363,7 +362,6 @@ export class VerdocsTemplateFieldProperties {
               {this.options.map((option, index) => (
                 <div class="row option-row" key={index}>
                   <verdocs-text-input
-                    id={`verdocs-option-id-${option.id}`}
                     value={option.id}
                     placeholder="Unique ID"
                     onInput={(e: any) => {
@@ -373,11 +371,10 @@ export class VerdocsTemplateFieldProperties {
                     }}
                   />
                   <verdocs-text-input
-                    id={`verdocs-option-label-${option.id}`}
                     value={option.value}
                     placeholder="Display label"
                     onInput={(e: any) => {
-                      this.options[index].label = e.target.label;
+                      this.options[index].label = e.target.value;
                       this.dirty = true;
                       this.cleanupOptions();
                     }}
