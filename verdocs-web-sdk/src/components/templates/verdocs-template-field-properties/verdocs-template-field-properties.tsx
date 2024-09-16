@@ -161,8 +161,8 @@ export class VerdocsTemplateFieldProperties {
       options: this.options,
     } as Partial<ITemplateField>;
 
-    console.log('[FIELD PROPERTIES] Will update', this.fieldName, newProperties);
     this.cleanupOptions();
+    console.log('[FIELD PROPERTIES] Will update', this.fieldName, newProperties);
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(updated => {
         console.log('[FIELD PROPERTIES] Updated', updated);
@@ -371,7 +371,7 @@ export class VerdocsTemplateFieldProperties {
                     }}
                   />
                   <verdocs-text-input
-                    value={option.value}
+                    value={option.label}
                     placeholder="Display label"
                     onInput={(e: any) => {
                       this.options[index].label = e.target.value;

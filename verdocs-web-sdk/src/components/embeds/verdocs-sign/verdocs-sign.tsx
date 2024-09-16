@@ -1,7 +1,7 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {getEnvelope, integerSequence, IRecipient, isValidEmail, isValidPhone, submitKbaPin, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
-import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField} from '@verdocs/js-sdk';
+import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField, sortFields} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
+import {getEnvelope, integerSequence, IRecipient, isValidEmail, isValidPhone, submitKbaPin, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {createTemplateFieldStoreFromEnvelope} from '../../../utils/TemplateFieldStore';
@@ -430,21 +430,7 @@ export class VerdocsSign {
 
   getSortedFillableFields() {
     const recipientFields = this.getRecipientFields().filter(field => field.type !== 'timestamp');
-
-    recipientFields.sort((a, b) => {
-      const aX = a.x || 0;
-      const aY = a.y || 0;
-      const bX = b.x || 0;
-      const bY = b.y || 0;
-      // NOTE: Logic looks a little strange X vs Y. It's because we go top down,
-      // left to right. But Y coordinates are inverted in PDFs. The reason for
-      // the division is because no human makes perfect templates and frequently
-      // two fields on the "same line" will be slightly offset vertically.
-      const divaY = Math.floor(aY / 5);
-      const divbY = Math.floor(bY / 5);
-      return divbY !== divaY ? divbY - divaY : aX - bX;
-    });
-
+    sortFields(recipientFields);
     return recipientFields;
   }
 
@@ -480,20 +466,7 @@ export class VerdocsSign {
 
     // Find and focus the next incomplete` field (that is fillable)
     const emptyFields = this.getSortedFillableFields().filter(field => !this.isFieldFilled(field));
-
-    emptyFields.sort((a, b) => {
-      const aX = a.x || 0;
-      const aY = a.y || 0;
-      const bX = b.x || 0;
-      const bY = b.y || 0;
-      // NOTE: Logic looks a little strange X vs Y. It's because we go top down,
-      // left to right. But Y coordinates are inverted in PDFs. The reason for
-      // the division is because no human makes perfect templates and frequently
-      // two fields on the "same line" will be slightly offset vertically.
-      const divaY = Math.floor(aY / 5);
-      const divbY = Math.floor(bY / 5);
-      return divbY !== divaY ? divbY - divaY : aX - bX;
-    });
+    sortFields(emptyFields);
 
     const focusedIndex = emptyFields.findIndex(field => field.name === this.focusedField);
     let nextFocusedIndex = focusedIndex + 1;
