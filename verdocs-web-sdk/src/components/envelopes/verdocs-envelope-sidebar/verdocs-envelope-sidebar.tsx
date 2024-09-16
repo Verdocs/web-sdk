@@ -337,7 +337,7 @@ export class VerdocsEnvelopeSidebar {
     if (this.remindersEnabled) {
       return this.handleSetReminders(null, null);
     } else {
-      return this.handleSetReminders(24 * MS_PER_DAY, 48 * MS_PER_DAY);
+      return this.handleSetReminders(MS_PER_DAY, 3 * MS_PER_DAY);
     }
   }
 
@@ -456,7 +456,7 @@ export class VerdocsEnvelopeSidebar {
                   <Fragment>
                     <div class="form-row">NOTE: Reminders will only be sent for up to 14 days.</div>
                     <div class="form-row">
-                      <div class="form-label">Initial Reminder:</div>
+                      <div class="form-label">Initial Reminder (days):</div>
                       <verdocs-text-input
                         placeholder="In hours..."
                         disabled={functionsDisabled || this.updatingReminders}

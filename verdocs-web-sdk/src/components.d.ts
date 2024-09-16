@@ -63,6 +63,10 @@ export namespace Components {
      */
     interface VerdocsAuth {
         /**
+          * The display mode to start in.
+         */
+        "displayMode": 'login' | 'forgot' | 'reset' | 'signup' | 'verify';
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
@@ -3747,6 +3751,10 @@ declare namespace LocalJSX {
      * ```
      */
     interface VerdocsAuth {
+        /**
+          * The display mode to start in.
+         */
+        "displayMode"?: 'login' | 'forgot' | 'reset' | 'signup' | 'verify';
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */

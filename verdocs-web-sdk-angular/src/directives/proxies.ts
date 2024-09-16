@@ -8,14 +8,14 @@ import { Components } from '@verdocs/web-sdk';
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'logo', 'visible']
+  inputs: ['displayMode', 'endpoint', 'logo', 'visible']
 })
 @Component({
   selector: 'verdocs-auth',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'logo', 'visible'],
+  inputs: ['displayMode', 'endpoint', 'logo', 'visible'],
 })
 export class VerdocsAuth {
   protected el: HTMLElement;
