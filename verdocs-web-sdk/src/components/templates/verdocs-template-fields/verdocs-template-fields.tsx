@@ -175,18 +175,16 @@ export class VerdocsTemplateFields {
     }
   }
 
-  async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
-    console.log('[FIELDS] handleFieldChange', field, e, optionId);
-  }
+  // async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
+  //   console.log('[FIELDS] handleFieldChange', field, e, optionId);
+  // }
 
   attachFieldAttributes(pageInfo: IDocumentPageInfo, field: ITemplateField, el: HTMLInputElement) {
-    el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('settingsChanged', (e: any) => {
-      console.log('Settings changed', e.detail);
+    // el.addEventListener('input', e => this.handleFieldChange(field, e));
+    el.addEventListener('settingsChanged', () => {
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
     });
     el.addEventListener('deleted', () => {
-      console.log('[FIELDS] Deleted', this, field);
       el.remove();
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
     });
@@ -251,7 +249,7 @@ export class VerdocsTemplateFields {
     }
 
     const pageNumber = event.target.getAttribute('pagenumber');
-    const {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
+    let {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
     const clientRect = event.target.getBoundingClientRect();
     const parent = event.target.parentElement;
     const parentRect = parent.getBoundingClientRect();
@@ -259,13 +257,29 @@ export class VerdocsTemplateFields {
     const width = field.width || defaultWidth(field.type);
     const height = field.height || defaultHeight(field.type);
 
-    // These two being backwards is not a mistake. Left measures "over" from the left (positive displacement) while bottom measures
-    // "up" from the bottom (negative displacement).
+    // These two being backwards is not a mistake. Left measures "over" from the left
+    // (positive displacement) while bottom measures "up" from the bottom (negative displacement).
     const newX = Math.max(clientRect.left - parentRect.left, 0);
-    const newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
+    let newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
+    console.log('drop', {pageNumber, newX, newY});
+
+    let newPageNumber = parseInt(pageNumber);
+    if (newY > renderedHeight) {
+      newPageNumber = Math.min(newPageNumber + 1, this.templateStore?.state?.documents?.[0]?.pages || 1);
+      newY -= renderedHeight;
+      renderedHeight = this.cachedPageInfo[newPageNumber].renderedHeight;
+
+      console.log('Next page', {newPageNumber, newY, renderedHeight});
+    } else if (newY < 0) {
+      newPageNumber = Math.max(newPageNumber - 1, 1);
+      renderedHeight = this.cachedPageInfo[newPageNumber].renderedHeight;
+      newY += renderedHeight;
+      console.log('Next page', {newPageNumber, newY, renderedHeight});
+    }
+
     const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - width, naturalHeight - height);
     try {
-      const params = {x, y};
+      const params = {x, y, page: newPageNumber};
       console.log('[FIELDS] Will update', name, y, option, params);
       const newFieldData = await updateField(this.endpoint, this.templateId, name, params);
       console.log('[FIELDS] Updated', newFieldData);

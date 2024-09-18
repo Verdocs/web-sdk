@@ -26,7 +26,6 @@ const AttachedIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 104.6
 })
 export class VerdocsFieldAttachment {
   @Element() el: HTMLElement;
-  private inputEl: HTMLInputElement;
 
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -103,14 +102,17 @@ export class VerdocsFieldAttachment {
   @Event({composed: true}) remove: EventEmitter;
 
   @State() showingProperties?: boolean = false;
-
   @State() dialogOpen?: boolean = false;
-
   @State() selectedFile?: ISelectedFile | null = null;
+  @State() focused = false;
 
   @Method()
   async focusField() {
-    this.inputEl.focus();
+    // Our input field is fake, so we fake the flash too
+    this.focused = true;
+    setTimeout(() => {
+      this.focused = false;
+    }, 500);
   }
 
   @Method()
@@ -139,31 +141,21 @@ export class VerdocsFieldAttachment {
 
   handleShow() {
     this.dialogOpen = true;
-    // this.dialog = document.createElement('verdocs-upload-dialog');
-    // this.dialog.open = true;
-    // this.dialog.existingFile = {name: 'image.png', size: 1000, type: 'image/png', lastModified: Date.now(), data: ''};
-    // this.dialog.addEventListener('exit', () => this.dialog?.remove());
-    // this.dialog.addEventListener('remove', () => this.remove?.emit());
-    // document.addEventListener('next', (e: any) => {
-    //   console.log('attach onNext', e.detail[0]);
-    //   this.selectedFile = e.detail[0];
-    //   this.attached?.emit(e.detail[0]);
-    //   this.dialog.open = false;
-    // });
-    // document.body.append(this.dialog);
   }
 
   handleUploadNext = (e: any) => {
     console.log('Upload next', e);
+    this.dialogOpen = false;
     this.selectedFile = e.detail[0];
     this.attached?.emit(e.detail[0]);
   };
 
   render() {
-    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {templateid, fieldname = '', editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', value = '', label = ''} = field || {};
+    console.log('Rendering attachment', field);
+    const {required = false, role_name = '', value = '', label = '', settings = {}} = field || {};
 
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
     const hasFile = value || !!this.selectedFile;
@@ -177,7 +169,7 @@ export class VerdocsFieldAttachment {
     }
 
     return (
-      <Host class={{required, disabled, done}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
 
         <div class="attach" innerHTML={hasFile ? AttachedIcon : PaperclipIcon} onClick={() => !disabled && this.handleShow()} />
@@ -217,14 +209,16 @@ export class VerdocsFieldAttachment {
         )}
 
         {this.dialogOpen && (
-          <verdocs-upload-dialog
-            // existingFile={{name: 'image.png', size: 1000, type: 'image/png', lastModified: Date.now(), data: ''}}
-            onNext={e => this.handleUploadNext(e)}
-            onExit={() => (this.dialogOpen = false)}
-            onRemove={e => {
-              console.log('remove', e);
-            }}
-          />
+          <verdocs-portal>
+            <verdocs-upload-dialog
+              existingFile={settings}
+              onNext={e => this.handleUploadNext(e)}
+              onExit={() => (this.dialogOpen = false)}
+              onRemove={e => {
+                console.log('remove', e);
+              }}
+            />
+          </verdocs-portal>
         )}
       </Host>
     );

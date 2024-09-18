@@ -501,8 +501,8 @@ export class VerdocsAuth {
             <div style={{marginTop: '30px'}} />
 
             <div class="buttons">
-              <verdocs-button label="Cancel" variant="outline" disabled={this.submitting} onClick={() => (this.displayMode = 'login')} />
-              <verdocs-button label="Request Code" disabled={this.submitting} onClick={() => this.handleResetGetCode()} />
+              <verdocs-button size="small" label="Cancel" variant="outline" disabled={this.submitting} onClick={() => (this.displayMode = 'login')} />
+              <verdocs-button size="small" label="Request Code" disabled={this.submitting} onClick={() => this.handleResetGetCode()} />
             </div>
           </form>
         </div>

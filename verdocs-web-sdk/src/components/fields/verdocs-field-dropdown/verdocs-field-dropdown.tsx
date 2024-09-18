@@ -13,8 +13,6 @@ import {SettingsIcon} from '../../../utils/Icons';
   shadow: false,
 })
 export class VerdocsFieldDropdown {
-  private el: HTMLSelectElement;
-
   /**
    * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
    */
@@ -79,9 +77,15 @@ export class VerdocsFieldDropdown {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
+  @State() focused = false;
 
-  @Method() async focusField() {
-    this.el.focus();
+  @Method()
+  async focusField() {
+    // Our input field is fake, so we fake the flash too
+    this.focused = true;
+    setTimeout(() => {
+      this.focused = false;
+    }, 500);
   }
 
   handleChange(e: any) {
@@ -113,7 +117,7 @@ export class VerdocsFieldDropdown {
   }
 
   render() {
-    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {templateid, fieldname = '', editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
     const {required = false, role_name = '', value = '', label = '', options = []} = field || {};
@@ -123,14 +127,13 @@ export class VerdocsFieldDropdown {
       return <Host class={{done}}>{value}</Host>;
     }
 
-    // TODO: Remove as any when JS SDK is updated
     return (
-      <Host class={{required, disabled, done}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
 
-        <select disabled={disabled} ref={el => (this.el = el)} onChange={e => this.handleChange(e)}>
+        <select disabled={disabled} onChange={e => this.handleChange(e)}>
           <option value="">Select...</option>
-          {(options || ([] as any[])).map(option => (
+          {options.map(option => (
             <option value={option.id} selected={option.id === value}>
               {option.label}
             </option>

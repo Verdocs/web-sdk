@@ -64,6 +64,7 @@ export class VerdocsFieldRadio {
   @Prop({reflect: true}) pagenumber?: number = 1;
 
   @State() showingProperties?: boolean = false;
+  @State() focused = false;
 
   /**
    * Event fired when the field's settings are changed.
@@ -74,6 +75,15 @@ export class VerdocsFieldRadio {
    * Event fired when the field is deleted.
    */
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
+
+  @Method()
+  async focusField() {
+    // Our input field is fake, so we fake the flash too
+    this.focused = true;
+    setTimeout(() => {
+      this.focused = false;
+    }, 500);
+  }
 
   @Method()
   async showSettingsPanel() {
@@ -100,7 +110,7 @@ export class VerdocsFieldRadio {
   }
 
   render() {
-    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {templateid, fieldname = '', editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
     const {name, required = false, role_name = '', label = '', group = '', value = false} = field || {};
@@ -119,7 +129,7 @@ export class VerdocsFieldRadio {
     }
 
     return (
-      <Host class={{required, disabled, done}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <div class="label">{label}</div>}
         {editable && group && <div class="group">{group}</div>}
 

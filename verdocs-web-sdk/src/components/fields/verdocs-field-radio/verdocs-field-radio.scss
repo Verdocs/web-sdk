@@ -12,6 +12,10 @@ verdocs-field-radio {
   transform-origin: bottom left;
   border-radius: 100%;
 
+  &.focused {
+    animation: verdocs-field-pulse 0.4s 1;
+  }
+
   svg {
     margin-top: 4px;
   }

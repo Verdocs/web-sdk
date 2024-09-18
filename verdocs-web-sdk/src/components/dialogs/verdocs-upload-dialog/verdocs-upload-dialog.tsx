@@ -16,8 +16,9 @@ const PaperclipIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewB
 export class VerdocsUploadDialog {
   private fileInput?: HTMLInputElement;
 
-  @Prop()
-  existingFile: File;
+  @Prop({mutable: true})
+  existingFile: any;
+  // existingFile: File;
 
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -79,7 +80,9 @@ export class VerdocsUploadDialog {
   }
 
   handleDeleteAttachment() {
+    // TODO: Discuss how we want to delete up to the server
     this.remove?.emit();
+    this.existingFile = null;
   }
 
   handleSelectFile() {
@@ -114,7 +117,7 @@ export class VerdocsUploadDialog {
               </Fragment>
             )}
 
-            {this.selectedFiles.length < 1 && (
+            {this.selectedFiles.length < 1 && !this.existingFile && (
               <div
                 class={{'drop-target': true, 'dragging-over': this.draggingOver}}
                 onDragOver={e => this.handleDragOver(e)}

@@ -75,6 +75,7 @@ export const getControlStyles = (field: ITemplateField | IEnvelopeField, xScale:
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type)} = field;
 
   return {
+    zIndex: '100',
     width: `${width}px`,
     height: `${height}px`,
     position: 'absolute',

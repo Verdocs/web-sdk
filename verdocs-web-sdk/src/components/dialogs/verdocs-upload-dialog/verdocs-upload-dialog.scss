@@ -1,8 +1,9 @@
 @import '../../../theme.scss';
 
 verdocs-upload-dialog {
-  font-family: $primary-font;
+  position: fixed;
   box-sizing: border-box;
+  font-family: $primary-font;
 
   div {
     box-sizing: border-box;

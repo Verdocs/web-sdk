@@ -26,6 +26,7 @@ export interface IContactSelectEvent {
   delegator: boolean;
   kba_method: string;
   kba_pin: string;
+  zip: string;
 }
 
 export type TPickerContact = Partial<IProfile>;
@@ -38,6 +39,14 @@ export type TPickerContact = Partial<IProfile>;
  * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
  * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
  * to always display the user's own contact record.
+ *
+ * ```ts
+ * <verdocs-contact-picker
+ *   templateRole={role}
+ *   contactSuggestions={[]}
+ *   onNext={e => console.log('Contact completed', e.detail)}
+ *   />
+ * ```
  */
 @Component({
   tag: 'verdocs-contact-picker',
@@ -81,13 +90,14 @@ export class VerdocsContactPicker {
   @State() last_name: string;
   @State() email: string;
   @State() phone: string;
+  @State() zip: string;
   @State() message: string;
   @State() showSuggestions: boolean = false;
   @State() showMessage: boolean = false;
   @State() delegator: boolean = false;
   @State() showKba: boolean = false;
-  @State() kbaMethod: string = '';
-  @State() pinCode: string = '';
+  @State() kba_method: '' | 'pin' | 'identity' = '';
+  @State() kba_pin: string = '';
 
   @State() nameFieldId = `verdocs-contact-picker-name-${Math.random().toString(36).substring(2, 11)}`;
   @State() firstNameFieldId = `verdocs-contact-picker-firstname-${Math.random().toString(36).substring(2, 11)}`;
@@ -97,7 +107,6 @@ export class VerdocsContactPicker {
 
   componentWillLoad() {
     if (this.templateRole) {
-      // TODO: For backwards compatibility, may be removed once templateRole no longer has a full_name
       const fullName = formatFullName(this.templateRole);
       const nameComponents = fullName.split(' ');
       const firstName = this.templateRole.first_name || nameComponents.shift() || '';
@@ -110,9 +119,10 @@ export class VerdocsContactPicker {
       this.delegator = this.templateRole.delegator || false;
       this.message = this.templateRole.message || '';
       this.showMessage = this.message !== '';
-      this.kbaMethod = this.templateRole.kba_method || '';
-      this.pinCode = this.templateRole.kba_pin || '';
-      this.showKba = !!this.kbaMethod;
+      this.kba_method = this.templateRole.kba_method || '';
+      this.kba_pin = this.templateRole.kba_pin || '';
+      this.showKba = !!this.kba_method;
+      // TODO: Allow template roles to have zip codes predefined?
     }
   }
 
@@ -143,8 +153,9 @@ export class VerdocsContactPicker {
       phone: this.phone,
       message: this.message,
       delegator: this.delegator,
-      kba_method: this.kbaMethod,
-      kba_pin: this.pinCode,
+      kba_method: this.kba_method,
+      kba_pin: this.kba_pin,
+      zip: this.zip,
     });
   }
 
@@ -161,6 +172,10 @@ export class VerdocsContactPicker {
   // The reason for the random names/IDs is to disable browser autocomplete. We set the autocomplete tags but many browsers ignore them
   // and show a duplicate autocomplete picker on top of our own.
   render() {
+    const hasBasics = this.first_name && this.last_name && (this.email || this.phone);
+    const hasKbaRequirements = !this.kba_method || (this.kba_method === 'pin' && this.kba_pin) || (this.kba_method === 'identity' && this.zip);
+    const canSubmit = hasBasics && hasKbaRequirements;
+
     return (
       <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
         <div class="row">
@@ -241,22 +256,25 @@ export class VerdocsContactPicker {
         {this.showKba && (
           <Fragment>
             <div class="kba-row">
-              {/*<div class="label-with-icon">*/}
               <label>KBA:</label>
               <verdocs-select-input
-                value={this.kbaMethod}
-                onInput={(e: any) => (this.kbaMethod = e.target.value)}
+                value={this.kba_method}
+                onInput={(e: any) => {
+                  this.kba_method = e.target.value;
+                  this.zip = '';
+                  this.kba_pin = '';
+                }}
                 options={[
                   {label: 'None', value: ''},
                   {label: 'PIN Code', value: 'pin'},
-                  {label: 'Full Verification', value: 'kba'},
+                  {label: 'Full Verification', value: 'identity'},
                 ]}
               />
               <div style={{flex: '1'}}></div>
               <verdocs-help-icon text="Knowledge-Based Authentication adds additional authentication for this user either via a simple PIN code or full address validation. NOTE: There may be a fee for using this feature." />
             </div>
 
-            {this.kbaMethod === 'pin' && (
+            {this.kba_method === 'pin' && (
               <div class="row pin-code">
                 <input
                   id="verdocs-pin-code"
@@ -264,10 +282,26 @@ export class VerdocsContactPicker {
                   type="text"
                   data-lpignore="true"
                   autocomplete="blocked"
-                  value={this.pinCode}
-                  placeholder="KBA PIN Code..."
+                  value={this.kba_pin}
+                  placeholder="PIN Code..."
                   onFocus={() => (this.showSuggestions = false)}
-                  onInput={(e: any) => (this.pinCode = e.target.value)}
+                  onInput={(e: any) => (this.kba_pin = e.target.value)}
+                />
+              </div>
+            )}
+
+            {this.kba_method === 'identity' && (
+              <div class="row zip-code">
+                <input
+                  id="verdocs-zip-code"
+                  name="verdocs-zip-code"
+                  type="text"
+                  data-lpignore="true"
+                  autocomplete="blocked"
+                  value={this.zip}
+                  placeholder="Zip Code..."
+                  onFocus={() => (this.showSuggestions = false)}
+                  onInput={(e: any) => (this.zip = e.target.value)}
                 />
               </div>
             )}
@@ -299,8 +333,9 @@ export class VerdocsContactPicker {
             onToggle={e => {
               this.showKba = e.detail.active;
               if (!e.detail.active) {
-                this.pinCode = '';
-                this.kbaMethod = '';
+                this.kba_pin = '';
+                this.kba_method = '';
+                this.zip = '';
               }
               this.showSuggestions = false;
             }}
@@ -318,7 +353,7 @@ export class VerdocsContactPicker {
           <div class="flex-fill" />
 
           <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} />
-          <verdocs-button label="OK" size="small" onClick={e => this.handleSubmit(e)} />
+          <verdocs-button label="OK" size="small" disabled={!canSubmit} onClick={e => this.handleSubmit(e)} />
         </div>
       </form>
     );

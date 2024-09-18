@@ -93,7 +93,8 @@ export class VerdocsFieldDate {
 
   @State() showingProperties?: boolean = false;
 
-  @Method() async focusField() {
+  @Method()
+  async focusField() {
     // Our input field is fake, so we fake the flash too
     this.focused = true;
     setTimeout(() => {

@@ -763,7 +763,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
 
 @ProxyCmp({
   inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
-  methods: ['showSettingsPanel', 'hideSettingsPanel']
+  methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
   selector: 'verdocs-field-radio',

@@ -113,6 +113,7 @@ export class VerdocsSign {
   @State() agreed = false;
   @State() documentsSingularPlural = 'document';
   @State() kbaStep = '';
+  @State() showSpinner = true;
 
   recipientIndex: number = -1;
 
@@ -280,6 +281,7 @@ export class VerdocsSign {
     this.getRecipientFields().forEach(oldField => {
       if (oldField.name === fieldName) {
         oldField.value = updateResult.value;
+        // TODO: Keeping this while attachments still rely on it
         oldField.settings = updateResult.settings;
         updateDocumentFieldValue(oldField);
         this.checkRecipientFields();
@@ -464,8 +466,8 @@ export class VerdocsSign {
       return;
     }
 
-    // Find and focus the next incomplete` field (that is fillable)
-    const emptyFields = this.getSortedFillableFields().filter(field => !this.isFieldFilled(field));
+    // Find and focus the next incomplete field (that is fillable)
+    const emptyFields = this.getSortedFillableFields().filter(field => field.required && !this.isFieldFilled(field));
     sortFields(emptyFields);
 
     const focusedIndex = emptyFields.findIndex(field => field.name === this.focusedField);
@@ -475,10 +477,11 @@ export class VerdocsSign {
     }
 
     let nextRequiredField = emptyFields[nextFocusedIndex];
+    console.log('Next field', nextRequiredField);
 
     // Skip signature and initial fields that are already filled in. We have to count our "skips" just in case, to avoid infinite loops.
     let skips = 0;
-    if (skips < emptyFields.length && ['signature', 'initial'].includes(nextRequiredField.type) && nextRequiredField.settings?.result === 'signed') {
+    if (skips < emptyFields.length && ['signature', 'initial'].includes(nextRequiredField.type) && ['initialed', 'signed'].includes(nextRequiredField.value)) {
       skips++;
       nextFocusedIndex++;
       if (nextFocusedIndex >= emptyFields.length) {
@@ -520,6 +523,7 @@ export class VerdocsSign {
   }
 
   attachFieldAttributes(pageInfo, field, el) {
+    // console.log('attach', field.name);
     el.addEventListener('input', (e: any) => {
       // console.log('[SIGN] onfieldInput', e.detail, e.target.value);
       // These field types don't emit fieldChange. Should we standardize on that? We don't tap "input" for fields like
@@ -535,10 +539,18 @@ export class VerdocsSign {
     el.addEventListener('attached', async (e: any) => {
       // TODO: Show a spinner and/or progress bar
       console.log('[SIGN] onAttached', e.detail, e.target.value);
-      const r = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name, e.detail);
-      console.log('upload result', r);
-      // this.updateRecipientFieldValue(fieldName, updateResult)
-      this.checkRecipientFields();
+      this.showSpinner = true;
+      try {
+        const r = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name, e.detail);
+        console.log('upload result', r);
+        // this.updateRecipientFieldValue(fieldName, updateResult)
+        this.checkRecipientFields();
+        this.showSpinner = false;
+      } catch (e) {
+        console.log('Error uploading attachment', e);
+        VerdocsToast('Unable to upload attachment, please try again later', {style: 'error'});
+        this.showSpinner = false;
+      }
     });
     el.addEventListener('remove', (e: any) => {
       console.log('[SIGN] onRemoved', e.detail, e.target.value);
@@ -550,7 +562,8 @@ export class VerdocsSign {
         .catch(e => console.log('[SIGN] Error deleting attachment', e));
     });
     el.addEventListener('focusout', e => {
-      if (field.type !== 'dropdown') {
+      // These field types trigger focusout as they're used, even without a value change
+      if (field.type !== 'dropdown' && field.type !== 'attachment') {
         this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
       }
     });
@@ -575,13 +588,8 @@ export class VerdocsSign {
     // NOTE: We don't filter on pageNumber here because we need the position in the
     // entire list to set the tabIndex.
     const recipientFields = this.getSortedFillableFields();
-    console.log('Recipient fields', recipientFields);
-    // this.getRecipientFields().filter(field => field.page === pageInfo.pageNumber);
 
     // First render the fields for the signer
-    // Also show field placeholders for other signers who have yet to act
-    // In template list in Beta, show second date being sorted on
-    // Sign top to bottom left to right
     recipientFields.forEach((field, tabIndex) => {
       if (field.page !== pageInfo.pageNumber) {
         return;
@@ -844,6 +852,14 @@ export class VerdocsSign {
           <div class="loading-indicator">
             <verdocs-loader />
           </div>
+        )}
+
+        {this.showSpinner && (
+          <verdocs-portal>
+            <div class="spinner-overlay">
+              <verdocs-spinner />
+            </div>
+          </verdocs-portal>
         )}
       </Host>
     );

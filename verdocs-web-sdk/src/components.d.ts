@@ -242,6 +242,13 @@ export namespace Components {
      * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
      * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
      * to always display the user's own contact record.
+     * ```ts
+     * <verdocs-contact-picker
+     *   templateRole={role}
+     *   contactSuggestions={[]}
+     *   onNext={e => console.log('Contact completed', e.detail)}
+     *   />
+     * ```
      */
     interface VerdocsContactPicker {
         /**
@@ -719,6 +726,7 @@ export namespace Components {
           * The name of the field to display.
          */
         "fieldname": string;
+        "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
@@ -1824,7 +1832,7 @@ export namespace Components {
      * caller via the onNext event handler.
      */
     interface VerdocsUploadDialog {
-        "existingFile": File;
+        "existingFile": any;
     }
     /**
      * Render the documents attached to an envelope in read-only (view) mode. All documents are
@@ -2240,6 +2248,13 @@ declare global {
      * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
      * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
      * to always display the user's own contact record.
+     * ```ts
+     * <verdocs-contact-picker
+     *   templateRole={role}
+     *   contactSuggestions={[]}
+     *   onNext={e => console.log('Contact completed', e.detail)}
+     *   />
+     * ```
      */
     interface HTMLVerdocsContactPickerElement extends Components.VerdocsContactPicker, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsContactPickerElementEventMap>(type: K, listener: (this: HTMLVerdocsContactPickerElement, ev: VerdocsContactPickerCustomEvent<HTMLVerdocsContactPickerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3960,6 +3975,13 @@ declare namespace LocalJSX {
      * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
      * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
      * to always display the user's own contact record.
+     * ```ts
+     * <verdocs-contact-picker
+     *   templateRole={role}
+     *   contactSuggestions={[]}
+     *   onNext={e => console.log('Contact completed', e.detail)}
+     *   />
+     * ```
      */
     interface VerdocsContactPicker {
         /**
@@ -6024,7 +6046,7 @@ declare namespace LocalJSX {
      * caller via the onNext event handler.
      */
     interface VerdocsUploadDialog {
-        "existingFile"?: File;
+        "existingFile"?: any;
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
@@ -6269,6 +6291,13 @@ declare module "@stencil/core" {
              * The parent can use that text as a query string to call a backend to obtain appropriate contacts to show. This list may also be
              * hard-coded ahead of time to provide the user with smart suggestions on initial display, such as "Recently Used" contacts, or
              * to always display the user's own contact record.
+             * ```ts
+             * <verdocs-contact-picker
+             *   templateRole={role}
+             *   contactSuggestions={[]}
+             *   onNext={e => console.log('Contact completed', e.detail)}
+             *   />
+             * ```
              */
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
             /**
