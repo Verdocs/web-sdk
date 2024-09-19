@@ -147,7 +147,7 @@ export namespace Components {
         /**
           * The size (height) of the button.
          */
-        "size": 'small' | 'normal' | 'medium' | 'large';
+        "size": 'xsmall' | 'small' | 'normal' | 'medium' | 'large';
         /**
           * If desired, a prefix icon for the button.
          */
@@ -1829,7 +1829,8 @@ export namespace Components {
     /**
      * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
      * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
-     * caller via the onNext event handler.
+     * caller via the onNext event handler. A delete event is also exposed to delete existing attachments.
+     * To represent an existing attachment, set the existingFile property.
      */
     interface VerdocsUploadDialog {
         "existingFile": any;
@@ -2441,9 +2442,8 @@ declare global {
     };
     interface HTMLVerdocsFieldAttachmentElementEventMap {
         "settingsChanged": {fieldName: string; field: ITemplateField};
-        "deleted": {fieldName: string};
         "attached": ISelectedFile;
-        "remove": any;
+        "deleted": {fieldName: string};
     }
     /**
      * Displays an attachment field.
@@ -3622,7 +3622,8 @@ declare global {
     /**
      * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
      * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
-     * caller via the onNext event handler.
+     * caller via the onNext event handler. A delete event is also exposed to delete existing attachments.
+     * To represent an existing attachment, set the existingFile property.
      */
     interface HTMLVerdocsUploadDialogElement extends Components.VerdocsUploadDialog, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsUploadDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsUploadDialogElement, ev: VerdocsUploadDialogCustomEvent<HTMLVerdocsUploadDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3883,7 +3884,7 @@ declare namespace LocalJSX {
         /**
           * The size (height) of the button.
          */
-        "size"?: 'small' | 'normal' | 'medium' | 'large';
+        "size"?: 'xsmall' | 'small' | 'normal' | 'medium' | 'large';
         /**
           * If desired, a prefix icon for the button.
          */
@@ -4281,10 +4282,6 @@ declare namespace LocalJSX {
           * Event fired when the field is deleted. Note that this is for the FIELD (e.g. in Build) not for any attachments (during signing).
          */
         "onDeleted"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string}>) => void;
-        /**
-          * Event fired when a file attachment is removed by the signer.
-         */
-        "onRemove"?: (event: VerdocsFieldAttachmentCustomEvent<any>) => void;
         /**
           * Event fired when the field's settings are changed.
          */
@@ -6043,7 +6040,8 @@ declare namespace LocalJSX {
     /**
      * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
      * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
-     * caller via the onNext event handler.
+     * caller via the onNext event handler. A delete event is also exposed to delete existing attachments.
+     * To represent an existing attachment, set the existingFile property.
      */
     interface VerdocsUploadDialog {
         "existingFile"?: any;
@@ -6716,7 +6714,8 @@ declare module "@stencil/core" {
             /**
              * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
              * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
-             * caller via the onNext event handler.
+             * caller via the onNext event handler. A delete event is also exposed to delete existing attachments.
+             * To represent an existing attachment, set the existingFile property.
              */
             "verdocs-upload-dialog": LocalJSX.VerdocsUploadDialog & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
             /**

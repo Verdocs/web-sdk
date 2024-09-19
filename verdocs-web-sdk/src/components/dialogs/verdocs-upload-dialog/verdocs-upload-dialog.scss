@@ -22,7 +22,8 @@ verdocs-upload-dialog {
     justify-content: center;
   }
 
-  .dialog {
+  // Not simple .dialog to avoid conflicts with ok-dialog. Should review that more.
+  .upload-dialog-content {
     width: 320px;
     display: flex;
     flex-direction: column;

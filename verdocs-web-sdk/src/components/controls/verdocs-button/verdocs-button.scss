@@ -30,6 +30,25 @@ verdocs-button {
     }
 
     // Small-sized button size adjustments
+    &.xsmall {
+      height: 26px;
+      font-size: 12px;
+
+      .icon {
+        margin: 0 3px;
+
+        svg {
+          margin: 2px 0 0 0;
+          height: 18px;
+        }
+      }
+
+      .button-label {
+        padding: 0 4px;
+      }
+    }
+
+    // Small-sized button size adjustments
     &.small {
       height: 34px;
       font-size: 13px;

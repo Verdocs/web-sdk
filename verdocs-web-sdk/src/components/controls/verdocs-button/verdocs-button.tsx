@@ -30,7 +30,7 @@ export class VerdocsButton {
   /**
    * The size (height) of the button.
    */
-  @Prop() size: 'small' | 'normal' | 'medium' | 'large' = 'normal';
+  @Prop() size: 'xsmall' | 'small' | 'normal' | 'medium' | 'large' = 'normal';
 
   /**
    * The type of the button.

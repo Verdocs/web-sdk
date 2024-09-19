@@ -113,7 +113,7 @@ export class VerdocsSign {
   @State() agreed = false;
   @State() documentsSingularPlural = 'document';
   @State() kbaStep = '';
-  @State() showSpinner = true;
+  @State() showSpinner = false;
 
   recipientIndex: number = -1;
 
@@ -523,12 +523,21 @@ export class VerdocsSign {
   }
 
   attachFieldAttributes(pageInfo, field, el) {
-    // console.log('attach', field.name);
+    // We can get called multiple times as rendering completes and it's hard to avoid that
+    // because it's a ton of work for the callers to know it's been done already. But we
+    // don't want to attach multiple event listeners or we get dupe event handling, like
+    // calling the server twice on every field update. Since JS has no removeAllEventListeners()
+    // option, using removeEventListener() isn't reliable the way Stencil binds local function
+    // contexts, and cloneNode messes up the rest of the rendering, we just track it with a flag.
+    if (el.getAttribute('attached') === '1') {
+      return;
+    }
+    el.setAttribute('attached', '1');
+
     el.addEventListener('input', (e: any) => {
       // console.log('[SIGN] onfieldInput', e.detail, e.target.value);
       // These field types don't emit fieldChange. Should we standardize on that? We don't tap "input" for fields like
       // text boxes because we'd be updating the field on every keystroke. We do those on blur which fires fieldChange.
-      console.log('onInput', e.target.type, e.target.name);
       if (e.target.type === 'radio' || e.target.type === 'checkbox') {
         // if (e.target.type === 'radio' || e.target.name.includes('date') || e.target.name.includes('checkbox')) {
         this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
@@ -541,10 +550,13 @@ export class VerdocsSign {
       console.log('[SIGN] onAttached', e.detail, e.target.value);
       this.showSpinner = true;
       try {
-        const r = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name, e.detail);
-        console.log('upload result', r);
-        // this.updateRecipientFieldValue(fieldName, updateResult)
+        const updateResult = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name, e.detail);
+        this.updateRecipientFieldValue(field.name, updateResult);
         this.checkRecipientFields();
+
+        const newEl = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
+        this.attachFieldAttributes(pageInfo, field, newEl);
+
         this.showSpinner = false;
       } catch (e) {
         console.log('Error uploading attachment', e);
@@ -552,14 +564,24 @@ export class VerdocsSign {
         this.showSpinner = false;
       }
     });
-    el.addEventListener('remove', (e: any) => {
-      console.log('[SIGN] onRemoved', e.detail, e.target.value);
-      deleteEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name)
-        .then(r => {
-          console.log('[SIGN] Deleted attachment', r);
-          // this.updateRecipientFieldValue(fieldName, updateResult)
-        })
-        .catch(e => console.log('[SIGN] Error deleting attachment', e));
+    el.addEventListener('deleted', async (e: any) => {
+      console.log('[SIGN] onDeleted', e.detail, e.target.value);
+      this.showSpinner = true;
+      try {
+        const updateResult = await deleteEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name);
+        console.log('[SIGN] Deleted attachment', updateResult);
+        this.updateRecipientFieldValue(field.name, updateResult);
+        this.checkRecipientFields();
+
+        const newEl = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
+        this.attachFieldAttributes(pageInfo, field, newEl);
+
+        this.showSpinner = false;
+      } catch (e) {
+        console.log('Error uploading attachment', e);
+        VerdocsToast('Unable to upload attachment, please try again later', {style: 'error'});
+        this.showSpinner = false;
+      }
     });
     el.addEventListener('focusout', e => {
       // These field types trigger focusout as they're used, even without a value change
@@ -595,6 +617,7 @@ export class VerdocsSign {
         return;
       }
 
+      // TODO: Review possible workflow/race conditions vs rendering in -document-page.
       const el = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
       if (!el) {
         return;
@@ -783,7 +806,7 @@ export class VerdocsSign {
             <div class="title">{this.envelope.name}</div>
             <div style={{flex: '1'}} />
 
-            {!this.finishLater && <verdocs-button size="small" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
+            {!this.finishLater && <verdocs-button size="xsmall" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
 
             <div style={{marginLeft: '10px'}} />
             <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />

@@ -7,7 +7,8 @@ const PaperclipIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewB
 /**
  * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
  * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
- * caller via the onNext event handler.
+ * caller via the onNext event handler. A delete event is also exposed to delete existing attachments.
+ * To represent an existing attachment, set the existingFile property.
  */
 @Component({
   tag: 'verdocs-upload-dialog',
@@ -37,7 +38,7 @@ export class VerdocsUploadDialog {
   @Event({composed: true}) remove: EventEmitter;
 
   @State() draggingOver = false;
-
+  @State() confirmDelete = false;
   @State() selectedFiles = [] as File[];
 
   handleCancel() {
@@ -79,10 +80,15 @@ export class VerdocsUploadDialog {
     this.selectedFiles = newFiles;
   }
 
-  handleDeleteAttachment() {
-    // TODO: Discuss how we want to delete up to the server
+  handleDeleteAttachment(e: any) {
+    // Stop the parent from seeing "next" and thinking an upload was done.
+    // TODO: Rethink having so many commonalities in nested dialogs (next/exit).
+    e.preventDefault();
+    e.stopPropagation();
+
     this.remove?.emit();
     this.existingFile = null;
+    this.confirmDelete = false;
   }
 
   handleSelectFile() {
@@ -98,36 +104,38 @@ export class VerdocsUploadDialog {
   }
 
   render() {
+    const existingFile = this.existingFile?.name ? this.existingFile : null;
+
     return (
       <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
-          <div class="dialog">
+          <div class="upload-dialog-content">
             <div class="heading">Upload attachment</div>
 
-            {this.selectedFiles.length < 1 && this.existingFile && (
+            {this.selectedFiles.length < 1 && existingFile && (
               <Fragment>
                 <div class="current-label">Current Attachment</div>
                 <div class="attachments" style={{marginTop: '0'}}>
                   <div class="attachment">
                     <div class="icon" innerHTML={PaperclipIcon} />
-                    <div class="name">{this.existingFile.name}</div>
-                    <div class="icon trash" innerHTML={TrashIcon} onClick={() => this.handleDeleteAttachment()} />
+                    <div class="name">{existingFile.name}</div>
+                    <div class="icon trash" innerHTML={TrashIcon} onClick={() => (this.confirmDelete = true)} />
                   </div>
                 </div>
               </Fragment>
             )}
 
-            {this.selectedFiles.length < 1 && !this.existingFile && (
+            {this.selectedFiles.length < 1 && !existingFile && (
               <div
                 class={{'drop-target': true, 'dragging-over': this.draggingOver}}
                 onDragOver={e => this.handleDragOver(e)}
                 onDragLeave={e => this.handleDragLeave(e)}
                 onDrop={e => this.handleDrop(e)}
               >
-                <p>Drag and drop a {!!this.existingFile && 'replacement'} here...</p>
+                <p>Drag and drop a {!!existingFile && 'replacement'} here...</p>
                 <p>- or -</p>
 
-                <verdocs-button label={!!this.existingFile ? 'Replace file...' : 'Select a file...'} onClick={() => this.handleSelectFile()} />
+                <verdocs-button label={!!existingFile ? 'Replace file...' : 'Select a file...'} onClick={() => this.handleSelectFile()} />
                 <input type="file" ref={el => (this.fileInput = el as HTMLInputElement)} style={{display: 'none'}} onChange={() => this.handleFileChange()} />
               </div>
             )}
@@ -150,6 +158,21 @@ export class VerdocsUploadDialog {
             </div>
           </div>
         </div>
+
+        {this.confirmDelete && (
+          <verdocs-ok-dialog
+            heading="Delete Attachment?"
+            message="Are you sure you wish to delete this attachment? This action cannot be undone."
+            showCancel={true}
+            onExit={e => {
+              // So we don't close the upload dialog
+              e.preventDefault();
+              e.stopPropagation();
+              this.confirmDelete = false;
+            }}
+            onNext={e => this.handleDeleteAttachment(e)}
+          />
+        )}
       </Host>
     );
   }

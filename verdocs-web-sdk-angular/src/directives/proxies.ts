@@ -526,7 +526,7 @@ export class VerdocsFieldAttachment {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted', 'attached', 'remove']);
+    proxyOutputs(this, this.el, ['settingsChanged', 'attached', 'deleted']);
   }
 }
 
@@ -540,18 +540,14 @@ export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldA
    */
   settingsChanged: EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldAttachmentITemplateField}>>;
   /**
-   * Event fired when the field is deleted. Note that this is for the FIELD (e.g. in
-Build) not for any attachments (during signing).
-   */
-  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
-  /**
    * Event fired when a file is attached by the signer.
    */
   attached: EventEmitter<CustomEvent<IVerdocsFieldAttachmentISelectedFile>>;
   /**
-   * Event fired when a file attachment is removed by the signer.
+   * Event fired when the field is deleted. Note that this is for the FIELD (e.g. in
+Build) not for any attachments (during signing).
    */
-  remove: EventEmitter<CustomEvent<any>>;
+  deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
 }
 
 
