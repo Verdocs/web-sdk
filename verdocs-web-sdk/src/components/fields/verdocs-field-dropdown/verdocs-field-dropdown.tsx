@@ -120,11 +120,20 @@ export class VerdocsFieldDropdown {
     const {templateid, fieldname = '', editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', value = '', label = '', options = []} = field || {};
+    let {required = false, role_name = '', value = '', label = '', options} = field || {};
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
     if (done) {
       return <Host class={{done}}>{value}</Host>;
+    }
+
+    // TODO: Look for other places this mistaken assumption was made.
+    // Defaults only apply in destructuring if undefined. null doesn't trigger it.
+    options ||= [];
+
+    if (!options.length) {
+      console.log('[DROPDOWN] Dropdown has no options, hiding field...', fieldname);
+      return <Host />;
     }
 
     return (

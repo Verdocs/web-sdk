@@ -97,6 +97,7 @@ export class VerdocsFieldDate {
   async focusField() {
     // Our input field is fake, so we fake the flash too
     this.focused = true;
+    this.picker?.show();
     setTimeout(() => {
       this.focused = false;
     }, 500);
@@ -104,6 +105,7 @@ export class VerdocsFieldDate {
 
   fieldStore: TTemplateFieldStore = null;
   roleStore: TTemplateRoleStore = null;
+  picker: AirDatepicker<HTMLElement> | null = null;
 
   async componentWillLoad() {
     if (this.field) {
@@ -116,7 +118,7 @@ export class VerdocsFieldDate {
   }
 
   componentDidLoad() {
-    new AirDatepicker(`#${this.containerId}`, {
+    this.picker = new AirDatepicker<HTMLElement>(`#${this.containerId}`, {
       locale: localeEn,
       isMobile: true,
       autoClose: true,

@@ -107,6 +107,8 @@ export class VerdocsSign {
   @State() declined = false;
   @State() isDone = false;
   @State() showDone = false;
+  @State() showCanceled = false;
+  @State() showDeclined = false;
   @State() showLoadError = false;
   @State() finishLater = false;
   @State() showFinishLater = false;
@@ -169,10 +171,15 @@ export class VerdocsSign {
         console.warn('[SIGN] Could not find our recipient record', this.roleId, this.sortedRecipients);
       }
 
+      // TODO: Envelope "complete" | "declined" | "canceled"
+      // TODO: Recipient "canceled"
       this.submitted = this.recipient.status === 'submitted';
       this.declined = this.recipient.status === 'declined';
       this.canceled = this.envelope.status === 'canceled';
       this.isDone = this.submitted || this.declined || this.canceled;
+      this.showDone = this.submitted;
+      this.showCanceled = this.canceled;
+      this.showDeclined = this.declined;
 
       if (this.agreed) {
         this.nextButtonLabel = 'Next';
@@ -244,16 +251,17 @@ export class VerdocsSign {
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
           this.submitting = false;
           this.declined = true;
-          console.log('[SIGN] Reloading envelope');
-          getEnvelope(this.endpoint, this.envelopeId)
-            .then(envelope => {
-              this.envelope = envelope;
-              this.isDone = true;
-            })
-            .catch(e => {
-              this.isDone = true;
-              console.log('[SIGN] Error reloading envelope', e);
-            });
+          this.showDeclined = true;
+          // console.log('[SIGN] Reloading envelope');
+          // getEnvelope(this.endpoint, this.envelopeId)
+          //   .then(envelope => {
+          //     this.envelope = envelope;
+          //     this.isDone = true;
+          //   })
+          //   .catch(e => {
+          //     this.isDone = true;
+          //     console.log('[SIGN] Error reloading envelope', e);
+          //   });
         }
         break;
 
@@ -386,7 +394,7 @@ export class VerdocsSign {
           case 'phone':
             return isValidPhone(value);
           default:
-            return value !== '';
+            return (value || '').trim() !== '';
         }
 
       case 'signature':
@@ -688,9 +696,37 @@ export class VerdocsSign {
             <verdocs-ok-dialog
               heading="You're Done!"
               message={`You can access the ${this.documentsSingularPlural} at any time by clicking on the link from the invitation email.<br /><br />After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.`}
-              onNext={() => {
+              onNext={(e: any) => {
+                e.preventDefault();
+                e.stopPropagation();
                 this.showDone = false;
                 this.isDone = true;
+              }}
+            />
+          )}
+
+          {this.showCanceled && (
+            <verdocs-ok-dialog
+              heading="Document Canceled"
+              message={`This envelope has been canceled. Please contact the sender.`}
+              onNext={(e: any) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // We don't allow this to be hidden
+                // this.showCanceled = false;
+              }}
+            />
+          )}
+
+          {this.showDeclined && (
+            <verdocs-ok-dialog
+              heading="Declined to Sign"
+              message={`You have declined to sign this document. Please contact the sender.`}
+              onNext={(e: any) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // We don't allow this to be hidden
+                // this.showDeclined = false;
               }}
             />
           )}
@@ -867,6 +903,32 @@ export class VerdocsSign {
             onNext={() => {
               this.showDone = false;
               this.isDone = true;
+            }}
+          />
+        )}
+
+        {this.showCanceled && (
+          <verdocs-ok-dialog
+            heading="Document Canceled"
+            message={`This envelope has been canceled. Please contact the sender.`}
+            onNext={(e: any) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // We don't allow this to be hidden
+              // this.showCanceled = false;
+            }}
+          />
+        )}
+
+        {this.showDeclined && (
+          <verdocs-ok-dialog
+            heading="Declined to Sign"
+            message={`You have declined to sign this document. Please contact the sender.`}
+            onNext={(e: any) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // We don't allow this to be hidden
+              // this.showDeclined = false;
             }}
           />
         )}

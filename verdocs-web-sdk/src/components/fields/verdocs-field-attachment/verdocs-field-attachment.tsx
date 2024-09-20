@@ -106,6 +106,7 @@ export class VerdocsFieldAttachment {
   async focusField() {
     // Our input field is fake, so we fake the flash too
     this.focused = true;
+    this.dialogOpen = true;
     setTimeout(() => {
       this.focused = false;
     }, 500);
@@ -147,13 +148,11 @@ export class VerdocsFieldAttachment {
   };
 
   handleUploadRemove = (e: any) => {
-    console.log('removing attachment');
     e.preventDefault();
     e.stopPropagation();
-    this.deleted?.emit({fieldName: this.fieldname});
+    this.dialogOpen = false;
     this.selectedFile = null;
-    // TODO: Judgment call, discuss with P.
-    // this.dialogOpen = false;
+    this.deleted?.emit({fieldName: this.fieldname});
   };
 
   render() {

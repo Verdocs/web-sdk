@@ -273,7 +273,7 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: I
     const subFolder = envelopes.length > 0 ? zip.folder(`${envelope.id} - ${envelope.name} - ${date}`) : null;
     for await (let document of envelope.documents) {
       // TODO: When attachments are added to envelopes, add a field that reflects the full, original filename (including extension)
-      const documentFileName = document.type === 'certificate' ? `${envelope.name}_certificate.pdf` : `${document.name}.pdf`;
+      const documentFileName = document.type === 'certificate' ? `${envelope.name}_certificate.pdf` : `${document.name.replace('.pdf', '')}.pdf`;
       const data = await getEnvelopeFile(endpoint, envelope.id, document.id);
 
       if (subFolder) {

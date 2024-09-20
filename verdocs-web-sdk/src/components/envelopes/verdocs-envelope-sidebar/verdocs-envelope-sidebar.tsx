@@ -178,7 +178,7 @@ export class VerdocsEnvelopeSidebar {
     this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.store?.state, event: id});
   }
 
-  cancelEnvelope() {
+  handleCancelEnvelope() {
     this.loading = true;
     cancelEnvelope(this.endpoint, this.envelopeId)
       .then(async r => {
@@ -309,6 +309,8 @@ export class VerdocsEnvelopeSidebar {
         case 'completed':
           entries.push({icon: 'done_all', message: `Envelope was completed.`, date: new Date(history.created_at)});
           break;
+        // TODO: Final answer?
+        case 'envelope:canceled':
         case 'envelope_canceled':
         case 'canceled':
         case 'owner:canceled':
@@ -534,7 +536,7 @@ export class VerdocsEnvelopeSidebar {
             message={'Are you sure you want to cancel this Envelope? This action cannot be undone.'}
             onNext={() => {
               this.showCancelDialog = false;
-              this.cancelEnvelope();
+              this.handleCancelEnvelope();
             }}
           />
         )}

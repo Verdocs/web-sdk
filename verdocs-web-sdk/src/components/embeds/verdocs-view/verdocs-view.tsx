@@ -1,7 +1,7 @@
 import {cancelEnvelope, getDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, userCanCancelEnvelope, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {saveEnvelopesAsZip} from '../../../utils/utils';
-import {IDocumentPageInfo} from '../../../utils/Types';
+// import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 
 /**
@@ -116,9 +116,9 @@ export class VerdocsView {
     }
   }
 
-  handlePageRendered(e: any) {
-    const pageInfo = e.detail as IDocumentPageInfo;
-    console.log('[VIEW] Page rendered', pageInfo);
+  handlePageRendered(_e: any) {
+    // const pageInfo = e.detail as IDocumentPageInfo;
+    // console.log('[VIEW] Page rendered', pageInfo);
   }
 
   async handleOptionSelected(e: any) {
