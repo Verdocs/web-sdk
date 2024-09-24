@@ -264,22 +264,26 @@ export class VerdocsView {
 
               return (
                 <Fragment>
-                  {pageNumbers.map(pageNumber => (
-                    <verdocs-envelope-document-page
-                      envelopeId={this.envelopeId}
-                      documentId={envelopeDocument.id}
-                      endpoint={this.endpoint}
-                      type="filled"
-                      virtualWidth={612}
-                      virtualHeight={792}
-                      pageNumber={pageNumber}
-                      onPageRendered={e => this.handlePageRendered(e)}
-                      layers={[
-                        {name: 'page', type: 'canvas'},
-                        {name: 'controls', type: 'div'},
-                      ]}
-                    />
-                  ))}
+                  {pageNumbers.map(pageNumber => {
+                    const pageSize = envelopeDocument.page_sizes[pageNumber];
+
+                    return (
+                      <verdocs-envelope-document-page
+                        envelopeId={this.envelopeId}
+                        documentId={envelopeDocument.id}
+                        endpoint={this.endpoint}
+                        type="filled"
+                        virtualWidth={pageSize?.width || 612}
+                        virtualHeight={pageSize?.height || 792}
+                        pageNumber={pageNumber}
+                        onPageRendered={e => this.handlePageRendered(e)}
+                        layers={[
+                          {name: 'page', type: 'canvas'},
+                          {name: 'controls', type: 'div'},
+                        ]}
+                      />
+                    );
+                  })}
                 </Fragment>
               );
             })}

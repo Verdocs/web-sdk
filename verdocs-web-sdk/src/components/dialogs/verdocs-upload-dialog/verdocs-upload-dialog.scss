@@ -68,11 +68,12 @@ verdocs-upload-dialog {
     flex-direction: column;
     justify-content: center;
     background-color: #f5f5f5;
-    color: rgba(0, 0, 0, 0.54);
+    color: $verdocs-grey-1;
     border: 2px dashed #979797;
 
     p {
       margin: 12px 0;
+      font-weight: 500;
     }
 
     &.dragging-over {
@@ -130,7 +131,6 @@ verdocs-upload-dialog {
   }
 
   .subscript {
-    font-weight: 500;
-    color: $verdocs-grey-1;
+    color: $verdocs-bg-4;
   }
 }

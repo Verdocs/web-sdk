@@ -109,23 +109,27 @@ export class VerdocsPreview {
           const pageNumbers = integerSequence(1, document.pages);
           return (
             <Fragment>
-              {pageNumbers.map(pageNumber => (
-                <verdocs-template-document-page
-                  templateId={document.template_id}
-                  documentId={document.id}
-                  pageNumber={pageNumber}
-                  disabled={true}
-                  editable={false}
-                  done={false}
-                  virtualWidth={612}
-                  virtualHeight={792}
-                  onPageRendered={e => this.handlePageRendered(e)}
-                  layers={[
-                    {name: 'page', type: 'canvas'},
-                    {name: 'controls', type: 'div'},
-                  ]}
-                />
-              ))}
+              {pageNumbers.map(pageNumber => {
+                const pageSize = document.page_sizes[pageNumber];
+
+                return (
+                  <verdocs-template-document-page
+                    templateId={document.template_id}
+                    documentId={document.id}
+                    pageNumber={pageNumber}
+                    disabled={true}
+                    editable={false}
+                    done={false}
+                    virtualWidth={pageSize?.width || 612}
+                    virtualHeight={pageSize?.height || 792}
+                    onPageRendered={e => this.handlePageRendered(e)}
+                    layers={[
+                      {name: 'page', type: 'canvas'},
+                      {name: 'controls', type: 'div'},
+                    ]}
+                  />
+                );
+              })}
             </Fragment>
           );
         })}
