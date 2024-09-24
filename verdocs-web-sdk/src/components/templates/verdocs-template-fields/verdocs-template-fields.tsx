@@ -1,5 +1,5 @@
 import interact from 'interactjs';
-import {Component, h, Event, EventEmitter, Prop, Host, State, Listen} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Prop, Host, State, Listen, Watch} from '@stencil/core';
 import {createField, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, updateCssTransform} from '../../../utils/utils';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
@@ -73,7 +73,7 @@ export class VerdocsTemplateFields {
   /**
    * The ID of the template to create the document from.
    */
-  @Prop() templateId: string | null = null;
+  @Prop({reflect: true, mutable: true}) templateId: string | null = null;
 
   /**
    * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this
@@ -110,6 +110,19 @@ export class VerdocsTemplateFields {
   fieldStore: TTemplateFieldStore | null = null;
   roleStore: TTemplateRoleStore | null = null;
 
+  @Watch('templateId')
+  onTemplateIdChanged(newTemplateId: string) {
+    this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
+  }
+
+  // Stop field-placement mode if ESC is pressed
+  @Listen('keydown', {target: 'document'})
+  handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === 'Escape') {
+      this.placing = null;
+    }
+  }
+
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
@@ -124,22 +137,12 @@ export class VerdocsTemplateFields {
         return;
       }
 
-      getTemplateStore(this.endpoint, this.templateId, true)
-        .then(ts => {
-          this.templateStore = ts;
-          this.fieldStore = getTemplateFieldStore(this.templateId);
-          this.roleStore = getTemplateRoleStore(this.templateId);
-          this.selectedRoleName = this.roleStore.get('roles')?.[0]?.name || '';
-          this.loading = false;
-
-          this.fieldStore.onChange('fields', fields => {
-            console.log('[FIELDS] Fields changed', {fields});
-            this.fieldsUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, fields});
-          });
-        })
-        .catch(e => {
-          console.log(e);
-        });
+      try {
+        this.loadTemplate(this.templateId).catch(e => console.log('[BUILD] Unable to load template', e));
+      } catch (e) {
+        console.log('[FIELDS] Error loading template', e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      }
     } catch (e) {
       console.log('[FIELDS] Error with fields session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -160,24 +163,28 @@ export class VerdocsTemplateFields {
 
   componentWillUpdate() {
     // If a new role was added and there were none yet so far, or the "selected" role was deleted, reset our selection
-    const roles = this.roleStore.get('roles');
+    const roles = this.roleStore?.get('roles') || [];
     if (!this.selectedRoleName || !roles.find(role => role && role.name === this.selectedRoleName)) {
       this.selectedRoleName = roles[0]?.name || '';
       console.log('[FIELDS] Selected new role', this.selectedRoleName);
     }
   }
 
-  // Stop field-placement mode if ESC is pressed
-  @Listen('keydown', {target: 'document'})
-  handleKeyDown(ev: KeyboardEvent) {
-    if (ev.key === 'Escape') {
-      this.placing = null;
+  async loadTemplate(templateId: string) {
+    if (templateId) {
+      this.loading = true;
+
+      this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
+      this.roleStore = getTemplateRoleStore(this.templateId);
+      this.fieldStore = getTemplateFieldStore(this.templateId);
+
+      this.selectedRoleName = this.roleStore.get('roles')?.[0]?.name || '';
+      this.loading = false;
+
+      // TODO: Necessary?
+      // this.fieldsUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, fields});
     }
   }
-
-  // async handleFieldChange(field: ITemplateField, e: any, optionId?: string) {
-  //   console.log('[FIELDS] handleFieldChange', field, e, optionId);
-  // }
 
   attachFieldAttributes(pageInfo: IDocumentPageInfo, field: ITemplateField, el: HTMLInputElement) {
     // el.addEventListener('input', e => this.handleFieldChange(field, e));
@@ -426,24 +433,28 @@ export class VerdocsTemplateFields {
           {(this.templateStore?.state?.documents || []).map(document => {
             const pageNumbers = integerSequence(1, document.pages);
 
-            return pageNumbers.map(page => (
-              <verdocs-template-document-page
-                templateId={this.templateId}
-                documentId={document.id}
-                pageNumber={page}
-                virtualWidth={612}
-                virtualHeight={792}
-                disabled={true}
-                editable={true}
-                done={false}
-                onClick={(e: PointerEvent) => this.handleClickPage(e, page)}
-                onPageRendered={e => this.handlePageRendered(e)}
-                layers={[
-                  {name: 'page', type: 'canvas'},
-                  {name: 'controls', type: 'div'},
-                ]}
-              />
-            ));
+            return pageNumbers.map(page => {
+              const pageSize = document.page_sizes[page];
+
+              return (
+                <verdocs-template-document-page
+                  templateId={this.templateId}
+                  documentId={document.id}
+                  pageNumber={page}
+                  virtualWidth={pageSize?.width || 612}
+                  virtualHeight={pageSize?.height || 792}
+                  disabled={true}
+                  editable={true}
+                  done={false}
+                  onClick={(e: PointerEvent) => this.handleClickPage(e, page)}
+                  onPageRendered={e => this.handlePageRendered(e)}
+                  layers={[
+                    {name: 'page', type: 'canvas'},
+                    {name: 'controls', type: 'div'},
+                  ]}
+                />
+              );
+            });
           })}
         </div>
         {this.showMustSelectRole && (

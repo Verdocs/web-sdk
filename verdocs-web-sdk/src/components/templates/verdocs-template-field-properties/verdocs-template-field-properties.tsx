@@ -121,8 +121,6 @@ export class VerdocsTemplateFieldProperties {
     if (!field) {
       console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in fields`);
       return;
-    } else {
-      console.log('[FIELD PROPERTIES]', field);
     }
 
     this.type = field.type;
@@ -226,6 +224,9 @@ export class VerdocsTemplateFieldProperties {
         </Host>
       );
     }
+
+    const hasOptions = this.options.filter(opt => (opt.id || '').trim() !== '' || (opt.label || '').trim() !== '').length > 0;
+    const saveDisabled = !this.dirty || (this.type === 'dropdown' && !hasOptions);
 
     return (
       <Host id="verdocs-template-field-properties">
@@ -397,7 +398,7 @@ export class VerdocsTemplateFieldProperties {
             <button class="delete-button" disabled={this.dirty} onClick={e => this.handleDelete(e)} innerHTML={TrashIcon} />
             <div style={{flex: '1'}} />
             <verdocs-button size="small" variant="outline" label="Cancel" disabled={!this.dirty} onClick={e => this.handleCancel(e)} />
-            <verdocs-button size="small" label="Save" disabled={!this.dirty} onClick={e => this.handleSave(e)} />
+            <verdocs-button size="small" label="Save" disabled={saveDisabled} onClick={e => !saveDisabled && this.handleSave(e)} />
           </div>
         </form>
       </Host>

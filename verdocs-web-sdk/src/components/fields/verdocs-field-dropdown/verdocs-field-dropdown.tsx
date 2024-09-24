@@ -131,11 +131,6 @@ export class VerdocsFieldDropdown {
     // Defaults only apply in destructuring if undefined. null doesn't trigger it.
     options ||= [];
 
-    if (!options.length) {
-      console.log('[DROPDOWN] Dropdown has no options, hiding field...', fieldname);
-      return <Host />;
-    }
-
     return (
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
@@ -147,6 +142,7 @@ export class VerdocsFieldDropdown {
               {option.label}
             </option>
           ))}
+          {!options.length && <option value="NA">N/A</option>}
         </select>
 
         {editable && (

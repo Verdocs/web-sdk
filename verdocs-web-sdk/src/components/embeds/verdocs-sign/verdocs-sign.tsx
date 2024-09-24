@@ -317,6 +317,8 @@ export class VerdocsSign {
     const {value, checked} = e.target;
 
     switch (field.type as any) {
+      // TODO: Remove legacy type when no longer needed
+      case 'textarea':
       case 'textbox':
         return this.saveFieldChange(field.name, {prepared: false, value});
 
@@ -485,7 +487,7 @@ export class VerdocsSign {
     }
 
     let nextRequiredField = emptyFields[nextFocusedIndex];
-    console.log('Next field', nextRequiredField);
+    console.log('Next field', nextRequiredField, emptyFields);
 
     // Skip signature and initial fields that are already filled in. We have to count our "skips" just in case, to avoid infinite loops.
     let skips = 0;
@@ -505,8 +507,8 @@ export class VerdocsSign {
     if (nextRequiredField) {
       const id = getFieldId(nextRequiredField);
       const el = document.getElementById(id) as any;
+      el?.scrollIntoView({behavior: 'smooth'});
       el?.focusField();
-      el?.scrollTo({behavior: 'smooth', top: 0});
       this.focusedField = nextRequiredField.name;
     }
   }

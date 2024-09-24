@@ -1834,6 +1834,7 @@ export namespace Components {
      */
     interface VerdocsUploadDialog {
         "existingFile": any;
+        "maxSize": number;
     }
     /**
      * Render the documents attached to an envelope in read-only (view) mode. All documents are
@@ -6045,6 +6046,7 @@ declare namespace LocalJSX {
      */
     interface VerdocsUploadDialog {
         "existingFile"?: any;
+        "maxSize"?: number;
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */

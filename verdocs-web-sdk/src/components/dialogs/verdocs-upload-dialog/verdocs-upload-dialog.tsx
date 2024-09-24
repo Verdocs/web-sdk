@@ -18,8 +18,10 @@ export class VerdocsUploadDialog {
   private fileInput?: HTMLInputElement;
 
   @Prop({mutable: true})
+  maxSize: number = 20 * 1024 * 1024;
+
+  @Prop({mutable: true})
   existingFile: any;
-  // existingFile: File;
 
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -40,6 +42,7 @@ export class VerdocsUploadDialog {
   @State() draggingOver = false;
   @State() confirmDelete = false;
   @State() selectedFiles = [] as File[];
+  @State() errorMessage = '';
 
   handleCancel() {
     this.exit.emit();
@@ -70,14 +73,23 @@ export class VerdocsUploadDialog {
   async handleDrop(e) {
     e.preventDefault();
     this.draggingOver = false;
-
-    this.selectedFiles = Array.from(e.dataTransfer.items);
+    this.handleSetSelected(Array.from(e.dataTransfer.files));
   }
 
   handleRemoveAttachment(index: number) {
     const newFiles = [...this.selectedFiles];
     newFiles.splice(index, 1);
-    this.selectedFiles = newFiles;
+    this.handleSetSelected(newFiles);
+  }
+
+  handleSetSelected(files: any[]) {
+    this.selectedFiles = files;
+    this.errorMessage = '';
+
+    const totalSize = this.selectedFiles.reduce((acc, file) => acc + file.size, 0);
+    if (totalSize > this.maxSize) {
+      this.errorMessage = 'Total file size must not exceed 20MB.';
+    }
   }
 
   handleDeleteAttachment(e: any) {
@@ -96,11 +108,13 @@ export class VerdocsUploadDialog {
   }
 
   async handleFileChange() {
-    this.selectedFiles = Array.from(this.fileInput?.files);
+    const selectedFiles = Array.from(this.fileInput?.files);
     let droppedFiles = [] as File[];
     for (let i = 0; i < this.fileInput?.files.length; i++) {
       droppedFiles.push(this.fileInput?.files[i]);
     }
+
+    this.handleSetSelected(selectedFiles);
   }
 
   render() {
@@ -132,10 +146,10 @@ export class VerdocsUploadDialog {
                 onDragLeave={e => this.handleDragLeave(e)}
                 onDrop={e => this.handleDrop(e)}
               >
-                <p>Drag and drop a {!!existingFile && 'replacement'} here...</p>
-                <p>- or -</p>
+                <p>Drag and drop your files here</p>
+                <p class="subscript">Supported files: PDF, Word</p>
 
-                <verdocs-button label={!!existingFile ? 'Replace file...' : 'Select a file...'} onClick={() => this.handleSelectFile()} />
+                <verdocs-button label={!!existingFile ? 'Replace files' : 'Select files'} onClick={() => this.handleSelectFile()} />
                 <input type="file" ref={el => (this.fileInput = el as HTMLInputElement)} style={{display: 'none'}} onChange={() => this.handleFileChange()} />
               </div>
             )}
@@ -152,9 +166,11 @@ export class VerdocsUploadDialog {
               </div>
             )}
 
+            {!!this.errorMessage && <div class="error">{this.errorMessage}</div>}
+
             <div class="buttons">
               <verdocs-button label="Cancel" variant="outline" onClick={() => this.handleCancel()} />
-              <verdocs-button label="Upload" onClick={() => this.handleDone()} disabled={this.selectedFiles.length < 1} />
+              <verdocs-button label="Upload" onClick={() => this.handleDone()} disabled={!!this.errorMessage || this.selectedFiles.length < 1} />
             </div>
           </div>
         </div>

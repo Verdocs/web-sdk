@@ -2362,14 +2362,14 @@ export declare interface VerdocsToolbarIcon extends Components.VerdocsToolbarIco
 
 
 @ProxyCmp({
-  inputs: ['existingFile']
+  inputs: ['existingFile', 'maxSize']
 })
 @Component({
   selector: 'verdocs-upload-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['existingFile'],
+  inputs: ['existingFile', 'maxSize'],
 })
 export class VerdocsUploadDialog {
   protected el: HTMLElement;
