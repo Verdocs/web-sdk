@@ -858,7 +858,7 @@ export class VerdocsSign {
             return (
               <Fragment>
                 {pageNumbers.map(pageNumber => {
-                  const pageSize = envelopeDocument.page_sizes[pageNumber];
+                  const pageSize = envelopeDocument.page_sizes?.[pageNumber] || {width: 612, height: 792};
 
                   // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
                   // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
@@ -873,8 +873,8 @@ export class VerdocsSign {
                       envelopeId={this.envelopeId}
                       documentId={envelopeDocument.id}
                       endpoint={this.endpoint}
-                      virtualWidth={pageSize?.width || 612}
-                      virtualHeight={pageSize?.height || 792}
+                      virtualWidth={pageSize.width}
+                      virtualHeight={pageSize.height}
                       pageNumber={pageNumber}
                       onPageRendered={e => this.handlePageRendered(e)}
                       type="filled"

@@ -110,7 +110,7 @@ export class VerdocsPreview {
           return (
             <Fragment>
               {pageNumbers.map(pageNumber => {
-                const pageSize = document.page_sizes[pageNumber];
+                const pageSize = document.page_sizes?.[pageNumber] || {width: 612, height: 792};
 
                 return (
                   <verdocs-template-document-page
@@ -120,8 +120,8 @@ export class VerdocsPreview {
                     disabled={true}
                     editable={false}
                     done={false}
-                    virtualWidth={pageSize?.width || 612}
-                    virtualHeight={pageSize?.height || 792}
+                    virtualWidth={pageSize.width}
+                    virtualHeight={pageSize.height}
                     onPageRendered={e => this.handlePageRendered(e)}
                     layers={[
                       {name: 'page', type: 'canvas'},

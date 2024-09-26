@@ -1492,6 +1492,7 @@ export namespace Components {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
+        "maxSize": number;
     }
     /**
      * Represents one document page. This is primarily a layout container used to coordinate positions of
@@ -5546,6 +5547,7 @@ declare namespace LocalJSX {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
+        "maxSize"?: number;
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */

@@ -1770,14 +1770,14 @@ export declare interface VerdocsTemplateCard extends Components.VerdocsTemplateC
 
 
 @ProxyCmp({
-  inputs: ['endpoint']
+  inputs: ['endpoint', 'maxSize']
 })
 @Component({
   selector: 'verdocs-template-create',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint'],
+  inputs: ['endpoint', 'maxSize'],
 })
 export class VerdocsTemplateCreate {
   protected el: HTMLElement;

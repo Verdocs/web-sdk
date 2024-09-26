@@ -146,7 +146,7 @@ export class VerdocsUploadDialog {
                 onDragLeave={e => this.handleDragLeave(e)}
                 onDrop={e => this.handleDrop(e)}
               >
-                <p>Drag and drop your files here:</p>
+                <p>Drag and drop your files here</p>
                 <p class="subscript">Supported files: PDF, Word</p>
 
                 <verdocs-button label={!!existingFile ? 'Replace files' : 'Select files'} onClick={() => this.handleSelectFile()} />

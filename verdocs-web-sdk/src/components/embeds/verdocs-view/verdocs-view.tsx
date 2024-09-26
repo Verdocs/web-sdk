@@ -265,7 +265,7 @@ export class VerdocsView {
               return (
                 <Fragment>
                   {pageNumbers.map(pageNumber => {
-                    const pageSize = envelopeDocument.page_sizes[pageNumber];
+                    const pageSize = envelopeDocument.page_sizes?.[pageNumber] || {width: 612, height: 792};
 
                     return (
                       <verdocs-envelope-document-page
@@ -273,8 +273,8 @@ export class VerdocsView {
                         documentId={envelopeDocument.id}
                         endpoint={this.endpoint}
                         type="filled"
-                        virtualWidth={pageSize?.width || 612}
-                        virtualHeight={pageSize?.height || 792}
+                        virtualWidth={pageSize.width}
+                        virtualHeight={pageSize.height}
                         pageNumber={pageNumber}
                         onPageRendered={e => this.handlePageRendered(e)}
                         layers={[

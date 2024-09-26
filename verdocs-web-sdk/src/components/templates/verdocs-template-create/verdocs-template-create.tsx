@@ -3,7 +3,7 @@ import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/cor
 import {getTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
-const unicodeNBSP = ' ';
+// const unicodeNBSP = ' ';
 
 const FileIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"></path></svg>';
@@ -22,6 +22,9 @@ export class VerdocsTemplateCreate {
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+
+  @Prop({mutable: true})
+  maxSize: number = 20 * 1024 * 1024;
 
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -48,6 +51,7 @@ export class VerdocsTemplateCreate {
   @State() creating = false;
   @State() progressLabel = 'Uploading...';
   @State() progressPercent = 0;
+  @State() errorMessage = '';
 
   componentWillLoad() {
     this.endpoint.setTimeout(30000);
@@ -55,9 +59,14 @@ export class VerdocsTemplateCreate {
   }
 
   handleFileChanged(e: any) {
+    this.errorMessage = '';
     this.file = e.target.files?.[0] || null;
     console.log('[CREATE] Selected file', this.file);
-    // this.filePath = e.target.files?.[0]?.name;
+
+    const totalSize = this.file.size;
+    if (totalSize > this.maxSize) {
+      this.errorMessage = 'Total file size must not exceed 20MB.';
+    }
   }
 
   handleUpload(e) {
@@ -73,8 +82,6 @@ export class VerdocsTemplateCreate {
 
   async handleSubmit(e) {
     e.stopPropagation();
-
-    console.log('Submitting');
 
     // Should be true if we're here because onClick is only enabled then. We're just guarding this for Typescript.
     if (!this.file) {
@@ -169,20 +176,14 @@ export class VerdocsTemplateCreate {
               onDragLeave={(e: any) => e.target.classList.remove('drag-over')}
             >
               <span innerHTML={FileIcon} style={{display: 'flex', justifyContent: 'center'}} />
-              <div style={{marginTop: '20px', fontSize: '20px', fontWeight: 'bold', overflowWrap: 'anywhere'}}>{this.file ? this.file.name : 'Drag a file here'}</div>
-              <div
-                style={{
-                  marginTop: '20px',
-                  marginBottom: '20px',
-                  fontSize: '16px',
-                  height: '20px',
-                }}
-              >
-                {this.file ? unicodeNBSP : 'Or, if you prefer...'}
-              </div>
+              <p>{this.file ? this.file.name : 'Drag and drop your files here'}</p>
+              <p class="subscript">Supported files: PDF, Word</p>
+
               <verdocs-button label={this.file ? 'Select a different file' : 'Select a file from your computer'} size="small" onClick={e => this.handleUpload(e)} />
             </div>
           )}
+
+          {!!this.errorMessage && <div class="error">{this.errorMessage}</div>}
 
           <div class="buttons">
             <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} disabled={this.creating} />

@@ -28,6 +28,18 @@ verdocs-template-create {
     }
   }
 
+  p {
+    color: $verdocs-grey-1;
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  .subscript {
+    color: $verdocs-bg-4;
+  }
+
   .loader-wrapper {
     background-color: $verdocs-grey-4;
     display: flex;
@@ -60,5 +72,10 @@ verdocs-template-create {
 
   ::placeholder {
     color: $verdocs-bg-2;
+  }
+
+  .error {
+    margin: 0 0 20px 0;
+    color: $verdocs-red-1;
   }
 }

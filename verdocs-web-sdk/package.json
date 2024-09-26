@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "4.2.127",
+  "version": "4.2.129",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -30,7 +30,7 @@
     "@stencil/core": "^4.21.0",
     "@stencil/store": "^2.0.16",
     "@svgdotjs/svg.js": "^3.2.4",
-    "@verdocs/js-sdk": "^4.2.123",
+    "@verdocs/js-sdk": "^4.2.124",
     "air-datepicker": "^3.5.3",
     "choices.js": "^11.0.2",
     "date-fns": "^4.1.0",
