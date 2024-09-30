@@ -31,13 +31,14 @@ verdocs-template-create {
   p {
     color: $verdocs-grey-1;
     margin-top: 20px;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
     overflow-wrap: anywhere;
-  }
 
-  .subscript {
-    color: $verdocs-bg-4;
+    &.subscript {
+      color: $verdocs-bg-4;
+      font-size: 14px;
+    }
   }
 
   .loader-wrapper {
@@ -75,7 +76,7 @@ verdocs-template-create {
   }
 
   .error {
-    margin: 0 0 20px 0;
+    margin: 20px 0;
     color: $verdocs-red-1;
   }
 }

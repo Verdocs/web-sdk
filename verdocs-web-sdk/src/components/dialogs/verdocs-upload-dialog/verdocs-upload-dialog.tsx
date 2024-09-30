@@ -147,10 +147,16 @@ export class VerdocsUploadDialog {
                 onDrop={e => this.handleDrop(e)}
               >
                 <p>Drag and drop your files here</p>
-                <p class="subscript">Supported files: PDF, Word</p>
+                <p class="subscript">Supported files: PDF, Word, JPG, PNG</p>
 
                 <verdocs-button label={!!existingFile ? 'Replace files' : 'Select files'} onClick={() => this.handleSelectFile()} />
-                <input type="file" ref={el => (this.fileInput = el as HTMLInputElement)} style={{display: 'none'}} onChange={() => this.handleFileChange()} />
+                <input
+                  type="file"
+                  ref={el => (this.fileInput = el as HTMLInputElement)}
+                  style={{display: 'none'}}
+                  accept=".pdf,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
+                  onChange={() => this.handleFileChange()}
+                />
               </div>
             )}
 

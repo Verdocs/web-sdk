@@ -74,6 +74,11 @@ verdocs-upload-dialog {
     p {
       margin: 12px 0;
       font-weight: 500;
+
+      &.subscript {
+        color: $verdocs-bg-4;
+        font-size: 14px;
+      }
     }
 
     &.dragging-over {
@@ -126,11 +131,7 @@ verdocs-upload-dialog {
   }
 
   .error {
-    margin: 0 0 20px 0;
+    margin: 20px 0;
     color: $verdocs-red-1;
-  }
-
-  .subscript {
-    color: $verdocs-bg-4;
   }
 }

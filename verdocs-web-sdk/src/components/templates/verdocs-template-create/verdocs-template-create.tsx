@@ -3,8 +3,6 @@ import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/cor
 import {getTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
-// const unicodeNBSP = ' ';
-
 const FileIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"></path></svg>';
 
@@ -187,7 +185,7 @@ export class VerdocsTemplateCreate {
 
           <div class="buttons">
             <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} disabled={this.creating} />
-            <verdocs-button label="Next" size="small" onClick={e => this.handleSubmit(e)} disabled={!this.file || this.creating} />
+            <verdocs-button label="Next" size="small" onClick={e => this.handleSubmit(e)} disabled={!this.file || this.creating || !!this.errorMessage} />
           </div>
         </form>
       </Host>
