@@ -24,7 +24,7 @@ export class VerdocsTemplateCreate {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   @Prop({mutable: true})
-  maxSize: number = 20 * 1024 * 1024;
+  maxSize: number = 20.5 * 1024 * 1024;
 
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.

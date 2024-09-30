@@ -13,6 +13,8 @@ import {SettingsIcon} from '../../../utils/Icons';
   shadow: false,
 })
 export class VerdocsFieldDropdown {
+  selectEl: HTMLSelectElement;
+
   /**
    * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
    */
@@ -86,6 +88,8 @@ export class VerdocsFieldDropdown {
     setTimeout(() => {
       this.focused = false;
     }, 500);
+
+    this.selectEl?.showPicker();
   }
 
   handleChange(e: any) {
@@ -135,7 +139,7 @@ export class VerdocsFieldDropdown {
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
 
-        <select disabled={disabled} onChange={e => this.handleChange(e)}>
+        <select disabled={disabled} onChange={e => this.handleChange(e)} ref={el => (this.selectEl = el as HTMLSelectElement)}>
           <option value="">Select...</option>
           {options.map(option => (
             <option value={option.id} selected={option.id === value}>

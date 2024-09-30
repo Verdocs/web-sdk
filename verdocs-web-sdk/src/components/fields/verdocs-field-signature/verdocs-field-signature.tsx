@@ -160,14 +160,14 @@ export class VerdocsFieldSignature {
     const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
     if (done) {
-      return <Host class={{done}}>{value && <img src={base64} alt="Signature" />}</Host>;
+      return <Host class={{done}}>{value && <img src={base64} alt="" />}</Host>;
     }
 
     return (
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
 
-        {base64 ? <img src={base64} alt="Signature" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
+        {base64 ? <img src={base64} alt="" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
 
         {editable && (
           <Fragment>

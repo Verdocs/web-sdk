@@ -526,7 +526,10 @@ export class VerdocsSign {
         this.nextSubmits = true;
       }
     } else {
-      console.log('[SIGN] Invalid fields remaining', invalidFields);
+      console.log(
+        '[SIGN] Invalid fields remaining',
+        invalidFields.map(field => field.name),
+      );
       this.nextButtonLabel = 'Next';
       this.nextSubmits = false;
     }
