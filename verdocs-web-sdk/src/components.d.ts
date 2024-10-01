@@ -711,7 +711,7 @@ export namespace Components {
      */
     interface VerdocsFieldRadio {
         /**
-          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * If set, overrides the field's settings object. Primarily used in Storybook mode.
          */
         "disabled"?: boolean;
         /**
@@ -736,6 +736,10 @@ export namespace Components {
           * The page the field is on
          */
         "pagenumber"?: number;
+        /**
+          * If set, overrides the field's required object. Primarily used in Storybook mode.
+         */
+        "required"?: boolean;
         "showSettingsPanel": () => Promise<void>;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
@@ -4597,7 +4601,7 @@ declare namespace LocalJSX {
      */
     interface VerdocsFieldRadio {
         /**
-          * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * If set, overrides the field's settings object. Primarily used in Storybook mode.
          */
         "disabled"?: boolean;
         /**
@@ -4628,6 +4632,10 @@ declare namespace LocalJSX {
           * The page the field is on
          */
         "pagenumber"?: number;
+        /**
+          * If set, overrides the field's required object. Primarily used in Storybook mode.
+         */
+        "required"?: boolean;
         /**
           * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
          */

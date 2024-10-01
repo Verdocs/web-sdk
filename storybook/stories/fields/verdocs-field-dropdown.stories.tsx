@@ -6,6 +6,7 @@ export default {
   component: 'verdocs-field-dropdown',
   args: {
     disabled: false,
+    required: false,
   },
   argTypes: {
     input: {
@@ -15,12 +16,13 @@ export default {
   },
 } as Meta;
 
-export const Dropdown = ({disabled, input}) =>
+export const Dropdown = ({disabled, required, input}) =>
   html`<verdocs-field-dropdown
     style="transform: scale(1.5);"
     .fieldname=${'storybook-field'}
     .templateid=${'0239fe5f-1b89-499a-bd83-098a2e1b4b9c'}
     .disabled=${disabled}
+    .required=${required}
     .editable=${false}
     .moveable=${false}
     .done=${false}

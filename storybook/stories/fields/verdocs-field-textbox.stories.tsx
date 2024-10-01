@@ -6,6 +6,7 @@ export default {
   component: 'verdocs-field-textbox',
   args: {
     disabled: false,
+    required: false,
   },
   argTypes: {
     input: {
@@ -15,12 +16,13 @@ export default {
   },
 } as Meta;
 
-export const Textbox = ({disabled, input}) =>
+export const Textbox = ({disabled, required, input}) =>
   html`<verdocs-field-textbox
     style="transform: scale(1.5); width: 150px; height: 15px;"
     .fieldname=${'storybook-field'}
     .templateid=${'0239fe5f-1b89-499a-bd83-098a2e1b4b9c'}
     .disabled=${disabled}
+    .required=${required}
     .editable=${false}
     .moveable=${false}
     .done=${false}

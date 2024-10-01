@@ -758,7 +758,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'required', 'templateid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -766,7 +766,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'templateid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'fieldname', 'moveable', 'pagenumber', 'required', 'templateid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldRadio {
   protected el: HTMLElement;
