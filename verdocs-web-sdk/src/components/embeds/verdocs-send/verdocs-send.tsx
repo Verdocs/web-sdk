@@ -15,6 +15,7 @@ import {getRoleIndex, getRoleNames, getTemplateRoleStore, TTemplateRoleStore} fr
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
+import {VerdocsToast} from '../../../utils/Toast';
 
 const editIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>';
@@ -265,7 +266,7 @@ export class VerdocsSend {
 
     const details: ICreateEnvelopeFromTemplateRequest = {
       template_id: this.templateId,
-      name: this.templateStore?.state?.name,
+      name: this.templateStore?.state?.name || '',
       environment: this.environment,
       // TODO: Make optional in the SDK
       initial_reminder: 0,
@@ -282,11 +283,11 @@ export class VerdocsSend {
         this.reset().catch((e: any) => console.log('Unknown Error', e));
         this.sending = false;
         this.sendingEnvelope?.emit({sending: false});
-        this.send?.emit({...details, envelope_id: r.id, envelope: r});
+        this.send?.emit({...details, name: this.templateStore?.state?.name || 'New Envelope', envelope_id: r.id, envelope: r});
       })
       .catch(e => {
         console.log('Send error', e);
-        // toast.error(e.response?.data?.message || 'Unknown error creating envelope');
+        VerdocsToast(e.response?.data?.message || 'Error creating envelope, please try again later.');
         this.sending = false;
         this.sendingEnvelope?.emit({sending: false});
       });

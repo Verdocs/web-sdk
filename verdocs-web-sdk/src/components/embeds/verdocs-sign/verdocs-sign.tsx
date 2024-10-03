@@ -343,11 +343,17 @@ export class VerdocsSign {
           return;
         }
 
+        this.showSpinner = true;
         const initialsBlob = await (await fetch(e.detail)).blob();
         return createInitials(this.endpoint, 'initial', initialsBlob) //
           .then(async newInitials => {
             const updateResult = await updateEnvelopeFieldInitials(this.endpoint, this.envelopeId, field.name, newInitials.id);
             this.updateRecipientFieldValue(field.name, updateResult);
+            this.showSpinner = false;
+          })
+          .catch(e => {
+            console.log('Error updating initials', e);
+            this.showSpinner = false;
           });
 
       case 'signature':
@@ -358,15 +364,18 @@ export class VerdocsSign {
           return;
         }
 
+        this.showSpinner = true;
         const signatureBlob = await (await fetch(e.detail)).blob();
         return createSignature(this.endpoint, 'signature', signatureBlob) //
           .then(async newSignature => {
             console.log('Signature update result', newSignature);
             const updateResult = await updateEnvelopeFieldSignature(this.endpoint, this.envelopeId, field.name, newSignature.id);
             this.updateRecipientFieldValue(field.name, updateResult);
+            this.showSpinner = false;
           })
           .catch(e => {
             console.warn('[SIGN] Error updating signature', e);
+            this.showSpinner = false;
           });
 
       case 'date':
@@ -559,7 +568,6 @@ export class VerdocsSign {
       }
     });
     el.addEventListener('attached', async (e: any) => {
-      // TODO: Show a spinner and/or progress bar
       console.log('[SIGN] onAttached', e.detail, e.target.value);
       this.showSpinner = true;
       try {
@@ -630,7 +638,6 @@ export class VerdocsSign {
         return;
       }
 
-      // TODO: Review possible workflow/race conditions vs rendering in -document-page.
       const el = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
       if (!el) {
         return;
@@ -940,19 +947,14 @@ export class VerdocsSign {
           />
         )}
 
-        {this.submitting && (
-          <div class="loading-indicator">
-            <verdocs-loader />
-          </div>
-        )}
-
-        {this.showSpinner && (
-          <verdocs-portal>
-            <div class="spinner-overlay">
-              <verdocs-spinner />
-            </div>
-          </verdocs-portal>
-        )}
+        {this.submitting ||
+          (this.showSpinner && (
+            <verdocs-portal>
+              <div class="spinner-overlay">
+                <verdocs-spinner />
+              </div>
+            </verdocs-portal>
+          ))}
       </Host>
     );
   }
