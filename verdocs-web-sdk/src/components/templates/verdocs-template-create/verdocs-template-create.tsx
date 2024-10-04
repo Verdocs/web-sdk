@@ -165,6 +165,10 @@ export class VerdocsTemplateCreate {
                 e.preventDefault();
                 e.target.classList.remove('drag-over');
                 this.file = e.dataTransfer.files[0];
+
+                if (this.file.size > this.maxSize) {
+                  this.errorMessage = 'Total file size must not exceed 20MB.';
+                }
               }}
               onDragOver={(e: any) => {
                 e.preventDefault();

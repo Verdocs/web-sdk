@@ -64,7 +64,6 @@ import { defineCustomElement as defineVerdocsTemplateFields } from '@verdocs/web
 import { defineCustomElement as defineVerdocsTemplateName } from '@verdocs/web-sdk/dist/components/verdocs-template-name.js';
 import { defineCustomElement as defineVerdocsTemplateRoleProperties } from '@verdocs/web-sdk/dist/components/verdocs-template-role-properties.js';
 import { defineCustomElement as defineVerdocsTemplateRoles } from '@verdocs/web-sdk/dist/components/verdocs-template-roles.js';
-import { defineCustomElement as defineVerdocsTemplateSender } from '@verdocs/web-sdk/dist/components/verdocs-template-sender.js';
 import { defineCustomElement as defineVerdocsTemplateStar } from '@verdocs/web-sdk/dist/components/verdocs-template-star.js';
 import { defineCustomElement as defineVerdocsTemplateTags } from '@verdocs/web-sdk/dist/components/verdocs-template-tags.js';
 import { defineCustomElement as defineVerdocsTemplateVisibility } from '@verdocs/web-sdk/dist/components/verdocs-template-visibility.js';
@@ -135,7 +134,6 @@ export const VerdocsTemplateFields = /*@__PURE__*/createReactComponent<JSX.Verdo
 export const VerdocsTemplateName = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateName, HTMLVerdocsTemplateNameElement>('verdocs-template-name', undefined, undefined, defineVerdocsTemplateName);
 export const VerdocsTemplateRoleProperties = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateRoleProperties, HTMLVerdocsTemplateRolePropertiesElement>('verdocs-template-role-properties', undefined, undefined, defineVerdocsTemplateRoleProperties);
 export const VerdocsTemplateRoles = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateRoles, HTMLVerdocsTemplateRolesElement>('verdocs-template-roles', undefined, undefined, defineVerdocsTemplateRoles);
-export const VerdocsTemplateSender = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateSender, HTMLVerdocsTemplateSenderElement>('verdocs-template-sender', undefined, undefined, defineVerdocsTemplateSender);
 export const VerdocsTemplateStar = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateStar, HTMLVerdocsTemplateStarElement>('verdocs-template-star', undefined, undefined, defineVerdocsTemplateStar);
 export const VerdocsTemplateTags = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateTags, HTMLVerdocsTemplateTagsElement>('verdocs-template-tags', undefined, undefined, defineVerdocsTemplateTags);
 export const VerdocsTemplateVisibility = /*@__PURE__*/createReactComponent<JSX.VerdocsTemplateVisibility, HTMLVerdocsTemplateVisibilityElement>('verdocs-template-visibility', undefined, undefined, defineVerdocsTemplateVisibility);
