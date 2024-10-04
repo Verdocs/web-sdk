@@ -472,16 +472,17 @@ export class VerdocsSign {
             this.envelope = envelope;
             // The show-done dialog does this
             // this.isDone = true;
+            this.submitting = false;
           })
           .catch(e => {
             // this.isDone = true;
             console.log('[SIGN] Error reloading envelope', e);
+            this.submitting = false;
           });
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
       }
 
-      this.submitting = false;
       return;
     }
 

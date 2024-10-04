@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -22,7 +22,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, TTemplateSenderType, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -1610,10 +1610,6 @@ export namespace Components {
          */
         "roleName": string;
         /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "sender": TTemplateSenderType;
-        /**
           * The template ID to edit.
          */
         "templateId": string;
@@ -1626,23 +1622,6 @@ export namespace Components {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint": VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId": string;
-    }
-    /**
-     * Display a dialog that allows a template sender to be selected.
-     */
-    interface VerdocsTemplateSender {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "sender": TTemplateSenderType;
         /**
           * The template ID to edit.
          */
@@ -1708,10 +1687,6 @@ export namespace Components {
          */
         "selectedPage": number;
         /**
-          * The sharing settings to filter by.
-         */
-        "sharing"?: 'all' | 'personal' | 'shared' | 'public';
-        /**
           * Whether or not pagination should be enabled.
          */
         "showPagination": boolean;
@@ -1723,6 +1698,10 @@ export namespace Components {
           * The starred settings to filter by.
          */
         "starred": 'all' | 'starred' | 'unstarred';
+        /**
+          * The sharing settings to filter by.
+         */
+        "visibility"?: 'private_shared' | 'private' | 'shared' | 'public';
     }
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
@@ -2053,10 +2032,6 @@ export interface VerdocsTemplateRolePropertiesCustomEvent<T> extends CustomEvent
 export interface VerdocsTemplateRolesCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateRolesElement;
-}
-export interface VerdocsTemplateSenderCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsTemplateSenderElement;
 }
 export interface VerdocsTemplateStarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3446,27 +3421,6 @@ declare global {
         prototype: HTMLVerdocsTemplateRolesElement;
         new (): HTMLVerdocsTemplateRolesElement;
     };
-    interface HTMLVerdocsTemplateSenderElementEventMap {
-        "close": any;
-        "sdkError": SDKError;
-    }
-    /**
-     * Display a dialog that allows a template sender to be selected.
-     */
-    interface HTMLVerdocsTemplateSenderElement extends Components.VerdocsTemplateSender, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsTemplateSenderElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateSenderElement, ev: VerdocsTemplateSenderCustomEvent<HTMLVerdocsTemplateSenderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsTemplateSenderElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateSenderElement, ev: VerdocsTemplateSenderCustomEvent<HTMLVerdocsTemplateSenderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsTemplateSenderElement: {
-        prototype: HTMLVerdocsTemplateSenderElement;
-        new (): HTMLVerdocsTemplateSenderElement;
-    };
     interface HTMLVerdocsTemplateStarElementEventMap {
         "starChange": {templateId: string; starred: boolean; count: number};
         "sdkError": SDKError;
@@ -3527,7 +3481,7 @@ declare global {
         "editTemplate": {endpoint: VerdocsEndpoint; template: ITemplate};
         "templateDeleted": {endpoint: VerdocsEndpoint; template: ITemplate};
         "changeSort": string;
-        "changeSharing": 'all' | 'personal' | 'shared' | 'public';
+        "changeVisibility": 'private_shared' | 'private' | 'shared' | 'public';
         "changeStarred": 'all' | 'starred' | 'unstarred';
         "changeName": string;
     }
@@ -3737,7 +3691,6 @@ declare global {
         "verdocs-template-name": HTMLVerdocsTemplateNameElement;
         "verdocs-template-role-properties": HTMLVerdocsTemplateRolePropertiesElement;
         "verdocs-template-roles": HTMLVerdocsTemplateRolesElement;
-        "verdocs-template-sender": HTMLVerdocsTemplateSenderElement;
         "verdocs-template-star": HTMLVerdocsTemplateStarElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-template-visibility": HTMLVerdocsTemplateVisibilityElement;
@@ -5738,10 +5691,6 @@ declare namespace LocalJSX {
          */
         "roleName"?: string;
         /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "sender"?: TTemplateSenderType;
-        /**
           * The template ID to edit.
          */
         "templateId"?: string;
@@ -5770,31 +5719,6 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateRolesCustomEvent<SDKError>) => void;
-        /**
-          * The template ID to edit.
-         */
-        "templateId"?: string;
-    }
-    /**
-     * Display a dialog that allows a template sender to be selected.
-     */
-    interface VerdocsTemplateSender {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the user cancels the dialog.
-         */
-        "onClose"?: (event: VerdocsTemplateSenderCustomEvent<any>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsTemplateSenderCustomEvent<SDKError>) => void;
-        /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-         */
-        "sender"?: TTemplateSenderType;
         /**
           * The template ID to edit.
          */
@@ -5878,15 +5802,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
          */
-        "onChangeSharing"?: (event: VerdocsTemplatesListCustomEvent<'all' | 'personal' | 'shared' | 'public'>) => void;
-        /**
-          * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
-         */
         "onChangeSort"?: (event: VerdocsTemplatesListCustomEvent<string>) => void;
         /**
           * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
          */
         "onChangeStarred"?: (event: VerdocsTemplatesListCustomEvent<'all' | 'starred' | 'unstarred'>) => void;
+        /**
+          * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
+         */
+        "onChangeVisibility"?: (event: VerdocsTemplatesListCustomEvent<'private_shared' | 'private' | 'shared' | 'public'>) => void;
         /**
           * Event fired when the user chooses the Edit option from the dropdown menu.
          */
@@ -5920,10 +5844,6 @@ declare namespace LocalJSX {
          */
         "selectedPage"?: number;
         /**
-          * The sharing settings to filter by.
-         */
-        "sharing"?: 'all' | 'personal' | 'shared' | 'public';
-        /**
           * Whether or not pagination should be enabled.
          */
         "showPagination"?: boolean;
@@ -5935,6 +5855,10 @@ declare namespace LocalJSX {
           * The starred settings to filter by.
          */
         "starred"?: 'all' | 'starred' | 'unstarred';
+        /**
+          * The sharing settings to filter by.
+         */
+        "visibility"?: 'private_shared' | 'private' | 'shared' | 'public';
     }
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
@@ -6179,7 +6103,6 @@ declare namespace LocalJSX {
         "verdocs-template-name": VerdocsTemplateName;
         "verdocs-template-role-properties": VerdocsTemplateRoleProperties;
         "verdocs-template-roles": VerdocsTemplateRoles;
-        "verdocs-template-sender": VerdocsTemplateSender;
         "verdocs-template-star": VerdocsTemplateStar;
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-template-visibility": VerdocsTemplateVisibility;
@@ -6673,10 +6596,6 @@ declare module "@stencil/core" {
              * Displays an edit form that allows the user to adjust a template's roles and workflow.
              */
             "verdocs-template-roles": LocalJSX.VerdocsTemplateRoles & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolesElement>;
-            /**
-             * Display a dialog that allows a template sender to be selected.
-             */
-            "verdocs-template-sender": LocalJSX.VerdocsTemplateSender & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSenderElement>;
             /**
              * Displays a clickable star that allows users to mark frequently-used templates.
              */

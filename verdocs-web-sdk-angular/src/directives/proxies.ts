@@ -1971,14 +1971,14 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['endpoint', 'roleName', 'sender', 'templateId']
+  inputs: ['endpoint', 'roleName', 'templateId']
 })
 @Component({
   selector: 'verdocs-template-role-properties',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'roleName', 'sender', 'templateId'],
+  inputs: ['endpoint', 'roleName', 'templateId'],
 })
 export class VerdocsTemplateRoleProperties {
   protected el: HTMLElement;
@@ -2052,41 +2052,6 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
   rolesUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateRolesVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsTemplateRolesIRole[]}>>;
-}
-
-
-@ProxyCmp({
-  inputs: ['endpoint', 'sender', 'templateId']
-})
-@Component({
-  selector: 'verdocs-template-sender',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: '<ng-content></ng-content>',
-  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'sender', 'templateId'],
-})
-export class VerdocsTemplateSender {
-  protected el: HTMLElement;
-  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
-    c.detach();
-    this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'sdkError']);
-  }
-}
-
-
-import type { SDKError as IVerdocsTemplateSenderSDKError } from '@verdocs/web-sdk';
-
-export declare interface VerdocsTemplateSender extends Components.VerdocsTemplateSender {
-  /**
-   * Event fired when the user cancels the dialog.
-   */
-  close: EventEmitter<CustomEvent<any>>;
-  /**
-   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
-terminate the process, and the calling application should correct the condition and re-render the component.
-   */
-  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateSenderSDKError>>;
 }
 
 
@@ -2190,21 +2155,21 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
-  inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'sharing', 'showPagination', 'sort', 'starred']
+  inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'starred', 'visibility']
 })
 @Component({
   selector: 'verdocs-templates-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'sharing', 'showPagination', 'sort', 'starred'],
+  inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'starred', 'visibility'],
 })
 export class VerdocsTemplatesList {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewTemplate', 'signNow', 'submittedData', 'editTemplate', 'templateDeleted', 'changeSort', 'changeSharing', 'changeStarred', 'changeName']);
+    proxyOutputs(this, this.el, ['sdkError', 'viewTemplate', 'signNow', 'submittedData', 'editTemplate', 'templateDeleted', 'changeSort', 'changeVisibility', 'changeStarred', 'changeName']);
   }
 }
 
@@ -2248,7 +2213,7 @@ will already have been deleted. The host application should remove it from the l
   /**
    * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
    */
-  changeSharing: EventEmitter<CustomEvent<'all' | 'personal' | 'shared' | 'public'>>;
+  changeVisibility: EventEmitter<CustomEvent<'private_shared' | 'private' | 'shared' | 'public'>>;
   /**
    * Event fired when the user changes their sort order. Host applications can use this to save the user's preferences.
    */

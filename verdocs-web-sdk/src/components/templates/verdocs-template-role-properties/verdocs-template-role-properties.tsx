@@ -1,5 +1,5 @@
 import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
-import {deleteTemplateRole, TRecipientType, TTemplateSenderType, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {deleteTemplateRole, TRecipientType, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {deleteStoreRole, getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -46,11 +46,6 @@ export class VerdocsTemplateRoleProperties {
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
-
-  /**
-   * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
-   */
-  @Prop() sender: TTemplateSenderType = 'everyone';
 
   @State() dirty = false;
   @State() saving = false;

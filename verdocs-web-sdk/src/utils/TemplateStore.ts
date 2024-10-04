@@ -29,7 +29,7 @@ const createTemplateStore = (templateId: string) => {
     id: templateId,
     name: '',
     description: '',
-    sender: 'creator',
+    sender: 'envelope_creator',
     profile_id: '',
     organization_id: '',
     counter: 0,

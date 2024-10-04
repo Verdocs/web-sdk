@@ -1,16 +1,13 @@
 import interact from 'interactjs';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
-import {createTemplateRole, getRGBA, IRole, TTemplateSenderType, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {createTemplateRole, formatFullName, getRGBA, IRole, TTemplateSender, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
-const senderLabels: Record<TTemplateSenderType, string> = {
-  everyone: 'Everyone',
-  everyone_as_creator: 'Everyone as Me',
-  organization_member: 'Organization member',
-  organization_member_as_creator: 'Organization Member as Me',
-  creator: 'Me',
+const senderLabels: Record<TTemplateSender, string> = {
+  template_owner: 'Template Owner',
+  envelope_creator: 'Envelope Creator',
 };
 
 const settingsIcon =
@@ -78,7 +75,6 @@ export class VerdocsTemplateRoles {
   @Event({composed: true}) rolesUpdated: EventEmitter<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]}>;
 
   @State() showingRoleDialog: string | null = null;
-  @State() showingSenderDialog = false;
   @State() sender = null;
   @State() loading = true;
 
@@ -335,8 +331,7 @@ export class VerdocsTemplateRoles {
               <div class="icon" innerHTML={startIcon} />
               <div class="row-roles">
                 <div class="sender">
-                  <span class="label">Sender:</span> {senderLabels[this.templateStore?.state?.sender]}{' '}
-                  <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingSenderDialog = true)} aria-role="button" />
+                  <span class="label">Owner:</span> {senderLabels[this.templateStore?.state?.sender]}{' '}
                 </div>
               </div>
             </div>
@@ -387,7 +382,7 @@ export class VerdocsTemplateRoles {
                             data-order={role.order}
                           >
                             <span class="type-icon" innerHTML={role.type === 'signer' ? iconSigner : role.type === 'cc' ? iconCC : iconApprover} />
-                            {role.first_name} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
+                            {formatFullName(role)} <div class="settings-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
                           </div>
 
                           {/* The "after this recipient" drop zone */}
@@ -459,8 +454,6 @@ export class VerdocsTemplateRoles {
             }}
           />
         )}
-
-        {this.showingSenderDialog && <verdocs-template-sender endpoint={this.endpoint} templateId={this.templateId} onClose={() => (this.showingSenderDialog = false)} />}
       </Host>
     );
   }
