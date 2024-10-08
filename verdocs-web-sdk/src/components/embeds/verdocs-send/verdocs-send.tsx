@@ -1,6 +1,7 @@
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method, Watch} from '@stencil/core';
 import {
   createEnvelope,
+  formatFullName,
   getOrganizationContacts,
   getRGBA,
   ICreateEnvelopeFromTemplateRequest,
@@ -338,7 +339,7 @@ export class VerdocsSend {
                     onClick={e => this.handleClickRole(e, role)}
                     id={elId}
                   >
-                    {this.rolesCompleted[role.id]?.first_name ?? role.role_name}
+                    {this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : role.role_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
                       <verdocs-portal anchor={elId} onClickAway={() => (this.showPickerForId = '')}>
@@ -354,7 +355,7 @@ export class VerdocsSend {
                   </div>
                 ) : (
                   <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(this.roleStore, role.role_name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
-                    {this.rolesCompleted[role.id]?.first_name ?? role.first_name}
+                    {this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : role.role_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
                       <verdocs-portal anchor={elId} onClickAway={() => (this.showPickerForId = '')}>

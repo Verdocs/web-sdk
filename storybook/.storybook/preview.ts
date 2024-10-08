@@ -4,12 +4,12 @@ import customElements from '../../verdocs-web-sdk/dist/custom-elements.json';
 // import StoriesTheme from './StoriesTheme';
 
 import {defineCustomElements} from '../../verdocs-web-sdk/dist/esm/loader';
+
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
+VerdocsEndpoint.getDefault().setBaseURL('https://api.verdocs.com');
+
 defineCustomElements();
-
 setCustomElementsManifest(customElements);
-
-VerdocsEndpoint.getDefault().setBaseURL('https://stage-api.verdocs.com');
 
 const preview: Preview = {
   tags: ['autodocs', 'autodocs', 'autodocs'],
