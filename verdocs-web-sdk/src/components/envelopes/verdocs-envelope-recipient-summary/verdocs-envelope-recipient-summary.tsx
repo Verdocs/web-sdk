@@ -126,7 +126,7 @@ export class VerdocsEnvelopeRecipientSummary {
         // VerdocsToast(`Unable to copy to clipboard: ${e.message}`, {style: 'error'});
       });
   }
-
+xw
   getLink(recipient: IRecipient) {
     this.gettingLinks = {...this.gettingLinks, [recipient.role_name]: true};
     getInPersonLink(this.endpoint, recipient.envelope_id, recipient.role_name)

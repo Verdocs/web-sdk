@@ -398,6 +398,7 @@ export class VerdocsSign {
   isFieldFilled(field: IEnvelopeField) {
     const {value = ''} = field;
     switch (field.type as any) {
+      case 'textarea':
       case 'textbox':
         switch (field.validator || '') {
           case 'email':
@@ -418,9 +419,8 @@ export class VerdocsSign {
       case 'timestamp':
         return true;
 
-      case 'textarea':
       case 'date':
-        return value !== '';
+        return !!value;
 
       case 'attachment':
         return value === 'attached';

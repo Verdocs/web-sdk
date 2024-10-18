@@ -1,5 +1,5 @@
-import {formatFullName, IProfile, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Fragment, Prop, State} from '@stencil/core';
+import {formatFullName, IProfile, IRecipient, isValidEmail, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {convertToE164} from '../../../utils/utils';
 
 const messageIcon =
@@ -172,7 +172,9 @@ export class VerdocsContactPicker {
   // The reason for the random names/IDs is to disable browser autocomplete. We set the autocomplete tags but many browsers ignore them
   // and show a duplicate autocomplete picker on top of our own.
   render() {
-    const hasBasics = this.first_name && this.last_name && (this.email || this.phone);
+    // TODO: Re-activate this one SMS is re-enabled
+    // const hasBasics = this.first_name && this.last_name && (isValidEmail(this.email) || isValidPhone(this.phone));
+    const hasBasics = this.first_name && this.last_name && isValidEmail(this.email);
     const hasKbaRequirements = !this.kba_method || (this.kba_method === 'pin' && this.kba_pin) || (this.kba_method === 'identity' && this.zip);
     const canSubmit = hasBasics && hasKbaRequirements;
 
@@ -249,7 +251,9 @@ export class VerdocsContactPicker {
             value={this.phone}
             placeholder="Phone (SMS)..."
             onFocus={() => (this.showSuggestions = false)}
-            onInput={(e: any) => convertToE164(e.target.value)}
+            onInput={(e: any) => {
+              this.phone = convertToE164(e.target.value);
+            }}
           />
         </div>
 
@@ -353,7 +357,7 @@ export class VerdocsContactPicker {
           <div class="flex-fill" />
 
           <verdocs-button variant="outline" label="Cancel" size="small" onClick={e => this.handleCancel(e)} />
-          <verdocs-button label="OK" size="small" disabled={!canSubmit} onClick={e => this.handleSubmit(e)} />
+          <verdocs-button label="OK" size="small" disabled={!canSubmit} onClick={!canSubmit ? () => {} : e => this.handleSubmit(e)} />
         </div>
       </form>
     );
