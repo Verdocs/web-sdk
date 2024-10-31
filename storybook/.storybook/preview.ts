@@ -18,6 +18,9 @@ const preview: Preview = {
     layout: 'centered',
 
     options: {
+      storySort: {
+        order: ['Embeds', ['Sign']],
+      },
       // storySort: (a, b) => (a.id === b.id ? 0 : a.id.localeCompare(b.id, undefined, {numeric: true})),
     },
 
