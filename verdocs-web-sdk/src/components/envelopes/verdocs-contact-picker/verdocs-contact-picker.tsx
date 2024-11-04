@@ -26,6 +26,7 @@ export interface IContactSelectEvent {
   delegator: boolean;
   kba_method: string;
   kba_pin: string;
+  address: string;
   zip: string;
 }
 
@@ -91,6 +92,7 @@ export class VerdocsContactPicker {
   @State() email: string;
   @State() phone: string;
   @State() zip: string;
+  @State() address: string;
   @State() message: string;
   @State() showSuggestions: boolean = false;
   @State() showMessage: boolean = false;
@@ -155,6 +157,7 @@ export class VerdocsContactPicker {
       delegator: this.delegator,
       kba_method: this.kba_method,
       kba_pin: this.kba_pin,
+      address: this.address,
       zip: this.zip,
     });
   }
@@ -175,7 +178,7 @@ export class VerdocsContactPicker {
     // TODO: Re-activate this one SMS is re-enabled
     // const hasBasics = this.first_name && this.last_name && (isValidEmail(this.email) || isValidPhone(this.phone));
     const hasBasics = this.first_name && this.last_name && isValidEmail(this.email);
-    const hasKbaRequirements = !this.kba_method || (this.kba_method === 'pin' && this.kba_pin) || (this.kba_method === 'identity' && this.zip);
+    const hasKbaRequirements = !this.kba_method || (this.kba_method === 'pin' && this.kba_pin) || (this.kba_method === 'identity' && this.address && this.zip);
     const canSubmit = hasBasics && hasKbaRequirements;
 
     return (
@@ -266,6 +269,7 @@ export class VerdocsContactPicker {
                 onInput={(e: any) => {
                   this.kba_method = e.target.value;
                   this.zip = '';
+                  this.address = '';
                   this.kba_pin = '';
                 }}
                 options={[
@@ -295,6 +299,23 @@ export class VerdocsContactPicker {
             )}
 
             {this.kba_method === 'identity' && (
+              <div class="row address">
+                <input
+                  id="verdocs-address"
+                  name="verdocs-address"
+                  type="text"
+                  data-lpignore="true"
+                  autocomplete="blocked"
+                  value={this.address}
+                  placeholder="Address..."
+                  onFocus={() => (this.showSuggestions = false)}
+                  onInput={(e: any) => (this.address = e.target.value)}
+                />
+                <verdocs-help-icon text="Pre-fill the recipient's current street address. They will still be asked ID challenge questions." />
+              </div>
+            )}
+
+            {this.kba_method === 'identity' && (
               <div class="row zip-code">
                 <input
                   id="verdocs-zip-code"
@@ -307,6 +328,7 @@ export class VerdocsContactPicker {
                   onFocus={() => (this.showSuggestions = false)}
                   onInput={(e: any) => (this.zip = e.target.value)}
                 />
+                <verdocs-help-icon text="Pre-fill the recipient's current zip code. They will still be asked ID challenge questions." />
               </div>
             )}
           </Fragment>

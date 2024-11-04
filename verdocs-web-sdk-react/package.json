@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk-react",
-  "version": "4.2.140",
+  "version": "4.2.141",
   "description": "Verdocs Web SDK for React",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -18,7 +18,7 @@
     "rollup": "rollup -c"
   },
   "dependencies": {
-    "@verdocs/web-sdk": "^4.2.140"
+    "@verdocs/web-sdk": "^4.2.141"
   },
   "peerDependencies": {
     "react": "^18.3.1",
@@ -34,7 +34,7 @@
     "prettier": "^3.3.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "typescript": "5.5.4"
+    "typescript": "^5.6.3"
   },
   "jest": {
     "preset": "ts-jest",

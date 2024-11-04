@@ -64,6 +64,19 @@ verdocs-contact-picker {
       }
     }
 
+    .address {
+      gap: 8px;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+
+      > input {
+        flex: 1;
+        font-size: 14px;
+        margin-left: 58px;
+      }
+    }
+
     .zip-code {
       gap: 8px;
       display: flex;
@@ -71,8 +84,7 @@ verdocs-contact-picker {
       flex-direction: row;
 
       > input {
-        flex: 0;
-        width: 133px;
+        flex: 1;
         font-size: 14px;
         margin-left: 58px;
       }
