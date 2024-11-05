@@ -315,10 +315,8 @@ export class VerdocsTemplateRoles {
       );
     }
 
-    console.log('Rendering roles', this.roleStore.get('roles'));
     const roleNames = this.getRoleNames();
     const sequences = this.getSequenceNumbers();
-    console.log('Rendering', roleNames, sequences);
 
     return (
       <Host>

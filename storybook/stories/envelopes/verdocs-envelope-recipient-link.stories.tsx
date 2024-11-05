@@ -5,8 +5,8 @@ export default {
   title: 'Envelopes/Recipient Link',
   component: 'verdocs-envelope-recipient-link',
   args: {
-    envelopeId: 'c64b09c1-23d8-4612-bc66-86723ab7ede3',
-    roleName: 'Buyer',
+    envelopeId: '',
+    roleName: '',
   },
   argTypes: {
     next: {action: 'next'},

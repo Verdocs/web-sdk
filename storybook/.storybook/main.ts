@@ -2,6 +2,14 @@ import remarkGfm from 'remark-gfm';
 import {StorybookConfig} from '@storybook/web-components-vite';
 
 const config: StorybookConfig = {
+  core: {
+    builder: {
+      name: '@storybook/builder-vite',
+      // See https://github.com/storybookjs/storybook/issues/13795
+      options: {fsCache: false},
+    },
+  },
+
   stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
 
   addons: [
@@ -30,8 +38,8 @@ const config: StorybookConfig = {
 
   docs: {
     // autodocs: true
-    docsMode:true
-  }
+    docsMode: true,
+  },
 };
 
 export default config;

@@ -6,8 +6,8 @@ export default {
   component: 'verdocs-contact-picker',
   args: {
     templateRole: {
-      template_id: '65cbba07-d0ac-4b62-afe3-25d186238938',
-      name: 'Recipient 1',
+      template_id: '',
+      name: '',
       first_name: '',
       last_name: '',
       email: '',

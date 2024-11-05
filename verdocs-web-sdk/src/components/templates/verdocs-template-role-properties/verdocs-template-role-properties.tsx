@@ -1,5 +1,5 @@
 import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
-import {deleteTemplateRole, TRecipientType, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {deleteTemplateRole, isValidEmail, TRecipientType, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {deleteStoreRole, getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
 import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -155,6 +155,9 @@ export class VerdocsTemplateRoleProperties {
   render() {
     const hasFields = this.fieldStore.get('fields').some(field => field.role_name === this.roleName);
 
+    // Either all three should be empty, or all three need to be filled
+    const isValid = (!this.email && !this.first_name && !this.last_name) || (isValidEmail(this.email) && !!this.first_name && !!this.last_name);
+
     return (
       <Host>
         <div class="background-overlay" onClick={e => this.handleCancel(e)}>
@@ -267,7 +270,7 @@ export class VerdocsTemplateRoleProperties {
                 <div style={{flex: '1'}} />
 
                 <verdocs-button size="small" variant="outline" label="Cancel" disabled={!this.dirty} onClick={e => this.handleCancel(e)} />
-                <verdocs-button size="small" label="Save" disabled={!this.dirty} onClick={e => this.handleSave(e)} />
+                <verdocs-button size="small" label="Save" disabled={!this.dirty || !isValid} onClick={e => this.handleSave(e)} />
               </div>
             </form>
           </div>
