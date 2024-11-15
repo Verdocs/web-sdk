@@ -715,7 +715,7 @@ export class VerdocsSign {
         <Host class={{agreed: this.agreed}}>
           <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} envelope={this.envelope} onSdkError={e => this.sdkError?.emit(e.detail)} />
 
-          {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
+          {this.errorMessage && <verdocs-ok-dialog heading="Unable to Sign Document" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
 
           {this.showDone && (
             <verdocs-ok-dialog
@@ -947,9 +947,16 @@ export class VerdocsSign {
                   if (this.kbaChoices.length >= this.kbaQuestions.length) {
                     const responses = this.kbaQuestions.map((q, i) => ({type: q.type, answer: this.kbaChoices[i]}));
                     console.log('Submitting KBA responses', this.kbaChoices, responses);
-                    const response = await submitKbaChallengeResponse(this.endpoint, this.envelopeId, this.roleId, {responses});
-                    console.log('KBA challenge response', response);
-                    this.kbaStep = 'complete';
+                    try {
+                      const response = await submitKbaChallengeResponse(this.endpoint, this.envelopeId, this.roleId, responses);
+                      console.log('KBA challenge response', response);
+                      this.kbaStep = '';
+                    } catch (e) {
+                      console.log('Error submitting KBA challenge', e);
+                      this.kbaStep = '';
+                      this.errorMessage = e.response?.data?.error || 'Unable to verify identity.';
+                      this.isDone = true;
+                    }
                   }
                 }}
               />

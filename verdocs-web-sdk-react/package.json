@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk-react",
-  "version": "4.2.147",
+  "version": "4.2.149",
   "description": "Verdocs Web SDK for React",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@stencil/react-output-target": "^0.7.4",
-    "@verdocs/web-sdk": "^4.2.147"
+    "@verdocs/web-sdk": "^4.2.149"
   },
   "peerDependencies": {
     "react": "^18.3.1",

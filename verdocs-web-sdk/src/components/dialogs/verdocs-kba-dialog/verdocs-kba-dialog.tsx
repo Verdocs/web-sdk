@@ -74,7 +74,6 @@ export class VerdocsKbaDialog {
   @Event({composed: true}) next: EventEmitter<string | IRecipient | string[]>;
 
   @State() response = '';
-  @State() answers = [];
   @State() updatedRecipient = null;
 
   componentDidLoad() {
@@ -129,8 +128,14 @@ export class VerdocsKbaDialog {
               )}
 
               <div class="choices">
-                {this.choices.map((choice, index) => (
-                  <div class={`choice ${choice === this.answers[index] ? 'selected' : ''}`} onClick={() => (this.answers[index] = choice)}>
+                {this.choices.map(choice => (
+                  <div
+                    class={`choice ${choice === this.response ? 'selected' : ''}`}
+                    onClick={() => {
+                      console.log('Selected', choice);
+                      this.response = choice;
+                    }}
+                  >
                     {choice}
                   </div>
                 ))}
@@ -138,7 +143,7 @@ export class VerdocsKbaDialog {
 
               <div class="buttons">
                 <verdocs-button label="Cancel" variant="outline" onClick={() => this.handleCancel()} />
-                <verdocs-button label="Done" onClick={() => this.handleDone()} disabled={!this.response} />
+                <verdocs-button label={this.step < this.steps ? 'Next' : 'Submit'} onClick={() => this.handleDone()} disabled={!this.response} />
               </div>
             </div>
           </div>
@@ -158,9 +163,7 @@ export class VerdocsKbaDialog {
                   <div class="help-icon" innerHTML={QuestionIcon} />
                   <div class="help-details">
                     <div class="help-title">Identity verification is required</div>
-                    <div class="help-text">
-                      NOTE: Only four fields are required, but providing more details will allow us to complete the verification process more quickly.
-                    </div>
+                    <div class="help-text">NOTE: Only four fields are required, but providing more details will allow us to complete the verification process more quickly.</div>
                   </div>
                 </div>
               )}
@@ -307,7 +310,7 @@ export class VerdocsKbaDialog {
 
             <div class="buttons">
               <verdocs-button label="Cancel" variant="outline" onClick={() => this.handleCancel()} />
-              <verdocs-button label="Done" onClick={() => this.handleDone()} disabled={!this.response} />
+              <verdocs-button label="Submit" onClick={() => this.handleDone()} disabled={!this.response} />
             </div>
           </div>
         </div>
