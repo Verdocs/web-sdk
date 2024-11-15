@@ -37,6 +37,7 @@ export const createForwardRef = <PropType, ElementType>(ReactComponent: any, dis
   };
   forwardRef.displayName = displayName;
 
+  // @ts-ignore
   return React.forwardRef(forwardRef);
 };
 

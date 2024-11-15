@@ -1013,13 +1013,17 @@ export namespace Components {
          */
         "label": string;
         /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+          * The type of dialog to display. Three modes are supported.
          */
-        "mode": 'text' | 'choice';
+        "mode": 'text' | 'choice' | 'identity';
         /**
           * For text input challenges, the placeholder to display inside the input field.
          */
         "placeholder": string;
+        /**
+          * For identity confirmation, the current recipient details.
+         */
+        "recipient": IRecipient | null;
         /**
           * Which step this confirmation is for, in a multi-step process. Ignored if `steps` is < 2.
          */
@@ -2736,7 +2740,8 @@ declare global {
     };
     interface HTMLVerdocsKbaDialogElementEventMap {
         "exit": any;
-        "next": string;
+        "pinEntered": string | IRecipient;
+        "next": string | IRecipient | string[];
     }
     /**
      * Prompt the user to confirm their identity with a PIN or a series of questions.
@@ -4901,21 +4906,29 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Whether the dialog is currently being displayed. This allows it to be added to the DOM before being displayed.
+          * The type of dialog to display. Three modes are supported.
          */
-        "mode"?: 'text' | 'choice';
+        "mode"?: 'text' | 'choice' | 'identity';
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
         "onExit"?: (event: VerdocsKbaDialogCustomEvent<any>) => void;
         /**
-          * Event fired when the dialog is closed. The event data will contain the value selected.
+          * Event fired when the dialog is closed. The event data will contain the value selected, or the new recipient details if the mode is 'identity'.
          */
-        "onNext"?: (event: VerdocsKbaDialogCustomEvent<string>) => void;
+        "onNext"?: (event: VerdocsKbaDialogCustomEvent<string | IRecipient | string[]>) => void;
+        /**
+          * Event fired when the dialog is closed. The event data will contain the value selected, or the new recipient details if the mode is 'identity'.
+         */
+        "onPinEntered"?: (event: VerdocsKbaDialogCustomEvent<string | IRecipient>) => void;
         /**
           * For text input challenges, the placeholder to display inside the input field.
          */
         "placeholder"?: string;
+        /**
+          * For identity confirmation, the current recipient details.
+         */
+        "recipient"?: IRecipient | null;
         /**
           * Which step this confirmation is for, in a multi-step process. Ignored if `steps` is < 2.
          */

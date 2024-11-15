@@ -39,10 +39,10 @@ export const config: Config = {
       valueAccessorConfigs: angularValueAccessorBindings,
     }),
     reactOutputTarget({
-      componentCorePackage: '@verdocs/web-sdk',
-      proxiesFile: '../verdocs-web-sdk-react/src/components.ts',
-      includeImportCustomElements: true,
-      customElementsDir: 'dist/components',
+      outDir: '../verdocs-web-sdk-react/src',
+      // proxiesFile: '../verdocs-web-sdk-react/src/components.ts',
+      // includeImportCustomElements: true,
+      // customElementsDir: 'dist/components',
     }),
     {
       type: 'dist',
@@ -53,6 +53,7 @@ export const config: Config = {
       customElementsExportBehavior: 'bundle',
       // customElementsExportBehavior: 'auto-define-custom-elements',
       generateTypeDeclarations: true,
+      externalRuntime: false,
     },
     // {
     //   type: 'dist-custom-elements-bundle',

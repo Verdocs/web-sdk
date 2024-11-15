@@ -1,5 +1,13 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, updateEnvelopeField, sortFields} from '@verdocs/js-sdk';
+import {
+  updateEnvelopeFieldSignature,
+  uploadEnvelopeFieldAttachment,
+  VerdocsEndpoint,
+  updateEnvelopeField,
+  sortFields,
+  submitKbaIdentity,
+  submitKbaChallengeResponse,
+} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
 import {getEnvelope, integerSequence, IRecipient, isValidEmail, isValidPhone, submitKbaPin, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
@@ -53,17 +61,17 @@ export class VerdocsSign {
   /**
    * The ID of the envelope to sign.
    */
-  @Prop() envelopeId: string | null = null;
+  @Prop({reflect: true}) envelopeId: string | null = null;
 
   /**
    * The ID of the role that will be signing e.g. 'Recipient 1'
    */
-  @Prop() roleId: string | null = null;
+  @Prop({reflect: true}) roleId: string | null = null;
 
   /**
    * The invite code for the signer.
    */
-  @Prop() inviteCode: string | null = null;
+  @Prop({reflect: true}) inviteCode: string | null = null;
 
   /**
    * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this
@@ -115,7 +123,9 @@ export class VerdocsSign {
   @State() agreed = false;
   @State() documentsSingularPlural = 'document';
   @State() kbaStep = '';
+  @State() kbaQuestions: any[] = [];
   @State() showSpinner = false;
+  @State() kbaChoices = [];
 
   recipientIndex: number = -1;
 
@@ -193,6 +203,8 @@ export class VerdocsSign {
           .then(r => {
             console.log('[SIGN] KBA Step', r);
             this.kbaStep = r.kba_step;
+            this.kbaQuestions = (r as any).questions?.question || [];
+            this.kbaChoices = [];
           })
           .catch(e => console.log('Error getting KBA step', e));
       }
@@ -497,7 +509,7 @@ export class VerdocsSign {
     }
 
     let nextRequiredField = emptyFields[nextFocusedIndex];
-    console.log('Next field', nextRequiredField, emptyFields);
+    // console.log('Next field', nextRequiredField, emptyFields);
 
     // Skip signature and initial fields that are already filled in. We have to count our "skips" just in case, to avoid infinite loops.
     let skips = 0;
@@ -828,7 +840,7 @@ export class VerdocsSign {
                 helptext="Please enter your PIN code to proceed. If you do not have one, please contact the sender."
                 label="PIN Code"
                 onNext={async e => {
-                  submitKbaPin(this.endpoint, this.envelopeId, this.roleId, e.detail)
+                  submitKbaPin(this.endpoint, this.envelopeId, this.roleId, e.detail as string)
                     .then(r => {
                       console.log('[SIGN] PIN code submission result', r);
                       if (r.kba_step === 'complete') {
@@ -839,6 +851,106 @@ export class VerdocsSign {
                       console.log('[SIGN] Error submitting PIN', e);
                       VerdocsToast(e.response?.data?.error || 'Unable to verify PIN code. Please try again.', {style: 'error'});
                     });
+                }}
+              />
+            </div>
+          </div>
+        </Host>
+      );
+    }
+
+    if (this.kbaStep === 'identity') {
+      return (
+        <Host class="kba">
+          <div id="verdocs-sign-header">
+            <div class="inner">
+              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+              <div class="title">{this.envelope.name}</div>
+            </div>
+          </div>
+
+          <div class="document" style={{paddingTop: '15px'}}>
+            <img
+              src="https://public-assets.verdocs.com/loading-placeholder.png"
+              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              alt="Placeholder page"
+            />
+          </div>
+
+          <div class="cover">
+            <div class="kba">
+              <verdocs-kba-dialog
+                mode="identity"
+                helptitle="Document requires identity verification"
+                helptext="Please complete your contact details to proceed."
+                recipient={this.recipient}
+                onNext={async e => {
+                  const recipDetails = e.detail as IRecipient;
+                  submitKbaIdentity(this.endpoint, this.envelopeId, this.roleId, {
+                    firstName: recipDetails.first_name,
+                    lastName: recipDetails.last_name,
+                    address: recipDetails.address,
+                    city: recipDetails.city,
+                    state: recipDetails.state,
+                    zip: recipDetails.zip,
+                    ssnLast4: recipDetails.ssn_last_4,
+                  })
+                    .then(r => {
+                      console.log('[SIGN] Identity submission result', r);
+                      this.kbaStep = r.kba_step;
+                    })
+                    .catch(e => {
+                      console.log('[SIGN] Error submitting identity', e);
+                      VerdocsToast(e.response?.data?.error || 'Unable to verify identity.', {style: 'error'});
+                    });
+                }}
+              />
+            </div>
+          </div>
+        </Host>
+      );
+    }
+
+    if (this.kbaStep === 'challenge') {
+      const questionNumber = this.kbaChoices.length;
+      const kbaQuestion = this.kbaQuestions[questionNumber];
+      console.log('Showing KBA question', {questionNumber, kbaQuestion}, this.kbaChoices);
+      return (
+        <Host class="kba">
+          <div id="verdocs-sign-header">
+            <div class="inner">
+              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+              <div class="title">{this.envelope.name}</div>
+            </div>
+          </div>
+
+          <div class="document" style={{paddingTop: '15px'}}>
+            <img
+              src="https://public-assets.verdocs.com/loading-placeholder.png"
+              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              alt="Placeholder page"
+            />
+          </div>
+
+          <div class="cover">
+            <div class="kba">
+              <verdocs-kba-dialog
+                mode="choice"
+                helptitle="Your identity requires additional verification"
+                helptext={kbaQuestion?.prompt || 'Please select one of the options below.'}
+                choices={kbaQuestion?.answer || ['Skip Question']}
+                step={questionNumber + 1}
+                steps={this.kbaQuestions.length}
+                onNext={async (e: any) => {
+                  const answer = e.detail as string;
+                  this.kbaChoices = [...this.kbaChoices, answer];
+                  if (this.kbaChoices.length >= this.kbaQuestions.length) {
+                    const responses = this.kbaQuestions.map((q, i) => ({type: q.type, answer: this.kbaChoices[i]}));
+                    console.log('Submitting KBA responses', this.kbaChoices, responses);
+                    const response = await submitKbaChallengeResponse(this.endpoint, this.envelopeId, this.roleId, {responses});
+                    console.log('KBA challenge response', response);
+                    this.kbaStep = 'complete';
+                  }
                 }}
               />
             </div>

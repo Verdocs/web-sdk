@@ -1024,24 +1024,26 @@ export declare interface VerdocsInitialDialog extends Components.VerdocsInitialD
 
 
 @ProxyCmp({
-  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'step', 'steps']
+  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'recipient', 'step', 'steps']
 })
 @Component({
   selector: 'verdocs-kba-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'step', 'steps'],
+  inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'recipient', 'step', 'steps'],
 })
 export class VerdocsKbaDialog {
   protected el: HTMLElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next']);
+    proxyOutputs(this, this.el, ['exit', 'pinEntered', 'next']);
   }
 }
 
+
+import type { IRecipient as IVerdocsKbaDialogIRecipient } from '@verdocs/web-sdk';
 
 export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
   /**
@@ -1049,9 +1051,15 @@ export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
    */
   exit: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the dialog is closed. The event data will contain the value selected.
+   * Event fired when the dialog is closed. The event data will contain the value selected,
+or the new recipient details if the mode is 'identity'.
    */
-  next: EventEmitter<CustomEvent<string>>;
+  pinEntered: EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IRecipient>>;
+  /**
+   * Event fired when the dialog is closed. The event data will contain the value selected,
+or the new recipient details if the mode is 'identity'.
+   */
+  next: EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IVerdocsKbaDialogIRecipient | string[]>>;
 }
 
 
