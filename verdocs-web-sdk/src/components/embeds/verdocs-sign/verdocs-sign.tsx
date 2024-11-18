@@ -1,13 +1,6 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {
-  updateEnvelopeFieldSignature,
-  uploadEnvelopeFieldAttachment,
-  VerdocsEndpoint,
-  updateEnvelopeField,
-  sortFields,
-  submitKbaIdentity,
-  submitKbaChallengeResponse,
-} from '@verdocs/js-sdk';
+import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {updateEnvelopeField, sortFields, submitKbaIdentity, submitKbaChallengeResponse} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
 import {getEnvelope, integerSequence, IRecipient, isValidEmail, isValidPhone, submitKbaPin, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
@@ -107,16 +100,13 @@ export class VerdocsSign {
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
   @State() nextSubmits = false;
-  @State() errorMessage = '';
+  @State() fatalErrorHeader = '';
+  @State() fatalErrorMessage = '';
   @State() focusedField = '';
   @State() submitting = false;
   @State() submitted = false;
-  @State() canceled = false;
-  @State() declined = false;
   @State() isDone = false;
   @State() showDone = false;
-  @State() showCanceled = false;
-  @State() showDeclined = false;
   @State() showLoadError = false;
   @State() finishLater = false;
   @State() showFinishLater = false;
@@ -184,14 +174,16 @@ export class VerdocsSign {
       // TODO: Envelope "complete" | "declined" | "canceled"
       // TODO: Recipient "canceled"
       this.submitted = this.recipient.status === 'submitted';
-      this.declined = this.recipient.status === 'declined';
-      this.canceled = this.envelope.status === 'canceled';
-      this.isDone = this.submitted || this.declined || this.canceled;
+      this.isDone = this.submitted;
       this.showDone = this.submitted;
-      this.showCanceled = this.canceled;
-      this.showDeclined = this.declined;
 
-      if (this.agreed) {
+      if (this.envelope.status === 'canceled') {
+        this.fatalErrorHeader = 'Unable to Start Signing Session';
+        this.fatalErrorMessage = 'This envelope has been canceled. Please contact its sender for more information.';
+      } else if (this.recipient.status === 'declined') {
+        this.fatalErrorHeader = 'Unable to Start Signing Session';
+        this.fatalErrorMessage = 'You have declined to sign this envelope.';
+      } else if (this.agreed) {
         this.nextButtonLabel = 'Next';
       }
 
@@ -203,8 +195,14 @@ export class VerdocsSign {
           .then(r => {
             console.log('[SIGN] KBA Step', r);
             this.kbaStep = r.kba_step;
-            this.kbaQuestions = (r as any).questions?.question || [];
-            this.kbaChoices = [];
+            if (this.kbaStep === 'failed') {
+              this.fatalErrorHeader = 'Identity Verification Failed';
+              this.fatalErrorMessage = "We were unable to verify your identity. Please contact the document's sender.";
+              this.isDone = true;
+            } else {
+              this.kbaQuestions = (r as any).questions?.question || [];
+              this.kbaChoices = [];
+            }
           })
           .catch(e => console.log('Error getting KBA step', e));
       }
@@ -262,18 +260,8 @@ export class VerdocsSign {
           console.log('[SIGN] Decline result', declineResult);
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
           this.submitting = false;
-          this.declined = true;
-          this.showDeclined = true;
-          // console.log('[SIGN] Reloading envelope');
-          // getEnvelope(this.endpoint, this.envelopeId)
-          //   .then(envelope => {
-          //     this.envelope = envelope;
-          //     this.isDone = true;
-          //   })
-          //   .catch(e => {
-          //     this.isDone = true;
-          //     console.log('[SIGN] Error reloading envelope', e);
-          //   });
+          this.fatalErrorHeader = 'Unable to Start Signing Session';
+          this.fatalErrorMessage = 'You have declined to sign this envelope.';
         }
         break;
 
@@ -316,7 +304,8 @@ export class VerdocsSign {
       .catch(e => {
         if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
           console.log('[SIGN] Signing session expired');
-          this.errorMessage = 'Signing session expired. Please reload your browser to continue.';
+          this.fatalErrorHeader = 'Signing Session Expired';
+          this.fatalErrorMessage = 'Please reload your browser to continue.';
         } else {
           console.log('[SIGN] Server error', e);
         }
@@ -710,12 +699,25 @@ export class VerdocsSign {
       );
     }
 
+    if (this.fatalErrorMessage) {
+      return (
+        <Host class={{agreed: this.agreed}}>
+          <div class="fatal-error">
+            <img src="https://public-assets.verdocs.com/loading-placeholder.png" class="placeholder" alt="Placeholder page" />
+
+            <div class="message">
+              <div class="header">{this.fatalErrorHeader}</div>
+              <p>{this.fatalErrorMessage}</p>
+            </div>
+          </div>
+        </Host>
+      );
+    }
+
     if (this.isDone) {
       return (
         <Host class={{agreed: this.agreed}}>
           <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} envelope={this.envelope} onSdkError={e => this.sdkError?.emit(e.detail)} />
-
-          {this.errorMessage && <verdocs-ok-dialog heading="Unable to Sign Document" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
 
           {this.showDone && (
             <verdocs-ok-dialog
@@ -726,32 +728,6 @@ export class VerdocsSign {
                 e.stopPropagation();
                 this.showDone = false;
                 this.isDone = true;
-              }}
-            />
-          )}
-
-          {this.showCanceled && (
-            <verdocs-ok-dialog
-              heading="Document Canceled"
-              message={`This envelope has been canceled. Please contact the sender.`}
-              onNext={(e: any) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // We don't allow this to be hidden
-                // this.showCanceled = false;
-              }}
-            />
-          )}
-
-          {this.showDeclined && (
-            <verdocs-ok-dialog
-              heading="Declined to Sign"
-              message={`You have declined to sign this document. Please contact the sender.`}
-              onNext={(e: any) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // We don't allow this to be hidden
-                // this.showDeclined = false;
               }}
             />
           )}
@@ -934,32 +910,45 @@ export class VerdocsSign {
 
           <div class="cover">
             <div class="kba">
-              <verdocs-kba-dialog
-                mode="choice"
-                helptitle="Your identity requires additional verification"
-                helptext={kbaQuestion?.prompt || 'Please select one of the options below.'}
-                choices={kbaQuestion?.answer || ['Skip Question']}
-                step={questionNumber + 1}
-                steps={this.kbaQuestions.length}
-                onNext={async (e: any) => {
-                  const answer = e.detail as string;
-                  this.kbaChoices = [...this.kbaChoices, answer];
-                  if (this.kbaChoices.length >= this.kbaQuestions.length) {
-                    const responses = this.kbaQuestions.map((q, i) => ({type: q.type, answer: this.kbaChoices[i]}));
-                    console.log('Submitting KBA responses', this.kbaChoices, responses);
-                    try {
-                      const response = await submitKbaChallengeResponse(this.endpoint, this.envelopeId, this.roleId, responses);
-                      console.log('KBA challenge response', response);
-                      this.kbaStep = '';
-                    } catch (e) {
-                      console.log('Error submitting KBA challenge', e);
-                      this.kbaStep = '';
-                      this.errorMessage = e.response?.data?.error || 'Unable to verify identity.';
-                      this.isDone = true;
+              {this.kbaChoices.length >= this.kbaQuestions.length ? (
+                <verdocs-spinner />
+              ) : (
+                <verdocs-kba-dialog
+                  mode="choice"
+                  helptitle="Your identity requires additional verification"
+                  helptext={kbaQuestion?.prompt || 'Please select one of the options below.'}
+                  choices={kbaQuestion?.answer || ['Skip Question']}
+                  step={questionNumber + 1}
+                  steps={this.kbaQuestions.length}
+                  onNext={async (e: any) => {
+                    const answer = e.detail as string;
+                    this.kbaChoices = [...this.kbaChoices, answer];
+                    if (this.kbaChoices.length >= this.kbaQuestions.length) {
+                      const responses = this.kbaQuestions.map((q, i) => ({type: q.type, answer: this.kbaChoices[i]}));
+                      console.log('Submitting KBA responses', this.kbaChoices, responses);
+                      try {
+                        const response = await submitKbaChallengeResponse(this.endpoint, this.envelopeId, this.roleId, responses);
+                        console.log('KBA challenge response', response);
+                        this.kbaStep = response.kba_step;
+                        if (this.kbaStep === 'failed') {
+                          this.fatalErrorHeader = 'Identity Verification Failed';
+                          this.fatalErrorMessage = "We were unable to verify your identity. Please contact the document's sender.";
+                          this.isDone = true;
+                        } else {
+                          this.kbaQuestions = (response as any).questions?.question || [];
+                          this.kbaChoices = [];
+                        }
+                      } catch (e) {
+                        console.log('Error submitting KBA challenge', e);
+                        this.kbaStep = '';
+                        this.fatalErrorHeader = 'Unable to Verify Identity';
+                        this.fatalErrorMessage = e.response?.data?.error || 'Please try again later.';
+                        this.isDone = true;
+                      }
                     }
-                  }
-                }}
-              />
+                  }}
+                />
+              )}
             </div>
           </div>
         </Host>
@@ -1028,8 +1017,6 @@ export class VerdocsSign {
           />
         )}
 
-        {this.errorMessage && <verdocs-ok-dialog heading="Network Error" message={this.errorMessage} onNext={() => (this.errorMessage = '')} />}
-
         {this.showDone && (
           <verdocs-ok-dialog
             heading="You're Done!"
@@ -1037,32 +1024,6 @@ export class VerdocsSign {
             onNext={() => {
               this.showDone = false;
               this.isDone = true;
-            }}
-          />
-        )}
-
-        {this.showCanceled && (
-          <verdocs-ok-dialog
-            heading="Document Canceled"
-            message={`This envelope has been canceled. Please contact the sender.`}
-            onNext={(e: any) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // We don't allow this to be hidden
-              // this.showCanceled = false;
-            }}
-          />
-        )}
-
-        {this.showDeclined && (
-          <verdocs-ok-dialog
-            heading="Declined to Sign"
-            message={`You have declined to sign this document. Please contact the sender.`}
-            onNext={(e: any) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // We don't allow this to be hidden
-              // this.showDeclined = false;
             }}
           />
         )}

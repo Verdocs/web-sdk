@@ -178,7 +178,12 @@ export class VerdocsContactPicker {
     // TODO: Re-activate this one SMS is re-enabled
     // const hasBasics = this.first_name && this.last_name && (isValidEmail(this.email) || isValidPhone(this.phone));
     const hasBasics = this.first_name && this.last_name && isValidEmail(this.email);
-    const hasKbaRequirements = !this.kba_method || (this.kba_method === 'pin' && this.kba_pin) || (this.kba_method === 'identity' && this.address && this.zip);
+    const hasKbaRequirements =
+      !this.kba_method ||
+      (this.kba_method === 'pin' && this.kba_pin) ||
+      this.kba_method === 'identity';
+      // TODO: For discussion
+      // (this.kba_method === 'identity' && this.address && this.zip)
     const canSubmit = hasBasics && hasKbaRequirements;
 
     return (

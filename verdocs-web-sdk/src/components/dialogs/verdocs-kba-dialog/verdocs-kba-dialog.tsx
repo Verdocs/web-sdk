@@ -94,6 +94,7 @@ export class VerdocsKbaDialog {
 
   handleDone() {
     this.next.emit(this.response);
+    this.response = '';
   }
 
   handleConfirmID() {

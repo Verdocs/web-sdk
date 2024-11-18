@@ -110,6 +110,56 @@ verdocs-sign {
     position: fixed;
     background-color: rgba(0, 0, 0, 0.7);
   }
+
+  .fatal-error {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #4a4a4a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .placeholder {
+      position: absolute;
+      opacity: 0.1;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 612px;
+      height: 792px;
+      box-shadow: 0 0 10px 5px #0000000f;
+      margin-top: 15px;
+    }
+
+    .message {
+      width: 50%;
+      font-size: 16px;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 3px 3px 9px -1px #0000003f;
+    }
+
+    .header {
+      color: white;
+      font-size: 18px;
+      font-weight: 500;
+      padding: 5px 10px;
+      margin: 0 0 10px 0;
+      background: $verdocs-purple;
+    }
+
+    p {
+      margin: 1rem;
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
 }
 
 @media print {

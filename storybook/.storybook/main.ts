@@ -8,6 +8,8 @@ const config: StorybookConfig = {
       // See https://github.com/storybookjs/storybook/issues/13795
       options: {fsCache: false},
     },
+
+    disableWhatsNewNotifications: true,
   },
 
   stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
