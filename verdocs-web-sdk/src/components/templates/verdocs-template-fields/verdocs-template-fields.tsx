@@ -291,10 +291,13 @@ export class VerdocsTemplateFields {
       const newFieldData = await updateField(this.endpoint, this.templateId, name, params);
       console.log('[FIELDS] Updated', newFieldData);
       updateStoreField(this.fieldStore, name, newFieldData);
+      console.log('a');
       event.target.removeAttribute('posX');
       event.target.removeAttribute('posY');
       removeCssTransform(event.target);
+      console.log('b');
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
+      console.log('c');
     } catch (e) {
       VerdocsToast('Error updating field, please try again later', {style: 'error'});
       console.log('[FIELDS] Error updating field', e);

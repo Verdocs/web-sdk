@@ -40,6 +40,7 @@ export const config: Config = {
     }),
     reactOutputTarget({
       outDir: '../verdocs-web-sdk-react/src',
+      // componentCorePackage: '@verdocs/web-sdk',
       // proxiesFile: '../verdocs-web-sdk-react/src/components.ts',
       // includeImportCustomElements: true,
       // customElementsDir: 'dist/components',
