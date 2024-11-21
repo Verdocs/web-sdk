@@ -54,7 +54,7 @@ export const config: Config = {
       customElementsExportBehavior: 'bundle',
       // customElementsExportBehavior: 'auto-define-custom-elements',
       generateTypeDeclarations: true,
-      externalRuntime: false,
+      // externalRuntime: false,
     },
     // {
     //   type: 'dist-custom-elements-bundle',

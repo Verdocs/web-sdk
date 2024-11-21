@@ -1,7 +1,7 @@
 import interact from 'interactjs';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen, Watch} from '@stencil/core';
 import {createField, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, updateCssTransform} from '../../../utils/utils';
+import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
 import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
@@ -291,13 +291,12 @@ export class VerdocsTemplateFields {
       const newFieldData = await updateField(this.endpoint, this.templateId, name, params);
       console.log('[FIELDS] Updated', newFieldData);
       updateStoreField(this.fieldStore, name, newFieldData);
-      console.log('a');
       event.target.removeAttribute('posX');
       event.target.removeAttribute('posY');
       removeCssTransform(event.target);
-      console.log('b');
+      const {xScale = 1, yScale = 1} = this.cachedPageInfo[pageNumber];
+      setControlStyles(event.target, newFieldData, xScale, yScale);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
-      console.log('c');
     } catch (e) {
       VerdocsToast('Error updating field, please try again later', {style: 'error'});
       console.log('[FIELDS] Error updating field', e);
