@@ -5,7 +5,7 @@ export default {
   title: 'Templates/Fields',
   component: 'verdocs-template-fields',
   args: {
-    templateId: '44dd4d72-bd8c-4695-b9b8-26f87a46e701',
+    templateId: '799195c5-fceb-47c7-b761-a563e6ff6cc2',
   },
   argTypes: {},
   parameters: {

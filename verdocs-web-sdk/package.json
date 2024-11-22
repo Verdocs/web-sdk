@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "4.2.158",
+  "version": "5.0.0",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -27,8 +27,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "@stencil/core": "^4.22.2",
-    "@stencil/store": "^2.0.16",
+    "@stencil/core": "^4.22.3",
     "@svgdotjs/svg.js": "^3.2.4",
     "@verdocs/js-sdk": "^4.2.156",
     "air-datepicker": "^3.5.3",
@@ -44,7 +43,7 @@
     "@babel/core": "^7.26.0",
     "@interactjs/types": "^1.10.27",
     "@stencil/angular-output-target": "^0.10.0",
-    "@stencil/react-output-target": "0.6.0",
+    "@stencil/react-output-target": "^0.7.4",
     "@stencil/sass": "^3.0.12",
     "@types/jest": "^29.5.14",
     "babel-loader": "^9.2.1",

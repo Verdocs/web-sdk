@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -22,7 +22,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, ITemplateFieldSetting, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -83,32 +83,9 @@ export namespace Components {
      * Display a template building experience. Several event callbacks provide status updates to the
      * parent application to support interface updates.
      * ```ts
-     * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
-     * interface IEnvelopeSent {
-     *   name: string;
-     *   template_id: string
-     *   recipients: ICreateEnvelopeRecipient[];
-     * }
-     * interface ITemplateEvent {
-     *   event: string
-     *   template: ITemplate;
-     * }
-     * interface IRolesEvent {
-     *   event: string
-     *   templateId: string;
-     *   roles: ITemplateRole[];
-     * }
-     * <verdocs-build
-     *   templateId={templateId}
-     *   step="preview"
-     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
-     *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
-     *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
-     *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
-     *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
-     *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
-     *   />
+     * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
+     *   console.log('Sent envelope from template', detail);
+     * }} />
      * ```
      */
     interface VerdocsBuild {
@@ -456,9 +433,13 @@ export namespace Components {
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -500,9 +481,13 @@ export namespace Components {
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -548,9 +533,13 @@ export namespace Components {
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required for the field builder, passed down to the properties component.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -592,9 +581,13 @@ export namespace Components {
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -645,9 +638,13 @@ export namespace Components {
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -670,14 +667,26 @@ export namespace Components {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
         "fieldId": string;
         /**
           * The name of the field to display.
          */
         "fieldname": string;
         "fields": any[];
-        "focused": boolean;
+        "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         "pageNum": number;
         /**
           * The page the field is on
@@ -694,9 +703,13 @@ export namespace Components {
         "showSettingsPanel": () => Promise<void>;
         "signed": boolean;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -742,9 +755,13 @@ export namespace Components {
         "required"?: boolean;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -795,9 +812,13 @@ export namespace Components {
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -844,9 +865,13 @@ export namespace Components {
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -873,10 +898,6 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
           * The name of the field to display.
          */
         "fieldname": string;
@@ -896,9 +917,13 @@ export namespace Components {
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -941,9 +966,13 @@ export namespace Components {
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid": string;
+        "source": 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -1452,20 +1481,6 @@ export namespace Components {
         "tabs": ITab[];
     }
     /**
-     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
-     * Note that an active session and valid template ID must be supplied.
-     */
-    interface VerdocsTemplateAttachments {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId": string;
-    }
-    /**
      * Display a set of tabs for the template builder.
      */
     interface VerdocsTemplateBuildTabs {
@@ -1589,19 +1604,6 @@ export namespace Components {
         "toolbarTargetId": string | null;
     }
     /**
-     * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
-     */
-    interface VerdocsTemplateName {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId": string;
-    }
-    /**
      * Display an edit form that allows the user to adjust a role's setitngs.
      */
     interface VerdocsTemplateRoleProperties {
@@ -1652,19 +1654,6 @@ export namespace Components {
           * The tags to display
          */
         "tags": any[];
-    }
-    /**
-     * Displays an edit form that allows the user to adjust a template's visibility.
-     */
-    interface VerdocsTemplateVisibility {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint": VerdocsEndpoint;
-        /**
-          * The template ID to edit.
-         */
-        "templateId": string;
     }
     /**
      * Displays a list of envelopes matching specified conditions.
@@ -1840,10 +1829,6 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint | null;
         /**
-          * If the envelope is already loaded, the parent may pass it in directly.
-         */
-        "envelope": IEnvelope | null;
-        /**
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
          */
         "envelopeId": string;
@@ -2001,10 +1986,6 @@ export interface VerdocsTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTabsElement;
 }
-export interface VerdocsTemplateAttachmentsCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsTemplateAttachmentsElement;
-}
 export interface VerdocsTemplateBuildTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateBuildTabsElement;
@@ -2025,10 +2006,6 @@ export interface VerdocsTemplateFieldsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateFieldsElement;
 }
-export interface VerdocsTemplateNameCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsTemplateNameElement;
-}
 export interface VerdocsTemplateRolePropertiesCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateRolePropertiesElement;
@@ -2041,17 +2018,9 @@ export interface VerdocsTemplateStarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateStarElement;
 }
-export interface VerdocsTemplateVisibilityCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsTemplateVisibilityElement;
-}
 export interface VerdocsTemplatesListCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplatesListElement;
-}
-export interface VerdocsTextInputCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLVerdocsTextInputElement;
 }
 export interface VerdocsToggleButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2117,32 +2086,9 @@ declare global {
      * Display a template building experience. Several event callbacks provide status updates to the
      * parent application to support interface updates.
      * ```ts
-     * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
-     * interface IEnvelopeSent {
-     *   name: string;
-     *   template_id: string
-     *   recipients: ICreateEnvelopeRecipient[];
-     * }
-     * interface ITemplateEvent {
-     *   event: string
-     *   template: ITemplate;
-     * }
-     * interface IRolesEvent {
-     *   event: string
-     *   templateId: string;
-     *   roles: ITemplateRole[];
-     * }
-     * <verdocs-build
-     *   templateId={templateId}
-     *   step="preview"
-     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
-     *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
-     *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
-     *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
-     *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
-     *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
-     *   />
+     * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
+     *   console.log('Sent envelope from template', detail);
+     * }} />
      * ```
      */
     interface HTMLVerdocsBuildElement extends Components.VerdocsBuild, HTMLStencilElement {
@@ -2543,9 +2489,7 @@ declare global {
         new (): HTMLVerdocsFieldInitialElement;
     };
     interface HTMLVerdocsFieldPaymentElementEventMap {
-        "signatureComplete": string;
-        "initialComplete": string;
-        "settingsChanged": {fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField};
+        "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
     }
     /**
@@ -3213,30 +3157,6 @@ declare global {
         prototype: HTMLVerdocsTabsElement;
         new (): HTMLVerdocsTabsElement;
     };
-    interface HTMLVerdocsTemplateAttachmentsElementEventMap {
-        "exit": any;
-        "next": {template: ITemplate};
-        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
-        "sdkError": SDKError;
-    }
-    /**
-     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
-     * Note that an active session and valid template ID must be supplied.
-     */
-    interface HTMLVerdocsTemplateAttachmentsElement extends Components.VerdocsTemplateAttachments, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsTemplateAttachmentsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateAttachmentsElement, ev: VerdocsTemplateAttachmentsCustomEvent<HTMLVerdocsTemplateAttachmentsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsTemplateAttachmentsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateAttachmentsElement, ev: VerdocsTemplateAttachmentsCustomEvent<HTMLVerdocsTemplateAttachmentsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsTemplateAttachmentsElement: {
-        prototype: HTMLVerdocsTemplateAttachmentsElement;
-        new (): HTMLVerdocsTemplateAttachmentsElement;
-    };
     interface HTMLVerdocsTemplateBuildTabsElementEventMap {
         "sdkError": SDKError;
         "stepChanged": TVerdocsBuildStep1;
@@ -3359,28 +3279,6 @@ declare global {
         prototype: HTMLVerdocsTemplateFieldsElement;
         new (): HTMLVerdocsTemplateFieldsElement;
     };
-    interface HTMLVerdocsTemplateNameElementEventMap {
-        "close": any;
-        "sdkError": SDKError;
-        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
-    }
-    /**
-     * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
-     */
-    interface HTMLVerdocsTemplateNameElement extends Components.VerdocsTemplateName, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsTemplateNameElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateNameElement, ev: VerdocsTemplateNameCustomEvent<HTMLVerdocsTemplateNameElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsTemplateNameElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateNameElement, ev: VerdocsTemplateNameCustomEvent<HTMLVerdocsTemplateNameElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsTemplateNameElement: {
-        prototype: HTMLVerdocsTemplateNameElement;
-        new (): HTMLVerdocsTemplateNameElement;
-    };
     interface HTMLVerdocsTemplateRolePropertiesElementEventMap {
         "close": any;
         "delete": {templateId: string; roleName: string};
@@ -3456,28 +3354,6 @@ declare global {
         prototype: HTMLVerdocsTemplateTagsElement;
         new (): HTMLVerdocsTemplateTagsElement;
     };
-    interface HTMLVerdocsTemplateVisibilityElementEventMap {
-        "close": any;
-        "sdkError": SDKError;
-        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
-    }
-    /**
-     * Displays an edit form that allows the user to adjust a template's visibility.
-     */
-    interface HTMLVerdocsTemplateVisibilityElement extends Components.VerdocsTemplateVisibility, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsTemplateVisibilityElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateVisibilityElement, ev: VerdocsTemplateVisibilityCustomEvent<HTMLVerdocsTemplateVisibilityElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsTemplateVisibilityElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateVisibilityElement, ev: VerdocsTemplateVisibilityCustomEvent<HTMLVerdocsTemplateVisibilityElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLVerdocsTemplateVisibilityElement: {
-        prototype: HTMLVerdocsTemplateVisibilityElement;
-        new (): HTMLVerdocsTemplateVisibilityElement;
-    };
     interface HTMLVerdocsTemplatesListElementEventMap {
         "sdkError": SDKError;
         "viewTemplate": {endpoint: VerdocsEndpoint; template: ITemplate};
@@ -3507,9 +3383,6 @@ declare global {
         prototype: HTMLVerdocsTemplatesListElement;
         new (): HTMLVerdocsTemplatesListElement;
     };
-    interface HTMLVerdocsTextInputElementEventMap {
-        "blur": any;
-    }
     /**
      * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
@@ -3519,14 +3392,6 @@ declare global {
      * ```
      */
     interface HTMLVerdocsTextInputElement extends Components.VerdocsTextInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLVerdocsTextInputElementEventMap>(type: K, listener: (this: HTMLVerdocsTextInputElement, ev: VerdocsTextInputCustomEvent<HTMLVerdocsTextInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLVerdocsTextInputElementEventMap>(type: K, listener: (this: HTMLVerdocsTextInputElement, ev: VerdocsTextInputCustomEvent<HTMLVerdocsTextInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLVerdocsTextInputElement: {
         prototype: HTMLVerdocsTextInputElement;
@@ -3686,19 +3551,16 @@ declare global {
         "verdocs-switch": HTMLVerdocsSwitchElement;
         "verdocs-table": HTMLVerdocsTableElement;
         "verdocs-tabs": HTMLVerdocsTabsElement;
-        "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
         "verdocs-template-build-tabs": HTMLVerdocsTemplateBuildTabsElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-create": HTMLVerdocsTemplateCreateElement;
         "verdocs-template-document-page": HTMLVerdocsTemplateDocumentPageElement;
         "verdocs-template-field-properties": HTMLVerdocsTemplateFieldPropertiesElement;
         "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
-        "verdocs-template-name": HTMLVerdocsTemplateNameElement;
         "verdocs-template-role-properties": HTMLVerdocsTemplateRolePropertiesElement;
         "verdocs-template-roles": HTMLVerdocsTemplateRolesElement;
         "verdocs-template-star": HTMLVerdocsTemplateStarElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
-        "verdocs-template-visibility": HTMLVerdocsTemplateVisibilityElement;
         "verdocs-templates-list": HTMLVerdocsTemplatesListElement;
         "verdocs-text-input": HTMLVerdocsTextInputElement;
         "verdocs-toggle": HTMLVerdocsToggleElement;
@@ -3760,32 +3622,9 @@ declare namespace LocalJSX {
      * Display a template building experience. Several event callbacks provide status updates to the
      * parent application to support interface updates.
      * ```ts
-     * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
-     * interface IEnvelopeSent {
-     *   name: string;
-     *   template_id: string
-     *   recipients: ICreateEnvelopeRecipient[];
-     * }
-     * interface ITemplateEvent {
-     *   event: string
-     *   template: ITemplate;
-     * }
-     * interface IRolesEvent {
-     *   event: string
-     *   templateId: string;
-     *   roles: ITemplateRole[];
-     * }
-     * <verdocs-build
-     *   templateId={templateId}
-     *   step="preview"
-     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
-     *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
-     *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
-     *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
-     *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
-     *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
-     *   />
+     * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
+     *   console.log('Sent envelope from template', detail);
+     * }} />
      * ```
      */
     interface VerdocsBuild {
@@ -4255,9 +4094,13 @@ declare namespace LocalJSX {
          */
         "pagenumber"?: number;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4304,9 +4147,13 @@ declare namespace LocalJSX {
          */
         "pagenumber"?: number;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4361,9 +4208,13 @@ declare namespace LocalJSX {
          */
         "pagenumber"?: number;
         /**
-          * The template the field is for/from. Only required for the field builder, passed down to the properties component.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4414,9 +4265,13 @@ declare namespace LocalJSX {
          */
         "pagenumber"?: number;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4488,9 +4343,13 @@ declare namespace LocalJSX {
          */
         "pagenumber"?: number;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4513,20 +4372,32 @@ declare namespace LocalJSX {
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
          */
         "disabled"?: boolean;
+        /**
+          * If set, the field is considered "done" and is drawn in a display-final-value state.
+         */
+        "done"?: boolean;
+        /**
+          * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+         */
+        "editable"?: boolean;
         "fieldId"?: string;
         /**
           * The name of the field to display.
          */
         "fieldname"?: string;
         "fields"?: any[];
-        "focused"?: boolean;
+        /**
+          * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+         */
+        "moveable"?: boolean;
         /**
           * Event fired when the field is deleted.
          */
         "onDeleted"?: (event: VerdocsFieldPaymentCustomEvent<{fieldName: string}>) => void;
-        "onInitialComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
-        "onSettingsChanged"?: (event: VerdocsFieldPaymentCustomEvent<{fieldName: string; settings: ITemplateFieldSetting; field: ITemplateField}>) => void;
-        "onSignatureComplete"?: (event: VerdocsFieldPaymentCustomEvent<string>) => void;
+        /**
+          * Event fired when the field's settings are changed.
+         */
+        "onSettingsChanged"?: (event: VerdocsFieldPaymentCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         "pageNum"?: number;
         /**
           * The page the field is on
@@ -4542,9 +4413,13 @@ declare namespace LocalJSX {
         "selectedRoleName"?: string;
         "signed"?: boolean;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4595,9 +4470,13 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4661,9 +4540,13 @@ declare namespace LocalJSX {
          */
         "pagenumber"?: number;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4715,9 +4598,13 @@ declare namespace LocalJSX {
          */
         "pagenumber"?: number;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4744,10 +4631,6 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
           * The name of the field to display.
          */
         "fieldname"?: string;
@@ -4772,9 +4655,13 @@ declare namespace LocalJSX {
          */
         "pagenumber"?: number;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -4822,9 +4709,13 @@ declare namespace LocalJSX {
          */
         "pagenumber"?: number;
         /**
-          * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+          * Fields may be attached to templates or envelopes, but only template fields may be edited.
          */
-        "templateid"?: string;
+        "source"?: 'template' | 'envelope';
+        /**
+          * The source template or envelope ID the field is found in.
+         */
+        "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
          */
@@ -5449,36 +5340,6 @@ declare namespace LocalJSX {
         "tabs"?: ITab[];
     }
     /**
-     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
-     * Note that an active session and valid template ID must be supplied.
-     */
-    interface VerdocsTemplateAttachments {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
-         */
-        "onExit"?: (event: VerdocsTemplateAttachmentsCustomEvent<any>) => void;
-        /**
-          * Event fired when the user clicks the next button.
-         */
-        "onNext"?: (event: VerdocsTemplateAttachmentsCustomEvent<{template: ITemplate}>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsTemplateAttachmentsCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the user updates the template.
-         */
-        "onTemplateUpdated"?: (event: VerdocsTemplateAttachmentsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
-        /**
-          * The template ID to edit.
-         */
-        "templateId"?: string;
-    }
-    /**
      * Display a set of tabs for the template builder.
      */
     interface VerdocsTemplateBuildTabs {
@@ -5655,31 +5516,6 @@ declare namespace LocalJSX {
         "toolbarTargetId"?: string | null;
     }
     /**
-     * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
-     */
-    interface VerdocsTemplateName {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the user cancels the dialog.
-         */
-        "onClose"?: (event: VerdocsTemplateNameCustomEvent<any>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsTemplateNameCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the user updates the template.
-         */
-        "onTemplateUpdated"?: (event: VerdocsTemplateNameCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
-        /**
-          * The template ID to edit.
-         */
-        "templateId"?: string;
-    }
-    /**
      * Display an edit form that allows the user to adjust a role's setitngs.
      */
     interface VerdocsTemplateRoleProperties {
@@ -5766,31 +5602,6 @@ declare namespace LocalJSX {
           * The tags to display
          */
         "tags"?: any[];
-    }
-    /**
-     * Displays an edit form that allows the user to adjust a template's visibility.
-     */
-    interface VerdocsTemplateVisibility {
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-         */
-        "endpoint"?: VerdocsEndpoint;
-        /**
-          * Event fired when the user cancels the dialog.
-         */
-        "onClose"?: (event: VerdocsTemplateVisibilityCustomEvent<any>) => void;
-        /**
-          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
-         */
-        "onSdkError"?: (event: VerdocsTemplateVisibilityCustomEvent<SDKError>) => void;
-        /**
-          * Event fired when the user updates the template.
-         */
-        "onTemplateUpdated"?: (event: VerdocsTemplateVisibilityCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
-        /**
-          * The template ID to edit.
-         */
-        "templateId"?: string;
     }
     /**
      * Displays a list of envelopes matching specified conditions.
@@ -5906,7 +5717,6 @@ declare namespace LocalJSX {
           * The label for the field.
          */
         "label"?: string;
-        "onBlur"?: (event: VerdocsTextInputCustomEvent<any>) => void;
         /**
           * The placeholder for the field.
          */
@@ -6023,10 +5833,6 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint | null;
         /**
-          * If the envelope is already loaded, the parent may pass it in directly.
-         */
-        "envelope"?: IEnvelope | null;
-        /**
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
          */
         "envelopeId"?: string;
@@ -6106,19 +5912,16 @@ declare namespace LocalJSX {
         "verdocs-switch": VerdocsSwitch;
         "verdocs-table": VerdocsTable;
         "verdocs-tabs": VerdocsTabs;
-        "verdocs-template-attachments": VerdocsTemplateAttachments;
         "verdocs-template-build-tabs": VerdocsTemplateBuildTabs;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-create": VerdocsTemplateCreate;
         "verdocs-template-document-page": VerdocsTemplateDocumentPage;
         "verdocs-template-field-properties": VerdocsTemplateFieldProperties;
         "verdocs-template-fields": VerdocsTemplateFields;
-        "verdocs-template-name": VerdocsTemplateName;
         "verdocs-template-role-properties": VerdocsTemplateRoleProperties;
         "verdocs-template-roles": VerdocsTemplateRoles;
         "verdocs-template-star": VerdocsTemplateStar;
         "verdocs-template-tags": VerdocsTemplateTags;
-        "verdocs-template-visibility": VerdocsTemplateVisibility;
         "verdocs-templates-list": VerdocsTemplatesList;
         "verdocs-text-input": VerdocsTextInput;
         "verdocs-toggle": VerdocsToggle;
@@ -6158,32 +5961,9 @@ declare module "@stencil/core" {
              * Display a template building experience. Several event callbacks provide status updates to the
              * parent application to support interface updates.
              * ```ts
-             * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
-             * interface IEnvelopeSent {
-             *   name: string;
-             *   template_id: string
-             *   recipients: ICreateEnvelopeRecipient[];
-             * }
-             * interface ITemplateEvent {
-             *   event: string
-             *   template: ITemplate;
-             * }
-             * interface IRolesEvent {
-             *   event: string
-             *   templateId: string;
-             *   roles: ITemplateRole[];
-             * }
-             * <verdocs-build
-             *   templateId={templateId}
-             *   step="preview"
-             *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
-             *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
-             *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
-             *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
-             *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
-             *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
-             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
-             *   />
+             * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
+             *   console.log('Sent envelope from template', detail);
+             * }} />
              * ```
              */
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
@@ -6565,11 +6345,6 @@ declare module "@stencil/core" {
              */
             "verdocs-tabs": LocalJSX.VerdocsTabs & JSXBase.HTMLAttributes<HTMLVerdocsTabsElement>;
             /**
-             * Displays an edit form that allows the user to view, add, or remove a template's attachments.
-             * Note that an active session and valid template ID must be supplied.
-             */
-            "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
-            /**
              * Display a set of tabs for the template builder.
              */
             "verdocs-template-build-tabs": LocalJSX.VerdocsTemplateBuildTabs & JSXBase.HTMLAttributes<HTMLVerdocsTemplateBuildTabsElement>;
@@ -6598,10 +6373,6 @@ declare module "@stencil/core" {
              */
             "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
             /**
-             * Displays an edit form that allows the user to rename a template. Note that an active session and valid template ID must be supplied.
-             */
-            "verdocs-template-name": LocalJSX.VerdocsTemplateName & JSXBase.HTMLAttributes<HTMLVerdocsTemplateNameElement>;
-            /**
              * Display an edit form that allows the user to adjust a role's setitngs.
              */
             "verdocs-template-role-properties": LocalJSX.VerdocsTemplateRoleProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolePropertiesElement>;
@@ -6617,10 +6388,6 @@ declare module "@stencil/core" {
              * Displays a message listing a template's tags.
              */
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
-            /**
-             * Displays an edit form that allows the user to adjust a template's visibility.
-             */
-            "verdocs-template-visibility": LocalJSX.VerdocsTemplateVisibility & JSXBase.HTMLAttributes<HTMLVerdocsTemplateVisibilityElement>;
             /**
              * Displays a list of envelopes matching specified conditions.
              */

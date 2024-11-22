@@ -2,9 +2,8 @@ import interact from 'interactjs';
 import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {ITemplateField, updateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {SettingsIcon} from '../../../utils/Icons';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Display a multi-line text input field. Reminder: the "position" of the field is specified
@@ -27,9 +26,14 @@ export class VerdocsFieldTextarea {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
-   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
-  @Prop({reflect: true}) templateid: string = '';
+  @Prop({reflect: true}) source: 'template' | 'envelope' = 'template';
+
+  /**
+   * The source template or envelope ID the field is found in.
+   */
+  @Prop({reflect: true}) sourceid: string = '';
 
   /**
    * The name of the field to display.
@@ -107,14 +111,6 @@ export class VerdocsFieldTextarea {
 
   @State() focused?: boolean = false;
 
-  fieldStore: TTemplateFieldStore = null;
-  roleStore: TTemplateRoleStore = null;
-
-  async componentWillLoad() {
-    this.fieldStore = getTemplateFieldStore(this.templateid);
-    this.roleStore = getTemplateRoleStore(this.templateid);
-  }
-
   componentDidRender() {
     interact.dynamicDrop(true);
 
@@ -153,7 +149,7 @@ export class VerdocsFieldTextarea {
   }
 
   handleResizeEnd(e: any) {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldname);
+    const {field} = Store.getField(this.source, this.sourceid, this.fieldname);
     if (!field) {
       return <Fragment />;
     }
@@ -165,7 +161,7 @@ export class VerdocsFieldTextarea {
     const x = Math.round(field.x + translateX / this.xscale);
     const y = Math.round(field.y - translateY / this.yscale);
 
-    updateField(this.endpoint, this.templateid, this.fieldname, {x, y, width, height})
+    updateField(this.endpoint, this.sourceid, this.fieldname, {x, y, width, height})
       .then(field => {
         this.settingsChanged?.emit({fieldName: this.fieldname, field});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
@@ -174,12 +170,11 @@ export class VerdocsFieldTextarea {
   }
 
   render() {
-    const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
-    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', placeholder = '', value = '', label = ''} = field || {};
-
-    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+    const {index, field} = Store.getField(source, sourceid, fieldname);
+    const {required = false, placeholder = '', value = '', label = ''} = field || {};
+    const backgroundColor = getRGBA(index);
 
     if (done) {
       return <Host class={{done}}>{value}</Host>;
@@ -217,7 +212,7 @@ export class VerdocsFieldTextarea {
             {this.showingProperties && (
               <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={templateid}
+                  templateId={sourceid}
                   fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {

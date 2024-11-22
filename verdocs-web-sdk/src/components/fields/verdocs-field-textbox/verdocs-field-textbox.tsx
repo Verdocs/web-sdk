@@ -1,9 +1,8 @@
 import interact from 'interactjs';
 import {getRGBA, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
-import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
 import {SettingsIcon} from '../../../utils/Icons';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Display a simple 1-line text input field.
@@ -18,16 +17,14 @@ export class VerdocsFieldTextbox {
   private inputEl: HTMLInputElement | HTMLTextAreaElement;
 
   /**
-   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-   * This component self-manages its resize (width) behavior when in edit-template mode, and uses
-   * this endpoint to save changes.
+   * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
-  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+  @Prop({reflect: true}) source: 'template' | 'envelope' = 'template';
 
   /**
-   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   * The source template or envelope ID the field is found in.
    */
-  @Prop({reflect: true}) templateid: string = '';
+  @Prop({reflect: true}) sourceid: string = '';
 
   /**
    * The name of the field to display.
@@ -110,20 +107,17 @@ export class VerdocsFieldTextbox {
     this.showingProperties = false;
   }
 
-  fieldStore: TTemplateFieldStore = null;
-  roleStore: TTemplateRoleStore = null;
-
-  async componentWillLoad() {
-    this.fieldStore = getTemplateFieldStore(this.templateid);
-    this.roleStore = getTemplateRoleStore(this.templateid);
-  }
-
   componentDidRender() {
     interact.dynamicDrop(true);
 
     if (this.editable) {
       interact(this.el).resizable({
-        edges: {top: true, bottom: false, left: true, right: true},
+        edges: {
+          top: '.edge-top',
+          left: '.edge-left',
+          bottom: '.edge-bottom',
+          right: '.edge-right',
+        },
         modifiers: [
           interact.modifiers.restrictSize({
             min: {width: 30, height: 15},
@@ -144,12 +138,12 @@ export class VerdocsFieldTextbox {
   }
 
   handleResize(e: any) {
-    let {x = 0, y = 0, h = 0} = e.target.dataset;
     let {width, height} = e.rect;
 
-    x = (parseFloat(x) || 0) + e.deltaRect.left;
-    y = (parseFloat(y) || 0) + e.deltaRect.top;
-    h = (parseFloat(h) || 0) + e.deltaRect.height;
+    const dX = e.deltaRect.left;
+    const dY = e.deltaRect.bottom;
+    const currentLeft = parseFloat(e.target.style.left);
+    const currentBottom = parseFloat(e.target.style.bottom);
 
     width /= this.xscale;
     height /= this.yscale;
@@ -157,14 +151,13 @@ export class VerdocsFieldTextbox {
     Object.assign(e.target.style, {
       width: `${width}px`,
       height: `${height}px`,
-      transform: `scale(${this.xscale}, ${this.yscale}); translate(${x}px, ${y + h}px)`,
+      left: `${currentLeft + dX}px`,
+      bottom: `${currentBottom - dY}px`,
     });
-
-    Object.assign(e.target.dataset, {x, y, h});
   }
 
   handleResizeEnd(e: any) {
-    const {fieldname = ''} = this;
+    const {sourceid, fieldname} = this;
 
     const width = Math.round(parseFloat(e.target.style.width));
     let height = Math.round(parseFloat(e.target.style.height));
@@ -174,20 +167,29 @@ export class VerdocsFieldTextbox {
     }
     const multiline = height > 15;
 
-    updateField(this.endpoint, this.templateid, this.fieldname, {width, height, multiline})
-      .then(field => {
-        updateStoreField(this.fieldStore, this.fieldname, field);
-        this.settingsChanged?.emit({fieldName: fieldname, field});
+    updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, multiline})
+      .then(async updatedField => {
+        const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
+        const newTemplate = JSON.parse(JSON.stringify(template));
+        const fieldIndex = newTemplate.fields.findIndex(field => field.name === fieldname);
+        if (fieldIndex > -1) {
+          newTemplate.fields[fieldIndex] = updatedField;
+        }
+        Store.updateTemplate(this.sourceid, newTemplate);
+
+        this.settingsChanged?.emit({fieldName: fieldname, field: updatedField});
         Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
       })
       .catch(e => console.log('Field update failed', e));
   }
 
   render() {
-    const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
-    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    let {required = false, role_name = '', placeholder = '', label = '', width = 150, default: value = '', multiline = false} = field || {};
+    const {index, field} = Store.getField(source, sourceid, fieldname);
+    let {required = false, placeholder = '', label = '', width = 150, default: value = '', multiline = false} = field || {};
+    const backgroundColor = getRGBA(index);
+
     // TODO: Consolidate value/defaultValue handling between template and envelope fields
     if ((field as any).value) {
       value = (field as any).value;
@@ -195,7 +197,6 @@ export class VerdocsFieldTextbox {
 
     // TODO: This is an outdated technique from the old system. We should compute it.
     const maxlength = width / 5;
-    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
 
     if (done) {
       return <Host class={{done}}>{value}</Host>;
@@ -203,6 +204,11 @@ export class VerdocsFieldTextbox {
 
     return (
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+        {editable && <div class="edge-top" />}
+        {editable && <div class="edge-right" />}
+        {editable && <div class="edge-left" />}
+        {editable && <div class="edge-bottom" />}
+
         {label && <label>{label}</label>}
 
         {multiline ? (
@@ -248,7 +254,7 @@ export class VerdocsFieldTextbox {
             {this.showingProperties && (
               <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={templateid}
+                  templateId={sourceid}
                   fieldName={fieldname}
                   onClose={() => this.hideSettingsPanel()}
                   onDelete={() => {

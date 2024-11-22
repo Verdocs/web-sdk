@@ -1,8 +1,8 @@
-import {formatFullName, getInPersonLink, getRecipientsWithActions, IEnvelope, IRecipient, recipientCanAct, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {formatFullName, getEnvelope, getInPersonLink, getRecipientsWithActions, IEnvelope, IRecipient, recipientCanAct, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
-import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
 // import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Displays a list of recipients with options to get in-person signing links for each one.
@@ -12,6 +12,8 @@ import {SDKError} from '../../../utils/errors';
   styleUrl: 'verdocs-envelope-recipient-summary.scss',
 })
 export class VerdocsEnvelopeRecipientSummary {
+  private envelopeListenerId = null;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -62,13 +64,13 @@ export class VerdocsEnvelopeRecipientSummary {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() isOpen: boolean;
-  @State() loading = true;
   @State() recipientStatusIcons = [];
   @State() containerId = `verdocs-status-indicator-${Math.random().toString(36).substring(2, 11)}`;
   @State() gettingLinks: Record<string, boolean> = {};
   @State() links: Record<string, string> = {};
 
-  store: TEnvelopeStore | null = null;
+  @State() loading = true;
+  @State() envelope: IEnvelope | null = null;
 
   async componentWillLoad() {
     try {
@@ -84,34 +86,60 @@ export class VerdocsEnvelopeRecipientSummary {
         return;
       }
 
-      this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
-      this.sortEnvelopeRecipients();
-      this.loading = false;
+      this.listenToEnvelope();
     } catch (e) {
       console.log('[RECIPIENTS] Error loading envelope', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
+  disconnectedCallback() {
+    this.unlistenToEnvelope();
+  }
+
+  async listenToEnvelope() {
+    console.log('[SIDEBAR] Loading envelope', this.envelopeId);
+    this.unlistenToEnvelope();
+    Store.subscribe(
+      'envelopes',
+      this.envelopeId,
+      () => getEnvelope(this.endpoint, this.envelopeId),
+      false,
+      (envelope: IEnvelope) => {
+        this.envelope = envelope;
+        this.loading = false;
+
+        this.sortEnvelopeRecipients();
+      },
+    );
+  }
+
+  unlistenToEnvelope() {
+    if (this.envelopeListenerId) {
+      Store.store.delListener(this.envelopeListenerId);
+      this.envelopeListenerId = null;
+    }
+  }
+
   sortEnvelopeRecipients() {
-    this.store?.state?.recipients.sort((a, b) => {
+    (this.envelope?.recipients || []).sort((a, b) => {
       return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
     });
   }
 
   handleAnother(e: any) {
     e.preventDefault();
-    this.another?.emit({envelope: this.store.state});
+    this.another?.emit({envelope: this.envelope});
   }
 
   handleView(e: any) {
     e.preventDefault();
-    this.view?.emit({envelope: this.store.state});
+    this.view?.emit({envelope: this.envelope});
   }
 
   handleDone(e: any) {
     e.preventDefault();
-    this.next?.emit({envelope: this.store.state});
+    this.next?.emit({envelope: this.envelope});
   }
 
   copyLink(link: string) {
@@ -126,7 +154,7 @@ export class VerdocsEnvelopeRecipientSummary {
         // VerdocsToast(`Unable to copy to clipboard: ${e.message}`, {style: 'error'});
       });
   }
-xw
+  xw;
   getLink(recipient: IRecipient) {
     this.gettingLinks = {...this.gettingLinks, [recipient.role_name]: true};
     getInPersonLink(this.endpoint, recipient.envelope_id, recipient.role_name)
@@ -153,8 +181,8 @@ xw
         <div class="summary-content">
           <h1 class="summary-title">Recipient Summary</h1>
           <div class="summary-rows">
-            {(this.store?.state?.recipients || []).map(recipient => {
-              const recipientsWithActions = getRecipientsWithActions(this.store.state);
+            {(this.envelope?.recipients || []).map(recipient => {
+              const recipientsWithActions = getRecipientsWithActions(this.envelope);
               const showLinkButton = recipientCanAct(recipient, recipientsWithActions);
               const link = this.links[recipient.role_name];
               const gettingLink = this.gettingLinks[recipient.role_name];

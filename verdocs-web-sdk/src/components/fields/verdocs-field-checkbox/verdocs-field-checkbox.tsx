@@ -1,8 +1,7 @@
 import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, Fragment, h, Host, Method, Prop, State} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {SettingsIcon} from '../../../utils/Icons';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Displays a checkbox.
@@ -14,9 +13,14 @@ import {SettingsIcon} from '../../../utils/Icons';
 })
 export class VerdocsFieldCheckbox {
   /**
-   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
-  @Prop({reflect: true}) templateid: string = '';
+  @Prop({reflect: true}) source: 'template' | 'envelope' = 'template';
+
+  /**
+   * The source template or envelope ID the field is found in.
+   */
+  @Prop({reflect: true}) sourceid: string = '';
 
   /**
    * The name of the field to display.
@@ -97,24 +101,13 @@ export class VerdocsFieldCheckbox {
     }
   }
 
-  fieldStore: TTemplateFieldStore = null;
-  roleStore: TTemplateRoleStore = null;
-
-  async componentWillLoad() {
-    this.fieldStore = getTemplateFieldStore(this.templateid);
-    this.roleStore = getTemplateRoleStore(this.templateid);
-  }
-
   render() {
-    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1, focused} = this;
+    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
-    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', label = '', value = false} = field || {};
+    const {index, field} = Store.getField(source, sourceid, fieldname);
+    const {required = false, label = '', value = false} = field || {};
+    const backgroundColor = getRGBA(index);
 
-    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
-
-    const fieldId = `${fieldname}`;
-    // const fieldId = `${fieldname}-${id}`;
     const checked = value === 'true';
 
     if (done) {
@@ -125,8 +118,8 @@ export class VerdocsFieldCheckbox {
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <div class="label">{label}</div>}
 
-        <label htmlFor={fieldId}>
-          <input id={fieldId} name={fieldname} type="checkbox" checked={checked} disabled={disabled} required={required} />
+        <label htmlFor={fieldname}>
+          <input id={fieldname} name={fieldname} type="checkbox" checked={checked} disabled={disabled} required={required} />
           <span />
 
           {editable && (
@@ -145,7 +138,7 @@ export class VerdocsFieldCheckbox {
               {this.showingProperties && (
                 <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
                   <verdocs-template-field-properties
-                    templateId={templateid}
+                    templateId={sourceid}
                     fieldName={field.name}
                     onClose={() => (this.showingProperties = false)}
                     onDelete={() => {

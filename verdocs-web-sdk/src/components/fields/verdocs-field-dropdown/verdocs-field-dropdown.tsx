@@ -1,8 +1,7 @@
 import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {SettingsIcon} from '../../../utils/Icons';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Displays a dropdown field that allows the user to choose one of a list of options.
@@ -16,9 +15,14 @@ export class VerdocsFieldDropdown {
   selectEl: HTMLSelectElement;
 
   /**
-   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
-  @Prop({reflect: true}) templateid: string = '';
+  @Prop({reflect: true}) source: 'template' | 'envelope' = 'template';
+
+  /**
+   * The source template or envelope ID the field is found in.
+   */
+  @Prop({reflect: true}) sourceid: string = '';
 
   /**
    * The name of the field to display.
@@ -112,20 +116,12 @@ export class VerdocsFieldDropdown {
     }
   }
 
-  fieldStore: TTemplateFieldStore = null;
-  roleStore: TTemplateRoleStore = null;
-
-  async componentWillLoad() {
-    this.fieldStore = getTemplateFieldStore(this.templateid);
-    this.roleStore = getTemplateRoleStore(this.templateid);
-  }
-
   render() {
-    const {templateid, fieldname = '', editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
+    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
-    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    let {required = false, role_name = '', value = '', label = '', options} = field || {};
-    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+    const {index, field} = Store.getField(source, sourceid, fieldname);
+    let {required = false, value = '', label = '', options} = field || {};
+    const backgroundColor = getRGBA(index);
 
     if (done) {
       return <Host class={{done}}>{value}</Host>;
@@ -165,7 +161,7 @@ export class VerdocsFieldDropdown {
             {this.showingProperties && (
               <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={templateid}
+                  templateId={sourceid}
                   fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {

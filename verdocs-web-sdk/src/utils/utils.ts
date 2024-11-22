@@ -107,7 +107,13 @@ export const updateDocumentFieldValue = (field: ITemplateField | IEnvelopeField)
   }
 };
 
-export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docPage: IDocumentPageInfo, fieldOptions: IFieldOptions, tabIndex: number = 1) => {
+export const renderDocumentField = (
+  source: 'envelope' | 'template',
+  field: ITemplateField | IEnvelopeField,
+  docPage: IDocumentPageInfo,
+  fieldOptions: IFieldOptions,
+  tabIndex: number = 1,
+) => {
   const {disabled = false, editable = false, draggable = false, done = false} = fieldOptions;
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
   if (!controlsDiv) {
@@ -145,7 +151,8 @@ export const renderDocumentField = (field: ITemplateField | IEnvelopeField, docP
       el.field = field;
       el.setAttribute('id', id);
       el.setAttribute('fieldname', field.name);
-      el.setAttribute('templateid', 'template_id' in field ? field.template_id : 'PREVIEW');
+      el.setAttribute('source', source);
+      el.setAttribute('sourceid', 'template_id' in field ? field.template_id : field.envelope_id);
 
       if (disabled) {
         el.setAttribute('tabindex', -1);

@@ -1,9 +1,9 @@
 import {format} from 'date-fns';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {getTemplate, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, h, Event, EventEmitter, Host, Watch, State} from '@stencil/core';
-import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 const HelpIcon =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="#5c6575"><path d="M11.925 18q.55 0 .938-.387.387-.388.387-.938 0-.55-.387-.925-.388-.375-.938-.375-.55 0-.925.375t-.375.925q0 .55.375.938.375.387.925.387Zm-.95-3.85h1.95q0-.8.2-1.287.2-.488 1.025-1.288.65-.625 1.025-1.213.375-.587.375-1.437 0-1.425-1.025-2.175Q13.5 6 12.1 6q-1.425 0-2.35.775t-1.275 1.85l1.775.7q.125-.45.55-.975.425-.525 1.275-.525.725 0 1.1.412.375.413.375.888 0 .475-.287.9-.288.425-.713.775-1.075.95-1.325 1.475-.25.525-.25 1.875ZM12 22.2q-2.125 0-3.988-.8-1.862-.8-3.237-2.175Q3.4 17.85 2.6 15.988 1.8 14.125 1.8 12t.8-3.988q.8-1.862 2.175-3.237Q6.15 3.4 8.012 2.6 9.875 1.8 12 1.8t3.988.8q1.862.8 3.237 2.175Q20.6 6.15 21.4 8.012q.8 1.863.8 3.988t-.8 3.988q-.8 1.862-2.175 3.237Q17.85 20.6 15.988 21.4q-1.863.8-3.988.8Zm0-2.275q3.325 0 5.625-2.3t2.3-5.625q0-3.325-2.3-5.625T12 4.075q-3.325 0-5.625 2.3T4.075 12q0 3.325 2.3 5.625t5.625 2.3ZM12 12Z"/></svg>';
@@ -22,6 +22,8 @@ export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' 
   shadow: false,
 })
 export class VerdocsTemplateBuildTabs {
+  private templateListenerId = null;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -50,19 +52,43 @@ export class VerdocsTemplateBuildTabs {
    */
   @Event({composed: true}) stepChanged: EventEmitter<TVerdocsBuildStep>;
 
-  @State()
-  templateStore: TTemplateStore | null = null;
+  @State() loading = true;
+  @State() template: ITemplate | null = null;
+
+  disconnectedCallback() {
+    this.unlistenToTemplate();
+  }
+
+  async listenToTemplate() {
+    this.unlistenToTemplate();
+    Store.subscribe(
+      'templates',
+      this.templateId,
+      () => getTemplate(this.endpoint, this.templateId),
+      false,
+      (template: ITemplate) => {
+        this.template = template;
+        this.loading = false;
+      },
+    );
+  }
+
+  unlistenToTemplate() {
+    if (this.templateListenerId) {
+      Store.store.delListener(this.templateListenerId);
+      this.templateListenerId = null;
+    }
+  }
 
   @Watch('templateId')
   onTemplateIdChanged(newTemplateId: string) {
     console.log('[BUILD_TABS] Template ID changed', newTemplateId);
-    this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
+    this.listenToTemplate();
   }
 
   @Watch('step')
   onStepChanged(newStep: TVerdocsBuildStep) {
     console.log('[BUILD_TABS] Step changed', newStep);
-    this.loadTemplate(this.templateId).catch((e: any) => console.log('Unknown Error', e));
   }
 
   async componentWillLoad() {
@@ -79,26 +105,15 @@ export class VerdocsTemplateBuildTabs {
         return;
       }
 
-      try {
-        this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
-      } catch (e) {
-        console.log('[BUILD_TABS] Error loading template', e);
-        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      }
+      this.listenToTemplate();
     } catch (e) {
       console.log('[BUILD_TABS] Error loading template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  async loadTemplate(templateId: string) {
-    if (templateId) {
-      this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
-    }
-  }
-
   setStep(e: any) {
-    console.log('Selected step', e.detail.tab.id);
+    console.log('[BUILD_TABS] Selected step', e.detail.tab.id);
     e.stopPropagation();
     e.preventDefault();
     this.step = e.detail.tab.id;
@@ -118,6 +133,14 @@ export class VerdocsTemplateBuildTabs {
   }
 
   render() {
+    if (this.loading) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
     if (!this.endpoint.session) {
       return (
         <Host>
@@ -126,14 +149,9 @@ export class VerdocsTemplateBuildTabs {
       );
     }
 
-    let canPreview = false;
-    let canEditFields = false;
-    let canEditRoles = false;
-    if (this.templateId && this.templateStore && this.templateStore.state) {
-      canEditRoles = this.templateStore?.state?.documents?.length > 0;
-      canEditFields = canEditRoles && this.templateStore?.state?.roles?.length > 0;
-      canPreview = canEditFields && this.templateStore?.state?.fields?.length > 0;
-    }
+    const canEditRoles = (this.template?.documents || []).length > 0;
+    let canEditFields = canEditRoles && (this.template?.roles || []).length > 0;
+    const canPreview = canEditFields && (this.template?.fields || []).length > 0;
 
     let selectedStepIndex = Math.max(STEPS.indexOf(this.step), 0);
     if (!canPreview && selectedStepIndex >= 4) {
@@ -172,19 +190,19 @@ export class VerdocsTemplateBuildTabs {
                 </div>
                 <div class="row">
                   <label>Name:</label>
-                  <div class="value">{this.templateStore?.state?.name}</div>
+                  <div class="value">{this.template?.name}</div>
                 </div>
                 <div class="row">
                   <label>Visibility:</label>
-                  <div class="value">{this.templateStore?.state?.is_public ? 'Public' : this.templateStore?.state?.is_personal ? 'Private' : 'Shared'}</div>
+                  <div class="value">{this.template?.is_public ? 'Public' : this.template?.is_personal ? 'Private' : 'Shared'}</div>
                 </div>
                 <div class="row">
                   <label>Created:</label>
-                  <div class="value">{this.templateStore?.state?.counter ? format(new Date(this.templateStore?.state?.created_at), 'P p') : ''}</div>
+                  <div class="value">{this.template?.counter ? format(new Date(this.template?.created_at), 'P p') : ''}</div>
                 </div>
                 <div class="row">
                   <label>Used:</label>
-                  <div class="value">{this.templateStore?.state?.counter} time(s)</div>
+                  <div class="value">{this.template?.counter} time(s)</div>
                 </div>
               </div>
             </verdocs-button-panel>

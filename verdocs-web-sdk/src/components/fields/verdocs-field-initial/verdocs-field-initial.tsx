@@ -1,8 +1,7 @@
 import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {SettingsIcon} from '../../../utils/Icons';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Displays an initial field. If an initial already exists, it will be displayed and the field
@@ -20,9 +19,14 @@ import {SettingsIcon} from '../../../utils/Icons';
 })
 export class VerdocsFieldInitial {
   /**
-   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
-  @Prop({reflect: true}) templateid: string = '';
+  @Prop({reflect: true}) source: 'template' | 'envelope' = 'template';
+
+  /**
+   * The source template or envelope ID the field is found in.
+   */
+  @Prop({reflect: true}) sourceid: string = '';
 
   /**
    * The name of the field to display.
@@ -112,14 +116,6 @@ export class VerdocsFieldInitial {
   @State()
   tempInitials: string = '';
 
-  fieldStore: TTemplateFieldStore = null;
-  roleStore: TTemplateRoleStore = null;
-
-  async componentWillLoad() {
-    this.fieldStore = getTemplateFieldStore(this.templateid);
-    this.roleStore = getTemplateRoleStore(this.templateid);
-  }
-
   private dialog?: any;
 
   hideDialog() {
@@ -162,13 +158,12 @@ export class VerdocsFieldInitial {
   }
 
   render() {
-    const {templateid, fieldname = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
-    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', value = '', label = ''} = field || {};
-    const {base64} = field.settings || {};
-
-    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+    const {index, field} = Store.getField(source, sourceid, fieldname);
+    const {required = false, value = '', label = '', settings = {}} = field || {};
+    const backgroundColor = getRGBA(index);
+    const {base64} = settings;
 
     if (done) {
       return <Host class={{done}}>{value && <img src={value} alt="Initial" />}</Host>;
@@ -196,7 +191,7 @@ export class VerdocsFieldInitial {
             {this.showingProperties && (
               <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={templateid}
+                  templateId={sourceid}
                   fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {

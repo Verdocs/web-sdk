@@ -1,11 +1,11 @@
+import type {IEnvelope, IEnvelopeField, IRecipient} from '@verdocs/js-sdk';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {updateEnvelopeField, sortFields, submitKbaIdentity, submitKbaChallengeResponse} from '@verdocs/js-sdk';
-import {fullNameToInitials, startSigningSession, IEnvelope, IEnvelopeField, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
-import {getEnvelope, integerSequence, IRecipient, isValidEmail, isValidPhone, submitKbaPin, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
+import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
+import {getEnvelope, integerSequence, isValidEmail, isValidPhone, submitKbaPin, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
-import {createTemplateFieldStoreFromEnvelope} from '../../../utils/TemplateFieldStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -93,7 +93,6 @@ export class VerdocsSign {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
-  @State() envelope: IEnvelope | null = null;
   @State() roleNames: string[] = [];
   @State() sortedRecipients: IRecipient[] = [];
   @State() recipient: IRecipient | null = null;
@@ -116,6 +115,9 @@ export class VerdocsSign {
   @State() kbaQuestions: any[] = [];
   @State() showSpinner = false;
   @State() kbaChoices = [];
+
+  @State() loading = true;
+  @State() envelope: IEnvelope | null = null;
 
   recipientIndex: number = -1;
 
@@ -145,13 +147,13 @@ export class VerdocsSign {
     try {
       console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
 
+      // NOTE: We don't listen to the store here because we are often an independent
+      // session and might have a different "view" of the envelope.
       const {envelope, recipient} = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
       console.log(`[SIGN] Loaded signing session`, envelope, recipient);
-
       this.recipient = recipient;
       this.envelope = envelope;
 
-      createTemplateFieldStoreFromEnvelope(this.envelope);
       this.sortedRecipients = [...this.envelope.recipients];
       this.sortedRecipients.sort((a, b) => {
         return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
@@ -577,7 +579,7 @@ export class VerdocsSign {
         this.updateRecipientFieldValue(field.name, updateResult);
         this.checkRecipientFields();
 
-        const newEl = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
+        const newEl = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
         this.attachFieldAttributes(pageInfo, field, newEl);
 
         this.showSpinner = false;
@@ -596,7 +598,7 @@ export class VerdocsSign {
         this.updateRecipientFieldValue(field.name, updateResult);
         this.checkRecipientFields();
 
-        const newEl = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
+        const newEl = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
         this.attachFieldAttributes(pageInfo, field, newEl);
 
         this.showSpinner = false;
@@ -640,7 +642,7 @@ export class VerdocsSign {
         return;
       }
 
-      const el = renderDocumentField(field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
+      const el = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
       if (!el) {
         return;
       }
@@ -659,7 +661,7 @@ export class VerdocsSign {
         this.getRecipientFields()
           .filter(field => field.page === pageInfo.pageNumber)
           .forEach(field => {
-            const el = renderDocumentField(field, pageInfo, {disabled: true, editable: false, draggable: false, done: this.isDone});
+            const el = renderDocumentField('envelope', field, pageInfo, {disabled: true, editable: false, draggable: false, done: this.isDone});
             if (!el) {
               return;
             }
@@ -717,7 +719,7 @@ export class VerdocsSign {
     if (this.isDone) {
       return (
         <Host class={{agreed: this.agreed}}>
-          <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} envelope={this.envelope} onSdkError={e => this.sdkError?.emit(e.detail)} />
+          <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
 
           {this.showDone && (
             <verdocs-ok-dialog
@@ -983,7 +985,6 @@ export class VerdocsSign {
                   // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
                   // future signers still need to act. Once we're "done" we flip to showing the envelope's documents which have the final
                   // field vales (so far) stamped into them.
-                  // const templatePage = EnvelopeStore.template?.pages.find(p => p.sequence === page.sequence);
                   // TODO: Confirm that a pure page-number match is good enough to find the matching template page. We need to make sure
                   //  we either don't reset our page numbers for additional attachments, or add match-on identifiers to work around that.
                   // console.log('tp', templatePage, page);

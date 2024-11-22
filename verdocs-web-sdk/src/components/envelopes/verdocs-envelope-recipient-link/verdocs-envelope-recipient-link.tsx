@@ -1,8 +1,8 @@
 import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/core';
-import {formatFullName, getInPersonLink, IEnvelope, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getEnvelopeStore, TEnvelopeStore} from '../../../utils/EnvelopeStore';
+import {formatFullName, getEnvelope, getInPersonLink, IEnvelope, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Displays a single recipient from an envelope, with the opportunity to copy an in-person
@@ -13,6 +13,8 @@ import {SDKError} from '../../../utils/errors';
   styleUrl: 'verdocs-envelope-recipient-link.scss',
 })
 export class VerdocsEnvelopeRecipientLink {
+  private envelopeListenerId = null;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -41,12 +43,12 @@ export class VerdocsEnvelopeRecipientLink {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() isOpen: boolean;
-  @State() loading = true;
   @State() gettingLink = true;
   @State() link = '';
 
-  store: TEnvelopeStore | null = null;
-  recipient: IRecipient | null = null;
+  @State() loading = true;
+  @State() envelope: IEnvelope | null = null;
+  @State() recipient: IRecipient | null = null;
 
   async componentWillLoad() {
     try {
@@ -62,22 +64,45 @@ export class VerdocsEnvelopeRecipientLink {
         return;
       }
 
-      this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
-      this.loading = false;
-      this.gettingLink = true;
-
-      this.recipient = this.store?.state?.recipients?.find(r => r.role_name === this.roleName);
-
-      this.getLink(this.recipient);
+      this.listenToEnvelope();
     } catch (e) {
       console.log('[RECIPIENT_LINK] Error loading envelope', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
+  disconnectedCallback() {
+    this.unlistenToEnvelope();
+  }
+
+  async listenToEnvelope() {
+    console.log('[SIDEBAR] Loading envelope', this.envelopeId);
+    this.unlistenToEnvelope();
+    Store.subscribe(
+      'envelopes',
+      this.envelopeId,
+      () => getEnvelope(this.endpoint, this.envelopeId),
+      false,
+      (envelope: IEnvelope) => {
+        this.envelope = envelope;
+        this.loading = false;
+
+        this.recipient = (this.envelope?.recipients || []).find(r => r.role_name === this.roleName);
+        this.getLink(this.recipient);
+      },
+    );
+  }
+
+  unlistenToEnvelope() {
+    if (this.envelopeListenerId) {
+      Store.store.delListener(this.envelopeListenerId);
+      this.envelopeListenerId = null;
+    }
+  }
+
   handleDone(e: any) {
     e.preventDefault();
-    this.next?.emit({envelope: this.store.state});
+    this.next?.emit({envelope: this.envelope});
   }
 
   copyLink(link: string) {

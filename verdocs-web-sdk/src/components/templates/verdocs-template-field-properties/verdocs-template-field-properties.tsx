@@ -1,9 +1,7 @@
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {deleteField, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
-import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
+import {deleteField, getTemplate, type ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -21,6 +19,8 @@ const HelpIcon =
   shadow: false,
 })
 export class VerdocsTemplateFieldProperties {
+  private templateListenerId = null;
+
   @Element()
   el: any;
 
@@ -67,8 +67,6 @@ export class VerdocsTemplateFieldProperties {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   @State() dirty: boolean = false;
-  @State() loading: boolean = true;
-
   @State() label = '';
   @State() type = 'textbox' as TFieldType;
   @State() name = '';
@@ -81,9 +79,36 @@ export class VerdocsTemplateFieldProperties {
   @State() defaultValue = '';
   @State() showingHelp = false;
 
-  templateStore: TTemplateStore | null = null;
-  fieldStore: TTemplateFieldStore | null = null;
-  roleStore: TTemplateRoleStore | null = null;
+  @State() loading = true;
+  @State() template: ITemplate | null = null;
+
+  disconnectedCallback() {
+    this.unlistenToTemplate();
+  }
+
+  async listenToTemplate() {
+    console.log('[SENT] Loading template', this.templateId);
+    this.unlistenToTemplate();
+    Store.subscribe(
+      'templates',
+      this.templateId,
+      () => getTemplate(this.endpoint, this.templateId),
+      false,
+      (template: ITemplate) => {
+        console.log('[SEND] Template Updated', template);
+        this.template = template;
+        this.loading = false;
+        this.resetForm();
+      },
+    );
+  }
+
+  unlistenToTemplate() {
+    if (this.templateListenerId) {
+      Store.store.delListener(this.templateListenerId);
+      this.templateListenerId = null;
+    }
+  }
 
   async componentWillLoad() {
     try {
@@ -104,11 +129,7 @@ export class VerdocsTemplateFieldProperties {
         return;
       }
 
-      this.templateStore = await getTemplateStore(this.endpoint, this.templateId);
-      this.fieldStore = getTemplateFieldStore(this.templateId);
-      this.roleStore = getTemplateRoleStore(this.templateId);
-
-      this.resetForm();
+      this.listenToTemplate();
     } catch (e) {
       console.log('[FIELD PROPERTIES] Error loading template', e);
       this.loading = false;
@@ -117,7 +138,7 @@ export class VerdocsTemplateFieldProperties {
   }
 
   resetForm() {
-    const field = this.fieldStore.get('fields').find(field => field.name === this.fieldName);
+    const field = (this.template?.fields || []).find(field => field.name === this.fieldName);
     if (!field) {
       console.log(`[FIELD PROPERTIES] Unable to find field "${this.fieldName}" in fields`);
       return;
@@ -162,11 +183,17 @@ export class VerdocsTemplateFieldProperties {
     this.cleanupOptions();
     console.log('[FIELD PROPERTIES] Will update', this.fieldName, newProperties);
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
-      .then(updated => {
-        console.log('[FIELD PROPERTIES] Updated', updated);
-        updateStoreField(this.fieldStore, this.fieldName, updated);
-        this.settingsChanged?.emit({fieldName: this.fieldName, field: updated});
+      .then(updatedField => {
+        console.log('[FIELD PROPERTIES] Updated', updatedField);
+        const newTemplate = JSON.parse(JSON.stringify(this.template));
+        const fieldIndex = newTemplate.fields.findIndex(field => field.name === this.fieldName);
+        if (fieldIndex > -1) {
+          newTemplate.fields[fieldIndex] = updatedField;
+        }
+        Store.updateTemplate(this.templateId, newTemplate);
+        this.settingsChanged?.emit({fieldName: this.fieldName, field: updatedField});
         this.close?.emit();
+
         document.getElementById('verdocs-template-field-properties')?.remove();
       })
       .catch(() => {
@@ -178,10 +205,9 @@ export class VerdocsTemplateFieldProperties {
     e.stopPropagation();
     deleteField(this.endpoint, this.templateId, this.fieldName)
       .then(() => {
-        this.fieldStore.set(
-          'fields',
-          this.fieldStore.get('fields').filter(field => field.name !== this.fieldName),
-        );
+        const newTemplate = JSON.parse(JSON.stringify(this.template));
+        newTemplate.fields = newTemplate.fields.filter(field => field.name !== this.fieldName);
+        Store.updateTemplate(this.templateId, newTemplate);
         this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
         document.getElementById('verdocs-template-field-properties')?.remove();
       })
@@ -198,7 +224,14 @@ export class VerdocsTemplateFieldProperties {
   }
 
   render() {
-    // console.log('Rendering field properties', this.fieldStore.get(this.fieldName));
+    if (this.loading) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
     if (!this.endpoint.session) {
       return (
         <Host>
@@ -208,7 +241,7 @@ export class VerdocsTemplateFieldProperties {
     }
 
     // This is meant to be a companion for larger visual experiences so we just go blank on errors for now.
-    if (!this.endpoint.session || !this.fieldStore.get('fields').some(field => field.name === this.fieldName)) {
+    if (!this.endpoint.session || !(this.template?.fields || []).some(field => field.name === this.fieldName)) {
       return <Host class="empty" />;
     }
 
@@ -269,7 +302,7 @@ export class VerdocsTemplateFieldProperties {
             <div class="input-label">Role:</div>
             <verdocs-select-input
               value={this.roleName}
-              options={this.roleStore.state?.roles.map(role => ({label: role.name, value: role.name}))}
+              options={(this.template?.roles || []).map(role => ({label: role.name, value: role.name}))}
               onInput={(e: any) => {
                 this.roleName = e.target.value;
                 this.dirty = true;

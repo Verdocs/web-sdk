@@ -1,10 +1,9 @@
 import {format} from 'date-fns/format';
 import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {SettingsIcon} from '../../../utils/Icons';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Display a timestamp. Timestamps are not editable by signers. Instead, they are automatically
@@ -19,9 +18,14 @@ export class VerdocsFieldTimestamp {
   private el: HTMLInputElement;
 
   /**
-   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
-  @Prop({reflect: true}) templateid: string = '';
+  @Prop({reflect: true}) source: 'template' | 'envelope' = 'template';
+
+  /**
+   * The source template or envelope ID the field is found in.
+   */
+  @Prop({reflect: true}) sourceid: string = '';
 
   /**
    * The name of the field to display.
@@ -97,21 +101,12 @@ export class VerdocsFieldTimestamp {
     this.showingProperties = false;
   }
 
-  fieldStore: TTemplateFieldStore = null;
-  roleStore: TTemplateRoleStore = null;
-
-  async componentWillLoad() {
-    this.fieldStore = getTemplateFieldStore(this.templateid);
-    this.roleStore = getTemplateRoleStore(this.templateid);
-  }
-
   render() {
-    const {templateid, fieldname = '', editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
 
-    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', placeholder = '', value = '', label = ''} = field || {};
-
-    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+    const {index, field} = Store.getField(source, sourceid, fieldname);
+    const {required = false, placeholder = '', value = '', label = ''} = field || {};
+    const backgroundColor = getRGBA(index);
 
     const formatted = format(new Date(value || new Date().toISOString()), FORMAT_TIMESTAMP);
 
@@ -140,7 +135,7 @@ export class VerdocsFieldTimestamp {
             {this.showingProperties && (
               <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={templateid}
+                  templateId={sourceid}
                   fieldName={fieldname}
                   onClose={() => this.hideSettingsPanel()}
                   onDelete={() => {

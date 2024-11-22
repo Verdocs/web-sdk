@@ -5,7 +5,7 @@ export default {
   title: 'Dialogs/KBA Dialog',
   component: 'verdocs-kba-dialog',
   args: {
-    mode: 'choice',
+    mode: 'identity',
     helptitle: 'Previous Addresses',
     helptext: 'Please select the address below that you have most recently lived at.',
     label: 'Enter Your PIN:',
@@ -13,11 +13,17 @@ export default {
     step: 1,
     steps: 3,
     choices: ['553 Arbor Dr', '18 Lacey Ln', '23A Ball Ct', '2375 Cavallo Blvd', '23-1 RR-7', '151 Boulder Rd'],
+    recipient: {
+      first_name: 'John',
+      last_name: 'Smith',
+      address: '18 Lacey Ln',
+      zip: '12345',
+    },
   },
   argTypes: {
     mode: {
       control: 'select',
-      options: ['text', 'choice'],
+      options: ['text', 'choice', 'identity'],
       description: 'Choose between text-input and multiple-choice responses.',
     },
     onNext: {
@@ -31,7 +37,7 @@ export default {
   },
 } as Meta;
 
-export const KBADialog = ({helptitle, helptext, label, placeholder, mode, step, steps, choices, onNext, onExit}) =>
+export const KBADialog = ({helptitle, helptext, label, placeholder, mode, recipient, step, steps, choices, onNext, onExit}) =>
   html`<div style="width: 500px; height: 500px;">
     <verdocs-kba-dialog
       .mode=${mode}
@@ -42,6 +48,7 @@ export const KBADialog = ({helptitle, helptext, label, placeholder, mode, step, 
       .step=${step}
       .steps=${steps}
       .choices=${choices}
+      .recipient=${recipient}
       @next=${onNext}
       @exit=${onExit}
     />

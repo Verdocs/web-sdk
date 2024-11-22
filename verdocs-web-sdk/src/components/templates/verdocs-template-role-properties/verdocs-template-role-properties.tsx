@@ -1,9 +1,7 @@
 import {Component, Prop, h, Event, EventEmitter, Host, State} from '@stencil/core';
-import {deleteTemplateRole, isValidEmail, TRecipientType, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {deleteStoreRole, getTemplateRoleStore, TTemplateRoleStore, updateStoreRole} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
+import {deleteTemplateRole, getTemplate, isValidEmail, ITemplate, TRecipientType, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#a50021"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>`;
 
@@ -15,6 +13,8 @@ const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="
   styleUrl: 'verdocs-template-role-properties.scss',
 })
 export class VerdocsTemplateRoleProperties {
+  private templateListenerId = null;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -57,48 +57,72 @@ export class VerdocsTemplateRoleProperties {
   @State() phone = '';
   @State() delegator = false;
 
-  templateStore: TTemplateStore | null = null;
-  fieldStore: TTemplateFieldStore | null = null;
-  roleStore: TTemplateRoleStore | null = null;
+  @State() loading = true;
+  @State() template: ITemplate | null = null;
 
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
 
       if (!this.templateId) {
-        console.log(`[ROLE_PROPERTIES] Missing required template ID ${this.templateId}`);
+        console.log(`[ROLES] Missing required template ID ${this.templateId}`);
         return;
       }
 
       if (!this.endpoint.session) {
-        console.log('[ROLE_PROPERTIES] Unable to start builder session, must be authenticated');
+        console.log('[ROLES] Unable to start builder session, must be authenticated');
         return;
       }
 
-      this.templateStore = await getTemplateStore(this.endpoint, this.templateId, false);
-      this.fieldStore = getTemplateFieldStore(this.templateId);
-      this.roleStore = getTemplateRoleStore(this.templateId);
-
-      const editingRole = this.roleStore.state.roles.find(role => role.name === this.roleName);
-      if (editingRole) {
-        this.name = editingRole.name;
-        this.type = editingRole.type;
-        this.first_name = editingRole.first_name;
-        this.last_name = editingRole.last_name;
-        this.email = editingRole.email;
-        this.phone = editingRole.phone;
-        this.delegator = editingRole.delegator;
-        console.log('[ROLE_PROPERTIES] Editing role', editingRole);
-      }
+      this.listenToTemplate();
     } catch (e) {
-      console.log('[ROLE_PROPERTIES Error with preview session', e);
+      console.log('[ROLES Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+  }
+
+  disconnectedCallback() {
+    this.unlistenToTemplate();
+  }
+
+  async listenToTemplate() {
+    console.log('[ROLES] Loading tempate', this.templateId);
+    this.unlistenToTemplate();
+    Store.subscribe(
+      'templates',
+      this.templateId,
+      () => getTemplate(this.endpoint, this.templateId),
+      false,
+      (template: ITemplate) => {
+        console.log('[BUILD] Template Updated', template);
+        this.template = template;
+        this.loading = false;
+
+        const editingRole = this.template?.roles.find(role => role.name === this.roleName);
+        if (editingRole) {
+          this.name = editingRole.name;
+          this.type = editingRole.type;
+          this.first_name = editingRole.first_name;
+          this.last_name = editingRole.last_name;
+          this.email = editingRole.email;
+          this.phone = editingRole.phone;
+          this.delegator = editingRole.delegator;
+          console.log('[ROLES] Editing role', editingRole);
+        }
+      },
+    );
+  }
+
+  unlistenToTemplate() {
+    if (this.templateListenerId) {
+      Store.store.delListener(this.templateListenerId);
+      this.templateListenerId = null;
     }
   }
 
   handleCancel(e) {
     e.stopPropagation();
-    const editingRole = this.roleStore.state.roles.find(role => role.name === this.roleName);
+    const editingRole = this.template?.roles.find(role => role.name === this.roleName);
     if (editingRole) {
       this.name = editingRole.name;
       this.type = editingRole.type;
@@ -126,14 +150,19 @@ export class VerdocsTemplateRoleProperties {
       delegator: this.delegator,
     })
       .then(async r => {
-        console.log('[ROLE_PROPERTIES] Update result', r);
+        console.log('[ROLES] Update result', r);
         this.saving = false;
         this.dirty = false;
-        updateStoreRole(this.roleStore, this.roleName, r);
+        const newTemplate = JSON.parse(JSON.stringify(this.template));
+        const roleIndex = newTemplate.roles.findIndex(role => role.name === this.roleName);
+        if (roleIndex > -1) {
+          newTemplate.roles[roleIndex] = r;
+        }
+        Store.updateTemplate(this.templateId, newTemplate);
         this.close?.emit();
       })
       .catch(e => {
-        console.log('[ROLE_PROPERTIES Update error', e);
+        console.log('[ROLES Update error', e);
         this.saving = false;
       });
   }
@@ -143,17 +172,19 @@ export class VerdocsTemplateRoleProperties {
     if (window.confirm('Are you sure you wish to remove this role? All associated fields will be removed as well. This action cannot be undone.')) {
       deleteTemplateRole(this.endpoint, this.templateId, this.roleName)
         .then(() => {
-          deleteStoreRole(this.roleStore, this.roleName);
+          const newTemplate = JSON.parse(JSON.stringify(this.template)) as ITemplate;
+          newTemplate.roles = newTemplate.roles.filter(role => role.name !== this.roleName);
+          Store.updateTemplate(this.templateId, newTemplate);
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
         })
         .catch(e => {
-          console.log('[ROLE_PROPERTIES Deletion error', e);
+          console.log('[ROLES Deletion error', e);
         });
     }
   }
 
   render() {
-    const hasFields = this.fieldStore.get('fields').some(field => field.role_name === this.roleName);
+    const hasFields = (this.template?.fields || []).some(field => field.role_name === this.roleName);
 
     // Either all three should be empty, or all three need to be filled
     const isValid = (!this.email && !this.first_name && !this.last_name) || (isValidEmail(this.email) && !!this.first_name && !!this.last_name);

@@ -1,10 +1,11 @@
 import {format} from 'date-fns';
+import type {IEnvelope, IRecipient} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
-import {cancelEnvelope, capitalize, formatFullName, IEnvelope, IRecipient, resendInvitation, updateEnvelope, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getEnvelopeStore, TEnvelopeStore, updateStoreEnvelope} from '../../../utils/EnvelopeStore';
+import {cancelEnvelope, capitalize, formatFullName, getEnvelope, resendInvitation, updateEnvelope, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -53,6 +54,8 @@ interface IHistoryEntry {
   shadow: false,
 })
 export class VerdocsEnvelopeSidebar {
+  private envelopeListenerId = null;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -92,14 +95,14 @@ export class VerdocsEnvelopeSidebar {
   @State() panelOpen = false;
   @State() showRecipientDialog = '';
   @State() showCancelDialog = false;
-  @State() loading = true;
 
   @State() remindersEnabled = false;
   @State() updatingReminders = false;
   @State() initialReminder: number | null = null;
   @State() followupReminders: number | null = null;
 
-  store: TEnvelopeStore | null = null;
+  @State() loading = true;
+  @State() envelope: IEnvelope | null = null;
 
   async componentWillLoad() {
     try {
@@ -115,21 +118,46 @@ export class VerdocsEnvelopeSidebar {
         return;
       }
 
-      this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
-      this.sortEnvelopeRecipients();
-      this.initialReminder = this.store?.state?.initial_reminder;
-      this.followupReminders = this.store?.state?.followup_reminders;
-      this.remindersEnabled = !!this.initialReminder;
-
-      this.loading = false;
+      this.listenToEnvelope();
     } catch (e) {
       console.log('[SIDEBAR] Error loading envelope', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
+  disconnectedCallback() {
+    this.unlistenToEnvelope();
+  }
+
+  async listenToEnvelope() {
+    console.log('[SIDEBAR] Loading envelope', this.envelopeId);
+    this.unlistenToEnvelope();
+    Store.subscribe(
+      'envelopes',
+      this.envelopeId,
+      () => getEnvelope(this.endpoint, this.envelopeId),
+      false,
+      (envelope: IEnvelope) => {
+        this.envelope = envelope;
+        this.loading = false;
+
+        this.sortEnvelopeRecipients();
+        this.initialReminder = this.envelope?.initial_reminder;
+        this.followupReminders = this.envelope?.followup_reminders;
+        this.remindersEnabled = !!this.initialReminder;
+      },
+    );
+  }
+
+  unlistenToEnvelope() {
+    if (this.envelopeListenerId) {
+      Store.store.delListener(this.envelopeListenerId);
+      this.envelopeListenerId = null;
+    }
+  }
+
   sortEnvelopeRecipients() {
-    this.store?.state?.recipients.sort((a, b) => {
+    (this.envelope?.recipients || []).sort((a, b) => {
       return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
     });
   }
@@ -144,7 +172,7 @@ export class VerdocsEnvelopeSidebar {
   canResendRecipient(recipient: IRecipient) {
     return (
       !['pending', 'declined', 'submitted', 'canceled'].includes(recipient.status) && //
-      !['complete', 'declined', 'canceled'].includes(this.store?.state?.status)
+      !['complete', 'declined', 'canceled'].includes(this.envelope?.status)
     );
   }
 
@@ -175,7 +203,7 @@ export class VerdocsEnvelopeSidebar {
         break;
     }
 
-    this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.store?.state, event: id});
+    this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: id});
   }
 
   handleCancelEnvelope() {
@@ -185,11 +213,14 @@ export class VerdocsEnvelopeSidebar {
         console.log('[SIDEBAR] Envelope canceled', r);
         VerdocsToast('Envelope canceled', {style: 'success'});
 
-        this.store = await getEnvelopeStore(this.endpoint, this.envelopeId, true);
-        this.sortEnvelopeRecipients();
+        // TODO: Use returned value instead?
+        const newEnvelope = JSON.parse(JSON.stringify(this.envelope));
+        newEnvelope.status = 'canceled';
+        Store.updateEnvelope(this.envelopeId, newEnvelope);
+
         this.loading = false;
         this.panelOpen = false;
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.store?.state, event: 'canceled'});
+        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: newEnvelope, event: 'canceled'});
       })
       .catch(e => {
         console.log('[SIDEBAR] Error canceling envelope', e);
@@ -200,23 +231,23 @@ export class VerdocsEnvelopeSidebar {
 
   prepareHistoryEntries() {
     const entries: IHistoryEntry[] = [];
-    const histories = this.store?.state?.history_entries || [];
+    const histories = this.envelope?.history_entries || [];
 
-    entries.push({icon: 'pencil', message: 'Envelope created.', date: new Date(this.store?.state?.created_at)});
+    entries.push({icon: 'pencil', message: 'Envelope created.', date: new Date(this.envelope?.created_at)});
 
-    if (this.store?.state?.status === 'complete') {
-      entries.push({icon: 'pencil', message: 'Envelope completed.', date: new Date(this.store?.state?.updated_at)});
+    if (this.envelope?.status === 'complete') {
+      entries.push({icon: 'pencil', message: 'Envelope completed.', date: new Date(this.envelope?.updated_at)});
     }
 
     // TODO: Shift back to server-side generating these events? We'll still need
     // to tolerate both cases here for a while.
     const ownerCanceled = histories.some(history => (history.event as any) === 'owner:canceled');
-    if (this.store?.state?.status === 'canceled' && !ownerCanceled) {
-      entries.push({icon: 'pencil', message: 'Envelope Cancelled.', date: new Date(this.store?.state?.canceled_at)});
+    if (this.envelope?.status === 'canceled' && !ownerCanceled) {
+      entries.push({icon: 'pencil', message: 'Envelope Cancelled.', date: new Date(this.envelope?.canceled_at)});
     }
 
     histories.forEach(history => {
-      const recipient = this.store.state?.recipients.find(recipient => recipient.role_name === history.role_name);
+      const recipient = (this.envelope?.recipients || []).find(recipient => recipient.role_name === history.role_name);
       const fullName = formatFullName(recipient);
 
       switch (history.event.toLowerCase()) {
@@ -332,7 +363,7 @@ export class VerdocsEnvelopeSidebar {
   // canModify(recipient: IRecipient) {
   //   const invalidRecipientStatus = ['declined', 'signed', 'submitted', 'canceled'];
   //   const invalidEnvelopeStatus = ['complete', 'declined', 'canceled'];
-  //   return recipient.claimed !== true && invalidRecipientStatus.indexOf(recipient.status) === -1 && invalidEnvelopeStatus.indexOf(this.store?.state?.status) === -1;
+  //   return recipient.claimed !== true && invalidRecipientStatus.indexOf(recipient.status) === -1 && invalidEnvelopeStatus.indexOf(this.envelope?.status) === -1;
   // }
 
   handleToggleReminders() {
@@ -350,7 +381,7 @@ export class VerdocsEnvelopeSidebar {
     updateEnvelope(this.endpoint, this.envelopeId, {initial_reminder, followup_reminders})
       .then(envelope => {
         console.log('Updated', envelope);
-        updateStoreEnvelope(this.store, envelope);
+        Store.updateEnvelope(this.envelopeId, envelope);
         this.initialReminder = envelope.initial_reminder;
         this.followupReminders = envelope.followup_reminders;
         this.remindersEnabled = !!envelope.initial_reminder;
@@ -358,22 +389,23 @@ export class VerdocsEnvelopeSidebar {
       })
       .catch(e => {
         console.log('Error updating envelope', e);
-        this.initialReminder = this.store?.state?.initial_reminder;
-        this.followupReminders = this.store?.state?.followup_reminders;
-        this.remindersEnabled = !!this.store?.state?.initial_reminder;
+        this.initialReminder = this.envelope?.initial_reminder;
+        this.followupReminders = this.envelope?.followup_reminders;
+        this.remindersEnabled = !!this.envelope?.initial_reminder;
         this.updatingReminders = false;
         alert(e.response.data.error);
       });
   }
 
   render() {
-    if (!this.store.state) {
+    if (this.loading) {
+      // We don't show a loading indicator for the sidebar, to avoid FOUS
       return <Host />;
     }
 
-    const isEnvelopeOwner = userIsEnvelopeOwner(this.endpoint.profile, this.store.state);
+    const isEnvelopeOwner = userIsEnvelopeOwner(this.endpoint.profile, this.envelope);
     const historyEntries = this.prepareHistoryEntries();
-    const functionsDisabled = this.store?.state?.status !== 'pending' && this.store?.state?.status !== 'in progress';
+    const functionsDisabled = this.envelope?.status !== 'pending' && this.envelope?.status !== 'in progress';
 
     return (
       <Host class={this.panelOpen ? 'open' : ''}>
@@ -388,32 +420,32 @@ export class VerdocsEnvelopeSidebar {
             <div class="title">Details</div>
 
             <div class="label">Envelope ID</div>
-            <div class="value">{this.store?.state?.id}</div>
+            <div class="value">{this.envelope?.id}</div>
 
             <div class="label">Date Created</div>
-            <div class="value">{format(new Date(this.store?.state?.created_at), FORMAT_TIMESTAMP)}</div>
+            <div class="value">{format(new Date(this.envelope?.created_at), FORMAT_TIMESTAMP)}</div>
 
             <div class="label">Last Modified</div>
-            <div class="value">{format(new Date(this.store?.state?.updated_at), FORMAT_TIMESTAMP)}</div>
+            <div class="value">{format(new Date(this.envelope?.updated_at), FORMAT_TIMESTAMP)}</div>
 
             <div class="label">Status</div>
-            <div class="value">{capitalize(this.store?.state?.status)}</div>
+            <div class="value">{capitalize(this.envelope?.status)}</div>
 
             <div class="label">Owner ID</div>
-            <div class="value">{this.store?.state?.profile_id}</div>
+            <div class="value">{this.envelope?.profile_id}</div>
 
             <div class="label">Owner Name</div>
-            <div class="value">{formatFullName(this.store?.state?.profile)}</div>
+            <div class="value">{formatFullName(this.envelope?.profile)}</div>
 
             <div class="label">Owner Email</div>
-            <div class="value">{this.store?.state?.profile?.email}</div>
+            <div class="value">{this.envelope?.profile?.email}</div>
           </div>
         )}
 
         {this.activeTab === 2 && (
           <div class="content">
             <div class="title">Recipients</div>
-            {this.store?.state?.recipients.map((recipient, index) => {
+            {this.envelope?.recipients.map((recipient, index) => {
               const canGetInPersonLink = recipient.status !== 'submitted' && recipient.status !== 'canceled' && recipient.status !== 'declined';
               const canSendReminder = this.canResendRecipient(recipient);
               const fullName = formatFullName(recipient);
@@ -483,7 +515,7 @@ export class VerdocsEnvelopeSidebar {
                     </div>
                     <div class="form-row">
                       <div class="form-label">Next Reminder:</div>
-                      <div style={{color: '#dddddd'}}>{format(new Date(this.store?.state?.next_reminder), 'P p')}</div>
+                      <div style={{color: '#dddddd'}}>{format(new Date(this.envelope?.next_reminder), 'P p')}</div>
                     </div>
                   </Fragment>
                 )}

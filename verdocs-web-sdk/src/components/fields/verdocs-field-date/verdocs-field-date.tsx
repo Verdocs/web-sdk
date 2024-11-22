@@ -4,12 +4,9 @@ import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
 import type {ITemplateField} from '@verdocs/js-sdk';
 import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import type {TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
-import type {TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {SettingsIcon} from '../../../utils/Icons';
 import {FORMAT_DATE} from '../../../utils/Types';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Displays a date field. When tapped or clicked, the input element will display a date picker component.
@@ -24,9 +21,14 @@ export class VerdocsFieldDate {
   private hostEl: HTMLInputElement;
 
   /**
-   * The template the field is for/from. Only required for the field builder, passed down to the properties component.
+   * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
-  @Prop({reflect: true}) templateid: string = '';
+  @Prop({reflect: true}) source: 'template' | 'envelope' = 'template';
+
+  /**
+   * The source template or envelope ID the field is found in.
+   */
+  @Prop({reflect: true}) sourceid: string = '';
 
   /**
    * The name of the field to display.
@@ -103,19 +105,7 @@ export class VerdocsFieldDate {
     }, 500);
   }
 
-  fieldStore: TTemplateFieldStore = null;
-  roleStore: TTemplateRoleStore = null;
   picker: AirDatepicker<HTMLElement> | null = null;
-
-  async componentWillLoad() {
-    if (this.field) {
-      const ts = getTemplateFieldStore(this.templateid);
-      ts.set('fields', [...ts.get('fields'), this.field]);
-    }
-
-    this.fieldStore = getTemplateFieldStore(this.templateid);
-    this.roleStore = getTemplateRoleStore(this.templateid);
-  }
 
   componentDidLoad() {
     this.picker = new AirDatepicker<HTMLElement>(`#${this.containerId}`, {
@@ -151,12 +141,11 @@ export class VerdocsFieldDate {
 
   // NOTE: We don't use a "date" field here because browsers vary widely in their formatting of it.
   render() {
-    const {templateid, fieldname = '', containerId = '', editable = false, focused, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
-    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {required = false, role_name = '', placeholder = 'Date...', value = '', label = ''} = field || {};
-
-    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
+    const {index, field} = Store.getField(source, sourceid, fieldname);
+    const {required = false, placeholder = 'Date...', value = '', label = ''} = field || {};
+    const backgroundColor = getRGBA(index);
 
     const formattedValue = value ? format(new Date(value), FORMAT_DATE) : '';
 
@@ -173,7 +162,7 @@ export class VerdocsFieldDate {
           class="input-el"
           type="text"
           value={formattedValue}
-          id={containerId}
+          id={fieldname}
           disabled={disabled}
           placeholder={placeholder}
           onFocus={() => (this.focused = true)}
@@ -196,7 +185,7 @@ export class VerdocsFieldDate {
             {this.showingProperties && (
               <verdocs-portal anchor={`verdocs-settings-panel-trigger-${field.name}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={templateid}
+                  templateId={sourceid}
                   fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {

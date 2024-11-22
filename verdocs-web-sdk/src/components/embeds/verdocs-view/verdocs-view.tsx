@@ -1,8 +1,8 @@
 import {cancelEnvelope, getDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, userCanCancelEnvelope, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {saveEnvelopesAsZip} from '../../../utils/utils';
-// import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Render the documents attached to an envelope in read-only (view) mode. All documents are
@@ -21,6 +21,8 @@ import {SDKError} from '../../../utils/errors';
   shadow: false,
 })
 export class VerdocsView {
+  private envelopeListenerId = null;
+
   @Element() component: HTMLElement;
 
   /**
@@ -32,11 +34,6 @@ export class VerdocsView {
    * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
    */
   @Prop() envelopeId: string = '';
-
-  /**
-   * If the envelope is already loaded, the parent may pass it in directly.
-   */
-  @Prop({mutable: true}) envelope: IEnvelope | null = null;
 
   /**
    * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this
@@ -78,9 +75,11 @@ export class VerdocsView {
    */
   @Event({composed: true}) next: EventEmitter;
   @State() canceling = false;
-  @State() roleNames: string[] = [];
   @State() showCancelDone = false;
   @State() showLoadError = false;
+
+  @State() loading = true;
+  @State() envelope: IEnvelope | null = null;
 
   async componentWillLoad() {
     if (!this.endpoint) {
@@ -93,12 +92,12 @@ export class VerdocsView {
       return;
     }
 
+    this.listenToEnvelope();
     if (!this.envelope) {
       try {
         console.log('[VIEW] Loading envelope...');
         this.envelope = await getEnvelope(this.endpoint, this.envelopeId);
         console.log('[VIEW] Loaded envelope', this.envelope);
-        this.roleNames = this.envelope.recipients.map(r => r.role_name);
       } catch (e) {
         this.showLoadError = true;
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -113,6 +112,32 @@ export class VerdocsView {
       console.log('[VIEW] Moving header');
       headerEl.remove();
       headerTarget.append(headerEl);
+    }
+  }
+
+  disconnectedCallback() {
+    this.unlistenToEnvelope();
+  }
+
+  async listenToEnvelope() {
+    console.log('[SIDEBAR] Loading envelope', this.envelopeId);
+    this.unlistenToEnvelope();
+    Store.subscribe(
+      'envelopes',
+      this.envelopeId,
+      () => getEnvelope(this.endpoint, this.envelopeId),
+      false,
+      (envelope: IEnvelope) => {
+        this.envelope = envelope;
+        this.loading = false;
+      },
+    );
+  }
+
+  unlistenToEnvelope() {
+    if (this.envelopeListenerId) {
+      Store.store.delListener(this.envelopeListenerId);
+      this.envelopeListenerId = null;
     }
   }
 
@@ -194,6 +219,14 @@ export class VerdocsView {
   }
 
   render() {
+    if (this.loading) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
     if (this.showLoadError) {
       return (
         <Host>

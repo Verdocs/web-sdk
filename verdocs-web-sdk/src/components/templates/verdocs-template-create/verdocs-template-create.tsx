@@ -1,6 +1,5 @@
 import {createTemplate, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
-import {getTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
 
 const FileIcon =
@@ -110,17 +109,11 @@ export class VerdocsTemplateCreate {
       );
 
       console.log('[CREATE] Created template', template);
-      getTemplateStore(this.endpoint, template.id, true)
-        .then(() => {
-          this.templateCreated?.emit({endpoint: this.endpoint, template, templateId: template.id});
-          this.next?.emit(template);
-          this.creating = false;
-          this.progressLabel = '';
-          this.progressPercent = 0;
-        })
-        .catch(e => {
-          console.log(e);
-        });
+      this.templateCreated?.emit({endpoint: this.endpoint, template, templateId: template.id});
+      this.next?.emit(template);
+      this.creating = false;
+      this.progressLabel = '';
+      this.progressPercent = 0;
     } catch (e) {
       console.log('[CREATE] Error creating template', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));

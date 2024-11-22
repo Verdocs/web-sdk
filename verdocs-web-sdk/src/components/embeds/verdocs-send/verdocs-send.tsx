@@ -1,11 +1,11 @@
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method, Watch} from '@stencil/core';
-import type {ICreateEnvelopeFromTemplateRequest, ICreateEnvelopeRecipient, IEnvelope, IRecipient} from '@verdocs/js-sdk';
-import {createEnvelope, formatFullName, getOrganizationContacts, getRGBA, isValidEmail, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getRoleIndex, getRoleNames, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
+import {createEnvelope, formatFullName, getTemplate, getOrganizationContacts, getRGBA, isValidEmail, VerdocsEndpoint} from '@verdocs/js-sdk';
+import type {ICreateEnvelopeFromTemplateRequest, ICreateEnvelopeRecipient, IEnvelope, IRecipient, ITemplate} from '@verdocs/js-sdk';
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
-import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
+import {getRoleIndex, getRoleNames} from '../../../utils/Templates';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 const editIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>';
@@ -42,6 +42,8 @@ const doneIcon =
   shadow: false,
 })
 export class VerdocsSend {
+  private templateListenerId = null;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -88,14 +90,40 @@ export class VerdocsSend {
   @Event({composed: true}) searchContacts: EventEmitter<IContactSearchEvent>;
 
   @State() containerId = `verdocs-send-${Math.random().toString(36).substring(2, 11)}`;
-
   @State() showPickerForId = '';
-
   @State() sessionContacts = [];
-
   @State() sending = false;
-
   @State() rolesCompleted: Record<string, Partial<IRecipient>> = {};
+
+  @State() loading = true;
+  @State() template: ITemplate | null = null;
+
+  disconnectedCallback() {
+    this.unlistenToTemplate();
+  }
+
+  async listenToTemplate() {
+    console.log('[SEND] Loading template', this.templateId);
+    this.unlistenToTemplate();
+    Store.subscribe(
+      'templates',
+      this.templateId,
+      () => getTemplate(this.endpoint, this.templateId),
+      false,
+      (template: ITemplate) => {
+        this.template = template;
+        this.loading = false;
+        this.rolesCompleted = {};
+      },
+    );
+  }
+
+  unlistenToTemplate() {
+    if (this.templateListenerId) {
+      Store.store.delListener(this.templateListenerId);
+      this.templateListenerId = null;
+    }
+  }
 
   @Method() async reset() {
     this.rolesCompleted = {};
@@ -104,14 +132,8 @@ export class VerdocsSend {
   @Watch('templateId')
   onTemplateIdChanged(newTemplateId: string) {
     console.log('[SEND] Template ID changed', newTemplateId);
-    this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
+    this.listenToTemplate();
   }
-
-  @State()
-  templateStore: TTemplateStore | null = null;
-
-  @State()
-  roleStore: TTemplateRoleStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -154,39 +176,18 @@ export class VerdocsSend {
         return;
       }
 
-      return this.loadTemplate(this.templateId);
+      this.listenToTemplate();
     } catch (e) {
       console.log('[SEND] Error with send session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
-  async loadTemplate(templateId: string) {
-    if (!templateId) {
-      return;
-    }
-
-    try {
-      this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
-      this.roleStore = getTemplateRoleStore(templateId);
-      this.recomputeRolesCompleted();
-
-      if (!this.templateStore?.state?.is_sendable) {
-        console.warn(`[SEND] Template is not sendable`, templateId);
-      }
-    } catch (e) {
-      console.log('[SEND] Error with preview session', e);
-      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-    }
-  }
-
   recomputeRolesCompleted() {
-    const roles = this.roleStore?.get('roles') || [];
-    const rolesAtLevel: Record<number, Partial<IRecipient>[]> = {};
-
     this.rolesCompleted = {};
 
-    roles.forEach(role => {
+    const rolesAtLevel: Record<number, Partial<IRecipient>[]> = {};
+    (this.template?.roles || []).forEach(role => {
       const level = role.sequence - 1;
       rolesAtLevel[level] ||= [];
       const id = `r-${level}-${rolesAtLevel[level].length}`;
@@ -201,15 +202,13 @@ export class VerdocsSend {
   }
 
   getLevels() {
-    const roles = this.roleStore?.get('roles') || [];
-    const levels = [...new Set(roles.map(role => role.sequence - 1))];
+    const levels = [...new Set((this.template?.roles || []).map(role => role.sequence - 1))];
     levels.sort((a, b) => a - b);
     return levels;
   }
 
   getRolesAtLevel(level: number) {
-    const roles = this.roleStore?.get('roles') || [];
-    const rolesAtLevel = roles
+    const rolesAtLevel = (this.template?.roles || [])
       .filter(role => role.sequence - 1 === level)
       .map((role, index) => ({
         ...role,
@@ -258,7 +257,7 @@ export class VerdocsSend {
 
     const details: ICreateEnvelopeFromTemplateRequest = {
       template_id: this.templateId,
-      name: this.templateStore?.state?.name || '',
+      name: this.template?.name || 'New Envelope',
       environment: this.environment,
       initial_reminder: 0,
       followup_reminders: 0,
@@ -274,7 +273,7 @@ export class VerdocsSend {
         this.reset().catch((e: any) => console.log('Unknown Error', e));
         this.sending = false;
         this.sendingEnvelope?.emit({sending: false});
-        this.send?.emit({...details, name: this.templateStore?.state?.name || 'New Envelope', envelope_id: r.id, envelope: r});
+        this.send?.emit({...details, name: details.name!, envelope_id: r.id, envelope: r});
       })
       .catch(e => {
         console.log('Send error', e);
@@ -290,6 +289,14 @@ export class VerdocsSend {
   }
 
   render() {
+    if (this.loading) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
     if (!this.endpoint.session) {
       return (
         <Host style={{display: 'flex'}}>
@@ -299,15 +306,13 @@ export class VerdocsSend {
     }
 
     const levels = this.getLevels();
-    const roleNames = getRoleNames(this.roleStore);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email));
     // TODO: Reactivate once SMS is re-enabled
     // const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
-    const allRolesAssigned = rolesAssigned.length >= roleNames.length;
-    // console.log('[SEND] Roles completed', this.rolesCompleted);
+    const allRolesAssigned = rolesAssigned.length >= getRoleNames(this.template).length;
 
     return (
-      <Host class={{sendable: this.templateStore?.state?.is_sendable}}>
+      <Host class={{sendable: this.template?.is_sendable}}>
         <div class="recipients">
           <div class="left-line" />
           <div class={`level level-start`}>
@@ -322,15 +327,11 @@ export class VerdocsSend {
               {this.getRolesAtLevel(level).map(role => {
                 const unknown = !role.email;
                 const elId = `verdocs-send-recipient-${role.role_name}`;
+                const roleIndex = getRoleIndex(this.template, role.role_name);
+                const rgba = getRGBA(roleIndex);
+
                 return unknown ? (
-                  <div
-                    class="recipient"
-                    data-ri={getRoleIndex(this.roleStore, role.role_name)}
-                    data-rn={role.role_name}
-                    style={{backgroundColor: getRGBA(getRoleIndex(this.roleStore, role.role_name))}}
-                    onClick={e => this.handleClickRole(e, role)}
-                    id={elId}
-                  >
+                  <div class="recipient" data-ri={roleIndex} data-rn={role.role_name} style={{backgroundColor: rgba}} onClick={e => this.handleClickRole(e, role)} id={elId}>
                     {this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : role.role_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
@@ -346,7 +347,7 @@ export class VerdocsSend {
                     )}
                   </div>
                 ) : (
-                  <div class="recipient" style={{borderColor: getRGBA(getRoleIndex(this.roleStore, role.role_name))}} onClick={e => this.handleClickRole(e, role)} id={elId}>
+                  <div class="recipient" style={{borderColor: rgba}} onClick={e => this.handleClickRole(e, role)} id={elId}>
                     {this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : role.role_name}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (

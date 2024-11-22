@@ -1,8 +1,7 @@
 import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
-import {getRoleIndex, getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {SettingsIcon} from '../../../utils/Icons';
+import {Store} from '../../../utils/Datastore';
 
 const RadioIconUnselected = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg>`;
 
@@ -18,9 +17,14 @@ const RadioIconSelected = `<svg focusable="false" aria-hidden="true" viewBox="0 
 })
 export class VerdocsFieldRadio {
   /**
-   * The template the field is for/from. Only required in Builder mode, to support the Field Properties dialog.
+   * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
-  @Prop({reflect: true}) templateid: string = '';
+  @Prop({reflect: true}) source: 'template' | 'envelope' = 'template';
+
+  /**
+   * The source template or envelope ID the field is found in.
+   */
+  @Prop({reflect: true}) sourceid: string = '';
 
   /**
    * The name of the field to display.
@@ -106,23 +110,13 @@ export class VerdocsFieldRadio {
     }
   }
 
-  fieldStore: TTemplateFieldStore = null;
-  roleStore: TTemplateRoleStore = null;
-
-  async componentWillLoad() {
-    this.fieldStore = getTemplateFieldStore(this.templateid);
-    this.roleStore = getTemplateRoleStore(this.templateid);
-  }
-
   render() {
-    const {templateid, fieldname = '', editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
+    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
-    const field = this.fieldStore.get('fields').find(field => field.name === fieldname);
-    const {name, required = false, role_name = '', label = '', group = '', value = false} = field || {};
+    const {index, field} = Store.getField(source, sourceid, fieldname);
+    const {name, required = false, label = '', group = '', value = false} = field || {};
+    const backgroundColor = getRGBA(index);
 
-    const backgroundColor = getRGBA(getRoleIndex(this.roleStore, role_name));
-    const fieldId = `${fieldname}`;
-    // const fieldId = `${fieldname}-${id}`;
     const selected = value === 'true';
 
     if (done) {
@@ -138,8 +132,8 @@ export class VerdocsFieldRadio {
         {label && <div class="label">{label}</div>}
         {editable && group && <div class="group">{group}</div>}
 
-        <input id={fieldId} type="radio" name={group || fieldname} value={name} checked={!!selected} disabled={disabled} required={required} />
-        <label htmlFor={fieldId} />
+        <input id={fieldname} type="radio" name={group || fieldname} value={name} checked={!!selected} disabled={disabled} required={required} />
+        <label htmlFor={fieldname} />
 
         {editable && (
           <Fragment>
@@ -157,7 +151,7 @@ export class VerdocsFieldRadio {
             {this.showingProperties && (
               <verdocs-portal anchor={`verdocs-settings-panel-trigger-${fieldname}`} onClickAway={() => (this.showingProperties = false)}>
                 <verdocs-template-field-properties
-                  templateId={templateid}
+                  templateId={sourceid}
                   fieldName={fieldname}
                   onClose={() => (this.showingProperties = false)}
                   onDelete={() => {

@@ -1,7 +1,7 @@
-import {ICreateEnvelopeRecipient, IRole, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {getTemplate, ICreateEnvelopeRecipient, IRole, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Prop, h, Element, Event, EventEmitter, Host, Watch, State} from '@stencil/core';
-import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview';
 
@@ -10,36 +10,9 @@ export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' 
  * parent application to support interface updates.
  *
  * ```ts
- * type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview'
- *
- * interface IEnvelopeSent {
- *   name: string;
- *   template_id: string
- *   recipients: ICreateEnvelopeRecipient[];
- * }
- *
- * interface ITemplateEvent {
- *   event: string
- *   template: ITemplate;
- * }
- *
- * interface IRolesEvent {
- *   event: string
- *   templateId: string;
- *   roles: ITemplateRole[];
- * }
- *
- * <verdocs-build
- *   templateId={templateId}
- *   step="preview"
- *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }}
- *   onStepChanged={({ detail }: { detail: TVerdocsBuildStep }) => { console.log('Step changed', detail) }}
- *   onSend={({ detail }: { detail: IEnvelopeSent }) => { console.log('Step changed', detail) }}
- *   onTemplateUpdated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template updated', detail) }}
- *   onTemplateCreated={({ detail }: { detail: ITemplateEvent }) => { console.log('Template created', detail) }}
- *   onRolesUpdated={({ detail }) => { console.log('Roles updated', detail) }}
- *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
- *   />
+ * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
+ *   console.log('Sent envelope from template', detail);
+ * }} />
  * ```
  */
 @Component({
@@ -48,6 +21,8 @@ export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' 
   shadow: false,
 })
 export class VerdocsBuild {
+  private templateListenerId = null;
+
   @Element() el!: any;
 
   /**
@@ -98,6 +73,9 @@ export class VerdocsBuild {
    */
   @Event({composed: true}) rolesUpdated: EventEmitter<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]}>;
 
+  @State() loading = true;
+  @State() template: ITemplate | null = null;
+
   @Watch('templateId')
   onTemplateIdChanged(newTemplateId: string, oldTemplateId: string) {
     if (!oldTemplateId && newTemplateId && this.step === 'attachments') {
@@ -113,9 +91,6 @@ export class VerdocsBuild {
     // we were out of sync before
     this.loadTemplate(this.templateId).catch((e: any) => console.log('Unknown Error', e));
   }
-
-  @State()
-  templateStore: TTemplateStore | null = null;
 
   async componentWillLoad() {
     try {
@@ -145,7 +120,28 @@ export class VerdocsBuild {
 
   async loadTemplate(templateId: string) {
     if (templateId) {
-      this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
+      Store.subscribe(
+        'templates',
+        this.templateId,
+        () => getTemplate(this.endpoint, this.templateId),
+        false,
+        (template: ITemplate) => {
+          this.template = template;
+          this.loading = false;
+        },
+      );
+    }
+  }
+
+  disconnectedCallback() {
+    console.log('[BUILD] Disconnected');
+    this.unlistenToTemplate();
+  }
+
+  unlistenToTemplate() {
+    if (this.templateListenerId) {
+      Store.store.delListener(this.templateListenerId);
+      this.templateListenerId = null;
     }
   }
 
@@ -184,6 +180,14 @@ export class VerdocsBuild {
   }
 
   render() {
+    if (this.loading) {
+      return (
+        <Host class="loading">
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
     if (!this.endpoint.session) {
       return (
         <Host>
@@ -191,32 +195,6 @@ export class VerdocsBuild {
         </Host>
       );
     }
-
-    if (!this.templateStore) {
-      console.log('[BUILD] No template ID, rendering created view');
-      return (
-        <Host>
-          <div class="content">
-            <verdocs-template-build-tabs
-              endpoint={this.endpoint}
-              templateId={this.templateId}
-              step="attachments"
-              onSdkError={e => this.sdkError?.emit(e.detail)}
-              onStepChanged={e => this.handleStepChanged(e.detail)}
-            />
-
-            <verdocs-template-create
-              endpoint={this.endpoint}
-              onExit={() => this.handleCancel()}
-              onNext={() => this.handleAttachmentsNext()}
-              onTemplateCreated={e => this.handleTemplateCreated(e.detail.templateId)}
-            />
-          </div>
-        </Host>
-      );
-    }
-
-    console.log('[BUILD] Rendering build view', this.templateId, this.step, ['attachments', 'roles', 'settings', 'fields', 'preview'].indexOf(this.step));
 
     return (
       <Host>

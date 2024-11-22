@@ -1,11 +1,11 @@
 // NOTE: This component does not have a story because it's not intended for external use.
 
-import {getTemplateDocumentPageDisplayUri, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {getTemplate, getTemplateDocumentPageDisplayUri, type ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Element, Fragment} from '@stencil/core';
-import {getTemplateFieldStore, TTemplateFieldStore} from '../../../utils/TemplateFieldStore';
 import {IDocumentPageInfo, IPageLayer} from '../../../utils/Types';
 import {getControlStyles, getFieldId} from '../../../utils/utils';
 import {throttle} from '../../../utils/utils';
+import {Store} from '../../../utils/Datastore';
 
 /**
  * Represents one document page. This is primarily a layout container used to coordinate positions of
@@ -18,8 +18,10 @@ import {throttle} from '../../../utils/utils';
   shadow: false,
 })
 export class VerdocsTemplateDocumentPage {
-  @Element() container: HTMLElement;
+  private templateListenerId = null;
   private resizeObserver: ResizeObserver;
+
+  @Element() container: HTMLElement;
 
   /**
    * The endpoint to load from.
@@ -88,25 +90,22 @@ export class VerdocsTemplateDocumentPage {
   @Event() pageRendered: EventEmitter<IDocumentPageInfo>;
 
   @State() containerId = `verdocs-document-page-${Math.random().toString(36).substring(2, 11)}`;
-
   @State() renderedWidth: number = this.virtualWidth;
   @State() renderedHeight: number = this.virtualHeight;
   @State() naturalWidth: number = this.virtualWidth;
   @State() naturalHeight: number = this.virtualHeight;
   @State() aspectRatio: number = this.virtualWidth / this.virtualHeight;
-
   @State() skipFirstNotification = true;
-
   @State() pageDisplayUri = '';
-
   @State() xScale = 1;
   @State() yScale = 1;
 
-  fieldStore: TTemplateFieldStore | null = null;
+  @State() loading = true;
+  @State() template: ITemplate | null = null;
 
   async componentWillLoad() {
     this.pageDisplayUri = await getTemplateDocumentPageDisplayUri(this.endpoint, this.documentId, this.pageNumber);
-    this.fieldStore = getTemplateFieldStore(this.templateId);
+    this.listenToTemplate();
   }
 
   componentDidLoad() {
@@ -132,13 +131,29 @@ export class VerdocsTemplateDocumentPage {
 
   disconnectedCallback() {
     this.resizeObserver?.disconnect();
+    this.unlistenToTemplate();
   }
 
-  // Left here for documentation purposes in case we find an edge case where this isn't true. But we apparently don't need this.
-  // When we add the resize observer it will always be triggered at least once so notifying here as well is just a dupe.
-  // componentDidRender() {
-  //   this.notifyRenderedSize();
-  // }
+  async listenToTemplate() {
+    this.unlistenToTemplate();
+    Store.subscribe(
+      'templates',
+      this.templateId,
+      () => getTemplate(this.endpoint, this.templateId),
+      false,
+      (template: ITemplate) => {
+        this.template = template;
+        this.loading = false;
+      },
+    );
+  }
+
+  unlistenToTemplate() {
+    if (this.templateListenerId) {
+      Store.store.delListener(this.templateListenerId);
+      this.templateListenerId = null;
+    }
+  }
 
   notifyRenderedSize() {
     // We skip one notification because by default we will always get at least two, one when rendering the initial size
@@ -176,6 +191,14 @@ export class VerdocsTemplateDocumentPage {
   }
 
   render() {
+    if (this.loading) {
+      return (
+        <Host>
+          <img src="https://public-assets.verdocs.com/loading-placeholder.png" class="placeholder" alt="Placeholder page" />
+        </Host>
+      );
+    }
+
     const height = `${this.renderedHeight}px`;
 
     return (
@@ -184,8 +207,7 @@ export class VerdocsTemplateDocumentPage {
           layer.type === 'div' ? (
             <div class="verdocs-template-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}}>
               {layer.name === 'controls' &&
-                this.fieldStore
-                  .get('fields')
+                (this.template?.fields || [])
                   .filter(field => field && field.page === this.pageNumber)
                   .map(field => {
                     const id = getFieldId(field);
@@ -201,7 +223,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-textbox
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             multiline={multiline}
                             disabled={disabled}
@@ -217,7 +240,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-textarea
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             disabled={disabled}
                             done={done}
@@ -232,7 +256,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-date
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             disabled={disabled}
                             done={done}
@@ -247,7 +272,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-attachment
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             disabled={disabled}
                             done={done}
@@ -262,7 +288,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-dropdown
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             disabled={disabled}
                             done={done}
@@ -277,7 +304,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-initial
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             disabled={disabled}
                             done={done}
@@ -292,7 +320,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-signature
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             disabled={disabled}
                             done={done}
@@ -307,7 +336,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-timestamp
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             disabled={disabled}
                             done={done}
@@ -322,7 +352,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-checkbox
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             disabled={disabled}
                             done={done}
@@ -337,7 +368,8 @@ export class VerdocsTemplateDocumentPage {
                           <verdocs-field-radio
                             id={id}
                             fieldname={name}
-                            templateid={templateId}
+                            source="template"
+                            sourceid={templateId}
                             editable={editable}
                             disabled={disabled}
                             done={done}

@@ -1,13 +1,11 @@
 import interact from 'interactjs';
 import {Component, h, Event, EventEmitter, Prop, Host, State, Listen, Watch} from '@stencil/core';
-import {createField, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {createField, getTemplate, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
-import {getTemplateFieldStore, TTemplateFieldStore, updateStoreField} from '../../../utils/TemplateFieldStore';
-import {getTemplateRoleStore, TTemplateRoleStore} from '../../../utils/TemplateRoleStore';
-import {getTemplateStore, TTemplateStore} from '../../../utils/TemplateStore';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 const iconTextbox = '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M3.425 16.15V13h11.15v3.15Zm0-5.15V7.85h17.15V11Z"/></svg>';
 
@@ -63,7 +61,7 @@ const menuOptions = [
   shadow: false,
 })
 export class VerdocsTemplateFields {
-  // page0El: HTMLDivElement;
+  private templateListenerId = null;
 
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -102,17 +100,15 @@ export class VerdocsTemplateFields {
   @State() placing: TFieldType | null = null;
   @State() showMustSelectRole = false;
   @State() selectedRoleName = '';
+
   @State() loading = true;
+  @State() template: ITemplate | null = null;
 
   pageHeights: Record<number, number> = {};
 
-  templateStore: TTemplateStore | null = null;
-  fieldStore: TTemplateFieldStore | null = null;
-  roleStore: TTemplateRoleStore | null = null;
-
   @Watch('templateId')
-  onTemplateIdChanged(newTemplateId: string) {
-    this.loadTemplate(newTemplateId).catch((e: any) => console.log('Unknown Error', e));
+  onTemplateIdChanged() {
+    this.listenToTemplate();
   }
 
   // Stop field-placement mode if ESC is pressed
@@ -137,12 +133,7 @@ export class VerdocsTemplateFields {
         return;
       }
 
-      try {
-        this.loadTemplate(this.templateId).catch(e => console.log('[BUILD] Unable to load template', e));
-      } catch (e) {
-        console.log('[FIELDS] Error loading template', e);
-        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      }
+      this.listenToTemplate();
     } catch (e) {
       console.log('[FIELDS] Error with fields session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -163,37 +154,48 @@ export class VerdocsTemplateFields {
 
   componentWillUpdate() {
     // If a new role was added and there were none yet so far, or the "selected" role was deleted, reset our selection
-    const roles = this.roleStore?.get('roles') || [];
+    const roles = this.template?.roles || [];
     if (!this.selectedRoleName || !roles.find(role => role && role.name === this.selectedRoleName)) {
       this.selectedRoleName = roles[0]?.name || '';
       console.log('[FIELDS] Selected new role', this.selectedRoleName);
     }
   }
 
-  async loadTemplate(templateId: string) {
-    if (templateId) {
-      this.loading = true;
+  disconnectedCallback() {
+    this.unlistenToTemplate();
+  }
 
-      this.templateStore = await getTemplateStore(this.endpoint, templateId, false);
-      this.roleStore = getTemplateRoleStore(this.templateId);
-      this.fieldStore = getTemplateFieldStore(this.templateId);
+  async listenToTemplate() {
+    this.unlistenToTemplate();
+    Store.subscribe(
+      'templates',
+      this.templateId,
+      () => getTemplate(this.endpoint, this.templateId),
+      false,
+      (template: ITemplate) => {
+        this.template = template;
+        this.loading = false;
 
-      this.selectedRoleName = this.roleStore.get('roles')?.[0]?.name || '';
-      this.loading = false;
+        this.selectedRoleName = template.roles?.[0]?.name || '';
+      },
+    );
+  }
 
-      // TODO: Necessary?
-      // this.fieldsUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, fields});
+  unlistenToTemplate() {
+    if (this.templateListenerId) {
+      Store.store.delListener(this.templateListenerId);
+      this.templateListenerId = null;
     }
   }
 
   attachFieldAttributes(pageInfo: IDocumentPageInfo, field: ITemplateField, el: HTMLInputElement) {
     // el.addEventListener('input', e => this.handleFieldChange(field, e));
     el.addEventListener('settingsChanged', () => {
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'added-field'});
     });
     el.addEventListener('deleted', () => {
       el.remove();
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'updated-field'});
     });
     el.setAttribute('templateid', this.templateId);
     el.setAttribute('fieldname', field.name);
@@ -211,8 +213,7 @@ export class VerdocsTemplateFields {
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
-    this.fieldStore
-      .get('fields')
+    (this.template?.fields || [])
       .filter(field => field && field.page === pageInfo.pageNumber)
       .forEach(field => {
         const id = getFieldId(field);
@@ -248,8 +249,7 @@ export class VerdocsTemplateFields {
 
   async handleMoveEnd(event: any) {
     const name = event.target.getAttribute('fieldname');
-    const option = +(event.target.getAttribute('option') || '0');
-    const field = this.fieldStore.get('fields').find(field => field.name === name);
+    const field = (this.template?.fields || []).find(field => field.name === name);
     if (!field) {
       console.log('[FIELDS] Unable to find field', name, event.target);
       return;
@@ -268,11 +268,10 @@ export class VerdocsTemplateFields {
     // (positive displacement) while bottom measures "up" from the bottom (negative displacement).
     const newX = Math.max(clientRect.left - parentRect.left, 0);
     let newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
-    console.log('drop', {pageNumber, newX, newY});
 
     let newPageNumber = parseInt(pageNumber);
     if (newY > renderedHeight) {
-      newPageNumber = Math.min(newPageNumber + 1, this.templateStore?.state?.documents?.[0]?.pages || 1);
+      newPageNumber = Math.min(newPageNumber + 1, (this.template?.documents || [])?.[0]?.pages || 1);
       newY -= renderedHeight;
       renderedHeight = this.cachedPageInfo[newPageNumber].renderedHeight;
 
@@ -281,22 +280,28 @@ export class VerdocsTemplateFields {
       newPageNumber = Math.max(newPageNumber - 1, 1);
       renderedHeight = this.cachedPageInfo[newPageNumber].renderedHeight;
       newY += renderedHeight;
-      console.log('Next page', {newPageNumber, newY, renderedHeight});
+      console.log('[FIELDS] Next page', {newPageNumber, newY, renderedHeight});
     }
 
     const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - width, naturalHeight - height);
     try {
       const params = {x, y, page: newPageNumber};
-      console.log('[FIELDS] Will update', name, y, option, params);
-      const newFieldData = await updateField(this.endpoint, this.templateId, name, params);
-      console.log('[FIELDS] Updated', newFieldData);
-      updateStoreField(this.fieldStore, name, newFieldData);
+      const updatedField = await updateField(this.endpoint, this.templateId, name, params);
+      console.log('[FIELDS] Updated', updatedField);
+
+      const newTemplate = JSON.parse(JSON.stringify(this.template));
+      const fieldIndex = newTemplate.fields.findIndex(field => field.name === name);
+      if (fieldIndex > -1) {
+        newTemplate.fields[fieldIndex] = updatedField;
+      }
+
+      Store.updateTemplate(this.templateId, newTemplate);
       event.target.removeAttribute('posX');
       event.target.removeAttribute('posY');
       removeCssTransform(event.target);
       const {xScale = 1, yScale = 1} = this.cachedPageInfo[pageNumber];
-      setControlStyles(event.target, newFieldData, xScale, yScale);
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'updated-field'});
+      setControlStyles(event.target, updatedField, xScale, yScale);
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: newTemplate, event: 'updated-field'});
     } catch (e) {
       VerdocsToast('Error updating field, please try again later', {style: 'error'});
       console.log('[FIELDS] Error updating field', e);
@@ -313,7 +318,7 @@ export class VerdocsTemplateFields {
     do {
       fieldName = `${type}P${pageNumber}-${i}`;
       i++;
-    } while (this.fieldStore.get('fields').some(field => field && field.name === fieldName));
+    } while ((this.template?.fields || []).some(field => field && field.name === fieldName));
 
     return fieldName;
   }
@@ -364,17 +369,27 @@ export class VerdocsTemplateFields {
       };
       console.log('[FIELDS] Will save new field', field);
 
-      const saved = await createField(this.endpoint, this.templateId, field);
-      console.log('[FIELDS] Saved field', saved);
+      const newField = await createField(this.endpoint, this.templateId, field);
+      console.log('[FIELDS] Saved field', newField);
 
-      this.fieldStore.set('fields', [...this.fieldStore.get('fields'), saved] as any);
+      const newTemplate = JSON.parse(JSON.stringify(this.template));
+      newTemplate.fields.push(newField);
+      Store.updateTemplate(this.templateId, newTemplate);
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: newTemplate, event: 'added-field'});
+
       this.placing = null;
-
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.templateStore?.state, event: 'added-field'});
     }
   }
 
   render() {
+    if (this.loading) {
+      return (
+        <Host>
+          <verdocs-loader />
+        </Host>
+      );
+    }
+
     if (!this.endpoint.session) {
       return (
         <Host>
@@ -383,15 +398,7 @@ export class VerdocsTemplateFields {
       );
     }
 
-    if (this.loading || !this.templateStore?.state.isLoaded) {
-      return (
-        <Host>
-          <verdocs-loader />
-        </Host>
-      );
-    }
-
-    const selectableRoles = this.roleStore.get('roles').map(role => ({value: role.name, label: role.full_name ? `${role.name}: ${role.full_name}` : role.name}));
+    const selectableRoles = (this.template?.roles || []).map(role => ({value: role.name, label: role.full_name ? `${role.name}: ${role.full_name}` : role.name}));
 
     return (
       <Host class={this.placing ? {[`placing-${this.placing}`]: true} : {}} onSubmit={() => {}}>
@@ -432,7 +439,7 @@ export class VerdocsTemplateFields {
         {/*</div>*/}
 
         <div class="pages">
-          {(this.templateStore?.state?.documents || []).map(document => {
+          {(this.template?.documents || []).map(document => {
             const pageNumbers = integerSequence(1, document.pages);
 
             return pageNumbers.map(page => {
@@ -462,7 +469,7 @@ export class VerdocsTemplateFields {
         {this.showMustSelectRole && (
           <verdocs-ok-dialog
             heading="Unable to add field"
-            message={this.roleStore.get('roles').length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
+            message={(this.template?.roles || []).length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
             onNext={() => (this.showMustSelectRole = false)}
           />
         )}
