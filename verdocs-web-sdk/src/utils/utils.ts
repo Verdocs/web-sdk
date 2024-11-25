@@ -279,8 +279,7 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: I
     const date = format(new Date(envelope.updated_at), FORMAT_DATE);
     const subFolder = envelopes.length > 0 ? zip.folder(`${envelope.id} - ${envelope.name} - ${date}`) : null;
     for await (let document of envelope.documents) {
-      // TODO: When attachments are added to envelopes, add a field that reflects the full, original filename (including extension)
-      const documentFileName = document.type === 'certificate' ? `${envelope.name}_certificate.pdf` : `${document.name.replace('.pdf', '')}.pdf`;
+      const documentFileName = document.type === 'certificate' ? `${envelope.name}_certificate.pdf` : `${document.name.replace('.pdf', '').replace(/\//g, '_')}.pdf`;
       const data = await getEnvelopeFile(endpoint, envelope.id, document.id);
 
       if (subFolder) {
@@ -289,13 +288,12 @@ export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: I
         zip.file(documentFileName, data, {compression: 'DEFLATE'});
       }
 
-      // TODO: fields needs to be added to envelope search result entries
       const attachFields = envelope.fields?.filter(field => field.type === 'attachment' && field.settings['name']) || [];
       if (attachFields.length > 0) {
         const attachmentsFolder = subFolder ? subFolder.folder('attachments') : zip.folder('attachments');
         for await (let attachField of attachFields) {
           const attachData = await getFieldAttachment(endpoint, envelope.id, attachField.name);
-          attachmentsFolder.file(attachField.settings['name'], attachData, {compression: 'DEFLATE'});
+          attachmentsFolder.file(attachField.settings['name'].replace(/\//g, '_'), attachData, {compression: 'DEFLATE'});
         }
       }
     }

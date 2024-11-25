@@ -1481,6 +1481,20 @@ export namespace Components {
         "tabs": ITab[];
     }
     /**
+     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
+     * Note that an active session and valid template ID must be supplied.
+     */
+    interface VerdocsTemplateAttachments {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
+    /**
      * Display a set of tabs for the template builder.
      */
     interface VerdocsTemplateBuildTabs {
@@ -1985,6 +1999,10 @@ export interface VerdocsTableCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTabsElement;
+}
+export interface VerdocsTemplateAttachmentsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateAttachmentsElement;
 }
 export interface VerdocsTemplateBuildTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3157,6 +3175,30 @@ declare global {
         prototype: HTMLVerdocsTabsElement;
         new (): HTMLVerdocsTabsElement;
     };
+    interface HTMLVerdocsTemplateAttachmentsElementEventMap {
+        "exit": any;
+        "next": {template: ITemplate};
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+        "sdkError": SDKError;
+    }
+    /**
+     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
+     * Note that an active session and valid template ID must be supplied.
+     */
+    interface HTMLVerdocsTemplateAttachmentsElement extends Components.VerdocsTemplateAttachments, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateAttachmentsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateAttachmentsElement, ev: VerdocsTemplateAttachmentsCustomEvent<HTMLVerdocsTemplateAttachmentsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateAttachmentsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateAttachmentsElement, ev: VerdocsTemplateAttachmentsCustomEvent<HTMLVerdocsTemplateAttachmentsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsTemplateAttachmentsElement: {
+        prototype: HTMLVerdocsTemplateAttachmentsElement;
+        new (): HTMLVerdocsTemplateAttachmentsElement;
+    };
     interface HTMLVerdocsTemplateBuildTabsElementEventMap {
         "sdkError": SDKError;
         "stepChanged": TVerdocsBuildStep1;
@@ -3551,6 +3593,7 @@ declare global {
         "verdocs-switch": HTMLVerdocsSwitchElement;
         "verdocs-table": HTMLVerdocsTableElement;
         "verdocs-tabs": HTMLVerdocsTabsElement;
+        "verdocs-template-attachments": HTMLVerdocsTemplateAttachmentsElement;
         "verdocs-template-build-tabs": HTMLVerdocsTemplateBuildTabsElement;
         "verdocs-template-card": HTMLVerdocsTemplateCardElement;
         "verdocs-template-create": HTMLVerdocsTemplateCreateElement;
@@ -5340,6 +5383,36 @@ declare namespace LocalJSX {
         "tabs"?: ITab[];
     }
     /**
+     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
+     * Note that an active session and valid template ID must be supplied.
+     */
+    interface VerdocsTemplateAttachments {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+         */
+        "onExit"?: (event: VerdocsTemplateAttachmentsCustomEvent<any>) => void;
+        /**
+          * Event fired when the user clicks the next button.
+         */
+        "onNext"?: (event: VerdocsTemplateAttachmentsCustomEvent<{template: ITemplate}>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplateAttachmentsCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the user updates the template.
+         */
+        "onTemplateUpdated"?: (event: VerdocsTemplateAttachmentsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
+    /**
      * Display a set of tabs for the template builder.
      */
     interface VerdocsTemplateBuildTabs {
@@ -5912,6 +5985,7 @@ declare namespace LocalJSX {
         "verdocs-switch": VerdocsSwitch;
         "verdocs-table": VerdocsTable;
         "verdocs-tabs": VerdocsTabs;
+        "verdocs-template-attachments": VerdocsTemplateAttachments;
         "verdocs-template-build-tabs": VerdocsTemplateBuildTabs;
         "verdocs-template-card": VerdocsTemplateCard;
         "verdocs-template-create": VerdocsTemplateCreate;
@@ -6344,6 +6418,11 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-tabs": LocalJSX.VerdocsTabs & JSXBase.HTMLAttributes<HTMLVerdocsTabsElement>;
+            /**
+             * Displays an edit form that allows the user to view, add, or remove a template's attachments.
+             * Note that an active session and valid template ID must be supplied.
+             */
+            "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
             /**
              * Display a set of tabs for the template builder.
              */

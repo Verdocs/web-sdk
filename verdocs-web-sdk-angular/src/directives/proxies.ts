@@ -1672,6 +1672,51 @@ to the template preview. This is also fired when the user selects "Preview/Send"
 
 
 @ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'verdocs-template-attachments',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class VerdocsTemplateAttachments {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['exit', 'next', 'templateUpdated', 'sdkError']);
+  }
+}
+
+
+import type { ITemplate as IVerdocsTemplateAttachmentsITemplate } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateAttachmentsVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateAttachmentsSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateAttachments extends Components.VerdocsTemplateAttachments {
+  /**
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the user clicks the next button.
+   */
+  next: EventEmitter<CustomEvent<{template: IVerdocsTemplateAttachmentsITemplate}>>;
+  /**
+   * Event fired when the user updates the template.
+   */
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateAttachmentsVerdocsEndpoint; template: IVerdocsTemplateAttachmentsITemplate; event: string}>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateAttachmentsSDKError>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'step', 'templateId']
 })
 @Component({
