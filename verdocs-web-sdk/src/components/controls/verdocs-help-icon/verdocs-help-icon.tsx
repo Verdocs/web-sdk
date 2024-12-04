@@ -73,7 +73,6 @@ export class VerdocsHelpIcon {
           id={this.containerId}
           role="tooltip"
           class="tooltip"
-          // style="display: none; visibility: visible; margin: 0px; position: absolute; inset: 0px auto auto 0px; transform: translate(951px, 5510px);"
           data-popper-placement="bottom"
           ref={el => (this.tooltipEl = el as HTMLDivElement)}
         >

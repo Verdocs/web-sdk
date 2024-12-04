@@ -1071,6 +1071,30 @@ export namespace Components {
     interface VerdocsLoader {
     }
     /**
+     * Display a menu panel in a left or right sidebar. The panel will animate (slide)
+     * as it appears, and an background will be shown over the rest of the page. If
+     * the background overlay is present, it can be clicked to dismiss the panel.
+     * ```ts
+     * <verdocs-menu-panel>
+     *   <div style="padding: 20px;">Menu Panel</div>
+     * </verdocs-menu-panel>
+     * ```
+     */
+    interface VerdocsMenuPanel {
+        /**
+          * Whether to show an overlay over the rest of the page.
+         */
+        "overlay": boolean;
+        /**
+          * Which side of the screen to place the panel.
+         */
+        "side": 'left' | 'right';
+        /**
+          * The width of the panel.
+         */
+        "width": number;
+    }
+    /**
      * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
      * box with a message and optional header/title. An OK button is shown that will dismiss the message.
      * It can also be dismissed by clicking the background overlay.
@@ -1618,7 +1642,7 @@ export namespace Components {
         "toolbarTargetId": string | null;
     }
     /**
-     * Display an edit form that allows the user to adjust a role's setitngs.
+     * Present an editing form suitable for adjusting template-role properties.
      */
     interface VerdocsTemplateRoleProperties {
         /**
@@ -1635,7 +1659,7 @@ export namespace Components {
         "templateId": string;
     }
     /**
-     * Displays an edit form that allows the user to adjust a template's roles and workflow.
+     * Display an edit form that allows the user to adjust a template's roles and workflow.
      */
     interface VerdocsTemplateRoles {
         /**
@@ -1947,6 +1971,10 @@ export interface VerdocsInitialDialogCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsKbaDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsKbaDialogElement;
+}
+export interface VerdocsMenuPanelCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsMenuPanelElement;
 }
 export interface VerdocsOkDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2734,6 +2762,33 @@ declare global {
         prototype: HTMLVerdocsLoaderElement;
         new (): HTMLVerdocsLoaderElement;
     };
+    interface HTMLVerdocsMenuPanelElementEventMap {
+        "close": void;
+    }
+    /**
+     * Display a menu panel in a left or right sidebar. The panel will animate (slide)
+     * as it appears, and an background will be shown over the rest of the page. If
+     * the background overlay is present, it can be clicked to dismiss the panel.
+     * ```ts
+     * <verdocs-menu-panel>
+     *   <div style="padding: 20px;">Menu Panel</div>
+     * </verdocs-menu-panel>
+     * ```
+     */
+    interface HTMLVerdocsMenuPanelElement extends Components.VerdocsMenuPanel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsMenuPanelElementEventMap>(type: K, listener: (this: HTMLVerdocsMenuPanelElement, ev: VerdocsMenuPanelCustomEvent<HTMLVerdocsMenuPanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsMenuPanelElementEventMap>(type: K, listener: (this: HTMLVerdocsMenuPanelElement, ev: VerdocsMenuPanelCustomEvent<HTMLVerdocsMenuPanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsMenuPanelElement: {
+        prototype: HTMLVerdocsMenuPanelElement;
+        new (): HTMLVerdocsMenuPanelElement;
+    };
     interface HTMLVerdocsOkDialogElementEventMap {
         "next": any;
         "exit": any;
@@ -3327,7 +3382,7 @@ declare global {
         "sdkError": SDKError;
     }
     /**
-     * Display an edit form that allows the user to adjust a role's setitngs.
+     * Present an editing form suitable for adjusting template-role properties.
      */
     interface HTMLVerdocsTemplateRolePropertiesElement extends Components.VerdocsTemplateRoleProperties, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsTemplateRolePropertiesElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRolePropertiesElement, ev: VerdocsTemplateRolePropertiesCustomEvent<HTMLVerdocsTemplateRolePropertiesElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3350,7 +3405,7 @@ declare global {
         "rolesUpdated": {endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]};
     }
     /**
-     * Displays an edit form that allows the user to adjust a template's roles and workflow.
+     * Display an edit form that allows the user to adjust a template's roles and workflow.
      */
     interface HTMLVerdocsTemplateRolesElement extends Components.VerdocsTemplateRoles, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsTemplateRolesElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateRolesElement, ev: VerdocsTemplateRolesCustomEvent<HTMLVerdocsTemplateRolesElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3573,6 +3628,7 @@ declare global {
         "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
         "verdocs-kba-dialog": HTMLVerdocsKbaDialogElement;
         "verdocs-loader": HTMLVerdocsLoaderElement;
+        "verdocs-menu-panel": HTMLVerdocsMenuPanelElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
         "verdocs-pagination": HTMLVerdocsPaginationElement;
@@ -4881,6 +4937,31 @@ declare namespace LocalJSX {
     interface VerdocsLoader {
     }
     /**
+     * Display a menu panel in a left or right sidebar. The panel will animate (slide)
+     * as it appears, and an background will be shown over the rest of the page. If
+     * the background overlay is present, it can be clicked to dismiss the panel.
+     * ```ts
+     * <verdocs-menu-panel>
+     *   <div style="padding: 20px;">Menu Panel</div>
+     * </verdocs-menu-panel>
+     * ```
+     */
+    interface VerdocsMenuPanel {
+        "onClose"?: (event: VerdocsMenuPanelCustomEvent<void>) => void;
+        /**
+          * Whether to show an overlay over the rest of the page.
+         */
+        "overlay"?: boolean;
+        /**
+          * Which side of the screen to place the panel.
+         */
+        "side"?: 'left' | 'right';
+        /**
+          * The width of the panel.
+         */
+        "width"?: number;
+    }
+    /**
      * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
      * box with a message and optional header/title. An OK button is shown that will dismiss the message.
      * It can also be dismissed by clicking the background overlay.
@@ -5589,7 +5670,7 @@ declare namespace LocalJSX {
         "toolbarTargetId"?: string | null;
     }
     /**
-     * Display an edit form that allows the user to adjust a role's setitngs.
+     * Present an editing form suitable for adjusting template-role properties.
      */
     interface VerdocsTemplateRoleProperties {
         /**
@@ -5618,7 +5699,7 @@ declare namespace LocalJSX {
         "templateId"?: string;
     }
     /**
-     * Displays an edit form that allows the user to adjust a template's roles and workflow.
+     * Display an edit form that allows the user to adjust a template's roles and workflow.
      */
     interface VerdocsTemplateRoles {
         /**
@@ -5965,6 +6046,7 @@ declare namespace LocalJSX {
         "verdocs-initial-dialog": VerdocsInitialDialog;
         "verdocs-kba-dialog": VerdocsKbaDialog;
         "verdocs-loader": VerdocsLoader;
+        "verdocs-menu-panel": VerdocsMenuPanel;
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
         "verdocs-pagination": VerdocsPagination;
@@ -6233,6 +6315,17 @@ declare module "@stencil/core" {
              */
             "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             /**
+             * Display a menu panel in a left or right sidebar. The panel will animate (slide)
+             * as it appears, and an background will be shown over the rest of the page. If
+             * the background overlay is present, it can be clicked to dismiss the panel.
+             * ```ts
+             * <verdocs-menu-panel>
+             *   <div style="padding: 20px;">Menu Panel</div>
+             * </verdocs-menu-panel>
+             * ```
+             */
+            "verdocs-menu-panel": LocalJSX.VerdocsMenuPanel & JSXBase.HTMLAttributes<HTMLVerdocsMenuPanelElement>;
+            /**
              * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
              * box with a message and optional header/title. An OK button is shown that will dismiss the message.
              * It can also be dismissed by clicking the background overlay.
@@ -6452,11 +6545,11 @@ declare module "@stencil/core" {
              */
             "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
             /**
-             * Display an edit form that allows the user to adjust a role's setitngs.
+             * Present an editing form suitable for adjusting template-role properties.
              */
             "verdocs-template-role-properties": LocalJSX.VerdocsTemplateRoleProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolePropertiesElement>;
             /**
-             * Displays an edit form that allows the user to adjust a template's roles and workflow.
+             * Display an edit form that allows the user to adjust a template's roles and workflow.
              */
             "verdocs-template-roles": LocalJSX.VerdocsTemplateRoles & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolesElement>;
             /**

@@ -6,7 +6,7 @@ import {Store} from '../../../utils/Datastore';
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#a50021"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>`;
 
 /**
- * Display an edit form that allows the user to adjust a role's setitngs.
+ * Present an editing form suitable for adjusting template-role properties.
  */
 @Component({
   tag: 'verdocs-template-role-properties',
@@ -176,6 +176,7 @@ export class VerdocsTemplateRoleProperties {
           newTemplate.roles = newTemplate.roles.filter(role => role.name !== this.roleName);
           Store.updateTemplate(this.templateId, newTemplate);
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
+          this.close?.emit();
         })
         .catch(e => {
           console.log('[ROLES Deletion error', e);
@@ -191,51 +192,54 @@ export class VerdocsTemplateRoleProperties {
 
     return (
       <Host>
-        <div class="background-overlay" onClick={e => this.handleCancel(e)}>
-          <div class="dialog">
-            <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
-              <verdocs-text-input
-                id="verdocs-role-name"
-                label="Role Name"
-                value={this.name}
-                autocomplete="off"
-                disabled={hasFields}
-                helpText={
-                  hasFields
-                    ? 'This role has fields assigned and can no longer be renamed.'
-                    : 'A unique name to identify the role in the workflow. Submitted data will also be tagged with this value.'
-                }
-                placeholder="Role Name..."
-                onInput={(e: any) => {
-                  this.name = e.target.value;
-                  this.dirty = true;
-                }}
-              />
+        <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
+          <div>
+            <verdocs-text-input
+              id="verdocs-role-name"
+              label="Role Name (Must be unique)"
+              value={this.name}
+              autocomplete="off"
+              disabled={hasFields}
+              placeholder="Role Name..."
+              onInput={(e: any) => {
+                this.name = e.target.value;
+                this.dirty = true;
+              }}
+            />
 
-              <div class="row">
-                <div class="input-label">Type:</div>
-                <verdocs-select-input
-                  value={this.type}
-                  options={[
-                    {label: 'Signer', value: 'signer'},
-                    {label: 'CC', value: 'cc'},
-                    {label: 'Approver', value: 'approver'},
-                  ]}
-                  onInput={(e: any) => {
-                    this.type = e.target.value;
-                    this.dirty = true;
-                  }}
-                />
-                <verdocs-help-icon text="Most participants are Signers. CC roles are notified when documents are signed, but have no other actions. Approvers get notified when signing is completed to perform a final review." />
-              </div>
+            {hasFields && <div class="instructions">This role has fields assigned and can no longer be renamed.</div>}
+            {/*<div class="instructions">{hasFields ? 'This role has fields assigned and can no longer be renamed.' : 'A unique name to identify the role in the workflow.'}</div>*/}
+          </div>
 
+          <div>
+            <div class="input-label">Type:</div>
+            <verdocs-select-input
+              value={this.type}
+              options={[
+                {label: 'Signer', value: 'signer'},
+                {label: 'CC', value: 'cc'},
+                {label: 'Approver', value: 'approver'},
+              ]}
+              onInput={(e: any) => {
+                this.type = e.target.value;
+                this.dirty = true;
+              }}
+            />
+            {/*<div class="instructions">*/}
+            {/*  Most participants are Signers. CC roles are notified when documents are signed, but have no other actions. Approvers get notified when signing is completed to perform*/}
+            {/*  a final review.*/}
+            {/*</div>*/}
+          </div>
+
+          <div>
+            <div class="input-label">Default Contact Info:</div>
+
+            <div class="first-last">
               <verdocs-text-input
                 id="verdocs-recipient-first"
-                label="First Name"
                 value={this.first_name}
                 autocomplete="off"
-                helpText="The recipient's first name, if it will always stay the same. Leave blank to supply this value later, when each new envelope is created from the template."
-                placeholder="First Name..."
+                placeholder="First..."
                 onInput={(e: any) => {
                   this.first_name = e.target.value;
                   this.dirty = true;
@@ -244,68 +248,71 @@ export class VerdocsTemplateRoleProperties {
 
               <verdocs-text-input
                 id="verdocs-recipient-first"
-                label="Last Name"
                 value={this.last_name}
                 autocomplete="off"
-                helpText="The recipient's last name, if it will always stay the same. Leave blank to supply this value later, when each new envelope is created from the template."
-                placeholder="Last Name..."
+                placeholder="Last..."
                 onInput={(e: any) => {
                   this.last_name = e.target.value;
                   this.dirty = true;
                 }}
               />
+            </div>
+          </div>
 
-              <verdocs-text-input
-                id="verdocs-recipient-email"
-                label="Email"
-                value={this.email}
-                autocomplete="off"
-                helpText="The recipient's email address, if it will always stay the same. Leave blank to supply this value later, when each new envelope is created from the template."
-                placeholder="Email Address..."
-                onInput={(e: any) => {
-                  this.email = e.target.value;
-                  this.dirty = true;
-                }}
-              />
+          <div>
+            <verdocs-text-input
+              id="verdocs-recipient-email"
+              value={this.email}
+              autocomplete="off"
+              placeholder="Email Address..."
+              onInput={(e: any) => {
+                this.email = e.target.value;
+                this.dirty = true;
+              }}
+            />
 
+            <div style={{height: '15px'}} />
+
+            <div>
               <verdocs-text-input
                 id="verdocs-recipient-phone"
-                label="Phone"
                 value={this.phone}
                 autocomplete="off"
-                helpText="The recipient's phone number, if it will always stay the same. Leave blank to supply this value later, when each new envelope is created from the template."
+                // helpText="The recipient's phone number, if it will always stay the same. Leave blank to supply this value later, when each new envelope is created from the template."
                 placeholder="Phone Number..."
                 onInput={(e: any) => {
                   this.phone = e.target.value;
                   this.dirty = true;
                 }}
               />
-
-              <div class="row">
-                <div class="input-label">May Delegate:</div>
-                <div class="checkbox-wrapper">
-                  <verdocs-checkbox
-                    checked={this.delegator}
-                    onInput={(e: any) => {
-                      this.delegator = e.target.checked;
-                      this.dirty = true;
-                    }}
-                  />
-                </div>
-                <verdocs-help-icon text="If enabled, this recipient may delegate their actions to another individual." />
-              </div>
-
-              <div class="buttons">
-                <button class="delete-button" disabled={this.dirty} onClick={e => this.handleDelete(e)} innerHTML={TrashIcon} />
-
-                <div style={{flex: '1'}} />
-
-                <verdocs-button size="small" variant="outline" label="Cancel" disabled={!this.dirty} onClick={e => this.handleCancel(e)} />
-                <verdocs-button size="small" label="Save" disabled={!this.dirty || !isValid} onClick={e => this.handleSave(e)} />
-              </div>
-            </form>
+              {/*<div class="instructions">Default name and contact information. This may be changed later when creating and envelope with this template.</div>*/}
+            </div>
           </div>
-        </div>
+
+          {/*<div class="row">*/}
+          {/*  <div class="input-label">May Delegate:</div>*/}
+          {/*  <div class="checkbox-wrapper">*/}
+          {/*    <verdocs-checkbox*/}
+          {/*      checked={this.delegator}*/}
+          {/*      onInput={(e: any) => {*/}
+          {/*        this.delegator = e.target.checked;*/}
+          {/*        this.dirty = true;*/}
+          {/*      }}*/}
+          {/*    />*/}
+          {/*  </div>*/}
+
+          {/*  <verdocs-help-icon text="If enabled, this recipient may delegate their actions to another individual." />*/}
+          {/*</div>*/}
+
+          <div class="buttons">
+            <button class="delete-button" disabled={this.dirty} onClick={e => this.handleDelete(e)} innerHTML={TrashIcon} />
+
+            <div style={{flex: '1'}} />
+
+            {/*<verdocs-button size="small" variant="outline" label="Cancel" disabled={!this.dirty} onClick={e => this.handleCancel(e)} />*/}
+            <verdocs-button size="small" label="Save" disabled={!this.dirty || !isValid} onClick={e => this.handleSave(e)} />
+          </div>
+        </form>
       </Host>
     );
   }

@@ -77,11 +77,10 @@ export const Store = {
     });
 
     if (!store.hasRow(tableId, rowId) || forceReload) {
-      console.log('[STORE] Reloading', {tableId, rowId});
+      console.log('[STORE] Loading/reloading', {tableId, rowId});
       getter()
         .then(result => {
           // We don't need to call the callback because it's already listening
-          console.log('[STORE] Loaded row', {tableId, rowId, forceReload}, result);
           store.setRow(tableId, rowId, objectToRow(result));
         })
         .catch(e => {
@@ -107,6 +106,7 @@ export const Store = {
     }
 
     const template = await getTemplate(endpoint, templateId);
+    console.log('[STORE] Reloading template', template);
     store.setRow('templates', templateId, objectToRow(template));
     return template;
   },

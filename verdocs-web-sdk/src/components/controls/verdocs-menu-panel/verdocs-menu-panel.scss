@@ -1,0 +1,36 @@
+@import '../../../theme.scss';
+
+#verdocs-menu-panel-overlay {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  position: fixed;
+  background-color: #0000007f;
+}
+
+#verdocs-menu-panel {
+  opacity: 0;
+  z-index: 10001;
+  position: fixed;
+  overflow-y: scroll;
+  background-color: #ffffff;
+  font-family: $verdocs-primary-font;
+
+  -webkit-animation: showVerdocsMenuPanel 0.35s;
+  -webkit-animation-fill-mode: forwards;
+}
+
+// TODO: Parameterize the width
+@-webkit-keyframes showVerdocsMenuPanel {
+  0% {
+    opacity: 0;
+    right: -300px;
+  }
+
+  100% {
+    right: 0;
+    opacity: 1;
+  }
+}

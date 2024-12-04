@@ -40,6 +40,7 @@ import { VerdocsHelpIcon as VerdocsHelpIconElement, defineCustomElement as defin
 import { VerdocsInitialDialog as VerdocsInitialDialogElement, defineCustomElement as defineVerdocsInitialDialog } from "@verdocs/web-sdk/dist/components/verdocs-initial-dialog.js";
 import { VerdocsKbaDialog as VerdocsKbaDialogElement, defineCustomElement as defineVerdocsKbaDialog } from "@verdocs/web-sdk/dist/components/verdocs-kba-dialog.js";
 import { VerdocsLoader as VerdocsLoaderElement, defineCustomElement as defineVerdocsLoader } from "@verdocs/web-sdk/dist/components/verdocs-loader.js";
+import { VerdocsMenuPanel as VerdocsMenuPanelElement, defineCustomElement as defineVerdocsMenuPanel } from "@verdocs/web-sdk/dist/components/verdocs-menu-panel.js";
 import { VerdocsOkDialog as VerdocsOkDialogElement, defineCustomElement as defineVerdocsOkDialog } from "@verdocs/web-sdk/dist/components/verdocs-ok-dialog.js";
 import { VerdocsOrganizationCard as VerdocsOrganizationCardElement, defineCustomElement as defineVerdocsOrganizationCard } from "@verdocs/web-sdk/dist/components/verdocs-organization-card.js";
 import { VerdocsPagination as VerdocsPaginationElement, defineCustomElement as defineVerdocsPagination } from "@verdocs/web-sdk/dist/components/verdocs-pagination.js";
@@ -576,6 +577,17 @@ export const VerdocsLoader: StencilReactComponent<VerdocsLoaderElement, VerdocsL
     react: React,
     events: {} as VerdocsLoaderEvents,
     defineCustomElement: defineVerdocsLoader
+});
+
+type VerdocsMenuPanelEvents = { onClose: EventName<CustomEvent<void>> };
+
+export const VerdocsMenuPanel: StencilReactComponent<VerdocsMenuPanelElement, VerdocsMenuPanelEvents> = /*@__PURE__*/ createComponent<VerdocsMenuPanelElement, VerdocsMenuPanelEvents>({
+    tagName: 'verdocs-menu-panel',
+    elementClass: VerdocsMenuPanelElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: { onClose: 'close' } as VerdocsMenuPanelEvents,
+    defineCustomElement: defineVerdocsMenuPanel
 });
 
 type VerdocsOkDialogEvents = {

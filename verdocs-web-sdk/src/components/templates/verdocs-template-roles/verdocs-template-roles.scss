@@ -2,8 +2,99 @@
 
 verdocs-template-roles {
   display: block;
-  min-width: 400px;
+  max-width: 600px;
   font-family: $verdocs-primary-font;
+
+  .roles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+
+    .sequence {
+      gap: 10px;
+      height: 34px;
+      display: flex;
+      flex-wrap: wrap;
+      font-weight: 500;
+      padding: 0 0 8px 0;
+      flex-direction: row;
+      border-bottom: 1px dotted #e3e3e3;
+
+      &.add-sequence {
+        color: #777777;
+        line-height: 34px;
+      }
+    }
+
+    .sequence-label {
+      font-size: 18px;
+      line-height: 32px;
+    }
+
+    .sequence-roles {
+      gap: 10px;
+      display: flex;
+      position: relative;
+      flex-wrap: wrap;
+      font-weight: 500;
+      flex-direction: row;
+    }
+
+    .role {
+      height: 32px;
+      cursor: move;
+      display: flex;
+      max-width: 200px;
+      position: relative;
+      border-radius: 32px;
+      background-color: #eff7fb;
+      box-sizing: border-box;
+      padding: 0 14px 0 34px;
+      border: 1px solid #ccc;
+      flex-direction: column;
+
+      .role-name {
+        font-size: 14px;
+        overflow: hidden;
+        font-weight: 400;
+        line-height: 30px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .icons {
+        position: absolute;
+        left: 1px;
+        top: -3px;
+        cursor: pointer;
+        padding: 5px;
+        z-index: 10;
+
+        .gear-button {
+          display: none;
+          transform: scale(1.1);
+          margin: 4px 0 0 1px;
+        }
+
+        .type-icon {
+          opacity: 0.6;
+          display: block;
+          transform: scale(0.8);
+        }
+
+        &:hover {
+          .gear-button {
+            display: block;
+          }
+
+          .type-icon {
+            display: none;
+          }
+        }
+      }
+    }
+  }
 
   > form {
     display: flex;
@@ -18,143 +109,6 @@ verdocs-template-roles {
       font-weight: bold;
       color: $verdocs-grey-blue;
       margin: 0 0 10px 0;
-    }
-
-    .participants {
-      position: relative;
-    }
-
-    // To avoid the need to compute things like heights, this layer is simply displayed "on top" of all the level rows. Its
-    // background obscures the horizontal lines.
-    .left-line {
-      top: 32px;
-      left: 11px;
-      z-index: 1;
-      width: 12px;
-      bottom: 30px;
-      position: absolute;
-      background: #ffffff;
-      border-left: 3px dotted #9b9b9b;
-    }
-
-    .row {
-      display: flex;
-      column-gap: 0;
-      min-height: 35px;
-      margin-top: 0;
-      margin-left: 40px;
-      position: relative;
-      flex-direction: row;
-      padding: 6px 0 4px 0;
-
-      .row-roles {
-        flex: 1;
-        gap: 10px;
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: row;
-      }
-
-      .icon {
-        top: 14px;
-        z-index: 2;
-        left: -40px;
-        width: 24px;
-        height: 24px;
-        position: absolute;
-        background: #ffffff;
-      }
-
-      .sender {
-        height: 30px;
-        display: flex;
-        font-size: 14px;
-        line-height: 30px;
-        align-items: center;
-        border-radius: 30px;
-        flex-direction: row;
-        padding: 0 15px 0 15px;
-        border: 1px solid #c6c9cc;
-        background-color: $verdocs-grey-3;
-      }
-
-      .complete {
-        height: 30px;
-        display: flex;
-        font-size: 14px;
-        padding: 0 15px;
-        line-height: 30px;
-        flex-direction: row;
-        border-radius: 30px;
-        background-color: $verdocs-grey-3;
-        border: 1px solid $verdocs-grey-2;
-      }
-
-      .label {
-        font-weight: bold;
-        margin-right: 6px;
-        color: $verdocs-grey-1;
-      }
-
-      .settings-button {
-        display: flex;
-        cursor: pointer;
-        margin: 0 0 0 9px;
-      }
-
-      .recipient {
-        height: 30px;
-        display: flex;
-        font-size: 14px;
-        border-radius: 30px;
-        align-items: center;
-        flex-direction: row;
-        padding: 0 5px 0 6px;
-        white-space: nowrap;
-        border: 2px solid $verdocs-grey-2;
-
-        .type-icon {
-          width: 24px;
-          height: 24px;
-          transform: scale(0.8);
-          opacity: 0.6;
-          margin: 0 12px 0 0;
-        }
-
-        &.dragging {
-          position: absolute;
-        }
-
-        // When dragging a recipient hide the "drop" target that appears after it. The dragged element gets removed from the DOM during
-        // the drag, so it leaves two drop zones side by side (a double width).
-        &.dragging + .dropzone {
-          display: none !important;
-        }
-      }
-
-      .dropzone {
-        width: 14px;
-        height: 30px;
-        display: none;
-
-        svg {
-          fill: #cccccc;
-        }
-
-        &.visible {
-          margin: 0 7px;
-          display: flex;
-          flex: 0 0 14px;
-          //border: 1px solid #ccc;
-        }
-
-        &.active {
-          flex: 0 0 120px;
-          border-radius: 30px;
-          background: #654dcb7f;
-          border: 1px dashed #654dcb;
-        }
-      }
     }
 
     label {
@@ -186,9 +140,10 @@ verdocs-template-roles {
     margin: 0;
     padding: 0;
     border: none;
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: pointer;
     background: none;
+    transform: scale(0.75);
 
     &:hover {
       opacity: 1;
@@ -219,30 +174,8 @@ verdocs-template-roles {
   }
 
   &.dragging {
-    .add-role {
-      display: none;
-    }
-
-    form .row .recipient + .dropzone {
-      display: flex;
-    }
-
     .row.add-sequence {
       display: flex;
-
-      .dropzone {
-        opacity: 0.5;
-        flex: 0 0 120px;
-        border-radius: 30px;
-        align-items: center;
-        background: #654dcb7f;
-        justify-content: center;
-        border: 1px dashed #654dcb;
-
-        &.active {
-          opacity: 1;
-        }
-      }
     }
   }
 
@@ -264,6 +197,19 @@ verdocs-template-roles {
       stroke: #666666;
       margin-bottom: 2px;
       display: inline-block;
+    }
+  }
+
+  &.dragging .roles .sequence.add-sequence {
+    .add-role,
+    .add-step-label {
+      display: none;
+    }
+
+    .sequence-roles {
+      display: flex;
+      min-width: 150px;
+      background: #e0e0e0;
     }
   }
 

@@ -1082,6 +1082,32 @@ export declare interface VerdocsLoader extends Components.VerdocsLoader {}
 
 
 @ProxyCmp({
+  inputs: ['overlay', 'side', 'width']
+})
+@Component({
+  selector: 'verdocs-menu-panel',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['overlay', 'side', 'width'],
+})
+export class VerdocsMenuPanel {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['close']);
+  }
+}
+
+
+export declare interface VerdocsMenuPanel extends Components.VerdocsMenuPanel {
+
+  close: EventEmitter<CustomEvent<void>>;
+}
+
+
+@ProxyCmp({
   inputs: ['buttonLabel', 'heading', 'message', 'showCancel']
 })
 @Component({
