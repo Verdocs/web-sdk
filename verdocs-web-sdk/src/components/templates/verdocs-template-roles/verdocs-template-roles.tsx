@@ -121,7 +121,7 @@ export class VerdocsTemplateRoles {
   componentDidRender() {
     // Existing sequence numbers
     const sequenceNumbers = this.getSequenceNumbers();
-    sequenceNumbers.forEach(sequence => {
+    (sequenceNumbers || []).forEach(sequence => {
       const el = document.getElementById(`verdocs-roles-sequence-${sequence}`);
       if (el) {
         new Sortable(el, {
@@ -243,8 +243,8 @@ export class VerdocsTemplateRoles {
 
     console.log('Sorting sequences', sequenceNumbers);
 
-    sequenceNumbers.forEach(targetSeq => {
-      sortableRoles[targetSeq].forEach((role, targetOrderMinusOne) => {
+    (sequenceNumbers || []).forEach(targetSeq => {
+      (sortableRoles[targetSeq] || []).forEach((role, targetOrderMinusOne) => {
         const targetOrder = +targetOrderMinusOne + 1;
         if (role.sequence !== +targetSeq || role.order !== targetOrder) {
           console.log('[ROLES] Updating role', role.name, 'from', role.sequence, role.order, 'to', targetSeq, targetOrder);
@@ -262,7 +262,7 @@ export class VerdocsTemplateRoles {
     console.log('Sortable Roles', sortableRoles);
 
     console.log(`[ROLES] Awaiting ${renumberRequests.length} renumber requests`);
-    return Promise.all(renumberRequests).then(async () => {
+    await Promise.all(renumberRequests).then(async () => {
       // When renumbering, we don't try to update the store for every individual item
       // changing. We just do it once at the end.
       const newTemplate = JSON.parse(JSON.stringify(this.template));
@@ -275,35 +275,8 @@ export class VerdocsTemplateRoles {
       // TODO: Explore race condition in reordering roles
       // this.template = await Store.getTemplate(this.endpoint, this.templateId, true);
     });
-    // // Avoid dupe renumber attempts
-    // const renumbered = [];
-    //
-    // // If the user dragged an entry from below a row to above it, we end up here like [1,0]. Make sure it's [0,1] for the next operation.
-    // const renumberRequests = [];
-    // this.getSequenceNumbers().forEach((originalSequence, newSequenceIndex) => {
-    //   this.getRolesAtSequence(originalSequence).forEach((role, newOrderIndex) => {
-    //     if (!renumbered.includes(role.name)) {
-    //       if (role.sequence !== newSequenceIndex + 1 || role.order !== newOrderIndex + 1) {
-    //         role.sequence = newSequenceIndex + 1;
-    //         role.order = newOrderIndex + 1;
-    //         renumbered.push(role.name);
-    //         // console.log('[ROLES] Renumbering', role.name, targetSequence, targetOrder);
-    //         renumberRequests.push(updateTemplateRole(this.endpoint, this.templateId, role.name, {sequence: role.sequence, order: role.order}));
-    //       }
-    //     }
-    //   });
-    // });
-    //
-    // if (renumberRequests.length > 0) {
-    //   console.log(`[ROLES] Submitting ${renumberRequests.length} renumber requests`);
-    //   return Promise.all(renumberRequests).then(async () => {
-    //     // When renumbering, we don't try to update the store for every individual item
-    //     // changing. We just do it once at the end.
-    //     this.template = await Store.getTemplate(this.endpoint, this.templateId, true);
-    //   });
-    // }
-    //
-    // return true;
+
+    this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles: this.getSortedRoles()});
   }
 
   // Look for name conflicts, because they're UGC and can be anything, regardless of order.
