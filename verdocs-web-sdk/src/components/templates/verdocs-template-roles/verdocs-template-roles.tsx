@@ -310,13 +310,14 @@ export class VerdocsTemplateRoles {
     })
       .then(async role => {
         console.log('[ROLES] Created role', role);
-        const newTemplate = JSON.parse(JSON.stringify(this.template));
-        newTemplate.roles.push(role);
+        // const newTemplate = JSON.parse(JSON.stringify(this.template));
+        // newTemplate.roles.push(role);
         // TODO: Verify this immediately triggers a self-update
         console.log('Updating template in data store');
-        Store.updateTemplate(this.templateId, newTemplate);
+        await Store.getTemplate(this.endpoint, this.templateId, true);
+        // Store.updateTemplate(this.templateId, newTemplate);
         // This will re-sort the roles and renumbers them via server calls if necessary
-        await this.renumberTemplateRoles();
+        // await this.renumberTemplateRoles();
         this.rolesUpdated?.emit({event: 'added', endpoint: this.endpoint, templateId: this.templateId, roles: this.getSortedRoles()});
       })
       .catch(e => {
@@ -414,7 +415,7 @@ export class VerdocsTemplateRoles {
               <div class="sequence-label no-drag">{sequences.length + 1}.</div>
 
               <div class="sequence-roles" id={`verdocs-roles-sequence-${sequences.length + 1}`} data-sequence={sequences.length + 1}>
-                <div class="role-name add-step-label">Add Step.</div>
+                {/*<div class="role-name add-step-label">Add Step.</div>*/}
               </div>
 
               <button class="add-role no-drag" innerHTML={plusIcon} onClick={e => this.handleAddRole(e, sequences.length + 1)} />

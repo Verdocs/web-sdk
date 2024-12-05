@@ -174,7 +174,8 @@ export class VerdocsTemplateRoleProperties {
         .then(() => {
           const newTemplate = JSON.parse(JSON.stringify(this.template)) as ITemplate;
           newTemplate.roles = newTemplate.roles.filter(role => role.name !== this.roleName);
-          Store.updateTemplate(this.templateId, newTemplate);
+          Store.getTemplate(this.endpoint, this.templateId, true);
+          // Store.updateTemplate(this.templateId, newTemplate);
           this.delete?.emit({templateId: this.templateId, roleName: this.roleName});
           this.close?.emit();
         })
