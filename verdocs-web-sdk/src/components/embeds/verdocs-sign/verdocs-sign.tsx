@@ -635,6 +635,7 @@ export class VerdocsSign {
     // NOTE: We don't filter on pageNumber here because we need the position in the
     // entire list to set the tabIndex.
     const recipientFields = this.getSortedFillableFields();
+    console.log('[SIGN] Rendering fields for page', pageInfo.pageNumber, recipientFields);
 
     // First render the fields for the signer
     recipientFields.forEach((field, tabIndex) => {

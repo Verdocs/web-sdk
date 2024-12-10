@@ -150,6 +150,7 @@ export class VerdocsFieldSignature {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const {index, field} = Store.getField(source, sourceid, fieldname);
+    console.log('Signature field', index, getRGBA(index), field);
     const {required = false, value = '', label = '', settings = {}} = field || {};
     const {base64} = settings;
     const backgroundColor = getRGBA(index);
