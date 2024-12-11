@@ -1,6 +1,6 @@
 import {createStore, Row} from 'tinybase';
-import type {IEnvelope, ITemplate} from '@verdocs/js-sdk';
 import {getTemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
+import type {IEnvelope, IEnvelopeField, ITemplate, ITemplateField} from '@verdocs/js-sdk';
 
 const store = createStore();
 
@@ -140,7 +140,7 @@ export const Store = {
   // called by the verdocs-field-* components themselves which are only rendered
   // after a template or envelope is already loaded and cached in the store, so
   // no attempt is made to load the parent record if it isn't already known.
-  getField(source: 'template' | 'envelope', sourceId: string, fieldName: string) {
+  getField(source: 'template' | 'envelope', sourceId: string, fieldName: string, fieldOverride: ITemplateField | IEnvelopeField | null | undefined) {
     if (source === 'template') {
       const row = store.getRow('templates', sourceId);
       const template = rowToObject<ITemplate>(row);
@@ -149,7 +149,7 @@ export const Store = {
       const roleNames = (template.roles || []).map(role => role.name);
       const index = roleNames.findIndex(name => name === field.role_name);
 
-      return {index: Math.max(index, 0), field};
+      return {index: Math.max(index, 0), field: fieldOverride || field};
     } else {
       const row = store.getRow('envelopes', sourceId);
       const envelope = rowToObject<IEnvelope>(row);
@@ -158,7 +158,7 @@ export const Store = {
       const roleNames = (envelope.recipients || []).map(recipient => recipient.role_name);
       const index = roleNames.findIndex(name => name === field.role_name);
 
-      return {index, field};
+      return {index, field: fieldOverride || field};
     }
   },
 };

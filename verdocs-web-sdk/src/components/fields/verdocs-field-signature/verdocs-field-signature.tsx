@@ -1,4 +1,4 @@
-import {ITemplateField, getRGBA} from '@verdocs/js-sdk';
+import {ITemplateField, getRGBA, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
@@ -28,10 +28,16 @@ export class VerdocsFieldSignature {
    */
   @Prop({reflect: true}) sourceid: string = '';
 
-  /**
+    /**
    * The name of the field to display.
    */
   @Prop({reflect: true}) fieldname: string = '';
+
+  /**
+   * Override the field's settings. This is intended to be used during signing when fields are being
+   * mutated.
+   */
+  @Prop() field: IEnvelopeField | null | undefined = null;
 
   /**
    * If set, the signature creation dialog will be initialized with this text.
@@ -149,7 +155,7 @@ export class VerdocsFieldSignature {
   render() {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
-    const {index, field} = Store.getField(source, sourceid, fieldname);
+    const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     console.log('Signature field', index, getRGBA(index), field);
     const {required = false, value = '', label = '', settings = {}} = field || {};
     const {base64} = settings;

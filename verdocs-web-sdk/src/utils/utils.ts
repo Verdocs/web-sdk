@@ -101,6 +101,7 @@ export const updateDocumentFieldValue = (field: ITemplateField | IEnvelopeField)
   const existingField = document.getElementById(id) as any;
   if (existingField) {
     existingField.field = field;
+    existingField.roleindex = field;
     existingField.setAttribute('id', id); // We need this to trigger a re-render
     existingField.setAttribute('disabled', true); // We need this to trigger a re-render
     existingField.setAttribute('disabled', false); // We need this to trigger a re-render

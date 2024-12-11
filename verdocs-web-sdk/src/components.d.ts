@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { ICreateEnvelopeRecipient, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -22,7 +22,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { ICreateEnvelopeRecipient, IEnvelope, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { ICreateEnvelopeRecipient, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -418,6 +418,10 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
+        /**
           * The name of the field to display.
          */
         "fieldname": string;
@@ -465,6 +469,10 @@ export namespace Components {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */
@@ -566,6 +574,10 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
+        /**
           * The name of the field to display.
          */
         "fieldname": string;
@@ -618,6 +630,10 @@ export namespace Components {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */
@@ -675,6 +691,10 @@ export namespace Components {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
         "fieldId": string;
         /**
           * The name of the field to display.
@@ -736,6 +756,10 @@ export namespace Components {
          */
         "editable"?: boolean;
         /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
+        /**
           * The name of the field to display.
          */
         "fieldname": string;
@@ -792,6 +816,10 @@ export namespace Components {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */
@@ -850,6 +878,10 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
+        /**
           * The name of the field to display.
          */
         "fieldname": string;
@@ -897,6 +929,10 @@ export namespace Components {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */
@@ -950,6 +986,10 @@ export namespace Components {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */
@@ -4169,6 +4209,10 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
+        /**
           * The name of the field to display.
          */
         "fieldname"?: string;
@@ -4225,6 +4269,10 @@ declare namespace LocalJSX {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */
@@ -4340,6 +4388,10 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
+        /**
           * The name of the field to display.
          */
         "fieldname"?: string;
@@ -4401,6 +4453,10 @@ declare namespace LocalJSX {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */
@@ -4479,6 +4535,10 @@ declare namespace LocalJSX {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
         "fieldId"?: string;
         /**
           * The name of the field to display.
@@ -4545,6 +4605,10 @@ declare namespace LocalJSX {
          */
         "editable"?: boolean;
         /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
+        /**
           * The name of the field to display.
          */
         "fieldname"?: string;
@@ -4606,6 +4670,10 @@ declare namespace LocalJSX {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */
@@ -4677,6 +4745,10 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
+        /**
           * The name of the field to display.
          */
         "fieldname"?: string;
@@ -4729,6 +4801,10 @@ declare namespace LocalJSX {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */
@@ -4787,6 +4863,10 @@ declare namespace LocalJSX {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
+        /**
+          * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+         */
+        "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
          */

@@ -114,6 +114,7 @@ export class VerdocsSend {
         this.template = template;
         this.loading = false;
         this.rolesCompleted = {};
+        this.recomputeRolesCompleted();
       },
     );
   }
@@ -214,8 +215,8 @@ export class VerdocsSend {
         ...role,
         id: `r-${level}-${index}`,
         role_name: role.name,
-        first_name: '',
-        last_name: '',
+        first_name: role.first_name,
+        last_name: role.last_name,
       }));
     return rolesAtLevel as Partial<IRecipient>[];
   }
@@ -306,7 +307,7 @@ export class VerdocsSend {
     }
 
     const levels = this.getLevels();
-    const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email));
+    const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) && recipient.first_name && recipient.last_name);
     // TODO: Reactivate once SMS is re-enabled
     // const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= getRoleNames(this.template).length;
@@ -325,14 +326,21 @@ export class VerdocsSend {
               {this.getLevelIcon(level)}
 
               {this.getRolesAtLevel(level).map(role => {
-                const unknown = !role.email;
+                const unknown = !role.email || !role.first_name || !role.last_name;
+                const roleName = this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : unknown ? role.role_name : formatFullName(role);
                 const elId = `verdocs-send-recipient-${role.role_name}`;
                 const roleIndex = getRoleIndex(this.template, role.role_name);
                 const rgba = getRGBA(roleIndex);
+                const completed = rolesAssigned.findIndex(r => r.role_name === role.role_name) > -1;
+
+                const style = {
+                  backgroundColor: rgba,
+                  border: completed ? '2px solid #55bc81' : '2px solid #dddddd',
+                };
 
                 return unknown ? (
-                  <div class="recipient" data-ri={roleIndex} data-rn={role.role_name} style={{backgroundColor: rgba}} onClick={e => this.handleClickRole(e, role)} id={elId}>
-                    {this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : role.role_name}
+                  <div class="recipient" data-ri={roleIndex} data-rn={role.role_name} style={style} onClick={e => this.handleClickRole(e, role)} id={elId}>
+                    {roleName}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
                       <verdocs-portal anchor={elId} onClickAway={() => (this.showPickerForId = '')}>
@@ -347,8 +355,9 @@ export class VerdocsSend {
                     )}
                   </div>
                 ) : (
-                  <div class="recipient" style={{borderColor: rgba}} onClick={e => this.handleClickRole(e, role)} id={elId}>
-                    {this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : role.role_name}
+                  <div class="recipient" data-ri={roleIndex} data-rn={role.role_name} style={style} onClick={e => this.handleClickRole(e, role)} id={elId}>
+                    {/*<div class="recipient" data-ri={roleIndex} data-rn={role.role_name} style={{borderColor: rgba}} onClick={e => this.handleClickRole(e, role)} id={elId}>*/}
+                    {roleName}
                     <div class="icon" innerHTML={editIcon} />
                     {this.showPickerForId === role.id && (
                       <verdocs-portal anchor={elId} onClickAway={() => (this.showPickerForId = '')}>

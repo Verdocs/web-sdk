@@ -1,8 +1,6 @@
 import Sortable from 'sortablejs';
 import {Component, h, Element, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
 import {createTemplateRole, formatFullName, getTemplate, IRole, ITemplate, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
-// import {createTemplateRole, formatFullName, getRGBA, getTemplate, IRole, ITemplate, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
-// import {getRoleIndex} from '../../../utils/Templates';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
@@ -380,7 +378,7 @@ export class VerdocsTemplateRoles {
 
                 <div class="sequence-roles" id={`verdocs-roles-sequence-${sequence}`} data-sequence={sequence}>
                   {this.getRolesAtSequence(sequence).map(role => {
-                    const unknown = !role.email;
+                    const unknown = !role.email || !role.first_name || !role.last_name;
                     return unknown ? (
                       <div class="role" data-rolename={role.name} data-sequence={sequence} data-order={role.order}>
                         <div class="role-name">{role.name}</div>

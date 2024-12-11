@@ -9,6 +9,7 @@ import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValu
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
+import {Store} from '../../../utils/Datastore';
 
 const inProgressMenuOptions = [
   {id: 'later', label: 'Finish Later'}, //
@@ -154,6 +155,9 @@ export class VerdocsSign {
       this.recipient = recipient;
       this.envelope = envelope;
 
+      Store.updateEnvelope(this.envelopeId, envelope);
+
+      // TODO: Can be cleaned up shortly.
       this.sortedRecipients = [...this.envelope.recipients];
       this.sortedRecipients.sort((a, b) => {
         return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
@@ -287,7 +291,7 @@ export class VerdocsSign {
   }
 
   updateRecipientFieldValue(fieldName: string, updateResult: any) {
-    console.log('[SIGN] updateRecipientFieldValue', fieldName);
+    console.log('[SIGN] updateRecipientFieldValue', fieldName, updateResult);
     this.getRecipientFields().forEach(oldField => {
       if (oldField.name === fieldName) {
         oldField.value = updateResult.value;
@@ -300,7 +304,7 @@ export class VerdocsSign {
   }
 
   saveFieldChange(fieldName: string, fields: Record<string, any>) {
-    console.log('[SIGN] updateRecipientFieldValue', fieldName);
+    console.log('[SIGN] saveFieldChange', fieldName, fields);
     updateEnvelopeField(this.endpoint, this.envelopeId, fieldName, fields) //
       .then(updateResult => this.updateRecipientFieldValue(fieldName, updateResult))
       .catch(e => {
