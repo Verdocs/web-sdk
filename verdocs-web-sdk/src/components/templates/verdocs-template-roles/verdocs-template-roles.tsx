@@ -70,6 +70,7 @@ export class VerdocsTemplateRoles {
 
   disconnectedCallback() {
     this.unlistenToTemplate();
+    this.cleanupSortables();
   }
 
   async listenToTemplate() {
@@ -111,18 +112,27 @@ export class VerdocsTemplateRoles {
 
       this.listenToTemplate();
     } catch (e) {
-      console.log('[FIELDS] Error with preview session', e);
+      console.log('[ROLES] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
 
+  sortableRefs: Sortable[] = [];
+
+  cleanupSortables() {
+    this.sortableRefs.forEach(sr => sr.destroy());
+    this.sortableRefs.length = 0;
+  }
+
   componentDidRender() {
+    this.cleanupSortables();
+
     // Existing sequence numbers
     const sequenceNumbers = this.getSequenceNumbers();
     (sequenceNumbers || []).forEach(sequence => {
       const el = document.getElementById(`verdocs-roles-sequence-${sequence}`);
       if (el) {
-        new Sortable(el, {
+        const sortable = new Sortable(el, {
           group: 'roles',
           animation: 150,
           dragoverBubble: true,
@@ -131,12 +141,14 @@ export class VerdocsTemplateRoles {
           onChoose: () => (this.dragging = true),
           onUnchoose: () => (this.dragging = false),
         });
+        this.sortableRefs.push(sortable);
       }
     });
 
-    const el = document.getElementById(`verdocs-roles-sequence-${sequenceNumbers.length + 1}`);
+    const el = document.getElementById(`verdocs-roles-sequence-add-target`);
     if (el) {
-      new Sortable(el, {
+      console.log('[ROLES] Applying sortable to add-sequence slot');
+      const sortable = new Sortable(el, {
         group: 'roles',
         animation: 150,
         dragoverBubble: true,
@@ -145,34 +157,41 @@ export class VerdocsTemplateRoles {
         onChoose: () => (this.dragging = true),
         onUnchoose: () => (this.dragging = false),
       });
+      this.sortableRefs.push(sortable);
     }
   }
 
   handleMoveEnd(evt) {
-    const fromSeq = +evt.from.id.split('-').pop();
-    const toSeq = +evt.to.id.split('-').pop();
+    const fromSeq = +evt.from.dataset.sequence;
+    const toSeq = +evt.to.dataset.sequence;
     const fromIndex = +evt.oldIndex + 1;
     const toIndex = +evt.newIndex + 1;
 
-    // console.log(`Move from ${fromSeq}:${fromIndex} to ${toSeq}:${toIndex}`, evt.item);
+    console.log(`Move from ${fromSeq}:${fromIndex} to ${toSeq}:${toIndex}`, evt.item);
 
-    const sortableRoles: Record<number, IRole[]> = {};
+    const sortableRoles: Record<string, IRole[]> = {};
     const sequenceNumbers = this.getSequenceNumbers();
     sequenceNumbers.forEach(sequence => {
-      sortableRoles[sequence] = JSON.parse(JSON.stringify(this.getRolesAtSequence(sequence)));
+      const ras = this.getRolesAtSequence(sequence);
+
+      sortableRoles[String(sequence)] = JSON.parse(JSON.stringify(ras));
     });
 
     // We might be adding a new sequence number now. Make sure we have an array to drop
     // the record into.
-    sortableRoles[sequenceNumbers.length + 1] = [];
+    sortableRoles[sequenceNumbers[sequenceNumbers.length - 1] + 1] = [];
 
     const role = sortableRoles[fromSeq].splice(fromIndex - 1, 1)[0];
+    sortableRoles[toSeq] ||= [];
     sortableRoles[toSeq].splice(toIndex - 1, 0, role);
 
     const renumberRequests = [];
     Object.entries(sortableRoles).forEach(([targetSeq, roles]) => {
       roles.forEach((role, index) => {
-        console.log('Evaluating role', role.name, role.sequence, role.order);
+        if (!role) {
+          return;
+        }
+
         const targetOrder = +index + 1;
         if (role.sequence !== +targetSeq || role.order !== targetOrder) {
           role.sequence = +targetSeq;
@@ -186,15 +205,9 @@ export class VerdocsTemplateRoles {
       });
     });
 
-    // When renumbering, we don't try to update the store for every individual item
-    // changing. We just do it once at the end.
-    console.log(`[ROLES] Awaiting ${renumberRequests.length} renumber requests`, renumberRequests);
-    return Promise.all(renumberRequests).then(async () => {
-      const newTemplate = JSON.parse(JSON.stringify(this.template));
-      newTemplate.roles = Object.keys(sortableRoles).reduce((acc, seq) => acc.concat(sortableRoles[seq]), []);
-      await Store.getTemplate(this.endpoint, this.templateId, true);
-      // Store.updateTemplate(this.templateId, newTemplate);
-    });
+    return Promise.all(renumberRequests)
+      .then(async () => console.log('[ROLES] Done renumbering'))
+      .catch(e => console.log('[ROLES] Error updating roles', e));
   }
 
   handleCancel() {
@@ -239,8 +252,6 @@ export class VerdocsTemplateRoles {
     const renumberRequests = [];
     const sequenceNumbers = this.getSequenceNumbers();
 
-    console.log('Sorting sequences', sequenceNumbers);
-
     (sequenceNumbers || []).forEach(targetSeq => {
       (sortableRoles[targetSeq] || []).forEach((role, targetOrderMinusOne) => {
         const targetOrder = +targetOrderMinusOne + 1;
@@ -256,8 +267,6 @@ export class VerdocsTemplateRoles {
         }
       });
     });
-
-    console.log('Sortable Roles', sortableRoles);
 
     console.log(`[ROLES] Awaiting ${renumberRequests.length} renumber requests`);
     await Promise.all(renumberRequests).then(async () => {
@@ -362,8 +371,7 @@ export class VerdocsTemplateRoles {
 
     const roleNames = this.getRoleNames();
     const sequences = this.getSequenceNumbers();
-
-    console.log('Rendering sequences', sequences, roleNames);
+    const nextSequence = sequences && sequences.length > 0 ? (sequences[sequences.length - 1] || 0) + 1 : 1;
 
     // style={{backgroundColor: getRGBA(getRoleIndex(this.template, role.name))}}
     return (
@@ -372,9 +380,9 @@ export class VerdocsTemplateRoles {
           <h5>Roles and Workflow</h5>
 
           <div class="roles">
-            {sequences.map(sequence => (
+            {sequences.map((sequence, index) => (
               <div class="sequence">
-                <div class="sequence-label no-drag">{sequence}.</div>
+                <div class="sequence-label no-drag">{index + 1}.</div>
 
                 <div class="sequence-roles" id={`verdocs-roles-sequence-${sequence}`} data-sequence={sequence}>
                   {this.getRolesAtSequence(sequence).map(role => {
@@ -388,13 +396,7 @@ export class VerdocsTemplateRoles {
                         </div>
                       </div>
                     ) : (
-                      <div
-                        class="role"
-                        // style={{borderColor: getRGBA(getRoleIndex(this.template, role.name))}}
-                        data-rolename={role.name}
-                        data-sequence={sequence}
-                        data-order={role.order}
-                      >
+                      <div class="role" data-rolename={role.name} data-sequence={sequence} data-order={role.order}>
                         <div class="role-name">{formatFullName(role)}</div>
                         <div class="icons">
                           <div class="gear-button" innerHTML={settingsIcon} onClick={() => (this.showingRoleDialog = role.name)} aria-role="button" />
@@ -405,18 +407,20 @@ export class VerdocsTemplateRoles {
                   })}
                 </div>
 
-                <button class="add-role no-drag" innerHTML={plusIcon} onClick={e => this.handleAddRole(e, sequence)} />
+                <button class="add-role no-drag" onClick={e => this.handleAddRole(e, sequence)}>
+                  + Add Role
+                </button>
               </div>
             ))}
 
             <div class="sequence add-sequence">
               <div class="sequence-label no-drag">{sequences.length + 1}.</div>
 
-              <div class="sequence-roles" id={`verdocs-roles-sequence-${sequences.length + 1}`} data-sequence={sequences.length + 1}>
-                {/*<div class="role-name add-step-label">Add Step.</div>*/}
-              </div>
+              <div class="sequence-roles" id={`verdocs-roles-sequence-add-target`} data-sequence={nextSequence} />
 
-              <button class="add-role no-drag" innerHTML={plusIcon} onClick={e => this.handleAddRole(e, sequences.length + 1)} />
+              <button class="add-role no-drag" onClick={e => this.handleAddRole(e, nextSequence)}>
+                + Add Role
+              </button>
             </div>
           </div>
 

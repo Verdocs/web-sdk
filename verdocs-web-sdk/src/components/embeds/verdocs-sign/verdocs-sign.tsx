@@ -266,7 +266,7 @@ export class VerdocsSign {
           console.log('[SIGN] Decline result', declineResult);
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
           this.submitting = false;
-          this.fatalErrorHeader = 'Unable to Start Signing Session';
+          this.fatalErrorHeader = 'Declined';
           this.fatalErrorMessage = 'You have declined to sign this envelope.';
         }
         break;
@@ -710,8 +710,6 @@ export class VerdocsSign {
       return (
         <Host class={{agreed: this.agreed}}>
           <div class="fatal-error">
-            <img src="https://public-assets.verdocs.com/loading-placeholder.png" class="placeholder" alt="Placeholder page" />
-
             <div class="message">
               <div class="header">{this.fatalErrorHeader}</div>
               <p>{this.fatalErrorMessage}</p>

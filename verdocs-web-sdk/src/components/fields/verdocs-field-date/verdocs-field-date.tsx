@@ -142,6 +142,7 @@ export class VerdocsFieldDate {
   // NOTE: We don't use a "date" field here because browsers vary widely in their formatting of it.
   render() {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
+    console.log('Rendering date picker', source, sourceid, fieldname);
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     const {required = false, placeholder = 'Date...', value = '', label = ''} = field || {};
@@ -162,7 +163,7 @@ export class VerdocsFieldDate {
           class="input-el"
           type="text"
           value={formattedValue}
-          id={fieldname}
+          id={this.containerId}
           disabled={disabled}
           placeholder={placeholder}
           onFocus={() => (this.focused = true)}

@@ -13,7 +13,7 @@ verdocs-template-roles {
 
     .sequence {
       gap: 10px;
-      height: 34px;
+      //height: 34px;
       display: flex;
       flex-wrap: wrap;
       font-weight: 500;
@@ -37,7 +37,6 @@ verdocs-template-roles {
       display: flex;
       position: relative;
       flex-wrap: wrap;
-      font-weight: 500;
       flex-direction: row;
     }
 
@@ -137,22 +136,24 @@ verdocs-template-roles {
   }
 
   .add-role {
-    margin: 0;
-    padding: 0;
-    border: none;
     opacity: 0.3;
+    padding: 0 10px;
     cursor: pointer;
     background: none;
-    transform: scale(0.75);
+    height: 32px;
+    border: 1px solid #cccccc;
+    border-radius: 32px;
+
+    //transform: scale(0.75);
 
     &:hover {
       opacity: 1;
     }
 
-    svg {
-      width: 32px;
-      height: 32px;
-    }
+    //svg {
+    //  width: 32px;
+    //  height: 32px;
+    //}
   }
 
   .add-step {
@@ -200,17 +201,9 @@ verdocs-template-roles {
     }
   }
 
-  &.dragging .roles .sequence.add-sequence {
-    .add-role,
-    .add-step-label {
-      display: none;
-    }
-
-    .sequence-roles {
-      display: flex;
-      min-width: 150px;
-      background: #e0e0e0;
-    }
+  .sequence-roles {
+    display: flex;
+    max-width: 400px;
   }
 
   ::placeholder {

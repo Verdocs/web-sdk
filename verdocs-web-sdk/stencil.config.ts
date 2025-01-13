@@ -1,5 +1,6 @@
 import {sass} from '@stencil/sass';
 import {Config} from '@stencil/core';
+import {vueOutputTarget} from '@stencil/vue-output-target';
 import {reactOutputTarget} from '@stencil/react-output-target';
 import {angularOutputTarget, ValueAccessorConfig} from '@stencil/angular-output-target';
 
@@ -16,7 +17,7 @@ export const config: Config = {
   namespace: 'verdocs-web-sdk',
   buildEs5: true,
   commonjs: {},
-  sourceMap: false,
+  sourceMap: true,
   devServer: {
     openBrowser: false,
   },
@@ -44,6 +45,10 @@ export const config: Config = {
       // proxiesFile: '../verdocs-web-sdk-react/src/components.ts',
       // includeImportCustomElements: true,
       // customElementsDir: 'dist/components',
+    }),
+    vueOutputTarget({
+      componentCorePackage: '@verdocs/web-sdk',
+      proxiesFile: '../verdocs-web-sdk-vue/lib/components.ts',
     }),
     {
       type: 'dist',
