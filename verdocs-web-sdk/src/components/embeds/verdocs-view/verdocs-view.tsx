@@ -126,7 +126,7 @@ export class VerdocsView {
       'envelopes',
       this.envelopeId,
       () => getEnvelope(this.endpoint, this.envelopeId),
-      false,
+      true,
       (envelope: IEnvelope) => {
         this.envelope = envelope;
         this.loading = false;

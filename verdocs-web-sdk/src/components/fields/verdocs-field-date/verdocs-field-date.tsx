@@ -108,6 +108,7 @@ export class VerdocsFieldDate {
   picker: AirDatepicker<HTMLElement> | null = null;
 
   componentDidLoad() {
+    console.log('Activating date picker', this.containerId, document.getElementById(this.containerId));
     this.picker = new AirDatepicker<HTMLElement>(`#${this.containerId}`, {
       locale: localeEn,
       isMobile: true,
