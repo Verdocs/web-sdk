@@ -1,7 +1,7 @@
 /* eslint-disable */
 /* tslint:disable */
 /* auto-generated vue proxies */
-import {defineContainer} from '@stencil/vue-output-target/dist/runtime';
+import { defineContainer } from '@stencil/vue-output-target/runtime';
 
 import type { JSX } from '@verdocs/web-sdk';
 
