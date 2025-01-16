@@ -138,6 +138,7 @@ verdocs-sign {
     }
 
     .message {
+      max-width: 50%;
       width: 50%;
       font-size: 16px;
       background: white;
@@ -158,6 +159,7 @@ verdocs-sign {
       margin: 1rem;
       font-size: 14px;
       font-weight: 400;
+      padding: 0 10px;
     }
   }
 }

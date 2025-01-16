@@ -5,7 +5,7 @@ export default {
   title: 'Templates/Roles',
   component: 'verdocs-template-roles',
   args: {
-    templateId: '',
+    templateId: '6a3b3095-84f1-40c4-9676-b8fd651bd427',
   },
   argTypes: {
     onSave: {action: 'save'},

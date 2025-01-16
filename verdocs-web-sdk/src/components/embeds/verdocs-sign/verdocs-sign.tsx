@@ -895,7 +895,6 @@ export class VerdocsSign {
     if (this.kbaStep === 'challenge') {
       const questionNumber = this.kbaChoices.length;
       const kbaQuestion = this.kbaQuestions[questionNumber];
-      console.log('Showing KBA question', {questionNumber, kbaQuestion}, this.kbaChoices);
       return (
         <Host class="kba">
           <div id="verdocs-sign-header">

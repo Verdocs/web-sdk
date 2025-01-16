@@ -29,8 +29,8 @@ const doneIcon =
  * ```ts
  * <verdocs-send
  *   templateId={templateId}
- *   onSend={({ detail }) => { console.log('Sent!', detail) }
- *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+ *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
+ *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
  *   onExit={(e) => { console.log('Send cancelled.', detail) }
  *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
  *   />
@@ -65,7 +65,7 @@ export class VerdocsSend {
   /**
    * The user is sending an envelope the form and clicked send.
    */
-  @Event({composed: true}) sendingEnvelope: EventEmitter<{sending: boolean}>;
+  @Event({composed: true}) beforeSend: EventEmitter<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string}>;
 
   /**
    * The user completed the form and clicked send.
@@ -254,7 +254,6 @@ export class VerdocsSend {
     e.stopPropagation();
 
     this.sending = true;
-    this.sendingEnvelope?.emit({sending: true});
 
     const details: ICreateEnvelopeFromTemplateRequest = {
       template_id: this.templateId,
@@ -267,20 +266,26 @@ export class VerdocsSend {
       fields: [],
     };
 
+    const beforeSendResult = this.beforeSend.emit({...details, name: details.name!});
+    if (beforeSendResult.defaultPrevented) {
+      console.log('[SEND] Send cancelled by parent', details);
+      this.sending = false;
+      return;
+    }
+
     console.log('[SEND] Creating envelope', details);
     createEnvelope(this.endpoint, details)
       .then(r => {
         console.log('[SEND] Send envelope', r);
         this.reset().catch((e: any) => console.log('Unknown Error', e));
         this.sending = false;
-        this.sendingEnvelope?.emit({sending: false});
         this.send?.emit({...details, name: details.name!, envelope_id: r.id, envelope: r});
       })
       .catch(e => {
-        console.log('Send error', e);
+        console.log('[SEND] Send error', e);
         VerdocsToast(e.response?.data?.error || 'Error creating envelope, please try again later.');
         this.sending = false;
-        this.sendingEnvelope?.emit({sending: false});
+        this.sdkError?.emit(e);
       });
   }
 
