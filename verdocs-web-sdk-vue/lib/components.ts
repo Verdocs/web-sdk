@@ -615,13 +615,13 @@ export const VerdocsSend = /*@__PURE__*/ defineContainer<JSX.VerdocsSend>('verdo
   'endpoint',
   'templateId',
   'environment',
-  'sendingEnvelope',
+  'beforeSend',
   'send',
   'exit',
   'sdkError',
   'searchContacts'
 ], [
-  'sendingEnvelope',
+  'beforeSend',
   'send',
   'exit',
   'sdkError',

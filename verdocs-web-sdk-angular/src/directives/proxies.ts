@@ -1452,7 +1452,7 @@ export class VerdocsSend {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sendingEnvelope', 'send', 'exit', 'sdkError', 'searchContacts']);
+    proxyOutputs(this, this.el, ['beforeSend', 'send', 'exit', 'sdkError', 'searchContacts']);
   }
 }
 
@@ -1466,7 +1466,7 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
    * The user is sending an envelope the form and clicked send.
    */
-  sendingEnvelope: EventEmitter<CustomEvent<{sending: boolean}>>;
+  beforeSend: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipient[]; name: string; template_id: string}>>;
   /**
    * The user completed the form and clicked send.
    */

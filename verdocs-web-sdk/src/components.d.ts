@@ -1389,8 +1389,8 @@ export namespace Components {
      * ```ts
      * <verdocs-send
      *   templateId={templateId}
-     *   onSend={({ detail }) => { console.log('Sent!', detail) }
-     *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+     *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
+     *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
      *   onExit={(e) => { console.log('Send cancelled.', detail) }
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
@@ -3081,7 +3081,7 @@ declare global {
         new (): HTMLVerdocsSelectInputElement;
     };
     interface HTMLVerdocsSendElementEventMap {
-        "sendingEnvelope": {sending: boolean};
+        "beforeSend": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string};
         "send": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope};
         "exit": any;
         "sdkError": SDKError;
@@ -3096,8 +3096,8 @@ declare global {
      * ```ts
      * <verdocs-send
      *   templateId={templateId}
-     *   onSend={({ detail }) => { console.log('Sent!', detail) }
-     *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+     *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
+     *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
      *   onExit={(e) => { console.log('Send cancelled.', detail) }
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
@@ -5336,8 +5336,8 @@ declare namespace LocalJSX {
      * ```ts
      * <verdocs-send
      *   templateId={templateId}
-     *   onSend={({ detail }) => { console.log('Sent!', detail) }
-     *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+     *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
+     *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
      *   onExit={(e) => { console.log('Send cancelled.', detail) }
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
@@ -5352,6 +5352,10 @@ declare namespace LocalJSX {
           * The environment the control is being called from, e.g. 'web'. This has an impact on how certain operations such as email communications are handled to ensure users receive the correct URLs for their invitations. Setting this to unknown values may produce unexpected/incorrect behaviors. If environment is not known, do this set this property.
          */
         "environment"?: string;
+        /**
+          * The user is sending an envelope the form and clicked send.
+         */
+        "onBeforeSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string}>) => void;
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
@@ -5368,10 +5372,6 @@ declare namespace LocalJSX {
           * The user completed the form and clicked send.
          */
         "onSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>) => void;
-        /**
-          * The user is sending an envelope the form and clicked send.
-         */
-        "onSendingEnvelope"?: (event: VerdocsSendCustomEvent<{sending: boolean}>) => void;
         /**
           * The ID of the template to create the document from.
          */
@@ -6524,8 +6524,8 @@ declare module "@stencil/core" {
              * ```ts
              * <verdocs-send
              *   templateId={templateId}
-             *   onSend={({ detail }) => { console.log('Sent!', detail) }
-             *   onSendingEnvelope={()) => { console.log('Sending... Show a spinner...') }
+             *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
+             *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
              *   onExit={(e) => { console.log('Send cancelled.', detail) }
              *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
              *   />

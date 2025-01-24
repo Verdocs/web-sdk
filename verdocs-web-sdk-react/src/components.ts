@@ -743,7 +743,7 @@ export const VerdocsSelectInput: StencilReactComponent<VerdocsSelectInputElement
 });
 
 type VerdocsSendEvents = {
-    onSendingEnvelope: EventName<CustomEvent<{ sending: boolean }>>,
+    onBeforeSend: EventName<VerdocsSendCustomEvent<{ recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string }>>,
     onSend: EventName<VerdocsSendCustomEvent<{ recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope }>>,
     onExit: EventName<CustomEvent<any>>,
     onSdkError: EventName<VerdocsSendCustomEvent<SDKError>>,
@@ -756,7 +756,7 @@ export const VerdocsSend: StencilReactComponent<VerdocsSendElement, VerdocsSendE
     // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
     react: React,
     events: {
-        onSendingEnvelope: 'sendingEnvelope',
+        onBeforeSend: 'beforeSend',
         onSend: 'send',
         onExit: 'exit',
         onSdkError: 'sdkError',

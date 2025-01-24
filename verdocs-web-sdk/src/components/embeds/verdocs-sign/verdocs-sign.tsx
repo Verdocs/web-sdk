@@ -185,10 +185,10 @@ export class VerdocsSign {
 
       if (this.envelope.status === 'canceled') {
         this.fatalErrorHeader = 'Unable to Start Signing Session';
-        this.fatalErrorMessage = 'This envelope has been canceled. Please contact its sender for more information.';
+        this.fatalErrorMessage = 'This envelope has been canceled. The sender has been notified.';
       } else if (this.recipient.status === 'declined') {
         this.fatalErrorHeader = 'Unable to Start Signing Session';
-        this.fatalErrorMessage = 'You have declined to sign this envelope.';
+        this.fatalErrorMessage = 'You have declined to sign this envelope. The sender has been notified.';
       } else if (this.agreed) {
         this.nextButtonLabel = 'Next';
       }
@@ -203,7 +203,7 @@ export class VerdocsSign {
             this.kbaStep = r.kba_step;
             if (this.kbaStep === 'failed') {
               this.fatalErrorHeader = 'Identity Verification Failed';
-              this.fatalErrorMessage = "We were unable to verify your identity. Please contact the document's sender.";
+              this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
               this.isDone = true;
             } else {
               this.kbaQuestions = (r as any).questions?.question || [];
@@ -267,7 +267,7 @@ export class VerdocsSign {
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
           this.submitting = false;
           this.fatalErrorHeader = 'Declined';
-          this.fatalErrorMessage = 'You have declined to sign this envelope.';
+          this.fatalErrorMessage = 'You have declined to sign this envelope. The sender has been notified.';
         }
         break;
 
@@ -936,7 +936,7 @@ export class VerdocsSign {
                         this.kbaStep = response.kba_step;
                         if (this.kbaStep === 'failed') {
                           this.fatalErrorHeader = 'Identity Verification Failed';
-                          this.fatalErrorMessage = "We were unable to verify your identity. Please contact the document's sender.";
+                          this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
                           this.isDone = true;
                         } else {
                           this.kbaQuestions = (response as any).questions?.question || [];
