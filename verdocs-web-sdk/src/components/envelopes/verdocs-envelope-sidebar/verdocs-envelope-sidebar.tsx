@@ -101,6 +101,7 @@ export class VerdocsEnvelopeSidebar {
   @State() panelOpen = false;
   @State() showRecipientDialog = '';
   @State() showCancelDialog = false;
+  @State() showReinviteDialog = '';
 
   @State() remindersEnabled = false;
   @State() updatingReminders = false;
@@ -194,6 +195,18 @@ export class VerdocsEnvelopeSidebar {
             console.log('[SIDEBAR] Error resending invitation', e);
             VerdocsToast('Error resending invitation: ' + e.message, {style: 'error'});
           });
+        break;
+
+      case 'reinvite':
+        this.showReinviteDialog = recipient.role_name;
+        // resendInvitation(this.endpoint, this.envelopeId, recipient.role_name)
+        //   .then(() => {
+        //     VerdocsToast('Reminder Sent', {style: 'success'});
+        //   })
+        //   .catch(e => {
+        //     console.log('[SIDEBAR] Error resending invitation', e);
+        //     VerdocsToast('Error resending invitation: ' + e.message, {style: 'error'});
+        //   });
         break;
 
       case 'inperson':
@@ -486,6 +499,7 @@ export class VerdocsEnvelopeSidebar {
                         options={[
                           {id: 'reminder', label: 'Send Reminder', disabled: !canSendReminder},
                           {id: 'inperson', label: 'Get In-Person Link', disabled: !canGetInPersonLink},
+                          {id: 'reinvite', label: 'Re-invite', disabled: !canSendReminder},
                           // {id: 'modify', label: 'Modify Recipient', disabled: !this.canModifyRecipient(recipient)},
                           // TODO: Details dialog
                           // {id:'details',label: 'View Details'},
@@ -593,6 +607,17 @@ export class VerdocsEnvelopeSidebar {
             onNext={() => {
               this.showCancelDialog = false;
               this.handleCancelEnvelope();
+            }}
+          />
+        )}
+
+        {this.showReinviteDialog && (
+          <verdocs-ok-dialog
+            heading="Re-invite Recipient?"
+            message={'This will reset the recipient\'s KBA status and send a new signing invitation. If you just want to send a reminder, please click "Send Reminder" instead.'}
+            onNext={() => {
+              this.showReinviteDialog = '';
+              // this.handleCancelEnvelope();
             }}
           />
         )}

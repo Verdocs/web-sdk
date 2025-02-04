@@ -227,10 +227,20 @@ export class VerdocsTemplateRoles {
   }
 
   getSequenceNumbers() {
-    const sequenceNumbers = (this.template?.roles || []).map(role => role.sequence);
-    const deduped = [...new Set(sequenceNumbers)];
-    deduped.sort((a, b) => a - b);
-    return deduped;
+    // TODO: This is cleaner with a Set but we found a regression in some target environments where
+    //  this breaks down. Reverting to an older technique while we diagnose it.
+    const sequences: Record<number, boolean> = {};
+    this.getSortedRoles().forEach(role => {
+      sequences[role.sequence] = true;
+    });
+    console.log('[ROLES] Sequences', sequences);
+    return Object.keys(sequences)
+      .map(s => +s)
+      .sort((a, b) => a - b);
+    // const sequenceNumbers = (this.template?.roles || []).map(role => role.sequence);
+    // const deduped = [...new Set(sequenceNumbers)];
+    // deduped.sort((a, b) => a - b);
+    // return deduped;
   }
 
   getRoleNames() {
@@ -364,16 +374,12 @@ export class VerdocsTemplateRoles {
       );
     }
 
-    console.log(
-      '[ROLES] Rendering',
-      this.template.roles.map(r => ({name: r.name, sequence: r.sequence, order: r.order})),
-    );
-
     const roleNames = this.getRoleNames();
     const sequences = this.getSequenceNumbers();
     const nextSequence = sequences && sequences.length > 0 ? (sequences[sequences.length - 1] || 0) + 1 : 1;
 
-    // style={{backgroundColor: getRGBA(getRoleIndex(this.template, role.name))}}
+    console.log('[ROLES] Rendering', {roleNames, sequences, nextSequence});
+
     return (
       <Host class={{dragging: this.dragging}}>
         <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">

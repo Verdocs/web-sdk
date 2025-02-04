@@ -203,9 +203,20 @@ export class VerdocsSend {
   }
 
   getLevels() {
-    const levels = [...new Set((this.template?.roles || []).map(role => role.sequence - 1))];
-    levels.sort((a, b) => a - b);
-    return levels;
+    // TODO: This is cleaner with a Set but we found a regression in some target environments where
+    //  this breaks down. Reverting to an older technique while we diagnose it.
+    const sequences: Record<number, boolean> = {};
+    (this.template?.roles || []).forEach(role => {
+      sequences[role.sequence] = true;
+    });
+    console.log('[SEND] Sequences', sequences);
+    return Object.keys(sequences)
+      .map(s => +s)
+      .sort((a, b) => a - b);
+
+    // const levels = [...new Set((this.template?.roles || []).map(role => role.sequence - 1))];
+    // levels.sort((a, b) => a - b);
+    // return levels;
   }
 
   getRolesAtLevel(level: number) {

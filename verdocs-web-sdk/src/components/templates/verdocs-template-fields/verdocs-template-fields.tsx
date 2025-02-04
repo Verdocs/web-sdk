@@ -176,7 +176,9 @@ export class VerdocsTemplateFields {
         this.template = template;
         this.loading = false;
 
-        this.selectedRoleName = template.roles?.[0]?.name || '';
+        if (!this.selectedRoleName) {
+          this.selectedRoleName = template.roles?.[0]?.name || '';
+        }
       },
     );
   }
@@ -365,6 +367,7 @@ export class VerdocsTemplateFields {
         width,
         height,
         multiline: false,
+        readonly: false,
         options: this.placing === 'radio' ? [{id: 'option-1', label: 'Option 1'}] : [],
       };
       console.log('[FIELDS] Will save new field', field);

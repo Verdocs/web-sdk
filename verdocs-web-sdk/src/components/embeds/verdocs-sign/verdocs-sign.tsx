@@ -830,7 +830,13 @@ export class VerdocsSign {
                     })
                     .catch(e => {
                       console.log('[SIGN] Error submitting PIN', e);
-                      VerdocsToast(e.response?.data?.error || 'Unable to verify PIN code. Please try again.', {style: 'error'});
+                      if (e.response?.data?.error === 'Rejecting PIN submission, too many attempts') {
+                        this.fatalErrorHeader = 'PIN Verification Failed';
+                        this.fatalErrorMessage = 'Too many failed attempts. The sender has been notified.';
+                        this.isDone = true;
+                      } else {
+                        VerdocsToast(e.response?.data?.error || 'Unable to verify PIN code. Please try again.', {style: 'error'});
+                      }
                     });
                 }}
               />
