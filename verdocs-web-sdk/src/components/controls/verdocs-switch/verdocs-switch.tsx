@@ -1,7 +1,7 @@
 import {Component, Prop, h, EventEmitter, Event} from '@stencil/core';
 
 /**
- * Displays a toggle switch.
+ * Displays a toggle switch
  *
  * ```ts
  * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />

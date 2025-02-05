@@ -109,8 +109,9 @@ export class VerdocsSend {
       'templates',
       this.templateId,
       () => getTemplate(this.endpoint, this.templateId),
-      false,
+      true,
       (template: ITemplate) => {
+        console.log('[SEND] Got new template', template);
         this.template = template;
         this.loading = false;
         this.rolesCompleted = {};
@@ -211,7 +212,7 @@ export class VerdocsSend {
     });
     console.log('[SEND] Sequences', sequences);
     return Object.keys(sequences)
-      .map(s => +s)
+      .map(s => +s - 1) // We subtract 1 here because the sequence is 1-based and our rendering is 0-based
       .sort((a, b) => a - b);
 
     // const levels = [...new Set((this.template?.roles || []).map(role => role.sequence - 1))];
@@ -323,6 +324,7 @@ export class VerdocsSend {
     }
 
     const levels = this.getLevels();
+    console.log('[SEND] Rendering levels', levels);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) && recipient.first_name && recipient.last_name);
     // TODO: Reactivate once SMS is re-enabled
     // const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
@@ -341,6 +343,10 @@ export class VerdocsSend {
             <div class={`level level-${level}`}>
               {this.getLevelIcon(level)}
 
+              {() => {
+                console.log('Rendering level', level, this.getRolesAtLevel(level));
+                return '';
+              }}
               {this.getRolesAtLevel(level).map(role => {
                 const unknown = !role.email || !role.first_name || !role.last_name;
                 const roleName = this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : unknown ? role.role_name : formatFullName(role);

@@ -1494,7 +1494,7 @@ export namespace Components {
         "theme"?: 'dark' | 'light';
     }
     /**
-     * Displays a toggle switch.
+     * Displays a toggle switch
      * ```ts
      * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />
      * ```
@@ -1702,6 +1702,19 @@ export namespace Components {
      * Display an edit form that allows the user to adjust a template's roles and workflow.
      */
     interface VerdocsTemplateRoles {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The template ID to edit.
+         */
+        "templateId": string;
+    }
+    /**
+     * Display an edit form that allows the user to adjust a template's roles and workflow.
+     */
+    interface VerdocsTemplateSettings {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
@@ -2099,6 +2112,10 @@ export interface VerdocsTemplateRolePropertiesCustomEvent<T> extends CustomEvent
 export interface VerdocsTemplateRolesCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsTemplateRolesElement;
+}
+export interface VerdocsTemplateSettingsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsTemplateSettingsElement;
 }
 export interface VerdocsTemplateStarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3202,7 +3219,7 @@ declare global {
         "checkedChange": boolean;
     }
     /**
-     * Displays a toggle switch.
+     * Displays a toggle switch
      * ```ts
      * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />
      * ```
@@ -3461,6 +3478,29 @@ declare global {
         prototype: HTMLVerdocsTemplateRolesElement;
         new (): HTMLVerdocsTemplateRolesElement;
     };
+    interface HTMLVerdocsTemplateSettingsElementEventMap {
+        "next": any;
+        "exit": any;
+        "sdkError": SDKError;
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+    }
+    /**
+     * Display an edit form that allows the user to adjust a template's roles and workflow.
+     */
+    interface HTMLVerdocsTemplateSettingsElement extends Components.VerdocsTemplateSettings, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsTemplateSettingsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateSettingsElement, ev: VerdocsTemplateSettingsCustomEvent<HTMLVerdocsTemplateSettingsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsTemplateSettingsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateSettingsElement, ev: VerdocsTemplateSettingsCustomEvent<HTMLVerdocsTemplateSettingsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsTemplateSettingsElement: {
+        prototype: HTMLVerdocsTemplateSettingsElement;
+        new (): HTMLVerdocsTemplateSettingsElement;
+    };
     interface HTMLVerdocsTemplateStarElementEventMap {
         "starChange": {templateId: string; starred: boolean; count: number};
         "sdkError": SDKError;
@@ -3698,6 +3738,7 @@ declare global {
         "verdocs-template-fields": HTMLVerdocsTemplateFieldsElement;
         "verdocs-template-role-properties": HTMLVerdocsTemplateRolePropertiesElement;
         "verdocs-template-roles": HTMLVerdocsTemplateRolesElement;
+        "verdocs-template-settings": HTMLVerdocsTemplateSettingsElement;
         "verdocs-template-star": HTMLVerdocsTemplateStarElement;
         "verdocs-template-tags": HTMLVerdocsTemplateTagsElement;
         "verdocs-templates-list": HTMLVerdocsTemplatesListElement;
@@ -5480,7 +5521,7 @@ declare namespace LocalJSX {
         "theme"?: 'dark' | 'light';
     }
     /**
-     * Displays a toggle switch.
+     * Displays a toggle switch
      * ```ts
      * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />
      * ```
@@ -5802,6 +5843,35 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsTemplateRolesCustomEvent<SDKError>) => void;
+        /**
+          * The template ID to edit.
+         */
+        "templateId"?: string;
+    }
+    /**
+     * Display an edit form that allows the user to adjust a template's roles and workflow.
+     */
+    interface VerdocsTemplateSettings {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+         */
+        "onExit"?: (event: VerdocsTemplateSettingsCustomEvent<any>) => void;
+        /**
+          * Event fired when the user clicks to proceed.
+         */
+        "onNext"?: (event: VerdocsTemplateSettingsCustomEvent<any>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsTemplateSettingsCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onTemplateUpdated"?: (event: VerdocsTemplateSettingsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
          */
@@ -6156,6 +6226,7 @@ declare namespace LocalJSX {
         "verdocs-template-fields": VerdocsTemplateFields;
         "verdocs-template-role-properties": VerdocsTemplateRoleProperties;
         "verdocs-template-roles": VerdocsTemplateRoles;
+        "verdocs-template-settings": VerdocsTemplateSettings;
         "verdocs-template-star": VerdocsTemplateStar;
         "verdocs-template-tags": VerdocsTemplateTags;
         "verdocs-templates-list": VerdocsTemplatesList;
@@ -6569,7 +6640,7 @@ declare module "@stencil/core" {
              */
             "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
             /**
-             * Displays a toggle switch.
+             * Displays a toggle switch
              * ```ts
              * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />
              * ```
@@ -6632,6 +6703,10 @@ declare module "@stencil/core" {
              * Display an edit form that allows the user to adjust a template's roles and workflow.
              */
             "verdocs-template-roles": LocalJSX.VerdocsTemplateRoles & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolesElement>;
+            /**
+             * Display an edit form that allows the user to adjust a template's roles and workflow.
+             */
+            "verdocs-template-settings": LocalJSX.VerdocsTemplateSettings & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSettingsElement>;
             /**
              * Displays a clickable star that allows users to mark frequently-used templates.
              */

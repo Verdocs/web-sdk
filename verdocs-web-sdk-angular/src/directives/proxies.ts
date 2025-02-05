@@ -2046,6 +2046,51 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'verdocs-template-settings',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+})
+export class VerdocsTemplateSettings {
+  protected el: HTMLElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['next', 'exit', 'sdkError', 'templateUpdated']);
+  }
+}
+
+
+import type { SDKError as IVerdocsTemplateSettingsSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateSettingsVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateSettingsITemplate } from '@verdocs/web-sdk';
+
+export declare interface VerdocsTemplateSettings extends Components.VerdocsTemplateSettings {
+  /**
+   * Event fired when the user clicks to proceed.
+   */
+  next: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsTemplateSettingsSDKError>>;
+  /**
+   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateSettingsVerdocsEndpoint; template: IVerdocsTemplateSettingsITemplate; event: string}>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'template']
 })
 @Component({

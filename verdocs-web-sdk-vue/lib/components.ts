@@ -823,6 +823,21 @@ export const VerdocsTemplateRoles = /*@__PURE__*/ defineContainer<JSX.VerdocsTem
 ]);
 
 
+export const VerdocsTemplateSettings = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateSettings>('verdocs-template-settings', undefined, [
+  'endpoint',
+  'templateId',
+  'next',
+  'exit',
+  'sdkError',
+  'templateUpdated'
+], [
+  'next',
+  'exit',
+  'sdkError',
+  'templateUpdated'
+]);
+
+
 export const VerdocsTemplateStar = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateStar>('verdocs-template-star', undefined, [
   'endpoint',
   'template',

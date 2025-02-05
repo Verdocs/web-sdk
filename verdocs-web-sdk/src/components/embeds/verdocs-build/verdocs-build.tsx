@@ -227,28 +227,7 @@ export class VerdocsBuild {
             />
           )}
 
-          {this.step === 'settings' && (
-            <div style={{flexDirection: 'column', gap: '20px', display: 'flex', maxWidth: '400px', margin: '20px'}}>
-              <verdocs-template-name
-                templateId={this.templateId}
-                endpoint={this.endpoint}
-                style={{backgroundColor: '#ffffff', padding: '20px'}}
-                onTemplateUpdated={e => this.handleTemplateUpdated(e)}
-              />
-              <verdocs-template-reminders
-                templateId={this.templateId}
-                endpoint={this.endpoint}
-                style={{backgroundColor: '#ffffff', padding: '20px'}}
-                onTemplateUpdated={e => this.handleTemplateUpdated(e)}
-              />
-              <verdocs-template-visibility
-                templateId={this.templateId}
-                endpoint={this.endpoint}
-                style={{backgroundColor: '#ffffff', padding: '20px'}}
-                onTemplateUpdated={e => this.handleTemplateUpdated(e)}
-              />
-            </div>
-          )}
+          {this.step === 'settings' && <verdocs-template-settings templateId={this.templateId} endpoint={this.endpoint} onTemplateUpdated={e => this.handleTemplateUpdated(e)} />}
 
           {this.step === 'fields' && <verdocs-template-fields templateId={this.templateId} endpoint={this.endpoint} onTemplateUpdated={e => this.handleTemplateUpdated(e)} />}
 
