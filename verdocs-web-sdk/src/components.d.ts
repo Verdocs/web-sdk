@@ -3098,7 +3098,7 @@ declare global {
         new (): HTMLVerdocsSelectInputElement;
     };
     interface HTMLVerdocsSendElementEventMap {
-        "beforeSend": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string};
+        "beforeSend": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; template: ITemplate};
         "send": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope};
         "exit": any;
         "sdkError": SDKError;
@@ -5396,7 +5396,7 @@ declare namespace LocalJSX {
         /**
           * The user is sending an envelope the form and clicked send.
          */
-        "onBeforeSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string}>) => void;
+        "onBeforeSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; template: ITemplate}>) => void;
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */

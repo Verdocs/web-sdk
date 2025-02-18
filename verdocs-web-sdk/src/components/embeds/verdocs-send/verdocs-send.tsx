@@ -65,7 +65,7 @@ export class VerdocsSend {
   /**
    * The user is sending an envelope the form and clicked send.
    */
-  @Event({composed: true}) beforeSend: EventEmitter<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string}>;
+  @Event({composed: true}) beforeSend: EventEmitter<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; template: ITemplate}>;
 
   /**
    * The user completed the form and clicked send.
@@ -203,16 +203,15 @@ export class VerdocsSend {
     });
   }
 
-  getLevels() {
+  getSequenceNumbers() {
     // TODO: This is cleaner with a Set but we found a regression in some target environments where
     //  this breaks down. Reverting to an older technique while we diagnose it.
     const sequences: Record<number, boolean> = {};
     (this.template?.roles || []).forEach(role => {
       sequences[role.sequence] = true;
     });
-    console.log('[SEND] Sequences', sequences);
     return Object.keys(sequences)
-      .map(s => +s - 1) // We subtract 1 here because the sequence is 1-based and our rendering is 0-based
+      .map(s => +s)
       .sort((a, b) => a - b);
 
     // const levels = [...new Set((this.template?.roles || []).map(role => role.sequence - 1))];
@@ -222,7 +221,7 @@ export class VerdocsSend {
 
   getRolesAtLevel(level: number) {
     const rolesAtLevel = (this.template?.roles || [])
-      .filter(role => role.sequence - 1 === level)
+      .filter(role => role.sequence === level)
       .map((role, index) => ({
         ...role,
         id: `r-${level}-${index}`,
@@ -233,11 +232,10 @@ export class VerdocsSend {
     return rolesAtLevel as Partial<IRecipient>[];
   }
 
-  getLevelIcon(level: number) {
-    const levels = this.getLevels();
-    if (level < 0) {
+  getLevelIcon(level: 'start' | 'end' | 'sequence') {
+    if (level === 'start') {
       return <div class="level-icon" innerHTML={startIcon} />;
-    } else if (level >= levels.length) {
+    } else if (level === 'end') {
       return <div class="level-icon" innerHTML={doneIcon} />;
     } else {
       return <div class="level-icon" innerHTML={stepIcon} />;
@@ -278,7 +276,7 @@ export class VerdocsSend {
       fields: [],
     };
 
-    const beforeSendResult = this.beforeSend.emit({...details, name: details.name!});
+    const beforeSendResult = this.beforeSend.emit({...details, name: details.name!, template: this.template});
     if (beforeSendResult.defaultPrevented) {
       console.log('[SEND] Send cancelled by parent', details);
       this.sending = false;
@@ -323,7 +321,7 @@ export class VerdocsSend {
       );
     }
 
-    const levels = this.getLevels();
+    const levels = this.getSequenceNumbers();
     console.log('[SEND] Rendering levels', levels);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) && recipient.first_name && recipient.last_name);
     // TODO: Reactivate once SMS is re-enabled
@@ -335,18 +333,14 @@ export class VerdocsSend {
         <div class="recipients">
           <div class="left-line" />
           <div class={`level level-start`}>
-            {this.getLevelIcon(-1)}
+            {this.getLevelIcon('start')}
             <div class="complete">Send Envelope</div>
           </div>
 
           {levels.map(level => (
             <div class={`level level-${level}`}>
-              {this.getLevelIcon(level)}
+              {this.getLevelIcon('sequence')}
 
-              {() => {
-                console.log('Rendering level', level, this.getRolesAtLevel(level));
-                return '';
-              }}
               {this.getRolesAtLevel(level).map(role => {
                 const unknown = !role.email || !role.first_name || !role.last_name;
                 const roleName = this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : unknown ? role.role_name : formatFullName(role);
@@ -399,7 +393,7 @@ export class VerdocsSend {
           ))}
 
           <div class={`level level-done`}>
-            {this.getLevelIcon(levels.length)}
+            {this.getLevelIcon('end')}
             <div class="complete">Signing Complete</div>
           </div>
         </div>

@@ -744,7 +744,7 @@ export const VerdocsSelectInput: StencilReactComponent<VerdocsSelectInputElement
 });
 
 type VerdocsSendEvents = {
-    onBeforeSend: EventName<VerdocsSendCustomEvent<{ recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string }>>,
+    onBeforeSend: EventName<VerdocsSendCustomEvent<{ recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; template: ITemplate }>>,
     onSend: EventName<VerdocsSendCustomEvent<{ recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope }>>,
     onExit: EventName<CustomEvent<any>>,
     onSdkError: EventName<VerdocsSendCustomEvent<SDKError>>,

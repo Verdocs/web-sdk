@@ -248,16 +248,33 @@ export class VerdocsKbaDialog {
               </div>
 
               <div class="field">
-                <label htmlFor="verdocs-kba-address">SSN Last 4:</label>
+                {/* TODO: Date picker but also allow typed entry */}
+                <label htmlFor="verdocs-kba-address">
+                  Date of Birth:<span class="required">*</span>
+                </label>
                 <input
+                  required
                   type="text"
                   id="verdocs-kba-state"
                   name="verdocs-kba-state"
-                  placeholder="Last 4 digits of your SSN..."
+                  placeholder="DOB..."
                   value={this.updatedRecipient?.ssn_last_4}
                   onInput={(e: any) => (this.updatedRecipient = {...this.updatedRecipient, ssn_last_4: e.target.value})}
                 />
               </div>
+
+              {/*<div class="field">*/}
+              {/*  <label htmlFor="verdocs-kba-address">SSN Last 4:</label>*/}
+              {/*  <input*/}
+              {/*    required*/}
+              {/*    type="text"*/}
+              {/*    id="verdocs-kba-state"*/}
+              {/*    name="verdocs-kba-state"*/}
+              {/*    placeholder="Last 4 digits of your SSN..."*/}
+              {/*    value={this.updatedRecipient?.ssn_last_4}*/}
+              {/*    onInput={(e: any) => (this.updatedRecipient = {...this.updatedRecipient, ssn_last_4: e.target.value})}*/}
+              {/*  />*/}
+              {/*</div>*/}
 
               <div class="buttons">
                 <verdocs-button

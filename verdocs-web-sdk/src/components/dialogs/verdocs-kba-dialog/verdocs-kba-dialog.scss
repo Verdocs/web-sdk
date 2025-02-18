@@ -29,7 +29,7 @@ verdocs-kba-dialog {
     overflow: hidden;
     background: #fff;
     padding: 16px;
-    gap: 14px;
+    gap: 10px;
     box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
   }
 
@@ -91,7 +91,7 @@ verdocs-kba-dialog {
 
     input {
       flex: 1;
-      padding: 2px 8px;
+      padding: 5px 8px;
       border-radius: 3px;
       border: 1px solid #cccccc;
     }
@@ -113,7 +113,7 @@ verdocs-kba-dialog {
     }
 
     label {
-      flex: 0 0 100px;
+      flex: 0 0 120px;
       font-weight: 500;
       line-height: 10px;
       text-align: right;
@@ -123,7 +123,7 @@ verdocs-kba-dialog {
     input {
       width: 40%;
       flex-grow: 1;
-      padding: 2px 8px;
+      padding: 5px 8px;
       border-radius: 3px;
       border: 1px solid #cccccc;
     }

@@ -18,7 +18,7 @@ import { Components } from '@verdocs/web-sdk';
   inputs: ['displayMode', 'endpoint', 'logo', 'visible'],
 })
 export class VerdocsAuth {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsAuthElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -56,7 +56,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'step', 'templateId'],
 })
 export class VerdocsBuild {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsBuildElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -112,7 +112,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['disabled', 'endIcon', 'label', 'size', 'startIcon', 'type', 'variant'],
 })
 export class VerdocsButton {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsButtonElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -135,7 +135,7 @@ export declare interface VerdocsButton extends Components.VerdocsButton {}
   inputs: ['icon'],
 })
 export class VerdocsButtonPanel {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsButtonPanelElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -157,7 +157,7 @@ export declare interface VerdocsButtonPanel extends Components.VerdocsButtonPane
   inputs: ['checked', 'disabled', 'label', 'name', 'theme', 'value'],
 })
 export class VerdocsCheckbox {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsCheckboxElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -179,7 +179,7 @@ export declare interface VerdocsCheckbox extends Components.VerdocsCheckbox {}
   inputs: ['message'],
 })
 export class VerdocsComponentError {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsComponentErrorElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -201,7 +201,7 @@ export declare interface VerdocsComponentError extends Components.VerdocsCompone
   inputs: ['contactSuggestions', 'endpoint', 'templateRole'],
 })
 export class VerdocsContactPicker {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsContactPickerElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -240,7 +240,7 @@ the `contactSuggestions` property.
   inputs: [],
 })
 export class VerdocsDialog {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsDialogElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -268,7 +268,7 @@ export declare interface VerdocsDialog extends Components.VerdocsDialog {
   inputs: ['options'],
 })
 export class VerdocsDropdown {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsDropdownElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -299,7 +299,7 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
   inputs: ['documentId', 'endpoint', 'envelopeId', 'layers', 'pageNumber', 'type', 'virtualHeight', 'virtualWidth'],
 })
 export class VerdocsEnvelopeDocumentPage {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsEnvelopeDocumentPageElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -329,7 +329,7 @@ export declare interface VerdocsEnvelopeDocumentPage extends Components.VerdocsE
   inputs: ['endpoint', 'envelopeId', 'roleName'],
 })
 export class VerdocsEnvelopeRecipientLink {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsEnvelopeRecipientLinkElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -366,7 +366,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelopeId'],
 })
 export class VerdocsEnvelopeRecipientSummary {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsEnvelopeRecipientSummaryElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -413,7 +413,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'envelopeId'],
 })
 export class VerdocsEnvelopeSidebar {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsEnvelopeSidebarElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -459,7 +459,7 @@ to redirect the user to the appropriate next workflow step.
   inputs: ['endpoint', 'match', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'status', 'view'],
 })
 export class VerdocsEnvelopesList {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsEnvelopesListElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -522,7 +522,7 @@ to the envelope detail view.
   inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldAttachment {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldAttachmentElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -563,7 +563,7 @@ Build) not for any attachments (during signing).
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldCheckbox {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldCheckboxElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -598,7 +598,7 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldDate {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldDateElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -637,7 +637,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldDropdown {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldDropdownElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -678,7 +678,7 @@ keypress.
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'initials', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldInitial {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldInitialElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -731,7 +731,7 @@ keypress.
   inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'done', 'editable', 'field', 'fieldId', 'fieldname', 'fields', 'moveable', 'pageNum', 'pagenumber', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldPayment {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldPaymentElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -766,7 +766,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'required', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldRadio {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldRadioElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -801,7 +801,7 @@ export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio 
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'name', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldSignature {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldSignatureElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -844,7 +844,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldTextarea {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldTextareaElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -879,7 +879,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'multiline', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldTextbox {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldTextboxElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -914,7 +914,7 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldTimestamp {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFieldTimestampElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -948,7 +948,7 @@ export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTi
   inputs: ['endpoint'],
 })
 export class VerdocsFileChooser {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsFileChooserElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -977,7 +977,7 @@ Host applications should use this event to enable/disable buttons to upload or o
   inputs: ['icon', 'text'],
 })
 export class VerdocsHelpIcon {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsHelpIconElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -999,7 +999,7 @@ export declare interface VerdocsHelpIcon extends Components.VerdocsHelpIcon {}
   inputs: ['initials'],
 })
 export class VerdocsInitialDialog {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsInitialDialogElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1031,7 +1031,7 @@ export declare interface VerdocsInitialDialog extends Components.VerdocsInitialD
   inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'recipient', 'step', 'steps'],
 })
 export class VerdocsKbaDialog {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsKbaDialogElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1070,7 +1070,7 @@ or the new recipient details if the mode is 'identity'.
   inputs: [],
 })
 export class VerdocsLoader {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsLoaderElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1092,7 +1092,7 @@ export declare interface VerdocsLoader extends Components.VerdocsLoader {}
   inputs: ['overlay', 'side', 'width'],
 })
 export class VerdocsMenuPanel {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsMenuPanelElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1118,7 +1118,7 @@ export declare interface VerdocsMenuPanel extends Components.VerdocsMenuPanel {
   inputs: ['buttonLabel', 'heading', 'message', 'showCancel'],
 })
 export class VerdocsOkDialog {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsOkDialogElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1150,7 +1150,7 @@ export declare interface VerdocsOkDialog extends Components.VerdocsOkDialog {
   inputs: ['organization'],
 })
 export class VerdocsOrganizationCard {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsOrganizationCardElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1172,7 +1172,7 @@ export declare interface VerdocsOrganizationCard extends Components.VerdocsOrgan
   inputs: ['itemCount', 'perPage', 'selectedPage'],
 })
 export class VerdocsPagination {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsPaginationElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1200,7 +1200,7 @@ export declare interface VerdocsPagination extends Components.VerdocsPagination 
   inputs: ['anchor', 'voffset'],
 })
 export class VerdocsPortal {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsPortalElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1226,7 +1226,7 @@ export declare interface VerdocsPortal extends Components.VerdocsPortal {
   inputs: ['endpoint', 'templateId'],
 })
 export class VerdocsPreview {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsPreviewElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1257,7 +1257,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['label', 'percent', 'showPercent'],
 })
 export class VerdocsProgressBar {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsProgressBarElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1279,7 +1279,7 @@ export declare interface VerdocsProgressBar extends Components.VerdocsProgressBa
   inputs: ['label', 'options', 'placeholder', 'value'],
 })
 export class VerdocsQuickFilter {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsQuickFilterElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1310,7 +1310,7 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
   inputs: ['endpoint'],
 })
 export class VerdocsQuickFunctions {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsQuickFunctionsElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1342,7 +1342,7 @@ export declare interface VerdocsQuickFunctions extends Components.VerdocsQuickFu
   inputs: ['checked', 'disabled', 'name', 'value'],
 })
 export class VerdocsRadioButton {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsRadioButtonElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1365,7 +1365,7 @@ export declare interface VerdocsRadioButton extends Components.VerdocsRadioButto
   inputs: ['endpoint', 'grabsFocus', 'placeholder', 'query', 'type'],
 })
 export class VerdocsSearchBox {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsSearchBoxElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1403,7 +1403,7 @@ export declare interface VerdocsSearchBox extends Components.VerdocsSearchBox {
   inputs: [],
 })
 export class VerdocsSearchTabs {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsSearchTabsElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1425,7 +1425,7 @@ export declare interface VerdocsSearchTabs extends Components.VerdocsSearchTabs 
   inputs: ['disabled', 'label', 'options', 'value'],
 })
 export class VerdocsSelectInput {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsSelectInputElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1448,7 +1448,7 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
   inputs: ['endpoint', 'environment', 'templateId'],
 })
 export class VerdocsSend {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsSendElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1458,6 +1458,7 @@ export class VerdocsSend {
 
 
 import type { ICreateEnvelopeRecipient as IVerdocsSendICreateEnvelopeRecipient } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsSendITemplate } from '@verdocs/web-sdk';
 import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
 import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk';
@@ -1466,7 +1467,7 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
    * The user is sending an envelope the form and clicked send.
    */
-  beforeSend: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipient[]; name: string; template_id: string}>>;
+  beforeSend: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipient[]; name: string; template_id: string; template: IVerdocsSendITemplate}>>;
   /**
    * The user completed the form and clicked send.
    */
@@ -1499,7 +1500,7 @@ the `contactSuggestions` property.
   inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId'],
 })
 export class VerdocsSign {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsSignElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1540,7 +1541,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['name'],
 })
 export class VerdocsSignatureDialog {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsSignatureDialogElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1573,7 +1574,7 @@ representation of the signature adopted.
   inputs: ['mode', 'size'],
 })
 export class VerdocsSpinner {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsSpinnerElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1595,7 +1596,7 @@ export declare interface VerdocsSpinner extends Components.VerdocsSpinner {}
   inputs: ['envelope', 'size', 'status', 'theme'],
 })
 export class VerdocsStatusIndicator {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsStatusIndicatorElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1617,7 +1618,7 @@ export declare interface VerdocsStatusIndicator extends Components.VerdocsStatus
   inputs: ['checked', 'disabled', 'theme'],
 })
 export class VerdocsSwitch {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsSwitchElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1643,7 +1644,7 @@ export declare interface VerdocsSwitch extends Components.VerdocsSwitch {
   inputs: ['columns', 'data'],
 })
 export class VerdocsTable {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTableElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1677,7 +1678,7 @@ export declare interface VerdocsTable extends Components.VerdocsTable {
   inputs: ['selectedTab', 'tabs'],
 })
 export class VerdocsTabs {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTabsElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1708,7 +1709,7 @@ to the template preview. This is also fired when the user selects "Preview/Send"
   inputs: ['endpoint', 'templateId'],
 })
 export class VerdocsTemplateAttachments {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateAttachmentsElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1753,7 +1754,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'step', 'templateId'],
 })
 export class VerdocsTemplateBuildTabs {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateBuildTabsElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1789,7 +1790,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['template'],
 })
 export class VerdocsTemplateCard {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateCardElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1811,7 +1812,7 @@ export declare interface VerdocsTemplateCard extends Components.VerdocsTemplateC
   inputs: ['endpoint', 'maxSize'],
 })
 export class VerdocsTemplateCreate {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateCreateElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1856,7 +1857,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['disabled', 'documentId', 'done', 'editable', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth'],
 })
 export class VerdocsTemplateDocumentPage {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateDocumentPageElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1886,7 +1887,7 @@ export declare interface VerdocsTemplateDocumentPage extends Components.VerdocsT
   inputs: ['endpoint', 'fieldName', 'helpText', 'templateId'],
 })
 export class VerdocsTemplateFieldProperties {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateFieldPropertiesElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1931,7 +1932,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'templateId', 'toolbarTargetId'],
 })
 export class VerdocsTemplateFields {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateFieldsElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1971,7 +1972,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'roleName', 'templateId'],
 })
 export class VerdocsTemplateRoleProperties {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateRolePropertiesElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2011,7 +2012,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'templateId'],
 })
 export class VerdocsTemplateRoles {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateRolesElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2056,7 +2057,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'templateId'],
 })
 export class VerdocsTemplateSettings {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateSettingsElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2101,7 +2102,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['endpoint', 'template'],
 })
 export class VerdocsTemplateStar {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateStarElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2137,7 +2138,7 @@ terminate the process, and the calling application should correct the condition 
   inputs: ['tags'],
 })
 export class VerdocsTemplateTags {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplateTagsElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2159,7 +2160,7 @@ export declare interface VerdocsTemplateTags extends Components.VerdocsTemplateT
   inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'starred', 'visibility'],
 })
 export class VerdocsTemplatesList {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTemplatesListElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2233,7 +2234,7 @@ probably not their search terms.
   inputs: ['autocomplete', 'clearable', 'copyable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value'],
 })
 export class VerdocsTextInput {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsTextInputElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2255,7 +2256,7 @@ export declare interface VerdocsTextInput extends Components.VerdocsTextInput {}
   inputs: ['options', 'theme'],
 })
 export class VerdocsToggle {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsToggleElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2277,7 +2278,7 @@ export declare interface VerdocsToggle extends Components.VerdocsToggle {}
   inputs: ['active', 'icon', 'label', 'size'],
 })
 export class VerdocsToggleButton {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsToggleButtonElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2305,7 +2306,7 @@ export declare interface VerdocsToggleButton extends Components.VerdocsToggleBut
   inputs: ['icon', 'placement', 'text'],
 })
 export class VerdocsToolbarIcon {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsToolbarIconElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2327,7 +2328,7 @@ export declare interface VerdocsToolbarIcon extends Components.VerdocsToolbarIco
   inputs: ['existingFile', 'maxSize'],
 })
 export class VerdocsUploadDialog {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsUploadDialogElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2364,7 +2365,7 @@ responsible for the actual removal.
   inputs: ['endpoint', 'envelopeId', 'headerTargetId'],
 })
 export class VerdocsView {
-  protected el: HTMLElement;
+  protected el: HTMLVerdocsViewElement;
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;

@@ -43,6 +43,11 @@ export class VerdocsBuild {
   @Prop({reflect: true, mutable: true}) step: TVerdocsBuildStep = 'preview';
 
   /**
+   * Event fired if the user clicks Cancel.
+   */
+  @Event({composed: true}) cancel: EventEmitter;
+
+  /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
@@ -103,6 +108,7 @@ export class VerdocsBuild {
       if (!this.templateId) {
         console.log(`[BUILD] No template ID, activating upload mode`);
         this.step = 'attachments';
+        this.loading = false;
         return;
       }
 
@@ -147,6 +153,7 @@ export class VerdocsBuild {
 
   handleCancel() {
     this.step = 'preview';
+    this.cancel?.emit();
   }
 
   async handleTemplateCreated(templateId: string) {
