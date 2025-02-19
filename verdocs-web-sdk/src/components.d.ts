@@ -13,6 +13,7 @@ import { IContactSearchEvent, IContactSelectEvent, TPickerContact } from "./comp
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { ISelectedFile } from "./components/fields/verdocs-field-attachment/verdocs-field-attachment";
+import { IMultiSelectOption } from "./components/controls/verdocs-multiselect/verdocs-multiselect";
 import { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
@@ -30,6 +31,7 @@ export { IContactSearchEvent, IContactSelectEvent, TPickerContact } from "./comp
 export { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 export { IDocumentPageInfo, IPageLayer } from "./utils/Types";
 export { ISelectedFile } from "./components/fields/verdocs-field-attachment/verdocs-field-attachment";
+export { IMultiSelectOption } from "./components/controls/verdocs-multiselect/verdocs-multiselect";
 export { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 export { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
 export { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
@@ -1135,6 +1137,32 @@ export namespace Components {
         "width": number;
     }
     /**
+     * Display a dropdown that allows multiple options to be selected. Note that events "bubble" from the
+     * input field to the container, so you can subscribe to the same DOM events (input, blur, etc) that a
+     * normal input would emit.
+     * ```ts
+     * <verdocs-multiselect label="Methods:" value={[]} options={[...options]} onInput={() => {}} />
+     * ```
+     */
+    interface VerdocsMultiselect {
+        /**
+          * The label for the field.
+         */
+        "label": string;
+        /**
+          * The options to list.
+         */
+        "options": IMultiSelectOption[];
+        /**
+          * The placeholder for the input element when no options are selected.
+         */
+        "placeholder": string;
+        /**
+          * The currently selected options.
+         */
+        "selectedOptions": string[];
+    }
+    /**
      * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
      * box with a message and optional header/title. An OK button is shown that will dismiss the message.
      * It can also be dismissed by clicking the background overlay.
@@ -1354,12 +1382,11 @@ export namespace Components {
     interface VerdocsSearchTabs {
     }
     /**
-     * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+     * Display a combo box. This is just a standard HTML select field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
      * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
      * ```ts
-     * <verdocs-select-input label="Select:" label="Select" options={[...options]}
-     * @input ={() => {}} />
+     * <verdocs-select-input label="Select:" label="Select" options={[...options]} onInput={() => {}} />
      * ```
      */
     interface VerdocsSelectInput {
@@ -2029,6 +2056,10 @@ export interface VerdocsMenuPanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsMenuPanelElement;
 }
+export interface VerdocsMultiselectCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsMultiselectElement;
+}
 export interface VerdocsOkDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsOkDialogElement;
@@ -2178,6 +2209,7 @@ declare global {
         new (): HTMLVerdocsAuthElement;
     };
     interface HTMLVerdocsBuildElementEventMap {
+        "cancel": any;
         "sdkError": SDKError;
         "stepChanged": TVerdocsBuildStep;
         "send": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string};
@@ -2846,6 +2878,31 @@ declare global {
         prototype: HTMLVerdocsMenuPanelElement;
         new (): HTMLVerdocsMenuPanelElement;
     };
+    interface HTMLVerdocsMultiselectElementEventMap {
+        "selectionChanged": {selectedOptions: string[]};
+    }
+    /**
+     * Display a dropdown that allows multiple options to be selected. Note that events "bubble" from the
+     * input field to the container, so you can subscribe to the same DOM events (input, blur, etc) that a
+     * normal input would emit.
+     * ```ts
+     * <verdocs-multiselect label="Methods:" value={[]} options={[...options]} onInput={() => {}} />
+     * ```
+     */
+    interface HTMLVerdocsMultiselectElement extends Components.VerdocsMultiselect, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsMultiselectElementEventMap>(type: K, listener: (this: HTMLVerdocsMultiselectElement, ev: VerdocsMultiselectCustomEvent<HTMLVerdocsMultiselectElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsMultiselectElementEventMap>(type: K, listener: (this: HTMLVerdocsMultiselectElement, ev: VerdocsMultiselectCustomEvent<HTMLVerdocsMultiselectElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsMultiselectElement: {
+        prototype: HTMLVerdocsMultiselectElement;
+        new (): HTMLVerdocsMultiselectElement;
+    };
     interface HTMLVerdocsOkDialogElementEventMap {
         "next": any;
         "exit": any;
@@ -3083,12 +3140,11 @@ declare global {
         new (): HTMLVerdocsSearchTabsElement;
     };
     /**
-     * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+     * Display a combo box. This is just a standard HTML select field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
      * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
      * ```ts
-     * <verdocs-select-input label="Select:" label="Select" options={[...options]}
-     * @input ={() => {}} />
+     * <verdocs-select-input label="Select:" label="Select" options={[...options]} onInput={() => {}} />
      * ```
      */
     interface HTMLVerdocsSelectInputElement extends Components.VerdocsSelectInput, HTMLStencilElement {
@@ -3709,6 +3765,7 @@ declare global {
         "verdocs-kba-dialog": HTMLVerdocsKbaDialogElement;
         "verdocs-loader": HTMLVerdocsLoaderElement;
         "verdocs-menu-panel": HTMLVerdocsMenuPanelElement;
+        "verdocs-multiselect": HTMLVerdocsMultiselectElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
         "verdocs-pagination": HTMLVerdocsPaginationElement;
@@ -3812,6 +3869,10 @@ declare namespace LocalJSX {
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
          */
         "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired if the user clicks Cancel.
+         */
+        "onCancel"?: (event: VerdocsBuildCustomEvent<any>) => void;
         /**
           * Event fired when roles are updated in the roles step.
          */
@@ -5083,6 +5144,33 @@ declare namespace LocalJSX {
         "width"?: number;
     }
     /**
+     * Display a dropdown that allows multiple options to be selected. Note that events "bubble" from the
+     * input field to the container, so you can subscribe to the same DOM events (input, blur, etc) that a
+     * normal input would emit.
+     * ```ts
+     * <verdocs-multiselect label="Methods:" value={[]} options={[...options]} onInput={() => {}} />
+     * ```
+     */
+    interface VerdocsMultiselect {
+        /**
+          * The label for the field.
+         */
+        "label"?: string;
+        "onSelectionChanged"?: (event: VerdocsMultiselectCustomEvent<{selectedOptions: string[]}>) => void;
+        /**
+          * The options to list.
+         */
+        "options"?: IMultiSelectOption[];
+        /**
+          * The placeholder for the input element when no options are selected.
+         */
+        "placeholder"?: string;
+        /**
+          * The currently selected options.
+         */
+        "selectedOptions"?: string[];
+    }
+    /**
      * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
      * box with a message and optional header/title. An OK button is shown that will dismiss the message.
      * It can also be dismissed by clicking the background overlay.
@@ -5342,12 +5430,11 @@ declare namespace LocalJSX {
     interface VerdocsSearchTabs {
     }
     /**
-     * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+     * Display a combo box. This is just a standard HTML select field with minimal markup to fit the
      * visual styles of the other components. Note that events "bubble" from the input field to the container,
      * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
      * ```ts
-     * <verdocs-select-input label="Select:" label="Select" options={[...options]}
-     * @input ={() => {}} />
+     * <verdocs-select-input label="Select:" label="Select" options={[...options]} onInput={() => {}} />
      * ```
      */
     interface VerdocsSelectInput {
@@ -6197,6 +6284,7 @@ declare namespace LocalJSX {
         "verdocs-kba-dialog": VerdocsKbaDialog;
         "verdocs-loader": VerdocsLoader;
         "verdocs-menu-panel": VerdocsMenuPanel;
+        "verdocs-multiselect": VerdocsMultiselect;
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
         "verdocs-pagination": VerdocsPagination;
@@ -6477,6 +6565,15 @@ declare module "@stencil/core" {
              */
             "verdocs-menu-panel": LocalJSX.VerdocsMenuPanel & JSXBase.HTMLAttributes<HTMLVerdocsMenuPanelElement>;
             /**
+             * Display a dropdown that allows multiple options to be selected. Note that events "bubble" from the
+             * input field to the container, so you can subscribe to the same DOM events (input, blur, etc) that a
+             * normal input would emit.
+             * ```ts
+             * <verdocs-multiselect label="Methods:" value={[]} options={[...options]} onInput={() => {}} />
+             * ```
+             */
+            "verdocs-multiselect": LocalJSX.VerdocsMultiselect & JSXBase.HTMLAttributes<HTMLVerdocsMultiselectElement>;
+            /**
              * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
              * box with a message and optional header/title. An OK button is shown that will dismiss the message.
              * It can also be dismissed by clicking the background overlay.
@@ -6577,12 +6674,11 @@ declare module "@stencil/core" {
             "verdocs-search-box": LocalJSX.VerdocsSearchBox & JSXBase.HTMLAttributes<HTMLVerdocsSearchBoxElement>;
             "verdocs-search-tabs": LocalJSX.VerdocsSearchTabs & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
             /**
-             * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+             * Display a combo box. This is just a standard HTML select field with minimal markup to fit the
              * visual styles of the other components. Note that events "bubble" from the input field to the container,
              * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
              * ```ts
-             * <verdocs-select-input label="Select:" label="Select" options={[...options]}
-             * @input ={() => {}} />
+             * <verdocs-select-input label="Select:" label="Select" options={[...options]} onInput={() => {}} />
              * ```
              */
             "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;

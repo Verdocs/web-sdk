@@ -41,6 +41,7 @@ import { VerdocsInitialDialog as VerdocsInitialDialogElement, defineCustomElemen
 import { VerdocsKbaDialog as VerdocsKbaDialogElement, defineCustomElement as defineVerdocsKbaDialog } from "@verdocs/web-sdk/dist/components/verdocs-kba-dialog.js";
 import { VerdocsLoader as VerdocsLoaderElement, defineCustomElement as defineVerdocsLoader } from "@verdocs/web-sdk/dist/components/verdocs-loader.js";
 import { VerdocsMenuPanel as VerdocsMenuPanelElement, defineCustomElement as defineVerdocsMenuPanel } from "@verdocs/web-sdk/dist/components/verdocs-menu-panel.js";
+import { VerdocsMultiselect as VerdocsMultiselectElement, defineCustomElement as defineVerdocsMultiselect } from "@verdocs/web-sdk/dist/components/verdocs-multiselect.js";
 import { VerdocsOkDialog as VerdocsOkDialogElement, defineCustomElement as defineVerdocsOkDialog } from "@verdocs/web-sdk/dist/components/verdocs-ok-dialog.js";
 import { VerdocsOrganizationCard as VerdocsOrganizationCardElement, defineCustomElement as defineVerdocsOrganizationCard } from "@verdocs/web-sdk/dist/components/verdocs-organization-card.js";
 import { VerdocsPagination as VerdocsPaginationElement, defineCustomElement as defineVerdocsPagination } from "@verdocs/web-sdk/dist/components/verdocs-pagination.js";
@@ -100,6 +101,7 @@ export const VerdocsAuth: StencilReactComponent<VerdocsAuthElement, VerdocsAuthE
 });
 
 type VerdocsBuildEvents = {
+    onCancel: EventName<CustomEvent<any>>,
     onSdkError: EventName<VerdocsBuildCustomEvent<SDKError>>,
     onStepChanged: EventName<VerdocsBuildCustomEvent<TVerdocsBuildStep>>,
     onSend: EventName<VerdocsBuildCustomEvent<{ recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string }>>,
@@ -114,6 +116,7 @@ export const VerdocsBuild: StencilReactComponent<VerdocsBuildElement, VerdocsBui
     // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
     react: React,
     events: {
+        onCancel: 'cancel',
         onSdkError: 'sdkError',
         onStepChanged: 'stepChanged',
         onSend: 'send',
@@ -589,6 +592,17 @@ export const VerdocsMenuPanel: StencilReactComponent<VerdocsMenuPanelElement, Ve
     react: React,
     events: { onClose: 'close' } as VerdocsMenuPanelEvents,
     defineCustomElement: defineVerdocsMenuPanel
+});
+
+type VerdocsMultiselectEvents = { onSelectionChanged: EventName<CustomEvent<{ selectedOptions: string[] }>> };
+
+export const VerdocsMultiselect: StencilReactComponent<VerdocsMultiselectElement, VerdocsMultiselectEvents> = /*@__PURE__*/ createComponent<VerdocsMultiselectElement, VerdocsMultiselectEvents>({
+    tagName: 'verdocs-multiselect',
+    elementClass: VerdocsMultiselectElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: { onSelectionChanged: 'selectionChanged' } as VerdocsMultiselectEvents,
+    defineCustomElement: defineVerdocsMultiselect
 });
 
 type VerdocsOkDialogEvents = {

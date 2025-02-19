@@ -25,6 +25,7 @@ export const VerdocsBuild = /*@__PURE__*/ defineContainer<JSX.VerdocsBuild>('ver
   'endpoint',
   'templateId',
   'step',
+  'cancel',
   'sdkError',
   'stepChanged',
   'send',
@@ -32,6 +33,7 @@ export const VerdocsBuild = /*@__PURE__*/ defineContainer<JSX.VerdocsBuild>('ver
   'templateCreated',
   'rolesUpdated'
 ], [
+  'cancel',
   'sdkError',
   'stepChanged',
   'send',
@@ -499,6 +501,17 @@ export const VerdocsMenuPanel = /*@__PURE__*/ defineContainer<JSX.VerdocsMenuPan
   'close'
 ], [
   'close'
+]);
+
+
+export const VerdocsMultiselect = /*@__PURE__*/ defineContainer<JSX.VerdocsMultiselect>('verdocs-multiselect', undefined, [
+  'label',
+  'placeholder',
+  'options',
+  'selectedOptions',
+  'selectionChanged'
+], [
+  'selectionChanged'
 ]);
 
 

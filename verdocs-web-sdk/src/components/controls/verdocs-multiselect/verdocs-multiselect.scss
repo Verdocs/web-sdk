@@ -1,0 +1,77 @@
+@import '../../../theme.scss';
+
+verdocs-multiselect {
+  width: 100%;
+  display: block;
+  margin: 0 0 10px 0;
+  box-sizing: border-box;
+  font-family: $primary-font;
+
+  .input-wrapper {
+    width: 100%;
+    position: relative;
+
+    .icon {
+      top: 6px;
+      right: 6px;
+      width: 18px;
+      height: 18px;
+      z-index: 10;
+      position: absolute;
+    }
+  }
+
+  &.open .input-wrapper .icon {
+    transform: rotate(180deg);
+  }
+
+  .trigger {
+    gap: 3px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    border-radius: 4px;
+    flex-direction: row;
+    box-sizing: border-box;
+    padding: 5px 32px 5px 7px;
+    background: $verdocs-grey-4;
+    border: 1px solid $border-color;
+
+    &::placeholder {
+      opacity: 1;
+      color: $light-disabled-color;
+    }
+  }
+
+  .selected-option {
+    color: white;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+    background: $verdocs-grey-blue;
+  }
+
+  .input-label {
+    display: block;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 0 4px 0;
+    color: $label-color-light;
+  }
+}
+
+#verdocs-multiselect-menu-items {
+  width: 200px;
+  z-index: 10000;
+  position: absolute;
+  border-radius: 5px;
+  font-family: $primary-font;
+  background: $verdocs-grey-4;
+  border: 1px solid $item-border-color;
+
+  label {
+    font-size: 13px;
+  }
+}

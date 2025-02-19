@@ -1,12 +1,12 @@
 import {Component, Prop, Host, h} from '@stencil/core';
 
 /**
- * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
+ * Display a combo box. This is just a standard HTML select field with minimal markup to fit the
  * visual styles of the other components. Note that events "bubble" from the input field to the container,
  * so you can subscribe to the same DOM events (input, blur, etc) that a normal input would emit.
  *
  * ```ts
- * <verdocs-select-input label="Select:" label="Select" options={[...options]} @input={() => {}} />
+ * <verdocs-select-input label="Select:" label="Select" options={[...options]} onInput={() => {}} />
  * ```
  */
 @Component({

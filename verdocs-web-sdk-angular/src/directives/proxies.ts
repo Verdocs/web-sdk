@@ -60,7 +60,7 @@ export class VerdocsBuild {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated', 'rolesUpdated']);
+    proxyOutputs(this, this.el, ['cancel', 'sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated', 'rolesUpdated']);
   }
 }
 
@@ -73,6 +73,10 @@ import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk';
 import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
 
 export declare interface VerdocsBuild extends Components.VerdocsBuild {
+  /**
+   * Event fired if the user clicks Cancel.
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -1104,6 +1108,32 @@ export class VerdocsMenuPanel {
 export declare interface VerdocsMenuPanel extends Components.VerdocsMenuPanel {
 
   close: EventEmitter<CustomEvent<void>>;
+}
+
+
+@ProxyCmp({
+  inputs: ['label', 'options', 'placeholder', 'selectedOptions']
+})
+@Component({
+  selector: 'verdocs-multiselect',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['label', 'options', 'placeholder', 'selectedOptions'],
+})
+export class VerdocsMultiselect {
+  protected el: HTMLVerdocsMultiselectElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['selectionChanged']);
+  }
+}
+
+
+export declare interface VerdocsMultiselect extends Components.VerdocsMultiselect {
+
+  selectionChanged: EventEmitter<CustomEvent<{selectedOptions: string[]}>>;
 }
 
 

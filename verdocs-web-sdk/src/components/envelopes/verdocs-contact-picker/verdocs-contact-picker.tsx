@@ -1,16 +1,7 @@
 import {Component, h, Event, EventEmitter, Fragment, Prop, State} from '@stencil/core';
-import {formatFullName, getActiveEntitlements, IEntitlement, IProfile, IRecipient, isValidEmail, TEntitlement, TKBAMethod, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {formatFullName, getActiveEntitlements, IEntitlement, IProfile, IRecipient, isValidEmail, TEntitlement, TRecipientAuthMethod, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getFeatureFlags, IFeatureFlags} from '../../../utils/Unleash';
 import {convertToE164} from '../../../utils/utils';
-
-// const messageIcon =
-//   '<svg focusable="false" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"></path></svg>';
-
-// const delegateIcon =
-//   '<svg focusable="false" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z"></path></svg>';
-
-// const kbaIcon =
-//   '<svg focusable="false" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm4.125 3a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Zm-3.873 8.703a4.126 4.126 0 0 1 7.746 0 .75.75 0 0 1-.351.92 7.47 7.47 0 0 1-3.522.877 7.47 7.47 0 0 1-3.522-.877.75.75 0 0 1-.351-.92ZM15 8.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15ZM14.25 12a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15Z" clip-rule="evenodd" /></svg>';
 
 const addrBookIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-user"><path d="M15 13a3 3 0 1 0-6 0"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><circle cx="12" cy="8" r="2"/></svg>`;
 
@@ -25,8 +16,8 @@ export interface IContactSelectEvent {
   phone: string;
   message: string;
   delegator: boolean;
-  kba_method: string;
-  kba_pin: string;
+  auth_methods: TRecipientAuthMethod[];
+  passcode: string;
   address: string;
   zip: string;
 }
@@ -98,9 +89,8 @@ export class VerdocsContactPicker {
   @State() showSuggestions: boolean = false;
   @State() showMessage: boolean = false;
   @State() delegator: boolean = false;
-  @State() showKba: boolean = true;
-  @State() kba_method: TKBAMethod = '';
-  @State() kba_pin: string = '';
+  @State() auth_methods: TRecipientAuthMethod[] = [];
+  @State() passcode: string = '';
 
   @State() firstNameFieldId = `verdocs-contact-picker-firstname-${Math.random().toString(36).substring(2, 11)}`;
   @State() lastNameFieldId = `verdocs-contact-picker-lastname-${Math.random().toString(36).substring(2, 11)}`;
@@ -126,9 +116,8 @@ export class VerdocsContactPicker {
       this.delegator = this.templateRole.delegator || false;
       this.message = this.templateRole.message || '';
       this.showMessage = this.message !== '';
-      this.kba_method = this.templateRole.kba_method || '';
-      this.kba_pin = this.templateRole.kba_pin || '';
-      this.showKba = !!this.kba_method;
+      this.auth_methods = this.templateRole.auth_methods || [];
+      this.passcode = this.templateRole.passcode || '';
       // TODO: Allow template roles to have zip codes predefined?
     }
 
@@ -176,8 +165,8 @@ export class VerdocsContactPicker {
       phone: this.phone,
       message: this.message,
       delegator: this.delegator,
-      kba_method: this.kba_method,
-      kba_pin: this.kba_pin,
+      auth_methods: this.auth_methods,
+      passcode: this.passcode,
       address: this.address,
       zip: this.zip,
     });
@@ -199,42 +188,34 @@ export class VerdocsContactPicker {
     // const hasBasics = this.first_name && this.last_name && (isValidEmail(this.email) || isValidPhone(this.phone));
     const hasBasics = this.first_name && this.last_name && isValidEmail(this.email);
     const hasAuthRequirements =
-      !this.kba_method ||
-      (this.kba_method === 'pin' && !!this.kba_pin) ||
-      (this.kba_method === 'kba' && !!this.kba_pin) ||
-      (this.kba_method === 'id' && !!this.kba_pin) ||
-      (this.kba_method === 'sms' && !!this.kba_pin) ||
-      (this.kba_method === 'pin' && !!this.kba_pin);
-    // "pin" | "kba" | "id" | "sms" | "" | null
-    const hasKbaRequirements =
-      !this.kba_method ||
-      // Passcode-based KBA requires a PIN
-      (this.kba_method === 'pin' && this.kba_pin) ||
-      // KBA has address/zip but they're optional
-      this.kba_method === 'kba' ||
-      // Fully ID-based KBA requires nothing else
-      this.kba_method === 'id' ||
-      // SMS requires a phone number
-      (this.kba_method === 'sms' && this.phone);
-    const canSubmit = hasBasics && hasKbaRequirements;
+      !this.auth_methods.length ||
+      (this.auth_methods.includes('passcode') && !!this.passcode) ||
+      (this.auth_methods.includes('kba') && !!this.first_name && !!this.last_name) ||
+      (this.auth_methods.includes('email') && !!this.email) ||
+      (this.auth_methods.includes('sms') && !!this.phone);
+    const canSubmit = hasBasics && hasAuthRequirements;
+    const globalSMS = this.featureFlags?.toggles?.find(t => t.name === 'sms')?.enabled === true;
 
-    const verificationOptions = [{label: 'None', value: ''}];
+    const verificationOptions = [];
 
-    if (!!this.activeEntitlements.passcode_auth) {
-      verificationOptions.push({label: 'Passcode', value: 'pin'});
+    if (this.featureFlags?.toggles?.find(t => t.name === 'passcode-verification')?.enabled === true) {
+      verificationOptions.push({label: 'Passcode', value: 'passcode'});
     }
 
-    if (this.featureFlags?.toggles?.find(t => t.name === 'sms-verification')?.enabled === true && !!this.activeEntitlements.sms_auth) {
+    if (this.featureFlags?.toggles?.find(t => t.name === 'email-verification')?.enabled === true) {
+      verificationOptions.push({label: 'Email', value: 'email'});
+    }
+
+    if (globalSMS && this.featureFlags?.toggles?.find(t => t.name === 'sms-verification')?.enabled === true && !!this.activeEntitlements.sms_auth) {
       verificationOptions.push({label: 'SMS (One-Time Code)', value: 'sms'});
     }
 
-    if (this.featureFlags?.toggles?.find(t => t.name === 'kba-verification')?.enabled === true) {
+    if (this.featureFlags?.toggles?.find(t => t.name === 'kba-verification')?.enabled === true && !!this.activeEntitlements.kba_auth) {
       verificationOptions.push({label: 'Knowledge-Based (KBA)', value: 'kba'});
     }
 
-    if (this.featureFlags?.toggles?.find(t => t.name === 'id-verification')?.enabled === true) {
+    if (this.featureFlags?.toggles?.find(t => t.name === 'id-verification')?.enabled === true && !!this.activeEntitlements.id_auth) {
       verificationOptions.push({label: 'ID Check', value: 'id'});
-      verificationOptions.push({label: 'KBA + ID Check', value: 'kba_id'});
     }
 
     return (
@@ -248,9 +229,18 @@ export class VerdocsContactPicker {
               type="text"
               data-lpignore="true"
               autocomplete="blocked"
+              aria-autocomplete="none"
               value={this.first_name}
               placeholder="First..."
-              onFocus={() => (this.showSuggestions = this.contactSuggestions?.length > 0)}
+              onBlur={() => {
+                this.showSuggestions = false;
+              }}
+              onFocus={() => {
+                // Give the blur event a chance to hide it first if going between first/last
+                setTimeout(() => {
+                  this.showSuggestions = this.contactSuggestions?.length > 0;
+                }, 100);
+              }}
               onInput={e => this.handleFirstNameChange(e)}
             />
             <input
@@ -259,9 +249,18 @@ export class VerdocsContactPicker {
               type="text"
               data-lpignore="true"
               autocomplete="blocked"
+              aria-autocomplete="none"
               value={this.last_name}
               placeholder="Last..."
-              onFocus={() => (this.showSuggestions = false)}
+              onBlur={() => {
+                this.showSuggestions = false;
+              }}
+              onFocus={() => {
+                // Give the blur event a chance to hide it first if going between first/last
+                setTimeout(() => {
+                  this.showSuggestions = this.contactSuggestions?.length > 0;
+                }, 100);
+              }}
               onInput={e => this.handleLastNameChange(e)}
             />
           </div>
@@ -292,80 +291,63 @@ export class VerdocsContactPicker {
             type="text"
             data-lpignore="true"
             autoComplete="blocked"
+            aria-autocomplete="none"
             value={this.email}
-            placeholder="Invite via email..."
+            placeholder="Invite/verify via email..."
             onFocus={() => (this.showSuggestions = false)}
             onInput={(e: any) => (this.email = e.target.value)}
           />
         </div>
 
         {/* TODO: Check entitlement for SMS invites */}
-        {/*{smsEnabled && this.kba_method === 'sms' && (*/}
-        <div class="row">
-          <label htmlFor={this.phoneFieldId}>Phone:</label>
-          <input
-            id={this.phoneFieldId}
-            name={this.phoneFieldId}
-            type="text"
-            data-lpignore="true"
-            autoComplete="blocked"
-            value={this.phone}
-            placeholder="Invite via SMS..."
-            onFocus={() => (this.showSuggestions = false)}
-            onInput={(e: any) => {
-              this.phone = convertToE164(e.target.value);
-            }}
-          />
-        </div>
-        {/*)}*/}
+        {globalSMS && (
+          <div class="row">
+            <label htmlFor={this.phoneFieldId}>Phone:</label>
+            <input
+              id={this.phoneFieldId}
+              name={this.phoneFieldId}
+              type="text"
+              data-lpignore="true"
+              autoComplete="blocked"
+              aria-autocomplete="none"
+              value={this.phone}
+              placeholder="Invite/verify via SMS..."
+              onFocus={() => (this.showSuggestions = false)}
+              onInput={(e: any) => {
+                this.phone = convertToE164(e.target.value);
+              }}
+            />
+          </div>
+        )}
 
         <Fragment>
           <div class="kba-row">
             <label>Recipient Verification:</label>
-            <verdocs-select-input
-              value={this.kba_method}
-              onInput={(e: any) => {
-                this.kba_method = e.target.value;
-                this.zip = '';
-                this.address = '';
-                this.kba_pin = '';
-              }}
+            <verdocs-multiselect
+              label=""
+              placeholder="None"
               options={verificationOptions}
+              selectedOptions={this.auth_methods}
+              onSelectionChanged={(e: any) => {
+                console.log('selectedOptions changed', e.detail);
+              }}
             />
           </div>
 
-          {this.kba_method === 'sms' && (
-            <div class="row">
-              <label htmlFor={this.phoneFieldId}>Phone:</label>
-              <input
-                id={this.phoneFieldId}
-                name={this.phoneFieldId}
-                type="text"
-                data-lpignore="true"
-                autoComplete="blocked"
-                value={this.phone}
-                placeholder="Verify via SMS one-time code..."
-                onFocus={() => (this.showSuggestions = false)}
-                onInput={(e: any) => {
-                  this.phone = convertToE164(e.target.value);
-                }}
-              />
-            </div>
-          )}
-
-          {this.kba_method === 'pin' && (
+          {this.auth_methods.includes('passcode') && (
             <div class="row pin-code">
               <label htmlFor={this.phoneFieldId}>Passcode:</label>
               <input
-                id="verdocs-pin-code"
-                name="verdocs-pin-code"
+                id="verdocs-passcode"
+                name="verdocs-passcode"
                 type="text"
                 data-lpignore="true"
                 autocomplete="blocked"
-                value={this.kba_pin}
+                aria-autocomplete="none"
+                value={this.passcode}
                 placeholder="4-8 digits recommended..."
                 onFocus={() => (this.showSuggestions = false)}
-                onInput={(e: any) => (this.kba_pin = e.target.value)}
+                onInput={(e: any) => (this.passcode = e.target.value)}
               />
             </div>
           )}
