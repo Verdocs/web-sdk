@@ -34,18 +34,6 @@ verdocs-contact-picker {
       }
     }
 
-    .kba-row {
-      gap: 8px;
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-
-      verdocs-select-input {
-        margin: 0;
-        flex: 1;
-      }
-    }
-
     .pin-code {
       gap: 8px;
       display: flex;
@@ -138,13 +126,8 @@ verdocs-contact-picker {
 
 #verdocs-contact-picker-suggestions {
   .dropdown {
-    //left: 0;
-    //right: 0;
-    //top: 49px;
-    //z-index: 1000000;
     max-height: 225px;
     overflow-y: scroll;
-    //position: absolute;
     background: #ffffff;
     font-family: $verdocs-primary-font;
     box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);

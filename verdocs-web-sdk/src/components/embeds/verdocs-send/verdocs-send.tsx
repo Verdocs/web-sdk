@@ -318,7 +318,6 @@ export class VerdocsSend {
     }
 
     const levels = this.getSequenceNumbers();
-    console.log('[SEND] Rendering levels', levels);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) && recipient.first_name && recipient.last_name);
     const allRolesAssigned = rolesAssigned.length >= getRoleNames(this.template).length;
 

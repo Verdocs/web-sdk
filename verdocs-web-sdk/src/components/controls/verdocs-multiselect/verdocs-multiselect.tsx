@@ -78,13 +78,20 @@ export class VerdocsMultiselect {
               <verdocs-portal anchor={elId} voffset={2} onClickAway={() => (this.showPicker = false)} id="verdocs-multiselect-menu-items">
                 {this.options.map((option, i) => (
                   <div class="option" onClick={() => (this.showPicker = false)}>
-                    <input
-                      id={`verdocs-multi-select-option-${i}`}
-                      type="checkbox"
+                    <verdocs-checkbox
+                      size="small"
+                      id={`verdocs-multi-select-opt-${i}`}
                       value={option.value}
                       checked={this.selectedOptions.includes(option.value)}
                       onInput={(e: any) => this.handleToggleOption(e, option)}
                     />
+                    {/*<input*/}
+                    {/*  id={`verdocs-multi-select-option-${i}`}*/}
+                    {/*  type="checkbox"*/}
+                    {/*  value={option.value}*/}
+                    {/*  checked={this.selectedOptions.includes(option.value)}*/}
+                    {/*  onInput={(e: any) => this.handleToggleOption(e, option)}*/}
+                    {/*/>*/}
                     <label htmlFor={`verdocs-multi-select-option-${i}`}>{option.label}</label>
                   </div>
                 ))}

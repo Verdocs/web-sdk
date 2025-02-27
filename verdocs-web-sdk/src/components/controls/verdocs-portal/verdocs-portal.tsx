@@ -55,7 +55,8 @@ export class VerdocsPortal {
 
   @Listen('click', {target: 'document'})
   handleClick(e) {
-    if (!this.element.contains(e.target)) {
+    const closest = e.target.closest('.verdocs-portal');
+    if (!this.element.contains(e.target) && !closest) {
       this.clickAway?.emit();
     }
   }
@@ -119,7 +120,7 @@ export class VerdocsPortal {
 
   render() {
     return (
-      <Host ref={el => (this.element = el)}>
+      <Host ref={el => (this.element = el)} class="verdocs-portal">
         <slot />
       </Host>
     );

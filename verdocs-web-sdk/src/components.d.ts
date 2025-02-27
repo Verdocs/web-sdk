@@ -197,6 +197,10 @@ export namespace Components {
          */
         "name": string;
         /**
+          * Size of checkbox to render.
+         */
+        "size": 'normal' | 'small';
+        /**
           * Style of checkbox to render. Use 'dark' when rendering on a dark background.
          */
         "theme": 'light' | 'dark';
@@ -3995,6 +3999,10 @@ declare namespace LocalJSX {
           * HTML form field name for the input.
          */
         "name"?: string;
+        /**
+          * Size of checkbox to render.
+         */
+        "size"?: 'normal' | 'small';
         /**
           * Style of checkbox to render. Use 'dark' when rendering on a dark background.
          */

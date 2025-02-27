@@ -65,6 +65,7 @@ export const VerdocsCheckbox = /*@__PURE__*/ defineContainer<JSX.VerdocsCheckbox
   'label',
   'value',
   'theme',
+  'size',
   'disabled'
 ]);
 

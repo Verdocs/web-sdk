@@ -52,13 +52,18 @@ export class VerdocsCheckbox {
   @Prop() theme: 'light' | 'dark' = 'light';
 
   /**
+   * Size of checkbox to render.
+   */
+  @Prop() size: 'normal' | 'small' = 'normal';
+
+  /**
    * If set, the button will still be displayed but not selectable.
    */
   @Prop() disabled?: boolean = false;
 
   render() {
     return (
-      <Host class={{disabled: this.disabled, [this.theme]: true}}>
+      <Host class={{disabled: this.disabled, [this.theme]: true, [this.size]: true}}>
         <label>
           <input type="checkbox" value={this.value} name={this.name} checked={this.checked} disabled={this.disabled} />
           <span>{this.label}</span>

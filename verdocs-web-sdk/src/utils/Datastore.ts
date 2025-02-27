@@ -10,7 +10,6 @@ const store = createStore();
 // of a user's interactions need to go through our servers anyway.
 store.delTables();
 store.delValues();
-console.log('[STORE] Data store initialized.');
 
 export const safeJsonParse = (val: any, fallback?: any) => {
   try {

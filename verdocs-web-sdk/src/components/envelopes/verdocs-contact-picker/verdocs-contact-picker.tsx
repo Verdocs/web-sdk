@@ -149,6 +149,7 @@ export class VerdocsContactPicker {
 
   handleCancel(e: any) {
     e.stopPropagation();
+    console.log('cxl');
     this.showSuggestions = false;
     this.exit?.emit();
   }
@@ -156,6 +157,7 @@ export class VerdocsContactPicker {
   handleSubmit(e: any) {
     e.stopPropagation();
 
+    console.log('sub');
     this.showSuggestions = false;
     this.next?.emit({
       first_name: this.first_name,
@@ -315,18 +317,21 @@ export class VerdocsContactPicker {
         )}
 
         <Fragment>
-          <div class="kba-row">
-            <label>Recipient Verification:</label>
-            <verdocs-multiselect
-              label=""
-              placeholder="None"
-              options={verificationOptions}
-              selectedOptions={this.auth_methods}
-              onSelectionChanged={(e: any) => {
-                console.log('selectedOptions changed', e.detail);
-              }}
-            />
-          </div>
+          {verificationOptions.length > 0 && (
+            <div class="row">
+              <label>Recipient Verification:</label>
+              <verdocs-multiselect
+                label=""
+                placeholder="None"
+                options={verificationOptions}
+                selectedOptions={this.auth_methods}
+                onSelectionChanged={(e: any) => {
+                  console.log('selectedOptions changed', e.detail);
+                  this.auth_methods = e.detail.selectedOptions;
+                }}
+              />
+            </div>
+          )}
 
           {this.auth_methods.includes('passcode') && (
             <div class="row pin-code">

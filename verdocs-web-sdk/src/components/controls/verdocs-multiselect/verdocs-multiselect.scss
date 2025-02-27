@@ -71,6 +71,14 @@ verdocs-multiselect {
   background: $verdocs-grey-4;
   border: 1px solid $item-border-color;
 
+  .option {
+    display: flex;
+    gap: 4px;
+    padding: 5px 8px;
+    align-items: center;
+    flex-direction: row;
+  }
+
   label {
     font-size: 13px;
   }

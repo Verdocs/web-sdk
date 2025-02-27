@@ -46,4 +46,12 @@ verdocs-checkbox {
       border-color: $verdocs-green;
     }
   }
+
+  &.small {
+    label > input[type='checkbox'] + *::before {
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+    }
+  }
 }

@@ -151,14 +151,14 @@ export declare interface VerdocsButtonPanel extends Components.VerdocsButtonPane
 
 
 @ProxyCmp({
-  inputs: ['checked', 'disabled', 'label', 'name', 'theme', 'value']
+  inputs: ['checked', 'disabled', 'label', 'name', 'size', 'theme', 'value']
 })
 @Component({
   selector: 'verdocs-checkbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['checked', 'disabled', 'label', 'name', 'theme', 'value'],
+  inputs: ['checked', 'disabled', 'label', 'name', 'size', 'theme', 'value'],
 })
 export class VerdocsCheckbox {
   protected el: HTMLVerdocsCheckboxElement;
