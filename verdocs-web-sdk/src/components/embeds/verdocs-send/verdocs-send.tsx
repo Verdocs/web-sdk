@@ -195,7 +195,6 @@ export class VerdocsSend {
       const id = `r-${level}-${rolesAtLevel[level].length}`;
       rolesAtLevel[level].push({...role, id, role_name: role.name, first_name: role.first_name, last_name: role.last_name});
 
-      // TODO: Re-activate once SMS is re-enabled
       // if (role.first_name && (isValidEmail(role.email) || isValidPhone(role.phone))) {
       if (role.first_name && isValidEmail(role.email)) {
         this.rolesCompleted[id] = {...role, id, role_name: role.name, first_name: role.first_name, last_name: role.last_name};
@@ -204,8 +203,8 @@ export class VerdocsSend {
   }
 
   getSequenceNumbers() {
-    // TODO: This is cleaner with a Set but we found a regression in some target environments where
-    //  this breaks down. Reverting to an older technique while we diagnose it.
+    // This is cleaner with a Set but we found a regression in some target environments where
+    // this breaks down. Reverting to an older technique while we diagnose it.
     const sequences: Record<number, boolean> = {};
     (this.template?.roles || []).forEach(role => {
       sequences[role.sequence] = true;
@@ -213,10 +212,6 @@ export class VerdocsSend {
     return Object.keys(sequences)
       .map(s => +s)
       .sort((a, b) => a - b);
-
-    // const levels = [...new Set((this.template?.roles || []).map(role => role.sequence - 1))];
-    // levels.sort((a, b) => a - b);
-    // return levels;
   }
 
   getRolesAtLevel(level: number) {
@@ -243,6 +238,7 @@ export class VerdocsSend {
   }
 
   handleSelectContact(e: any, role: Partial<IRecipient>) {
+    console.log('hsc', e.detail, role);
     e.preventDefault();
     this.rolesCompleted[role.id] = {...role, ...e.detail};
     this.showPickerForId = '';
@@ -324,8 +320,6 @@ export class VerdocsSend {
     const levels = this.getSequenceNumbers();
     console.log('[SEND] Rendering levels', levels);
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) && recipient.first_name && recipient.last_name);
-    // TODO: Reactivate once SMS is re-enabled
-    // const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) || isValidPhone(recipient.phone));
     const allRolesAssigned = rolesAssigned.length >= getRoleNames(this.template).length;
 
     return (

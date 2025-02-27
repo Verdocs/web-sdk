@@ -96,7 +96,7 @@ verdocs-contact-picker {
     .row.message textarea {
       width: 100%;
       padding: 5px 7px;
-      border-radius:4px;
+      border-radius: 4px;
       font-family: $verdocs-primary-font;
     }
 
@@ -110,61 +110,6 @@ verdocs-contact-picker {
 
       &:focus {
         outline: none;
-      }
-    }
-
-    .dropdown {
-      left: 0;
-      right: 0;
-      top: 49px;
-      z-index: 1000000;
-      max-height: 225px;
-      overflow-y: scroll;
-      position: absolute;
-      background: #ffffff;
-      box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);
-
-      .suggestion {
-        display: flex;
-        padding: 6px 12px;
-        align-items: center;
-        flex-direction: row;
-
-        svg {
-          width: 32px;
-          height: 32px;
-        }
-
-        .avatar {
-          width: 32px;
-          height: 32px;
-          flex: 0 0 32px;
-          margin-right: 8px;
-          border-radius: 100%;
-        }
-
-        .details {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .name {
-          font-size: 16px;
-          font-weight: 500;
-          margin-bottom: 3px;
-          color: $verdocs-grey-0;
-        }
-
-        .destination {
-          font-size: 14px;
-          margin-bottom: 3px;
-          color: $verdocs-grey-1;
-        }
-
-        &:hover {
-          background: #eee;
-          cursor: pointer;
-        }
       }
     }
   }
@@ -188,5 +133,63 @@ verdocs-contact-picker {
   // LastPass is ignoring the data-lpignore attribute in some cases
   [data-lastpass-icon-root] {
     display: none !important;
+  }
+}
+
+#verdocs-contact-picker-suggestions {
+  .dropdown {
+    //left: 0;
+    //right: 0;
+    //top: 49px;
+    //z-index: 1000000;
+    max-height: 225px;
+    overflow-y: scroll;
+    //position: absolute;
+    background: #ffffff;
+    font-family: $verdocs-primary-font;
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);
+
+    .suggestion {
+      display: flex;
+      padding: 6px 12px;
+      align-items: center;
+      flex-direction: row;
+
+      svg {
+        width: 32px;
+        height: 32px;
+      }
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        margin-right: 8px;
+        border-radius: 100%;
+      }
+
+      .details {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .name {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 3px;
+        color: $verdocs-grey-0;
+      }
+
+      .destination {
+        font-size: 14px;
+        margin-bottom: 3px;
+        color: $verdocs-grey-1;
+      }
+
+      &:hover {
+        background: #eee;
+        cursor: pointer;
+      }
+    }
   }
 }

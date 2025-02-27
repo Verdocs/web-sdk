@@ -118,7 +118,6 @@ export class VerdocsContactPicker {
       this.showMessage = this.message !== '';
       this.auth_methods = this.templateRole.auth_methods || [];
       this.passcode = this.templateRole.passcode || '';
-      // TODO: Allow template roles to have zip codes predefined?
     }
 
     getActiveEntitlements(this.endpoint)
@@ -232,9 +231,6 @@ export class VerdocsContactPicker {
               aria-autocomplete="none"
               value={this.first_name}
               placeholder="First..."
-              onBlur={() => {
-                this.showSuggestions = false;
-              }}
               onFocus={() => {
                 // Give the blur event a chance to hide it first if going between first/last
                 setTimeout(() => {
@@ -252,9 +248,6 @@ export class VerdocsContactPicker {
               aria-autocomplete="none"
               value={this.last_name}
               placeholder="Last..."
-              onBlur={() => {
-                this.showSuggestions = false;
-              }}
               onFocus={() => {
                 // Give the blur event a chance to hide it first if going between first/last
                 setTimeout(() => {
@@ -266,20 +259,22 @@ export class VerdocsContactPicker {
           </div>
 
           {this.showSuggestions && (
-            <div class="dropdown">
-              {this.contactSuggestions
-                .filter(suggestion => !this.first_name || suggestion.first_name.toLowerCase().includes(this.first_name.toLowerCase()))
-                .map(suggestion => (
-                  <div key={suggestion.id ?? suggestion.email} class="suggestion" onClick={e => this.handleSelectSuggestion(e, suggestion)}>
-                    {suggestion.picture ? <img alt="Avatar" class="avatar" src={suggestion.picture} /> : <div class="avatar" innerHTML={addrBookIcon} />}
-                    <div class="details">
-                      <div class="name">{formatFullName(suggestion)}</div>
-                      {suggestion.email && <div class="destination">{suggestion.email}</div>}
-                      {suggestion.phone && <div class="destination">{suggestion.phone}</div>}
+            <verdocs-portal anchor={this.firstNameFieldId} onClickAway={() => (this.showSuggestions = false)} id="verdocs-contact-picker-suggestions">
+              <div class="dropdown">
+                {this.contactSuggestions
+                  .filter(suggestion => !this.first_name || suggestion.first_name.toLowerCase().includes(this.first_name.toLowerCase()))
+                  .map(suggestion => (
+                    <div key={suggestion.id ?? suggestion.email} class="suggestion" onClick={e => this.handleSelectSuggestion(e, suggestion)}>
+                      {suggestion.picture ? <img alt="Avatar" class="avatar" src={suggestion.picture} /> : <div class="avatar" innerHTML={addrBookIcon} />}
+                      <div class="details">
+                        <div class="name">{formatFullName(suggestion)}</div>
+                        {suggestion.email && <div class="destination">{suggestion.email}</div>}
+                        {suggestion.phone && <div class="destination">{suggestion.phone}</div>}
+                      </div>
                     </div>
-                  </div>
-                ))}
-            </div>
+                  ))}
+              </div>
+            </verdocs-portal>
           )}
         </div>
 
@@ -299,7 +294,6 @@ export class VerdocsContactPicker {
           />
         </div>
 
-        {/* TODO: Check entitlement for SMS invites */}
         {globalSMS && (
           <div class="row">
             <label htmlFor={this.phoneFieldId}>Phone:</label>
