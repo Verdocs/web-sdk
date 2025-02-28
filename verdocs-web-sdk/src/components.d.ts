@@ -248,6 +248,39 @@ export namespace Components {
         "templateRole": Partial<IRecipient> | null;
     }
     /**
+     * Display a date input field.
+     * ```ts
+     * <verdocs-date-input type="text" label="DOB" placeholder="Date of Birth..." value="" />
+     * ```
+     */
+    interface VerdocsDateInput {
+        /**
+          * Should the field be disabled?
+         */
+        "disabled": boolean;
+        "focusField": () => Promise<void>;
+        /**
+          * If supplied, a help icon will be displayed to provide the user more information.
+         */
+        "helpText": string;
+        /**
+          * The label for the field.
+         */
+        "label": string;
+        /**
+          * The placeholder for the field.
+         */
+        "placeholder": string;
+        /**
+          * Should the field be required?
+         */
+        "required": boolean;
+        /**
+          * The initial value for the input field.
+         */
+        "value": string;
+    }
+    /**
      * Display a simple dialog where the contents are provided via slots.
      */
     interface VerdocsDialog {
@@ -2341,6 +2374,18 @@ declare global {
         prototype: HTMLVerdocsContactPickerElement;
         new (): HTMLVerdocsContactPickerElement;
     };
+    /**
+     * Display a date input field.
+     * ```ts
+     * <verdocs-date-input type="text" label="DOB" placeholder="Date of Birth..." value="" />
+     * ```
+     */
+    interface HTMLVerdocsDateInputElement extends Components.VerdocsDateInput, HTMLStencilElement {
+    }
+    var HTMLVerdocsDateInputElement: {
+        prototype: HTMLVerdocsDateInputElement;
+        new (): HTMLVerdocsDateInputElement;
+    };
     interface HTMLVerdocsDialogElementEventMap {
         "exit": any;
     }
@@ -3745,6 +3790,7 @@ declare global {
         "verdocs-checkbox": HTMLVerdocsCheckboxElement;
         "verdocs-component-error": HTMLVerdocsComponentErrorElement;
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
+        "verdocs-date-input": HTMLVerdocsDateInputElement;
         "verdocs-dialog": HTMLVerdocsDialogElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-envelope-document-page": HTMLVerdocsEnvelopeDocumentPageElement;
@@ -4061,6 +4107,38 @@ declare namespace LocalJSX {
           * The role that this contact will be assigned to.
          */
         "templateRole"?: Partial<IRecipient> | null;
+    }
+    /**
+     * Display a date input field.
+     * ```ts
+     * <verdocs-date-input type="text" label="DOB" placeholder="Date of Birth..." value="" />
+     * ```
+     */
+    interface VerdocsDateInput {
+        /**
+          * Should the field be disabled?
+         */
+        "disabled"?: boolean;
+        /**
+          * If supplied, a help icon will be displayed to provide the user more information.
+         */
+        "helpText"?: string;
+        /**
+          * The label for the field.
+         */
+        "label"?: string;
+        /**
+          * The placeholder for the field.
+         */
+        "placeholder"?: string;
+        /**
+          * Should the field be required?
+         */
+        "required"?: boolean;
+        /**
+          * The initial value for the input field.
+         */
+        "value"?: string;
     }
     /**
      * Display a simple dialog where the contents are provided via slots.
@@ -6268,6 +6346,7 @@ declare namespace LocalJSX {
         "verdocs-checkbox": VerdocsCheckbox;
         "verdocs-component-error": VerdocsComponentError;
         "verdocs-contact-picker": VerdocsContactPicker;
+        "verdocs-date-input": VerdocsDateInput;
         "verdocs-dialog": VerdocsDialog;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-envelope-document-page": VerdocsEnvelopeDocumentPage;
@@ -6429,6 +6508,13 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
+            /**
+             * Display a date input field.
+             * ```ts
+             * <verdocs-date-input type="text" label="DOB" placeholder="Date of Birth..." value="" />
+             * ```
+             */
+            "verdocs-date-input": LocalJSX.VerdocsDateInput & JSXBase.HTMLAttributes<HTMLVerdocsDateInputElement>;
             /**
              * Display a simple dialog where the contents are provided via slots.
              */

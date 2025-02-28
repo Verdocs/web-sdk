@@ -17,6 +17,7 @@ import { VerdocsButton as VerdocsButtonElement, defineCustomElement as defineVer
 import { VerdocsCheckbox as VerdocsCheckboxElement, defineCustomElement as defineVerdocsCheckbox } from "@verdocs/web-sdk/dist/components/verdocs-checkbox.js";
 import { VerdocsComponentError as VerdocsComponentErrorElement, defineCustomElement as defineVerdocsComponentError } from "@verdocs/web-sdk/dist/components/verdocs-component-error.js";
 import { VerdocsContactPicker as VerdocsContactPickerElement, defineCustomElement as defineVerdocsContactPicker } from "@verdocs/web-sdk/dist/components/verdocs-contact-picker.js";
+import { VerdocsDateInput as VerdocsDateInputElement, defineCustomElement as defineVerdocsDateInput } from "@verdocs/web-sdk/dist/components/verdocs-date-input.js";
 import { VerdocsDialog as VerdocsDialogElement, defineCustomElement as defineVerdocsDialog } from "@verdocs/web-sdk/dist/components/verdocs-dialog.js";
 import { VerdocsDropdown as VerdocsDropdownElement, defineCustomElement as defineVerdocsDropdown } from "@verdocs/web-sdk/dist/components/verdocs-dropdown.js";
 import { VerdocsEnvelopeDocumentPage as VerdocsEnvelopeDocumentPageElement, defineCustomElement as defineVerdocsEnvelopeDocumentPage } from "@verdocs/web-sdk/dist/components/verdocs-envelope-document-page.js";
@@ -188,6 +189,17 @@ export const VerdocsContactPicker: StencilReactComponent<VerdocsContactPickerEle
         onNext: 'next'
     } as VerdocsContactPickerEvents,
     defineCustomElement: defineVerdocsContactPicker
+});
+
+type VerdocsDateInputEvents = NonNullable<unknown>;
+
+export const VerdocsDateInput: StencilReactComponent<VerdocsDateInputElement, VerdocsDateInputEvents> = /*@__PURE__*/ createComponent<VerdocsDateInputElement, VerdocsDateInputEvents>({
+    tagName: 'verdocs-date-input',
+    elementClass: VerdocsDateInputElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {} as VerdocsDateInputEvents,
+    defineCustomElement: defineVerdocsDateInput
 });
 
 type VerdocsDialogEvents = { onExit: EventName<CustomEvent<any>> };

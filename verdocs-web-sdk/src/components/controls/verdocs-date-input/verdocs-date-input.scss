@@ -1,0 +1,110 @@
+@import '../../../theme.scss';
+
+verdocs-text-input {
+  font-family: $primary-font;
+  box-sizing: border-box;
+  margin: 0 0 10px 0;
+  display: block;
+
+  .input-element {
+    box-sizing: border-box;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    background: $verdocs-grey-4;
+    color: #000;
+    width: 100%;
+    font-size: 16px;
+    height: 34px;
+    padding: 0 9px;
+    outline: none;
+
+    &:disabled {
+      cursor: not-allowed;
+      background: $verdocs-grey-2;
+      border: 1px solid $verdocs-grey-1;
+    }
+
+    &::placeholder {
+      color: $light-disabled-color;
+      opacity: 1;
+    }
+
+    &:focus {
+      outline: 1px solid $border-color-highlight;
+    }
+  }
+
+  .input-label {
+    display: block;
+    color: $label-color-light;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 0 4px 0;
+  }
+
+  .required {
+    color: red;
+    margin-left: 2px;
+    display: inline-block;
+  }
+
+  // @see https://community.logmein.com/t5/LastPass-Support-Discussions/placeholder-text-overrides-data-lpignore-quot-true-quot/td-p/295135
+  // LastPass is ignoring the data-lpignore attribute in some cases
+  [data-lastpass-icon-root] {
+    display: none !important;
+  }
+
+  .input-container {
+    position: relative;
+  }
+
+  .clear {
+    top: 7px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    fill: #cccccc;
+    position: absolute;
+
+    &:hover {
+      fill: #720101;
+      cursor: pointer;
+    }
+  }
+
+  .copy {
+    top: 7px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    fill: #cccccc;
+    position: absolute;
+
+    &:hover {
+      fill: $verdocs-purple;
+      cursor: pointer;
+    }
+  }
+
+  .toggle-pw {
+    top: 5px;
+    right: 7px;
+    width: 18px;
+    height: 18px;
+    stroke: #cccccc;
+    //fill: #cccccc;
+    position: absolute;
+
+    &:hover {
+      fill: $verdocs-purple;
+      cursor: pointer;
+    }
+  }
+
+  &.clearable,
+  &.copyable {
+    .input-element {
+      padding-right: 32px;
+    }
+  }
+}

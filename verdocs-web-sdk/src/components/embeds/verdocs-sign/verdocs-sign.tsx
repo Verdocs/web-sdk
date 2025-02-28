@@ -818,6 +818,7 @@ export class VerdocsSign {
                 mode="text"
                 step={1}
                 steps={1}
+                placeholder="Enter your passcode..."
                 helptitle="Document is protected by a Passcode"
                 helptext="Please enter your Passcode to proceed. If you do not have one, please contact the sender."
                 label="Passcode"
@@ -864,7 +865,6 @@ export class VerdocsSign {
                     city: recipDetails.city,
                     state: recipDetails.state,
                     zip: recipDetails.zip,
-                    ssn_last_4: recipDetails.ssn_last_4,
                     dob: recipDetails.dob,
                   });
                 }}

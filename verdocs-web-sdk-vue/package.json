@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk-vue",
-  "version": "5.0.43",
+  "version": "5.0.44",
   "description": "Verdocs Web SDK for React",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -18,7 +18,7 @@
     "rollup": "rollup -c"
   },
   "dependencies": {
-    "@verdocs/web-sdk": "^5.0.43",
+    "@verdocs/web-sdk": "^5.0.44",
     "@stencil/vue-output-target": "^0.9.2"
   },
   "peerDependencies": {

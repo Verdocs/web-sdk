@@ -120,6 +120,16 @@ verdocs-kba-dialog {
       white-space: nowrap;
     }
 
+    verdocs-date-input {
+      width: 40%;
+      flex-grow: 1;
+
+      input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+
     input {
       width: 40%;
       flex-grow: 1;

@@ -235,6 +235,29 @@ the `contactSuggestions` property.
 
 
 @ProxyCmp({
+  inputs: ['disabled', 'helpText', 'label', 'placeholder', 'required', 'value'],
+  methods: ['focusField']
+})
+@Component({
+  selector: 'verdocs-date-input',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['disabled', 'helpText', 'label', 'placeholder', 'required', 'value'],
+})
+export class VerdocsDateInput {
+  protected el: HTMLVerdocsDateInputElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsDateInput extends Components.VerdocsDateInput {}
+
+
+@ProxyCmp({
 })
 @Component({
   selector: 'verdocs-dialog',

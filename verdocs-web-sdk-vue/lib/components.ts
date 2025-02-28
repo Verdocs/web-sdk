@@ -89,6 +89,16 @@ export const VerdocsContactPicker = /*@__PURE__*/ defineContainer<JSX.VerdocsCon
 ]);
 
 
+export const VerdocsDateInput = /*@__PURE__*/ defineContainer<JSX.VerdocsDateInput>('verdocs-date-input', undefined, [
+  'value',
+  'label',
+  'placeholder',
+  'helpText',
+  'disabled',
+  'required'
+]);
+
+
 export const VerdocsDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsDialog>('verdocs-dialog', undefined, [
   'exit'
 ], [
