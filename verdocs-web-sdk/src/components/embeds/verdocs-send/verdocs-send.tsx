@@ -238,7 +238,6 @@ export class VerdocsSend {
   }
 
   handleSelectContact(e: any, role: Partial<IRecipient>) {
-    console.log('hsc', e.detail, role);
     e.preventDefault();
     this.rolesCompleted[role.id] = {...role, ...e.detail};
     this.showPickerForId = '';

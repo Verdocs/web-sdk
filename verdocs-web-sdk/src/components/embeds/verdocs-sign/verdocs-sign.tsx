@@ -1,11 +1,11 @@
-import type {IEnvelope, IEnvelopeField, IRecipient} from '@verdocs/js-sdk';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {updateEnvelopeField, sortFields, submitKbaIdentity, submitKbaChallengeResponse} from '@verdocs/js-sdk';
-import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, getKbaStep} from '@verdocs/js-sdk';
-import {getEnvelope, integerSequence, isValidEmail, isValidPhone, submitKbaPin, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
-import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, formatFullName} from '@verdocs/js-sdk';
+import {getEnvelope, integerSequence, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
+import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
+import {authenticateSigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
+import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod} from '@verdocs/js-sdk';
+import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
+import {updateEnvelopeField, sortFields} from '@verdocs/js-sdk';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -94,8 +94,8 @@ export class VerdocsSign {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
-  @State() roleNames: string[] = [];
-  @State() sortedRecipients: IRecipient[] = [];
+  // @State() roleNames: string[] = [];
+  // @State() sortedRecipients: IRecipient[] = [];
   @State() recipient: IRecipient | null = null;
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
@@ -112,7 +112,10 @@ export class VerdocsSign {
   @State() showFinishLater = false;
   @State() agreed = false;
   @State() documentsSingularPlural = 'document';
-  @State() kbaStep = '';
+  // TODO
+  // @State() authStep: TRecipientAuthMethod | null = null;
+  @State() authStep: string | null = null;
+  @State() authDetails: any = null;
   @State() kbaQuestions: any[] = [];
   @State() showSpinner = false;
   @State() kbaChoices = [];
@@ -120,7 +123,7 @@ export class VerdocsSign {
   @State() loading = true;
   @State() envelope: IEnvelope | null = null;
 
-  recipientIndex: number = -1;
+  // recipientIndex: number = -1;
 
   componentWillLoad() {
     if (!this.endpoint) {
@@ -150,43 +153,37 @@ export class VerdocsSign {
 
       // NOTE: We don't listen to the store here because we are often an independent
       // session and might have a different "view" of the envelope.
-      const {envelope, recipient} = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
+      const {envelope, recipient, auth_step, auth_details} = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
       console.log(`[SIGN] Loaded signing session`, envelope, recipient);
       this.recipient = recipient;
       this.envelope = envelope;
+      this.authStep = auth_step;
+      this.authDetails = auth_details;
+      this.agreed = recipient.agreed;
+      this.submitted = recipient.status === 'submitted';
+      this.isDone = this.submitted;
+      this.showDone = this.submitted;
 
       Store.updateEnvelope(this.envelopeId, envelope);
-
-      // TODO: Can be cleaned up shortly.
-      this.sortedRecipients = [...this.envelope.recipients];
-      this.sortedRecipients.sort((a, b) => {
-        return a.sequence === b.sequence ? a.order - b.order : a.sequence - b.sequence;
-      });
-
-      this.roleNames = this.sortedRecipients.map(r => r.role_name);
 
       if (this.envelope.documents.length > 0) {
         this.documentsSingularPlural = 'document(s)';
       }
 
-      this.recipientIndex = this.roleNames.findIndex(roleName => roleName == this.roleId);
-      if (this.recipientIndex > -1) {
-        this.recipient = this.sortedRecipients[this.recipientIndex];
-        this.agreed = this.recipient.agreed;
-      } else {
-        console.warn('[SIGN] Could not find our recipient record', this.roleId, this.sortedRecipients);
+      const auth_method_states = (recipient.auth_method_states || {}) as Record<TRecipientAuthMethod, string>;
+      if (Object.values(auth_method_states).includes('failed')) {
+        this.fatalErrorHeader = 'Recipient Verification Failed';
+        this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
+        this.isDone = true;
       }
 
       // TODO: Envelope "complete" | "declined" | "canceled"
       // TODO: Recipient "canceled"
-      this.submitted = this.recipient.status === 'submitted';
-      this.isDone = this.submitted;
-      this.showDone = this.submitted;
 
       if (this.envelope.status === 'canceled') {
         this.fatalErrorHeader = 'Unable to Start Signing Session';
         this.fatalErrorMessage = 'This envelope has been canceled. The sender has been notified.';
-      } else if (this.recipient.status === 'declined') {
+      } else if (recipient.status === 'declined') {
         this.fatalErrorHeader = 'Unable to Start Signing Session';
         this.fatalErrorMessage = 'You have declined to sign this envelope. The sender has been notified.';
       } else if (this.agreed) {
@@ -195,23 +192,6 @@ export class VerdocsSign {
 
       this.checkRecipientFields();
       this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
-
-      if (!this.isDone) {
-        getKbaStep(this.endpoint, this.envelopeId, this.roleId)
-          .then(r => {
-            console.log('[SIGN] KBA Step', r);
-            this.kbaStep = r.kba_step;
-            if (this.kbaStep === 'failed') {
-              this.fatalErrorHeader = 'Identity Verification Failed';
-              this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
-              this.isDone = true;
-            } else {
-              this.kbaQuestions = (r as any).questions?.question || [];
-              this.kbaChoices = [];
-            }
-          })
-          .catch(e => console.log('Error getting KBA step', e));
-      }
     } catch (e) {
       console.log('[SIGN] Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -660,7 +640,7 @@ export class VerdocsSign {
     });
 
     // Now render the fields for other signers who have yet to act
-    this.sortedRecipients
+    this.envelope.recipients
       .filter(r => r.role_name !== this.recipient.role_name && (r.status === 'invited' || r.status === 'opened' || r.status === 'pending'))
       .forEach(() => {
         this.getRecipientFields()
@@ -682,7 +662,28 @@ export class VerdocsSign {
     this.checkRecipientFields();
   }
 
+  handleAuthenticateSigner(params: TAuthenticateRecipientRequest) {
+    console.log('[SIGN] Submitting authentication step', params);
+    authenticateSigner(this.endpoint, params)
+      .then(r => {
+        console.log('[SIGN] Authentication successful', r);
+        this.authStep = r.auth_step;
+        this.authDetails = r.auth_details;
+      })
+      .catch(e => {
+        console.log('[SIGN] Error submitting authentication step', e);
+        if (e.response?.data?.error?.includes('failed')) {
+          this.fatalErrorHeader = 'Recipient Verification Failed';
+          this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
+          this.isDone = true;
+        } else {
+          VerdocsToast(e.response?.data?.error || 'Unable to verify your identity. Please try again.', {style: 'error'});
+        }
+      });
+  }
+
   render() {
+    console.log('[SIGN] Rendering', {authStep: this.authStep});
     if (this.showLoadError) {
       return (
         <Host>
@@ -793,7 +794,7 @@ export class VerdocsSign {
       );
     }
 
-    if (this.kbaStep === 'pin') {
+    if (this.authStep === 'passcode') {
       return (
         <Host class="kba">
           <div id="verdocs-sign-header">
@@ -817,28 +818,10 @@ export class VerdocsSign {
                 mode="text"
                 step={1}
                 steps={1}
-                helptitle="Document is protected by a PIN code"
-                helptext="Please enter your PIN code to proceed. If you do not have one, please contact the sender."
-                label="PIN Code"
-                onNext={async e => {
-                  submitKbaPin(this.endpoint, this.envelopeId, this.roleId, e.detail as string)
-                    .then(r => {
-                      console.log('[SIGN] PIN code submission result', r);
-                      if (r.kba_step === 'complete') {
-                        this.kbaStep = '';
-                      }
-                    })
-                    .catch(e => {
-                      console.log('[SIGN] Error submitting PIN', e);
-                      if (e.response?.data?.error === 'Rejecting PIN submission, too many attempts') {
-                        this.fatalErrorHeader = 'PIN Verification Failed';
-                        this.fatalErrorMessage = 'Too many failed attempts. The sender has been notified.';
-                        this.isDone = true;
-                      } else {
-                        VerdocsToast(e.response?.data?.error || 'Unable to verify PIN code. Please try again.', {style: 'error'});
-                      }
-                    });
-                }}
+                helptitle="Document is protected by a Passcode"
+                helptext="Please enter your Passcode to proceed. If you do not have one, please contact the sender."
+                label="Passcode"
+                onNext={e => this.handleAuthenticateSigner({auth_method: 'passcode', code: e.detail as string})}
               />
             </div>
           </div>
@@ -846,7 +829,7 @@ export class VerdocsSign {
       );
     }
 
-    if (this.kbaStep === 'identity') {
+    if (this.authStep === 'kba') {
       return (
         <Host class="kba">
           <div id="verdocs-sign-header">
@@ -873,23 +856,17 @@ export class VerdocsSign {
                 recipient={this.recipient}
                 onNext={async e => {
                   const recipDetails = e.detail as IRecipient;
-                  submitKbaIdentity(this.endpoint, this.envelopeId, this.roleId, {
-                    firstName: recipDetails.first_name,
-                    lastName: recipDetails.last_name,
+                  this.handleAuthenticateSigner({
+                    auth_method: 'kba',
+                    first_name: recipDetails.first_name,
+                    last_name: recipDetails.last_name,
                     address: recipDetails.address,
                     city: recipDetails.city,
                     state: recipDetails.state,
                     zip: recipDetails.zip,
-                    ssnLast4: recipDetails.ssn_last_4,
-                  })
-                    .then(r => {
-                      console.log('[SIGN] Identity submission result', r);
-                      this.kbaStep = r.kba_step;
-                    })
-                    .catch(e => {
-                      console.log('[SIGN] Error submitting identity', e);
-                      VerdocsToast(e.response?.data?.error || 'Unable to verify identity.', {style: 'error'});
-                    });
+                    ssn_last_4: recipDetails.ssn_last_4,
+                    dob: recipDetails.dob,
+                  });
                 }}
               />
             </div>
@@ -898,72 +875,72 @@ export class VerdocsSign {
       );
     }
 
-    if (this.kbaStep === 'challenge') {
-      const questionNumber = this.kbaChoices.length;
-      const kbaQuestion = this.kbaQuestions[questionNumber];
-      return (
-        <Host class="kba">
-          <div id="verdocs-sign-header">
-            <div class="inner">
-              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-              <div class="title">{this.envelope.name}</div>
-            </div>
-          </div>
-
-          <div class="document" style={{paddingTop: '15px'}}>
-            <img
-              src="https://public-assets.verdocs.com/loading-placeholder.png"
-              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
-              alt="Placeholder page"
-            />
-          </div>
-
-          <div class="cover">
-            <div class="kba">
-              {this.kbaChoices.length >= this.kbaQuestions.length ? (
-                <verdocs-spinner />
-              ) : (
-                <verdocs-kba-dialog
-                  mode="choice"
-                  helptitle="Your identity requires additional verification"
-                  helptext={kbaQuestion?.prompt || 'Please select one of the options below.'}
-                  choices={kbaQuestion?.answer || ['Skip Question']}
-                  step={questionNumber + 1}
-                  steps={this.kbaQuestions.length}
-                  onNext={async (e: any) => {
-                    const answer = e.detail as string;
-                    this.kbaChoices = [...this.kbaChoices, answer];
-                    if (this.kbaChoices.length >= this.kbaQuestions.length) {
-                      const responses = this.kbaQuestions.map((q, i) => ({type: q.type, answer: this.kbaChoices[i]}));
-                      console.log('Submitting KBA responses', this.kbaChoices, responses);
-                      try {
-                        const response = await submitKbaChallengeResponse(this.endpoint, this.envelopeId, this.roleId, responses);
-                        console.log('KBA challenge response', response);
-                        this.kbaStep = response.kba_step;
-                        if (this.kbaStep === 'failed') {
-                          this.fatalErrorHeader = 'Identity Verification Failed';
-                          this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
-                          this.isDone = true;
-                        } else {
-                          this.kbaQuestions = (response as any).questions?.question || [];
-                          this.kbaChoices = [];
-                        }
-                      } catch (e) {
-                        console.log('Error submitting KBA challenge', e);
-                        this.kbaStep = '';
-                        this.fatalErrorHeader = 'Unable to Verify Identity';
-                        this.fatalErrorMessage = e.response?.data?.error || 'Please try again later.';
-                        this.isDone = true;
-                      }
-                    }
-                  }}
-                />
-              )}
-            </div>
-          </div>
-        </Host>
-      );
-    }
+    // if (this.kbaStep === 'challenge') {
+    //   const questionNumber = this.kbaChoices.length;
+    //   const kbaQuestion = this.kbaQuestions[questionNumber];
+    //   return (
+    //     <Host class="kba">
+    //       <div id="verdocs-sign-header">
+    //         <div class="inner">
+    //           <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+    //           <div class="title">{this.envelope.name}</div>
+    //         </div>
+    //       </div>
+    //
+    //       <div class="document" style={{paddingTop: '15px'}}>
+    //         <img
+    //           src="https://public-assets.verdocs.com/loading-placeholder.png"
+    //           style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+    //           alt="Placeholder page"
+    //         />
+    //       </div>
+    //
+    //       <div class="cover">
+    //         <div class="kba">
+    //           {this.kbaChoices.length >= this.kbaQuestions.length ? (
+    //             <verdocs-spinner />
+    //           ) : (
+    //             <verdocs-kba-dialog
+    //               mode="choice"
+    //               helptitle="Your identity requires additional verification"
+    //               helptext={kbaQuestion?.prompt || 'Please select one of the options below.'}
+    //               choices={kbaQuestion?.answer || ['Skip Question']}
+    //               step={questionNumber + 1}
+    //               steps={this.kbaQuestions.length}
+    //               onNext={async (e: any) => {
+    //                 const answer = e.detail as string;
+    //                 this.kbaChoices = [...this.kbaChoices, answer];
+    //                 if (this.kbaChoices.length >= this.kbaQuestions.length) {
+    //                   const responses = this.kbaQuestions.map((q, i) => ({type: q.type, answer: this.kbaChoices[i]}));
+    //                   console.log('Submitting KBA responses', this.kbaChoices, responses);
+    //                   try {
+    //                     const response = await submitKbaChallengeResponse(this.endpoint, this.envelopeId, this.roleId, responses);
+    //                     console.log('KBA challenge response', response);
+    //                     this.kbaStep = response.kba_step;
+    //                     if (this.kbaStep === 'failed') {
+    //                       this.fatalErrorHeader = 'Identity Verification Failed';
+    //                       this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
+    //                       this.isDone = true;
+    //                     } else {
+    //                       this.kbaQuestions = (response as any).questions?.question || [];
+    //                       this.kbaChoices = [];
+    //                     }
+    //                   } catch (e) {
+    //                     console.log('Error submitting KBA challenge', e);
+    //                     this.kbaStep = '';
+    //                     this.fatalErrorHeader = 'Unable to Verify Identity';
+    //                     this.fatalErrorMessage = e.response?.data?.error || 'Please try again later.';
+    //                     this.isDone = true;
+    //                   }
+    //                 }
+    //               }}
+    //             />
+    //           )}
+    //         </div>
+    //       </div>
+    //     </Host>
+    //   );
+    // }
 
     return (
       <Host>

@@ -157,7 +157,6 @@ export class VerdocsContactPicker {
   handleSubmit(e: any) {
     e.stopPropagation();
 
-    console.log('sub');
     this.showSuggestions = false;
     this.next?.emit({
       first_name: this.first_name,
