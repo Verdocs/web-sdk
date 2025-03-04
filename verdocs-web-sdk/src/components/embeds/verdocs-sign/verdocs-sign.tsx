@@ -1,3 +1,4 @@
+import {updateEnvelopeField, sortFields} from '@verdocs/js-sdk';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {getEnvelope, integerSequence, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
@@ -5,7 +6,7 @@ import {authenticateSigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticate
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
-import {updateEnvelopeField, sortFields} from '@verdocs/js-sdk';
+import {DefaultEndpoint} from '../../../utils/Environment';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -50,7 +51,7 @@ export class VerdocsSign {
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
-  @Prop({mutable: true}) endpoint: VerdocsEndpoint = null;
+  @Prop({mutable: true}) endpoint: VerdocsEndpoint = DefaultEndpoint;
 
   /**
    * The ID of the envelope to sign.
@@ -112,10 +113,9 @@ export class VerdocsSign {
   @State() showFinishLater = false;
   @State() agreed = false;
   @State() documentsSingularPlural = 'document';
-  // TODO
-  // @State() authStep: TRecipientAuthMethod | null = null;
   @State() authStep: string | null = null;
   @State() authDetails: any = null;
+  @State() authMethodStates: Partial<Record<TRecipientAuthMethod, string>> = {};
   @State() kbaQuestions: any[] = [];
   @State() showSpinner = false;
   @State() kbaChoices = [];
@@ -170,8 +170,8 @@ export class VerdocsSign {
         this.documentsSingularPlural = 'document(s)';
       }
 
-      const auth_method_states = (recipient.auth_method_states || {}) as Record<TRecipientAuthMethod, string>;
-      if (Object.values(auth_method_states).includes('failed')) {
+      this.authMethodStates = recipient.auth_method_states || ({} as Record<TRecipientAuthMethod, string>);
+      if (Object.values(this.authMethodStates).includes('failed')) {
         this.fatalErrorHeader = 'Recipient Verification Failed';
         this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
         this.isDone = true;
@@ -830,7 +830,7 @@ export class VerdocsSign {
       );
     }
 
-    if (this.authStep === 'kba') {
+    if (this.authStep === 'kba' && !this.authMethodStates.kba) {
       return (
         <Host class="kba">
           <div id="verdocs-sign-header">

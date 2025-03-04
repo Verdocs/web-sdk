@@ -3,6 +3,7 @@ import {createEnvelope, formatFullName, getTemplate, getOrganizationContacts, ge
 import type {ICreateEnvelopeFromTemplateRequest, ICreateEnvelopeRecipient, IEnvelope, IRecipient, ITemplate} from '@verdocs/js-sdk';
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
 import {getRoleIndex, getRoleNames} from '../../../utils/Templates';
+import {DefaultEndpoint} from '../../../utils/Environment';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
@@ -47,7 +48,7 @@ export class VerdocsSend {
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
-  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
+  @Prop() endpoint: VerdocsEndpoint = DefaultEndpoint;
 
   /**
    * The ID of the template to create the document from.
@@ -190,7 +191,7 @@ export class VerdocsSend {
 
     const rolesAtLevel: Record<number, Partial<IRecipient>[]> = {};
     (this.template?.roles || []).forEach(role => {
-      const level = role.sequence - 1;
+      const level = role.sequence;
       rolesAtLevel[level] ||= [];
       const id = `r-${level}-${rolesAtLevel[level].length}`;
       rolesAtLevel[level].push({...role, id, role_name: role.name, first_name: role.first_name, last_name: role.last_name});

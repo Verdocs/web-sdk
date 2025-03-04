@@ -149,7 +149,6 @@ export class VerdocsContactPicker {
 
   handleCancel(e: any) {
     e.stopPropagation();
-    console.log('cxl');
     this.showSuggestions = false;
     this.exit?.emit();
   }
@@ -325,7 +324,6 @@ export class VerdocsContactPicker {
                 options={verificationOptions}
                 selectedOptions={this.auth_methods}
                 onSelectionChanged={(e: any) => {
-                  console.log('selectedOptions changed', e.detail);
                   this.auth_methods = e.detail.selectedOptions;
                 }}
               />

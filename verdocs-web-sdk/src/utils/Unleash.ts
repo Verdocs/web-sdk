@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const BETA_ORIGINS = ['https://beta.verdocs.com', 'https://stage.verdocs.com', 'http://localhost:6006', 'http://localhost:5173'];
+import {BETA_ORIGINS} from './Environment';
 
 const API_KEY = BETA_ORIGINS.includes(window.location.origin)
   ? 'default:development.6348f953f52485d19daf03992f2123a36e9eae59c5ca7f8736dc2b67'
