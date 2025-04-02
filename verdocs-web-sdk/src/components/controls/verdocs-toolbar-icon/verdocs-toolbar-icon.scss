@@ -2,7 +2,11 @@
 
 verdocs-toolbar-icon {
   font-family: $verdocs-primary-font;
-  display: inline-block;
+  //display: inline-block;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
 
   .icon {
     display: inline-block;

@@ -1,8 +1,8 @@
-import {updateEnvelopeField, sortFields} from '@verdocs/js-sdk';
+import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse} from '@verdocs/js-sdk';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
+import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
 import {getEnvelope, integerSequence, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
-import {authenticateSigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
@@ -114,9 +114,8 @@ export class VerdocsSign {
   @State() agreed = false;
   @State() documentsSingularPlural = 'document';
   @State() authStep: string | null = null;
-  @State() authDetails: any = null;
   @State() authMethodStates: Partial<Record<TRecipientAuthMethod, string>> = {};
-  @State() kbaQuestions: any[] = [];
+  @State() kbaQuestions: IKBAQuestion[] | null = null;
   @State() showSpinner = false;
   @State() kbaChoices = [];
 
@@ -153,45 +152,9 @@ export class VerdocsSign {
 
       // NOTE: We don't listen to the store here because we are often an independent
       // session and might have a different "view" of the envelope.
-      const {envelope, recipient, auth_step, auth_details} = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
-      console.log(`[SIGN] Loaded signing session`, envelope, recipient);
-      this.recipient = recipient;
-      this.envelope = envelope;
-      this.authStep = auth_step;
-      this.authDetails = auth_details;
-      this.agreed = recipient.agreed;
-      this.submitted = recipient.status === 'submitted';
-      this.isDone = this.submitted;
-      this.showDone = this.submitted;
-
-      Store.updateEnvelope(this.envelopeId, envelope);
-
-      if (this.envelope.documents.length > 0) {
-        this.documentsSingularPlural = 'document(s)';
-      }
-
-      this.authMethodStates = recipient.auth_method_states || ({} as Record<TRecipientAuthMethod, string>);
-      if (Object.values(this.authMethodStates).includes('failed')) {
-        this.fatalErrorHeader = 'Recipient Verification Failed';
-        this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
-        this.isDone = true;
-      }
-
-      // TODO: Envelope "complete" | "declined" | "canceled"
-      // TODO: Recipient "canceled"
-
-      if (this.envelope.status === 'canceled') {
-        this.fatalErrorHeader = 'Unable to Start Signing Session';
-        this.fatalErrorMessage = 'This envelope has been canceled. The sender has been notified.';
-      } else if (recipient.status === 'declined') {
-        this.fatalErrorHeader = 'Unable to Start Signing Session';
-        this.fatalErrorMessage = 'You have declined to sign this envelope. The sender has been notified.';
-      } else if (this.agreed) {
-        this.nextButtonLabel = 'Next';
-      }
-
-      this.checkRecipientFields();
-      this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
+      const response = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
+      console.log('[SIGN] Authentication successful', response);
+      this.processAuthResponse(response);
     } catch (e) {
       console.log('[SIGN] Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -207,6 +170,47 @@ export class VerdocsSign {
       headerEl.remove();
       headerTarget.append(headerEl);
     }
+  }
+
+  processAuthResponse(response: ISignerTokenResponse) {
+    const {envelope, recipient} = response;
+    const {auth_step} = recipient;
+    this.recipient = recipient;
+    this.envelope = envelope;
+    this.authStep = auth_step;
+    this.agreed = recipient.agreed;
+    this.submitted = recipient.status === 'submitted';
+    this.isDone = this.submitted;
+    this.showDone = this.submitted;
+    Store.updateEnvelope(this.envelopeId, envelope);
+
+    if (this.envelope.documents.length > 0) {
+      this.documentsSingularPlural = 'document(s)';
+    }
+
+    this.authMethodStates = recipient.auth_method_states || ({} as Record<TRecipientAuthMethod, string>);
+    this.kbaQuestions = recipient.kba_questions;
+    if (Object.values(this.authMethodStates).includes('failed')) {
+      this.fatalErrorHeader = 'Recipient Verification Failed';
+      this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
+      this.isDone = true;
+    }
+
+    // TODO: Envelope "complete" | "declined" | "canceled"
+    // TODO: Recipient "canceled"
+
+    if (this.envelope.status === 'canceled') {
+      this.fatalErrorHeader = 'Unable to Start Signing Session';
+      this.fatalErrorMessage = 'This envelope has been canceled. The sender has been notified.';
+    } else if (recipient.status === 'declined') {
+      this.fatalErrorHeader = 'Declined';
+      this.fatalErrorMessage = 'You have declined to sign this envelope. The sender has been notified.';
+    } else if (this.agreed) {
+      this.nextButtonLabel = 'Next';
+    }
+
+    this.checkRecipientFields();
+    this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
   }
 
   handleClickAgree() {
@@ -664,11 +668,10 @@ export class VerdocsSign {
 
   handleAuthenticateSigner(params: TAuthenticateRecipientRequest) {
     console.log('[SIGN] Submitting authentication step', params);
-    authenticateSigner(this.endpoint, params)
+    verifySigner(this.endpoint, params)
       .then(r => {
-        console.log('[SIGN] Authentication successful', r);
-        this.authStep = r.auth_step;
-        this.authDetails = r.auth_details;
+        console.log('[SIGN] Verification successful', r);
+        this.processAuthResponse(r);
       })
       .catch(e => {
         console.log('[SIGN] Error submitting authentication step', e);
@@ -830,6 +833,18 @@ export class VerdocsSign {
       );
     }
 
+    if (this.authStep === 'email' && this.authMethodStates.email !== 'complete') {
+      return (
+        <verdocs-otp-dialog
+          endpoint={this.endpoint}
+          method="email"
+          onNext={async e => {
+            this.processAuthResponse(e.detail.response);
+          }}
+        />
+      );
+    }
+
     if (this.authStep === 'kba' && !this.authMethodStates.kba) {
       return (
         <Host class="kba">
@@ -875,72 +890,54 @@ export class VerdocsSign {
       );
     }
 
-    // if (this.kbaStep === 'challenge') {
-    //   const questionNumber = this.kbaChoices.length;
-    //   const kbaQuestion = this.kbaQuestions[questionNumber];
-    //   return (
-    //     <Host class="kba">
-    //       <div id="verdocs-sign-header">
-    //         <div class="inner">
-    //           <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-    //           <div class="title">{this.envelope.name}</div>
-    //         </div>
-    //       </div>
-    //
-    //       <div class="document" style={{paddingTop: '15px'}}>
-    //         <img
-    //           src="https://public-assets.verdocs.com/loading-placeholder.png"
-    //           style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
-    //           alt="Placeholder page"
-    //         />
-    //       </div>
-    //
-    //       <div class="cover">
-    //         <div class="kba">
-    //           {this.kbaChoices.length >= this.kbaQuestions.length ? (
-    //             <verdocs-spinner />
-    //           ) : (
-    //             <verdocs-kba-dialog
-    //               mode="choice"
-    //               helptitle="Your identity requires additional verification"
-    //               helptext={kbaQuestion?.prompt || 'Please select one of the options below.'}
-    //               choices={kbaQuestion?.answer || ['Skip Question']}
-    //               step={questionNumber + 1}
-    //               steps={this.kbaQuestions.length}
-    //               onNext={async (e: any) => {
-    //                 const answer = e.detail as string;
-    //                 this.kbaChoices = [...this.kbaChoices, answer];
-    //                 if (this.kbaChoices.length >= this.kbaQuestions.length) {
-    //                   const responses = this.kbaQuestions.map((q, i) => ({type: q.type, answer: this.kbaChoices[i]}));
-    //                   console.log('Submitting KBA responses', this.kbaChoices, responses);
-    //                   try {
-    //                     const response = await submitKbaChallengeResponse(this.endpoint, this.envelopeId, this.roleId, responses);
-    //                     console.log('KBA challenge response', response);
-    //                     this.kbaStep = response.kba_step;
-    //                     if (this.kbaStep === 'failed') {
-    //                       this.fatalErrorHeader = 'Identity Verification Failed';
-    //                       this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
-    //                       this.isDone = true;
-    //                     } else {
-    //                       this.kbaQuestions = (response as any).questions?.question || [];
-    //                       this.kbaChoices = [];
-    //                     }
-    //                   } catch (e) {
-    //                     console.log('Error submitting KBA challenge', e);
-    //                     this.kbaStep = '';
-    //                     this.fatalErrorHeader = 'Unable to Verify Identity';
-    //                     this.fatalErrorMessage = e.response?.data?.error || 'Please try again later.';
-    //                     this.isDone = true;
-    //                   }
-    //                 }
-    //               }}
-    //             />
-    //           )}
-    //         </div>
-    //       </div>
-    //     </Host>
-    //   );
-    // }
+    if (this.authStep === 'kba' && this.authMethodStates.kba === 'questions') {
+      const questionNumber = this.kbaChoices.length;
+      const kbaQuestion = this.kbaQuestions[questionNumber];
+      return (
+        <Host class="kba">
+          <div id="verdocs-sign-header">
+            <div class="inner">
+              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+              <div class="title">{this.envelope.name}</div>
+            </div>
+          </div>
+
+          <div class="document" style={{paddingTop: '15px'}}>
+            <img
+              src="https://public-assets.verdocs.com/loading-placeholder.png"
+              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              alt="Placeholder page"
+            />
+          </div>
+
+          <div class="cover">
+            <div class="kba">
+              {this.kbaChoices.length >= this.kbaQuestions.length ? (
+                <verdocs-spinner />
+              ) : (
+                <verdocs-kba-dialog
+                  mode="choice"
+                  helptitle="Your identity requires additional verification"
+                  helptext={kbaQuestion?.prompt || 'Please select one of the options below.'}
+                  choices={kbaQuestion?.answer || ['Skip Question']}
+                  step={questionNumber + 1}
+                  steps={this.kbaQuestions.length}
+                  onNext={async (e: any) => {
+                    const answer = e.detail as string;
+                    this.kbaChoices = [...this.kbaChoices, answer];
+                    if (this.kbaChoices.length >= this.kbaQuestions.length) {
+                      const responses = this.kbaQuestions.map((q, i) => ({type: q.type, answer: this.kbaChoices[i]}));
+                      console.log('Submitting KBA responses', this.kbaChoices, responses);
+                      this.handleAuthenticateSigner({auth_method: 'kba', responses});
+                    }
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </Host>
+      );
+    }
 
     return (
       <Host>

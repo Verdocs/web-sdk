@@ -538,7 +538,7 @@ to the envelope detail view.
 
 
 @ProxyCmp({
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -546,7 +546,7 @@ to the envelope detail view.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLVerdocsFieldAttachmentElement;
@@ -1212,6 +1212,40 @@ export class VerdocsOrganizationCard {
 
 
 export declare interface VerdocsOrganizationCard extends Components.VerdocsOrganizationCard {}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'method', 'recipient']
+})
+@Component({
+  selector: 'verdocs-otp-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'method', 'recipient'],
+})
+export class VerdocsOtpDialog {
+  protected el: HTMLVerdocsOtpDialogElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['exit', 'next']);
+  }
+}
+
+
+import type { ISignerTokenResponse as IVerdocsOtpDialogISignerTokenResponse } from '@verdocs/web-sdk';
+
+export declare interface VerdocsOtpDialog extends Components.VerdocsOtpDialog {
+  /**
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the process has completed successfully.
+   */
+  next: EventEmitter<CustomEvent<{response: IVerdocsOtpDialogISignerTokenResponse}>>;
+}
 
 
 @ProxyCmp({

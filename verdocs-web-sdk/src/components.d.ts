@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ICreateEnvelopeRecipient, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { ICreateEnvelopeRecipient, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -23,7 +23,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { ICreateEnvelopeRecipient, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { ICreateEnvelopeRecipient, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -452,10 +452,6 @@ export namespace Components {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
-         */
-        "endpoint": VerdocsEndpoint;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
          */
@@ -1233,6 +1229,23 @@ export namespace Components {
           * The organization to display
          */
         "organization": IOrganization;
+    }
+    /**
+     * Prompt the user to confirm their identity with a one time code via email/SMS.
+     */
+    interface VerdocsOtpDialog {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The type of dialog to display. Three modes are supported.
+         */
+        "method": 'email' | 'sms';
+        /**
+          * For identity confirmation, the current recipient details.
+         */
+        "recipient": IRecipient | null;
     }
     /**
      * Display a simple pagination control with individual buttons to move through the data set.
@@ -2100,6 +2113,10 @@ export interface VerdocsMultiselectCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsOkDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsOkDialogElement;
+}
+export interface VerdocsOtpDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsOtpDialogElement;
 }
 export interface VerdocsPaginationCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2987,6 +3004,27 @@ declare global {
         prototype: HTMLVerdocsOrganizationCardElement;
         new (): HTMLVerdocsOrganizationCardElement;
     };
+    interface HTMLVerdocsOtpDialogElementEventMap {
+        "exit": any;
+        "next": {response: ISignerTokenResponse};
+    }
+    /**
+     * Prompt the user to confirm their identity with a one time code via email/SMS.
+     */
+    interface HTMLVerdocsOtpDialogElement extends Components.VerdocsOtpDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsOtpDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsOtpDialogElement, ev: VerdocsOtpDialogCustomEvent<HTMLVerdocsOtpDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsOtpDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsOtpDialogElement, ev: VerdocsOtpDialogCustomEvent<HTMLVerdocsOtpDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsOtpDialogElement: {
+        prototype: HTMLVerdocsOtpDialogElement;
+        new (): HTMLVerdocsOtpDialogElement;
+    };
     interface HTMLVerdocsPaginationElementEventMap {
         "selectPage": {selectedPage: number};
     }
@@ -3818,6 +3856,7 @@ declare global {
         "verdocs-multiselect": HTMLVerdocsMultiselectElement;
         "verdocs-ok-dialog": HTMLVerdocsOkDialogElement;
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
+        "verdocs-otp-dialog": HTMLVerdocsOtpDialogElement;
         "verdocs-pagination": HTMLVerdocsPaginationElement;
         "verdocs-portal": HTMLVerdocsPortalElement;
         "verdocs-preview": HTMLVerdocsPreviewElement;
@@ -4392,10 +4431,6 @@ declare namespace LocalJSX {
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
          */
         "editable"?: boolean;
-        /**
-          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
-         */
-        "endpoint"?: VerdocsEndpoint;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
          */
@@ -5298,6 +5333,31 @@ declare namespace LocalJSX {
           * The organization to display
          */
         "organization"?: IOrganization;
+    }
+    /**
+     * Prompt the user to confirm their identity with a one time code via email/SMS.
+     */
+    interface VerdocsOtpDialog {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The type of dialog to display. Three modes are supported.
+         */
+        "method"?: 'email' | 'sms';
+        /**
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+         */
+        "onExit"?: (event: VerdocsOtpDialogCustomEvent<any>) => void;
+        /**
+          * Event fired when the process has completed successfully.
+         */
+        "onNext"?: (event: VerdocsOtpDialogCustomEvent<{response: ISignerTokenResponse}>) => void;
+        /**
+          * For identity confirmation, the current recipient details.
+         */
+        "recipient"?: IRecipient | null;
     }
     /**
      * Display a simple pagination control with individual buttons to move through the data set.
@@ -6374,6 +6434,7 @@ declare namespace LocalJSX {
         "verdocs-multiselect": VerdocsMultiselect;
         "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
+        "verdocs-otp-dialog": VerdocsOtpDialog;
         "verdocs-pagination": VerdocsPagination;
         "verdocs-portal": VerdocsPortal;
         "verdocs-preview": VerdocsPreview;
@@ -6680,6 +6741,10 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
+            /**
+             * Prompt the user to confirm their identity with a one time code via email/SMS.
+             */
+            "verdocs-otp-dialog": LocalJSX.VerdocsOtpDialog & JSXBase.HTMLAttributes<HTMLVerdocsOtpDialogElement>;
             /**
              * Display a simple pagination control with individual buttons to move through the data set.
              * ```ts

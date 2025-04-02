@@ -202,7 +202,6 @@ export const VerdocsEnvelopesList = /*@__PURE__*/ defineContainer<JSX.VerdocsEnv
 
 
 export const VerdocsFieldAttachment = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldAttachment>('verdocs-field-attachment', undefined, [
-  'endpoint',
   'source',
   'sourceid',
   'fieldname',
@@ -541,6 +540,18 @@ export const VerdocsOkDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsOkDialog
 
 export const VerdocsOrganizationCard = /*@__PURE__*/ defineContainer<JSX.VerdocsOrganizationCard>('verdocs-organization-card', undefined, [
   'organization'
+]);
+
+
+export const VerdocsOtpDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsOtpDialog>('verdocs-otp-dialog', undefined, [
+  'endpoint',
+  'method',
+  'recipient',
+  'exit',
+  'next'
+], [
+  'exit',
+  'next'
 ]);
 
 

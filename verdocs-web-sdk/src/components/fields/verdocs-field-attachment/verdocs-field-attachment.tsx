@@ -1,4 +1,4 @@
-import {ITemplateField, getRGBA, VerdocsEndpoint, IEnvelopeField} from '@verdocs/js-sdk';
+import {ITemplateField, getRGBA, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment, Element} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
@@ -25,13 +25,6 @@ const AttachedIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height=
 })
 export class VerdocsFieldAttachment {
   @Element() el: HTMLElement;
-
-  /**
-   * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-   * This component self-manages its resize (width) behavior when in edit-template mode, and uses
-   * this endpoint to save changes.
-   */
-  @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
    * Fields may be attached to templates or envelopes, but only template fields may be edited.
