@@ -10,7 +10,7 @@ import {Store} from '../../../utils/Datastore';
  *
  * ```ts
  * <verdocs-preview
- *   templateId={templateId}
+ *   templateId={TEMPLATE_ID}
  *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
  *   />
  * ```

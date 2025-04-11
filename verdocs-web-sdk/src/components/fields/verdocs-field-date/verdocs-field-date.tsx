@@ -119,7 +119,6 @@ export class VerdocsFieldDate {
         this.hostEl.dispatchEvent(event);
       },
     });
-    console.log('p', this.picker);
   }
 
   @Method()

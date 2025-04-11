@@ -1607,11 +1607,11 @@ terminate the process, and the calling application should correct the condition 
    */
   sdkError: EventEmitter<CustomEvent<IVerdocsSignSDKError>>;
   /**
-   * Event fired when the envelope is updated in any way.
+   * Event fired when the envelope is loaded for the first time.
    */
   envelopeLoaded: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope}>>;
   /**
-   * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   * Event fired when the envelope is updated in any way.
    */
   envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope; event: string}>>;
 }

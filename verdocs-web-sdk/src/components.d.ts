@@ -52,13 +52,8 @@ export namespace Components {
      * This embed is responsive / mobile-friendly, but the calling application should provide at
      * least a 300px wide container to allow sufficient space for the required forms.
      * ```ts
-     * interface IAuthStatus {
-     *   authenticated: boolean;
-     *   session: TSession;
-     *   profile: IProfile | null;
-     * }
      * <verdocs-auth
-     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+     *   onAuthenticated={({ detail }) => console.log('Authentication state:', detail) }
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -85,9 +80,11 @@ export namespace Components {
      * Display a template building experience. Several event callbacks provide status updates to the
      * parent application to support interface updates.
      * ```ts
-     * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
-     *   console.log('Sent envelope from template', detail);
-     * }} />
+     * <verdocs-build
+     *   templateId={TEMPLATE_ID} step="preview"
+     *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface VerdocsBuild {
@@ -1306,7 +1303,7 @@ export namespace Components {
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
      * ```ts
      * <verdocs-preview
-     *   templateId={templateId}
+     *   templateId={TEMPLATE_ID}
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -1465,10 +1462,10 @@ export namespace Components {
      * hide itself if the template is not sendable.
      * ```ts
      * <verdocs-send
-     *   templateId={templateId}
+     *   templateId={TEMPLATE_ID}
      *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
      *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
-     *   onExit={(e) => { console.log('Send cancelled.', detail) }
+     *   onExit={({ detail }) => { console.log('Send cancelled.', detail) }
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -1502,6 +1499,15 @@ export namespace Components {
      * convenience of host applications that may wish to make server calls using the
      * signer's credentials once signing is complete (e.g. to obtain copies of
      * the signed attachments.)
+     * ```ts
+     * <verdocs-sign
+     *   envelopeId={ENVELOPE_ID}
+     *   roleId={ROLE_ID}
+     *   inviteCode={INVITE_CODE}
+     *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
+     * ```
      */
     interface VerdocsSign {
         /**
@@ -1986,7 +1992,7 @@ export namespace Components {
      * displayed in order.
      * ```ts
      * <verdocs-view
-     *   envelopeId={envelopeId}
+     *   envelopeId={ENVELOPE_ID}
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -2237,13 +2243,8 @@ declare global {
      * This embed is responsive / mobile-friendly, but the calling application should provide at
      * least a 300px wide container to allow sufficient space for the required forms.
      * ```ts
-     * interface IAuthStatus {
-     *   authenticated: boolean;
-     *   session: TSession;
-     *   profile: IProfile | null;
-     * }
      * <verdocs-auth
-     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+     *   onAuthenticated={({ detail }) => console.log('Authentication state:', detail) }
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -2275,9 +2276,11 @@ declare global {
      * Display a template building experience. Several event callbacks provide status updates to the
      * parent application to support interface updates.
      * ```ts
-     * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
-     *   console.log('Sent envelope from template', detail);
-     * }} />
+     * <verdocs-build
+     *   templateId={TEMPLATE_ID} step="preview"
+     *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface HTMLVerdocsBuildElement extends Components.VerdocsBuild, HTMLStencilElement {
@@ -3097,7 +3100,7 @@ declare global {
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
      * ```ts
      * <verdocs-preview
-     *   templateId={templateId}
+     *   templateId={TEMPLATE_ID}
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -3255,10 +3258,10 @@ declare global {
      * hide itself if the template is not sendable.
      * ```ts
      * <verdocs-send
-     *   templateId={templateId}
+     *   templateId={TEMPLATE_ID}
      *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
      *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
-     *   onExit={(e) => { console.log('Send cancelled.', detail) }
+     *   onExit={({ detail }) => { console.log('Send cancelled.', detail) }
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -3296,6 +3299,15 @@ declare global {
      * convenience of host applications that may wish to make server calls using the
      * signer's credentials once signing is complete (e.g. to obtain copies of
      * the signed attachments.)
+     * ```ts
+     * <verdocs-sign
+     *   envelopeId={ENVELOPE_ID}
+     *   roleId={ROLE_ID}
+     *   inviteCode={INVITE_CODE}
+     *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
+     * ```
      */
     interface HTMLVerdocsSignElement extends Components.VerdocsSign, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsSignElementEventMap>(type: K, listener: (this: HTMLVerdocsSignElement, ev: VerdocsSignCustomEvent<HTMLVerdocsSignElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3801,7 +3813,7 @@ declare global {
      * displayed in order.
      * ```ts
      * <verdocs-view
-     *   envelopeId={envelopeId}
+     *   envelopeId={ENVELOPE_ID}
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -3907,13 +3919,8 @@ declare namespace LocalJSX {
      * This embed is responsive / mobile-friendly, but the calling application should provide at
      * least a 300px wide container to allow sufficient space for the required forms.
      * ```ts
-     * interface IAuthStatus {
-     *   authenticated: boolean;
-     *   session: TSession;
-     *   profile: IProfile | null;
-     * }
      * <verdocs-auth
-     *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+     *   onAuthenticated={({ detail }) => console.log('Authentication state:', detail) }
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -3948,9 +3955,11 @@ declare namespace LocalJSX {
      * Display a template building experience. Several event callbacks provide status updates to the
      * parent application to support interface updates.
      * ```ts
-     * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
-     *   console.log('Sent envelope from template', detail);
-     * }} />
+     * <verdocs-build
+     *   templateId={TEMPLATE_ID} step="preview"
+     *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
      * ```
      */
     interface VerdocsBuild {
@@ -5423,7 +5432,7 @@ declare namespace LocalJSX {
      * by recipient, and will be read-only (cannot be filled, moved, or altered).
      * ```ts
      * <verdocs-preview
-     *   templateId={templateId}
+     *   templateId={TEMPLATE_ID}
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -5609,10 +5618,10 @@ declare namespace LocalJSX {
      * hide itself if the template is not sendable.
      * ```ts
      * <verdocs-send
-     *   templateId={templateId}
+     *   templateId={TEMPLATE_ID}
      *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
      *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
-     *   onExit={(e) => { console.log('Send cancelled.', detail) }
+     *   onExit={({ detail }) => { console.log('Send cancelled.', detail) }
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -5665,6 +5674,15 @@ declare namespace LocalJSX {
      * convenience of host applications that may wish to make server calls using the
      * signer's credentials once signing is complete (e.g. to obtain copies of
      * the signed attachments.)
+     * ```ts
+     * <verdocs-sign
+     *   envelopeId={ENVELOPE_ID}
+     *   roleId={ROLE_ID}
+     *   inviteCode={INVITE_CODE}
+     *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   />
+     * ```
      */
     interface VerdocsSign {
         /**
@@ -5684,11 +5702,11 @@ declare namespace LocalJSX {
          */
         "inviteCode"?: string | null;
         /**
-          * Event fired when the envelope is updated in any way.
+          * Event fired when the envelope is loaded for the first time.
          */
         "onEnvelopeLoaded"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
         /**
-          * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+          * Event fired when the envelope is updated in any way.
          */
         "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
         /**
@@ -6359,7 +6377,7 @@ declare namespace LocalJSX {
      * displayed in order.
      * ```ts
      * <verdocs-view
-     *   envelopeId={envelopeId}
+     *   envelopeId={ENVELOPE_ID}
      *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
      *   />
      * ```
@@ -6488,13 +6506,8 @@ declare module "@stencil/core" {
              * This embed is responsive / mobile-friendly, but the calling application should provide at
              * least a 300px wide container to allow sufficient space for the required forms.
              * ```ts
-             * interface IAuthStatus {
-             *   authenticated: boolean;
-             *   session: TSession;
-             *   profile: IProfile | null;
-             * }
              * <verdocs-auth
-             *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+             *   onAuthenticated={({ detail }) => console.log('Authentication state:', detail) }
              *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
              *   />
              * ```
@@ -6504,9 +6517,11 @@ declare module "@stencil/core" {
              * Display a template building experience. Several event callbacks provide status updates to the
              * parent application to support interface updates.
              * ```ts
-             * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
-             *   console.log('Sent envelope from template', detail);
-             * }} />
+             * <verdocs-build
+             *   templateId={TEMPLATE_ID} step="preview"
+             *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+             *   />
              * ```
              */
             "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
@@ -6782,7 +6797,7 @@ declare module "@stencil/core" {
              * by recipient, and will be read-only (cannot be filled, moved, or altered).
              * ```ts
              * <verdocs-preview
-             *   templateId={templateId}
+             *   templateId={TEMPLATE_ID}
              *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
              *   />
              * ```
@@ -6849,10 +6864,10 @@ declare module "@stencil/core" {
              * hide itself if the template is not sendable.
              * ```ts
              * <verdocs-send
-             *   templateId={templateId}
+             *   templateId={TEMPLATE_ID}
              *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
              *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
-             *   onExit={(e) => { console.log('Send cancelled.', detail) }
+             *   onExit={({ detail }) => { console.log('Send cancelled.', detail) }
              *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
              *   />
              * ```
@@ -6872,6 +6887,15 @@ declare module "@stencil/core" {
              * convenience of host applications that may wish to make server calls using the
              * signer's credentials once signing is complete (e.g. to obtain copies of
              * the signed attachments.)
+             * ```ts
+             * <verdocs-sign
+             *   envelopeId={ENVELOPE_ID}
+             *   roleId={ROLE_ID}
+             *   inviteCode={INVITE_CODE}
+             *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+             *   />
+             * ```
              */
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             /**
@@ -7016,7 +7040,7 @@ declare module "@stencil/core" {
              * displayed in order.
              * ```ts
              * <verdocs-view
-             *   envelopeId={envelopeId}
+             *   envelopeId={ENVELOPE_ID}
              *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
              *   />
              * ```

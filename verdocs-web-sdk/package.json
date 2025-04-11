@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "5.0.59",
+  "version": "5.0.60",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -27,9 +27,9 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "@stencil/core": "^4.22.3",
+    "@stencil/core": "^4.29.2",
     "@svgdotjs/svg.js": "^3.2.4",
-    "@verdocs/js-sdk": "^5.0.34",
+    "@verdocs/js-sdk": "^5.0.36",
     "air-datepicker": "^3.5.3",
     "choices.js": "^11.1.0",
     "date-fns": "^4.1.0",
@@ -37,18 +37,18 @@
     "interactjs": "^1.10.27",
     "jszip": "^3.10.1",
     "sortablejs": "^1.15.6",
-    "tinybase": "^5.4.9",
+    "tinybase": "^6.0.1",
     "workflow-svg.js": "^3.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.9",
+    "@babel/core": "^7.26.10",
     "@interactjs/types": "^1.10.27",
     "@stencil/angular-output-target": "^0.10.2",
-    "@stencil/react-output-target": "^0.8.2",
-    "@stencil/sass": "^3.0.12",
-    "@stencil/vue-output-target": "^0.9.4",
+    "@stencil/react-output-target": "^1.0.2",
+    "@stencil/sass": "^3.2.1",
+    "@stencil/vue-output-target": "^0.10.7",
     "@types/jest": "^29.5.14",
-    "babel-loader": "^9.2.1",
+    "babel-loader": "^10.0.0",
     "jest": "^29.7.0",
     "jest-cli": "^29.7.0",
     "jest-svg-transformer": "^1.0.0",
@@ -57,6 +57,6 @@
     "prettier": "^3.5.3",
     "terser-webpack-plugin": "^5.3.11",
     "tslib": "^2.8.1",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }

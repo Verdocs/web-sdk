@@ -1,18 +1,14 @@
 import {Preview} from '@storybook/react';
 import {setCustomElementsManifest} from '@storybook/web-components';
 import customElements from '../../verdocs-web-sdk/dist/custom-elements.json';
-// import StoriesTheme from './StoriesTheme';
 
 import {defineCustomElements} from '../../verdocs-web-sdk/dist/esm/loader';
-
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
-VerdocsEndpoint.getDefault().setBaseURL('https://api.verdocs.com');
 
 defineCustomElements();
 setCustomElementsManifest(customElements);
 
 const preview: Preview = {
-  tags: ['autodocs', 'autodocs', 'autodocs'],
+  tags: ['autodocs'],
 
   parameters: {
     layout: 'centered',
@@ -31,7 +27,7 @@ const preview: Preview = {
       },
 
       extractComponentDescription: (a, b) => {
-        const componentDocs = customElements.tags.find(tag => tag.name === b.component);
+        const componentDocs = (customElements.tags as any).find(tag => tag.name === b.component);
         if (componentDocs) {
           return componentDocs.description.value;
         }

@@ -2,8 +2,8 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Templates/Visibility',
-  component: 'verdocs-template-visibility',
+  title: 'Templates/Settings',
+  component: 'verdocs-template-settings',
   args: {
     templateId: '',
   },
@@ -12,11 +12,11 @@ export default {
   },
 } as Meta;
 
-export const Visibility = ({onClose, templateId}) =>
+export const Name = ({onClose, templateId}) =>
   templateId
     ? html`
         <div style="width: 360px; background: #ffffff; padding: 20px; box-sizing: border-box">
-          <verdocs-template-visibility .templateId=${templateId} @close=${onClose} />
+          <verdocs-template-settings .templateId=${templateId} @close=${onClose} />
         </div>
       `
     : html`<img src="https://verdocs-public-assets.s3.amazonaws.com/storybook-placeholders/template-name.png" alt="Placeholder" />`;

@@ -41,6 +41,16 @@ const doneMenuOptions = [
  * convenience of host applications that may wish to make server calls using the
  * signer's credentials once signing is complete (e.g. to obtain copies of
  * the signed attachments.)
+ *
+ * ```ts
+ * <verdocs-sign
+ *   envelopeId={ENVELOPE_ID}
+ *   roleId={ROLE_ID}
+ *   inviteCode={INVITE_CODE}
+ *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+ *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+ *   />
+ * ```
  */
 @Component({
   tag: 'verdocs-sign',
@@ -86,12 +96,12 @@ export class VerdocsSign {
   @Event({composed: true}) sdkError: EventEmitter<SDKError>;
 
   /**
-   * Event fired when the envelope is updated in any way.
+   * Event fired when the envelope is loaded for the first time.
    */
   @Event({composed: true}) envelopeLoaded: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>;
 
   /**
-   * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   * Event fired when the envelope is updated in any way.
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 

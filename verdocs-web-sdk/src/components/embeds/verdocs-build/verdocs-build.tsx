@@ -10,9 +10,11 @@ export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' 
  * parent application to support interface updates.
  *
  * ```ts
- * <verdocs-build templateId={templateId} step="preview" onSend={(detail) => {
- *   console.log('Sent envelope from template', detail);
- * }} />
+ * <verdocs-build
+ *   templateId={TEMPLATE_ID} step="preview"
+ *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
+ *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+ *   />
  * ```
  */
 @Component({

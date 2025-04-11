@@ -22,14 +22,8 @@ export interface IAuthStatus {
  * least a 300px wide container to allow sufficient space for the required forms.
  *
  * ```ts
- * interface IAuthStatus {
- *   authenticated: boolean;
- *   session: TSession;
- *   profile: IProfile | null;
- * }
- *
  * <verdocs-auth
- *   onAuthenticated={({ detail }: { detail: IAuthStatus }) => console.log('Authentication state:', detail) }
+ *   onAuthenticated={({ detail }) => console.log('Authentication state:', detail) }
  *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
  *   />
  * ```

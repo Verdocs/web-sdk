@@ -8,8 +8,6 @@ const MockOrganization: IOrganization = {
   url: 'https://verdocs.com/',
   address: null,
   phone: null,
-  business_name: null,
-  is_business: true,
   address2: null,
   contact_email: null,
   slug: 'verdocs',

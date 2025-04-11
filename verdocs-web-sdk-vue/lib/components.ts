@@ -1,14 +1,14 @@
 /* eslint-disable */
 /* tslint:disable */
 /* auto-generated vue proxies */
-import { defineContainer } from '@stencil/vue-output-target/runtime';
+import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-target/runtime';
 
 import type { JSX } from '@verdocs/web-sdk';
 
 
 
 
-export const VerdocsAuth = /*@__PURE__*/ defineContainer<JSX.VerdocsAuth>('verdocs-auth', undefined, [
+export const VerdocsAuth: StencilVueComponent<JSX.VerdocsAuth> = /*@__PURE__*/ defineContainer<JSX.VerdocsAuth>('verdocs-auth', undefined, [
   'endpoint',
   'visible',
   'logo',
@@ -21,7 +21,7 @@ export const VerdocsAuth = /*@__PURE__*/ defineContainer<JSX.VerdocsAuth>('verdo
 ]);
 
 
-export const VerdocsBuild = /*@__PURE__*/ defineContainer<JSX.VerdocsBuild>('verdocs-build', undefined, [
+export const VerdocsBuild: StencilVueComponent<JSX.VerdocsBuild> = /*@__PURE__*/ defineContainer<JSX.VerdocsBuild>('verdocs-build', undefined, [
   'endpoint',
   'templateId',
   'step',
@@ -43,7 +43,7 @@ export const VerdocsBuild = /*@__PURE__*/ defineContainer<JSX.VerdocsBuild>('ver
 ]);
 
 
-export const VerdocsButton = /*@__PURE__*/ defineContainer<JSX.VerdocsButton>('verdocs-button', undefined, [
+export const VerdocsButton: StencilVueComponent<JSX.VerdocsButton> = /*@__PURE__*/ defineContainer<JSX.VerdocsButton>('verdocs-button', undefined, [
   'label',
   'startIcon',
   'endIcon',
@@ -54,12 +54,12 @@ export const VerdocsButton = /*@__PURE__*/ defineContainer<JSX.VerdocsButton>('v
 ]);
 
 
-export const VerdocsButtonPanel = /*@__PURE__*/ defineContainer<JSX.VerdocsButtonPanel>('verdocs-button-panel', undefined, [
+export const VerdocsButtonPanel: StencilVueComponent<JSX.VerdocsButtonPanel> = /*@__PURE__*/ defineContainer<JSX.VerdocsButtonPanel>('verdocs-button-panel', undefined, [
   'icon'
 ]);
 
 
-export const VerdocsCheckbox = /*@__PURE__*/ defineContainer<JSX.VerdocsCheckbox>('verdocs-checkbox', undefined, [
+export const VerdocsCheckbox: StencilVueComponent<JSX.VerdocsCheckbox> = /*@__PURE__*/ defineContainer<JSX.VerdocsCheckbox>('verdocs-checkbox', undefined, [
   'checked',
   'name',
   'label',
@@ -70,12 +70,12 @@ export const VerdocsCheckbox = /*@__PURE__*/ defineContainer<JSX.VerdocsCheckbox
 ]);
 
 
-export const VerdocsComponentError = /*@__PURE__*/ defineContainer<JSX.VerdocsComponentError>('verdocs-component-error', undefined, [
+export const VerdocsComponentError: StencilVueComponent<JSX.VerdocsComponentError> = /*@__PURE__*/ defineContainer<JSX.VerdocsComponentError>('verdocs-component-error', undefined, [
   'message'
 ]);
 
 
-export const VerdocsContactPicker = /*@__PURE__*/ defineContainer<JSX.VerdocsContactPicker>('verdocs-contact-picker', undefined, [
+export const VerdocsContactPicker: StencilVueComponent<JSX.VerdocsContactPicker> = /*@__PURE__*/ defineContainer<JSX.VerdocsContactPicker>('verdocs-contact-picker', undefined, [
   'endpoint',
   'templateRole',
   'contactSuggestions',
@@ -89,7 +89,7 @@ export const VerdocsContactPicker = /*@__PURE__*/ defineContainer<JSX.VerdocsCon
 ]);
 
 
-export const VerdocsDateInput = /*@__PURE__*/ defineContainer<JSX.VerdocsDateInput>('verdocs-date-input', undefined, [
+export const VerdocsDateInput: StencilVueComponent<JSX.VerdocsDateInput> = /*@__PURE__*/ defineContainer<JSX.VerdocsDateInput>('verdocs-date-input', undefined, [
   'value',
   'label',
   'placeholder',
@@ -99,14 +99,14 @@ export const VerdocsDateInput = /*@__PURE__*/ defineContainer<JSX.VerdocsDateInp
 ]);
 
 
-export const VerdocsDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsDialog>('verdocs-dialog', undefined, [
+export const VerdocsDialog: StencilVueComponent<JSX.VerdocsDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsDialog>('verdocs-dialog', undefined, [
   'exit'
 ], [
   'exit'
 ]);
 
 
-export const VerdocsDropdown = /*@__PURE__*/ defineContainer<JSX.VerdocsDropdown>('verdocs-dropdown', undefined, [
+export const VerdocsDropdown: StencilVueComponent<JSX.VerdocsDropdown> = /*@__PURE__*/ defineContainer<JSX.VerdocsDropdown>('verdocs-dropdown', undefined, [
   'options',
   'optionSelected'
 ], [
@@ -114,7 +114,7 @@ export const VerdocsDropdown = /*@__PURE__*/ defineContainer<JSX.VerdocsDropdown
 ]);
 
 
-export const VerdocsEnvelopeDocumentPage = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopeDocumentPage>('verdocs-envelope-document-page', undefined, [
+export const VerdocsEnvelopeDocumentPage: StencilVueComponent<JSX.VerdocsEnvelopeDocumentPage> = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopeDocumentPage>('verdocs-envelope-document-page', undefined, [
   'endpoint',
   'envelopeId',
   'documentId',
@@ -129,7 +129,7 @@ export const VerdocsEnvelopeDocumentPage = /*@__PURE__*/ defineContainer<JSX.Ver
 ]);
 
 
-export const VerdocsEnvelopeRecipientLink = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopeRecipientLink>('verdocs-envelope-recipient-link', undefined, [
+export const VerdocsEnvelopeRecipientLink: StencilVueComponent<JSX.VerdocsEnvelopeRecipientLink> = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopeRecipientLink>('verdocs-envelope-recipient-link', undefined, [
   'endpoint',
   'envelopeId',
   'roleName',
@@ -141,7 +141,7 @@ export const VerdocsEnvelopeRecipientLink = /*@__PURE__*/ defineContainer<JSX.Ve
 ]);
 
 
-export const VerdocsEnvelopeRecipientSummary = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopeRecipientSummary>('verdocs-envelope-recipient-summary', undefined, [
+export const VerdocsEnvelopeRecipientSummary: StencilVueComponent<JSX.VerdocsEnvelopeRecipientSummary> = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopeRecipientSummary>('verdocs-envelope-recipient-summary', undefined, [
   'endpoint',
   'envelopeId',
   'canSendAnother',
@@ -159,7 +159,7 @@ export const VerdocsEnvelopeRecipientSummary = /*@__PURE__*/ defineContainer<JSX
 ]);
 
 
-export const VerdocsEnvelopeSidebar = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopeSidebar>('verdocs-envelope-sidebar', undefined, [
+export const VerdocsEnvelopeSidebar: StencilVueComponent<JSX.VerdocsEnvelopeSidebar> = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopeSidebar>('verdocs-envelope-sidebar', undefined, [
   'endpoint',
   'envelopeId',
   'sdkError',
@@ -174,7 +174,7 @@ export const VerdocsEnvelopeSidebar = /*@__PURE__*/ defineContainer<JSX.VerdocsE
 ]);
 
 
-export const VerdocsEnvelopesList = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopesList>('verdocs-envelopes-list', undefined, [
+export const VerdocsEnvelopesList: StencilVueComponent<JSX.VerdocsEnvelopesList> = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopesList>('verdocs-envelopes-list', undefined, [
   'endpoint',
   'view',
   'status',
@@ -201,7 +201,7 @@ export const VerdocsEnvelopesList = /*@__PURE__*/ defineContainer<JSX.VerdocsEnv
 ]);
 
 
-export const VerdocsFieldAttachment = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldAttachment>('verdocs-field-attachment', undefined, [
+export const VerdocsFieldAttachment: StencilVueComponent<JSX.VerdocsFieldAttachment> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldAttachment>('verdocs-field-attachment', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -223,7 +223,7 @@ export const VerdocsFieldAttachment = /*@__PURE__*/ defineContainer<JSX.VerdocsF
 ]);
 
 
-export const VerdocsFieldCheckbox = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldCheckbox>('verdocs-field-checkbox', undefined, [
+export const VerdocsFieldCheckbox: StencilVueComponent<JSX.VerdocsFieldCheckbox> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldCheckbox>('verdocs-field-checkbox', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -243,7 +243,7 @@ export const VerdocsFieldCheckbox = /*@__PURE__*/ defineContainer<JSX.VerdocsFie
 ]);
 
 
-export const VerdocsFieldDate = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldDate>('verdocs-field-date', undefined, [
+export const VerdocsFieldDate: StencilVueComponent<JSX.VerdocsFieldDate> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldDate>('verdocs-field-date', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -265,7 +265,7 @@ export const VerdocsFieldDate = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldDa
 ]);
 
 
-export const VerdocsFieldDropdown = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldDropdown>('verdocs-field-dropdown', undefined, [
+export const VerdocsFieldDropdown: StencilVueComponent<JSX.VerdocsFieldDropdown> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldDropdown>('verdocs-field-dropdown', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -287,7 +287,7 @@ export const VerdocsFieldDropdown = /*@__PURE__*/ defineContainer<JSX.VerdocsFie
 ]);
 
 
-export const VerdocsFieldInitial = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldInitial>('verdocs-field-initial', undefined, [
+export const VerdocsFieldInitial: StencilVueComponent<JSX.VerdocsFieldInitial> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldInitial>('verdocs-field-initial', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -316,7 +316,7 @@ export const VerdocsFieldInitial = /*@__PURE__*/ defineContainer<JSX.VerdocsFiel
 ]);
 
 
-export const VerdocsFieldPayment = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldPayment>('verdocs-field-payment', undefined, [
+export const VerdocsFieldPayment: StencilVueComponent<JSX.VerdocsFieldPayment> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldPayment>('verdocs-field-payment', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -349,7 +349,7 @@ export const VerdocsFieldPayment = /*@__PURE__*/ defineContainer<JSX.VerdocsFiel
 ]);
 
 
-export const VerdocsFieldRadio = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldRadio>('verdocs-field-radio', undefined, [
+export const VerdocsFieldRadio: StencilVueComponent<JSX.VerdocsFieldRadio> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldRadio>('verdocs-field-radio', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -370,7 +370,7 @@ export const VerdocsFieldRadio = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldR
 ]);
 
 
-export const VerdocsFieldSignature = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldSignature>('verdocs-field-signature', undefined, [
+export const VerdocsFieldSignature: StencilVueComponent<JSX.VerdocsFieldSignature> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldSignature>('verdocs-field-signature', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -395,7 +395,7 @@ export const VerdocsFieldSignature = /*@__PURE__*/ defineContainer<JSX.VerdocsFi
 ]);
 
 
-export const VerdocsFieldTextarea = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldTextarea>('verdocs-field-textarea', undefined, [
+export const VerdocsFieldTextarea: StencilVueComponent<JSX.VerdocsFieldTextarea> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldTextarea>('verdocs-field-textarea', undefined, [
   'endpoint',
   'source',
   'sourceid',
@@ -416,7 +416,7 @@ export const VerdocsFieldTextarea = /*@__PURE__*/ defineContainer<JSX.VerdocsFie
 ]);
 
 
-export const VerdocsFieldTextbox = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldTextbox>('verdocs-field-textbox', undefined, [
+export const VerdocsFieldTextbox: StencilVueComponent<JSX.VerdocsFieldTextbox> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldTextbox>('verdocs-field-textbox', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -437,7 +437,7 @@ export const VerdocsFieldTextbox = /*@__PURE__*/ defineContainer<JSX.VerdocsFiel
 ]);
 
 
-export const VerdocsFieldTimestamp = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldTimestamp>('verdocs-field-timestamp', undefined, [
+export const VerdocsFieldTimestamp: StencilVueComponent<JSX.VerdocsFieldTimestamp> = /*@__PURE__*/ defineContainer<JSX.VerdocsFieldTimestamp>('verdocs-field-timestamp', undefined, [
   'source',
   'sourceid',
   'fieldname',
@@ -457,7 +457,7 @@ export const VerdocsFieldTimestamp = /*@__PURE__*/ defineContainer<JSX.VerdocsFi
 ]);
 
 
-export const VerdocsFileChooser = /*@__PURE__*/ defineContainer<JSX.VerdocsFileChooser>('verdocs-file-chooser', undefined, [
+export const VerdocsFileChooser: StencilVueComponent<JSX.VerdocsFileChooser> = /*@__PURE__*/ defineContainer<JSX.VerdocsFileChooser>('verdocs-file-chooser', undefined, [
   'endpoint',
   'fileSelected'
 ], [
@@ -465,13 +465,13 @@ export const VerdocsFileChooser = /*@__PURE__*/ defineContainer<JSX.VerdocsFileC
 ]);
 
 
-export const VerdocsHelpIcon = /*@__PURE__*/ defineContainer<JSX.VerdocsHelpIcon>('verdocs-help-icon', undefined, [
+export const VerdocsHelpIcon: StencilVueComponent<JSX.VerdocsHelpIcon> = /*@__PURE__*/ defineContainer<JSX.VerdocsHelpIcon>('verdocs-help-icon', undefined, [
   'text',
   'icon'
 ]);
 
 
-export const VerdocsInitialDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsInitialDialog>('verdocs-initial-dialog', undefined, [
+export const VerdocsInitialDialog: StencilVueComponent<JSX.VerdocsInitialDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsInitialDialog>('verdocs-initial-dialog', undefined, [
   'initials',
   'next',
   'exit'
@@ -481,7 +481,7 @@ export const VerdocsInitialDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsIni
 ]);
 
 
-export const VerdocsKbaDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsKbaDialog>('verdocs-kba-dialog', undefined, [
+export const VerdocsKbaDialog: StencilVueComponent<JSX.VerdocsKbaDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsKbaDialog>('verdocs-kba-dialog', undefined, [
   'step',
   'steps',
   'helptitle',
@@ -501,10 +501,10 @@ export const VerdocsKbaDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsKbaDial
 ]);
 
 
-export const VerdocsLoader = /*@__PURE__*/ defineContainer<JSX.VerdocsLoader>('verdocs-loader', undefined);
+export const VerdocsLoader: StencilVueComponent<JSX.VerdocsLoader> = /*@__PURE__*/ defineContainer<JSX.VerdocsLoader>('verdocs-loader', undefined);
 
 
-export const VerdocsMenuPanel = /*@__PURE__*/ defineContainer<JSX.VerdocsMenuPanel>('verdocs-menu-panel', undefined, [
+export const VerdocsMenuPanel: StencilVueComponent<JSX.VerdocsMenuPanel> = /*@__PURE__*/ defineContainer<JSX.VerdocsMenuPanel>('verdocs-menu-panel', undefined, [
   'side',
   'overlay',
   'width',
@@ -514,7 +514,7 @@ export const VerdocsMenuPanel = /*@__PURE__*/ defineContainer<JSX.VerdocsMenuPan
 ]);
 
 
-export const VerdocsMultiselect = /*@__PURE__*/ defineContainer<JSX.VerdocsMultiselect>('verdocs-multiselect', undefined, [
+export const VerdocsMultiselect: StencilVueComponent<JSX.VerdocsMultiselect> = /*@__PURE__*/ defineContainer<JSX.VerdocsMultiselect>('verdocs-multiselect', undefined, [
   'label',
   'placeholder',
   'options',
@@ -525,7 +525,7 @@ export const VerdocsMultiselect = /*@__PURE__*/ defineContainer<JSX.VerdocsMulti
 ]);
 
 
-export const VerdocsOkDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsOkDialog>('verdocs-ok-dialog', undefined, [
+export const VerdocsOkDialog: StencilVueComponent<JSX.VerdocsOkDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsOkDialog>('verdocs-ok-dialog', undefined, [
   'heading',
   'message',
   'buttonLabel',
@@ -538,12 +538,12 @@ export const VerdocsOkDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsOkDialog
 ]);
 
 
-export const VerdocsOrganizationCard = /*@__PURE__*/ defineContainer<JSX.VerdocsOrganizationCard>('verdocs-organization-card', undefined, [
+export const VerdocsOrganizationCard: StencilVueComponent<JSX.VerdocsOrganizationCard> = /*@__PURE__*/ defineContainer<JSX.VerdocsOrganizationCard>('verdocs-organization-card', undefined, [
   'organization'
 ]);
 
 
-export const VerdocsOtpDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsOtpDialog>('verdocs-otp-dialog', undefined, [
+export const VerdocsOtpDialog: StencilVueComponent<JSX.VerdocsOtpDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsOtpDialog>('verdocs-otp-dialog', undefined, [
   'endpoint',
   'method',
   'recipient',
@@ -555,7 +555,7 @@ export const VerdocsOtpDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsOtpDial
 ]);
 
 
-export const VerdocsPagination = /*@__PURE__*/ defineContainer<JSX.VerdocsPagination>('verdocs-pagination', undefined, [
+export const VerdocsPagination: StencilVueComponent<JSX.VerdocsPagination> = /*@__PURE__*/ defineContainer<JSX.VerdocsPagination>('verdocs-pagination', undefined, [
   'selectedPage',
   'itemCount',
   'perPage',
@@ -565,7 +565,7 @@ export const VerdocsPagination = /*@__PURE__*/ defineContainer<JSX.VerdocsPagina
 ]);
 
 
-export const VerdocsPortal = /*@__PURE__*/ defineContainer<JSX.VerdocsPortal>('verdocs-portal', undefined, [
+export const VerdocsPortal: StencilVueComponent<JSX.VerdocsPortal> = /*@__PURE__*/ defineContainer<JSX.VerdocsPortal>('verdocs-portal', undefined, [
   'anchor',
   'voffset',
   'clickAway'
@@ -574,7 +574,7 @@ export const VerdocsPortal = /*@__PURE__*/ defineContainer<JSX.VerdocsPortal>('v
 ]);
 
 
-export const VerdocsPreview = /*@__PURE__*/ defineContainer<JSX.VerdocsPreview>('verdocs-preview', undefined, [
+export const VerdocsPreview: StencilVueComponent<JSX.VerdocsPreview> = /*@__PURE__*/ defineContainer<JSX.VerdocsPreview>('verdocs-preview', undefined, [
   'endpoint',
   'templateId',
   'sdkError'
@@ -583,14 +583,14 @@ export const VerdocsPreview = /*@__PURE__*/ defineContainer<JSX.VerdocsPreview>(
 ]);
 
 
-export const VerdocsProgressBar = /*@__PURE__*/ defineContainer<JSX.VerdocsProgressBar>('verdocs-progress-bar', undefined, [
+export const VerdocsProgressBar: StencilVueComponent<JSX.VerdocsProgressBar> = /*@__PURE__*/ defineContainer<JSX.VerdocsProgressBar>('verdocs-progress-bar', undefined, [
   'label',
   'showPercent',
   'percent'
 ]);
 
 
-export const VerdocsQuickFilter = /*@__PURE__*/ defineContainer<JSX.VerdocsQuickFilter>('verdocs-quick-filter', undefined, [
+export const VerdocsQuickFilter: StencilVueComponent<JSX.VerdocsQuickFilter> = /*@__PURE__*/ defineContainer<JSX.VerdocsQuickFilter>('verdocs-quick-filter', undefined, [
   'options',
   'label',
   'value',
@@ -601,7 +601,7 @@ export const VerdocsQuickFilter = /*@__PURE__*/ defineContainer<JSX.VerdocsQuick
 ]);
 
 
-export const VerdocsQuickFunctions = /*@__PURE__*/ defineContainer<JSX.VerdocsQuickFunctions>('verdocs-quick-functions', undefined, [
+export const VerdocsQuickFunctions: StencilVueComponent<JSX.VerdocsQuickFunctions> = /*@__PURE__*/ defineContainer<JSX.VerdocsQuickFunctions>('verdocs-quick-functions', undefined, [
   'endpoint',
   'createTemplate',
   'createDocument'
@@ -611,7 +611,7 @@ export const VerdocsQuickFunctions = /*@__PURE__*/ defineContainer<JSX.VerdocsQu
 ]);
 
 
-export const VerdocsRadioButton = /*@__PURE__*/ defineContainer<JSX.VerdocsRadioButton>('verdocs-radio-button', undefined, [
+export const VerdocsRadioButton: StencilVueComponent<JSX.VerdocsRadioButton> = /*@__PURE__*/ defineContainer<JSX.VerdocsRadioButton>('verdocs-radio-button', undefined, [
   'checked',
   'name',
   'value',
@@ -619,7 +619,7 @@ export const VerdocsRadioButton = /*@__PURE__*/ defineContainer<JSX.VerdocsRadio
 ]);
 
 
-export const VerdocsSearchBox = /*@__PURE__*/ defineContainer<JSX.VerdocsSearchBox>('verdocs-search-box', undefined, [
+export const VerdocsSearchBox: StencilVueComponent<JSX.VerdocsSearchBox> = /*@__PURE__*/ defineContainer<JSX.VerdocsSearchBox>('verdocs-search-box', undefined, [
   'endpoint',
   'placeholder',
   'type',
@@ -635,10 +635,10 @@ export const VerdocsSearchBox = /*@__PURE__*/ defineContainer<JSX.VerdocsSearchB
 ]);
 
 
-export const VerdocsSearchTabs = /*@__PURE__*/ defineContainer<JSX.VerdocsSearchTabs>('verdocs-search-tabs', undefined);
+export const VerdocsSearchTabs: StencilVueComponent<JSX.VerdocsSearchTabs> = /*@__PURE__*/ defineContainer<JSX.VerdocsSearchTabs>('verdocs-search-tabs', undefined);
 
 
-export const VerdocsSelectInput = /*@__PURE__*/ defineContainer<JSX.VerdocsSelectInput>('verdocs-select-input', undefined, [
+export const VerdocsSelectInput: StencilVueComponent<JSX.VerdocsSelectInput> = /*@__PURE__*/ defineContainer<JSX.VerdocsSelectInput>('verdocs-select-input', undefined, [
   'value',
   'label',
   'options',
@@ -646,7 +646,7 @@ export const VerdocsSelectInput = /*@__PURE__*/ defineContainer<JSX.VerdocsSelec
 ]);
 
 
-export const VerdocsSend = /*@__PURE__*/ defineContainer<JSX.VerdocsSend>('verdocs-send', undefined, [
+export const VerdocsSend: StencilVueComponent<JSX.VerdocsSend> = /*@__PURE__*/ defineContainer<JSX.VerdocsSend>('verdocs-send', undefined, [
   'endpoint',
   'templateId',
   'environment',
@@ -664,7 +664,7 @@ export const VerdocsSend = /*@__PURE__*/ defineContainer<JSX.VerdocsSend>('verdo
 ]);
 
 
-export const VerdocsSign = /*@__PURE__*/ defineContainer<JSX.VerdocsSign>('verdocs-sign', undefined, [
+export const VerdocsSign: StencilVueComponent<JSX.VerdocsSign> = /*@__PURE__*/ defineContainer<JSX.VerdocsSign>('verdocs-sign', undefined, [
   'endpoint',
   'envelopeId',
   'roleId',
@@ -680,7 +680,7 @@ export const VerdocsSign = /*@__PURE__*/ defineContainer<JSX.VerdocsSign>('verdo
 ]);
 
 
-export const VerdocsSignatureDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsSignatureDialog>('verdocs-signature-dialog', undefined, [
+export const VerdocsSignatureDialog: StencilVueComponent<JSX.VerdocsSignatureDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsSignatureDialog>('verdocs-signature-dialog', undefined, [
   'name',
   'next',
   'exit'
@@ -690,13 +690,13 @@ export const VerdocsSignatureDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsS
 ]);
 
 
-export const VerdocsSpinner = /*@__PURE__*/ defineContainer<JSX.VerdocsSpinner>('verdocs-spinner', undefined, [
+export const VerdocsSpinner: StencilVueComponent<JSX.VerdocsSpinner> = /*@__PURE__*/ defineContainer<JSX.VerdocsSpinner>('verdocs-spinner', undefined, [
   'size',
   'mode'
 ]);
 
 
-export const VerdocsStatusIndicator = /*@__PURE__*/ defineContainer<JSX.VerdocsStatusIndicator>('verdocs-status-indicator', undefined, [
+export const VerdocsStatusIndicator: StencilVueComponent<JSX.VerdocsStatusIndicator> = /*@__PURE__*/ defineContainer<JSX.VerdocsStatusIndicator>('verdocs-status-indicator', undefined, [
   'size',
   'theme',
   'status',
@@ -704,7 +704,7 @@ export const VerdocsStatusIndicator = /*@__PURE__*/ defineContainer<JSX.VerdocsS
 ]);
 
 
-export const VerdocsSwitch = /*@__PURE__*/ defineContainer<JSX.VerdocsSwitch>('verdocs-switch', undefined, [
+export const VerdocsSwitch: StencilVueComponent<JSX.VerdocsSwitch> = /*@__PURE__*/ defineContainer<JSX.VerdocsSwitch>('verdocs-switch', undefined, [
   'checked',
   'theme',
   'disabled',
@@ -714,7 +714,7 @@ export const VerdocsSwitch = /*@__PURE__*/ defineContainer<JSX.VerdocsSwitch>('v
 ]);
 
 
-export const VerdocsTable = /*@__PURE__*/ defineContainer<JSX.VerdocsTable>('verdocs-table', undefined, [
+export const VerdocsTable: StencilVueComponent<JSX.VerdocsTable> = /*@__PURE__*/ defineContainer<JSX.VerdocsTable>('verdocs-table', undefined, [
   'columns',
   'data',
   'colHeaderClick',
@@ -725,7 +725,7 @@ export const VerdocsTable = /*@__PURE__*/ defineContainer<JSX.VerdocsTable>('ver
 ]);
 
 
-export const VerdocsTabs = /*@__PURE__*/ defineContainer<JSX.VerdocsTabs>('verdocs-tabs', undefined, [
+export const VerdocsTabs: StencilVueComponent<JSX.VerdocsTabs> = /*@__PURE__*/ defineContainer<JSX.VerdocsTabs>('verdocs-tabs', undefined, [
   'tabs',
   'selectedTab',
   'selectTab'
@@ -734,7 +734,7 @@ export const VerdocsTabs = /*@__PURE__*/ defineContainer<JSX.VerdocsTabs>('verdo
 ]);
 
 
-export const VerdocsTemplateAttachments = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateAttachments>('verdocs-template-attachments', undefined, [
+export const VerdocsTemplateAttachments: StencilVueComponent<JSX.VerdocsTemplateAttachments> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateAttachments>('verdocs-template-attachments', undefined, [
   'endpoint',
   'templateId',
   'exit',
@@ -749,7 +749,7 @@ export const VerdocsTemplateAttachments = /*@__PURE__*/ defineContainer<JSX.Verd
 ]);
 
 
-export const VerdocsTemplateBuildTabs = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateBuildTabs>('verdocs-template-build-tabs', undefined, [
+export const VerdocsTemplateBuildTabs: StencilVueComponent<JSX.VerdocsTemplateBuildTabs> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateBuildTabs>('verdocs-template-build-tabs', undefined, [
   'endpoint',
   'templateId',
   'step',
@@ -761,12 +761,12 @@ export const VerdocsTemplateBuildTabs = /*@__PURE__*/ defineContainer<JSX.Verdoc
 ]);
 
 
-export const VerdocsTemplateCard = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateCard>('verdocs-template-card', undefined, [
+export const VerdocsTemplateCard: StencilVueComponent<JSX.VerdocsTemplateCard> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateCard>('verdocs-template-card', undefined, [
   'template'
 ]);
 
 
-export const VerdocsTemplateCreate = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateCreate>('verdocs-template-create', undefined, [
+export const VerdocsTemplateCreate: StencilVueComponent<JSX.VerdocsTemplateCreate> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateCreate>('verdocs-template-create', undefined, [
   'endpoint',
   'maxSize',
   'exit',
@@ -781,7 +781,7 @@ export const VerdocsTemplateCreate = /*@__PURE__*/ defineContainer<JSX.VerdocsTe
 ]);
 
 
-export const VerdocsTemplateDocumentPage = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateDocumentPage>('verdocs-template-document-page', undefined, [
+export const VerdocsTemplateDocumentPage: StencilVueComponent<JSX.VerdocsTemplateDocumentPage> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateDocumentPage>('verdocs-template-document-page', undefined, [
   'endpoint',
   'editable',
   'disabled',
@@ -798,7 +798,7 @@ export const VerdocsTemplateDocumentPage = /*@__PURE__*/ defineContainer<JSX.Ver
 ]);
 
 
-export const VerdocsTemplateFieldProperties = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateFieldProperties>('verdocs-template-field-properties', undefined, [
+export const VerdocsTemplateFieldProperties: StencilVueComponent<JSX.VerdocsTemplateFieldProperties> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateFieldProperties>('verdocs-template-field-properties', undefined, [
   'endpoint',
   'templateId',
   'fieldName',
@@ -815,7 +815,7 @@ export const VerdocsTemplateFieldProperties = /*@__PURE__*/ defineContainer<JSX.
 ]);
 
 
-export const VerdocsTemplateFields = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateFields>('verdocs-template-fields', undefined, [
+export const VerdocsTemplateFields: StencilVueComponent<JSX.VerdocsTemplateFields> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateFields>('verdocs-template-fields', undefined, [
   'endpoint',
   'templateId',
   'toolbarTargetId',
@@ -829,7 +829,7 @@ export const VerdocsTemplateFields = /*@__PURE__*/ defineContainer<JSX.VerdocsTe
 ]);
 
 
-export const VerdocsTemplateRoleProperties = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateRoleProperties>('verdocs-template-role-properties', undefined, [
+export const VerdocsTemplateRoleProperties: StencilVueComponent<JSX.VerdocsTemplateRoleProperties> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateRoleProperties>('verdocs-template-role-properties', undefined, [
   'endpoint',
   'templateId',
   'roleName',
@@ -843,7 +843,7 @@ export const VerdocsTemplateRoleProperties = /*@__PURE__*/ defineContainer<JSX.V
 ]);
 
 
-export const VerdocsTemplateRoles = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateRoles>('verdocs-template-roles', undefined, [
+export const VerdocsTemplateRoles: StencilVueComponent<JSX.VerdocsTemplateRoles> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateRoles>('verdocs-template-roles', undefined, [
   'endpoint',
   'templateId',
   'next',
@@ -858,7 +858,7 @@ export const VerdocsTemplateRoles = /*@__PURE__*/ defineContainer<JSX.VerdocsTem
 ]);
 
 
-export const VerdocsTemplateSettings = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateSettings>('verdocs-template-settings', undefined, [
+export const VerdocsTemplateSettings: StencilVueComponent<JSX.VerdocsTemplateSettings> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateSettings>('verdocs-template-settings', undefined, [
   'endpoint',
   'templateId',
   'next',
@@ -873,7 +873,7 @@ export const VerdocsTemplateSettings = /*@__PURE__*/ defineContainer<JSX.Verdocs
 ]);
 
 
-export const VerdocsTemplateStar = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateStar>('verdocs-template-star', undefined, [
+export const VerdocsTemplateStar: StencilVueComponent<JSX.VerdocsTemplateStar> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateStar>('verdocs-template-star', undefined, [
   'endpoint',
   'template',
   'starChange',
@@ -884,12 +884,12 @@ export const VerdocsTemplateStar = /*@__PURE__*/ defineContainer<JSX.VerdocsTemp
 ]);
 
 
-export const VerdocsTemplateTags = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateTags>('verdocs-template-tags', undefined, [
+export const VerdocsTemplateTags: StencilVueComponent<JSX.VerdocsTemplateTags> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplateTags>('verdocs-template-tags', undefined, [
   'tags'
 ]);
 
 
-export const VerdocsTemplatesList = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplatesList>('verdocs-templates-list', undefined, [
+export const VerdocsTemplatesList: StencilVueComponent<JSX.VerdocsTemplatesList> = /*@__PURE__*/ defineContainer<JSX.VerdocsTemplatesList>('verdocs-templates-list', undefined, [
   'endpoint',
   'visibility',
   'starred',
@@ -923,7 +923,7 @@ export const VerdocsTemplatesList = /*@__PURE__*/ defineContainer<JSX.VerdocsTem
 ]);
 
 
-export const VerdocsTextInput = /*@__PURE__*/ defineContainer<JSX.VerdocsTextInput>('verdocs-text-input', undefined, [
+export const VerdocsTextInput: StencilVueComponent<JSX.VerdocsTextInput> = /*@__PURE__*/ defineContainer<JSX.VerdocsTextInput>('verdocs-text-input', undefined, [
   'value',
   'label',
   'placeholder',
@@ -937,13 +937,13 @@ export const VerdocsTextInput = /*@__PURE__*/ defineContainer<JSX.VerdocsTextInp
 ]);
 
 
-export const VerdocsToggle = /*@__PURE__*/ defineContainer<JSX.VerdocsToggle>('verdocs-toggle', undefined, [
+export const VerdocsToggle: StencilVueComponent<JSX.VerdocsToggle> = /*@__PURE__*/ defineContainer<JSX.VerdocsToggle>('verdocs-toggle', undefined, [
   'options',
   'theme'
 ]);
 
 
-export const VerdocsToggleButton = /*@__PURE__*/ defineContainer<JSX.VerdocsToggleButton>('verdocs-toggle-button', undefined, [
+export const VerdocsToggleButton: StencilVueComponent<JSX.VerdocsToggleButton> = /*@__PURE__*/ defineContainer<JSX.VerdocsToggleButton>('verdocs-toggle-button', undefined, [
   'active',
   'icon',
   'label',
@@ -954,14 +954,14 @@ export const VerdocsToggleButton = /*@__PURE__*/ defineContainer<JSX.VerdocsTogg
 ]);
 
 
-export const VerdocsToolbarIcon = /*@__PURE__*/ defineContainer<JSX.VerdocsToolbarIcon>('verdocs-toolbar-icon', undefined, [
+export const VerdocsToolbarIcon: StencilVueComponent<JSX.VerdocsToolbarIcon> = /*@__PURE__*/ defineContainer<JSX.VerdocsToolbarIcon>('verdocs-toolbar-icon', undefined, [
   'text',
   'icon',
   'placement'
 ]);
 
 
-export const VerdocsUploadDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsUploadDialog>('verdocs-upload-dialog', undefined, [
+export const VerdocsUploadDialog: StencilVueComponent<JSX.VerdocsUploadDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsUploadDialog>('verdocs-upload-dialog', undefined, [
   'maxSize',
   'existingFile',
   'exit',
@@ -974,7 +974,7 @@ export const VerdocsUploadDialog = /*@__PURE__*/ defineContainer<JSX.VerdocsUplo
 ]);
 
 
-export const VerdocsView = /*@__PURE__*/ defineContainer<JSX.VerdocsView>('verdocs-view', undefined, [
+export const VerdocsView: StencilVueComponent<JSX.VerdocsView> = /*@__PURE__*/ defineContainer<JSX.VerdocsView>('verdocs-view', undefined, [
   'endpoint',
   'envelopeId',
   'headerTargetId',

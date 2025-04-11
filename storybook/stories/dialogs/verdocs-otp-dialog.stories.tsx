@@ -2,10 +2,10 @@ import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
 
 export default {
-  title: 'Dialogs/KBA Dialog',
-  component: 'verdocs-kba-dialog',
+  title: 'Dialogs/OTP Dialog',
+  component: 'verdocs-otp-dialog',
   args: {
-    mode: 'identity',
+    method: 'email',
     helptitle: 'Previous Addresses',
     helptext: 'Please select the address below that you have most recently lived at.',
     label: 'Enter Your PIN:',
@@ -38,10 +38,10 @@ export default {
   },
 } as Meta;
 
-export const KBADialog = ({helptitle, helptext, label, placeholder, mode, recipient, step, steps, choices, onNext, onExit}) =>
+export const OTPDialog = ({helptitle, helptext, label, placeholder, method, recipient, step, steps, choices, onNext, onExit}) =>
   html`<div style="width: 500px; height: 500px;">
-    <verdocs-kba-dialog
-      .mode=${mode}
+    <verdocs-otp-dialog
+      .method=${method}
       .helptitle=${helptitle}
       .helptext=${helptext}
       .label=${label}

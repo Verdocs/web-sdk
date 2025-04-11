@@ -29,10 +29,10 @@ const doneIcon =
  *
  * ```ts
  * <verdocs-send
- *   templateId={templateId}
+ *   templateId={TEMPLATE_ID}
  *   onBeforeSend={({ detail })) => { console.log('Sending... Show a spinner...', detail) }
  *   onSend={({ detail }) => { console.log('Sent! Hide the spinner...', detail) }
- *   onExit={(e) => { console.log('Send cancelled.', detail) }
+ *   onExit={({ detail }) => { console.log('Send cancelled.', detail) }
  *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
  *   />
  * ```

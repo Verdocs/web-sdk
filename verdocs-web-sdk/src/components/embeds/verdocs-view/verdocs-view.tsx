@@ -10,7 +10,7 @@ import {Store} from '../../../utils/Datastore';
  *
  * ```ts
  * <verdocs-view
- *   envelopeId={envelopeId}
+ *   envelopeId={ENVELOPE_ID}
  *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
  *   />
  * ```
