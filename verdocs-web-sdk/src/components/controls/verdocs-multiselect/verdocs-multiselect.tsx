@@ -6,7 +6,8 @@ export interface IMultiSelectOption {
   value: string;
 }
 
-const DownIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>`;
+const DownIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>`;
+const UpIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" /></svg>`;
 
 /**
  * Display a dropdown that allows multiple options to be selected. Note that events "bubble" from the
@@ -64,7 +65,7 @@ export class VerdocsMultiselect {
         <label>
           {this.label ? <div class="input-label">{this.label + ':'}</div> : <div />}
           <div class="input-wrapper">
-            <button id={elId} class="trigger" value="" onClick={() => (this.showPicker = true)}>
+            <button id={elId} class="trigger" value="" onClick={() => (this.showPicker = !this.showPicker)}>
               {this.selectedOptions.length === 0 ? (
                 <span class="placeholder">{this.placeholder}</span>
               ) : (
@@ -72,7 +73,7 @@ export class VerdocsMultiselect {
               )}
             </button>
 
-            <div class="icon" innerHTML={DownIcon} />
+            <div class="icon" innerHTML={this.showPicker ? UpIcon : DownIcon} />
 
             {this.showPicker && (
               <verdocs-portal anchor={elId} voffset={2} onClickAway={() => (this.showPicker = false)} id="verdocs-multiselect-menu-items">
@@ -85,13 +86,6 @@ export class VerdocsMultiselect {
                       checked={this.selectedOptions.includes(option.value)}
                       onInput={(e: any) => this.handleToggleOption(e, option)}
                     />
-                    {/*<input*/}
-                    {/*  id={`verdocs-multi-select-option-${i}`}*/}
-                    {/*  type="checkbox"*/}
-                    {/*  value={option.value}*/}
-                    {/*  checked={this.selectedOptions.includes(option.value)}*/}
-                    {/*  onInput={(e: any) => this.handleToggleOption(e, option)}*/}
-                    {/*/>*/}
                     <label htmlFor={`verdocs-multi-select-option-${i}`}>{option.label}</label>
                   </div>
                 ))}

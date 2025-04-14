@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "5.0.60",
+  "version": "5.0.62",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -37,7 +37,7 @@
     "interactjs": "^1.10.27",
     "jszip": "^3.10.1",
     "sortablejs": "^1.15.6",
-    "tinybase": "^6.0.1",
+    "tinybase": "^6.0.2",
     "workflow-svg.js": "^3.0.2"
   },
   "devDependencies": {

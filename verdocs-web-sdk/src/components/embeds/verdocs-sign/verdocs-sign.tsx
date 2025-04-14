@@ -12,6 +12,22 @@ import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
+const DEFAULT_DISCLOSURE = `
+<ul>
+  <li>
+    Agree to use electronic records and signatures, and confirm you have read the
+    <a href="https://verdocs.com/en/electronic-record-signature-disclosure/" target="_blank">
+      Electronic Record and Signatures Disclosure</a>.</li>
+  <li>
+    Agree to Verdocs'
+    <a href="https://verdocs.com/en/eula" target="_blank">
+      End User License Agreement</a>
+    and confirm you have read Verdocs'
+    <a href="https://verdocs.com/en/privacy-policy/" target="_blank">
+      Privacy Policy</a>.
+  </li>
+</ul>`;
+
 const inProgressMenuOptions = [
   {id: 'later', label: 'Finish Later'}, //
   // {id: 'claim', label: 'Claim the Document', disabled: true},
@@ -114,6 +130,7 @@ export class VerdocsSign {
   @State() fatalErrorHeader = '';
   @State() fatalErrorMessage = '';
   @State() focusedField = '';
+  @State() disclosure = DEFAULT_DISCLOSURE;
   @State() submitting = false;
   @State() submitted = false;
   @State() isDone = false;
@@ -187,6 +204,7 @@ export class VerdocsSign {
     const {auth_step} = recipient;
     this.recipient = recipient;
     this.envelope = envelope;
+    this.disclosure = this.envelope?.organization?.disclaimer || DEFAULT_DISCLOSURE;
     this.authStep = auth_step;
     this.agreed = recipient.agreed;
     this.submitted = recipient.status === 'submitted';
@@ -781,26 +799,7 @@ export class VerdocsSign {
           <div class="cover">
             <div class="agree">
               <verdocs-checkbox name="agree" label="By checking this box, you:" onInput={() => this.handleClickAgree()} />
-              <ul>
-                <li>
-                  Agree to use electronic records and signatures, and confirm you have read the{' '}
-                  <a href="https://verdocs.com/en/electronic-record-signature-disclosure/" target="_blank">
-                    Electronic Record and Signatures Disclosure
-                  </a>
-                  .
-                </li>
-                <li>
-                  Agree to Verdocs'{' '}
-                  <a href="https://verdocs.com/en/eula" target="_blank">
-                    End User License Agreement
-                  </a>{' '}
-                  and confirm you have read Verdocs'{' '}
-                  <a href="https://verdocs.com/en/privacy-policy/" target="_blank">
-                    Privacy Policy
-                  </a>
-                  .
-                </li>
-              </ul>
+              <div innerHTML={this.disclosure} />
             </div>
           </div>
         </Host>
