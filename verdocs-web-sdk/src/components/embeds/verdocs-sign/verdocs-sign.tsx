@@ -842,7 +842,7 @@ export class VerdocsSign {
       );
     }
 
-    if (this.authStep === 'email' && this.authMethodStates.email !== 'complete') {
+    if (this.authStep === 'email') {
       return (
         <verdocs-otp-dialog
           endpoint={this.endpoint}
