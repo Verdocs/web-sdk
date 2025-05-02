@@ -1,8 +1,6 @@
 import IMask from 'imask';
 import {IRecipient} from '@verdocs/js-sdk';
 import {Component, Prop, h, Event, EventEmitter, Fragment, Host, State} from '@stencil/core';
-// import AirDatepicker from 'air-datepicker';
-// import localeEn from 'air-datepicker/locale/en';
 
 const States = {
   AL: 'Alabama',
@@ -176,16 +174,6 @@ export class VerdocsKbaDialog {
         return new Date(yearMonthDay[2], yearMonthDay[0] - 1, yearMonthDay[1]);
       },
     });
-    // this.picker = new AirDatepicker<HTMLElement>(`#${this.dobContainerId}`, {
-    //   locale: localeEn,
-    //   isMobile: true,
-    //   autoClose: true,
-    //   onSelect: ({date, formattedDate}) => {
-    //     console.log('onselect', date, formattedDate);
-    //     // const event = new CustomEvent('input', {detail: {date, formattedDate}});
-    //     // this.hostEl.dispatchEvent(event);
-    //   },
-    // });
   }
 
   handleCancel() {
@@ -336,14 +324,6 @@ export class VerdocsKbaDialog {
                   value={this.updatedRecipient?.state}
                   onInput={(e: any) => (this.updatedRecipient = {...this.updatedRecipient, state: e.target.value})}
                 />
-                {/*<input*/}
-                {/*  type="text"*/}
-                {/*  id="verdocs-kba-state"*/}
-                {/*  name="verdocs-kba-state"*/}
-                {/*  placeholder="State..."*/}
-                {/*  value={this.updatedRecipient?.state}*/}
-                {/*  onInput={(e: any) => (this.updatedRecipient = {...this.updatedRecipient, state: e.target.value})}*/}
-                {/*/>*/}
               </div>
 
               <div class="field">
@@ -393,6 +373,7 @@ export class VerdocsKbaDialog {
       );
     }
 
+    // mode='text'
     return (
       <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>

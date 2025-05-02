@@ -430,7 +430,7 @@ export class VerdocsEnvelopeSidebar {
         this.followupReminders = this.envelope?.followup_reminders;
         this.remindersEnabled = !!this.envelope?.initial_reminder;
         this.updatingReminders = false;
-        alert(e.response.data.error);
+        VerdocsToast(e.response.data.error, {style: 'error'});
       });
   }
 
