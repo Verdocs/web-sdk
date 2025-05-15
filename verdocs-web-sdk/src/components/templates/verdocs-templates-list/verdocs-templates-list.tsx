@@ -39,9 +39,16 @@ const SortOptions: IFilterOption[] = [
 export type TAllowedTemplateAction = 'send' | 'createlink' | 'signnow' | 'submitted' | 'link' | 'edit' | 'delete';
 
 /**
- * Displays a list of envelopes matching specified conditions.
- */
-@Component({
+ * Display a list if templates in the caller's account.
+ *
+ * ```ts
+ * <verdocs-template-list
+ *   visibility="private"
+ *   sort="updated_at"
+ *   onViewTemplate={({ detail }) => console.log('View template:', detail) }
+ *   />
+ * ```
+ */@Component({
   tag: 'verdocs-templates-list',
   styleUrl: 'verdocs-templates-list.scss',
 })
