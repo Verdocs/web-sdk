@@ -76,7 +76,15 @@ export class VerdocsMultiselect {
             <div class="icon" innerHTML={this.showPicker ? UpIcon : DownIcon} />
 
             {this.showPicker && (
-              <verdocs-portal anchor={elId} voffset={2} onClickAway={() => (this.showPicker = false)} id="verdocs-multiselect-menu-items">
+              <div class="verdocs-multiselect-dropdown">
+                {/*<verdocs-portal*/}
+                {/*  anchor={elId}*/}
+                {/*  voffset={2}*/}
+                {/*  onClickAway={() => {*/}
+                {/*    this.showPicker = false;*/}
+                {/*  }}*/}
+                {/*  id="verdocs-multiselect-menu-items"*/}
+                {/*>*/}
                 {this.options.map((option, i) => (
                   <div class="option" onClick={() => (this.showPicker = false)}>
                     <verdocs-checkbox
@@ -89,7 +97,8 @@ export class VerdocsMultiselect {
                     <label htmlFor={`verdocs-multi-select-option-${i}`}>{option.label}</label>
                   </div>
                 ))}
-              </verdocs-portal>
+                {/*</verdocs-portal>*/}
+              </div>
             )}
           </div>
         </label>

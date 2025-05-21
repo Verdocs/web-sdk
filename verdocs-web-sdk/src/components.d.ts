@@ -1830,7 +1830,14 @@ export namespace Components {
         "tags": any[];
     }
     /**
-     * Displays a list of envelopes matching specified conditions.
+     * Display a list of templates in the caller's account.
+     * ```ts
+     * <verdocs-template-list
+     *   visibility="private"
+     *   sort="updated_at"
+     *   onViewTemplate={({ detail }) => console.log('View template:', detail) }
+     *   />
+     * ```
      */
     interface VerdocsTemplatesList {
         /**
@@ -3699,7 +3706,14 @@ declare global {
         "changeName": string;
     }
     /**
-     * Displays a list of envelopes matching specified conditions.
+     * Display a list of templates in the caller's account.
+     * ```ts
+     * <verdocs-template-list
+     *   visibility="private"
+     *   sort="updated_at"
+     *   onViewTemplate={({ detail }) => console.log('View template:', detail) }
+     *   />
+     * ```
      */
     interface HTMLVerdocsTemplatesListElement extends Components.VerdocsTemplatesList, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsTemplatesListElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplatesListElement, ev: VerdocsTemplatesListCustomEvent<HTMLVerdocsTemplatesListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -6159,7 +6173,14 @@ declare namespace LocalJSX {
         "tags"?: any[];
     }
     /**
-     * Displays a list of envelopes matching specified conditions.
+     * Display a list of templates in the caller's account.
+     * ```ts
+     * <verdocs-template-list
+     *   visibility="private"
+     *   sort="updated_at"
+     *   onViewTemplate={({ detail }) => console.log('View template:', detail) }
+     *   />
+     * ```
      */
     interface VerdocsTemplatesList {
         /**
@@ -6995,7 +7016,14 @@ declare module "@stencil/core" {
              */
             "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             /**
-             * Displays a list of envelopes matching specified conditions.
+             * Display a list of templates in the caller's account.
+             * ```ts
+             * <verdocs-template-list
+             *   visibility="private"
+             *   sort="updated_at"
+             *   onViewTemplate={({ detail }) => console.log('View template:', detail) }
+             *   />
+             * ```
              */
             "verdocs-templates-list": LocalJSX.VerdocsTemplatesList & JSXBase.HTMLAttributes<HTMLVerdocsTemplatesListElement>;
             /**

@@ -218,7 +218,11 @@ export class VerdocsContactPicker {
     }
 
     return (
-      <form onSubmit={e => e.preventDefault()} onClick={e => e.stopPropagation()} autocomplete="off">
+      <form
+        onSubmit={e => e.preventDefault()}
+        // onClick={e => e.stopPropagation()}
+        autocomplete="off"
+      >
         <div class="row">
           <label htmlFor={this.firstNameFieldId}>Name:</label>
           <div class="names-row">
@@ -259,7 +263,14 @@ export class VerdocsContactPicker {
           </div>
 
           {this.showSuggestions && (
-            <verdocs-portal anchor={this.firstNameFieldId} onClickAway={() => (this.showSuggestions = false)} id="verdocs-contact-picker-suggestions">
+            <verdocs-portal
+              anchor={this.firstNameFieldId}
+              onClickAway={() => {
+                this.showSuggestions = false;
+                document.querySelectorAll(`.verdocs-portal-wrapper`).forEach(el => el.remove());
+              }}
+              id="verdocs-contact-picker-suggestions"
+            >
               <div class="dropdown">
                 {this.contactSuggestions
                   .filter(suggestion => !this.first_name || suggestion.first_name.toLowerCase().includes(this.first_name.toLowerCase()))

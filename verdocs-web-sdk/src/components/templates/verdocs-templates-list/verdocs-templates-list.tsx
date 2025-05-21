@@ -39,7 +39,7 @@ const SortOptions: IFilterOption[] = [
 export type TAllowedTemplateAction = 'send' | 'createlink' | 'signnow' | 'submitted' | 'link' | 'edit' | 'delete';
 
 /**
- * Display a list if templates in the caller's account.
+ * Display a list of templates in the caller's account.
  *
  * ```ts
  * <verdocs-template-list

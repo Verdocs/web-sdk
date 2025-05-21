@@ -56,9 +56,14 @@ export class VerdocsPortal {
   @Listen('click', {target: 'document'})
   handleClick(e) {
     const closest = e.target.closest('.verdocs-portal');
+    console.log('closest', e.target, closest);
     if (!this.element.contains(e.target) && !closest) {
       this.clickAway?.emit();
     }
+
+    // Temporary hack to dismiss portals-in-portals, which right now is pretty much just
+    // multiselect.
+    document.querySelectorAll('.verdocs-multiselect-dropdown').forEach(el => el.remove());
   }
 
   private calculateLeft() {
@@ -106,6 +111,7 @@ export class VerdocsPortal {
     this.portal.setAttribute('id', id);
     this.portal.style.zIndex = Z_INDEX;
     this.portal.style.position = 'absolute';
+    this.portal.className = 'verdocs-portal-wrapper';
     document.body.append(this.portal);
   }
 

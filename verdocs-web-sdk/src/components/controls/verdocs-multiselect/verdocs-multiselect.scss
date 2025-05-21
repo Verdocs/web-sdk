@@ -6,6 +6,7 @@ verdocs-multiselect {
   margin: 0 0 10px 0;
   box-sizing: border-box;
   font-family: $primary-font;
+  position: relative;
 
   .input-wrapper {
     width: 100%;
@@ -55,6 +56,31 @@ verdocs-multiselect {
     font-size: 14px;
     margin: 0 0 4px 0;
     color: $label-color-light;
+  }
+
+  .verdocs-multiselect-dropdown {
+    left: 0;
+    top: 30px;
+    width: 210px;
+    z-index: 10000;
+    position: absolute;
+    border-radius: 5px;
+    font-family: $primary-font;
+    background: $verdocs-grey-4;
+    border: 1px solid $item-border-color;
+
+    .option {
+      gap: 4px;
+      display: flex;
+      padding: 5px 8px;
+      align-items: center;
+      flex-direction: row;
+      text-wrap: nowrap;
+    }
+
+    label {
+      font-size: 13px;
+    }
   }
 }
 
