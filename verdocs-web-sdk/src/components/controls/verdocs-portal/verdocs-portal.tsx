@@ -56,7 +56,6 @@ export class VerdocsPortal {
   @Listen('click', {target: 'document'})
   handleClick(e) {
     const closest = e.target.closest('.verdocs-portal');
-    console.log('closest', e.target, closest);
     if (!this.element.contains(e.target) && !closest) {
       this.clickAway?.emit();
     }

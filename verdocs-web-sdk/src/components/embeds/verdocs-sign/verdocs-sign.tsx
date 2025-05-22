@@ -243,7 +243,7 @@ export class VerdocsSign {
 
   handleClickAgree() {
     this.submitting = true;
-    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, true)
+    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, true, this.disclosure)
       .then(() => {
         this.nextButtonLabel = 'Next';
         this.recipient.agreed = true;

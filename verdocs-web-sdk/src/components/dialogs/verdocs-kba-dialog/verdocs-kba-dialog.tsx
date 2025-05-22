@@ -342,6 +342,21 @@ export class VerdocsKbaDialog {
               </div>
 
               <div class="field">
+                <label htmlFor="verdocs-kba-ssn">
+                  SSN Last 4:<span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="verdocs-kba-ssn"
+                  name="verdocs-kba-ssn"
+                  placeholder="Last 4 digits of your Social Security Number..."
+                  required
+                  value={this.updatedRecipient?.ssn_last_4}
+                  onInput={(e: any) => (this.updatedRecipient = {...this.updatedRecipient, ssn_last_4: e.target.value})}
+                />
+              </div>
+
+              <div class="field">
                 <label htmlFor={this.dobContainerId}>
                   Date of Birth:<span class="required">*</span>
                 </label>
@@ -363,6 +378,7 @@ export class VerdocsKbaDialog {
                     !this.updatedRecipient?.last_name ||
                     !this.updatedRecipient?.address ||
                     !this.updatedRecipient?.zip ||
+                    !this.updatedRecipient?.ssn_last_4 ||
                     !this.updatedRecipient?.dob
                   }
                 />

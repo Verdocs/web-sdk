@@ -10,7 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@verdocs/js-sdk": "^5.0.38"
+    "@verdocs/js-sdk": "^5.0.42"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.6",
