@@ -21,6 +21,15 @@ verdocs-contact-picker {
       position: relative;
       flex-direction: row;
       align-items: center;
+
+      .option {
+        gap: 4px;
+        display: flex;
+        padding: 5px 8px;
+        align-items: center;
+        flex-direction: row;
+        text-wrap: nowrap;
+      }
     }
 
     .names-row {

@@ -327,19 +327,44 @@ export class VerdocsContactPicker {
 
         <Fragment>
           {verificationOptions.length > 0 && (
-            <div class="row">
+            <div class="row pin-code">
               <label>Recipient Verification:</label>
-              <verdocs-multiselect
-                label=""
-                placeholder="None"
-                options={verificationOptions}
-                selectedOptions={this.auth_methods}
-                onSelectionChanged={(e: any) => {
-                  this.auth_methods = e.detail.selectedOptions;
-                }}
-              />
+              <div>
+                {verificationOptions.map((option, i) => (
+                  <div class="option">
+                    <verdocs-checkbox
+                      size="small"
+                      id={`verdocs-multi-select-opt-${i}`}
+                      value={option.value}
+                      checked={this.auth_methods.includes(option.value)}
+                      onInput={(e: any) => {
+                        if (e.target.checked) {
+                          this.auth_methods = [...this.auth_methods, option.value];
+                        } else {
+                          this.auth_methods = this.auth_methods.filter(selected => selected !== option.value);
+                        }
+                      }}
+                    />
+                    <label htmlFor={`verdocs-multi-select-option-${i}`}>{option.label}</label>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
+          {/*{verificationOptions.length > 0 && (*/}
+          {/*  <div class="row">*/}
+          {/*    <label>Recipient Verification:</label>*/}
+          {/*    <verdocs-multiselect*/}
+          {/*      label=""*/}
+          {/*      placeholder="None"*/}
+          {/*      options={verificationOptions}*/}
+          {/*      selectedOptions={this.auth_methods}*/}
+          {/*      onSelectionChanged={(e: any) => {*/}
+          {/*        this.auth_methods = e.detail.selectedOptions;*/}
+          {/*      }}*/}
+          {/*    />*/}
+          {/*  </div>*/}
+          {/*)}*/}
 
           {this.auth_methods.includes('passcode') && (
             <div class="row pin-code">
