@@ -140,6 +140,7 @@ export class VerdocsKbaDialog {
    */
   @Event({composed: true}) next: EventEmitter<string | IRecipient | string[]>;
 
+  @State() agreed = false;
   @State() response = '';
   @State() updatedRecipient: IRecipient = null;
   @State() dobContainerId = `verdocs-date-input-${Math.random().toString(36).substring(2, 11)}`;
@@ -256,15 +257,15 @@ export class VerdocsKbaDialog {
             <div class="dialog">
               <div class="heading">Confirm Your Identity</div>
 
-              {!!this.helptitle && (
-                <div class="help-box">
-                  <div class="help-icon" innerHTML={QuestionIcon} />
-                  <div class="help-details">
-                    <div class="help-title">Identity verification is required</div>
-                    <div class="help-text">NOTE: Only four fields are required, but providing more details will allow us to complete the verification process more quickly.</div>
-                  </div>
-                </div>
-              )}
+              {/*{!!this.helptitle && (*/}
+              {/*  <div class="help-box">*/}
+              {/*    <div class="help-icon" innerHTML={QuestionIcon} />*/}
+              {/*    <div class="help-details">*/}
+              {/*      <div class="help-title">Identity verification is required</div>*/}
+              {/*      <div class="help-text">NOTE: Only four fields are required, but providing more details will allow us to complete the verification process more quickly.</div>*/}
+              {/*    </div>*/}
+              {/*  </div>*/}
+              {/*)}*/}
 
               <div class="field">
                 <label htmlFor="verdocs-kba-first">
@@ -369,11 +370,31 @@ export class VerdocsKbaDialog {
                 />
               </div>
 
+              <div class="field">
+                <label></label>
+                <verdocs-checkbox
+                  id="verdocs-kba-agree"
+                  name="verdocs-kba-agree"
+                  checked={this.agreed}
+                  onInput={(e: any) => (this.agreed = e.target.checked)}
+                  // label="I agree to provide my personal information in order to validate my identity. Identity verification powered by IDology."
+                />
+                <span>I agree to provide my personal information in order to validate my identity.</span>
+                {/*<input*/}
+                {/*  type="text"*/}
+                {/*  value={this.updatedRecipient?.dob || ''}*/}
+                {/*  id={this.dobContainerId}*/}
+                {/*  placeholder="DOB..."*/}
+                {/*  onInput={(e: any) => (this.updatedRecipient = {...this.updatedRecipient, dob: e.target.value})}*/}
+                {/*/>*/}
+              </div>
+
               <div class="buttons">
                 <verdocs-button
                   label="Submit"
                   onClick={() => this.handleConfirmID()}
                   disabled={
+                    !this.agreed ||
                     !this.updatedRecipient?.first_name ||
                     !this.updatedRecipient?.last_name ||
                     !this.updatedRecipient?.address ||
