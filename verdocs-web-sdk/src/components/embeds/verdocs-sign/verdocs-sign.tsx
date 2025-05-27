@@ -956,7 +956,7 @@ export class VerdocsSign {
             <div class="title">{this.envelope.name}</div>
             <div style={{flex: '1'}} />
 
-            {!this.finishLater && <verdocs-button size="xsmall" label={this.nextButtonLabel} disabled={!this.agreed} onClick={() => this.handleNext()} />}
+            {!this.finishLater && <verdocs-button size="xsmall" label={this.nextButtonLabel} disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />}
 
             <div style={{marginLeft: '10px'}} />
             <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
