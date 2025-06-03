@@ -5,7 +5,7 @@ export default {
   title: 'Envelopes/Envelope Sidebar',
   component: 'verdocs-envelope-sidebar',
   args: {
-    envelopeId: '423b1710-dbb5-4b18-a3ff-445229ef958a',
+    envelopeId: '',
   },
   argTypes: {
     envelopeId: {name: 'envelopeId'},

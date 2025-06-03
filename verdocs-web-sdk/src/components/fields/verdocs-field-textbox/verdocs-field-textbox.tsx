@@ -1,8 +1,9 @@
 import interact from 'interactjs';
-import {getRGBA, IEnvelopeField, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {getRGBA, IEnvelopeField, ITemplate, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
+import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 
 /**
  * Display a simple 1-line text input field.
@@ -138,9 +139,10 @@ export class VerdocsFieldTextbox {
     }
   }
 
-  handleResizeStart(e: any) {
+  handleResizeStart(e: ResizeEvent) {
     e.preventDefault();
     e.stopPropagation();
+    e.target.dataset.originalBottom = e.target.style.bottom;
   }
 
   handleResize(e: any) {
@@ -162,21 +164,30 @@ export class VerdocsFieldTextbox {
     });
   }
 
-  handleResizeEnd(e: any) {
+  async handleResizeEnd(e: any) {
     const {sourceid, fieldname} = this;
 
     const width = Math.round(parseFloat(e.target.style.width));
     let height = Math.round(parseFloat(e.target.style.height));
-
     if (height < 20) {
       height = 15;
     }
     const multiline = height > 15;
 
-    updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, multiline})
+    const newBottom = parseFloat(e.target.style.bottom);
+    const originalBottom = parseFloat(e.target.dataset.originalBottom);
+    const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
+    const oldField = template.fields.find(f => f.name === fieldname);
+    let y = newBottom !== originalBottom ? newBottom / this.yscale : oldField?.y;
+    if (newBottom !== originalBottom) {
+      console.log('Adjusting Bottom', {y, fbot: oldField?.y, yscale: this.yscale, originalBottom, currentBottom: newBottom});
+    }
+    // const oldField =    Store.d  this.templateS.fields.findIndex(field => field.name === fieldname);
+
+    updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, y, multiline})
       .then(async updatedField => {
         const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
-        const newTemplate = JSON.parse(JSON.stringify(template));
+        const newTemplate = JSON.parse(JSON.stringify(template)) as ITemplate;
         const fieldIndex = newTemplate.fields.findIndex(field => field.name === fieldname);
         if (fieldIndex > -1) {
           newTemplate.fields[fieldIndex] = updatedField;
