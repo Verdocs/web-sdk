@@ -178,11 +178,7 @@ export class VerdocsFieldTextbox {
     const originalBottom = parseFloat(e.target.dataset.originalBottom);
     const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
     const oldField = template.fields.find(f => f.name === fieldname);
-    let y = newBottom !== originalBottom ? newBottom / this.yscale : oldField?.y;
-    if (newBottom !== originalBottom) {
-      console.log('Adjusting Bottom', {y, fbot: oldField?.y, yscale: this.yscale, originalBottom, currentBottom: newBottom});
-    }
-    // const oldField =    Store.d  this.templateS.fields.findIndex(field => field.name === fieldname);
+    const y = newBottom !== originalBottom ? newBottom / this.yscale : oldField?.y;
 
     updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, y, multiline})
       .then(async updatedField => {

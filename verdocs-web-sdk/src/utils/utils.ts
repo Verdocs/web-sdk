@@ -184,6 +184,8 @@ export const renderDocumentField = (
       cbEl.field = field;
       cbEl.setAttribute('id', id);
       cbEl.setAttribute('option', 0);
+      cbEl.setAttribute('source', source);
+      cbEl.setAttribute('sourceid', 'template_id' in field ? field.template_id : field.envelope_id);
       if (disabled) {
         cbEl.setAttribute('disabled', true);
       }
@@ -214,6 +216,8 @@ export const renderDocumentField = (
       radioEl.field = field;
       radioEl.setAttribute('id', id);
       radioEl.setAttribute('option', 0);
+      radioEl.setAttribute('source', source);
+      radioEl.setAttribute('sourceid', 'template_id' in field ? field.template_id : field.envelope_id);
       if (disabled) {
         radioEl.setAttribute('disabled', true);
       }
