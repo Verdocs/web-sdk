@@ -114,8 +114,8 @@ verdocs-field-radio {
       + label {
         &:before {
           box-shadow: inset 0 0 0 4px $verdocs-grey-3;
-          border-color: darken($verdocs-grey-3, 25%);
-          background: darken($verdocs-grey-3, 25%);
+          border-color: #f3f3fc;
+          background: #f3f3fc;
         }
       }
     }

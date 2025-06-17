@@ -2,8 +2,8 @@ import {Meta} from '@storybook/web-components';
 import {html} from 'lit-html';
 
 export default {
-  title: 'Envelopes/Recipient Link',
-  component: 'verdocs-envelope-recipient-link',
+  title: 'Envelopes/Update Recipient',
+  component: 'verdocs-envelope-update-recipient',
   args: {
     envelopeId: '',
     roleName: '',
@@ -13,9 +13,9 @@ export default {
   },
 } as Meta;
 
-export const recipientLink = ({envelopeId, roleName, next}) =>
+export const updateRecipient = ({envelopeId, roleName, next}) =>
   html`
     <div style="width:600px; height:400px; margin: 0 auto;">
-      <verdocs-envelope-recipient-link .envelopeId="${envelopeId}" .roleName="${roleName}" @next=${next} />
+      <verdocs-envelope-update-recipient .envelopeId="${envelopeId}" .roleName="${roleName}" @next=${next} />
     </div>
   `;

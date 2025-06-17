@@ -1,0 +1,99 @@
+@import '../../../theme.scss';
+
+verdocs-envelope-update-recipient {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  z-index: 100000;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  font-family: $primary-font;
+  background-color: #0000007f;
+
+  .summary-content {
+    width: 600px;
+    display: flex;
+    max-width: 90%;
+    font-size: 18px;
+    flex: 0 0 600px;
+    border-radius: 6px;
+    background: #ffffff;
+    flex-direction: column;
+    padding: 30px 20px 20px;
+
+    .summary-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+      color: $verdocs-dark-blue;
+    }
+  }
+
+  .fields {
+    display: flex;
+    color: $verdocs-grey-1;
+    margin: 8px 0 24px 0;
+    flex-direction: column;
+
+    .field {
+      margin: 2px 0;
+    }
+
+    .note {
+      font-style: italic;
+      font-size: 14px;
+    }
+
+    .fields-row {
+      gap: 12px;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+
+      > * {
+        flex: 1;
+      }
+    }
+
+    .role-name {
+      flex: 1;
+      display: flex;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: $verdocs-grey-0;
+    }
+
+    textarea {
+      width: 100%;
+      font-size: 16px;
+      padding: 5px 7px;
+      border-radius: 4px;
+      box-sizing: border-box;
+      border: 1px solid $border-color;
+      font-family: $verdocs-primary-font;
+    }
+  }
+
+  .buttons {
+    display: flex;
+    column-gap: 15px;
+    margin: 10px 0 0 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    verdocs-button {
+      flex: 0 0 120px;
+      margin-left: 10px;
+      white-space: nowrap;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

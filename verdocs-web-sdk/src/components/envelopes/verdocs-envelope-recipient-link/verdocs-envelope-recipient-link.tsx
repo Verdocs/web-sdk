@@ -76,7 +76,7 @@ export class VerdocsEnvelopeRecipientLink {
   }
 
   async listenToEnvelope() {
-    console.log('[SIDEBAR] Loading envelope', this.envelopeId);
+    console.log('[RECIPIENT_LINK] Loading envelope', this.envelopeId);
     this.unlistenToEnvelope();
     Store.subscribe(
       'envelopes',

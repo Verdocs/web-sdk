@@ -1,5 +1,5 @@
 import {createStore, Row} from 'tinybase';
-import {getTemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {getEnvelope, getTemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import type {IEnvelope, IEnvelopeField, ITemplate, ITemplateField} from '@verdocs/js-sdk';
 
 const store = createStore();
@@ -115,17 +115,17 @@ export const Store = {
     return template;
   },
 
-  async getEnvelope(endpoint: VerdocsEndpoint, envelopeId: string, reload: boolean = false): Promise<ITemplate | null> {
+  async getEnvelope(endpoint: VerdocsEndpoint, envelopeId: string, reload: boolean = false): Promise<IEnvelope | null> {
     if (!reload) {
       if (!store.hasRow('envelopes', envelopeId)) {
         return null;
       }
 
       const row = store.getRow('envelopes', envelopeId);
-      return rowToObject<ITemplate>(row);
+      return rowToObject<IEnvelope>(row);
     }
 
-    const envelope = await getTemplate(endpoint, envelopeId);
+    const envelope = await getEnvelope(endpoint, envelopeId);
     store.setRow('envelopes', envelopeId, objectToRow(envelope));
     return envelope;
   },

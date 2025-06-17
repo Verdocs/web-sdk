@@ -5,7 +5,7 @@ export default {
   title: 'Templates/Settings',
   component: 'verdocs-template-settings',
   args: {
-    templateId: '',
+    templateId: 'c15776e9-f9a8-4c6c-a9b2-076eb2ec45ff',
   },
   argTypes: {
     onClose: {action: 'close'},

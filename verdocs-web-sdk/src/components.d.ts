@@ -397,6 +397,24 @@ export namespace Components {
         "envelopeId": string;
     }
     /**
+     * Displays a single recipient from an envelope, with the opportunity to copy an in-person
+     * signing link for that recipient to use.
+     */
+    interface VerdocsEnvelopeUpdateRecipient {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The envelope ID to edit.
+         */
+        "envelopeId": string;
+        /**
+          * The role to load.
+         */
+        "roleName": string;
+    }
+    /**
      * Displays a list of envelopes matching specified conditions.
      */
     interface VerdocsEnvelopesList {
@@ -2055,6 +2073,10 @@ export interface VerdocsEnvelopeSidebarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsEnvelopeSidebarElement;
 }
+export interface VerdocsEnvelopeUpdateRecipientCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsEnvelopeUpdateRecipientElement;
+}
 export interface VerdocsEnvelopesListCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsEnvelopesListElement;
@@ -2555,6 +2577,28 @@ declare global {
     var HTMLVerdocsEnvelopeSidebarElement: {
         prototype: HTMLVerdocsEnvelopeSidebarElement;
         new (): HTMLVerdocsEnvelopeSidebarElement;
+    };
+    interface HTMLVerdocsEnvelopeUpdateRecipientElementEventMap {
+        "next": {action: 'cancel' | 'save'; originalRecipient: IRecipient; updatedRecipient: IRecipient};
+        "sdkError": SDKError;
+    }
+    /**
+     * Displays a single recipient from an envelope, with the opportunity to copy an in-person
+     * signing link for that recipient to use.
+     */
+    interface HTMLVerdocsEnvelopeUpdateRecipientElement extends Components.VerdocsEnvelopeUpdateRecipient, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsEnvelopeUpdateRecipientElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeUpdateRecipientElement, ev: VerdocsEnvelopeUpdateRecipientCustomEvent<HTMLVerdocsEnvelopeUpdateRecipientElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsEnvelopeUpdateRecipientElementEventMap>(type: K, listener: (this: HTMLVerdocsEnvelopeUpdateRecipientElement, ev: VerdocsEnvelopeUpdateRecipientCustomEvent<HTMLVerdocsEnvelopeUpdateRecipientElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsEnvelopeUpdateRecipientElement: {
+        prototype: HTMLVerdocsEnvelopeUpdateRecipientElement;
+        new (): HTMLVerdocsEnvelopeUpdateRecipientElement;
     };
     interface HTMLVerdocsEnvelopesListElementEventMap {
         "changeView": 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
@@ -3861,6 +3905,7 @@ declare global {
         "verdocs-envelope-recipient-link": HTMLVerdocsEnvelopeRecipientLinkElement;
         "verdocs-envelope-recipient-summary": HTMLVerdocsEnvelopeRecipientSummaryElement;
         "verdocs-envelope-sidebar": HTMLVerdocsEnvelopeSidebarElement;
+        "verdocs-envelope-update-recipient": HTMLVerdocsEnvelopeUpdateRecipientElement;
         "verdocs-envelopes-list": HTMLVerdocsEnvelopesListElement;
         "verdocs-field-attachment": HTMLVerdocsFieldAttachmentElement;
         "verdocs-field-checkbox": HTMLVerdocsFieldCheckboxElement;
@@ -4372,6 +4417,32 @@ declare namespace LocalJSX {
           * Event fired when the sidebar is opened or closed.
          */
         "onToggle"?: (event: VerdocsEnvelopeSidebarCustomEvent<{open: boolean}>) => void;
+    }
+    /**
+     * Displays a single recipient from an envelope, with the opportunity to copy an in-person
+     * signing link for that recipient to use.
+     */
+    interface VerdocsEnvelopeUpdateRecipient {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The envelope ID to edit.
+         */
+        "envelopeId"?: string;
+        /**
+          * Event fired when the user clicks Done to proceed. It is up to the host application to save any updates and proceed to the next step.
+         */
+        "onNext"?: (event: VerdocsEnvelopeUpdateRecipientCustomEvent<{action: 'cancel' | 'save'; originalRecipient: IRecipient; updatedRecipient: IRecipient}>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsEnvelopeUpdateRecipientCustomEvent<SDKError>) => void;
+        /**
+          * The role to load.
+         */
+        "roleName"?: string;
     }
     /**
      * Displays a list of envelopes matching specified conditions.
@@ -6452,6 +6523,7 @@ declare namespace LocalJSX {
         "verdocs-envelope-recipient-link": VerdocsEnvelopeRecipientLink;
         "verdocs-envelope-recipient-summary": VerdocsEnvelopeRecipientSummary;
         "verdocs-envelope-sidebar": VerdocsEnvelopeSidebar;
+        "verdocs-envelope-update-recipient": VerdocsEnvelopeUpdateRecipient;
         "verdocs-envelopes-list": VerdocsEnvelopesList;
         "verdocs-field-attachment": VerdocsFieldAttachment;
         "verdocs-field-checkbox": VerdocsFieldCheckbox;
@@ -6652,6 +6724,11 @@ declare module "@stencil/core" {
              * This is typically the first step in a template creation workflow.
              */
             "verdocs-envelope-sidebar": LocalJSX.VerdocsEnvelopeSidebar & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeSidebarElement>;
+            /**
+             * Displays a single recipient from an envelope, with the opportunity to copy an in-person
+             * signing link for that recipient to use.
+             */
+            "verdocs-envelope-update-recipient": LocalJSX.VerdocsEnvelopeUpdateRecipient & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeUpdateRecipientElement>;
             /**
              * Displays a list of envelopes matching specified conditions.
              */

@@ -1,5 +1,5 @@
 import {format} from 'date-fns';
-import type {IEnvelope, IRecipient} from '@verdocs/js-sdk';
+import {IEnvelope, IRecipient, updateRecipient} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
 import {cancelEnvelope, capitalize, formatFullName, getEnvelope, resendInvitation, updateEnvelope, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
@@ -102,6 +102,7 @@ export class VerdocsEnvelopeSidebar {
   @State() showRecipientDialog = '';
   @State() showCancelDialog = false;
   @State() showReinviteDialog = '';
+  @State() showUpdateDialog = '';
 
   @State() remindersEnabled = false;
   @State() updatingReminders = false;
@@ -186,6 +187,10 @@ export class VerdocsEnvelopeSidebar {
   handleRecipientAction(recipient: IRecipient, id: string) {
     console.log('[SIDEBAR] Recipient action', id, recipient);
     switch (id) {
+      case 'update':
+        this.showUpdateDialog = recipient.role_name;
+        break;
+
       case 'reminder':
         resendInvitation(this.endpoint, this.envelopeId, recipient.role_name)
           .then(() => {
@@ -248,6 +253,43 @@ export class VerdocsEnvelopeSidebar {
       });
   }
 
+  handleUpdateRecipient(originalRecipient: IRecipient, updatedRecipient: IRecipient) {
+    console.log('Updating recipient', originalRecipient, updatedRecipient);
+    const fields: any = {};
+    if (updatedRecipient.email !== originalRecipient.email) {
+      fields.email = updatedRecipient.email;
+    }
+    if (updatedRecipient.phone !== originalRecipient.phone) {
+      fields.phone = updatedRecipient.phone;
+    }
+    if (updatedRecipient.message !== originalRecipient.message) {
+      fields.message = updatedRecipient.message;
+    }
+    if (updatedRecipient.first_name !== originalRecipient.first_name) {
+      fields.first_name = updatedRecipient.first_name;
+    }
+    if (updatedRecipient.last_name !== originalRecipient.last_name) {
+      fields.last_name = updatedRecipient.last_name;
+    }
+
+    if (Object.keys(fields).length > 0) {
+      updateRecipient(this.endpoint, this.envelopeId, originalRecipient.role_name, fields)
+        .then(r => {
+          // TODO: Reload the envelope?
+          VerdocsToast('Recipient updated', {style: 'success'});
+          console.log('[SIDEBAR] Updated recipient', r);
+          Store.getEnvelope(this.endpoint, this.envelopeId, true);
+          this.showUpdateDialog = '';
+        })
+        .catch(e => {
+          VerdocsToast(e.response.data.error, {style: 'error'});
+          this.showUpdateDialog = '';
+        });
+    } else {
+      this.showUpdateDialog = '';
+    }
+  }
+
   prepareHistoryEntries() {
     const entries: IHistoryEntry[] = [];
     const histories = this.envelope?.history_entries || [];
@@ -262,7 +304,7 @@ export class VerdocsEnvelopeSidebar {
     // to tolerate both cases here for a while.
     const ownerCanceled = histories.some(history => (history.event as any) === 'owner:canceled');
     if (this.envelope?.status === 'canceled' && !ownerCanceled) {
-      entries.push({icon: 'pencil', message: 'Envelope Cancelled.', date: new Date(this.envelope?.canceled_at)});
+      entries.push({icon: 'pencil', message: 'Envelope Canceled.', date: new Date(this.envelope?.canceled_at)});
     }
 
     histories.forEach(history => {
@@ -384,6 +426,9 @@ export class VerdocsEnvelopeSidebar {
         case 'owner:canceled':
           entries.push({icon: 'cancel', message: `Envelope was canceled by the creator.`, date: new Date(history.created_at)});
           break;
+        case 'envelope:expired':
+          entries.push({icon: 'cancel', message: `Envelope expired.`, date: new Date(history.created_at)});
+          break;
         case 'owner:get_in_person_link':
           entries.push({icon: 'link', message: `Owner accessed the In-person link for ${recipient}.`, date: new Date(history.created_at)});
           break;
@@ -484,6 +529,7 @@ export class VerdocsEnvelopeSidebar {
             <div class="title">Recipients</div>
             {this.envelope?.recipients.map((recipient, index) => {
               const canGetInPersonLink = recipient.status !== 'submitted' && recipient.status !== 'canceled' && recipient.status !== 'declined';
+              const canUpdate = recipient.status !== 'submitted';
               const canSendReminder = this.canResendRecipient(recipient);
               const fullName = formatFullName(recipient);
 
@@ -497,6 +543,7 @@ export class VerdocsEnvelopeSidebar {
                       <verdocs-dropdown
                         onOptionSelected={item => this.handleRecipientAction(recipient, item.detail.id)}
                         options={[
+                          {id: 'update', label: 'Update', disabled: !canUpdate},
                           {id: 'reminder', label: 'Send Reminder', disabled: !canSendReminder},
                           {id: 'inperson', label: 'Get In-Person Link', disabled: !canGetInPersonLink},
                           {id: 'reinvite', label: 'Re-invite', disabled: !canSendReminder},
@@ -559,14 +606,6 @@ export class VerdocsEnvelopeSidebar {
                 )}
               </div>
             )}
-            {/*  <verdocs-button*/}
-            {/*    class="manage-recipients-button"*/}
-            {/*    variant="standard"*/}
-            {/*    label="Turn On Reminders"*/}
-            {/*    onClick={() => (this.showManageDialog = !functionsDisabled)}*/}
-            {/*    disabled={functionsDisabled}*/}
-            {/*  />*/}
-
             {isEnvelopeOwner && (
               <verdocs-button
                 class="manage-recipients-button"
@@ -618,6 +657,21 @@ export class VerdocsEnvelopeSidebar {
             onNext={() => {
               this.showReinviteDialog = '';
               // this.handleCancelEnvelope();
+            }}
+          />
+        )}
+
+        {this.showUpdateDialog && (
+          <verdocs-envelope-update-recipient
+            envelopeId={this.envelopeId}
+            roleName={this.showUpdateDialog}
+            onNext={e => {
+              console.log('next', e.detail);
+              if (e.detail.action === 'save') {
+                this.handleUpdateRecipient(e.detail.originalRecipient, e.detail.updatedRecipient);
+              } else {
+                this.showUpdateDialog = '';
+              }
             }}
           />
         )}

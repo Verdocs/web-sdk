@@ -174,6 +174,18 @@ export const VerdocsEnvelopeSidebar: StencilVueComponent<JSX.VerdocsEnvelopeSide
 ]);
 
 
+export const VerdocsEnvelopeUpdateRecipient: StencilVueComponent<JSX.VerdocsEnvelopeUpdateRecipient> = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopeUpdateRecipient>('verdocs-envelope-update-recipient', undefined, [
+  'endpoint',
+  'envelopeId',
+  'roleName',
+  'next',
+  'sdkError'
+], [
+  'next',
+  'sdkError'
+]);
+
+
 export const VerdocsEnvelopesList: StencilVueComponent<JSX.VerdocsEnvelopesList> = /*@__PURE__*/ defineContainer<JSX.VerdocsEnvelopesList>('verdocs-envelopes-list', undefined, [
   'endpoint',
   'view',

@@ -476,6 +476,43 @@ to redirect the user to the appropriate next workflow step.
 
 
 @ProxyCmp({
+  inputs: ['endpoint', 'envelopeId', 'roleName']
+})
+@Component({
+  selector: 'verdocs-envelope-update-recipient',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'envelopeId', 'roleName'],
+})
+export class VerdocsEnvelopeUpdateRecipient {
+  protected el: HTMLVerdocsEnvelopeUpdateRecipientElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['next', 'sdkError']);
+  }
+}
+
+
+import type { IRecipient as IVerdocsEnvelopeUpdateRecipientIRecipient } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsEnvelopeUpdateRecipientSDKError } from '@verdocs/web-sdk';
+
+export declare interface VerdocsEnvelopeUpdateRecipient extends Components.VerdocsEnvelopeUpdateRecipient {
+  /**
+   * Event fired when the user clicks Done to proceed. It is up to the host application
+to save any updates and proceed to the next step.
+   */
+  next: EventEmitter<CustomEvent<{action: 'cancel' | 'save'; originalRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient; updatedRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient}>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsEnvelopeUpdateRecipientSDKError>>;
+}
+
+
+@ProxyCmp({
   inputs: ['endpoint', 'match', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'status', 'view']
 })
 @Component({
