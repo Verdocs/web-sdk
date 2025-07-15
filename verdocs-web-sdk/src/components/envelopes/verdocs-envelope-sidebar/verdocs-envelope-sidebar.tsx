@@ -537,7 +537,7 @@ export class VerdocsEnvelopeSidebar {
                 <div class="recipient-detail">
                   <div class="recipient-header">
                     <div class="recipient-number">{index + 1}</div>
-                    <div class="recipient-name">{recipient.role_name}</div>
+                    <div class="recipient-name">{recipient.role_name.replace('delegated_to_', 'Delegated')}</div>
                     <div class={{'recipient-status': true, [recipient.status]: true}}>{recipient.status}</div>
                     {isEnvelopeOwner && !functionsDisabled && (
                       <verdocs-dropdown

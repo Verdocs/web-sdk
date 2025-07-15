@@ -67,7 +67,7 @@ export class VerdocsBuild {
 
 import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk';
 import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk';
-import type { ICreateEnvelopeRecipient as IVerdocsBuildICreateEnvelopeRecipient } from '@verdocs/web-sdk';
+import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsBuildICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk';
 import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk';
 import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk';
 import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
@@ -89,7 +89,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * The user completed the Send form and clicked send.
    */
-  send: EventEmitter<CustomEvent<{recipients: IVerdocsBuildICreateEnvelopeRecipient[]; name: string; template_id: string}>>;
+  send: EventEmitter<CustomEvent<{recipients: IVerdocsBuildICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string}>>;
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
@@ -255,6 +255,38 @@ export class VerdocsDateInput {
 
 
 export declare interface VerdocsDateInput extends Components.VerdocsDateInput {}
+
+
+@ProxyCmp({
+  inputs: ['endpoint', 'envelope']
+})
+@Component({
+  selector: 'verdocs-delegate-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'envelope'],
+})
+export class VerdocsDelegateDialog {
+  protected el: HTMLVerdocsDelegateDialogElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['exit', 'next']);
+  }
+}
+
+
+export declare interface VerdocsDelegateDialog extends Components.VerdocsDelegateDialog {
+  /**
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the process has completed successfully.
+   */
+  next: EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>;
+}
 
 
 @ProxyCmp({
@@ -1581,7 +1613,7 @@ export class VerdocsSend {
 }
 
 
-import type { ICreateEnvelopeRecipient as IVerdocsSendICreateEnvelopeRecipient } from '@verdocs/web-sdk';
+import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsSendICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk';
 import type { ITemplate as IVerdocsSendITemplate } from '@verdocs/web-sdk';
 import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
@@ -1591,11 +1623,11 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
    * The user is sending an envelope the form and clicked send.
    */
-  beforeSend: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipient[]; name: string; template_id: string; template: IVerdocsSendITemplate}>>;
+  beforeSend: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: IVerdocsSendITemplate}>>;
   /**
    * The user completed the form and clicked send.
    */
-  send: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>;
+  send: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>;
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */

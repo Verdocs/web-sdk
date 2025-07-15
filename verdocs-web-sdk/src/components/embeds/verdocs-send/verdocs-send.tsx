@@ -1,6 +1,6 @@
 import {Component, Prop, State, h, Event, EventEmitter, Host, Method, Watch} from '@stencil/core';
 import {createEnvelope, formatFullName, getTemplate, getOrganizationContacts, getRGBA, isValidEmail, VerdocsEndpoint} from '@verdocs/js-sdk';
-import type {ICreateEnvelopeFromTemplateRequest, ICreateEnvelopeRecipient, IEnvelope, IRecipient, ITemplate} from '@verdocs/js-sdk';
+import type {ICreateEnvelopeFromTemplateRequest, ICreateEnvelopeRecipientFromTemplate, IEnvelope, IRecipient, ITemplate} from '@verdocs/js-sdk';
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
 import {getRoleIndex, getRoleNames} from '../../../utils/Templates';
 import {DefaultEndpoint} from '../../../utils/Environment';
@@ -66,12 +66,12 @@ export class VerdocsSend {
   /**
    * The user is sending an envelope the form and clicked send.
    */
-  @Event({composed: true}) beforeSend: EventEmitter<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; template: ITemplate}>;
+  @Event({composed: true}) beforeSend: EventEmitter<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: ITemplate}>;
 
   /**
    * The user completed the form and clicked send.
    */
-  @Event({composed: true}) send: EventEmitter<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>;
+  @Event({composed: true}) send: EventEmitter<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>;
 
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -267,9 +267,7 @@ export class VerdocsSend {
       environment: this.environment,
       initial_reminder: 0,
       followup_reminders: 0,
-      recipients: Object.values(this.rolesCompleted) as ICreateEnvelopeRecipient[],
-      // TODO: Pre-filled fields support
-      fields: [],
+      recipients: Object.values(this.rolesCompleted) as ICreateEnvelopeRecipientFromTemplate[],
     };
 
     const beforeSendResult = this.beforeSend.emit({...details, name: details.name!, template: this.template});

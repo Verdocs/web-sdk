@@ -1,0 +1,194 @@
+@import '../../../theme.scss';
+
+verdocs-delegate-dialog {
+  font-family: $primary-font;
+  box-sizing: border-box;
+
+  div {
+    box-sizing: border-box;
+  }
+
+  .background-overlay {
+    position: fixed;
+    z-index: 10000;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0000007f;
+  }
+
+  .dialog {
+    width: 440px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    padding: 16px;
+    gap: 10px;
+    box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
+  }
+
+  .heading {
+    display: flex;
+    flex-direction: row;
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .step {
+    margin-left: 6px;
+    color: #666;
+  }
+
+  .help-box {
+    background-color: $border-color;
+    display: flex;
+    flex-direction: row;
+    padding: 14px;
+    align-items: center;
+    color: white;
+  }
+
+  .help-details {
+    display: flex;
+    flex-direction: column;
+    margin-left: 15px;
+    font-size: 14px;
+  }
+
+  .help-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .help-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .help-text {
+    font-weight: 400;
+  }
+
+  .input {
+    gap: 10px;
+    margin: 5px 0;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+
+    label {
+      margin: 8px 0 0 0;
+      flex: 0 0 100px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 10px;
+      white-space: nowrap;
+    }
+
+    input {
+      flex: 1;
+      padding: 5px 8px;
+      border-radius: 3px;
+      box-sizing: border-box;
+      border: 1px solid #cccccc;
+    }
+
+    textarea {
+      flex: 1;
+      padding: 5px 8px;
+      border-radius: 3px;
+      box-sizing: border-box;
+      border: 1px solid #cccccc;
+      font-family: $primary-font;
+    }
+
+    &.names input {
+      width: 80px;
+    }
+  }
+
+  .field {
+    gap: 10px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    max-width: 100%;
+
+    .required {
+      color: red;
+      position: relative;
+      top: -0.5em;
+      font-size: 80%;
+    }
+
+    label {
+      flex: 0 0 120px;
+      font-weight: 500;
+      line-height: 10px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    verdocs-date-input {
+      width: 40%;
+      flex-grow: 1;
+
+      input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+
+    input {
+      width: 40%;
+      flex-grow: 1;
+      padding: 5px 8px;
+      border-radius: 3px;
+      border: 1px solid #cccccc;
+    }
+  }
+
+  .choices {
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    margin: 0 0 15px 0;
+  }
+
+  .choice {
+    border: 1px solid $border-color;
+    border-radius: 5px;
+    display: flex;
+    height: 60px;
+    font-size: 14px;
+    padding: 0 5px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: $choice-available-color;
+    cursor: pointer;
+
+    &.selected {
+      background-color: $border-color;
+      color: $verdocs-grey-4;
+    }
+  }
+
+  .buttons {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    verdocs-button {
+      margin-left: 16px;
+    }
+  }
+}

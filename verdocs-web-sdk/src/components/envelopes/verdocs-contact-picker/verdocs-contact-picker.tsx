@@ -328,7 +328,7 @@ export class VerdocsContactPicker {
         <Fragment>
           {verificationOptions.length > 0 && (
             <div class="row pin-code">
-              <label>Recipient Verification:</label>
+              <label>Verification Methods:</label>
               <div>
                 {verificationOptions.map((option, i) => (
                   <div class="option">
@@ -351,20 +351,6 @@ export class VerdocsContactPicker {
               </div>
             </div>
           )}
-          {/*{verificationOptions.length > 0 && (*/}
-          {/*  <div class="row">*/}
-          {/*    <label>Recipient Verification:</label>*/}
-          {/*    <verdocs-multiselect*/}
-          {/*      label=""*/}
-          {/*      placeholder="None"*/}
-          {/*      options={verificationOptions}*/}
-          {/*      selectedOptions={this.auth_methods}*/}
-          {/*      onSelectionChanged={(e: any) => {*/}
-          {/*        this.auth_methods = e.detail.selectedOptions;*/}
-          {/*      }}*/}
-          {/*    />*/}
-          {/*  </div>*/}
-          {/*)}*/}
 
           {this.auth_methods.includes('passcode') && (
             <div class="row pin-code">
@@ -384,6 +370,23 @@ export class VerdocsContactPicker {
             </div>
           )}
         </Fragment>
+
+        <div class="row pin-code">
+          <label>Delegation:</label>
+          <div>
+            <div class="option">
+              <verdocs-checkbox
+                size="small"
+                id="verdocs-delegator"
+                checked={this.delegator}
+                onInput={(e: any) => {
+                  this.delegator = e.target.checked;
+                }}
+              />
+              <label htmlFor="verdocs-delegator">May delegate signing</label>
+            </div>
+          </div>
+        </div>
 
         <div class="row message">
           <label htmlFor="verdocs-contact-picker-message">Message:</label>

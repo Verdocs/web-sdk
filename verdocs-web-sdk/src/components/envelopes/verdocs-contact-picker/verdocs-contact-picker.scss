@@ -20,7 +20,7 @@ verdocs-contact-picker {
       display: flex;
       position: relative;
       flex-direction: row;
-      align-items: center;
+      align-items: flex-start;
 
       .option {
         gap: 4px;

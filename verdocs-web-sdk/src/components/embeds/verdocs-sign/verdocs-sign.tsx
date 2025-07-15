@@ -1,4 +1,4 @@
-import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse} from '@verdocs/js-sdk';
+import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
 import {getEnvelope, integerSequence, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
@@ -144,6 +144,9 @@ export class VerdocsSign {
   @State() authMethodStates: Partial<Record<TRecipientAuthMethod, string>> = {};
   @State() kbaQuestions: IKBAQuestion[] | null = null;
   @State() showSpinner = false;
+  @State() declining = false;
+  @State() delegating = false;
+  @State() delegated = false;
   @State() kbaChoices = [];
 
   @State() loading = true;
@@ -206,6 +209,7 @@ export class VerdocsSign {
     this.envelope = envelope;
     this.disclosure = this.envelope?.organization?.disclaimer || DEFAULT_DISCLOSURE;
     this.authStep = auth_step;
+    this.delegated = !!recipient.delegated_to;
     this.agreed = recipient.agreed;
     this.submitted = recipient.status === 'submitted';
     this.isDone = this.submitted;
@@ -232,7 +236,7 @@ export class VerdocsSign {
       this.fatalErrorMessage = 'This envelope has been canceled. The sender has been notified.';
     } else if (recipient.status === 'declined') {
       this.fatalErrorHeader = 'Declined';
-      this.fatalErrorMessage = 'You have declined to sign this envelope. The sender has been notified.';
+      this.fatalErrorMessage = 'You have declined to sign this request. The sender has been notified.';
     } else if (this.agreed) {
       this.nextButtonLabel = 'Next';
     }
@@ -279,7 +283,7 @@ export class VerdocsSign {
           this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
           this.submitting = false;
           this.fatalErrorHeader = 'Declined';
-          this.fatalErrorMessage = 'You have declined to sign this envelope. The sender has been notified.';
+          this.fatalErrorMessage = 'You have declined to sign this request. The sender has been notified.';
         }
         break;
 
@@ -751,6 +755,19 @@ export class VerdocsSign {
       );
     }
 
+    if (this.delegated) {
+      return (
+        <Host class={{agreed: false}}>
+          <div class="fatal-error">
+            <div class="message">
+              <div class="header">Delegated Signing Request</div>
+              <p>You have delegated signing to another recipient. You will not be able to sign this request again.</p>
+            </div>
+          </div>
+        </Host>
+      );
+    }
+
     if (this.isDone) {
       return (
         <Host class={{agreed: this.agreed}}>
@@ -778,6 +795,49 @@ export class VerdocsSign {
       );
     }
 
+    if (this.delegating) {
+      return (
+        <verdocs-delegate-dialog
+          endpoint={this.endpoint}
+          envelope={this.envelope}
+          onExit={() => (this.delegating = false)}
+          onNext={(e: any) => {
+            delegateRecipient(this.endpoint, this.envelopeId, this.roleId, e.detail)
+              .then(r => {
+                VerdocsToast('Delegation request submitted.', {style: 'success'});
+                console.log('[SIGN] Delegated successfully', r);
+                this.delegated = true;
+                this.delegating = false;
+              })
+              .catch(e => {
+                console.log('[SIGN] Error delegating request', e);
+                VerdocsToast('Unable to process delegation request. Please try again later.', {style: 'error'});
+              });
+          }}
+        />
+      );
+    }
+
+    if (this.declining) {
+      return (
+        <verdocs-ok-dialog
+          heading="Decline Signing Request"
+          message={`If you decline to sign this request, you will not be able to sign again in the future. The envelope sender will be notified.`}
+          buttonLabel="OK"
+          showCancel={true}
+          onExit={() => (this.declining = false)}
+          onNext={() => {
+            envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId)
+              .then(r => {
+                console.log('[SIGN] Decline result', r);
+                window.location.reload();
+              })
+              .catch(e => console.warn('[SIGN] Error declining signing session', e));
+          }}
+        />
+      );
+    }
+
     if (!this.agreed) {
       return (
         <Host class="agreed">
@@ -800,6 +860,12 @@ export class VerdocsSign {
             <div class="agree">
               <verdocs-checkbox name="agree" label="By checking this box, you:" onInput={() => this.handleClickAgree()} />
               <div innerHTML={this.disclosure} />
+
+              <div class="disclosure-buttons">
+                <h5>Other Options:</h5>
+                <verdocs-button variant="outline" label="Decline" onClick={() => (this.declining = true)} />
+                {this.recipient?.delegator && <verdocs-button variant="outline" label="Delegate" onClick={() => (this.delegating = true)} />}
+              </div>
             </div>
           </div>
         </Host>

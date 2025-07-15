@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ICreateEnvelopeRecipient, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { ICreateEnvelopeRecipientFromTemplate, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -23,7 +23,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { ICreateEnvelopeRecipient, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { ICreateEnvelopeRecipientFromTemplate, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -276,6 +276,19 @@ export namespace Components {
           * The initial value for the input field.
          */
         "value": string;
+    }
+    /**
+     * Delegate signing responsibility to another recipient.
+     */
+    interface VerdocsDelegateDialog {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The envelope to process.
+         */
+        "envelope": IEnvelope | null;
     }
     /**
      * Display a simple dialog where the contents are provided via slots.
@@ -2049,6 +2062,10 @@ export interface VerdocsContactPickerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsContactPickerElement;
 }
+export interface VerdocsDelegateDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsDelegateDialogElement;
+}
 export interface VerdocsDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDialogElement;
@@ -2296,7 +2313,7 @@ declare global {
         "cancel": any;
         "sdkError": SDKError;
         "stepChanged": TVerdocsBuildStep;
-        "send": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string};
+        "send": {recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string};
         "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
         "templateCreated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
         "rolesUpdated": {endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]};
@@ -2434,6 +2451,27 @@ declare global {
     var HTMLVerdocsDateInputElement: {
         prototype: HTMLVerdocsDateInputElement;
         new (): HTMLVerdocsDateInputElement;
+    };
+    interface HTMLVerdocsDelegateDialogElementEventMap {
+        "exit": any;
+        "next": {first_name: string; last_name: string; email: string; phone: string; message: string};
+    }
+    /**
+     * Delegate signing responsibility to another recipient.
+     */
+    interface HTMLVerdocsDelegateDialogElement extends Components.VerdocsDelegateDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsDelegateDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsDelegateDialogElement, ev: VerdocsDelegateDialogCustomEvent<HTMLVerdocsDelegateDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsDelegateDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsDelegateDialogElement, ev: VerdocsDelegateDialogCustomEvent<HTMLVerdocsDelegateDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsDelegateDialogElement: {
+        prototype: HTMLVerdocsDelegateDialogElement;
+        new (): HTMLVerdocsDelegateDialogElement;
     };
     interface HTMLVerdocsDialogElementEventMap {
         "exit": any;
@@ -3295,8 +3333,8 @@ declare global {
         new (): HTMLVerdocsSelectInputElement;
     };
     interface HTMLVerdocsSendElementEventMap {
-        "beforeSend": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; template: ITemplate};
-        "send": {recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope};
+        "beforeSend": {recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: ITemplate};
+        "send": {recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope};
         "exit": any;
         "sdkError": SDKError;
         "searchContacts": IContactSearchEvent1;
@@ -3899,6 +3937,7 @@ declare global {
         "verdocs-component-error": HTMLVerdocsComponentErrorElement;
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
         "verdocs-date-input": HTMLVerdocsDateInputElement;
+        "verdocs-delegate-dialog": HTMLVerdocsDelegateDialogElement;
         "verdocs-dialog": HTMLVerdocsDialogElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-envelope-document-page": HTMLVerdocsEnvelopeDocumentPageElement;
@@ -4041,7 +4080,7 @@ declare namespace LocalJSX {
         /**
           * The user completed the Send form and clicked send.
          */
-        "onSend"?: (event: VerdocsBuildCustomEvent<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string}>) => void;
+        "onSend"?: (event: VerdocsBuildCustomEvent<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string}>) => void;
         /**
           * Event fired when the user selects a different step.
          */
@@ -4246,6 +4285,27 @@ declare namespace LocalJSX {
           * The initial value for the input field.
          */
         "value"?: string;
+    }
+    /**
+     * Delegate signing responsibility to another recipient.
+     */
+    interface VerdocsDelegateDialog {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The envelope to process.
+         */
+        "envelope"?: IEnvelope | null;
+        /**
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+         */
+        "onExit"?: (event: VerdocsDelegateDialogCustomEvent<any>) => void;
+        /**
+          * Event fired when the process has completed successfully.
+         */
+        "onNext"?: (event: VerdocsDelegateDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
     }
     /**
      * Display a simple dialog where the contents are provided via slots.
@@ -5723,7 +5783,7 @@ declare namespace LocalJSX {
         /**
           * The user is sending an envelope the form and clicked send.
          */
-        "onBeforeSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; template: ITemplate}>) => void;
+        "onBeforeSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: ITemplate}>) => void;
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
@@ -5739,7 +5799,7 @@ declare namespace LocalJSX {
         /**
           * The user completed the form and clicked send.
          */
-        "onSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipient[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>) => void;
+        "onSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>) => void;
         /**
           * The ID of the template to create the document from.
          */
@@ -6517,6 +6577,7 @@ declare namespace LocalJSX {
         "verdocs-component-error": VerdocsComponentError;
         "verdocs-contact-picker": VerdocsContactPicker;
         "verdocs-date-input": VerdocsDateInput;
+        "verdocs-delegate-dialog": VerdocsDelegateDialog;
         "verdocs-dialog": VerdocsDialog;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-envelope-document-page": VerdocsEnvelopeDocumentPage;
@@ -6684,6 +6745,10 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-date-input": LocalJSX.VerdocsDateInput & JSXBase.HTMLAttributes<HTMLVerdocsDateInputElement>;
+            /**
+             * Delegate signing responsibility to another recipient.
+             */
+            "verdocs-delegate-dialog": LocalJSX.VerdocsDelegateDialog & JSXBase.HTMLAttributes<HTMLVerdocsDelegateDialogElement>;
             /**
              * Display a simple dialog where the contents are provided via slots.
              */

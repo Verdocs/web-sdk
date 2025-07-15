@@ -99,6 +99,17 @@ export const VerdocsDateInput: StencilVueComponent<JSX.VerdocsDateInput> = /*@__
 ]);
 
 
+export const VerdocsDelegateDialog: StencilVueComponent<JSX.VerdocsDelegateDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsDelegateDialog>('verdocs-delegate-dialog', undefined, [
+  'endpoint',
+  'envelope',
+  'exit',
+  'next'
+], [
+  'exit',
+  'next'
+]);
+
+
 export const VerdocsDialog: StencilVueComponent<JSX.VerdocsDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsDialog>('verdocs-dialog', undefined, [
   'exit'
 ], [
