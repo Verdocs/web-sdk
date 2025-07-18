@@ -28,19 +28,6 @@ const DEFAULT_DISCLOSURES = `
   </li>
 </ul>`;
 
-const inProgressMenuOptions = [
-  {id: 'later', label: 'Finish Later'}, //
-  // {id: 'claim', label: 'Claim the Document', disabled: true},
-  {id: 'decline', label: 'Decline to Sign'},
-  {id: 'print', label: 'Print Without Signing'},
-  {id: 'download', label: 'Download'},
-];
-
-const doneMenuOptions = [
-  {id: 'print', label: 'Print'},
-  {id: 'download', label: 'Download'},
-];
-
 /**
  * Display an envelope signing experience. This will display the envelope's attached
  * documents with signing fields overlaid on each page.
@@ -270,21 +257,12 @@ export class VerdocsSign {
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'later'});
         break;
 
-      case 'claim':
-        VerdocsToast('This feature will be available in an upcoming release.');
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'claimed'});
+      case 'delegate':
+        this.delegating = true;
         break;
 
       case 'decline':
-        {
-          this.submitting = true;
-          const declineResult = await envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId);
-          console.log('[SIGN] Decline result', declineResult);
-          this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
-          this.submitting = false;
-          this.fatalErrorHeader = 'Declined';
-          this.fatalErrorMessage = 'You have declined to sign this request. The sender has been notified.';
-        }
+        this.declining = true;
         break;
 
       case 'print':
@@ -1001,6 +979,23 @@ export class VerdocsSign {
           </div>
         </Host>
       );
+    }
+
+    const inProgressMenuOptions = [
+      {id: 'later', label: 'Finish Later'}, //
+      // {id: 'claim', label: 'Claim the Document', disabled: true},
+      {id: 'decline', label: 'Decline to Sign'},
+      {id: 'print', label: 'Print Without Signing'},
+      {id: 'download', label: 'Download'},
+    ];
+
+    const doneMenuOptions = [
+      {id: 'print', label: 'Print'},
+      {id: 'download', label: 'Download'},
+    ];
+
+    if (this.recipient.delegator) {
+      inProgressMenuOptions.unshift({id: 'delegate', label: 'Delegate'});
     }
 
     return (
