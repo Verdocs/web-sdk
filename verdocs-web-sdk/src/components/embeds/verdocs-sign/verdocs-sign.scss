@@ -77,24 +77,6 @@ verdocs-sign {
     background: rgba(0, 0, 0, 0.5);
   }
 
-  .agree {
-    flex: 0;
-    width: 600px;
-    display: flex;
-    max-width: 90%;
-    padding: 30px 15px;
-    flex-direction: column;
-    background-color: #ffffff;
-
-    .header {
-      flex: 0 0 56px;
-    }
-
-    li {
-      margin: 0.5em 0;
-    }
-  }
-
   verdocs-ok-dialog .background-overlay {
     align-items: flex-start;
     padding-top: 100px;
@@ -159,12 +141,6 @@ verdocs-sign {
       font-size: 14px;
       font-weight: 400;
       padding: 0 10px;
-    }
-  }
-
-  .disclosure-buttons {
-    verdocs-button {
-      margin: 0 12px 0 0;
     }
   }
 }

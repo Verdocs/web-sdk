@@ -317,6 +317,38 @@ export declare interface VerdocsDialog extends Components.VerdocsDialog {
 
 
 @ProxyCmp({
+  inputs: ['disclosures']
+})
+@Component({
+  selector: 'verdocs-disclosure-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['disclosures'],
+})
+export class VerdocsDisclosureDialog {
+  protected el: HTMLVerdocsDisclosureDialogElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+    proxyOutputs(this, this.el, ['decline', 'accept']);
+  }
+}
+
+
+export declare interface VerdocsDisclosureDialog extends Components.VerdocsDisclosureDialog {
+  /**
+   * Event fired when the process has completed successfully.
+   */
+  decline: EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>;
+  /**
+   * Event fired when the process has completed successfully.
+   */
+  accept: EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>;
+}
+
+
+@ProxyCmp({
   inputs: ['options']
 })
 @Component({

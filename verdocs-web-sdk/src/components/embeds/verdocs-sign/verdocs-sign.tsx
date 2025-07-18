@@ -12,7 +12,7 @@ import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
-const DEFAULT_DISCLOSURE = `
+const DEFAULT_DISCLOSURES = `
 <ul>
   <li>
     Agree to use electronic records and signatures, and confirm you have read the
@@ -130,7 +130,7 @@ export class VerdocsSign {
   @State() fatalErrorHeader = '';
   @State() fatalErrorMessage = '';
   @State() focusedField = '';
-  @State() disclosure = DEFAULT_DISCLOSURE;
+  @State() disclosures = DEFAULT_DISCLOSURES;
   @State() submitting = false;
   @State() submitted = false;
   @State() isDone = false;
@@ -207,7 +207,7 @@ export class VerdocsSign {
     const {auth_step} = recipient;
     this.recipient = recipient;
     this.envelope = envelope;
-    this.disclosure = this.envelope?.organization?.disclaimer || DEFAULT_DISCLOSURE;
+    this.disclosures = this.envelope?.organization?.disclaimer || DEFAULT_DISCLOSURES;
     this.authStep = auth_step;
     this.delegated = !!recipient.delegated_to;
     this.agreed = recipient.agreed;
@@ -247,7 +247,7 @@ export class VerdocsSign {
 
   handleClickAgree() {
     this.submitting = true;
-    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, true, this.disclosure)
+    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, true, this.disclosures)
       .then(() => {
         this.nextButtonLabel = 'Next';
         this.recipient.agreed = true;
@@ -856,18 +856,7 @@ export class VerdocsSign {
             />
           </div>
 
-          <div class="cover">
-            <div class="agree">
-              <verdocs-checkbox name="agree" label="By checking this box, you:" onInput={() => this.handleClickAgree()} />
-              <div innerHTML={this.disclosure} />
-
-              <div class="disclosure-buttons">
-                <h5>Other Options:</h5>
-                <verdocs-button variant="outline" label="Decline" onClick={() => (this.declining = true)} />
-                {this.recipient?.delegator && <verdocs-button variant="outline" label="Delegate" onClick={() => (this.delegating = true)} />}
-              </div>
-            </div>
-          </div>
+          <verdocs-disclosure-dialog disclosures={this.disclosures} onDecline={() => (this.declining = true)} onAccept={() => this.handleClickAgree()} />
         </Host>
       );
     }

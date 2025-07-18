@@ -296,6 +296,15 @@ export namespace Components {
     interface VerdocsDialog {
     }
     /**
+     * Display e-signing disclosures with options to decline or proceed.
+     */
+    interface VerdocsDisclosureDialog {
+        /**
+          * The disclosures to display.
+         */
+        "disclosures": string | null;
+    }
+    /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
      * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
      * ```ts
@@ -2070,6 +2079,10 @@ export interface VerdocsDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDialogElement;
 }
+export interface VerdocsDisclosureDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsDisclosureDialogElement;
+}
 export interface VerdocsDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDropdownElement;
@@ -2492,6 +2505,27 @@ declare global {
     var HTMLVerdocsDialogElement: {
         prototype: HTMLVerdocsDialogElement;
         new (): HTMLVerdocsDialogElement;
+    };
+    interface HTMLVerdocsDisclosureDialogElementEventMap {
+        "decline": {first_name: string; last_name: string; email: string; phone: string; message: string};
+        "accept": {first_name: string; last_name: string; email: string; phone: string; message: string};
+    }
+    /**
+     * Display e-signing disclosures with options to decline or proceed.
+     */
+    interface HTMLVerdocsDisclosureDialogElement extends Components.VerdocsDisclosureDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsDisclosureDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsDisclosureDialogElement, ev: VerdocsDisclosureDialogCustomEvent<HTMLVerdocsDisclosureDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsDisclosureDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsDisclosureDialogElement, ev: VerdocsDisclosureDialogCustomEvent<HTMLVerdocsDisclosureDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsDisclosureDialogElement: {
+        prototype: HTMLVerdocsDisclosureDialogElement;
+        new (): HTMLVerdocsDisclosureDialogElement;
     };
     interface HTMLVerdocsDropdownElementEventMap {
         "optionSelected": IMenuOption;
@@ -3939,6 +3973,7 @@ declare global {
         "verdocs-date-input": HTMLVerdocsDateInputElement;
         "verdocs-delegate-dialog": HTMLVerdocsDelegateDialogElement;
         "verdocs-dialog": HTMLVerdocsDialogElement;
+        "verdocs-disclosure-dialog": HTMLVerdocsDisclosureDialogElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-envelope-document-page": HTMLVerdocsEnvelopeDocumentPageElement;
         "verdocs-envelope-recipient-link": HTMLVerdocsEnvelopeRecipientLinkElement;
@@ -4315,6 +4350,23 @@ declare namespace LocalJSX {
           * Event fired when the dialog is dismissed by clicking the background overlay.
          */
         "onExit"?: (event: VerdocsDialogCustomEvent<any>) => void;
+    }
+    /**
+     * Display e-signing disclosures with options to decline or proceed.
+     */
+    interface VerdocsDisclosureDialog {
+        /**
+          * The disclosures to display.
+         */
+        "disclosures"?: string | null;
+        /**
+          * Event fired when the process has completed successfully.
+         */
+        "onAccept"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
+        /**
+          * Event fired when the process has completed successfully.
+         */
+        "onDecline"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
     }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
@@ -6579,6 +6631,7 @@ declare namespace LocalJSX {
         "verdocs-date-input": VerdocsDateInput;
         "verdocs-delegate-dialog": VerdocsDelegateDialog;
         "verdocs-dialog": VerdocsDialog;
+        "verdocs-disclosure-dialog": VerdocsDisclosureDialog;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-envelope-document-page": VerdocsEnvelopeDocumentPage;
         "verdocs-envelope-recipient-link": VerdocsEnvelopeRecipientLink;
@@ -6753,6 +6806,10 @@ declare module "@stencil/core" {
              * Display a simple dialog where the contents are provided via slots.
              */
             "verdocs-dialog": LocalJSX.VerdocsDialog & JSXBase.HTMLAttributes<HTMLVerdocsDialogElement>;
+            /**
+             * Display e-signing disclosures with options to decline or proceed.
+             */
+            "verdocs-disclosure-dialog": LocalJSX.VerdocsDisclosureDialog & JSXBase.HTMLAttributes<HTMLVerdocsDisclosureDialogElement>;
             /**
              * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
              * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.

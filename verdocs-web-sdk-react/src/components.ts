@@ -20,6 +20,7 @@ import { VerdocsContactPicker as VerdocsContactPickerElement, defineCustomElemen
 import { VerdocsDateInput as VerdocsDateInputElement, defineCustomElement as defineVerdocsDateInput } from "@verdocs/web-sdk/dist/components/verdocs-date-input.js";
 import { VerdocsDelegateDialog as VerdocsDelegateDialogElement, defineCustomElement as defineVerdocsDelegateDialog } from "@verdocs/web-sdk/dist/components/verdocs-delegate-dialog.js";
 import { VerdocsDialog as VerdocsDialogElement, defineCustomElement as defineVerdocsDialog } from "@verdocs/web-sdk/dist/components/verdocs-dialog.js";
+import { VerdocsDisclosureDialog as VerdocsDisclosureDialogElement, defineCustomElement as defineVerdocsDisclosureDialog } from "@verdocs/web-sdk/dist/components/verdocs-disclosure-dialog.js";
 import { VerdocsDropdown as VerdocsDropdownElement, defineCustomElement as defineVerdocsDropdown } from "@verdocs/web-sdk/dist/components/verdocs-dropdown.js";
 import { VerdocsEnvelopeDocumentPage as VerdocsEnvelopeDocumentPageElement, defineCustomElement as defineVerdocsEnvelopeDocumentPage } from "@verdocs/web-sdk/dist/components/verdocs-envelope-document-page.js";
 import { VerdocsEnvelopeRecipientLink as VerdocsEnvelopeRecipientLinkElement, defineCustomElement as defineVerdocsEnvelopeRecipientLink } from "@verdocs/web-sdk/dist/components/verdocs-envelope-recipient-link.js";
@@ -231,6 +232,23 @@ export const VerdocsDialog: StencilReactComponent<VerdocsDialogElement, VerdocsD
     react: React,
     events: { onExit: 'exit' } as VerdocsDialogEvents,
     defineCustomElement: defineVerdocsDialog
+});
+
+export type VerdocsDisclosureDialogEvents = {
+    onDecline: EventName<CustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>,
+    onAccept: EventName<CustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>
+};
+
+export const VerdocsDisclosureDialog: StencilReactComponent<VerdocsDisclosureDialogElement, VerdocsDisclosureDialogEvents> = /*@__PURE__*/ createComponent<VerdocsDisclosureDialogElement, VerdocsDisclosureDialogEvents>({
+    tagName: 'verdocs-disclosure-dialog',
+    elementClass: VerdocsDisclosureDialogElement,
+    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    react: React,
+    events: {
+        onDecline: 'decline',
+        onAccept: 'accept'
+    } as VerdocsDisclosureDialogEvents,
+    defineCustomElement: defineVerdocsDisclosureDialog
 });
 
 export type VerdocsDropdownEvents = { onOptionSelected: EventName<VerdocsDropdownCustomEvent<IMenuOption>> };

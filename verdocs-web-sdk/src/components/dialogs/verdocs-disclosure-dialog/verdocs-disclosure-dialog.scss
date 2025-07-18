@@ -1,0 +1,61 @@
+@import '../../../theme.scss';
+
+verdocs-disclosure-dialog {
+  .footer {
+    .accept {
+      margin-left: 28px;
+    }
+  }
+
+  a {
+    color: $verdocs-purple-shade;
+  }
+
+  verdocs-checkbox {
+    font-size: 14px;
+    line-height: 20px;
+
+    label > input[type='checkbox'] + *::before {
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+      margin-left: -28px;
+      vertical-align: middle;
+    }
+  }
+
+  /* TODO: Evalute making formal components for these */
+  .buttons {
+    gap: 20px;
+    display: flex;
+    margin-top: 28px;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    button {
+      flex: 1;
+      border: 0;
+      height: 38px;
+      display: flex;
+      color: #ffffff;
+      font-size: 14px;
+      //font-size: 16px;
+      cursor: pointer;
+      align-items: center;
+      border-radius: 6px;
+      justify-content: center;
+
+      &.decline {
+        background-color: $verdocs-button-purple;
+      }
+
+      &.proceed {
+        background-color: $verdocs-button-green;
+      }
+
+      &:disabled {
+        background-color: $verdocs-button-disabled;
+      }
+    }
+  }
+}

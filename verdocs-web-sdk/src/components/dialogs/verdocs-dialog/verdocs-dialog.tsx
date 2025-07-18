@@ -13,7 +13,8 @@ export class VerdocsDialog {
    */
   @Event({composed: true}) exit: EventEmitter;
 
-  // We need a separate event handler for clicking the background because it can receive events "through" other child components
+  // We need a separate event handler for clicking the background because it can
+  // receive events "through" other child components
   handleDismiss(e: any) {
     if (e.target.className === 'background-overlay') {
       e.preventDefault();
@@ -21,18 +22,23 @@ export class VerdocsDialog {
     }
   }
 
+
   render() {
     return (
       <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
-            <slot name="title">
-              <div class="heading">Please Confirm</div>
+            <slot name="heading">
+              <div class="heading">Title</div>
             </slot>
 
-            <div class="content">
-              <slot></slot>
-            </div>
+            <slot name="content">
+              <div class="content">Content</div>
+            </slot>
+
+            <slot name="footer">
+              <div class="footer">Footer</div>
+            </slot>
           </div>
         </div>
       </Host>
