@@ -21,8 +21,9 @@
     "build": "stencil build --docs",
     "serve": "stencil build --dev --watch --serve",
     "start": "stencil build --dev --watch --docs",
-    "test": "stencil test --spec --e2e --screenshot",
-    "test.watch": "stencil test --spec --e2e --watchAll",
+    "test": "stencil test --spec",
+    "e2e-test": "stencil test --e2e --screenshot",
+    "test.watch": "stencil test --spec --watchAll",
     "generate": "stencil generate"
   },
   "dependencies": {
@@ -45,7 +46,7 @@
     "@interactjs/types": "^1.10.27",
     "@stencil/angular-output-target": "^0.10.2",
     "@stencil/react-output-target": "^1.0.2",
-    "@stencil/sass": "^3.2.1",
+    "@stencil/sass": "^3.2.2",
     "@stencil/vue-output-target": "^0.10.7",
     "@types/jest": "^29.5.14",
     "babel-loader": "^10.0.0",
