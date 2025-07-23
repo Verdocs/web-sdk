@@ -236,6 +236,7 @@ export const VerdocsDialog: StencilReactComponent<VerdocsDialogElement, VerdocsD
 
 export type VerdocsDisclosureDialogEvents = {
     onDecline: EventName<CustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>,
+    onDelegate: EventName<CustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>,
     onAccept: EventName<CustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>
 };
 
@@ -246,6 +247,7 @@ export const VerdocsDisclosureDialog: StencilReactComponent<VerdocsDisclosureDia
     react: React,
     events: {
         onDecline: 'decline',
+        onDelegate: 'delegate',
         onAccept: 'accept'
     } as VerdocsDisclosureDialogEvents,
     defineCustomElement: defineVerdocsDisclosureDialog

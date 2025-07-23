@@ -775,24 +775,34 @@ export class VerdocsSign {
 
     if (this.delegating) {
       return (
-        <verdocs-delegate-dialog
-          endpoint={this.endpoint}
-          envelope={this.envelope}
-          onExit={() => (this.delegating = false)}
-          onNext={(e: any) => {
-            delegateRecipient(this.endpoint, this.envelopeId, this.roleId, e.detail)
-              .then(r => {
-                VerdocsToast('Delegation request submitted.', {style: 'success'});
-                console.log('[SIGN] Delegated successfully', r);
-                this.delegated = true;
-                this.delegating = false;
-              })
-              .catch(e => {
-                console.log('[SIGN] Error delegating request', e);
-                VerdocsToast('Unable to process delegation request. Please try again later.', {style: 'error'});
-              });
-          }}
-        />
+        <Host class="agreed">
+          <div class="document" style={{paddingTop: '15px'}}>
+            <img
+              src="https://public-assets.verdocs.com/loading-placeholder.png"
+              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              alt="Placeholder page"
+            />
+          </div>
+
+          <verdocs-delegate-dialog
+            endpoint={this.endpoint}
+            envelope={this.envelope}
+            onExit={() => (this.delegating = false)}
+            onNext={(e: any) => {
+              delegateRecipient(this.endpoint, this.envelopeId, this.roleId, e.detail)
+                .then(r => {
+                  VerdocsToast('Delegation request submitted.', {style: 'success'});
+                  console.log('[SIGN] Delegated successfully', r);
+                  this.delegated = true;
+                  this.delegating = false;
+                })
+                .catch(e => {
+                  console.log('[SIGN] Error delegating request', e);
+                  VerdocsToast('Unable to process delegation request. Please try again later.', {style: 'error'});
+                });
+            }}
+          />
+        </Host>
       );
     }
 
@@ -819,13 +829,6 @@ export class VerdocsSign {
     if (!this.agreed) {
       return (
         <Host class="agreed">
-          <div id="verdocs-sign-header">
-            <div class="inner">
-              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-              <div class="title">{this.envelope.name}</div>
-            </div>
-          </div>
-
           <div class="document" style={{paddingTop: '15px'}}>
             <img
               src="https://public-assets.verdocs.com/loading-placeholder.png"
@@ -834,7 +837,12 @@ export class VerdocsSign {
             />
           </div>
 
-          <verdocs-disclosure-dialog disclosures={this.disclosures} onDecline={() => (this.declining = true)} onAccept={() => this.handleClickAgree()} />
+          <verdocs-disclosure-dialog
+            disclosures={this.disclosures}
+            onDelegate={() => (this.delegating = true)}
+            onDecline={() => (this.declining = true)}
+            onAccept={() => this.handleClickAgree()}
+          />
         </Host>
       );
     }
@@ -1070,14 +1078,13 @@ export class VerdocsSign {
           />
         )}
 
-        {this.submitting ||
-          (this.showSpinner && (
-            <verdocs-portal>
-              <div class="spinner-overlay">
-                <verdocs-spinner />
-              </div>
-            </verdocs-portal>
-          ))}
+        {(this.submitting || this.showSpinner) && (
+          <verdocs-portal>
+            <div class="spinner-overlay">
+              <verdocs-spinner />
+            </div>
+          </verdocs-portal>
+        )}
       </Host>
     );
   }

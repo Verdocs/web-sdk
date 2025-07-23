@@ -296,7 +296,7 @@ export namespace Components {
     interface VerdocsDialog {
     }
     /**
-     * Display e-signing disclosures with options to decline or proceed.
+     * Display e-signing disclosures with options to delegate, decline or proceed.
      */
     interface VerdocsDisclosureDialog {
         /**
@@ -2508,10 +2508,11 @@ declare global {
     };
     interface HTMLVerdocsDisclosureDialogElementEventMap {
         "decline": {first_name: string; last_name: string; email: string; phone: string; message: string};
+        "delegate": {first_name: string; last_name: string; email: string; phone: string; message: string};
         "accept": {first_name: string; last_name: string; email: string; phone: string; message: string};
     }
     /**
-     * Display e-signing disclosures with options to decline or proceed.
+     * Display e-signing disclosures with options to delegate, decline or proceed.
      */
     interface HTMLVerdocsDisclosureDialogElement extends Components.VerdocsDisclosureDialog, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsDisclosureDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsDisclosureDialogElement, ev: VerdocsDisclosureDialogCustomEvent<HTMLVerdocsDisclosureDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4352,7 +4353,7 @@ declare namespace LocalJSX {
         "onExit"?: (event: VerdocsDialogCustomEvent<any>) => void;
     }
     /**
-     * Display e-signing disclosures with options to decline or proceed.
+     * Display e-signing disclosures with options to delegate, decline or proceed.
      */
     interface VerdocsDisclosureDialog {
         /**
@@ -4360,13 +4361,17 @@ declare namespace LocalJSX {
          */
         "disclosures"?: string | null;
         /**
-          * Event fired when the process has completed successfully.
+          * Event fired when the user chooses to proceed.
          */
         "onAccept"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
         /**
-          * Event fired when the process has completed successfully.
+          * Event fired when the user chooses to decline.
          */
         "onDecline"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
+        /**
+          * Event fired when the user chooses to delegate signing.
+         */
+        "onDelegate"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
     }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
@@ -6807,7 +6812,7 @@ declare module "@stencil/core" {
              */
             "verdocs-dialog": LocalJSX.VerdocsDialog & JSXBase.HTMLAttributes<HTMLVerdocsDialogElement>;
             /**
-             * Display e-signing disclosures with options to decline or proceed.
+             * Display e-signing disclosures with options to delegate, decline or proceed.
              */
             "verdocs-disclosure-dialog": LocalJSX.VerdocsDisclosureDialog & JSXBase.HTMLAttributes<HTMLVerdocsDisclosureDialogElement>;
             /**
