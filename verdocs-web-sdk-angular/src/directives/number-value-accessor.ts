@@ -7,7 +7,7 @@ import { ValueAccessor } from './value-accessor';
   /* tslint:disable-next-line:directive-selector */
   selector: 'pdf-viewer',
   host: {
-    '(pdfClicked)': 'handleChangeEvent($event.target.value)'
+    '(pdfClicked)': 'handleChangeEvent($event.target?.["value"])'
   },
   providers: [
     {

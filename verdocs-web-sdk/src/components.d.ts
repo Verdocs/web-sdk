@@ -61,18 +61,22 @@ export namespace Components {
     interface VerdocsAuth {
         /**
           * The display mode to start in.
+          * @default 'login'
          */
         "displayMode": 'login' | 'forgot' | 'reset' | 'signup' | 'verify';
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * By default, a Verdocs logo will be displayed above the login/signup forms. This may be used to override its source. (Alternatively, you may simply hide it via CSS overrides.) Logos should be in SVG format for best results.
+          * @default 'https://app.verdocs.com/assets/blue-logo.svg'
          */
         "logo": string;
         /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
+          * @default true
          */
         "visible": boolean;
     }
@@ -90,14 +94,17 @@ export namespace Components {
     interface VerdocsBuild {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The step in the creation process to display.
+          * @default 'preview'
          */
         "step": TVerdocsBuildStep;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+          * @default null
          */
         "templateId": string | null;
     }
@@ -110,10 +117,12 @@ export namespace Components {
     interface VerdocsButton {
         /**
           * Whether the button should be disabled.
+          * @default false
          */
         "disabled": boolean;
         /**
           * If desired, a suffix icon for the button.
+          * @default null
          */
         "endIcon": string | null;
         /**
@@ -122,18 +131,22 @@ export namespace Components {
         "label": string;
         /**
           * The size (height) of the button.
+          * @default 'normal'
          */
         "size": 'xsmall' | 'small' | 'normal' | 'medium' | 'large';
         /**
           * If desired, a prefix icon for the button.
+          * @default null
          */
         "startIcon": string | null;
         /**
           * The type of the button.
+          * @default 'button'
          */
         "type": 'button' | 'submit' | 'reset';
         /**
           * The display variant of the button.
+          * @default 'standard'
          */
         "variant": 'standard' | 'text' | 'outline';
     }
@@ -156,6 +169,7 @@ export namespace Components {
         "hidePanel": () => Promise<void>;
         /**
           * SVG icon to display
+          * @default ''
          */
         "icon": string;
         "showPanel": () => Promise<void>;
@@ -179,30 +193,37 @@ export namespace Components {
     interface VerdocsCheckbox {
         /**
           * Whether the radio button is currently selected.
+          * @default false
          */
         "checked": boolean;
         /**
           * If set, the button will still be displayed but not selectable.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * Label to display. Leave blank for no label. The label will be displayed to the right of the checkbox, but may be repositioned with CSS.
+          * @default ''
          */
         "label": string;
         /**
           * HTML form field name for the input.
+          * @default ''
          */
         "name": string;
         /**
           * Size of checkbox to render.
+          * @default 'normal'
          */
         "size": 'normal' | 'small';
         /**
           * Style of checkbox to render. Use 'dark' when rendering on a dark background.
+          * @default 'light'
          */
         "theme": 'light' | 'dark';
         /**
           * Value to track with the input. Value is not used internally by this component but is sometimes useful to set because it can be retrieved in event handlers via e.target.value. This can be used to identify which checkbox was clicked in a checkbox group.
+          * @default ''
          */
         "value": string;
     }
@@ -212,6 +233,7 @@ export namespace Components {
     interface VerdocsComponentError {
         /**
           * The message to display.
+          * @default ''
          */
         "message": string;
     }
@@ -233,14 +255,17 @@ export namespace Components {
     interface VerdocsContactPicker {
         /**
           * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+          * @default []
          */
         "contactSuggestions": TPickerContact[];
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The role that this contact will be assigned to.
+          * @default null
          */
         "templateRole": Partial<IRecipient> | null;
     }
@@ -253,27 +278,33 @@ export namespace Components {
     interface VerdocsDateInput {
         /**
           * Should the field be disabled?
+          * @default false
          */
         "disabled": boolean;
         "focusField": () => Promise<void>;
         /**
           * If supplied, a help icon will be displayed to provide the user more information.
+          * @default ''
          */
         "helpText": string;
         /**
           * The label for the field.
+          * @default ''
          */
         "label": string;
         /**
           * The placeholder for the field.
+          * @default ''
          */
         "placeholder": string;
         /**
           * Should the field be required?
+          * @default false
          */
         "required": boolean;
         /**
           * The initial value for the input field.
+          * @default ''
          */
         "value": string;
     }
@@ -283,10 +314,12 @@ export namespace Components {
     interface VerdocsDelegateDialog {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The envelope to process.
+          * @default null
          */
         "envelope": IEnvelope | null;
     }
@@ -301,6 +334,7 @@ export namespace Components {
     interface VerdocsDisclosureDialog {
         /**
           * The disclosures to display.
+          * @default null
          */
         "disclosures": string | null;
     }
@@ -322,6 +356,7 @@ export namespace Components {
     interface VerdocsDropdown {
         /**
           * The menu options to display.
+          * @default []
          */
         "options": IMenuOption[];
     }
@@ -333,31 +368,41 @@ export namespace Components {
     interface VerdocsEnvelopeDocumentPage {
         /**
           * The ID of the document to display.
+          * @default ''
          */
         "documentId": string;
         /**
           * The endpoint to load from.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The ID of the envelope the document is for.
+          * @default ''
          */
         "envelopeId": string;
         /**
           * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-envelope-document-page-ker2fr1p9">       <div id="verdocs-envelope-document-page-ker2fr1p9-page"></div>       <div id="verdocs-envelope-document-page-ker2fr1p9-fields"></div>     </div> ```
+          * @default [{name: 'page', type: 'canvas'}]
          */
         "layers": IPageLayer[];
         /**
           * The page number being rendered. (Reminder: page numbers are 1-based.)
+          * @default 1
          */
         "pageNumber": number;
+        /**
+          * @default 'original'
+         */
         "type": 'original' | 'filled' | 'certificate';
         /**
           * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+          * @default 792
          */
         "virtualHeight": number;
         /**
           * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+          * @default 612
          */
         "virtualWidth": number;
     }
@@ -368,14 +413,17 @@ export namespace Components {
     interface VerdocsEnvelopeRecipientLink {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The envelope ID to edit.
+          * @default ''
          */
         "envelopeId": string;
         /**
           * The role to load.
+          * @default ''
          */
         "roleName": string;
     }
@@ -385,22 +433,27 @@ export namespace Components {
     interface VerdocsEnvelopeRecipientSummary {
         /**
           * Enable or disable the Done button.
+          * @default true
          */
         "canDone": boolean;
         /**
           * Enable or disable the Send Another button.
+          * @default true
          */
         "canSendAnother": boolean;
         /**
           * Enable or disable the View button.
+          * @default true
          */
         "canView": boolean;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The envelope ID to edit.
+          * @default ''
          */
         "envelopeId": string;
     }
@@ -411,10 +464,12 @@ export namespace Components {
     interface VerdocsEnvelopeSidebar {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+          * @default ''
          */
         "envelopeId": string;
     }
@@ -425,14 +480,17 @@ export namespace Components {
     interface VerdocsEnvelopeUpdateRecipient {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The envelope ID to edit.
+          * @default ''
          */
         "envelopeId": string;
         /**
           * The role to load.
+          * @default ''
          */
         "roleName": string;
     }
@@ -442,34 +500,42 @@ export namespace Components {
     interface VerdocsEnvelopesList {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * If set, filter envelopes by the specified string.
+          * @default ''
          */
         "match": string;
         /**
           * The number of rows to display per page.
+          * @default 10
          */
         "rowsPerPage": number;
         /**
           * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
+          * @default 0
          */
         "selectedPage": number;
         /**
           * Whether or not pagination should be enabled.
+          * @default true
          */
         "showPagination": boolean;
         /**
           * The sort field to use
+          * @default 'created_at'
          */
         "sort": 'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status';
         /**
           * The status value to filter by
+          * @default 'all'
          */
         "status": TEnvelopeStatus | 'all';
         /**
           * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+          * @default undefined
          */
         "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
     }
@@ -479,49 +545,60 @@ export namespace Components {
     interface VerdocsFieldAttachment {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -531,49 +608,60 @@ export namespace Components {
     interface VerdocsFieldCheckbox {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -583,14 +671,17 @@ export namespace Components {
     interface VerdocsFieldDate {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
@@ -599,33 +690,40 @@ export namespace Components {
         "field"?: ITemplateField;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -635,49 +733,60 @@ export namespace Components {
     interface VerdocsFieldDropdown {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -692,53 +801,65 @@ export namespace Components {
     interface VerdocsFieldInitial {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * The document or template field to display.
+          * @default ''
          */
         "initials": string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -753,23 +874,28 @@ export namespace Components {
         "currentSignatureId": string;
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         "fieldId": string;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "fields": any[];
@@ -777,11 +903,13 @@ export namespace Components {
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         "pageNum": number;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "pdfPages": any[];
@@ -789,25 +917,33 @@ export namespace Components {
         "roleName": string;
         /**
           * If set, the field will be colored using this index value to select the background color.
+          * @default 0
          */
         "roleindex"?: number;
         "selectedRoleName": string;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * @default false
+         */
         "signed": boolean;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -817,53 +953,65 @@ export namespace Components {
     interface VerdocsFieldRadio {
         /**
           * If set, overrides the field's settings object. Primarily used in Storybook mode.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * If set, overrides the field's required object. Primarily used in Storybook mode.
+          * @default false
          */
         "required"?: boolean;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -878,53 +1026,65 @@ export namespace Components {
     interface VerdocsFieldSignature {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * If set, the signature creation dialog will be initialized with this text.
+          * @default ''
          */
         "name"?: string;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -935,53 +1095,65 @@ export namespace Components {
     interface VerdocsFieldTextarea {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -991,53 +1163,65 @@ export namespace Components {
     interface VerdocsFieldTextbox {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "multiline"?: boolean;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -1048,49 +1232,60 @@ export namespace Components {
     interface VerdocsFieldTimestamp {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field": IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname": string;
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source": 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid": string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -1104,6 +1299,7 @@ export namespace Components {
     interface VerdocsFileChooser {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
     }
@@ -1116,10 +1312,12 @@ export namespace Components {
     interface VerdocsHelpIcon {
         /**
           * Optional icon to display. If not supplied, a standard help icon will be shown.
+          * @default helpIcon
          */
         "icon": string;
         /**
           * Help text to display on hover/focus
+          * @default ''
          */
         "text": string;
     }
@@ -1130,6 +1328,7 @@ export namespace Components {
     interface VerdocsInitialDialog {
         /**
           * Initial signature text
+          * @default ''
          */
         "initials": string;
     }
@@ -1139,38 +1338,47 @@ export namespace Components {
     interface VerdocsKbaDialog {
         /**
           * For choice challenges, a set of choices to choose from. 6 choices is recommended to fit most screen sizes.
+          * @default ['553 Arbor Dr', '18 Lacey Ln', '23A Ball Ct', '2375 Cavallo Blvd', '23-1 RR-7', '151 Boulder Rd']
          */
         "choices": string[];
         /**
           * If set, a help/instructions box will be displayed with this text
+          * @default 'Please select the address below that you have most recently lived at.'
          */
         "helptext": string;
         /**
           * If set, a help/instructions box will be displayed with this title
+          * @default 'Previous Addresses'
          */
         "helptitle": string;
         /**
           * For text input challenges, the label to display next to the input field.
+          * @default 'PIN'
          */
         "label": string;
         /**
           * The type of dialog to display. Three modes are supported.
+          * @default 'choice'
          */
         "mode": 'text' | 'choice' | 'identity';
         /**
           * For text input challenges, the placeholder to display inside the input field.
+          * @default 'Enter your PIN...'
          */
         "placeholder": string;
         /**
           * For identity confirmation, the current recipient details.
+          * @default null
          */
         "recipient": IRecipient | null;
         /**
           * Which step this confirmation is for, in a multi-step process. Ignored if `steps` is < 2.
+          * @default 1
          */
         "step": number;
         /**
           * How many steps exist in a multi-step process. Set to 1 for a single-step process (hides the indicator).
+          * @default 3
          */
         "steps": number;
     }
@@ -1195,14 +1403,17 @@ export namespace Components {
     interface VerdocsMenuPanel {
         /**
           * Whether to show an overlay over the rest of the page.
+          * @default true
          */
         "overlay": boolean;
         /**
           * Which side of the screen to place the panel.
+          * @default 'right'
          */
         "side": 'left' | 'right';
         /**
           * The width of the panel.
+          * @default 300
          */
         "width": number;
     }
@@ -1217,6 +1428,7 @@ export namespace Components {
     interface VerdocsMultiselect {
         /**
           * The label for the field.
+          * @default ''
          */
         "label": string;
         /**
@@ -1225,10 +1437,12 @@ export namespace Components {
         "options": IMultiSelectOption[];
         /**
           * The placeholder for the input element when no options are selected.
+          * @default 'Select...'
          */
         "placeholder": string;
         /**
           * The currently selected options.
+          * @default []
          */
         "selectedOptions": string[];
     }
@@ -1240,18 +1454,22 @@ export namespace Components {
     interface VerdocsOkDialog {
         /**
           * Override the "OK" button's label
+          * @default 'OK'
          */
         "buttonLabel": string;
         /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
+          * @default ''
          */
         "heading": string;
         /**
           * The message content to display.
+          * @default ''
          */
         "message": string;
         /**
           * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background overlay to dismiss it.
+          * @default false
          */
         "showCancel": boolean;
     }
@@ -1273,14 +1491,17 @@ export namespace Components {
     interface VerdocsOtpDialog {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The type of dialog to display. Three modes are supported.
+          * @default 'email'
          */
         "method": 'email' | 'sms';
         /**
           * For identity confirmation, the current recipient details.
+          * @default null
          */
         "recipient": IRecipient | null;
     }
@@ -1298,14 +1519,17 @@ export namespace Components {
     interface VerdocsPagination {
         /**
           * The total number of items.
+          * @default 1
          */
         "itemCount": number;
         /**
           * The number of displayed per page.
+          * @default 10
          */
         "perPage": number;
         /**
           * The currently selected page.
+          * @default 0
          */
         "selectedPage": number;
     }
@@ -1334,6 +1558,7 @@ export namespace Components {
         "anchor": string;
         /**
           * Vertical offset from the parent.
+          * @default 0
          */
         "voffset": number;
     }
@@ -1351,10 +1576,12 @@ export namespace Components {
     interface VerdocsPreview {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The ID of the template to create the document from.
+          * @default null
          */
         "templateId": string | null;
     }
@@ -1367,14 +1594,17 @@ export namespace Components {
     interface VerdocsProgressBar {
         /**
           * Optional label to display above the bar
+          * @default ''
          */
         "label": string;
         /**
           * The current progress value (0-100)
+          * @default 0
          */
         "percent": number;
         /**
           * If true, the progress percentage will be displayed above the bar.
+          * @default false
          */
         "showPercent": boolean;
     }
@@ -1385,12 +1615,22 @@ export namespace Components {
      * ```
      */
     interface VerdocsQuickFilter {
+        /**
+          * @default 'Filter'
+         */
         "label": string;
         /**
           * The menu options to display.
+          * @default []
          */
         "options": IFilterOption[];
+        /**
+          * @default 'Select...'
+         */
         "placeholder": string;
+        /**
+          * @default ''
+         */
         "value": string;
     }
     /**
@@ -1401,6 +1641,7 @@ export namespace Components {
     interface VerdocsQuickFunctions {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
     }
@@ -1423,18 +1664,22 @@ export namespace Components {
     interface VerdocsRadioButton {
         /**
           * Whether the radio button is currently selected.
+          * @default false
          */
         "checked": boolean;
         /**
           * If set, the button will still be displayed but not selectable.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * HTML form field name for the input.
+          * @default ''
          */
         "name": string;
         /**
           * Value to track with the input.
+          * @default ''
          */
         "value": string;
     }
@@ -1446,23 +1691,28 @@ export namespace Components {
     interface VerdocsSearchBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         "focusField": () => Promise<void>;
         /**
           * If set, the input field will attempt to "grab" focus after being rendered.
+          * @default false
          */
         "grabsFocus": boolean;
         /**
           * The placeholder to display in the input field.
+          * @default 'Search envelopes, templates, organizations...'
          */
         "placeholder": string;
         /**
           * The text search string entered by the user.
+          * @default ''
          */
         "query": string;
         /**
           * If set to a value other than 'all', a removeable filter indicator will be displayed.
+          * @default 'all'
          */
         "type": TContentType;
     }
@@ -1479,10 +1729,12 @@ export namespace Components {
     interface VerdocsSelectInput {
         /**
           * Should the field be disabled?
+          * @default false
          */
         "disabled": boolean;
         /**
           * The label for the field.
+          * @default ''
          */
         "label": string;
         /**
@@ -1491,6 +1743,7 @@ export namespace Components {
         "options": {label: string; value: string}[];
         /**
           * The initial value for the input field.
+          * @default ''
          */
         "value": string;
     }
@@ -1513,15 +1766,18 @@ export namespace Components {
     interface VerdocsSend {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The environment the control is being called from, e.g. 'web'. This has an impact on how certain operations such as email communications are handled to ensure users receive the correct URLs for their invitations. Setting this to unknown values may produce unexpected/incorrect behaviors. If environment is not known, do this set this property.
+          * @default ''
          */
         "environment": string;
         "reset": () => Promise<void>;
         /**
           * The ID of the template to create the document from.
+          * @default null
          */
         "templateId": string | null;
     }
@@ -1552,22 +1808,27 @@ export namespace Components {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The ID of the envelope to sign.
+          * @default null
          */
         "envelopeId": string | null;
         /**
           * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the header will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").  The movement of the header to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the header's visibility must be externally controlled, use CSS display options to hide/show it instead.
+          * @default null
          */
         "headerTargetId": string | null;
         /**
           * The invite code for the signer.
+          * @default null
          */
         "inviteCode": string | null;
         /**
           * The ID of the role that will be signing e.g. 'Recipient 1'
+          * @default null
          */
         "roleId": string | null;
     }
@@ -1578,6 +1839,7 @@ export namespace Components {
     interface VerdocsSignatureDialog {
         /**
           * Initial signature text
+          * @default ''
          */
         "name": string;
     }
@@ -1588,7 +1850,13 @@ export namespace Components {
      * ```
      */
     interface VerdocsSpinner {
+        /**
+          * @default 'light'
+         */
         "mode": 'light' | 'dark';
+        /**
+          * @default 32
+         */
         "size": number;
     }
     /**
@@ -1605,6 +1873,7 @@ export namespace Components {
         "envelope"?: IEnvelope;
         /**
           * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
+          * @default 'normal'
          */
         "size": 'small' | 'normal';
         /**
@@ -1613,6 +1882,7 @@ export namespace Components {
         "status"?: TEnvelopeStatus | TRecipientStatus | 'accepted';
         /**
           * The theme to use for diplay.
+          * @default 'light'
          */
         "theme"?: 'dark' | 'light';
     }
@@ -1623,13 +1893,18 @@ export namespace Components {
      * ```
      */
     interface VerdocsSwitch {
+        /**
+          * @default false
+         */
         "checked": boolean;
         /**
           * Should the field be disabled?
+          * @default false
          */
         "disabled": boolean;
         /**
           * Select purple or green treatments.
+          * @default 'primary'
          */
         "theme": 'primary' | 'secondary';
     }
@@ -1643,10 +1918,12 @@ export namespace Components {
     interface VerdocsTable {
         /**
           * The columns to display
+          * @default []
          */
         "columns": IColumn[];
         /**
           * The rows to display
+          * @default []
          */
         "data": any[];
     }
@@ -1660,10 +1937,12 @@ export namespace Components {
     interface VerdocsTabs {
         /**
           * The index of the tab to show selected.
+          * @default 0
          */
         "selectedTab": number;
         /**
           * The tabs to display
+          * @default []
          */
         "tabs": ITab[];
     }
@@ -1674,10 +1953,12 @@ export namespace Components {
     interface VerdocsTemplateAttachments {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId": string;
     }
@@ -1687,14 +1968,17 @@ export namespace Components {
     interface VerdocsTemplateBuildTabs {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The step in the creation process to display.
+          * @default 'preview'
          */
         "step": TVerdocsBuildStep1;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+          * @default null
          */
         "templateId": string | null;
     }
@@ -1714,8 +1998,12 @@ export namespace Components {
     interface VerdocsTemplateCreate {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
+        /**
+          * @default 20.5 * 1024 * 1024
+         */
         "maxSize": number;
     }
     /**
@@ -1726,42 +2014,52 @@ export namespace Components {
     interface VerdocsTemplateDocumentPage {
         /**
           * Whether the fields should be disabled (Builder)
+          * @default false
          */
         "disabled": boolean;
         /**
           * The ID of the document to display.
+          * @default ''
          */
         "documentId": string;
         /**
           * Whether the field are interactable (done/submitted disables this)
+          * @default false
          */
         "done": boolean;
         /**
           * Whether the fields should be editable (Builder)
+          * @default false
          */
         "editable": boolean;
         /**
           * The endpoint to load from.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-document-page-ker2fr1p9">       <div id="verdocs-document-page-ker2fr1p9-page"></div>       <div id="verdocs-document-page-ker2fr1p9-fields"></div>     </div> ```
+          * @default [{name: 'page', type: 'canvas'}]
          */
         "layers": IPageLayer[];
         /**
           * The page number being rendered. (Reminder: page numbers are 1-based.)
+          * @default 1
          */
         "pageNumber": number;
         /**
           * The ID of the template the document is for.
+          * @default ''
          */
         "templateId": string;
         /**
           * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+          * @default 792
          */
         "virtualHeight": number;
         /**
           * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+          * @default 612
          */
         "virtualWidth": number;
     }
@@ -1771,18 +2069,22 @@ export namespace Components {
     interface VerdocsTemplateFieldProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The field to configure.
+          * @default ''
          */
         "fieldName": string;
         /**
           * If specified, the properties card will have a "back" side with the help text as its content.
+          * @default ''
          */
         "helpText"?: string;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId": string;
     }
@@ -1793,14 +2095,17 @@ export namespace Components {
     interface VerdocsTemplateFields {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The ID of the template to create the document from.
+          * @default null
          */
         "templateId": string | null;
         /**
           * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the toolbar will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects.  The movement of the toolbar to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the toolbar's visibility must be externally controlled, use CSS display options to hide/show it instead.
+          * @default null
          */
         "toolbarTargetId": string | null;
     }
@@ -1810,14 +2115,17 @@ export namespace Components {
     interface VerdocsTemplateRoleProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The role name to edit.
+          * @default ''
          */
         "roleName": string;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId": string;
     }
@@ -1827,10 +2135,12 @@ export namespace Components {
     interface VerdocsTemplateRoles {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId": string;
     }
@@ -1840,10 +2150,12 @@ export namespace Components {
     interface VerdocsTemplateSettings {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId": string;
     }
@@ -1853,6 +2165,7 @@ export namespace Components {
     interface VerdocsTemplateStar {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
@@ -1882,38 +2195,47 @@ export namespace Components {
     interface VerdocsTemplatesList {
         /**
           * Override the If set, filter templates by the specified name.
+          * @default ['send', 'submitted', 'link', 'edit', 'delete']
          */
         "allowedActions": TAllowedTemplateAction[];
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
         /**
           * If set, filter templates by the specified name.
+          * @default ''
          */
         "name": string;
         /**
           * The number of rows to display per page.
+          * @default 10
          */
         "rowsPerPage": number;
         /**
           * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
+          * @default 0
          */
         "selectedPage": number;
         /**
           * Whether or not pagination should be enabled.
+          * @default true
          */
         "showPagination": boolean;
         /**
           * The sort order to display.
+          * @default 'updated_at'
          */
         "sort": string;
         /**
           * The starred settings to filter by.
+          * @default 'all'
          */
         "starred": 'all' | 'starred' | 'unstarred';
         /**
           * The sharing settings to filter by.
+          * @default 'private_shared'
          */
         "visibility"?: 'private_shared' | 'private' | 'shared' | 'public';
     }
@@ -1928,42 +2250,52 @@ export namespace Components {
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
+          * @default ''
          */
         "autocomplete": string;
         /**
           * If set, a clear button will be displayed.
+          * @default false
          */
         "clearable": boolean;
         /**
           * If set, a copy-to-clipboard button will be displayed. NOTE: A field may not be both clearable and copyable. If both properties are set to true, copyable will be ignored.
+          * @default false
          */
         "copyable": boolean;
         /**
           * Should the field be disabled?
+          * @default false
          */
         "disabled": boolean;
         /**
           * If supplied, a help icon will be displayed to provide the user more information.
+          * @default ''
          */
         "helpText": string;
         /**
           * The label for the field.
+          * @default ''
          */
         "label": string;
         /**
           * The placeholder for the field.
+          * @default ''
          */
         "placeholder": string;
         /**
           * Should the field be required?
+          * @default false
          */
         "required": boolean;
         /**
           * The type of field to render. Only text-type fields are allowed here for the current styling. Additional types (e.g. a date picker) will be supported by other controls in the future.
+          * @default 'text'
          */
         "type": 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url';
         /**
           * The initial value for the input field.
+          * @default ''
          */
         "value": string;
     }
@@ -1990,17 +2322,23 @@ export namespace Components {
      * ```
      */
     interface VerdocsToggleButton {
+        /**
+          * @default false
+         */
         "active": boolean;
         /**
           * If set, should be an SVG object. This will be rendered as the button's visible element. If icon is supplied, label is ignored.
+          * @default null
          */
         "icon"?: string | null;
         /**
           * If set, should be an SVG object. This will be rendered as the button's visible element. If icon is supplied, label is ignored.
+          * @default null
          */
         "label"?: string | null;
         /**
           * How large the button should be. Small buttons are intended for dialog boxes and other smaller scale UI regions.
+          * @default 'normal'
          */
         "size"?: 'small' | 'normal';
     }
@@ -2013,14 +2351,17 @@ export namespace Components {
     interface VerdocsToolbarIcon {
         /**
           * SVG icon to display
+          * @default ''
          */
         "icon": string;
         /**
           * Override the Popper "placement" setting
+          * @default 'bottom'
          */
         "placement": Placement;
         /**
           * Help text to display on hover/focus
+          * @default ''
          */
         "text": string;
     }
@@ -2032,6 +2373,9 @@ export namespace Components {
      */
     interface VerdocsUploadDialog {
         "existingFile": any;
+        /**
+          * @default 20 * 1024 * 1024
+         */
         "maxSize": number;
     }
     /**
@@ -2047,14 +2391,17 @@ export namespace Components {
     interface VerdocsView {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default null
          */
         "endpoint": VerdocsEndpoint | null;
         /**
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+          * @default ''
          */
         "envelopeId": string;
         /**
           * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the header will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").  The movement of the header to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the header's visibility must be externally controlled, use CSS display options to hide/show it instead.
+          * @default null
          */
         "headerTargetId": string | null;
     }
@@ -4062,14 +4409,17 @@ declare namespace LocalJSX {
     interface VerdocsAuth {
         /**
           * The display mode to start in.
+          * @default 'login'
          */
         "displayMode"?: 'login' | 'forgot' | 'reset' | 'signup' | 'verify';
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * By default, a Verdocs logo will be displayed above the login/signup forms. This may be used to override its source. (Alternatively, you may simply hide it via CSS overrides.) Logos should be in SVG format for best results.
+          * @default 'https://app.verdocs.com/assets/blue-logo.svg'
          */
         "logo"?: string;
         /**
@@ -4082,6 +4432,7 @@ declare namespace LocalJSX {
         "onSdkError"?: (event: VerdocsAuthCustomEvent<SDKError>) => void;
         /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
+          * @default true
          */
         "visible"?: boolean;
     }
@@ -4099,6 +4450,7 @@ declare namespace LocalJSX {
     interface VerdocsBuild {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -4131,10 +4483,12 @@ declare namespace LocalJSX {
         "onTemplateUpdated"?: (event: VerdocsBuildCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The step in the creation process to display.
+          * @default 'preview'
          */
         "step"?: TVerdocsBuildStep;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+          * @default null
          */
         "templateId"?: string | null;
     }
@@ -4147,10 +4501,12 @@ declare namespace LocalJSX {
     interface VerdocsButton {
         /**
           * Whether the button should be disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If desired, a suffix icon for the button.
+          * @default null
          */
         "endIcon"?: string | null;
         /**
@@ -4159,18 +4515,22 @@ declare namespace LocalJSX {
         "label": string;
         /**
           * The size (height) of the button.
+          * @default 'normal'
          */
         "size"?: 'xsmall' | 'small' | 'normal' | 'medium' | 'large';
         /**
           * If desired, a prefix icon for the button.
+          * @default null
          */
         "startIcon"?: string | null;
         /**
           * The type of the button.
+          * @default 'button'
          */
         "type"?: 'button' | 'submit' | 'reset';
         /**
           * The display variant of the button.
+          * @default 'standard'
          */
         "variant"?: 'standard' | 'text' | 'outline';
     }
@@ -4192,6 +4552,7 @@ declare namespace LocalJSX {
     interface VerdocsButtonPanel {
         /**
           * SVG icon to display
+          * @default ''
          */
         "icon"?: string;
     }
@@ -4213,30 +4574,37 @@ declare namespace LocalJSX {
     interface VerdocsCheckbox {
         /**
           * Whether the radio button is currently selected.
+          * @default false
          */
         "checked"?: boolean;
         /**
           * If set, the button will still be displayed but not selectable.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * Label to display. Leave blank for no label. The label will be displayed to the right of the checkbox, but may be repositioned with CSS.
+          * @default ''
          */
         "label"?: string;
         /**
           * HTML form field name for the input.
+          * @default ''
          */
         "name"?: string;
         /**
           * Size of checkbox to render.
+          * @default 'normal'
          */
         "size"?: 'normal' | 'small';
         /**
           * Style of checkbox to render. Use 'dark' when rendering on a dark background.
+          * @default 'light'
          */
         "theme"?: 'light' | 'dark';
         /**
           * Value to track with the input. Value is not used internally by this component but is sometimes useful to set because it can be retrieved in event handlers via e.target.value. This can be used to identify which checkbox was clicked in a checkbox group.
+          * @default ''
          */
         "value"?: string;
     }
@@ -4246,6 +4614,7 @@ declare namespace LocalJSX {
     interface VerdocsComponentError {
         /**
           * The message to display.
+          * @default ''
          */
         "message"?: string;
     }
@@ -4267,10 +4636,12 @@ declare namespace LocalJSX {
     interface VerdocsContactPicker {
         /**
           * If set, suggestions will be displayed in a drop-down list to the user. It is recommended that the number of suggestions be limited to the 5 best matching records.
+          * @default []
          */
         "contactSuggestions"?: TPickerContact[];
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -4287,6 +4658,7 @@ declare namespace LocalJSX {
         "onSearchContacts"?: (event: VerdocsContactPickerCustomEvent<IContactSearchEvent>) => void;
         /**
           * The role that this contact will be assigned to.
+          * @default null
          */
         "templateRole"?: Partial<IRecipient> | null;
     }
@@ -4299,26 +4671,32 @@ declare namespace LocalJSX {
     interface VerdocsDateInput {
         /**
           * Should the field be disabled?
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If supplied, a help icon will be displayed to provide the user more information.
+          * @default ''
          */
         "helpText"?: string;
         /**
           * The label for the field.
+          * @default ''
          */
         "label"?: string;
         /**
           * The placeholder for the field.
+          * @default ''
          */
         "placeholder"?: string;
         /**
           * Should the field be required?
+          * @default false
          */
         "required"?: boolean;
         /**
           * The initial value for the input field.
+          * @default ''
          */
         "value"?: string;
     }
@@ -4328,10 +4706,12 @@ declare namespace LocalJSX {
     interface VerdocsDelegateDialog {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The envelope to process.
+          * @default null
          */
         "envelope"?: IEnvelope | null;
         /**
@@ -4358,6 +4738,7 @@ declare namespace LocalJSX {
     interface VerdocsDisclosureDialog {
         /**
           * The disclosures to display.
+          * @default null
          */
         "disclosures"?: string | null;
         /**
@@ -4395,6 +4776,7 @@ declare namespace LocalJSX {
         "onOptionSelected"?: (event: VerdocsDropdownCustomEvent<IMenuOption>) => void;
         /**
           * The menu options to display.
+          * @default []
          */
         "options"?: IMenuOption[];
     }
@@ -4406,18 +4788,22 @@ declare namespace LocalJSX {
     interface VerdocsEnvelopeDocumentPage {
         /**
           * The ID of the document to display.
+          * @default ''
          */
         "documentId"?: string;
         /**
           * The endpoint to load from.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The ID of the envelope the document is for.
+          * @default ''
          */
         "envelopeId"?: string;
         /**
           * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-envelope-document-page-ker2fr1p9">       <div id="verdocs-envelope-document-page-ker2fr1p9-page"></div>       <div id="verdocs-envelope-document-page-ker2fr1p9-fields"></div>     </div> ```
+          * @default [{name: 'page', type: 'canvas'}]
          */
         "layers"?: IPageLayer[];
         /**
@@ -4426,15 +4812,21 @@ declare namespace LocalJSX {
         "onPageRendered"?: (event: VerdocsEnvelopeDocumentPageCustomEvent<IDocumentPageInfo>) => void;
         /**
           * The page number being rendered. (Reminder: page numbers are 1-based.)
+          * @default 1
          */
         "pageNumber"?: number;
+        /**
+          * @default 'original'
+         */
         "type"?: 'original' | 'filled' | 'certificate';
         /**
           * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+          * @default 792
          */
         "virtualHeight"?: number;
         /**
           * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+          * @default 612
          */
         "virtualWidth"?: number;
     }
@@ -4445,10 +4837,12 @@ declare namespace LocalJSX {
     interface VerdocsEnvelopeRecipientLink {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The envelope ID to edit.
+          * @default ''
          */
         "envelopeId"?: string;
         /**
@@ -4461,6 +4855,7 @@ declare namespace LocalJSX {
         "onSdkError"?: (event: VerdocsEnvelopeRecipientLinkCustomEvent<SDKError>) => void;
         /**
           * The role to load.
+          * @default ''
          */
         "roleName"?: string;
     }
@@ -4470,22 +4865,27 @@ declare namespace LocalJSX {
     interface VerdocsEnvelopeRecipientSummary {
         /**
           * Enable or disable the Done button.
+          * @default true
          */
         "canDone"?: boolean;
         /**
           * Enable or disable the Send Another button.
+          * @default true
          */
         "canSendAnother"?: boolean;
         /**
           * Enable or disable the View button.
+          * @default true
          */
         "canView"?: boolean;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The envelope ID to edit.
+          * @default ''
          */
         "envelopeId"?: string;
         /**
@@ -4512,10 +4912,12 @@ declare namespace LocalJSX {
     interface VerdocsEnvelopeSidebar {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+          * @default ''
          */
         "envelopeId"?: string;
         /**
@@ -4542,10 +4944,12 @@ declare namespace LocalJSX {
     interface VerdocsEnvelopeUpdateRecipient {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The envelope ID to edit.
+          * @default ''
          */
         "envelopeId"?: string;
         /**
@@ -4558,6 +4962,7 @@ declare namespace LocalJSX {
         "onSdkError"?: (event: VerdocsEnvelopeUpdateRecipientCustomEvent<SDKError>) => void;
         /**
           * The role to load.
+          * @default ''
          */
         "roleName"?: string;
     }
@@ -4567,10 +4972,12 @@ declare namespace LocalJSX {
     interface VerdocsEnvelopesList {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * If set, filter envelopes by the specified string.
+          * @default ''
          */
         "match"?: string;
         /**
@@ -4603,26 +5010,32 @@ declare namespace LocalJSX {
         "onViewEnvelope"?: (event: VerdocsEnvelopesListCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
         /**
           * The number of rows to display per page.
+          * @default 10
          */
         "rowsPerPage"?: number;
         /**
           * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
+          * @default 0
          */
         "selectedPage"?: number;
         /**
           * Whether or not pagination should be enabled.
+          * @default true
          */
         "showPagination"?: boolean;
         /**
           * The sort field to use
+          * @default 'created_at'
          */
         "sort"?: 'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status';
         /**
           * The status value to filter by
+          * @default 'all'
          */
         "status"?: TEnvelopeStatus | 'all';
         /**
           * The filtered view to display. "completed" will show envelopes that have been submitted. "action" will show envelopes where the user is a recipient and the envelope is not completed. "waiting" will show only envelopes where the user is the sender and the envelope is not completed.
+          * @default undefined
          */
         "view"?: 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
     }
@@ -4632,26 +5045,32 @@ declare namespace LocalJSX {
     interface VerdocsFieldAttachment {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
@@ -4668,22 +5087,27 @@ declare namespace LocalJSX {
         "onSettingsChanged"?: (event: VerdocsFieldAttachmentCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -4693,26 +5117,32 @@ declare namespace LocalJSX {
     interface VerdocsFieldCheckbox {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
@@ -4725,22 +5155,27 @@ declare namespace LocalJSX {
         "onSettingsChanged"?: (event: VerdocsFieldCheckboxCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -4750,14 +5185,17 @@ declare namespace LocalJSX {
     interface VerdocsFieldDate {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
@@ -4766,10 +5204,12 @@ declare namespace LocalJSX {
         "field"?: ITemplateField;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
@@ -4786,22 +5226,27 @@ declare namespace LocalJSX {
         "onSettingsPress"?: (event: VerdocsFieldDateCustomEvent<any>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -4811,26 +5256,32 @@ declare namespace LocalJSX {
     interface VerdocsFieldDropdown {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
@@ -4847,22 +5298,27 @@ declare namespace LocalJSX {
         "onSettingsChanged"?: (event: VerdocsFieldDropdownCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -4877,30 +5333,37 @@ declare namespace LocalJSX {
     interface VerdocsFieldInitial {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * The document or template field to display.
+          * @default ''
          */
         "initials"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
@@ -4929,22 +5392,27 @@ declare namespace LocalJSX {
         "onSettingsPress"?: (event: VerdocsFieldInitialCustomEvent<any>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -4959,28 +5427,34 @@ declare namespace LocalJSX {
         "currentSignatureId"?: string;
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         "fieldId"?: string;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         "fields"?: any[];
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
@@ -4994,6 +5468,7 @@ declare namespace LocalJSX {
         "pageNum"?: number;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         "pdfPages"?: any[];
@@ -5001,24 +5476,32 @@ declare namespace LocalJSX {
         "roleName"?: string;
         /**
           * If set, the field will be colored using this index value to select the background color.
+          * @default 0
          */
         "roleindex"?: number;
         "selectedRoleName"?: string;
+        /**
+          * @default false
+         */
         "signed"?: boolean;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -5028,26 +5511,32 @@ declare namespace LocalJSX {
     interface VerdocsFieldRadio {
         /**
           * If set, overrides the field's settings object. Primarily used in Storybook mode.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
@@ -5060,26 +5549,32 @@ declare namespace LocalJSX {
         "onSettingsChanged"?: (event: VerdocsFieldRadioCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * If set, overrides the field's required object. Primarily used in Storybook mode.
+          * @default false
          */
         "required"?: boolean;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -5094,30 +5589,37 @@ declare namespace LocalJSX {
     interface VerdocsFieldSignature {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * If set, the signature creation dialog will be initialized with this text.
+          * @default ''
          */
         "name"?: string;
         /**
@@ -5138,22 +5640,27 @@ declare namespace LocalJSX {
         "onSettingsPress"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -5164,30 +5671,37 @@ declare namespace LocalJSX {
     interface VerdocsFieldTextarea {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used. This component self-manages its resize (width) behavior when in edit-template mode, and uses this endpoint to save changes.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
@@ -5200,22 +5714,27 @@ declare namespace LocalJSX {
         "onSettingsChanged"?: (event: VerdocsFieldTextareaCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -5225,30 +5744,37 @@ declare namespace LocalJSX {
     interface VerdocsFieldTextbox {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "multiline"?: boolean;
         /**
@@ -5261,22 +5787,27 @@ declare namespace LocalJSX {
         "onSettingsChanged"?: (event: VerdocsFieldTextboxCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -5287,26 +5818,32 @@ declare namespace LocalJSX {
     interface VerdocsFieldTimestamp {
         /**
           * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If set, the field is considered "done" and is drawn in a display-final-value state.
+          * @default false
          */
         "done"?: boolean;
         /**
           * If set, a settings icon will be displayed on hover. The settings shown allow the field's recipient and other settings to be changed, so it should typically only be enabled in the Builder.
+          * @default false
          */
         "editable"?: boolean;
         /**
           * Override the field's settings. This is intended to be used during signing when fields are being mutated.
+          * @default null
          */
         "field"?: IEnvelopeField | null | undefined;
         /**
           * The name of the field to display.
+          * @default ''
          */
         "fieldname"?: string;
         /**
           * If set, the field may be dragged to a new location. This should only be enabled in the Builder, or for self-placed fields.
+          * @default false
          */
         "moveable"?: boolean;
         /**
@@ -5319,22 +5856,27 @@ declare namespace LocalJSX {
         "onSettingsChanged"?: (event: VerdocsFieldTimestampCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The page the field is on
+          * @default 1
          */
         "pagenumber"?: number;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
+          * @default 'template'
          */
         "source"?: 'template' | 'envelope';
         /**
           * The source template or envelope ID the field is found in.
+          * @default ''
          */
         "sourceid"?: string;
         /**
           * If set, the field will be be scaled horizontally by this factor.
+          * @default 1
          */
         "xscale"?: number;
         /**
           * If set, the field will be be scaled vertically by this factor.
+          * @default 1
          */
         "yscale"?: number;
     }
@@ -5348,6 +5890,7 @@ declare namespace LocalJSX {
     interface VerdocsFileChooser {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -5364,10 +5907,12 @@ declare namespace LocalJSX {
     interface VerdocsHelpIcon {
         /**
           * Optional icon to display. If not supplied, a standard help icon will be shown.
+          * @default helpIcon
          */
         "icon"?: string;
         /**
           * Help text to display on hover/focus
+          * @default ''
          */
         "text"?: string;
     }
@@ -5378,6 +5923,7 @@ declare namespace LocalJSX {
     interface VerdocsInitialDialog {
         /**
           * Initial signature text
+          * @default ''
          */
         "initials"?: string;
         /**
@@ -5395,22 +5941,27 @@ declare namespace LocalJSX {
     interface VerdocsKbaDialog {
         /**
           * For choice challenges, a set of choices to choose from. 6 choices is recommended to fit most screen sizes.
+          * @default ['553 Arbor Dr', '18 Lacey Ln', '23A Ball Ct', '2375 Cavallo Blvd', '23-1 RR-7', '151 Boulder Rd']
          */
         "choices"?: string[];
         /**
           * If set, a help/instructions box will be displayed with this text
+          * @default 'Please select the address below that you have most recently lived at.'
          */
         "helptext"?: string;
         /**
           * If set, a help/instructions box will be displayed with this title
+          * @default 'Previous Addresses'
          */
         "helptitle"?: string;
         /**
           * For text input challenges, the label to display next to the input field.
+          * @default 'PIN'
          */
         "label"?: string;
         /**
           * The type of dialog to display. Three modes are supported.
+          * @default 'choice'
          */
         "mode"?: 'text' | 'choice' | 'identity';
         /**
@@ -5427,18 +5978,22 @@ declare namespace LocalJSX {
         "onPinEntered"?: (event: VerdocsKbaDialogCustomEvent<string | IRecipient>) => void;
         /**
           * For text input challenges, the placeholder to display inside the input field.
+          * @default 'Enter your PIN...'
          */
         "placeholder"?: string;
         /**
           * For identity confirmation, the current recipient details.
+          * @default null
          */
         "recipient"?: IRecipient | null;
         /**
           * Which step this confirmation is for, in a multi-step process. Ignored if `steps` is < 2.
+          * @default 1
          */
         "step"?: number;
         /**
           * How many steps exist in a multi-step process. Set to 1 for a single-step process (hides the indicator).
+          * @default 3
          */
         "steps"?: number;
     }
@@ -5464,14 +6019,17 @@ declare namespace LocalJSX {
         "onClose"?: (event: VerdocsMenuPanelCustomEvent<void>) => void;
         /**
           * Whether to show an overlay over the rest of the page.
+          * @default true
          */
         "overlay"?: boolean;
         /**
           * Which side of the screen to place the panel.
+          * @default 'right'
          */
         "side"?: 'left' | 'right';
         /**
           * The width of the panel.
+          * @default 300
          */
         "width"?: number;
     }
@@ -5486,6 +6044,7 @@ declare namespace LocalJSX {
     interface VerdocsMultiselect {
         /**
           * The label for the field.
+          * @default ''
          */
         "label"?: string;
         "onSelectionChanged"?: (event: VerdocsMultiselectCustomEvent<{selectedOptions: string[]}>) => void;
@@ -5495,10 +6054,12 @@ declare namespace LocalJSX {
         "options"?: IMultiSelectOption[];
         /**
           * The placeholder for the input element when no options are selected.
+          * @default 'Select...'
          */
         "placeholder"?: string;
         /**
           * The currently selected options.
+          * @default []
          */
         "selectedOptions"?: string[];
     }
@@ -5510,18 +6071,21 @@ declare namespace LocalJSX {
     interface VerdocsOkDialog {
         /**
           * Override the "OK" button's label
+          * @default 'OK'
          */
         "buttonLabel"?: string;
         /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
+          * @default ''
          */
         "heading"?: string;
         /**
           * The message content to display.
+          * @default ''
          */
         "message"?: string;
         /**
-          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+          * Event fired when Cancel is pressed. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
         "onExit"?: (event: VerdocsOkDialogCustomEvent<any>) => void;
         /**
@@ -5530,6 +6094,7 @@ declare namespace LocalJSX {
         "onNext"?: (event: VerdocsOkDialogCustomEvent<any>) => void;
         /**
           * If set, a cancel button will also be displayed. Note that the dialog is always cancelable by clicking the background overlay to dismiss it.
+          * @default false
          */
         "showCancel"?: boolean;
     }
@@ -5551,10 +6116,12 @@ declare namespace LocalJSX {
     interface VerdocsOtpDialog {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The type of dialog to display. Three modes are supported.
+          * @default 'email'
          */
         "method"?: 'email' | 'sms';
         /**
@@ -5567,6 +6134,7 @@ declare namespace LocalJSX {
         "onNext"?: (event: VerdocsOtpDialogCustomEvent<{response: ISignerTokenResponse}>) => void;
         /**
           * For identity confirmation, the current recipient details.
+          * @default null
          */
         "recipient"?: IRecipient | null;
     }
@@ -5584,6 +6152,7 @@ declare namespace LocalJSX {
     interface VerdocsPagination {
         /**
           * The total number of items.
+          * @default 1
          */
         "itemCount"?: number;
         /**
@@ -5592,10 +6161,12 @@ declare namespace LocalJSX {
         "onSelectPage"?: (event: VerdocsPaginationCustomEvent<{selectedPage: number}>) => void;
         /**
           * The number of displayed per page.
+          * @default 10
          */
         "perPage"?: number;
         /**
           * The currently selected page.
+          * @default 0
          */
         "selectedPage"?: number;
     }
@@ -5625,6 +6196,7 @@ declare namespace LocalJSX {
         "onClickAway"?: (event: VerdocsPortalCustomEvent<void>) => void;
         /**
           * Vertical offset from the parent.
+          * @default 0
          */
         "voffset"?: number;
     }
@@ -5642,6 +6214,7 @@ declare namespace LocalJSX {
     interface VerdocsPreview {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -5650,6 +6223,7 @@ declare namespace LocalJSX {
         "onSdkError"?: (event: VerdocsPreviewCustomEvent<SDKError>) => void;
         /**
           * The ID of the template to create the document from.
+          * @default null
          */
         "templateId"?: string | null;
     }
@@ -5662,14 +6236,17 @@ declare namespace LocalJSX {
     interface VerdocsProgressBar {
         /**
           * Optional label to display above the bar
+          * @default ''
          */
         "label"?: string;
         /**
           * The current progress value (0-100)
+          * @default 0
          */
         "percent"?: number;
         /**
           * If true, the progress percentage will be displayed above the bar.
+          * @default false
          */
         "showPercent"?: boolean;
     }
@@ -5680,6 +6257,9 @@ declare namespace LocalJSX {
      * ```
      */
     interface VerdocsQuickFilter {
+        /**
+          * @default 'Filter'
+         */
         "label"?: string;
         /**
           * Event fired when a menu option is clicked. Web Component events need to be "composed" to cross the Shadow DOM and be received by parent frameworks.
@@ -5687,9 +6267,16 @@ declare namespace LocalJSX {
         "onOptionSelected"?: (event: VerdocsQuickFilterCustomEvent<IFilterOption>) => void;
         /**
           * The menu options to display.
+          * @default []
          */
         "options"?: IFilterOption[];
+        /**
+          * @default 'Select...'
+         */
         "placeholder"?: string;
+        /**
+          * @default ''
+         */
         "value"?: string;
     }
     /**
@@ -5700,6 +6287,7 @@ declare namespace LocalJSX {
     interface VerdocsQuickFunctions {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -5730,18 +6318,22 @@ declare namespace LocalJSX {
     interface VerdocsRadioButton {
         /**
           * Whether the radio button is currently selected.
+          * @default false
          */
         "checked"?: boolean;
         /**
           * If set, the button will still be displayed but not selectable.
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * HTML form field name for the input.
+          * @default ''
          */
         "name"?: string;
         /**
           * Value to track with the input.
+          * @default ''
          */
         "value"?: string;
     }
@@ -5753,10 +6345,12 @@ declare namespace LocalJSX {
     interface VerdocsSearchBox {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * If set, the input field will attempt to "grab" focus after being rendered.
+          * @default false
          */
         "grabsFocus"?: boolean;
         /**
@@ -5773,14 +6367,17 @@ declare namespace LocalJSX {
         "onTypeChanged"?: (event: VerdocsSearchBoxCustomEvent<TContentType>) => void;
         /**
           * The placeholder to display in the input field.
+          * @default 'Search envelopes, templates, organizations...'
          */
         "placeholder"?: string;
         /**
           * The text search string entered by the user.
+          * @default ''
          */
         "query"?: string;
         /**
           * If set to a value other than 'all', a removeable filter indicator will be displayed.
+          * @default 'all'
          */
         "type"?: TContentType;
     }
@@ -5797,10 +6394,12 @@ declare namespace LocalJSX {
     interface VerdocsSelectInput {
         /**
           * Should the field be disabled?
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * The label for the field.
+          * @default ''
          */
         "label"?: string;
         /**
@@ -5809,6 +6408,7 @@ declare namespace LocalJSX {
         "options"?: {label: string; value: string}[];
         /**
           * The initial value for the input field.
+          * @default ''
          */
         "value"?: string;
     }
@@ -5831,10 +6431,12 @@ declare namespace LocalJSX {
     interface VerdocsSend {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The environment the control is being called from, e.g. 'web'. This has an impact on how certain operations such as email communications are handled to ensure users receive the correct URLs for their invitations. Setting this to unknown values may produce unexpected/incorrect behaviors. If environment is not known, do this set this property.
+          * @default ''
          */
         "environment"?: string;
         /**
@@ -5859,6 +6461,7 @@ declare namespace LocalJSX {
         "onSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>) => void;
         /**
           * The ID of the template to create the document from.
+          * @default null
          */
         "templateId"?: string | null;
     }
@@ -5889,18 +6492,22 @@ declare namespace LocalJSX {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The ID of the envelope to sign.
+          * @default null
          */
         "envelopeId"?: string | null;
         /**
           * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the header will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").  The movement of the header to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the header's visibility must be externally controlled, use CSS display options to hide/show it instead.
+          * @default null
          */
         "headerTargetId"?: string | null;
         /**
           * The invite code for the signer.
+          * @default null
          */
         "inviteCode"?: string | null;
         /**
@@ -5917,6 +6524,7 @@ declare namespace LocalJSX {
         "onSdkError"?: (event: VerdocsSignCustomEvent<SDKError>) => void;
         /**
           * The ID of the role that will be signing e.g. 'Recipient 1'
+          * @default null
          */
         "roleId"?: string | null;
     }
@@ -5927,6 +6535,7 @@ declare namespace LocalJSX {
     interface VerdocsSignatureDialog {
         /**
           * Initial signature text
+          * @default ''
          */
         "name"?: string;
         /**
@@ -5945,7 +6554,13 @@ declare namespace LocalJSX {
      * ```
      */
     interface VerdocsSpinner {
+        /**
+          * @default 'light'
+         */
         "mode"?: 'light' | 'dark';
+        /**
+          * @default 32
+         */
         "size"?: number;
     }
     /**
@@ -5962,6 +6577,7 @@ declare namespace LocalJSX {
         "envelope"?: IEnvelope;
         /**
           * The size (height) of the indicator. The small variant is suitable for use in densely populated components such as table rows.
+          * @default 'normal'
          */
         "size"?: 'small' | 'normal';
         /**
@@ -5970,6 +6586,7 @@ declare namespace LocalJSX {
         "status"?: TEnvelopeStatus | TRecipientStatus | 'accepted';
         /**
           * The theme to use for diplay.
+          * @default 'light'
          */
         "theme"?: 'dark' | 'light';
     }
@@ -5980,14 +6597,19 @@ declare namespace LocalJSX {
      * ```
      */
     interface VerdocsSwitch {
+        /**
+          * @default false
+         */
         "checked"?: boolean;
         /**
           * Should the field be disabled?
+          * @default false
          */
         "disabled"?: boolean;
         "onCheckedChange"?: (event: VerdocsSwitchCustomEvent<boolean>) => void;
         /**
           * Select purple or green treatments.
+          * @default 'primary'
          */
         "theme"?: 'primary' | 'secondary';
     }
@@ -6001,10 +6623,12 @@ declare namespace LocalJSX {
     interface VerdocsTable {
         /**
           * The columns to display
+          * @default []
          */
         "columns"?: IColumn[];
         /**
           * The rows to display
+          * @default []
          */
         "data"?: any[];
         /**
@@ -6030,10 +6654,12 @@ declare namespace LocalJSX {
         "onSelectTab"?: (event: VerdocsTabsCustomEvent<{tab: ITab; index: number}>) => void;
         /**
           * The index of the tab to show selected.
+          * @default 0
          */
         "selectedTab"?: number;
         /**
           * The tabs to display
+          * @default []
          */
         "tabs"?: ITab[];
     }
@@ -6044,6 +6670,7 @@ declare namespace LocalJSX {
     interface VerdocsTemplateAttachments {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6064,6 +6691,7 @@ declare namespace LocalJSX {
         "onTemplateUpdated"?: (event: VerdocsTemplateAttachmentsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId"?: string;
     }
@@ -6073,6 +6701,7 @@ declare namespace LocalJSX {
     interface VerdocsTemplateBuildTabs {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6085,10 +6714,12 @@ declare namespace LocalJSX {
         "onStepChanged"?: (event: VerdocsTemplateBuildTabsCustomEvent<TVerdocsBuildStep1>) => void;
         /**
           * The step in the creation process to display.
+          * @default 'preview'
          */
         "step"?: TVerdocsBuildStep1;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+          * @default null
          */
         "templateId"?: string | null;
     }
@@ -6108,8 +6739,12 @@ declare namespace LocalJSX {
     interface VerdocsTemplateCreate {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
+        /**
+          * @default 20.5 * 1024 * 1024
+         */
         "maxSize"?: number;
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -6136,26 +6771,32 @@ declare namespace LocalJSX {
     interface VerdocsTemplateDocumentPage {
         /**
           * Whether the fields should be disabled (Builder)
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * The ID of the document to display.
+          * @default ''
          */
         "documentId"?: string;
         /**
           * Whether the field are interactable (done/submitted disables this)
+          * @default false
          */
         "done"?: boolean;
         /**
           * Whether the fields should be editable (Builder)
+          * @default false
          */
         "editable"?: boolean;
         /**
           * The endpoint to load from.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The layers that will be rendered. The DOM structure will be a DIV container with one child DIV for each layer. The parent DIV will have a unique ID, and each child DIV will have that ID with the layer name appended, e.g. if `pages` was ['page', 'fields'] the structure will be:  ```     <div id="verdocs-document-page-ker2fr1p9">       <div id="verdocs-document-page-ker2fr1p9-page"></div>       <div id="verdocs-document-page-ker2fr1p9-fields"></div>     </div> ```
+          * @default [{name: 'page', type: 'canvas'}]
          */
         "layers"?: IPageLayer[];
         /**
@@ -6164,18 +6805,22 @@ declare namespace LocalJSX {
         "onPageRendered"?: (event: VerdocsTemplateDocumentPageCustomEvent<IDocumentPageInfo>) => void;
         /**
           * The page number being rendered. (Reminder: page numbers are 1-based.)
+          * @default 1
          */
         "pageNumber"?: number;
         /**
           * The ID of the template the document is for.
+          * @default ''
          */
         "templateId"?: string;
         /**
           * The "virtual" height of the page canvas.  Defaults to 792 which at 72dpi is 11" tall. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+          * @default 792
          */
         "virtualHeight"?: number;
         /**
           * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute the aspect ratio of the final rendered element when scaling up/down.
+          * @default 612
          */
         "virtualWidth"?: number;
     }
@@ -6185,14 +6830,17 @@ declare namespace LocalJSX {
     interface VerdocsTemplateFieldProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * The field to configure.
+          * @default ''
          */
         "fieldName"?: string;
         /**
           * If specified, the properties card will have a "back" side with the help text as its content.
+          * @default ''
          */
         "helpText"?: string;
         /**
@@ -6213,6 +6861,7 @@ declare namespace LocalJSX {
         "onSettingsChanged"?: (event: VerdocsTemplateFieldPropertiesCustomEvent<{fieldName: string; field: ITemplateField}>) => void;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId"?: string;
     }
@@ -6223,6 +6872,7 @@ declare namespace LocalJSX {
     interface VerdocsTemplateFields {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         "onFieldsUpdated"?: (event: VerdocsTemplateFieldsCustomEvent<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: ITemplateField[]}>) => void;
@@ -6236,10 +6886,12 @@ declare namespace LocalJSX {
         "onTemplateUpdated"?: (event: VerdocsTemplateFieldsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The ID of the template to create the document from.
+          * @default null
          */
         "templateId"?: string | null;
         /**
           * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the toolbar will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects.  The movement of the toolbar to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the toolbar's visibility must be externally controlled, use CSS display options to hide/show it instead.
+          * @default null
          */
         "toolbarTargetId"?: string | null;
     }
@@ -6249,6 +6901,7 @@ declare namespace LocalJSX {
     interface VerdocsTemplateRoleProperties {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6265,10 +6918,12 @@ declare namespace LocalJSX {
         "onSdkError"?: (event: VerdocsTemplateRolePropertiesCustomEvent<SDKError>) => void;
         /**
           * The role name to edit.
+          * @default ''
          */
         "roleName"?: string;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId"?: string;
     }
@@ -6278,6 +6933,7 @@ declare namespace LocalJSX {
     interface VerdocsTemplateRoles {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6298,6 +6954,7 @@ declare namespace LocalJSX {
         "onSdkError"?: (event: VerdocsTemplateRolesCustomEvent<SDKError>) => void;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId"?: string;
     }
@@ -6307,6 +6964,7 @@ declare namespace LocalJSX {
     interface VerdocsTemplateSettings {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6327,6 +6985,7 @@ declare namespace LocalJSX {
         "onTemplateUpdated"?: (event: VerdocsTemplateSettingsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
         /**
           * The template ID to edit.
+          * @default ''
          */
         "templateId"?: string;
     }
@@ -6336,6 +6995,7 @@ declare namespace LocalJSX {
     interface VerdocsTemplateStar {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6373,14 +7033,17 @@ declare namespace LocalJSX {
     interface VerdocsTemplatesList {
         /**
           * Override the If set, filter templates by the specified name.
+          * @default ['send', 'submitted', 'link', 'edit', 'delete']
          */
         "allowedActions"?: TAllowedTemplateAction[];
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
         /**
           * If set, filter templates by the specified name.
+          * @default ''
          */
         "name"?: string;
         /**
@@ -6425,26 +7088,32 @@ declare namespace LocalJSX {
         "onViewTemplate"?: (event: VerdocsTemplatesListCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate}>) => void;
         /**
           * The number of rows to display per page.
+          * @default 10
          */
         "rowsPerPage"?: number;
         /**
           * The initial page number to select. Pagination is internally controlled but may be overriden by the host applicaiton.
+          * @default 0
          */
         "selectedPage"?: number;
         /**
           * Whether or not pagination should be enabled.
+          * @default true
          */
         "showPagination"?: boolean;
         /**
           * The sort order to display.
+          * @default 'updated_at'
          */
         "sort"?: string;
         /**
           * The starred settings to filter by.
+          * @default 'all'
          */
         "starred"?: 'all' | 'starred' | 'unstarred';
         /**
           * The sharing settings to filter by.
+          * @default 'private_shared'
          */
         "visibility"?: 'private_shared' | 'private' | 'shared' | 'public';
     }
@@ -6459,42 +7128,52 @@ declare namespace LocalJSX {
     interface VerdocsTextInput {
         /**
           * If desired, the autocomplete attribute to set.
+          * @default ''
          */
         "autocomplete"?: string;
         /**
           * If set, a clear button will be displayed.
+          * @default false
          */
         "clearable"?: boolean;
         /**
           * If set, a copy-to-clipboard button will be displayed. NOTE: A field may not be both clearable and copyable. If both properties are set to true, copyable will be ignored.
+          * @default false
          */
         "copyable"?: boolean;
         /**
           * Should the field be disabled?
+          * @default false
          */
         "disabled"?: boolean;
         /**
           * If supplied, a help icon will be displayed to provide the user more information.
+          * @default ''
          */
         "helpText"?: string;
         /**
           * The label for the field.
+          * @default ''
          */
         "label"?: string;
         /**
           * The placeholder for the field.
+          * @default ''
          */
         "placeholder"?: string;
         /**
           * Should the field be required?
+          * @default false
          */
         "required"?: boolean;
         /**
           * The type of field to render. Only text-type fields are allowed here for the current styling. Additional types (e.g. a date picker) will be supported by other controls in the future.
+          * @default 'text'
          */
         "type"?: 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url';
         /**
           * The initial value for the input field.
+          * @default ''
          */
         "value"?: string;
     }
@@ -6521,13 +7200,18 @@ declare namespace LocalJSX {
      * ```
      */
     interface VerdocsToggleButton {
+        /**
+          * @default false
+         */
         "active"?: boolean;
         /**
           * If set, should be an SVG object. This will be rendered as the button's visible element. If icon is supplied, label is ignored.
+          * @default null
          */
         "icon"?: string | null;
         /**
           * If set, should be an SVG object. This will be rendered as the button's visible element. If icon is supplied, label is ignored.
+          * @default null
          */
         "label"?: string | null;
         /**
@@ -6536,6 +7220,7 @@ declare namespace LocalJSX {
         "onToggle"?: (event: VerdocsToggleButtonCustomEvent<{active: boolean}>) => void;
         /**
           * How large the button should be. Small buttons are intended for dialog boxes and other smaller scale UI regions.
+          * @default 'normal'
          */
         "size"?: 'small' | 'normal';
     }
@@ -6548,14 +7233,17 @@ declare namespace LocalJSX {
     interface VerdocsToolbarIcon {
         /**
           * SVG icon to display
+          * @default ''
          */
         "icon"?: string;
         /**
           * Override the Popper "placement" setting
+          * @default 'bottom'
          */
         "placement"?: Placement;
         /**
           * Help text to display on hover/focus
+          * @default ''
          */
         "text"?: string;
     }
@@ -6567,6 +7255,9 @@ declare namespace LocalJSX {
      */
     interface VerdocsUploadDialog {
         "existingFile"?: any;
+        /**
+          * @default 20 * 1024 * 1024
+         */
         "maxSize"?: number;
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -6594,14 +7285,17 @@ declare namespace LocalJSX {
     interface VerdocsView {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default null
          */
         "endpoint"?: VerdocsEndpoint | null;
         /**
           * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+          * @default ''
          */
         "envelopeId"?: string;
         /**
           * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this component renders, the header will be removed from its default location and placed in the target element. This allows the parent application to more easily control its placement and scroll effects (e.g. "fixed").  The movement of the header to the target container is not dynamic - it is performed only on the initial render. Host applications should not conditionally render this container. If the header's visibility must be externally controlled, use CSS display options to hide/show it instead.
+          * @default null
          */
         "headerTargetId"?: string | null;
         /**

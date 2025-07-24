@@ -96,7 +96,7 @@ export type VerdocsAuthEvents = {
 export const VerdocsAuth: StencilReactComponent<VerdocsAuthElement, VerdocsAuthEvents> = /*@__PURE__*/ createComponent<VerdocsAuthElement, VerdocsAuthEvents>({
     tagName: 'verdocs-auth',
     elementClass: VerdocsAuthElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onAuthenticated: 'authenticated',
@@ -118,7 +118,7 @@ export type VerdocsBuildEvents = {
 export const VerdocsBuild: StencilReactComponent<VerdocsBuildElement, VerdocsBuildEvents> = /*@__PURE__*/ createComponent<VerdocsBuildElement, VerdocsBuildEvents>({
     tagName: 'verdocs-build',
     elementClass: VerdocsBuildElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onCancel: 'cancel',
@@ -137,7 +137,7 @@ export type VerdocsButtonEvents = NonNullable<unknown>;
 export const VerdocsButton: StencilReactComponent<VerdocsButtonElement, VerdocsButtonEvents> = /*@__PURE__*/ createComponent<VerdocsButtonElement, VerdocsButtonEvents>({
     tagName: 'verdocs-button',
     elementClass: VerdocsButtonElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsButtonEvents,
     defineCustomElement: defineVerdocsButton
@@ -148,7 +148,7 @@ export type VerdocsButtonPanelEvents = NonNullable<unknown>;
 export const VerdocsButtonPanel: StencilReactComponent<VerdocsButtonPanelElement, VerdocsButtonPanelEvents> = /*@__PURE__*/ createComponent<VerdocsButtonPanelElement, VerdocsButtonPanelEvents>({
     tagName: 'verdocs-button-panel',
     elementClass: VerdocsButtonPanelElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsButtonPanelEvents,
     defineCustomElement: defineVerdocsButtonPanel
@@ -159,7 +159,7 @@ export type VerdocsCheckboxEvents = NonNullable<unknown>;
 export const VerdocsCheckbox: StencilReactComponent<VerdocsCheckboxElement, VerdocsCheckboxEvents> = /*@__PURE__*/ createComponent<VerdocsCheckboxElement, VerdocsCheckboxEvents>({
     tagName: 'verdocs-checkbox',
     elementClass: VerdocsCheckboxElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsCheckboxEvents,
     defineCustomElement: defineVerdocsCheckbox
@@ -170,7 +170,7 @@ export type VerdocsComponentErrorEvents = NonNullable<unknown>;
 export const VerdocsComponentError: StencilReactComponent<VerdocsComponentErrorElement, VerdocsComponentErrorEvents> = /*@__PURE__*/ createComponent<VerdocsComponentErrorElement, VerdocsComponentErrorEvents>({
     tagName: 'verdocs-component-error',
     elementClass: VerdocsComponentErrorElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsComponentErrorEvents,
     defineCustomElement: defineVerdocsComponentError
@@ -185,7 +185,7 @@ export type VerdocsContactPickerEvents = {
 export const VerdocsContactPicker: StencilReactComponent<VerdocsContactPickerElement, VerdocsContactPickerEvents> = /*@__PURE__*/ createComponent<VerdocsContactPickerElement, VerdocsContactPickerEvents>({
     tagName: 'verdocs-contact-picker',
     elementClass: VerdocsContactPickerElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSearchContacts: 'searchContacts',
@@ -200,7 +200,7 @@ export type VerdocsDateInputEvents = NonNullable<unknown>;
 export const VerdocsDateInput: StencilReactComponent<VerdocsDateInputElement, VerdocsDateInputEvents> = /*@__PURE__*/ createComponent<VerdocsDateInputElement, VerdocsDateInputEvents>({
     tagName: 'verdocs-date-input',
     elementClass: VerdocsDateInputElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsDateInputEvents,
     defineCustomElement: defineVerdocsDateInput
@@ -214,7 +214,7 @@ export type VerdocsDelegateDialogEvents = {
 export const VerdocsDelegateDialog: StencilReactComponent<VerdocsDelegateDialogElement, VerdocsDelegateDialogEvents> = /*@__PURE__*/ createComponent<VerdocsDelegateDialogElement, VerdocsDelegateDialogEvents>({
     tagName: 'verdocs-delegate-dialog',
     elementClass: VerdocsDelegateDialogElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onExit: 'exit',
@@ -228,7 +228,7 @@ export type VerdocsDialogEvents = { onExit: EventName<CustomEvent<any>> };
 export const VerdocsDialog: StencilReactComponent<VerdocsDialogElement, VerdocsDialogEvents> = /*@__PURE__*/ createComponent<VerdocsDialogElement, VerdocsDialogEvents>({
     tagName: 'verdocs-dialog',
     elementClass: VerdocsDialogElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onExit: 'exit' } as VerdocsDialogEvents,
     defineCustomElement: defineVerdocsDialog
@@ -243,7 +243,7 @@ export type VerdocsDisclosureDialogEvents = {
 export const VerdocsDisclosureDialog: StencilReactComponent<VerdocsDisclosureDialogElement, VerdocsDisclosureDialogEvents> = /*@__PURE__*/ createComponent<VerdocsDisclosureDialogElement, VerdocsDisclosureDialogEvents>({
     tagName: 'verdocs-disclosure-dialog',
     elementClass: VerdocsDisclosureDialogElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onDecline: 'decline',
@@ -258,7 +258,7 @@ export type VerdocsDropdownEvents = { onOptionSelected: EventName<VerdocsDropdow
 export const VerdocsDropdown: StencilReactComponent<VerdocsDropdownElement, VerdocsDropdownEvents> = /*@__PURE__*/ createComponent<VerdocsDropdownElement, VerdocsDropdownEvents>({
     tagName: 'verdocs-dropdown',
     elementClass: VerdocsDropdownElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onOptionSelected: 'optionSelected' } as VerdocsDropdownEvents,
     defineCustomElement: defineVerdocsDropdown
@@ -269,7 +269,7 @@ export type VerdocsEnvelopeDocumentPageEvents = { onPageRendered: EventName<Verd
 export const VerdocsEnvelopeDocumentPage: StencilReactComponent<VerdocsEnvelopeDocumentPageElement, VerdocsEnvelopeDocumentPageEvents> = /*@__PURE__*/ createComponent<VerdocsEnvelopeDocumentPageElement, VerdocsEnvelopeDocumentPageEvents>({
     tagName: 'verdocs-envelope-document-page',
     elementClass: VerdocsEnvelopeDocumentPageElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onPageRendered: 'pageRendered' } as VerdocsEnvelopeDocumentPageEvents,
     defineCustomElement: defineVerdocsEnvelopeDocumentPage
@@ -283,7 +283,7 @@ export type VerdocsEnvelopeRecipientLinkEvents = {
 export const VerdocsEnvelopeRecipientLink: StencilReactComponent<VerdocsEnvelopeRecipientLinkElement, VerdocsEnvelopeRecipientLinkEvents> = /*@__PURE__*/ createComponent<VerdocsEnvelopeRecipientLinkElement, VerdocsEnvelopeRecipientLinkEvents>({
     tagName: 'verdocs-envelope-recipient-link',
     elementClass: VerdocsEnvelopeRecipientLinkElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onNext: 'next',
@@ -302,7 +302,7 @@ export type VerdocsEnvelopeRecipientSummaryEvents = {
 export const VerdocsEnvelopeRecipientSummary: StencilReactComponent<VerdocsEnvelopeRecipientSummaryElement, VerdocsEnvelopeRecipientSummaryEvents> = /*@__PURE__*/ createComponent<VerdocsEnvelopeRecipientSummaryElement, VerdocsEnvelopeRecipientSummaryEvents>({
     tagName: 'verdocs-envelope-recipient-summary',
     elementClass: VerdocsEnvelopeRecipientSummaryElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onAnother: 'another',
@@ -323,7 +323,7 @@ export type VerdocsEnvelopeSidebarEvents = {
 export const VerdocsEnvelopeSidebar: StencilReactComponent<VerdocsEnvelopeSidebarElement, VerdocsEnvelopeSidebarEvents> = /*@__PURE__*/ createComponent<VerdocsEnvelopeSidebarElement, VerdocsEnvelopeSidebarEvents>({
     tagName: 'verdocs-envelope-sidebar',
     elementClass: VerdocsEnvelopeSidebarElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSdkError: 'sdkError',
@@ -342,7 +342,7 @@ export type VerdocsEnvelopeUpdateRecipientEvents = {
 export const VerdocsEnvelopeUpdateRecipient: StencilReactComponent<VerdocsEnvelopeUpdateRecipientElement, VerdocsEnvelopeUpdateRecipientEvents> = /*@__PURE__*/ createComponent<VerdocsEnvelopeUpdateRecipientElement, VerdocsEnvelopeUpdateRecipientEvents>({
     tagName: 'verdocs-envelope-update-recipient',
     elementClass: VerdocsEnvelopeUpdateRecipientElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onNext: 'next',
@@ -364,7 +364,7 @@ export type VerdocsEnvelopesListEvents = {
 export const VerdocsEnvelopesList: StencilReactComponent<VerdocsEnvelopesListElement, VerdocsEnvelopesListEvents> = /*@__PURE__*/ createComponent<VerdocsEnvelopesListElement, VerdocsEnvelopesListEvents>({
     tagName: 'verdocs-envelopes-list',
     elementClass: VerdocsEnvelopesListElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onChangeView: 'changeView',
@@ -387,7 +387,7 @@ export type VerdocsFieldAttachmentEvents = {
 export const VerdocsFieldAttachment: StencilReactComponent<VerdocsFieldAttachmentElement, VerdocsFieldAttachmentEvents> = /*@__PURE__*/ createComponent<VerdocsFieldAttachmentElement, VerdocsFieldAttachmentEvents>({
     tagName: 'verdocs-field-attachment',
     elementClass: VerdocsFieldAttachmentElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSettingsChanged: 'settingsChanged',
@@ -405,7 +405,7 @@ export type VerdocsFieldCheckboxEvents = {
 export const VerdocsFieldCheckbox: StencilReactComponent<VerdocsFieldCheckboxElement, VerdocsFieldCheckboxEvents> = /*@__PURE__*/ createComponent<VerdocsFieldCheckboxElement, VerdocsFieldCheckboxEvents>({
     tagName: 'verdocs-field-checkbox',
     elementClass: VerdocsFieldCheckboxElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSettingsChanged: 'settingsChanged',
@@ -423,7 +423,7 @@ export type VerdocsFieldDateEvents = {
 export const VerdocsFieldDate: StencilReactComponent<VerdocsFieldDateElement, VerdocsFieldDateEvents> = /*@__PURE__*/ createComponent<VerdocsFieldDateElement, VerdocsFieldDateEvents>({
     tagName: 'verdocs-field-date',
     elementClass: VerdocsFieldDateElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSettingsPress: 'settingsPress',
@@ -442,7 +442,7 @@ export type VerdocsFieldDropdownEvents = {
 export const VerdocsFieldDropdown: StencilReactComponent<VerdocsFieldDropdownElement, VerdocsFieldDropdownEvents> = /*@__PURE__*/ createComponent<VerdocsFieldDropdownElement, VerdocsFieldDropdownEvents>({
     tagName: 'verdocs-field-dropdown',
     elementClass: VerdocsFieldDropdownElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onFieldChange: 'fieldChange',
@@ -464,7 +464,7 @@ export type VerdocsFieldInitialEvents = {
 export const VerdocsFieldInitial: StencilReactComponent<VerdocsFieldInitialElement, VerdocsFieldInitialEvents> = /*@__PURE__*/ createComponent<VerdocsFieldInitialElement, VerdocsFieldInitialEvents>({
     tagName: 'verdocs-field-initial',
     elementClass: VerdocsFieldInitialElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onAdopt: 'adopt',
@@ -485,7 +485,7 @@ export type VerdocsFieldPaymentEvents = {
 export const VerdocsFieldPayment: StencilReactComponent<VerdocsFieldPaymentElement, VerdocsFieldPaymentEvents> = /*@__PURE__*/ createComponent<VerdocsFieldPaymentElement, VerdocsFieldPaymentEvents>({
     tagName: 'verdocs-field-payment',
     elementClass: VerdocsFieldPaymentElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSettingsChanged: 'settingsChanged',
@@ -502,7 +502,7 @@ export type VerdocsFieldRadioEvents = {
 export const VerdocsFieldRadio: StencilReactComponent<VerdocsFieldRadioElement, VerdocsFieldRadioEvents> = /*@__PURE__*/ createComponent<VerdocsFieldRadioElement, VerdocsFieldRadioEvents>({
     tagName: 'verdocs-field-radio',
     elementClass: VerdocsFieldRadioElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSettingsChanged: 'settingsChanged',
@@ -521,7 +521,7 @@ export type VerdocsFieldSignatureEvents = {
 export const VerdocsFieldSignature: StencilReactComponent<VerdocsFieldSignatureElement, VerdocsFieldSignatureEvents> = /*@__PURE__*/ createComponent<VerdocsFieldSignatureElement, VerdocsFieldSignatureEvents>({
     tagName: 'verdocs-field-signature',
     elementClass: VerdocsFieldSignatureElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onFieldChange: 'fieldChange',
@@ -540,7 +540,7 @@ export type VerdocsFieldTextareaEvents = {
 export const VerdocsFieldTextarea: StencilReactComponent<VerdocsFieldTextareaElement, VerdocsFieldTextareaEvents> = /*@__PURE__*/ createComponent<VerdocsFieldTextareaElement, VerdocsFieldTextareaEvents>({
     tagName: 'verdocs-field-textarea',
     elementClass: VerdocsFieldTextareaElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSettingsChanged: 'settingsChanged',
@@ -557,7 +557,7 @@ export type VerdocsFieldTextboxEvents = {
 export const VerdocsFieldTextbox: StencilReactComponent<VerdocsFieldTextboxElement, VerdocsFieldTextboxEvents> = /*@__PURE__*/ createComponent<VerdocsFieldTextboxElement, VerdocsFieldTextboxEvents>({
     tagName: 'verdocs-field-textbox',
     elementClass: VerdocsFieldTextboxElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSettingsChanged: 'settingsChanged',
@@ -574,7 +574,7 @@ export type VerdocsFieldTimestampEvents = {
 export const VerdocsFieldTimestamp: StencilReactComponent<VerdocsFieldTimestampElement, VerdocsFieldTimestampEvents> = /*@__PURE__*/ createComponent<VerdocsFieldTimestampElement, VerdocsFieldTimestampEvents>({
     tagName: 'verdocs-field-timestamp',
     elementClass: VerdocsFieldTimestampElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSettingsChanged: 'settingsChanged',
@@ -588,7 +588,7 @@ export type VerdocsFileChooserEvents = { onFileSelected: EventName<VerdocsFileCh
 export const VerdocsFileChooser: StencilReactComponent<VerdocsFileChooserElement, VerdocsFileChooserEvents> = /*@__PURE__*/ createComponent<VerdocsFileChooserElement, VerdocsFileChooserEvents>({
     tagName: 'verdocs-file-chooser',
     elementClass: VerdocsFileChooserElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onFileSelected: 'fileSelected' } as VerdocsFileChooserEvents,
     defineCustomElement: defineVerdocsFileChooser
@@ -599,7 +599,7 @@ export type VerdocsHelpIconEvents = NonNullable<unknown>;
 export const VerdocsHelpIcon: StencilReactComponent<VerdocsHelpIconElement, VerdocsHelpIconEvents> = /*@__PURE__*/ createComponent<VerdocsHelpIconElement, VerdocsHelpIconEvents>({
     tagName: 'verdocs-help-icon',
     elementClass: VerdocsHelpIconElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsHelpIconEvents,
     defineCustomElement: defineVerdocsHelpIcon
@@ -613,7 +613,7 @@ export type VerdocsInitialDialogEvents = {
 export const VerdocsInitialDialog: StencilReactComponent<VerdocsInitialDialogElement, VerdocsInitialDialogEvents> = /*@__PURE__*/ createComponent<VerdocsInitialDialogElement, VerdocsInitialDialogEvents>({
     tagName: 'verdocs-initial-dialog',
     elementClass: VerdocsInitialDialogElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onNext: 'next',
@@ -631,7 +631,7 @@ export type VerdocsKbaDialogEvents = {
 export const VerdocsKbaDialog: StencilReactComponent<VerdocsKbaDialogElement, VerdocsKbaDialogEvents> = /*@__PURE__*/ createComponent<VerdocsKbaDialogElement, VerdocsKbaDialogEvents>({
     tagName: 'verdocs-kba-dialog',
     elementClass: VerdocsKbaDialogElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onExit: 'exit',
@@ -646,7 +646,7 @@ export type VerdocsLoaderEvents = NonNullable<unknown>;
 export const VerdocsLoader: StencilReactComponent<VerdocsLoaderElement, VerdocsLoaderEvents> = /*@__PURE__*/ createComponent<VerdocsLoaderElement, VerdocsLoaderEvents>({
     tagName: 'verdocs-loader',
     elementClass: VerdocsLoaderElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsLoaderEvents,
     defineCustomElement: defineVerdocsLoader
@@ -657,7 +657,7 @@ export type VerdocsMenuPanelEvents = { onClose: EventName<CustomEvent<void>> };
 export const VerdocsMenuPanel: StencilReactComponent<VerdocsMenuPanelElement, VerdocsMenuPanelEvents> = /*@__PURE__*/ createComponent<VerdocsMenuPanelElement, VerdocsMenuPanelEvents>({
     tagName: 'verdocs-menu-panel',
     elementClass: VerdocsMenuPanelElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onClose: 'close' } as VerdocsMenuPanelEvents,
     defineCustomElement: defineVerdocsMenuPanel
@@ -668,7 +668,7 @@ export type VerdocsMultiselectEvents = { onSelectionChanged: EventName<CustomEve
 export const VerdocsMultiselect: StencilReactComponent<VerdocsMultiselectElement, VerdocsMultiselectEvents> = /*@__PURE__*/ createComponent<VerdocsMultiselectElement, VerdocsMultiselectEvents>({
     tagName: 'verdocs-multiselect',
     elementClass: VerdocsMultiselectElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onSelectionChanged: 'selectionChanged' } as VerdocsMultiselectEvents,
     defineCustomElement: defineVerdocsMultiselect
@@ -682,7 +682,7 @@ export type VerdocsOkDialogEvents = {
 export const VerdocsOkDialog: StencilReactComponent<VerdocsOkDialogElement, VerdocsOkDialogEvents> = /*@__PURE__*/ createComponent<VerdocsOkDialogElement, VerdocsOkDialogEvents>({
     tagName: 'verdocs-ok-dialog',
     elementClass: VerdocsOkDialogElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onNext: 'next',
@@ -696,7 +696,7 @@ export type VerdocsOrganizationCardEvents = NonNullable<unknown>;
 export const VerdocsOrganizationCard: StencilReactComponent<VerdocsOrganizationCardElement, VerdocsOrganizationCardEvents> = /*@__PURE__*/ createComponent<VerdocsOrganizationCardElement, VerdocsOrganizationCardEvents>({
     tagName: 'verdocs-organization-card',
     elementClass: VerdocsOrganizationCardElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsOrganizationCardEvents,
     defineCustomElement: defineVerdocsOrganizationCard
@@ -710,7 +710,7 @@ export type VerdocsOtpDialogEvents = {
 export const VerdocsOtpDialog: StencilReactComponent<VerdocsOtpDialogElement, VerdocsOtpDialogEvents> = /*@__PURE__*/ createComponent<VerdocsOtpDialogElement, VerdocsOtpDialogEvents>({
     tagName: 'verdocs-otp-dialog',
     elementClass: VerdocsOtpDialogElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onExit: 'exit',
@@ -724,7 +724,7 @@ export type VerdocsPaginationEvents = { onSelectPage: EventName<CustomEvent<{ se
 export const VerdocsPagination: StencilReactComponent<VerdocsPaginationElement, VerdocsPaginationEvents> = /*@__PURE__*/ createComponent<VerdocsPaginationElement, VerdocsPaginationEvents>({
     tagName: 'verdocs-pagination',
     elementClass: VerdocsPaginationElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onSelectPage: 'selectPage' } as VerdocsPaginationEvents,
     defineCustomElement: defineVerdocsPagination
@@ -735,7 +735,7 @@ export type VerdocsPortalEvents = { onClickAway: EventName<CustomEvent<void>> };
 export const VerdocsPortal: StencilReactComponent<VerdocsPortalElement, VerdocsPortalEvents> = /*@__PURE__*/ createComponent<VerdocsPortalElement, VerdocsPortalEvents>({
     tagName: 'verdocs-portal',
     elementClass: VerdocsPortalElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onClickAway: 'clickAway' } as VerdocsPortalEvents,
     defineCustomElement: defineVerdocsPortal
@@ -746,7 +746,7 @@ export type VerdocsPreviewEvents = { onSdkError: EventName<VerdocsPreviewCustomE
 export const VerdocsPreview: StencilReactComponent<VerdocsPreviewElement, VerdocsPreviewEvents> = /*@__PURE__*/ createComponent<VerdocsPreviewElement, VerdocsPreviewEvents>({
     tagName: 'verdocs-preview',
     elementClass: VerdocsPreviewElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onSdkError: 'sdkError' } as VerdocsPreviewEvents,
     defineCustomElement: defineVerdocsPreview
@@ -757,7 +757,7 @@ export type VerdocsProgressBarEvents = NonNullable<unknown>;
 export const VerdocsProgressBar: StencilReactComponent<VerdocsProgressBarElement, VerdocsProgressBarEvents> = /*@__PURE__*/ createComponent<VerdocsProgressBarElement, VerdocsProgressBarEvents>({
     tagName: 'verdocs-progress-bar',
     elementClass: VerdocsProgressBarElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsProgressBarEvents,
     defineCustomElement: defineVerdocsProgressBar
@@ -768,7 +768,7 @@ export type VerdocsQuickFilterEvents = { onOptionSelected: EventName<VerdocsQuic
 export const VerdocsQuickFilter: StencilReactComponent<VerdocsQuickFilterElement, VerdocsQuickFilterEvents> = /*@__PURE__*/ createComponent<VerdocsQuickFilterElement, VerdocsQuickFilterEvents>({
     tagName: 'verdocs-quick-filter',
     elementClass: VerdocsQuickFilterElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onOptionSelected: 'optionSelected' } as VerdocsQuickFilterEvents,
     defineCustomElement: defineVerdocsQuickFilter
@@ -782,7 +782,7 @@ export type VerdocsQuickFunctionsEvents = {
 export const VerdocsQuickFunctions: StencilReactComponent<VerdocsQuickFunctionsElement, VerdocsQuickFunctionsEvents> = /*@__PURE__*/ createComponent<VerdocsQuickFunctionsElement, VerdocsQuickFunctionsEvents>({
     tagName: 'verdocs-quick-functions',
     elementClass: VerdocsQuickFunctionsElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onCreateTemplate: 'createTemplate',
@@ -796,7 +796,7 @@ export type VerdocsRadioButtonEvents = NonNullable<unknown>;
 export const VerdocsRadioButton: StencilReactComponent<VerdocsRadioButtonElement, VerdocsRadioButtonEvents> = /*@__PURE__*/ createComponent<VerdocsRadioButtonElement, VerdocsRadioButtonEvents>({
     tagName: 'verdocs-radio-button',
     elementClass: VerdocsRadioButtonElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsRadioButtonEvents,
     defineCustomElement: defineVerdocsRadioButton
@@ -811,7 +811,7 @@ export type VerdocsSearchBoxEvents = {
 export const VerdocsSearchBox: StencilReactComponent<VerdocsSearchBoxElement, VerdocsSearchBoxEvents> = /*@__PURE__*/ createComponent<VerdocsSearchBoxElement, VerdocsSearchBoxEvents>({
     tagName: 'verdocs-search-box',
     elementClass: VerdocsSearchBoxElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSearchClicked: 'searchClicked',
@@ -826,7 +826,7 @@ export type VerdocsSearchTabsEvents = NonNullable<unknown>;
 export const VerdocsSearchTabs: StencilReactComponent<VerdocsSearchTabsElement, VerdocsSearchTabsEvents> = /*@__PURE__*/ createComponent<VerdocsSearchTabsElement, VerdocsSearchTabsEvents>({
     tagName: 'verdocs-search-tabs',
     elementClass: VerdocsSearchTabsElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsSearchTabsEvents,
     defineCustomElement: defineVerdocsSearchTabs
@@ -837,7 +837,7 @@ export type VerdocsSelectInputEvents = NonNullable<unknown>;
 export const VerdocsSelectInput: StencilReactComponent<VerdocsSelectInputElement, VerdocsSelectInputEvents> = /*@__PURE__*/ createComponent<VerdocsSelectInputElement, VerdocsSelectInputEvents>({
     tagName: 'verdocs-select-input',
     elementClass: VerdocsSelectInputElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsSelectInputEvents,
     defineCustomElement: defineVerdocsSelectInput
@@ -854,7 +854,7 @@ export type VerdocsSendEvents = {
 export const VerdocsSend: StencilReactComponent<VerdocsSendElement, VerdocsSendEvents> = /*@__PURE__*/ createComponent<VerdocsSendElement, VerdocsSendEvents>({
     tagName: 'verdocs-send',
     elementClass: VerdocsSendElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onBeforeSend: 'beforeSend',
@@ -875,7 +875,7 @@ export type VerdocsSignEvents = {
 export const VerdocsSign: StencilReactComponent<VerdocsSignElement, VerdocsSignEvents> = /*@__PURE__*/ createComponent<VerdocsSignElement, VerdocsSignEvents>({
     tagName: 'verdocs-sign',
     elementClass: VerdocsSignElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSdkError: 'sdkError',
@@ -893,7 +893,7 @@ export type VerdocsSignatureDialogEvents = {
 export const VerdocsSignatureDialog: StencilReactComponent<VerdocsSignatureDialogElement, VerdocsSignatureDialogEvents> = /*@__PURE__*/ createComponent<VerdocsSignatureDialogElement, VerdocsSignatureDialogEvents>({
     tagName: 'verdocs-signature-dialog',
     elementClass: VerdocsSignatureDialogElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onNext: 'next',
@@ -907,7 +907,7 @@ export type VerdocsSpinnerEvents = NonNullable<unknown>;
 export const VerdocsSpinner: StencilReactComponent<VerdocsSpinnerElement, VerdocsSpinnerEvents> = /*@__PURE__*/ createComponent<VerdocsSpinnerElement, VerdocsSpinnerEvents>({
     tagName: 'verdocs-spinner',
     elementClass: VerdocsSpinnerElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsSpinnerEvents,
     defineCustomElement: defineVerdocsSpinner
@@ -918,7 +918,7 @@ export type VerdocsStatusIndicatorEvents = NonNullable<unknown>;
 export const VerdocsStatusIndicator: StencilReactComponent<VerdocsStatusIndicatorElement, VerdocsStatusIndicatorEvents> = /*@__PURE__*/ createComponent<VerdocsStatusIndicatorElement, VerdocsStatusIndicatorEvents>({
     tagName: 'verdocs-status-indicator',
     elementClass: VerdocsStatusIndicatorElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsStatusIndicatorEvents,
     defineCustomElement: defineVerdocsStatusIndicator
@@ -929,7 +929,7 @@ export type VerdocsSwitchEvents = { onCheckedChange: EventName<CustomEvent<boole
 export const VerdocsSwitch: StencilReactComponent<VerdocsSwitchElement, VerdocsSwitchEvents> = /*@__PURE__*/ createComponent<VerdocsSwitchElement, VerdocsSwitchEvents>({
     tagName: 'verdocs-switch',
     elementClass: VerdocsSwitchElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onCheckedChange: 'checkedChange' } as VerdocsSwitchEvents,
     defineCustomElement: defineVerdocsSwitch
@@ -943,7 +943,7 @@ export type VerdocsTableEvents = {
 export const VerdocsTable: StencilReactComponent<VerdocsTableElement, VerdocsTableEvents> = /*@__PURE__*/ createComponent<VerdocsTableElement, VerdocsTableEvents>({
     tagName: 'verdocs-table',
     elementClass: VerdocsTableElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onColHeaderClick: 'colHeaderClick',
@@ -957,7 +957,7 @@ export type VerdocsTabsEvents = { onSelectTab: EventName<VerdocsTabsCustomEvent<
 export const VerdocsTabs: StencilReactComponent<VerdocsTabsElement, VerdocsTabsEvents> = /*@__PURE__*/ createComponent<VerdocsTabsElement, VerdocsTabsEvents>({
     tagName: 'verdocs-tabs',
     elementClass: VerdocsTabsElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onSelectTab: 'selectTab' } as VerdocsTabsEvents,
     defineCustomElement: defineVerdocsTabs
@@ -973,7 +973,7 @@ export type VerdocsTemplateAttachmentsEvents = {
 export const VerdocsTemplateAttachments: StencilReactComponent<VerdocsTemplateAttachmentsElement, VerdocsTemplateAttachmentsEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateAttachmentsElement, VerdocsTemplateAttachmentsEvents>({
     tagName: 'verdocs-template-attachments',
     elementClass: VerdocsTemplateAttachmentsElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onExit: 'exit',
@@ -992,7 +992,7 @@ export type VerdocsTemplateBuildTabsEvents = {
 export const VerdocsTemplateBuildTabs: StencilReactComponent<VerdocsTemplateBuildTabsElement, VerdocsTemplateBuildTabsEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateBuildTabsElement, VerdocsTemplateBuildTabsEvents>({
     tagName: 'verdocs-template-build-tabs',
     elementClass: VerdocsTemplateBuildTabsElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSdkError: 'sdkError',
@@ -1006,7 +1006,7 @@ export type VerdocsTemplateCardEvents = NonNullable<unknown>;
 export const VerdocsTemplateCard: StencilReactComponent<VerdocsTemplateCardElement, VerdocsTemplateCardEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateCardElement, VerdocsTemplateCardEvents>({
     tagName: 'verdocs-template-card',
     elementClass: VerdocsTemplateCardElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsTemplateCardEvents,
     defineCustomElement: defineVerdocsTemplateCard
@@ -1022,7 +1022,7 @@ export type VerdocsTemplateCreateEvents = {
 export const VerdocsTemplateCreate: StencilReactComponent<VerdocsTemplateCreateElement, VerdocsTemplateCreateEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateCreateElement, VerdocsTemplateCreateEvents>({
     tagName: 'verdocs-template-create',
     elementClass: VerdocsTemplateCreateElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onExit: 'exit',
@@ -1038,7 +1038,7 @@ export type VerdocsTemplateDocumentPageEvents = { onPageRendered: EventName<Verd
 export const VerdocsTemplateDocumentPage: StencilReactComponent<VerdocsTemplateDocumentPageElement, VerdocsTemplateDocumentPageEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateDocumentPageElement, VerdocsTemplateDocumentPageEvents>({
     tagName: 'verdocs-template-document-page',
     elementClass: VerdocsTemplateDocumentPageElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onPageRendered: 'pageRendered' } as VerdocsTemplateDocumentPageEvents,
     defineCustomElement: defineVerdocsTemplateDocumentPage
@@ -1054,7 +1054,7 @@ export type VerdocsTemplateFieldPropertiesEvents = {
 export const VerdocsTemplateFieldProperties: StencilReactComponent<VerdocsTemplateFieldPropertiesElement, VerdocsTemplateFieldPropertiesEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateFieldPropertiesElement, VerdocsTemplateFieldPropertiesEvents>({
     tagName: 'verdocs-template-field-properties',
     elementClass: VerdocsTemplateFieldPropertiesElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onClose: 'close',
@@ -1074,7 +1074,7 @@ export type VerdocsTemplateFieldsEvents = {
 export const VerdocsTemplateFields: StencilReactComponent<VerdocsTemplateFieldsElement, VerdocsTemplateFieldsEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateFieldsElement, VerdocsTemplateFieldsEvents>({
     tagName: 'verdocs-template-fields',
     elementClass: VerdocsTemplateFieldsElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSdkError: 'sdkError',
@@ -1093,7 +1093,7 @@ export type VerdocsTemplateRolePropertiesEvents = {
 export const VerdocsTemplateRoleProperties: StencilReactComponent<VerdocsTemplateRolePropertiesElement, VerdocsTemplateRolePropertiesEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateRolePropertiesElement, VerdocsTemplateRolePropertiesEvents>({
     tagName: 'verdocs-template-role-properties',
     elementClass: VerdocsTemplateRolePropertiesElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onClose: 'close',
@@ -1113,7 +1113,7 @@ export type VerdocsTemplateRolesEvents = {
 export const VerdocsTemplateRoles: StencilReactComponent<VerdocsTemplateRolesElement, VerdocsTemplateRolesEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateRolesElement, VerdocsTemplateRolesEvents>({
     tagName: 'verdocs-template-roles',
     elementClass: VerdocsTemplateRolesElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onNext: 'next',
@@ -1134,7 +1134,7 @@ export type VerdocsTemplateSettingsEvents = {
 export const VerdocsTemplateSettings: StencilReactComponent<VerdocsTemplateSettingsElement, VerdocsTemplateSettingsEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateSettingsElement, VerdocsTemplateSettingsEvents>({
     tagName: 'verdocs-template-settings',
     elementClass: VerdocsTemplateSettingsElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onNext: 'next',
@@ -1153,7 +1153,7 @@ export type VerdocsTemplateStarEvents = {
 export const VerdocsTemplateStar: StencilReactComponent<VerdocsTemplateStarElement, VerdocsTemplateStarEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateStarElement, VerdocsTemplateStarEvents>({
     tagName: 'verdocs-template-star',
     elementClass: VerdocsTemplateStarElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onStarChange: 'starChange',
@@ -1167,7 +1167,7 @@ export type VerdocsTemplateTagsEvents = NonNullable<unknown>;
 export const VerdocsTemplateTags: StencilReactComponent<VerdocsTemplateTagsElement, VerdocsTemplateTagsEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateTagsElement, VerdocsTemplateTagsEvents>({
     tagName: 'verdocs-template-tags',
     elementClass: VerdocsTemplateTagsElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsTemplateTagsEvents,
     defineCustomElement: defineVerdocsTemplateTags
@@ -1189,7 +1189,7 @@ export type VerdocsTemplatesListEvents = {
 export const VerdocsTemplatesList: StencilReactComponent<VerdocsTemplatesListElement, VerdocsTemplatesListEvents> = /*@__PURE__*/ createComponent<VerdocsTemplatesListElement, VerdocsTemplatesListEvents>({
     tagName: 'verdocs-templates-list',
     elementClass: VerdocsTemplatesListElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSdkError: 'sdkError',
@@ -1211,7 +1211,7 @@ export type VerdocsTextInputEvents = NonNullable<unknown>;
 export const VerdocsTextInput: StencilReactComponent<VerdocsTextInputElement, VerdocsTextInputEvents> = /*@__PURE__*/ createComponent<VerdocsTextInputElement, VerdocsTextInputEvents>({
     tagName: 'verdocs-text-input',
     elementClass: VerdocsTextInputElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsTextInputEvents,
     defineCustomElement: defineVerdocsTextInput
@@ -1222,7 +1222,7 @@ export type VerdocsToggleEvents = NonNullable<unknown>;
 export const VerdocsToggle: StencilReactComponent<VerdocsToggleElement, VerdocsToggleEvents> = /*@__PURE__*/ createComponent<VerdocsToggleElement, VerdocsToggleEvents>({
     tagName: 'verdocs-toggle',
     elementClass: VerdocsToggleElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsToggleEvents,
     defineCustomElement: defineVerdocsToggle
@@ -1233,7 +1233,7 @@ export type VerdocsToggleButtonEvents = { onToggle: EventName<CustomEvent<{ acti
 export const VerdocsToggleButton: StencilReactComponent<VerdocsToggleButtonElement, VerdocsToggleButtonEvents> = /*@__PURE__*/ createComponent<VerdocsToggleButtonElement, VerdocsToggleButtonEvents>({
     tagName: 'verdocs-toggle-button',
     elementClass: VerdocsToggleButtonElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: { onToggle: 'toggle' } as VerdocsToggleButtonEvents,
     defineCustomElement: defineVerdocsToggleButton
@@ -1244,7 +1244,7 @@ export type VerdocsToolbarIconEvents = NonNullable<unknown>;
 export const VerdocsToolbarIcon: StencilReactComponent<VerdocsToolbarIconElement, VerdocsToolbarIconEvents> = /*@__PURE__*/ createComponent<VerdocsToolbarIconElement, VerdocsToolbarIconEvents>({
     tagName: 'verdocs-toolbar-icon',
     elementClass: VerdocsToolbarIconElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {} as VerdocsToolbarIconEvents,
     defineCustomElement: defineVerdocsToolbarIcon
@@ -1259,7 +1259,7 @@ export type VerdocsUploadDialogEvents = {
 export const VerdocsUploadDialog: StencilReactComponent<VerdocsUploadDialogElement, VerdocsUploadDialogEvents> = /*@__PURE__*/ createComponent<VerdocsUploadDialogElement, VerdocsUploadDialogEvents>({
     tagName: 'verdocs-upload-dialog',
     elementClass: VerdocsUploadDialogElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onExit: 'exit',
@@ -1280,7 +1280,7 @@ export type VerdocsViewEvents = {
 export const VerdocsView: StencilReactComponent<VerdocsViewElement, VerdocsViewEvents> = /*@__PURE__*/ createComponent<VerdocsViewElement, VerdocsViewEvents>({
     tagName: 'verdocs-view',
     elementClass: VerdocsViewElement,
-    // @ts-ignore - React type of Stencil Output Target may differ from the React version used in the Nuxt.js project, this can be ignored.
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
         onSdkError: 'sdkError',

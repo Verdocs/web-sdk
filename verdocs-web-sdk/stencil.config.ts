@@ -32,6 +32,7 @@ export const config: Config = {
   },
   extras: {
     enableImportInjection: true,
+    addGlobalStyleToComponents: false,
   },
   outputTargets: [
     angularOutputTarget({
