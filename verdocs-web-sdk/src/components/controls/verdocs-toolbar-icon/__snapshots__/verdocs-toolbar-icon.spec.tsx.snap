@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-toolbar-icon renders with default props 1`] = `
+<verdocs-toolbar-icon>
+  <div aria-describedby="verdocs-toolbar-icon-4fzzzxjyl" class="icon"></div>
+  <div class="tooltip" data-popper-placement="bottom" id="verdocs-toolbar-icon-4fzzzxjyl" role="tooltip" style="position: absolute; left: 0; top: 0; margin: 0;">
+    <div class="arrow" data-popper-arrow="true" style="position: absolute;"></div>
+  </div>
+</verdocs-toolbar-icon>
+`;
+
+exports[`verdocs-toolbar-icon renders with text, icon, and placement 1`] = `
+<verdocs-toolbar-icon>
+  <div aria-describedby="verdocs-toolbar-icon-4fzzzxjyl" class="icon">
+    <svg></svg>
+  </div>
+  <div class="tooltip" data-popper-placement="top" id="verdocs-toolbar-icon-4fzzzxjyl" role="tooltip" style="position: absolute; left: 0; top: 0; margin: 0;">
+    Tooltip
+    <div class="arrow" data-popper-arrow="true" style="position: absolute;"></div>
+  </div>
+</verdocs-toolbar-icon>
+`;

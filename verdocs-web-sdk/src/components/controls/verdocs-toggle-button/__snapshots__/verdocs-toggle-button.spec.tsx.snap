@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-toggle-button renders as active with icon and size 1`] = `
+<verdocs-toggle-button active="true" class="size-small" icon="<svg></svg>" size="small">
+  <button class="active">
+    <svg></svg>
+  </button>
+</verdocs-toggle-button>
+`;
+
+exports[`verdocs-toggle-button renders with default props 1`] = `
+<verdocs-toggle-button class="size-normal">
+  <button></button>
+</verdocs-toggle-button>
+`;

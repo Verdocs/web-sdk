@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-file-chooser renders with a custom endpoint 1`] = `
+<verdocs-file-chooser endpoint="custom">
+  <input accept="application/pdf,.pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" id="verdocs-file-chooser" multiple="" type="file" style="display: none;">
+  <div class="upload-box">
+    <div class="selected-filename">
+      Drag a file here
+    </div>
+    <div class="or-prefer">
+      Or, if you prefer...
+    </div>
+    <verdocs-button label="Select a file from your computer" size="small"></verdocs-button>
+  </div>
+</verdocs-file-chooser>
+`;
+
+exports[`verdocs-file-chooser renders with default props 1`] = `
+<verdocs-file-chooser>
+  <input accept="application/pdf,.pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" id="verdocs-file-chooser" multiple="" type="file" style="display: none;">
+  <div class="upload-box">
+    <div class="selected-filename">
+      Drag a file here
+    </div>
+    <div class="or-prefer">
+      Or, if you prefer...
+    </div>
+    <verdocs-button label="Select a file from your computer" size="small"></verdocs-button>
+  </div>
+</verdocs-file-chooser>
+`;

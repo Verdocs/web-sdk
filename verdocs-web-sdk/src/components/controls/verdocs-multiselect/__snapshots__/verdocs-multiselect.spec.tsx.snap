@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-multiselect renders with default props 1`] = `
+<verdocs-multiselect class="closed">
+  <label>
+    <div></div>
+    <div class="input-wrapper">
+      <button class="trigger" id="verdocs-dropdown-4fzzzxjyl" value="">
+        <span class="placeholder">
+          Select...
+        </span>
+      </button>
+      <div class="icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </div>
+    </div>
+  </label>
+</verdocs-multiselect>
+`;
+
+exports[`verdocs-multiselect renders with label, placeholder, and options 1`] = `
+<verdocs-multiselect class="closed">
+  <label>
+    <div class="input-label">
+      Test:
+    </div>
+    <div class="input-wrapper">
+      <button class="trigger" id="verdocs-dropdown-4fzzzxjyl" value="">
+        <span class="placeholder">
+          Choose...
+        </span>
+      </button>
+      <div class="icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </div>
+    </div>
+  </label>
+</verdocs-multiselect>
+`;
+
+exports[`verdocs-multiselect renders with selected options 1`] = `
+<verdocs-multiselect class="closed">
+  <label>
+    <div class="input-label">
+      Test:
+    </div>
+    <div class="input-wrapper">
+      <button class="trigger" id="verdocs-dropdown-4fzzzxjyl" value="">
+        <span class="selected-option">
+          Option 1
+        </span>
+      </button>
+      <div class="icon">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="m19.5 8.25-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </div>
+    </div>
+  </label>
+</verdocs-multiselect>
+`;

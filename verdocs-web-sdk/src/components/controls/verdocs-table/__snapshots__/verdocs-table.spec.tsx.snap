@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-table renders with columns and data 1`] = `
+<verdocs-table class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr class="header-row row">
+        <th class="col col-0 col-name header-col">
+          Name
+        </th>
+        <th class="col col-1 col-age header-col">
+          Age
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="data-row row">
+        <td class="col col-0 col-name data-col">
+          Alice
+        </td>
+        <td class="col col-1 col-age data-col">
+          30
+        </td>
+      </tr>
+      <tr class="data-row row">
+        <td class="col col-0 col-name data-col">
+          Bob
+        </td>
+        <td class="col col-1 col-age data-col">
+          25
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</verdocs-table>
+`;
+
+exports[`verdocs-table renders with default props 1`] = `
+<verdocs-table class="table-wrapper">
+  <table class="table">
+    <thead>
+      <tr class="header-row row"></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</verdocs-table>
+`;
