@@ -3,6 +3,14 @@ import { VerdocsDropdown } from './verdocs-dropdown';
 import {h} from '@stencil/core';
 
 describe('verdocs-dropdown', () => {
+  beforeAll(() => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.123456789);
+  });
+
+  afterAll(() => {
+    // restore the original behavior after the tests
+    (Math.random as jest.Mock).mockRestore();
+  });
   it('renders with default props', async () => {
     const page = await newSpecPage({
       components: [VerdocsDropdown],

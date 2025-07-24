@@ -1,11 +1,12 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { VerdocsProgressBar } from './verdocs-progress-bar';
+import { h } from '@stencil/core';
 
 describe('verdocs-progress-bar', () => {
   it('renders with default props', async () => {
     const page = await newSpecPage({
       components: [VerdocsProgressBar],
-      html: `<verdocs-progress-bar></verdocs-progress-bar>`,
+      template: () => <verdocs-progress-bar></verdocs-progress-bar>,
     });
     expect(page.root).toMatchSnapshot();
   });
@@ -13,7 +14,7 @@ describe('verdocs-progress-bar', () => {
   it('renders with label and percent', async () => {
     const page = await newSpecPage({
       components: [VerdocsProgressBar],
-      html: `<verdocs-progress-bar label="Uploading..." percent="54"></verdocs-progress-bar>`,
+      template: () => <verdocs-progress-bar label="Uploading..." percent={54}></verdocs-progress-bar>,
     });
     expect(page.root).toMatchSnapshot();
     expect(page.rootInstance.label).toBe('Uploading...');
@@ -23,9 +24,8 @@ describe('verdocs-progress-bar', () => {
   it('renders with showPercent true', async () => {
     const page = await newSpecPage({
       components: [VerdocsProgressBar],
-      html: `<verdocs-progress-bar percent="75"></verdocs-progress-bar>`,
+      template: () => <verdocs-progress-bar label="Loading..." percent={75} showPercent={true}></verdocs-progress-bar>,
     });
-    (page.rootInstance as any).showPercent = true;
     await page.waitForChanges();
     expect(page.root).toMatchSnapshot();
     expect(page.rootInstance.showPercent).toBe(true);

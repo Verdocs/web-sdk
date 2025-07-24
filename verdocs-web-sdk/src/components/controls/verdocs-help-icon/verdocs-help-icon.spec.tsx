@@ -3,6 +3,15 @@ import { VerdocsHelpIcon } from './verdocs-help-icon';
 import {h} from '@stencil/core';
 
 describe('verdocs-help-icon', () => {
+   beforeAll(() => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.123456789);
+  });
+
+  afterAll(() => {
+    // restore the original behavior after the tests
+    (Math.random as jest.Mock).mockRestore();
+  });
+
   it('renders the help icon with the correct attributes', async () => {
     const page = await newSpecPage({
       components: [VerdocsHelpIcon],

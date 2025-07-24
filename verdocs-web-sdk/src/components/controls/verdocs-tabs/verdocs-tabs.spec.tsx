@@ -1,11 +1,21 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { VerdocsTabs } from './verdocs-tabs';
+import { h } from '@stencil/core';
 
 describe('verdocs-tabs', () => {
+  beforeAll(() => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.123456789);
+  });
+
+  afterAll(() => {
+    // restore the original behavior after the tests
+    (Math.random as jest.Mock).mockRestore();
+  });
+
   it('renders with default props', async () => {
     const page = await newSpecPage({
       components: [VerdocsTabs],
-      html: `<verdocs-tabs></verdocs-tabs>`,
+      template: () => <verdocs-tabs tabs={[]} selectedTab={0}></verdocs-tabs>,
     });
     expect(page.root).toMatchSnapshot();
   });
@@ -17,7 +27,7 @@ describe('verdocs-tabs', () => {
     ];
     const page = await newSpecPage({
       components: [VerdocsTabs],
-      html: `<verdocs-tabs selectedTab="1" tabs='${JSON.stringify(tabs)}'></verdocs-tabs>`,
+      template: () =>  <verdocs-tabs selectedTab={1} tabs={tabs}></verdocs-tabs>,
     });
     expect(page.root).toMatchSnapshot();
   });
@@ -29,7 +39,7 @@ describe('verdocs-tabs', () => {
     ];
     const page = await newSpecPage({
       components: [VerdocsTabs],
-      html: `<verdocs-tabs tabs='${JSON.stringify(tabs)}'></verdocs-tabs>`,
+      template: () =>  <verdocs-tabs selectedTab={1} tabs={tabs}></verdocs-tabs>,
     });
 
     const spy = jest.fn();

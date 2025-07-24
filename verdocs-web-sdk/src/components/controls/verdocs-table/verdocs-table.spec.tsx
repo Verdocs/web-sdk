@@ -1,11 +1,21 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { VerdocsTable } from './verdocs-table';
+import {h} from '@stencil/core';
 
 describe('verdocs-table', () => {
+  beforeAll(() => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.123456789);
+  });
+
+  afterAll(() => {
+    // restore the original behavior after the tests
+    (Math.random as jest.Mock).mockRestore();
+  });
+
   it('renders with default props', async () => {
     const page = await newSpecPage({
       components: [VerdocsTable],
-      html: `<verdocs-table></verdocs-table>`,
+      template: () => <verdocs-table></verdocs-table>,
     });
     expect(page.root).toMatchSnapshot();
   });
@@ -21,7 +31,7 @@ describe('verdocs-table', () => {
     ];
     const page = await newSpecPage({
       components: [VerdocsTable],
-      html: `<verdocs-table columns='${JSON.stringify(columns)}' data='${JSON.stringify(data)}'></verdocs-table>`,
+      template: () => <verdocs-table columns={columns} data={data}></verdocs-table>,
     });
     expect(page.root).toMatchSnapshot();
   });
@@ -35,7 +45,7 @@ describe('verdocs-table', () => {
     ];
     const page = await newSpecPage({
       components: [VerdocsTable],
-      html: `<verdocs-table></verdocs-table>`,
+      template: () => <verdocs-table></verdocs-table>,
     });
     (page.rootInstance as any).columns = columns;
     (page.rootInstance as any).data = data;
