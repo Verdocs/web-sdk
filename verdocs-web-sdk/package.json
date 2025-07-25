@@ -21,8 +21,10 @@
     "build": "stencil build --docs",
     "serve": "stencil build --dev --watch --serve",
     "start": "stencil build --dev --watch --docs",
-    "test": "stencil test --spec --e2e --screenshot",
-    "test.watch": "stencil test --spec --e2e --watchAll",
+    "test": "stencil test --spec",
+    "test-coverage": "stencil test --spec --coverage",
+    "e2e-test": "stencil test --e2e --screenshot",
+    "test.watch": "stencil test --spec --watchAll",
     "generate": "stencil generate"
   },
   "dependencies": {
