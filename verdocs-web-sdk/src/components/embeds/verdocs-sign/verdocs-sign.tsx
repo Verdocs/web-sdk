@@ -847,6 +847,7 @@ export class VerdocsSign {
 
           <verdocs-disclosure-dialog
             disclosures={this.disclosures}
+            delegator={this.recipient.delegator}
             onDelegate={() => (this.delegating = true)}
             onDecline={() => (this.declining = true)}
             onAccept={() => this.handleClickAgree()}

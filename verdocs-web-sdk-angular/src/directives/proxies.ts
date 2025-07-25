@@ -403,14 +403,14 @@ export declare interface VerdocsDialog extends Components.VerdocsDialog {
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsDisclosureDialog,
-  inputs: ['disclosures']
+  inputs: ['delegator', 'disclosures']
 })
 @Component({
   selector: 'verdocs-disclosure-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disclosures'],
+  inputs: ['delegator', 'disclosures'],
 })
 export class VerdocsDisclosureDialog {
   protected el: HTMLVerdocsDisclosureDialogElement;
