@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-dropdown renders with default props 1`] = `
+<verdocs-dropdown>
+  <button aria-label="Open Menu" class="arrow" id="verdocs-dropdown-4fzzzxjyl">
+    <svg fill="#50BE80" height="24px" viewBox="0 0 24 24" width="24px" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0h24v24H0V0z" fill="none"></path>
+      <path d="M7 10l5 5 5-5H7z"></path>
+    </svg>
+  </button>
+</verdocs-dropdown>
+`;
+
+exports[`verdocs-dropdown renders with options 1`] = `
+<verdocs-dropdown>
+  <button aria-label="Open Menu" class="arrow" id="verdocs-dropdown-4fzzzxjyl">
+    <svg fill="#50BE80" height="24px" viewBox="0 0 24 24" width="24px" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0h24v24H0V0z" fill="none"></path>
+      <path d="M7 10l5 5 5-5H7z"></path>
+    </svg>
+  </button>
+</verdocs-dropdown>
+`;

@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-select-input renders as disabled 1`] = `
+<verdocs-select-input class="input-field">
+  <label>
+    <div></div>
+    <select class="input-element" disabled="">
+      <option value="1">
+        Option 1
+      </option>
+    </select>
+  </label>
+</verdocs-select-input>
+`;
+
+exports[`verdocs-select-input renders with default props 1`] = `
+<verdocs-select-input class="input-field">
+  <label>
+    <div></div>
+    <select class="input-element"></select>
+  </label>
+</verdocs-select-input>
+`;
+
+exports[`verdocs-select-input renders with label, value, and options 1`] = `
+<verdocs-select-input class="input-field">
+  <label>
+    <div class="input-label">
+      Select:
+    </div>
+    <select class="input-element">
+      <option value="1">
+        Option 1
+      </option>
+      <option selected="" value="2">
+        Option 2
+      </option>
+    </select>
+  </label>
+</verdocs-select-input>
+`;

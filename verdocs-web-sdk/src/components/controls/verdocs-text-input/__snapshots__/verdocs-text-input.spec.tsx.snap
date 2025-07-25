@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-text-input renders with clearable and helpText 1`] = `
+<verdocs-text-input class="clearable input-field" clearable="true" help-text="Help!" value="">
+  <label>
+    <div class="input-container">
+      <input autocomplete="" class="input-element" data-lpignore="true" placeholder="" type="text" value="">
+    </div>
+    <verdocs-help-icon text="Help!"></verdocs-help-icon>
+  </label>
+</verdocs-text-input>
+`;
+
+exports[`verdocs-text-input renders with default props 1`] = `
+<verdocs-text-input class="input-field" value="">
+  <label>
+    <div class="input-container">
+      <input autocomplete="" class="input-element" data-lpignore="true" placeholder="" type="text" value="">
+    </div>
+  </label>
+</verdocs-text-input>
+`;
+
+exports[`verdocs-text-input renders with label, value, and placeholder 1`] = `
+<verdocs-text-input class="input-field" label="Name" placeholder="Enter your name" value="Alice">
+  <label>
+    <div class="input-label">
+      Name:
+    </div>
+    <div class="input-container">
+      <input autocomplete="" class="input-element" data-lpignore="true" placeholder="Enter your name" type="text" value="Alice">
+    </div>
+  </label>
+</verdocs-text-input>
+`;

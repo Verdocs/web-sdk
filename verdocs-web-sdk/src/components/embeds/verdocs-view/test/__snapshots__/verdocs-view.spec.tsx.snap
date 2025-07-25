@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-view renders 1`] = `
+<verdocs-view>
+  <verdocs-loader></verdocs-loader>
+</verdocs-view>
+`;

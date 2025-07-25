@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-date-input renders as disabled 1`] = `
+<verdocs-date-input class="input-field" value="">
+  <label>
+    <div class="input-container">
+      <input class="input-element" data-lpignore="true" disabled="" id="verdocs-date-input-4fzzzxjyl" placeholder="" readonly="true" type="text" value="">
+    </div>
+  </label>
+</verdocs-date-input>
+`;
+
+exports[`verdocs-date-input renders with default props 1`] = `
+<verdocs-date-input class="input-field" value="">
+  <label>
+    <div class="input-container">
+      <input class="input-element" data-lpignore="true" id="verdocs-date-input-4fzzzxjyl" placeholder="" readonly="true" type="text" value="">
+    </div>
+  </label>
+</verdocs-date-input>
+`;
+
+exports[`verdocs-date-input renders with label, placeholder, and value 1`] = `
+<verdocs-date-input class="input-field" value="2023-01-01">
+  <label>
+    <div class="input-label">
+      DOB:
+    </div>
+    <div class="input-container">
+      <input class="input-element" data-lpignore="true" id="verdocs-date-input-4fzzzxjyl" placeholder="Date of Birth..." readonly="true" type="text" value="2023-01-01">
+    </div>
+  </label>
+</verdocs-date-input>
+`;

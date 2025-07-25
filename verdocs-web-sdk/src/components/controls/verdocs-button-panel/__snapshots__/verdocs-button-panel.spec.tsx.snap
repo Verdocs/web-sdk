@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-button-panel renders with default props 1`] = `
+<verdocs-button-panel>
+  <!---->
+  <div class="icon"></div>
+</verdocs-button-panel>
+`;
+
+exports[`verdocs-button-panel renders with icon prop 1`] = `
+<verdocs-button-panel icon="<svg></svg>">
+  <!---->
+  <div class="icon">
+    <svg></svg>
+  </div>
+</verdocs-button-panel>
+`;
+
+exports[`verdocs-button-panel renders with slotted content 1`] = `
+<verdocs-button-panel icon="<svg></svg>">
+  <!---->
+  <div class="icon">
+    <svg></svg>
+  </div>
+</verdocs-button-panel>
+`;

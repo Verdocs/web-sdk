@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-tabs renders with default props 1`] = `
+<verdocs-tabs>
+  <!---->
+  <div class="flex flex-1"></div>
+  <slot-fb>
+    <div></div>
+  </slot-fb>
+</verdocs-tabs>
+`;
+
+exports[`verdocs-tabs renders with tabs and selectedTab 1`] = `
+<verdocs-tabs>
+  <!---->
+  <div class="tab">
+    Tab 1
+  </div>
+  <div class="active disabled tab">
+    Tab 2
+  </div>
+  <div class="flex flex-1"></div>
+  <slot-fb>
+    <div></div>
+  </slot-fb>
+</verdocs-tabs>
+`;
