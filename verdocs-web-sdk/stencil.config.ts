@@ -21,11 +21,12 @@ export const config: Config = {
   devServer: {
     openBrowser: false,
   },
-  // testing: {
-  //   transform: {
-  //     '^.+\\.svg$': 'jest-svg-transformer',
-  //   },
-  // },
+   testing: {
+    setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
+    transformIgnorePatterns: [
+      '/node_modules/(?!(tinybase|@verdocs/js-sdk|imask|sortablejs|axios)/)'
+    ],
+  },
   rollupPlugins: {
     // before: [typescript()],
     // after: [nodePolyfills()],

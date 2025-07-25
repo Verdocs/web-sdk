@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-portal renders with anchor and voffset 1`] = `
+<verdocs-portal anchor="anchor-id" class="verdocs-portal" voffset="10">
+  <!---->
+</verdocs-portal>
+`;
+
+exports[`verdocs-portal renders with default props 1`] = `
+<verdocs-portal class="verdocs-portal">
+  <!---->
+</verdocs-portal>
+`;

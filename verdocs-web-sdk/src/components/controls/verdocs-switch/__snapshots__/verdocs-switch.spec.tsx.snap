@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-switch renders as checked and disabled 1`] = `
+<verdocs-switch checked="true" disabled="true">
+  <button aria-checked="checked" class="disabled primary switch" data-state="checked" role="switch" type="button" value="on">
+    <span class="slider" data-state="checked"></span>
+  </button>
+</verdocs-switch>
+`;
+
+exports[`verdocs-switch renders with default props 1`] = `
+<verdocs-switch>
+  <button aria-checked="unchecked" class="primary switch" data-state="unchecked" role="switch" type="button" value="on">
+    <span class="slider" data-state="unchecked"></span>
+  </button>
+</verdocs-switch>
+`;

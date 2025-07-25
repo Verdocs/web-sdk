@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-checkbox renders with checked, theme, size, and label 1`] = `
+<verdocs-checkbox checked="true" class="dark small" label="Test" size="small" theme="dark">
+  <label>
+    <input checked="" type="checkbox" value="">
+    <span>
+      Test
+    </span>
+  </label>
+</verdocs-checkbox>
+`;
+
+exports[`verdocs-checkbox renders with default props 1`] = `
+<verdocs-checkbox class="light normal">
+  <label>
+    <input type="checkbox" value="">
+    <span></span>
+  </label>
+</verdocs-checkbox>
+`;

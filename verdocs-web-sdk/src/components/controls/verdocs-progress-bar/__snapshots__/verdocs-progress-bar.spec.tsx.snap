@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-progress-bar renders with default props 1`] = `
+<verdocs-progress-bar>
+  <div class="labels"></div>
+  <div class="bar">
+    <div class="slider" style="width: 0%;"></div>
+  </div>
+</verdocs-progress-bar>
+`;
+
+exports[`verdocs-progress-bar renders with label and percent 1`] = `
+<verdocs-progress-bar>
+  <div class="labels">
+    <div class="label">
+      Uploading...
+    </div>
+  </div>
+  <div class="bar">
+    <div class="slider" style="width: 54%;"></div>
+  </div>
+</verdocs-progress-bar>
+`;
+
+exports[`verdocs-progress-bar renders with showPercent true 1`] = `
+<verdocs-progress-bar>
+  <div class="labels">
+    <div class="label">
+      Loading...
+    </div>
+    <div class="label">
+      75%
+    </div>
+  </div>
+  <div class="bar">
+    <div class="slider" style="width: 75%;"></div>
+  </div>
+</verdocs-progress-bar>
+`;

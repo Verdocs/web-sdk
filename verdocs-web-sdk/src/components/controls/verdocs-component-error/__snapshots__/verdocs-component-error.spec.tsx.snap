@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-component-error renders with a message 1`] = `
+<verdocs-component-error message="Error occurred">
+  <div class="inner">
+    Error occurred
+  </div>
+</verdocs-component-error>
+`;
+
+exports[`verdocs-component-error renders with default props 1`] = `
+<verdocs-component-error>
+  <div class="inner"></div>
+</verdocs-component-error>
+`;
