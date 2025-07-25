@@ -3,7 +3,7 @@
 verdocs-disclosure-dialog {
   .footer {
     .accept {
-      margin-left: 28px;
+      margin: 0 0 28px 28px;
     }
   }
 
@@ -28,7 +28,7 @@ verdocs-disclosure-dialog {
   .buttons {
     gap: 20px;
     display: flex;
-    margin-top: 28px;
+    margin-top: 14px;
     flex-direction: row;
     justify-content: flex-end;
 
@@ -47,6 +47,10 @@ verdocs-disclosure-dialog {
 
       &.decline {
         background-color: $verdocs-button-purple;
+      }
+
+      &.delegate {
+        background-color: $verdocs-button-green;
       }
 
       &.proceed {

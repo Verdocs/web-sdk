@@ -8,73 +8,6 @@ verdocs-delegate-dialog {
     box-sizing: border-box;
   }
 
-  .background-overlay {
-    position: fixed;
-    z-index: 10000;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0000007f;
-  }
-
-  .dialog {
-    width: 440px;
-    display: flex;
-    flex-direction: column;
-    border-radius: 4px;
-    overflow: hidden;
-    background: #fff;
-    padding: 16px;
-    gap: 10px;
-    box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
-  }
-
-  .heading {
-    display: flex;
-    flex-direction: row;
-    font-size: 20px;
-    font-weight: 500;
-  }
-
-  .step {
-    margin-left: 6px;
-    color: #666;
-  }
-
-  .help-box {
-    background-color: $border-color;
-    display: flex;
-    flex-direction: row;
-    padding: 14px;
-    align-items: center;
-    color: white;
-  }
-
-  .help-details {
-    display: flex;
-    flex-direction: column;
-    margin-left: 15px;
-    font-size: 14px;
-  }
-
-  .help-icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .help-title {
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .help-text {
-    font-weight: 400;
-  }
-
   .input {
     gap: 10px;
     margin: 5px 0;
@@ -155,40 +88,38 @@ verdocs-delegate-dialog {
     }
   }
 
-  .choices {
-    display: grid;
-    gap: 15px;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    margin: 0 0 15px 0;
-  }
-
-  .choice {
-    border: 1px solid $border-color;
-    border-radius: 5px;
-    display: flex;
-    height: 60px;
-    font-size: 14px;
-    padding: 0 5px;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: $choice-available-color;
-    cursor: pointer;
-
-    &.selected {
-      background-color: $border-color;
-      color: $verdocs-grey-4;
-    }
-  }
-
+  /* TODO: We're getting positive feedback. Add this as a formal button variant. */
   .buttons {
+    gap: 20px;
     display: flex;
-    align-items: center;
+    margin-top: 14px;
     flex-direction: row;
     justify-content: flex-end;
 
-    verdocs-button {
-      margin-left: 16px;
+    button {
+      flex: 1;
+      border: 0;
+      height: 38px;
+      display: flex;
+      color: #ffffff;
+      font-size: 14px;
+      //font-size: 16px;
+      cursor: pointer;
+      align-items: center;
+      border-radius: 6px;
+      justify-content: center;
+
+      &.cancel {
+        background-color: $verdocs-button-purple;
+      }
+
+      &.proceed {
+        background-color: $verdocs-button-green;
+      }
+
+      &:disabled {
+        background-color: $verdocs-button-disabled;
+      }
     }
   }
 }

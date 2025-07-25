@@ -1,8 +1,8 @@
-import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
+import {integerSequence, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
-import {getEnvelope, integerSequence, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
+import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
@@ -170,7 +170,6 @@ export class VerdocsSign {
       // NOTE: We don't listen to the store here because we are often an independent
       // session and might have a different "view" of the envelope.
       const response = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
-      console.log('[SIGN] Authentication successful', response);
       this.processAuthResponse(response);
     } catch (e) {
       console.log('[SIGN] Error with signing session', e);
@@ -234,7 +233,8 @@ export class VerdocsSign {
 
   handleClickAgree() {
     this.submitting = true;
-    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, true, this.disclosures)
+    console.log('[SIGN] Accepting disclosures', this.disclosures);
+    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, this.disclosures)
       .then(() => {
         this.nextButtonLabel = 'Next';
         this.recipient.agreed = true;
@@ -243,7 +243,8 @@ export class VerdocsSign {
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'agreed'});
       })
       .catch(e => {
-        console.log('[SIGN] Update failure', e);
+        console.log('[SIGN] Unable to accept disclosures', e);
+        VerdocsToast('Unable to accept disclosures, please try again later', {style: 'error'});
         this.submitting = false;
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
@@ -275,6 +276,7 @@ export class VerdocsSign {
           const firstDoc = this.envelope.documents.find(doc => doc.type === 'attachment');
           if (firstDoc) {
             saveAttachment(this.endpoint, this.envelope, firstDoc.id).catch(e => {
+              VerdocsToast('Unable to download PDF, please try again later', {style: 'error'});
               console.log('[SIGN] Error downloading PDF', e);
             });
             this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
@@ -308,6 +310,7 @@ export class VerdocsSign {
           this.fatalErrorMessage = 'Please reload your browser to continue.';
         } else {
           console.log('[SIGN] Server error', e);
+          VerdocsToast('Unable to save change, please try again later', {style: 'error'});
         }
 
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -354,6 +357,7 @@ export class VerdocsSign {
           })
           .catch(e => {
             console.log('Error updating initials', e);
+            VerdocsToast('Unable to save initials, please try again later', {style: 'error'});
             this.showSpinner = false;
           });
 
@@ -376,6 +380,7 @@ export class VerdocsSign {
           })
           .catch(e => {
             console.warn('[SIGN] Error updating signature', e);
+            VerdocsToast('Unable to save signature, please try again later', {style: 'error'});
             this.showSpinner = false;
           });
 
@@ -465,21 +470,26 @@ export class VerdocsSign {
         this.submitting = true;
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
         console.log('[SIGN] Submitted successfully', result);
-        this.recipient.status = 'submitted';
-        this.showDone = true;
-        console.log('[SIGN] Reloading envelope');
-        getEnvelope(this.endpoint, this.envelopeId)
-          .then(envelope => {
-            this.envelope = envelope;
-            // The show-done dialog does this
-            // this.isDone = true;
-            this.submitting = false;
-          })
-          .catch(e => {
-            // this.isDone = true;
-            console.log('[SIGN] Error reloading envelope', e);
-            this.submitting = false;
-          });
+        // TODO: The "proper" way is generating an error from Stencil
+        //  NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which
+        //  the new node is to be inserted is not a child of this node.
+        window.location.reload();
+        // this.recipient.status = 'submitted';
+        // this.showDone = true;
+        // console.log('[SIGN] Reloading envelope');
+        // getEnvelope(this.endpoint, this.envelopeId)
+        //   .then(envelope => {
+        //     this.envelope = envelope;
+        //     // The show-done dialog does this
+        //     // this.isDone = true;
+        //     this.submitting = false;
+        //   })
+        //   .catch(e => {
+        //     // this.isDone = true;
+        //     console.log('[SIGN] Error reloading envelope', e);
+        //     VerdocsToast('Unable to save changes, please try again later', {style: 'error'});
+        //     this.submitting = false;
+        //   });
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
       }
@@ -537,10 +547,6 @@ export class VerdocsSign {
         this.nextSubmits = true;
       }
     } else {
-      console.log(
-        '[SIGN] Invalid fields remaining',
-        invalidFields.map(field => field.name),
-      );
       this.nextButtonLabel = 'Next';
       this.nextSubmits = false;
     }
@@ -696,7 +702,6 @@ export class VerdocsSign {
   }
 
   render() {
-    console.log('[SIGN] Rendering', {authStep: this.authStep});
     if (this.showLoadError) {
       return (
         <Host>
@@ -775,24 +780,34 @@ export class VerdocsSign {
 
     if (this.delegating) {
       return (
-        <verdocs-delegate-dialog
-          endpoint={this.endpoint}
-          envelope={this.envelope}
-          onExit={() => (this.delegating = false)}
-          onNext={(e: any) => {
-            delegateRecipient(this.endpoint, this.envelopeId, this.roleId, e.detail)
-              .then(r => {
-                VerdocsToast('Delegation request submitted.', {style: 'success'});
-                console.log('[SIGN] Delegated successfully', r);
-                this.delegated = true;
-                this.delegating = false;
-              })
-              .catch(e => {
-                console.log('[SIGN] Error delegating request', e);
-                VerdocsToast('Unable to process delegation request. Please try again later.', {style: 'error'});
-              });
-          }}
-        />
+        <Host class="agreed">
+          <div class="document" style={{paddingTop: '15px'}}>
+            <img
+              src="https://public-assets.verdocs.com/loading-placeholder.png"
+              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              alt="Placeholder page"
+            />
+          </div>
+
+          <verdocs-delegate-dialog
+            endpoint={this.endpoint}
+            envelope={this.envelope}
+            onExit={() => (this.delegating = false)}
+            onNext={(e: any) => {
+              delegateRecipient(this.endpoint, this.envelopeId, this.roleId, e.detail)
+                .then(r => {
+                  VerdocsToast('Delegation request submitted.', {style: 'success'});
+                  console.log('[SIGN] Delegated successfully', r);
+                  this.delegated = true;
+                  this.delegating = false;
+                })
+                .catch(e => {
+                  console.log('[SIGN] Error delegating request', e);
+                  VerdocsToast('Unable to process delegation request. Please try again later.', {style: 'error'});
+                });
+            }}
+          />
+        </Host>
       );
     }
 
@@ -810,7 +825,10 @@ export class VerdocsSign {
                 console.log('[SIGN] Decline result', r);
                 window.location.reload();
               })
-              .catch(e => console.warn('[SIGN] Error declining signing session', e));
+              .catch(e => {
+                console.warn('[SIGN] Error declining signing session', e);
+                VerdocsToast('Unable to decline, please try again later', {style: 'error'});
+              });
           }}
         />
       );
@@ -819,13 +837,6 @@ export class VerdocsSign {
     if (!this.agreed) {
       return (
         <Host class="agreed">
-          <div id="verdocs-sign-header">
-            <div class="inner">
-              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-              <div class="title">{this.envelope.name}</div>
-            </div>
-          </div>
-
           <div class="document" style={{paddingTop: '15px'}}>
             <img
               src="https://public-assets.verdocs.com/loading-placeholder.png"
@@ -834,7 +845,12 @@ export class VerdocsSign {
             />
           </div>
 
-          <verdocs-disclosure-dialog disclosures={this.disclosures} onDecline={() => (this.declining = true)} onAccept={() => this.handleClickAgree()} />
+          <verdocs-disclosure-dialog
+            disclosures={this.disclosures}
+            onDelegate={() => (this.delegating = true)}
+            onDecline={() => (this.declining = true)}
+            onAccept={() => this.handleClickAgree()}
+          />
         </Host>
       );
     }
@@ -998,6 +1014,14 @@ export class VerdocsSign {
       inProgressMenuOptions.unshift({id: 'delegate', label: 'Delegate'});
     }
 
+    const invalidFields = this.getRecipientFields().filter(field => !this.isFieldValid(field));
+    invalidFields.length > 0
+      ? console.log(
+          '[SIGN] Invalid fields remaining',
+          invalidFields.map(field => field.name),
+        )
+      : console.log('[SIGN] All field valid');
+
     return (
       <Host>
         <div id="verdocs-sign-header">
@@ -1070,14 +1094,13 @@ export class VerdocsSign {
           />
         )}
 
-        {this.submitting ||
-          (this.showSpinner && (
-            <verdocs-portal>
-              <div class="spinner-overlay">
-                <verdocs-spinner />
-              </div>
-            </verdocs-portal>
-          ))}
+        {(this.submitting || this.showSpinner) && (
+          <verdocs-portal>
+            <div class="spinner-overlay">
+              <verdocs-spinner />
+            </div>
+          </verdocs-portal>
+        )}
       </Host>
     );
   }

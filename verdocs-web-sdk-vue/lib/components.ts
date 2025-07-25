@@ -120,9 +120,11 @@ export const VerdocsDialog: StencilVueComponent<JSX.VerdocsDialog> = /*@__PURE__
 export const VerdocsDisclosureDialog: StencilVueComponent<JSX.VerdocsDisclosureDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsDisclosureDialog>('verdocs-disclosure-dialog', undefined, [
   'disclosures',
   'decline',
+  'delegate',
   'accept'
 ], [
   'decline',
+  'delegate',
   'accept'
 ]);
 

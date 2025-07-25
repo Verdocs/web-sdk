@@ -4,10 +4,86 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Even
 
 import { ProxyCmp, proxyOutputs } from './angular-component-lib/utils';
 
-import { Components } from '@verdocs/web-sdk';
+import type { Components } from '@verdocs/web-sdk/components';
 
-
+import { defineCustomElement as defineVerdocsAuth } from '@verdocs/web-sdk/components/verdocs-auth.js';
+import { defineCustomElement as defineVerdocsBuild } from '@verdocs/web-sdk/components/verdocs-build.js';
+import { defineCustomElement as defineVerdocsButton } from '@verdocs/web-sdk/components/verdocs-button.js';
+import { defineCustomElement as defineVerdocsButtonPanel } from '@verdocs/web-sdk/components/verdocs-button-panel.js';
+import { defineCustomElement as defineVerdocsCheckbox } from '@verdocs/web-sdk/components/verdocs-checkbox.js';
+import { defineCustomElement as defineVerdocsComponentError } from '@verdocs/web-sdk/components/verdocs-component-error.js';
+import { defineCustomElement as defineVerdocsContactPicker } from '@verdocs/web-sdk/components/verdocs-contact-picker.js';
+import { defineCustomElement as defineVerdocsDateInput } from '@verdocs/web-sdk/components/verdocs-date-input.js';
+import { defineCustomElement as defineVerdocsDelegateDialog } from '@verdocs/web-sdk/components/verdocs-delegate-dialog.js';
+import { defineCustomElement as defineVerdocsDialog } from '@verdocs/web-sdk/components/verdocs-dialog.js';
+import { defineCustomElement as defineVerdocsDisclosureDialog } from '@verdocs/web-sdk/components/verdocs-disclosure-dialog.js';
+import { defineCustomElement as defineVerdocsDropdown } from '@verdocs/web-sdk/components/verdocs-dropdown.js';
+import { defineCustomElement as defineVerdocsEnvelopeDocumentPage } from '@verdocs/web-sdk/components/verdocs-envelope-document-page.js';
+import { defineCustomElement as defineVerdocsEnvelopeRecipientLink } from '@verdocs/web-sdk/components/verdocs-envelope-recipient-link.js';
+import { defineCustomElement as defineVerdocsEnvelopeRecipientSummary } from '@verdocs/web-sdk/components/verdocs-envelope-recipient-summary.js';
+import { defineCustomElement as defineVerdocsEnvelopeSidebar } from '@verdocs/web-sdk/components/verdocs-envelope-sidebar.js';
+import { defineCustomElement as defineVerdocsEnvelopeUpdateRecipient } from '@verdocs/web-sdk/components/verdocs-envelope-update-recipient.js';
+import { defineCustomElement as defineVerdocsEnvelopesList } from '@verdocs/web-sdk/components/verdocs-envelopes-list.js';
+import { defineCustomElement as defineVerdocsFieldAttachment } from '@verdocs/web-sdk/components/verdocs-field-attachment.js';
+import { defineCustomElement as defineVerdocsFieldCheckbox } from '@verdocs/web-sdk/components/verdocs-field-checkbox.js';
+import { defineCustomElement as defineVerdocsFieldDate } from '@verdocs/web-sdk/components/verdocs-field-date.js';
+import { defineCustomElement as defineVerdocsFieldDropdown } from '@verdocs/web-sdk/components/verdocs-field-dropdown.js';
+import { defineCustomElement as defineVerdocsFieldInitial } from '@verdocs/web-sdk/components/verdocs-field-initial.js';
+import { defineCustomElement as defineVerdocsFieldPayment } from '@verdocs/web-sdk/components/verdocs-field-payment.js';
+import { defineCustomElement as defineVerdocsFieldRadio } from '@verdocs/web-sdk/components/verdocs-field-radio.js';
+import { defineCustomElement as defineVerdocsFieldSignature } from '@verdocs/web-sdk/components/verdocs-field-signature.js';
+import { defineCustomElement as defineVerdocsFieldTextarea } from '@verdocs/web-sdk/components/verdocs-field-textarea.js';
+import { defineCustomElement as defineVerdocsFieldTextbox } from '@verdocs/web-sdk/components/verdocs-field-textbox.js';
+import { defineCustomElement as defineVerdocsFieldTimestamp } from '@verdocs/web-sdk/components/verdocs-field-timestamp.js';
+import { defineCustomElement as defineVerdocsFileChooser } from '@verdocs/web-sdk/components/verdocs-file-chooser.js';
+import { defineCustomElement as defineVerdocsHelpIcon } from '@verdocs/web-sdk/components/verdocs-help-icon.js';
+import { defineCustomElement as defineVerdocsInitialDialog } from '@verdocs/web-sdk/components/verdocs-initial-dialog.js';
+import { defineCustomElement as defineVerdocsKbaDialog } from '@verdocs/web-sdk/components/verdocs-kba-dialog.js';
+import { defineCustomElement as defineVerdocsLoader } from '@verdocs/web-sdk/components/verdocs-loader.js';
+import { defineCustomElement as defineVerdocsMenuPanel } from '@verdocs/web-sdk/components/verdocs-menu-panel.js';
+import { defineCustomElement as defineVerdocsMultiselect } from '@verdocs/web-sdk/components/verdocs-multiselect.js';
+import { defineCustomElement as defineVerdocsOkDialog } from '@verdocs/web-sdk/components/verdocs-ok-dialog.js';
+import { defineCustomElement as defineVerdocsOrganizationCard } from '@verdocs/web-sdk/components/verdocs-organization-card.js';
+import { defineCustomElement as defineVerdocsOtpDialog } from '@verdocs/web-sdk/components/verdocs-otp-dialog.js';
+import { defineCustomElement as defineVerdocsPagination } from '@verdocs/web-sdk/components/verdocs-pagination.js';
+import { defineCustomElement as defineVerdocsPortal } from '@verdocs/web-sdk/components/verdocs-portal.js';
+import { defineCustomElement as defineVerdocsPreview } from '@verdocs/web-sdk/components/verdocs-preview.js';
+import { defineCustomElement as defineVerdocsProgressBar } from '@verdocs/web-sdk/components/verdocs-progress-bar.js';
+import { defineCustomElement as defineVerdocsQuickFilter } from '@verdocs/web-sdk/components/verdocs-quick-filter.js';
+import { defineCustomElement as defineVerdocsQuickFunctions } from '@verdocs/web-sdk/components/verdocs-quick-functions.js';
+import { defineCustomElement as defineVerdocsRadioButton } from '@verdocs/web-sdk/components/verdocs-radio-button.js';
+import { defineCustomElement as defineVerdocsSearchBox } from '@verdocs/web-sdk/components/verdocs-search-box.js';
+import { defineCustomElement as defineVerdocsSearchTabs } from '@verdocs/web-sdk/components/verdocs-search-tabs.js';
+import { defineCustomElement as defineVerdocsSelectInput } from '@verdocs/web-sdk/components/verdocs-select-input.js';
+import { defineCustomElement as defineVerdocsSend } from '@verdocs/web-sdk/components/verdocs-send.js';
+import { defineCustomElement as defineVerdocsSign } from '@verdocs/web-sdk/components/verdocs-sign.js';
+import { defineCustomElement as defineVerdocsSignatureDialog } from '@verdocs/web-sdk/components/verdocs-signature-dialog.js';
+import { defineCustomElement as defineVerdocsSpinner } from '@verdocs/web-sdk/components/verdocs-spinner.js';
+import { defineCustomElement as defineVerdocsStatusIndicator } from '@verdocs/web-sdk/components/verdocs-status-indicator.js';
+import { defineCustomElement as defineVerdocsSwitch } from '@verdocs/web-sdk/components/verdocs-switch.js';
+import { defineCustomElement as defineVerdocsTable } from '@verdocs/web-sdk/components/verdocs-table.js';
+import { defineCustomElement as defineVerdocsTabs } from '@verdocs/web-sdk/components/verdocs-tabs.js';
+import { defineCustomElement as defineVerdocsTemplateAttachments } from '@verdocs/web-sdk/components/verdocs-template-attachments.js';
+import { defineCustomElement as defineVerdocsTemplateBuildTabs } from '@verdocs/web-sdk/components/verdocs-template-build-tabs.js';
+import { defineCustomElement as defineVerdocsTemplateCard } from '@verdocs/web-sdk/components/verdocs-template-card.js';
+import { defineCustomElement as defineVerdocsTemplateCreate } from '@verdocs/web-sdk/components/verdocs-template-create.js';
+import { defineCustomElement as defineVerdocsTemplateDocumentPage } from '@verdocs/web-sdk/components/verdocs-template-document-page.js';
+import { defineCustomElement as defineVerdocsTemplateFieldProperties } from '@verdocs/web-sdk/components/verdocs-template-field-properties.js';
+import { defineCustomElement as defineVerdocsTemplateFields } from '@verdocs/web-sdk/components/verdocs-template-fields.js';
+import { defineCustomElement as defineVerdocsTemplateRoleProperties } from '@verdocs/web-sdk/components/verdocs-template-role-properties.js';
+import { defineCustomElement as defineVerdocsTemplateRoles } from '@verdocs/web-sdk/components/verdocs-template-roles.js';
+import { defineCustomElement as defineVerdocsTemplateSettings } from '@verdocs/web-sdk/components/verdocs-template-settings.js';
+import { defineCustomElement as defineVerdocsTemplateStar } from '@verdocs/web-sdk/components/verdocs-template-star.js';
+import { defineCustomElement as defineVerdocsTemplateTags } from '@verdocs/web-sdk/components/verdocs-template-tags.js';
+import { defineCustomElement as defineVerdocsTemplatesList } from '@verdocs/web-sdk/components/verdocs-templates-list.js';
+import { defineCustomElement as defineVerdocsTextInput } from '@verdocs/web-sdk/components/verdocs-text-input.js';
+import { defineCustomElement as defineVerdocsToggle } from '@verdocs/web-sdk/components/verdocs-toggle.js';
+import { defineCustomElement as defineVerdocsToggleButton } from '@verdocs/web-sdk/components/verdocs-toggle-button.js';
+import { defineCustomElement as defineVerdocsToolbarIcon } from '@verdocs/web-sdk/components/verdocs-toolbar-icon.js';
+import { defineCustomElement as defineVerdocsUploadDialog } from '@verdocs/web-sdk/components/verdocs-upload-dialog.js';
+import { defineCustomElement as defineVerdocsView } from '@verdocs/web-sdk/components/verdocs-view.js';
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsAuth,
   inputs: ['displayMode', 'endpoint', 'logo', 'visible']
 })
 @Component({
@@ -27,8 +103,8 @@ export class VerdocsAuth {
 }
 
 
-import type { IAuthStatus as IVerdocsAuthIAuthStatus } from '@verdocs/web-sdk';
-import type { SDKError as IVerdocsAuthSDKError } from '@verdocs/web-sdk';
+import type { IAuthStatus as IVerdocsAuthIAuthStatus } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsAuthSDKError } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsAuth extends Components.VerdocsAuth {
   /**
@@ -46,6 +122,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsBuild,
   inputs: ['endpoint', 'step', 'templateId']
 })
 @Component({
@@ -65,12 +142,12 @@ export class VerdocsBuild {
 }
 
 
-import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk';
-import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk';
-import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsBuildICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk';
-import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk/components';
+import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk/components';
+import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsBuildICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk/components';
+import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsBuild extends Components.VerdocsBuild {
   /**
@@ -106,6 +183,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsButton,
   inputs: ['disabled', 'endIcon', 'label', 'size', 'startIcon', 'type', 'variant']
 })
 @Component({
@@ -113,7 +191,7 @@ terminate the process, and the calling application should correct the condition 
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'endIcon', 'label', 'size', 'startIcon', 'type', 'variant'],
+  inputs: ['disabled', 'endIcon', { name: 'label', required: true }, 'size', 'startIcon', 'type', 'variant'],
 })
 export class VerdocsButton {
   protected el: HTMLVerdocsButtonElement;
@@ -128,6 +206,7 @@ export declare interface VerdocsButton extends Components.VerdocsButton {}
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsButtonPanel,
   inputs: ['icon'],
   methods: ['showPanel', 'hidePanel', 'toggle']
 })
@@ -151,6 +230,7 @@ export declare interface VerdocsButtonPanel extends Components.VerdocsButtonPane
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsCheckbox,
   inputs: ['checked', 'disabled', 'label', 'name', 'size', 'theme', 'value']
 })
 @Component({
@@ -173,6 +253,7 @@ export declare interface VerdocsCheckbox extends Components.VerdocsCheckbox {}
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsComponentError,
   inputs: ['message']
 })
 @Component({
@@ -195,6 +276,7 @@ export declare interface VerdocsComponentError extends Components.VerdocsCompone
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsContactPicker,
   inputs: ['contactSuggestions', 'endpoint', 'templateRole']
 })
 @Component({
@@ -214,8 +296,8 @@ export class VerdocsContactPicker {
 }
 
 
-import type { IContactSearchEvent as IVerdocsContactPickerIContactSearchEvent } from '@verdocs/web-sdk';
-import type { IContactSelectEvent as IVerdocsContactPickerIContactSelectEvent } from '@verdocs/web-sdk';
+import type { IContactSearchEvent as IVerdocsContactPickerIContactSearchEvent } from '@verdocs/web-sdk/components';
+import type { IContactSelectEvent as IVerdocsContactPickerIContactSelectEvent } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsContactPicker extends Components.VerdocsContactPicker {
   /**
@@ -235,6 +317,7 @@ the `contactSuggestions` property.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsDateInput,
   inputs: ['disabled', 'helpText', 'label', 'placeholder', 'required', 'value'],
   methods: ['focusField']
 })
@@ -258,6 +341,7 @@ export declare interface VerdocsDateInput extends Components.VerdocsDateInput {}
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsDelegateDialog,
   inputs: ['endpoint', 'envelope']
 })
 @Component({
@@ -290,6 +374,7 @@ export declare interface VerdocsDelegateDialog extends Components.VerdocsDelegat
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsDialog
 })
 @Component({
   selector: 'verdocs-dialog',
@@ -317,6 +402,7 @@ export declare interface VerdocsDialog extends Components.VerdocsDialog {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsDisclosureDialog,
   inputs: ['disclosures']
 })
 @Component({
@@ -331,24 +417,29 @@ export class VerdocsDisclosureDialog {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['decline', 'accept']);
+    proxyOutputs(this, this.el, ['decline', 'delegate', 'accept']);
   }
 }
 
 
 export declare interface VerdocsDisclosureDialog extends Components.VerdocsDisclosureDialog {
   /**
-   * Event fired when the process has completed successfully.
+   * Event fired when the user chooses to decline.
    */
   decline: EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>;
   /**
-   * Event fired when the process has completed successfully.
+   * Event fired when the user chooses to delegate signing.
+   */
+  delegate: EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>;
+  /**
+   * Event fired when the user chooses to proceed.
    */
   accept: EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>;
 }
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsDropdown,
   inputs: ['options']
 })
 @Component({
@@ -368,7 +459,7 @@ export class VerdocsDropdown {
 }
 
 
-import type { IMenuOption as IVerdocsDropdownIMenuOption } from '@verdocs/web-sdk';
+import type { IMenuOption as IVerdocsDropdownIMenuOption } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsDropdown extends Components.VerdocsDropdown {
   /**
@@ -380,6 +471,7 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsEnvelopeDocumentPage,
   inputs: ['documentId', 'endpoint', 'envelopeId', 'layers', 'pageNumber', 'type', 'virtualHeight', 'virtualWidth']
 })
 @Component({
@@ -399,7 +491,7 @@ export class VerdocsEnvelopeDocumentPage {
 }
 
 
-import type { IDocumentPageInfo as IVerdocsEnvelopeDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk';
+import type { IDocumentPageInfo as IVerdocsEnvelopeDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsEnvelopeDocumentPage extends Components.VerdocsEnvelopeDocumentPage {
   /**
@@ -410,6 +502,7 @@ export declare interface VerdocsEnvelopeDocumentPage extends Components.VerdocsE
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsEnvelopeRecipientLink,
   inputs: ['endpoint', 'envelopeId', 'roleName']
 })
 @Component({
@@ -429,8 +522,8 @@ export class VerdocsEnvelopeRecipientLink {
 }
 
 
-import type { IEnvelope as IVerdocsEnvelopeRecipientLinkIEnvelope } from '@verdocs/web-sdk';
-import type { SDKError as IVerdocsEnvelopeRecipientLinkSDKError } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsEnvelopeRecipientLinkIEnvelope } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsEnvelopeRecipientLinkSDKError } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsEnvelopeRecipientLink extends Components.VerdocsEnvelopeRecipientLink {
   /**
@@ -447,6 +540,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsEnvelopeRecipientSummary,
   inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelopeId']
 })
 @Component({
@@ -466,8 +560,8 @@ export class VerdocsEnvelopeRecipientSummary {
 }
 
 
-import type { IEnvelope as IVerdocsEnvelopeRecipientSummaryIEnvelope } from '@verdocs/web-sdk';
-import type { SDKError as IVerdocsEnvelopeRecipientSummarySDKError } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsEnvelopeRecipientSummaryIEnvelope } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsEnvelopeRecipientSummarySDKError } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsEnvelopeRecipientSummary extends Components.VerdocsEnvelopeRecipientSummary {
   /**
@@ -494,6 +588,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsEnvelopeSidebar,
   inputs: ['endpoint', 'envelopeId']
 })
 @Component({
@@ -513,9 +608,9 @@ export class VerdocsEnvelopeSidebar {
 }
 
 
-import type { SDKError as IVerdocsEnvelopeSidebarSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsEnvelopeSidebarVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IEnvelope as IVerdocsEnvelopeSidebarIEnvelope } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsEnvelopeSidebarSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsEnvelopeSidebarVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { IEnvelope as IVerdocsEnvelopeSidebarIEnvelope } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsEnvelopeSidebar extends Components.VerdocsEnvelopeSidebar {
   /**
@@ -540,6 +635,7 @@ to redirect the user to the appropriate next workflow step.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsEnvelopeUpdateRecipient,
   inputs: ['endpoint', 'envelopeId', 'roleName']
 })
 @Component({
@@ -559,8 +655,8 @@ export class VerdocsEnvelopeUpdateRecipient {
 }
 
 
-import type { IRecipient as IVerdocsEnvelopeUpdateRecipientIRecipient } from '@verdocs/web-sdk';
-import type { SDKError as IVerdocsEnvelopeUpdateRecipientSDKError } from '@verdocs/web-sdk';
+import type { IRecipient as IVerdocsEnvelopeUpdateRecipientIRecipient } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsEnvelopeUpdateRecipientSDKError } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsEnvelopeUpdateRecipient extends Components.VerdocsEnvelopeUpdateRecipient {
   /**
@@ -577,6 +673,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsEnvelopesList,
   inputs: ['endpoint', 'match', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'status', 'view']
 })
 @Component({
@@ -596,10 +693,10 @@ export class VerdocsEnvelopesList {
 }
 
 
-import type { TEnvelopeStatus as IVerdocsEnvelopesListTEnvelopeStatus } from '@verdocs/web-sdk';
-import type { SDKError as IVerdocsEnvelopesListSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsEnvelopesListVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IEnvelope as IVerdocsEnvelopesListIEnvelope } from '@verdocs/web-sdk';
+import type { TEnvelopeStatus as IVerdocsEnvelopesListTEnvelopeStatus } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsEnvelopesListSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsEnvelopesListVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { IEnvelope as IVerdocsEnvelopesListIEnvelope } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsEnvelopesList extends Components.VerdocsEnvelopesList {
   /**
@@ -639,6 +736,7 @@ to the envelope detail view.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldAttachment,
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -659,8 +757,8 @@ export class VerdocsFieldAttachment {
 }
 
 
-import type { ITemplateField as IVerdocsFieldAttachmentITemplateField } from '@verdocs/web-sdk';
-import type { ISelectedFile as IVerdocsFieldAttachmentISelectedFile } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldAttachmentITemplateField } from '@verdocs/web-sdk/components';
+import type { ISelectedFile as IVerdocsFieldAttachmentISelectedFile } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {
   /**
@@ -680,6 +778,7 @@ Build) not for any attachments (during signing).
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldCheckbox,
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -700,7 +799,7 @@ export class VerdocsFieldCheckbox {
 }
 
 
-import type { ITemplateField as IVerdocsFieldCheckboxITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldCheckboxITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {
   /**
@@ -715,6 +814,7 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldDate,
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -735,7 +835,7 @@ export class VerdocsFieldDate {
 }
 
 
-import type { ITemplateField as IVerdocsFieldDateITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldDateITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   /**
@@ -754,6 +854,7 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldDropdown,
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -774,7 +875,7 @@ export class VerdocsFieldDropdown {
 }
 
 
-import type { ITemplateField as IVerdocsFieldDropdownITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldDropdownITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
   /**
@@ -795,6 +896,7 @@ keypress.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldInitial,
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'initials', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -815,7 +917,7 @@ export class VerdocsFieldInitial {
 }
 
 
-import type { ITemplateField as IVerdocsFieldInitialITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldInitialITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInitial {
   /**
@@ -848,6 +950,7 @@ keypress.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldPayment,
   inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'done', 'editable', 'field', 'fieldId', 'fieldname', 'fields', 'moveable', 'pageNum', 'pagenumber', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -868,7 +971,7 @@ export class VerdocsFieldPayment {
 }
 
 
-import type { ITemplateField as IVerdocsFieldPaymentITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldPaymentITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPayment {
   /**
@@ -883,6 +986,7 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldRadio,
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'required', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -903,7 +1007,7 @@ export class VerdocsFieldRadio {
 }
 
 
-import type { ITemplateField as IVerdocsFieldRadioITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldRadioITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio {
   /**
@@ -918,6 +1022,7 @@ export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldSignature,
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'name', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -938,7 +1043,7 @@ export class VerdocsFieldSignature {
 }
 
 
-import type { ITemplateField as IVerdocsFieldSignatureITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldSignatureITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSignature {
   /**
@@ -961,6 +1066,7 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldTextarea,
   inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -981,7 +1087,7 @@ export class VerdocsFieldTextarea {
 }
 
 
-import type { ITemplateField as IVerdocsFieldTextareaITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldTextareaITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {
   /**
@@ -996,6 +1102,7 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldTextbox,
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'multiline', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -1016,7 +1123,7 @@ export class VerdocsFieldTextbox {
 }
 
 
-import type { ITemplateField as IVerdocsFieldTextboxITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldTextboxITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
   /**
@@ -1031,6 +1138,7 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFieldTimestamp,
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
@@ -1051,7 +1159,7 @@ export class VerdocsFieldTimestamp {
 }
 
 
-import type { ITemplateField as IVerdocsFieldTimestampITemplateField } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsFieldTimestampITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {
   /**
@@ -1066,6 +1174,7 @@ export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTi
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsFileChooser,
   inputs: ['endpoint']
 })
 @Component({
@@ -1095,6 +1204,7 @@ Host applications should use this event to enable/disable buttons to upload or o
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsHelpIcon,
   inputs: ['icon', 'text']
 })
 @Component({
@@ -1117,6 +1227,7 @@ export declare interface VerdocsHelpIcon extends Components.VerdocsHelpIcon {}
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsInitialDialog,
   inputs: ['initials']
 })
 @Component({
@@ -1149,6 +1260,7 @@ export declare interface VerdocsInitialDialog extends Components.VerdocsInitialD
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsKbaDialog,
   inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'recipient', 'step', 'steps']
 })
 @Component({
@@ -1168,7 +1280,7 @@ export class VerdocsKbaDialog {
 }
 
 
-import type { IRecipient as IVerdocsKbaDialogIRecipient } from '@verdocs/web-sdk';
+import type { IRecipient as IVerdocsKbaDialogIRecipient } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
   /**
@@ -1189,6 +1301,7 @@ or the new recipient details if the mode is 'identity'.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsLoader
 })
 @Component({
   selector: 'verdocs-loader',
@@ -1210,6 +1323,7 @@ export declare interface VerdocsLoader extends Components.VerdocsLoader {}
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsMenuPanel,
   inputs: ['overlay', 'side', 'width']
 })
 @Component({
@@ -1236,6 +1350,7 @@ export declare interface VerdocsMenuPanel extends Components.VerdocsMenuPanel {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsMultiselect,
   inputs: ['label', 'options', 'placeholder', 'selectedOptions']
 })
 @Component({
@@ -1262,6 +1377,7 @@ export declare interface VerdocsMultiselect extends Components.VerdocsMultiselec
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsOkDialog,
   inputs: ['buttonLabel', 'heading', 'message', 'showCancel']
 })
 @Component({
@@ -1287,13 +1403,14 @@ export declare interface VerdocsOkDialog extends Components.VerdocsOkDialog {
    */
   next: EventEmitter<CustomEvent<any>>;
   /**
-   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   * Event fired when Cancel is pressed. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
   exit: EventEmitter<CustomEvent<any>>;
 }
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsOrganizationCard,
   inputs: ['organization']
 })
 @Component({
@@ -1316,6 +1433,7 @@ export declare interface VerdocsOrganizationCard extends Components.VerdocsOrgan
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsOtpDialog,
   inputs: ['endpoint', 'method', 'recipient']
 })
 @Component({
@@ -1335,7 +1453,7 @@ export class VerdocsOtpDialog {
 }
 
 
-import type { ISignerTokenResponse as IVerdocsOtpDialogISignerTokenResponse } from '@verdocs/web-sdk';
+import type { ISignerTokenResponse as IVerdocsOtpDialogISignerTokenResponse } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsOtpDialog extends Components.VerdocsOtpDialog {
   /**
@@ -1350,6 +1468,7 @@ export declare interface VerdocsOtpDialog extends Components.VerdocsOtpDialog {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsPagination,
   inputs: ['itemCount', 'perPage', 'selectedPage']
 })
 @Component({
@@ -1378,6 +1497,7 @@ export declare interface VerdocsPagination extends Components.VerdocsPagination 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsPortal,
   inputs: ['anchor', 'voffset']
 })
 @Component({
@@ -1404,6 +1524,7 @@ export declare interface VerdocsPortal extends Components.VerdocsPortal {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsPreview,
   inputs: ['endpoint', 'templateId']
 })
 @Component({
@@ -1423,7 +1544,7 @@ export class VerdocsPreview {
 }
 
 
-import type { SDKError as IVerdocsPreviewSDKError } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsPreviewSDKError } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsPreview extends Components.VerdocsPreview {
   /**
@@ -1435,6 +1556,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsProgressBar,
   inputs: ['label', 'percent', 'showPercent']
 })
 @Component({
@@ -1457,6 +1579,7 @@ export declare interface VerdocsProgressBar extends Components.VerdocsProgressBa
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsQuickFilter,
   inputs: ['label', 'options', 'placeholder', 'value']
 })
 @Component({
@@ -1476,7 +1599,7 @@ export class VerdocsQuickFilter {
 }
 
 
-import type { IFilterOption as IVerdocsQuickFilterIFilterOption } from '@verdocs/web-sdk';
+import type { IFilterOption as IVerdocsQuickFilterIFilterOption } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsQuickFilter extends Components.VerdocsQuickFilter {
   /**
@@ -1488,6 +1611,7 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsQuickFunctions,
   inputs: ['endpoint']
 })
 @Component({
@@ -1520,6 +1644,7 @@ export declare interface VerdocsQuickFunctions extends Components.VerdocsQuickFu
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsRadioButton,
   inputs: ['checked', 'disabled', 'name', 'value']
 })
 @Component({
@@ -1542,6 +1667,7 @@ export declare interface VerdocsRadioButton extends Components.VerdocsRadioButto
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsSearchBox,
   inputs: ['endpoint', 'grabsFocus', 'placeholder', 'query', 'type'],
   methods: ['focusField']
 })
@@ -1562,8 +1688,8 @@ export class VerdocsSearchBox {
 }
 
 
-import type { ISearchEvent as IVerdocsSearchBoxISearchEvent } from '@verdocs/web-sdk';
-import type { TContentType as IVerdocsSearchBoxTContentType } from '@verdocs/web-sdk';
+import type { ISearchEvent as IVerdocsSearchBoxISearchEvent } from '@verdocs/web-sdk/components';
+import type { TContentType as IVerdocsSearchBoxTContentType } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsSearchBox extends Components.VerdocsSearchBox {
   /**
@@ -1582,6 +1708,7 @@ export declare interface VerdocsSearchBox extends Components.VerdocsSearchBox {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsSearchTabs
 })
 @Component({
   selector: 'verdocs-search-tabs',
@@ -1603,6 +1730,7 @@ export declare interface VerdocsSearchTabs extends Components.VerdocsSearchTabs 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsSelectInput,
   inputs: ['disabled', 'label', 'options', 'value']
 })
 @Component({
@@ -1625,6 +1753,7 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsSend,
   inputs: ['endpoint', 'environment', 'templateId'],
   methods: ['reset']
 })
@@ -1645,11 +1774,11 @@ export class VerdocsSend {
 }
 
 
-import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsSendICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk';
-import type { ITemplate as IVerdocsSendITemplate } from '@verdocs/web-sdk';
-import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk';
-import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
-import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk';
+import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsSendICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk/components';
+import type { ITemplate as IVerdocsSendITemplate } from '@verdocs/web-sdk/components';
+import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk/components';
+import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
@@ -1678,6 +1807,7 @@ the `contactSuggestions` property.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsSign,
   inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId']
 })
 @Component({
@@ -1697,9 +1827,9 @@ export class VerdocsSign {
 }
 
 
-import type { SDKError as IVerdocsSignSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsSignVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IEnvelope as IVerdocsSignIEnvelope } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsSignSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsSignVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { IEnvelope as IVerdocsSignIEnvelope } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsSign extends Components.VerdocsSign {
   /**
@@ -1719,6 +1849,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsSignatureDialog,
   inputs: ['name']
 })
 @Component({
@@ -1752,6 +1883,7 @@ representation of the signature adopted.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsSpinner,
   inputs: ['mode', 'size']
 })
 @Component({
@@ -1774,6 +1906,7 @@ export declare interface VerdocsSpinner extends Components.VerdocsSpinner {}
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsStatusIndicator,
   inputs: ['envelope', 'size', 'status', 'theme']
 })
 @Component({
@@ -1796,6 +1929,7 @@ export declare interface VerdocsStatusIndicator extends Components.VerdocsStatus
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsSwitch,
   inputs: ['checked', 'disabled', 'theme']
 })
 @Component({
@@ -1822,6 +1956,7 @@ export declare interface VerdocsSwitch extends Components.VerdocsSwitch {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTable,
   inputs: ['columns', 'data']
 })
 @Component({
@@ -1841,7 +1976,7 @@ export class VerdocsTable {
 }
 
 
-import type { IColumn as IVerdocsTableIColumn } from '@verdocs/web-sdk';
+import type { IColumn as IVerdocsTableIColumn } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTable extends Components.VerdocsTable {
   /**
@@ -1856,6 +1991,7 @@ export declare interface VerdocsTable extends Components.VerdocsTable {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTabs,
   inputs: ['selectedTab', 'tabs']
 })
 @Component({
@@ -1875,7 +2011,7 @@ export class VerdocsTabs {
 }
 
 
-import type { ITab as IVerdocsTabsITab } from '@verdocs/web-sdk';
+import type { ITab as IVerdocsTabsITab } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTabs extends Components.VerdocsTabs {
   /**
@@ -1887,6 +2023,7 @@ to the template preview. This is also fired when the user selects "Preview/Send"
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateAttachments,
   inputs: ['endpoint', 'templateId']
 })
 @Component({
@@ -1906,9 +2043,9 @@ export class VerdocsTemplateAttachments {
 }
 
 
-import type { ITemplate as IVerdocsTemplateAttachmentsITemplate } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsTemplateAttachmentsVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { SDKError as IVerdocsTemplateAttachmentsSDKError } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateAttachmentsITemplate } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsTemplateAttachmentsVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplateAttachmentsSDKError } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateAttachments extends Components.VerdocsTemplateAttachments {
   /**
@@ -1932,6 +2069,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateBuildTabs,
   inputs: ['endpoint', 'step', 'templateId']
 })
 @Component({
@@ -1951,8 +2089,8 @@ export class VerdocsTemplateBuildTabs {
 }
 
 
-import type { SDKError as IVerdocsTemplateBuildTabsSDKError } from '@verdocs/web-sdk';
-import type { TVerdocsBuildStep as IVerdocsTemplateBuildTabsTVerdocsBuildStep } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateBuildTabsSDKError } from '@verdocs/web-sdk/components';
+import type { TVerdocsBuildStep as IVerdocsTemplateBuildTabsTVerdocsBuildStep } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateBuildTabs extends Components.VerdocsTemplateBuildTabs {
   /**
@@ -1968,6 +2106,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateCard,
   inputs: ['template']
 })
 @Component({
@@ -1990,6 +2129,7 @@ export declare interface VerdocsTemplateCard extends Components.VerdocsTemplateC
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateCreate,
   inputs: ['endpoint', 'maxSize']
 })
 @Component({
@@ -2009,9 +2149,9 @@ export class VerdocsTemplateCreate {
 }
 
 
-import type { ITemplate as IVerdocsTemplateCreateITemplate } from '@verdocs/web-sdk';
-import type { SDKError as IVerdocsTemplateCreateSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsTemplateCreateVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateCreateITemplate } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplateCreateSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsTemplateCreateVerdocsEndpoint } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplateCreate {
   /**
@@ -2035,6 +2175,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateDocumentPage,
   inputs: ['disabled', 'documentId', 'done', 'editable', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth']
 })
 @Component({
@@ -2054,7 +2195,7 @@ export class VerdocsTemplateDocumentPage {
 }
 
 
-import type { IDocumentPageInfo as IVerdocsTemplateDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk';
+import type { IDocumentPageInfo as IVerdocsTemplateDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateDocumentPage extends Components.VerdocsTemplateDocumentPage {
   /**
@@ -2065,6 +2206,7 @@ export declare interface VerdocsTemplateDocumentPage extends Components.VerdocsT
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateFieldProperties,
   inputs: ['endpoint', 'fieldName', 'helpText', 'templateId']
 })
 @Component({
@@ -2084,8 +2226,8 @@ export class VerdocsTemplateFieldProperties {
 }
 
 
-import type { ITemplateField as IVerdocsTemplateFieldPropertiesITemplateField } from '@verdocs/web-sdk';
-import type { SDKError as IVerdocsTemplateFieldPropertiesSDKError } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsTemplateFieldPropertiesITemplateField } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplateFieldPropertiesSDKError } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateFieldProperties extends Components.VerdocsTemplateFieldProperties {
   /**
@@ -2110,6 +2252,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateFields,
   inputs: ['endpoint', 'templateId', 'toolbarTargetId']
 })
 @Component({
@@ -2129,10 +2272,10 @@ export class VerdocsTemplateFields {
 }
 
 
-import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsTemplateFieldsVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk';
-import type { ITemplateField as IVerdocsTemplateFieldsITemplateField } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsTemplateFieldsVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsTemplateFieldsITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
   /**
@@ -2150,6 +2293,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateRoleProperties,
   inputs: ['endpoint', 'roleName', 'templateId']
 })
 @Component({
@@ -2169,7 +2313,7 @@ export class VerdocsTemplateRoleProperties {
 }
 
 
-import type { SDKError as IVerdocsTemplateRolePropertiesSDKError } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateRolePropertiesSDKError } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateRoleProperties extends Components.VerdocsTemplateRoleProperties {
   /**
@@ -2190,6 +2334,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateRoles,
   inputs: ['endpoint', 'templateId']
 })
 @Component({
@@ -2209,9 +2354,9 @@ export class VerdocsTemplateRoles {
 }
 
 
-import type { SDKError as IVerdocsTemplateRolesSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsTemplateRolesVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IRole as IVerdocsTemplateRolesIRole } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateRolesSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsTemplateRolesVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { IRole as IVerdocsTemplateRolesIRole } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateRoles extends Components.VerdocsTemplateRoles {
   /**
@@ -2235,6 +2380,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateSettings,
   inputs: ['endpoint', 'templateId']
 })
 @Component({
@@ -2254,9 +2400,9 @@ export class VerdocsTemplateSettings {
 }
 
 
-import type { SDKError as IVerdocsTemplateSettingsSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsTemplateSettingsVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { ITemplate as IVerdocsTemplateSettingsITemplate } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateSettingsSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsTemplateSettingsVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { ITemplate as IVerdocsTemplateSettingsITemplate } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateSettings extends Components.VerdocsTemplateSettings {
   /**
@@ -2280,6 +2426,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateStar,
   inputs: ['endpoint', 'template']
 })
 @Component({
@@ -2299,7 +2446,7 @@ export class VerdocsTemplateStar {
 }
 
 
-import type { SDKError as IVerdocsTemplateStarSDKError } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateStarSDKError } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateStar extends Components.VerdocsTemplateStar {
   /**
@@ -2316,6 +2463,7 @@ terminate the process, and the calling application should correct the condition 
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplateTags,
   inputs: ['tags']
 })
 @Component({
@@ -2338,6 +2486,7 @@ export declare interface VerdocsTemplateTags extends Components.VerdocsTemplateT
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTemplatesList,
   inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'starred', 'visibility']
 })
 @Component({
@@ -2357,9 +2506,9 @@ export class VerdocsTemplatesList {
 }
 
 
-import type { SDKError as IVerdocsTemplatesListSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsTemplatesListVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { ITemplate as IVerdocsTemplatesListITemplate } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplatesListSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsTemplatesListVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { ITemplate as IVerdocsTemplatesListITemplate } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplatesList extends Components.VerdocsTemplatesList {
   /**
@@ -2412,6 +2561,7 @@ probably not their search terms.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsTextInput,
   inputs: ['autocomplete', 'clearable', 'copyable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value']
 })
 @Component({
@@ -2434,6 +2584,7 @@ export declare interface VerdocsTextInput extends Components.VerdocsTextInput {}
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsToggle,
   inputs: ['options', 'theme']
 })
 @Component({
@@ -2456,6 +2607,7 @@ export declare interface VerdocsToggle extends Components.VerdocsToggle {}
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsToggleButton,
   inputs: ['active', 'icon', 'label', 'size']
 })
 @Component({
@@ -2484,6 +2636,7 @@ export declare interface VerdocsToggleButton extends Components.VerdocsToggleBut
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsToolbarIcon,
   inputs: ['icon', 'placement', 'text']
 })
 @Component({
@@ -2506,6 +2659,7 @@ export declare interface VerdocsToolbarIcon extends Components.VerdocsToolbarIco
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsUploadDialog,
   inputs: ['existingFile', 'maxSize']
 })
 @Component({
@@ -2543,6 +2697,7 @@ responsible for the actual removal.
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsView,
   inputs: ['endpoint', 'envelopeId', 'headerTargetId']
 })
 @Component({
@@ -2562,9 +2717,9 @@ export class VerdocsView {
 }
 
 
-import type { SDKError as IVerdocsViewSDKError } from '@verdocs/web-sdk';
-import type { VerdocsEndpoint as IVerdocsViewVerdocsEndpoint } from '@verdocs/web-sdk';
-import type { IEnvelope as IVerdocsViewIEnvelope } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsViewSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsViewVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { IEnvelope as IVerdocsViewIEnvelope } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsView extends Components.VerdocsView {
   /**
