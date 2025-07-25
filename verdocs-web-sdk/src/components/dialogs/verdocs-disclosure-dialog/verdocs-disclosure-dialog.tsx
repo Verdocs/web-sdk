@@ -1,7 +1,7 @@
 import {Component, Prop, h, Event, EventEmitter, State} from '@stencil/core';
 
 /**
- * Display e-signing disclosures with options to decline or proceed.
+ * Display e-signing disclosures with options to delegate, decline or proceed.
  */
 @Component({
   tag: 'verdocs-disclosure-dialog',
@@ -14,12 +14,17 @@ export class VerdocsDisclosureDialog {
   @Prop() disclosures: string | null = null;
 
   /**
-   * Event fired when the process has completed successfully.
+   * Event fired when the user chooses to decline.
    */
   @Event({composed: true}) decline: EventEmitter<{first_name: string; last_name: string; email: string; phone: string; message: string}>;
 
   /**
-   * Event fired when the process has completed successfully.
+   * Event fired when the user chooses to delegate signing.
+   */
+  @Event({composed: true}) delegate: EventEmitter<{first_name: string; last_name: string; email: string; phone: string; message: string}>;
+
+  /**
+   * Event fired when the user chooses to proceed.
    */
   @Event({composed: true}) accept: EventEmitter<{first_name: string; last_name: string; email: string; phone: string; message: string}>;
 
@@ -60,11 +65,16 @@ export class VerdocsDisclosureDialog {
           </div>
 
           <div class="buttons">
+            <button class="proceed" onClick={() => this.accept.emit()} disabled={!this.accepted}>
+              Proceed
+            </button>
+          </div>
+          <div class="buttons">
             <button class="decline" onClick={() => this.decline.emit()}>
               Decline
             </button>
-            <button class="proceed" onClick={() => this.accept.emit()} disabled={!this.accepted}>
-              Proceed
+            <button class="delegate" onClick={() => this.delegate.emit()}>
+              Delegate
             </button>
           </div>
         </div>
