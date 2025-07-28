@@ -333,6 +333,11 @@ export namespace Components {
      */
     interface VerdocsDisclosureDialog {
         /**
+          * If the recipient may delegate, an additional button will be shown to drive this flow.
+          * @default false
+         */
+        "delegator": boolean;
+        /**
           * The disclosures to display.
           * @default null
          */
@@ -4736,6 +4741,11 @@ declare namespace LocalJSX {
      * Display e-signing disclosures with options to delegate, decline or proceed.
      */
     interface VerdocsDisclosureDialog {
+        /**
+          * If the recipient may delegate, an additional button will be shown to drive this flow.
+          * @default false
+         */
+        "delegator"?: boolean;
         /**
           * The disclosures to display.
           * @default null

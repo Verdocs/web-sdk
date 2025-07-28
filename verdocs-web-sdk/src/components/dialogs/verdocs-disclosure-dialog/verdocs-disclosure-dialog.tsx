@@ -1,4 +1,4 @@
-import {Component, Prop, h, Event, EventEmitter, State} from '@stencil/core';
+import {Component, Prop, h, Event, EventEmitter, Fragment, State} from '@stencil/core';
 
 /**
  * Display e-signing disclosures with options to delegate, decline or proceed.
@@ -12,6 +12,11 @@ export class VerdocsDisclosureDialog {
    * The disclosures to display.
    */
   @Prop() disclosures: string | null = null;
+
+  /**
+   * If the recipient may delegate, an additional button will be shown to drive this flow.
+   */
+  @Prop() delegator = false;
 
   /**
    * Event fired when the user chooses to decline.
@@ -64,19 +69,34 @@ export class VerdocsDisclosureDialog {
             />
           </div>
 
-          <div class="buttons">
-            <button class="proceed" onClick={() => this.accept.emit()} disabled={!this.accepted}>
-              Proceed
-            </button>
-          </div>
-          <div class="buttons">
-            <button class="decline" onClick={() => this.decline.emit()}>
-              Decline
-            </button>
-            <button class="delegate" onClick={() => this.delegate.emit()}>
-              Delegate
-            </button>
-          </div>
+          {this.delegator ? (
+            <Fragment>
+              <div class="buttons">
+                <button class="proceed" onClick={() => this.accept.emit()} disabled={!this.accepted}>
+                  Proceed
+                </button>
+              </div>
+              <div class="buttons">
+                <button class="decline" onClick={() => this.decline.emit()}>
+                  Decline
+                </button>
+                <button class="delegate" onClick={() => this.delegate.emit()}>
+                  Delegate
+                </button>
+              </div>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <div class="buttons">
+                <button class="decline" onClick={() => this.decline.emit()}>
+                  Decline
+                </button>
+                <button class="proceed" onClick={() => this.accept.emit()} disabled={!this.accepted}>
+                  Proceed
+                </button>
+              </div>
+            </Fragment>
+          )}
         </div>
       </verdocs-dialog>
     );
