@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-pagination renders with custom selectedPage, itemCount, and perPage 1`] = `
+<verdocs-pagination selected-page="2">
+  <div class="page-button">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </div>
+  <div class="page-button">
+    1
+  </div>
+  <div class="page-button">
+    2
+  </div>
+  <div class="page-button selected">
+    3
+  </div>
+  <div class="page-button">
+    4
+  </div>
+  <div class="page-button">
+    5
+  </div>
+  <div class="ellipsis">
+    ...
+  </div>
+  <div class="page-button">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+  </div>
+</verdocs-pagination>
+`;
+
+exports[`verdocs-pagination renders with default props 1`] = `
+<verdocs-pagination selected-page="0">
+  <div class="page-button selected">
+    1
+  </div>
+</verdocs-pagination>
+`;

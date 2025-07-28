@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-button renders with label 1`] = `
+<verdocs-button label="Click Me">
+  <button class="button normal standard" type="button">
+    <span class="button-label">
+      Click Me
+    </span>
+  </button>
+</verdocs-button>
+`;
+
+exports[`verdocs-button renders with startIcon and endIcon 1`] = `
+<verdocs-button endicon="<svg></svg>" label="Icon" starticon="<svg></svg>">
+  <button class="button normal standard" type="button">
+    <span class="button-label">
+      Icon
+    </span>
+  </button>
+</verdocs-button>
+`;
+
+exports[`verdocs-button renders with variant, size, and disabled 1`] = `
+<verdocs-button disabled="true" label="Disabled" size="large" variant="outline">
+  <button class="button large outline" disabled="" type="button">
+    <span class="button-label">
+      Disabled
+    </span>
+  </button>
+</verdocs-button>
+`;

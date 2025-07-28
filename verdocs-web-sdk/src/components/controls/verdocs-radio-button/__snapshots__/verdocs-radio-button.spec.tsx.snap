@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-radio-button renders as checked and disabled 1`] = `
+<verdocs-radio-button checked="true" class="disabled" disabled="true" name="group1" value="val1">
+  <input checked="" disabled="" id="verdocs-radio-button-group1-val1" name="group1" type="radio" value="val1">
+  <label htmlfor="verdocs-radio-button-group1-val1"></label>
+</verdocs-radio-button>
+`;
+
+exports[`verdocs-radio-button renders with default props 1`] = `
+<verdocs-radio-button>
+  <input id="verdocs-radio-button--" type="radio" value="">
+  <label htmlfor="verdocs-radio-button--"></label>
+</verdocs-radio-button>
+`;
+
+exports[`verdocs-radio-button renders with value and name 1`] = `
+<verdocs-radio-button name="group2" value="val2">
+  <input id="verdocs-radio-button-group2-val2" name="group2" type="radio" value="val2">
+  <label htmlfor="verdocs-radio-button-group2-val2"></label>
+</verdocs-radio-button>
+`;
