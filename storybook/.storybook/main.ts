@@ -23,7 +23,7 @@ const config: StorybookConfig = {
         },
       },
     },
-  }],
+  }, '@storybook/addon-vitest'],
 
   // decorators: [(story) => html`<div style="border: 3px dashed red">${story()}</div>`],
   framework: {
