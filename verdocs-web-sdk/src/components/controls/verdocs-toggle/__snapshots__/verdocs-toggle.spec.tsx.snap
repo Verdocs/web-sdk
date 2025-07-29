@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-toggle renders with default props (with options) 1`] = `
+<verdocs-toggle>
+  <div class="container">
+    <span class="label">
+      Toggle:
+    </span>
+    <div class="buttons">
+      <button class="selected" id="btn1">
+        <svg></svg>
+      </button>
+      <button id="btn2">
+        <svg></svg>
+      </button>
+    </div>
+  </div>
+</verdocs-toggle>
+`;
+
+exports[`verdocs-toggle renders with options and theme 1`] = `
+<verdocs-toggle>
+  <div class="container">
+    <span class="label">
+      Toggle:
+    </span>
+    <div class="buttons">
+      <button id="btn1">
+        <svg></svg>
+      </button>
+      <button class="selected" id="btn2">
+        <svg></svg>
+      </button>
+    </div>
+  </div>
+</verdocs-toggle>
+`;

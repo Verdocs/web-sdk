@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-menu-panel renders with default props 1`] = `
+<verdocs-menu-panel>
+  <!---->
+</verdocs-menu-panel>
+`;
+
+exports[`verdocs-menu-panel renders with overlay disabled 1`] = `
+<verdocs-menu-panel overlay="false">
+  <!---->
+</verdocs-menu-panel>
+`;
+
+exports[`verdocs-menu-panel renders with side left and custom width 1`] = `
+<verdocs-menu-panel side="left" width="400">
+  <!---->
+</verdocs-menu-panel>
+`;

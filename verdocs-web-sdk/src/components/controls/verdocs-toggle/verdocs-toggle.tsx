@@ -36,6 +36,7 @@ export class VerdocsToggle {
   @State() selectedOption: number = 0;
 
   componentWillLoad() {
+    console.log('verdocs-toggle componentWillLoad', this.options);
     this.selectedOption = this.options?.defaultSelection || 0;
   }
 

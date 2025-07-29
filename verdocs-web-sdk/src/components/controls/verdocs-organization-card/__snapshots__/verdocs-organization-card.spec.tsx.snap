@@ -1,0 +1,102 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`verdocs-organization-card renders with minimal organization data 1`] = `
+<verdocs-organization-card id="verdocs-org-card-org1">
+  <span class="icon">
+    <svg aria-hidden="true" focusable="false" height="24px" viewBox="0 0 24 24" width="24px" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"></path>
+    </svg>
+  </span>
+  <span class="content">
+    Test Org
+  </span>
+  <verdocs-portal anchor="verdocs-org-card-org1">
+    <div class="verdocs-org-card-popup" style="display: none;">
+      <div class="popup-header">
+        <span class="status">
+          <span class="icon">
+            <svg aria-hidden="true" focusable="false" height="24px" viewBox="0 0 24 24" width="24px" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"></path>
+            </svg>
+          </span>
+        </span>
+        <span class="title">
+          Test Org
+        </span>
+      </div>
+      <div class="popup-body">
+        <div class="field">
+          <strong>
+            Joined
+          </strong>
+          Jan 1, 2021
+        </div>
+      </div>
+    </div>
+  </verdocs-portal>
+</verdocs-organization-card>
+`;
+
+exports[`verdocs-organization-card renders with only name 1`] = `
+<verdocs-organization-card id="verdocs-org-card-org2">
+  <span class="icon">
+    <svg aria-hidden="true" focusable="false" height="24px" viewBox="0 0 24 24" width="24px" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"></path>
+    </svg>
+  </span>
+  <span class="content">
+    Name Only
+  </span>
+  <verdocs-portal anchor="verdocs-org-card-org2">
+    <div class="verdocs-org-card-popup" style="display: none;">
+      <div class="popup-header">
+        <span class="status">
+          <span class="icon">
+            <svg aria-hidden="true" focusable="false" height="24px" viewBox="0 0 24 24" width="24px" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"></path>
+            </svg>
+          </span>
+        </span>
+        <span class="title">
+          Name Only
+        </span>
+      </div>
+      <div class="popup-body">
+        <div class="field">
+          <strong>
+            Joined
+          </strong>
+          Feb 2, 2022
+        </div>
+      </div>
+    </div>
+  </verdocs-portal>
+</verdocs-organization-card>
+`;
+
+exports[`verdocs-organization-card renders with thumbnail and full logo 1`] = `
+<verdocs-organization-card id="verdocs-org-card-org1">
+  <img alt="Logo" class="icon" src="https://example.com/thumb.png">
+  <span class="content">
+    Test Org
+  </span>
+  <verdocs-portal anchor="verdocs-org-card-org1">
+    <div class="verdocs-org-card-popup" style="display: none;">
+      <div class="popup-header-with-logo">
+        <img alt="Logo" src="https://example.com/logo.png">
+        <div class="title">
+          Test Org
+        </div>
+      </div>
+      <div class="popup-body">
+        <div class="field">
+          <strong>
+            Joined
+          </strong>
+          Jan 1, 2021
+        </div>
+      </div>
+    </div>
+  </verdocs-portal>
+</verdocs-organization-card>
+`;
