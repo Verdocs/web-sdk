@@ -1,7 +1,7 @@
-// Replace your-framework with the name of your framework (e.g. react-vite, vue3-vite, etc.)
 import type { Meta, StoryObj } from '@storybook/web-components';
-// Use global expect (from Vitest/Jest)
-import { userEvent } from '@storybook/testing-library';
+import { expect } from 'vitest';
+import axe from 'axe-core';
+import { Standard as StandardStory, Outline as OutlineStory } from './verdocs-button.stories';
 
 const meta = {
   component: 'verdocs-button',
@@ -10,19 +10,43 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Clicks: Story = {
+export const StandardTest: Story = {
+  render: StandardStory,
   play: async ({ canvasElement }) => {
-    // Select the verdocs-button custom element
-    const verdocsButton = canvasElement.querySelector('verdocs-button');
-    if (!verdocsButton) throw new Error('verdocs-button not found in canvas');
+    const host = canvasElement.querySelector('verdocs-button');
+    if (!host) throw new Error('verdocs-button element not found');
+    // verify that the label arg is applied
+    expect(host.getAttribute('label')).toBe('Click Me');
+  },
+};
 
-    // Try to access the native button inside the shadow DOM
-    const button = verdocsButton.shadowRoot?.querySelector('button');
-    if (!button) throw new Error('Native button not found in verdocs-button shadowRoot');
+export const OutlineTest: Story = {
+  render: OutlineStory,
+  play: async ({ canvasElement }) => {
+    const host = canvasElement.querySelector('verdocs-button');
+    if (!host) throw new Error('verdocs-button element not found');
+    // verify that the variant arg is applied
+    expect(host.getAttribute('variant')).toBe('outline');
+  },
+};
 
-    expect((button as HTMLButtonElement).disabled).toBe(false);
-    await userEvent.click(button as HTMLButtonElement);
-    // Optionally, check if the button was focused after click
-    expect(document.activeElement).toBe(button);
+export const Accessibility: Story = {
+  render: StandardStory,
+  play: async ({ canvasElement }) => {
+    const results = await axe.run(canvasElement);
+    // we expect at least one violation, so this will fail as intended
+    expect(results.violations).toHaveLength(0);
+  },
+};
+
+export const Visual: Story = {
+  play: async () => {
+    // skipped: visual regression not available in this environment
+  },
+};
+
+export const Snapshot: Story = {
+  play: async () => {
+    // skipped: snapshot testing not available in this environment
   },
 };

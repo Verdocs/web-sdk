@@ -12,7 +12,11 @@ const config: StorybookConfig = {
     disableWhatsNewNotifications: true,
   },
 
-  stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  stories: [
+    '../stories/**/*.mdx',
+    '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)',
+    '../stories/**/*.stories.test.ts'
+  ],
 
   addons: ['@storybook/addon-links', '@chromatic-com/storybook', {
     name: '@storybook/addon-docs',

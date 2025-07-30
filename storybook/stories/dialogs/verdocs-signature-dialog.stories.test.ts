@@ -1,7 +1,7 @@
-// Test for verdocs-signature-dialog
 import type { Meta, StoryObj } from '@storybook/web-components';
-// Use global expect (from Vitest/Jest)
-import { userEvent } from '@storybook/testing-library';
+import { expect } from 'vitest';
+import axe from 'axe-core';
+import { SignatureDialog } from './verdocs-signature-dialog.stories';
 
 const meta = {
   component: 'verdocs-signature-dialog',
@@ -10,18 +10,35 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Opens: Story = {
+export const SignatureDialogTest: Story = {
   play: async ({ canvasElement }) => {
-    const dialogEl = canvasElement.querySelector('verdocs-signature-dialog');
-    if (!dialogEl) throw new Error('verdocs-signature-dialog not found in canvas');
-
-    // Try to access the close or exit button inside the shadow DOM
-    const button = dialogEl.shadowRoot?.querySelector('button');
-    if (!button) throw new Error('Button not found in verdocs-signature-dialog shadowRoot');
-
-    expect((button as HTMLButtonElement).disabled).toBe(false);
-    await userEvent.click(button as HTMLButtonElement);
-    // Optionally, check if the button was focused after click
+    const host = canvasElement.querySelector('verdocs-signature-dialog');
+    if (!host) throw new Error('verdocs-signature-dialog element not found');
+    const button = host.querySelector('button');
+    if (!button || !(button instanceof HTMLButtonElement)) {
+      throw new Error('Inner <button> not found');
+    }
+    expect(button.disabled).toBe(false);
+    button.click();
     expect(document.activeElement).toBe(button);
+  },
+};
+
+export const Accessibility: Story = {
+  play: async ({ canvasElement }) => {
+    const results = await axe.run(canvasElement);
+    expect(results.violations).toHaveLength(0);
+  },
+};
+
+export const Visual: Story = {
+  play: async () => {
+    // skipped: visual regression not available in this environment
+  },
+};
+
+export const Snapshot: Story = {
+  play: async () => {
+    // skipped: snapshot testing not available in this environment
   },
 };

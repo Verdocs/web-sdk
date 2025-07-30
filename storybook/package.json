@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@verdocs/js-sdk": "^5.4.0",
+    "axe-core": "^4.10.3",
     "esbuild": "^0.25.8"
   },
   "devDependencies": {
