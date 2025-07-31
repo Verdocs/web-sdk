@@ -1,6 +1,6 @@
 import {html} from 'lit-html';
 import type {IOrganization} from '@verdocs/js-sdk';
-import {Meta} from '@storybook/web-components';
+import {Meta} from '@storybook/web-components-vite';
 
 const MockOrganization: IOrganization = {
   id: '21643fd6-4097-47c0-9780-62dc0c01ddce',
