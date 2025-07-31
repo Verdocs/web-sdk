@@ -20,6 +20,7 @@ export default defineConfig({
         ],
         test: {
           name: 'storybook',
+          include: ['../stories/**/*.stories.test.ts'],
           browser: {
             enabled: true,
             headless: true,

@@ -20,6 +20,14 @@ export const StandardTest: Story = {
   },
 };
 
+export const InteractionTest: Story = {
+  render: StandardStory,
+  play: async ({ canvasElement }) => {
+    const host = canvasElement.querySelector('verdocs-button');
+    await host?.click();
+  },
+};
+
 export const OutlineTest: Story = {
   render: OutlineStory,
   play: async ({ canvasElement }) => {
