@@ -23,7 +23,7 @@ describe('verdocs-file-chooser', () => {
       components: [VerdocsFileChooser],
       html: `<verdocs-file-chooser></verdocs-file-chooser>`,
     });
-    const input = page.root.querySelector('input[type="file"]');
+    // const input = page.root.querySelector('input[type="file"]');
     const spy = jest.fn();
     page.root.addEventListener('fileSelected', spy);
 

@@ -17,7 +17,8 @@ export class VerdocsInitialDialog {
   @Prop() initials: string = '';
 
   /**
-   * Event fired when the initials are adopted.
+   * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string
+   * representation of the initials adopted.
    */
   @Event({composed: true}) next: EventEmitter<string>;
 
@@ -51,14 +52,11 @@ export class VerdocsInitialDialog {
   }
 
   redrawSignature() {
-    console.log('redrawing sig');
     if (!this.canvasElement) {
-      console.log('no canvas');
       return;
     }
 
     const canvasWidth = this.canvasElement.width;
-    console.log('cw', canvasWidth);
 
     const context = this.canvasElement.getContext('2d');
     context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
@@ -257,7 +255,13 @@ export class VerdocsInitialDialog {
           <div class="heading">Create Your Initial</div>
 
           <div class="content">
-            <verdocs-text-input placeholder="Initials..." label="Initials" value={this.enteredInitials} onInput={e => this.handleNameChange(e)} />
+            <verdocs-text-input
+              placeholder="Initials..."
+              label="Initials"
+              value={this.enteredInitials}
+              onInput={e => this.handleNameChange(e)}
+              onClick={e => e.stopPropagation()}
+            />
             <div class="as-shown">As shown on driver's license or govt. ID card.</div>
 
             {/*<div class="tabs">*/}
@@ -277,8 +281,8 @@ export class VerdocsInitialDialog {
             </div>
 
             <div class="buttons">
-              <verdocs-button label="CANCEL" variant="outline" onClick={e => this.handleCancel(e)} />
-              <verdocs-button label="Adopt & Sign" onClick={e => this.handleAdopt(e)} />
+              <verdocs-button label="CANCEL" size="normal" variant="outline" onClick={e => this.handleCancel(e)} />
+              <verdocs-button label="Adopt & Sign" size="normal" onClick={e => this.handleAdopt(e)} />
             </div>
           </div>
         </div>

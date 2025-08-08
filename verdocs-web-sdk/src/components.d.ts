@@ -1488,7 +1488,7 @@ export namespace Components {
         /**
           * The organization to display
          */
-        "organization": IOrganization;
+        "organization": Partial<IOrganization>;
     }
     /**
      * Prompt the user to confirm their identity with a one time code via email/SMS.
@@ -6118,7 +6118,7 @@ declare namespace LocalJSX {
         /**
           * The organization to display
          */
-        "organization"?: IOrganization;
+        "organization"?: Partial<IOrganization>;
     }
     /**
      * Prompt the user to confirm their identity with a one time code via email/SMS.
