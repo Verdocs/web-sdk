@@ -5941,7 +5941,7 @@ declare namespace LocalJSX {
          */
         "onExit"?: (event: VerdocsInitialDialogCustomEvent<any>) => void;
         /**
-          * Event fired when the initials are adopted.
+          * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string representation of the initials adopted.
          */
         "onNext"?: (event: VerdocsInitialDialogCustomEvent<string>) => void;
     }
