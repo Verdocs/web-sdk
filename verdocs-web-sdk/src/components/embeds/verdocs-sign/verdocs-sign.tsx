@@ -245,8 +245,8 @@ export class VerdocsSign {
       .catch(e => {
         console.log('[SIGN] Unable to accept disclosures', e);
         VerdocsToast('Unable to accept disclosures, please try again later', {style: 'error'});
-        this.submitting = false;
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+        this.submitting = false;
       });
   }
 
@@ -643,7 +643,7 @@ export class VerdocsSign {
 
     // First render the fields for the signer
     recipientFields.forEach((field, tabIndex) => {
-      if (field.page !== pageInfo.pageNumber) {
+      if (field.document_id !== pageInfo.documentId || field.page !== pageInfo.pageNumber) {
         return;
       }
 
@@ -664,7 +664,7 @@ export class VerdocsSign {
       .filter(r => r.role_name !== this.recipient.role_name && (r.status === 'invited' || r.status === 'opened' || r.status === 'pending'))
       .forEach(() => {
         this.getRecipientFields()
-          .filter(field => field.page === pageInfo.pageNumber)
+          .filter(field => field.document_id === pageInfo.documentId && field.page === pageInfo.pageNumber)
           .forEach(field => {
             const el = renderDocumentField('envelope', field, pageInfo, {disabled: true, editable: false, draggable: false, done: this.isDone});
             if (!el) {
