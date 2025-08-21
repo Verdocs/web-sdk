@@ -130,6 +130,7 @@ export class VerdocsEnvelopeSidebar {
     } catch (e) {
       console.log('[SIDEBAR] Error loading envelope', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      VerdocsToast('Error loading envelope: ' + e.message, {style: 'error'});
     }
   }
 
@@ -198,6 +199,7 @@ export class VerdocsEnvelopeSidebar {
           })
           .catch(e => {
             console.log('[SIDEBAR] Error resending invitation', e);
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
             VerdocsToast('Error resending invitation: ' + e.message, {style: 'error'});
           });
         break;
@@ -249,6 +251,7 @@ export class VerdocsEnvelopeSidebar {
       .catch(e => {
         console.log('[SIDEBAR] Error canceling envelope', e);
         this.loading = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         VerdocsToast('Error canceling envelope: ' + e.message, {style: 'error'});
       });
   }
@@ -282,8 +285,10 @@ export class VerdocsEnvelopeSidebar {
           this.showUpdateDialog = '';
         })
         .catch(e => {
+          console.log('[SIDEBAR] Error updating recipient', e);
           VerdocsToast(e.response.data.error, {style: 'error'});
           this.showUpdateDialog = '';
+          this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         });
     } else {
       this.showUpdateDialog = '';
@@ -475,6 +480,7 @@ export class VerdocsEnvelopeSidebar {
         this.followupReminders = this.envelope?.followup_reminders;
         this.remindersEnabled = !!this.envelope?.initial_reminder;
         this.updatingReminders = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         VerdocsToast(e.response.data.error, {style: 'error'});
       });
   }

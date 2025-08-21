@@ -278,6 +278,7 @@ export class VerdocsSign {
             saveAttachment(this.endpoint, this.envelope, firstDoc.id).catch(e => {
               VerdocsToast('Unable to download PDF, please try again later', {style: 'error'});
               console.log('[SIGN] Error downloading PDF', e);
+              this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
             });
             this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
           }
@@ -359,6 +360,7 @@ export class VerdocsSign {
             console.log('Error updating initials', e);
             VerdocsToast('Unable to save initials, please try again later', {style: 'error'});
             this.showSpinner = false;
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
           });
 
       case 'signature':
@@ -382,6 +384,7 @@ export class VerdocsSign {
             console.warn('[SIGN] Error updating signature', e);
             VerdocsToast('Unable to save signature, please try again later', {style: 'error'});
             this.showSpinner = false;
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
           });
 
       case 'date':
@@ -492,6 +495,8 @@ export class VerdocsSign {
         //   });
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
+        VerdocsToast('Unable to submit sign, please try again later', {style: 'error'});
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
 
       return;
@@ -591,6 +596,7 @@ export class VerdocsSign {
         console.log('Error uploading attachment', e);
         VerdocsToast('Unable to upload attachment, please try again later', {style: 'error'});
         this.showSpinner = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
     });
     el.addEventListener('deleted', async (e: any) => {
@@ -610,6 +616,7 @@ export class VerdocsSign {
         console.log('Error uploading attachment', e);
         VerdocsToast('Unable to upload attachment, please try again later', {style: 'error'});
         this.showSpinner = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
     });
     el.addEventListener('focusout', e => {
@@ -698,6 +705,8 @@ export class VerdocsSign {
         } else {
           VerdocsToast(e.response?.data?.error || 'Unable to verify your identity. Please try again.', {style: 'error'});
         }
+
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
   }
 
@@ -804,6 +813,7 @@ export class VerdocsSign {
                 .catch(e => {
                   console.log('[SIGN] Error delegating request', e);
                   VerdocsToast('Unable to process delegation request. Please try again later.', {style: 'error'});
+                  this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
                 });
             }}
           />
@@ -828,6 +838,7 @@ export class VerdocsSign {
               .catch(e => {
                 console.warn('[SIGN] Error declining signing session', e);
                 VerdocsToast('Unable to decline, please try again later', {style: 'error'});
+                this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
               });
           }}
         />

@@ -163,6 +163,8 @@ export class VerdocsSend {
             })
             .catch(e => {
               console.log('[SEND] Error getting contacts', e);
+              VerdocsToast(e.response?.data?.error || 'Error getting contacts, please try again later.');
+              this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
             });
         }
       });
@@ -289,7 +291,7 @@ export class VerdocsSend {
         console.log('[SEND] Send error', e);
         VerdocsToast(e.response?.data?.error || 'Error creating envelope, please try again later.');
         this.sending = false;
-        this.sdkError?.emit(e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
   }
 
