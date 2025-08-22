@@ -40,6 +40,7 @@ export const config: Config = {
       componentCorePackage: '@verdocs/web-sdk',
       directivesProxyFile: '../verdocs-web-sdk-angular/src/directives/proxies.ts',
       valueAccessorConfigs: angularValueAccessorBindings,
+      customElementsDir: 'dist/components',
     }),
     reactOutputTarget({
       outDir: '../verdocs-web-sdk-react/src',

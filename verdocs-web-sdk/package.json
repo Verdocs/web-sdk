@@ -19,6 +19,7 @@
   "scripts": {
     "push": "npm run build && npm publish",
     "build": "stencil build --docs",
+    "postbuild": "node ../fix-angular-proxies.js",
     "serve": "stencil build --dev --watch --serve",
     "start": "stencil build --dev --watch --docs",
     "test": "stencil test --spec",
@@ -46,7 +47,7 @@
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "@interactjs/types": "^1.10.27",
-    "@stencil/angular-output-target": "^1.1.0",
+    "@stencil/angular-output-target": "^1.1.1",
     "@stencil/react-output-target": "^1.2.0",
     "@stencil/sass": "^3.2.2",
     "@stencil/vue-output-target": "^0.10.8",
