@@ -2,6 +2,7 @@ import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/cor
 import {getEnvelope, IEnvelope, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
+import { VerdocsToast } from '../../../utils/Toast';
 
 /**
  * Displays a single recipient from an envelope, with the opportunity to copy an in-person
@@ -67,6 +68,7 @@ export class VerdocsEnvelopeUpdateRecipient {
       this.listenToEnvelope();
     } catch (e) {
       console.log('[UPDATE_RECIPIENT] Error loading envelope', e);
+      VerdocsToast('Unable to load template: ' + e.message, {style: 'error'});
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }

@@ -2,6 +2,7 @@ import {getTemplate, integerSequence, ITemplate, VerdocsEndpoint} from '@verdocs
 import {Event, EventEmitter, Host, Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
+import { VerdocsToast } from '../../../utils/Toast';
 
 /**
  * Display a template preview experience. This will display the template's attached
@@ -89,6 +90,7 @@ export class VerdocsPreview {
       this.listenToTemplate();
     } catch (e) {
       console.log('[PREVIEW] Error with preview session', e);
+      VerdocsToast('Unable to load template: ' + e.message, {style: 'error'});
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
