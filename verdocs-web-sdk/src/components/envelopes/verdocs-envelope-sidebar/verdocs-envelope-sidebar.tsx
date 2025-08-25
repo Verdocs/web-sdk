@@ -192,7 +192,7 @@ export class VerdocsEnvelopeSidebar {
         break;
 
       case 'reminder':
-        resendInvitation(this.endpoint, this.envelopeId, recipient.role_name)
+        resendInvitation(this.endpoint, this.envelopeId, recipient.role_name, recipient.message)
           .then(() => {
             VerdocsToast('Reminder Sent', {style: 'success'});
           })
