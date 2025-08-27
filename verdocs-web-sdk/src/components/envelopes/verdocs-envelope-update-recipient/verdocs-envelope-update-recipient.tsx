@@ -31,6 +31,11 @@ export class VerdocsEnvelopeUpdateRecipient {
   @Prop() roleName: string = '';
 
   /**
+   * Should the field be disabled?
+   */
+  @Prop() disabled: boolean = false;
+
+  /**
    * Event fired when the user clicks Done to proceed. It is up to the host application
    * to save any updates and proceed to the next step.
    */
@@ -176,8 +181,8 @@ export class VerdocsEnvelopeUpdateRecipient {
           </div>
 
           <div class="buttons">
-            <verdocs-button variant="outline" size="small" label="Cancel" onClick={e => this.handleCancel(e)} />
-            <verdocs-button size="small" label="Save" onClick={e => this.handleSave(e)} />
+            <verdocs-button disabled={this.disabled} variant="outline" size="small" label="Cancel" onClick={e => this.handleCancel(e)} />
+            <verdocs-button disabled={this.disabled} size="small" label="Save" onClick={e => this.handleSave(e)} />
           </div>
         </div>
       </Host>

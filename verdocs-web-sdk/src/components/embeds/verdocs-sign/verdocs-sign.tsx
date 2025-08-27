@@ -471,8 +471,10 @@ export class VerdocsSign {
         document.getElementById('air-datepicker-global-container')?.remove();
 
         this.submitting = true;
+        this.showSpinner = true;
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
         console.log('[SIGN] Submitted successfully', result);
+        this.showSpinner = false;
         // TODO: The "proper" way is generating an error from Stencil
         //  NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which
         //  the new node is to be inserted is not a child of this node.
@@ -496,6 +498,7 @@ export class VerdocsSign {
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
         VerdocsToast('Unable to submit sign, please try again later', {style: 'error'});
+        this.showSpinner = false;
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
 
@@ -691,9 +694,11 @@ export class VerdocsSign {
 
   handleAuthenticateSigner(params: TAuthenticateRecipientRequest) {
     console.log('[SIGN] Submitting authentication step', params);
+    this.showSpinner = true;
     verifySigner(this.endpoint, params)
       .then(r => {
         console.log('[SIGN] Verification successful', r);
+        this.showSpinner = false;
         this.processAuthResponse(r);
       })
       .catch(e => {
@@ -705,7 +710,7 @@ export class VerdocsSign {
         } else {
           VerdocsToast(e.response?.data?.error || 'Unable to verify your identity. Please try again.', {style: 'error'});
         }
-
+        this.showSpinner = false;
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
   }

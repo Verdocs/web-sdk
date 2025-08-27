@@ -80,10 +80,12 @@ export const VerdocsContactPicker: StencilVueComponent<JSX.VerdocsContactPicker>
   'templateRole',
   'contactSuggestions',
   'searchContacts',
+  'sdkError',
   'exit',
   'next'
 ], [
   'searchContacts',
+  'sdkError',
   'exit',
   'next'
 ]);
@@ -202,6 +204,7 @@ export const VerdocsEnvelopeUpdateRecipient: StencilVueComponent<JSX.VerdocsEnve
   'endpoint',
   'envelopeId',
   'roleName',
+  'disabled',
   'next',
   'sdkError'
 ], [
@@ -566,6 +569,7 @@ export const VerdocsOkDialog: StencilVueComponent<JSX.VerdocsOkDialog> = /*@__PU
   'message',
   'buttonLabel',
   'showCancel',
+  'disabled',
   'next',
   'exit'
 ], [
