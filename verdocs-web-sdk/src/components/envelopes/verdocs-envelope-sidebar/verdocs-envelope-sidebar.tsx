@@ -647,14 +647,15 @@ export class VerdocsEnvelopeSidebar {
             heading="Re-invite Recipient?"
             message={'This will reset the recipient\'s KBA status and send a new signing invitation. If you just want to send a reminder, please click "Send Reminder" instead.'}
             onNext={() => {
-              this.showReinviteDialog = '';
               resetRecipient(this.endpoint, this.envelopeId, this.showReinviteDialog)
                 .then(() => {
                   VerdocsToast('Recipient Reset', {style: 'success'});
+                  this.showReinviteDialog = '';
                 })
                 .catch(e => {
                   console.log('[SIDEBAR] Error resetting recipient', e);
                   VerdocsToast('Error resetting recipient: ' + e.message, {style: 'error'});
+                  this.showReinviteDialog = '';
                 });
             }}
           />
