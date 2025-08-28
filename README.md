@@ -60,3 +60,16 @@ the required skeleton files for you in `src/components`. Move the folder created
   parent to provide some data, control, and business logic.
 - `embeds` - Embeds are fully functional "mini-apps". If provided with appropriate configurations (e.g API endpoints and authorization
   details) they can be used to represent entire experiences such as document preview, document signing, or search.
+
+
+
+## Specific Build Instructions
+> **For angular build target (verdocs-web-sdk-angular):** the NPM lib needs to be linked for local builds
+```bash
+cd verdocs-web-sdk
+npm run build && npm link
+
+cd ../verdocs-web-sdk-angular
+npm link @verdocs/web-sdk
+npm run build
+```

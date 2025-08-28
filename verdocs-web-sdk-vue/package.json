@@ -22,7 +22,7 @@
     "@stencil/vue-output-target": "^0.10.8"
   },
   "peerDependencies": {
-    "vue": "^4",
+    "vue": "^3",
     "vue-router": "^4"
   },
   "devDependencies": {
