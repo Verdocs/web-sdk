@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Even
 
 import { ProxyCmp } from './angular-component-lib/utils';
 
-import type { Components } from '@verdocs/web-sdk';
+import type { Components , IRecipient} from '@verdocs/web-sdk';
 
 import { defineCustomElement as defineVerdocsAuth } from '@verdocs/web-sdk/dist/components/verdocs-auth.js';
 import { defineCustomElement as defineVerdocsBuild } from '@verdocs/web-sdk/dist/components/verdocs-build.js';
@@ -678,7 +678,7 @@ to redirect the user to the appropriate next workflow step.
 })
 export class VerdocsEnvelopeUpdateRecipient {
   protected el: HTMLVerdocsEnvelopeUpdateRecipientElement;
-  @Output() next = new EventEmitter<CustomEvent<{action: 'cancel' | 'save'; originalRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient; updatedRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient}>>();
+  @Output() next = new EventEmitter<CustomEvent<{action: 'cancel' | 'save'; originalRecipient: IRecipient; updatedRecipient: IRecipient}>>();
   @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopeUpdateRecipientSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -687,7 +687,6 @@ export class VerdocsEnvelopeUpdateRecipient {
 }
 
 
-import type { IRecipient as IVerdocsEnvelopeUpdateRecipientIRecipient } from '@verdocs/web-sdk';
 import type { SDKError as IVerdocsEnvelopeUpdateRecipientSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeUpdateRecipient extends Components.VerdocsEnvelopeUpdateRecipient {
@@ -695,7 +694,7 @@ export declare interface VerdocsEnvelopeUpdateRecipient extends Components.Verdo
    * Event fired when the user clicks Done to proceed. It is up to the host application
 to save any updates and proceed to the next step.
    */
-  next: EventEmitter<CustomEvent<{action: 'cancel' | 'save'; originalRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient; updatedRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient}>>;
+  next: EventEmitter<CustomEvent<{action: 'cancel' | 'save'; originalRecipient: IRecipient; updatedRecipient: IRecipient}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -1348,8 +1347,8 @@ representation of the initials adopted.
 export class VerdocsKbaDialog {
   protected el: HTMLVerdocsKbaDialogElement;
   @Output() exit = new EventEmitter<CustomEvent<any>>();
-  @Output() pinEntered = new EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IRecipient>>();
-  @Output() next = new EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IVerdocsKbaDialogIRecipient | string[]>>();
+  @Output() pinEntered = new EventEmitter<CustomEvent<string | IRecipient>>();
+  @Output() next = new EventEmitter<CustomEvent<string | IRecipient | string[]>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1357,7 +1356,6 @@ export class VerdocsKbaDialog {
 }
 
 
-import type { IRecipient as IVerdocsKbaDialogIRecipient } from '@verdocs/web-sdk';
 
 export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
   /**
@@ -1368,12 +1366,12 @@ export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
    * Event fired when the dialog is closed. The event data will contain the value selected,
 or the new recipient details if the mode is 'identity'.
    */
-  pinEntered: EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IRecipient>>;
+  pinEntered: EventEmitter<CustomEvent<string | IRecipient>>;
   /**
    * Event fired when the dialog is closed. The event data will contain the value selected,
 or the new recipient details if the mode is 'identity'.
    */
-  next: EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IVerdocsKbaDialogIRecipient | string[]>>;
+  next: EventEmitter<CustomEvent<string | IRecipient | string[]>>;
 }
 
 
