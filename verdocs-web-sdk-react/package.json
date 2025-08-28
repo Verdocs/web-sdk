@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk-react",
-  "version": "6.0.5",
+  "version": "6.1.1",
   "description": "Verdocs Web SDK for React",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -18,7 +18,7 @@
     "rollup": "rollup -c"
   },
   "dependencies": {
-    "@verdocs/web-sdk": "^6.0.5",
+    "@verdocs/web-sdk": "^6.1.1",
     "@stencil/react-output-target": "^1.0.2"
   },
   "peerDependencies": {
