@@ -178,6 +178,7 @@ export const VerdocsComponentError: StencilReactComponent<VerdocsComponentErrorE
 
 export type VerdocsContactPickerEvents = {
     onSearchContacts: EventName<VerdocsContactPickerCustomEvent<IContactSearchEvent>>,
+    onSdkError: EventName<VerdocsContactPickerCustomEvent<SDKError>>,
     onExit: EventName<CustomEvent<any>>,
     onNext: EventName<VerdocsContactPickerCustomEvent<IContactSelectEvent>>
 };
@@ -189,6 +190,7 @@ export const VerdocsContactPicker: StencilReactComponent<VerdocsContactPickerEle
     react: React,
     events: {
         onSearchContacts: 'searchContacts',
+        onSdkError: 'sdkError',
         onExit: 'exit',
         onNext: 'next'
     } as VerdocsContactPickerEvents,

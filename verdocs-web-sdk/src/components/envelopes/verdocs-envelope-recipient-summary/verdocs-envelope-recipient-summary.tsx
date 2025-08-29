@@ -150,7 +150,7 @@ export class VerdocsEnvelopeRecipientSummary {
       })
       .catch(e => {
         console.warn('[RECIPIENTS] Error copying to clipboard', e);
-        this.sdkError?.emit(e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         // VerdocsToast(`Unable to copy to clipboard: ${e.message}`, {style: 'error'});
       });
   }
@@ -166,7 +166,7 @@ export class VerdocsEnvelopeRecipientSummary {
       .catch(e => {
         this.gettingLinks = {...this.gettingLinks, [recipient.role_name]: false};
         console.log('[RECIPIENTS] Error getting link', e);
-        this.sdkError?.emit(e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         // VerdocsToast('Unable to get link: ' + e.message, {style: 'error'});
       });
   }

@@ -484,6 +484,11 @@ export namespace Components {
      */
     interface VerdocsEnvelopeUpdateRecipient {
         /**
+          * Should the field be disabled?
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
          */
@@ -1462,6 +1467,11 @@ export namespace Components {
           * @default 'OK'
          */
         "buttonLabel": string;
+        /**
+          * Should the field be disabled?
+          * @default false
+         */
+        "disabled": boolean;
         /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
           * @default ''
@@ -2773,6 +2783,7 @@ declare global {
     };
     interface HTMLVerdocsContactPickerElementEventMap {
         "searchContacts": IContactSearchEvent;
+        "sdkError": SDKError;
         "exit": any;
         "next": IContactSelectEvent;
     }
@@ -4658,6 +4669,10 @@ declare namespace LocalJSX {
          */
         "onNext"?: (event: VerdocsContactPickerCustomEvent<IContactSelectEvent>) => void;
         /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsContactPickerCustomEvent<SDKError>) => void;
+        /**
           * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
          */
         "onSearchContacts"?: (event: VerdocsContactPickerCustomEvent<IContactSearchEvent>) => void;
@@ -4952,6 +4967,11 @@ declare namespace LocalJSX {
      * signing link for that recipient to use.
      */
     interface VerdocsEnvelopeUpdateRecipient {
+        /**
+          * Should the field be disabled?
+          * @default false
+         */
+        "disabled"?: boolean;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
@@ -6084,6 +6104,11 @@ declare namespace LocalJSX {
           * @default 'OK'
          */
         "buttonLabel"?: string;
+        /**
+          * Should the field be disabled?
+          * @default false
+         */
+        "disabled"?: boolean;
         /**
           * The title of the dialog. "title" is a reserved word, so we use heading.
           * @default ''

@@ -178,6 +178,7 @@ export class VerdocsAuth {
       this.completeLogin(verificationResult);
     } catch (e) {
       this.submitting = false;
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       console.log('Verification error', e);
       VerdocsToast('Verification error, please check the code and try again.');
     }
@@ -223,6 +224,7 @@ export class VerdocsAuth {
       }
     } catch (e) {
       this.submitting = false;
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       console.log('[AUTH] Auth failure', e.response?.data || e);
       VerdocsToast('Login failed. Please check your credentials and try again.', {style: 'error'});
     }
@@ -264,6 +266,7 @@ export class VerdocsAuth {
         VerdocsToast('Please check your email for a verification code.', {style: 'info'});
       })
       .catch((e: any) => {
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         console.log('[AUTH] Unable to resend verification', e);
         VerdocsToast('Unable to resend code. Please try again later.', {style: 'error'});
       });
@@ -284,6 +287,7 @@ export class VerdocsAuth {
         VerdocsToast('Please check your email again for a verification code.', {style: 'info'});
       })
       .catch((e: any) => {
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         console.log('[AUTH] Unable to resend reset request', e);
         VerdocsToast('Unable to resend code. Please try again later.', {style: 'error'});
       });
@@ -305,6 +309,7 @@ export class VerdocsAuth {
       this.displayMode = 'reset';
     } catch (e) {
       this.submitting = false;
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       console.log('Reset request error', e);
       VerdocsToast('Request failed. Please check your email address and try again.');
     }
@@ -334,6 +339,7 @@ export class VerdocsAuth {
       this.displayMode = 'login';
     } catch (e) {
       this.submitting = false;
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       console.log('Verification error', e);
       VerdocsToast('Verification error, please check the code and try again.');
     }
@@ -351,6 +357,7 @@ export class VerdocsAuth {
     } catch (e) {
       console.log('[AUTH] Unable to reset password', e);
       this.submitting = false;
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       VerdocsToast('Unable to reset password. Please check your email address and try again.', {style: 'error'});
     }
   }
