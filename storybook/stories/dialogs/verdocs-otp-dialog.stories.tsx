@@ -1,5 +1,5 @@
 import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {Meta} from '@storybook/web-components-vite';
 
 export default {
   title: 'Dialogs/OTP Dialog',

@@ -1,6 +1,6 @@
 import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
-import {action} from '@storybook/addon-actions';
+import {Meta} from '@storybook/web-components-vite';
+import {action} from 'storybook/actions';
 import {IconOptions, Icons} from '../icons';
 
 export default {
