@@ -1,20 +1,27 @@
-import { newSpecPage } from '@stencil/core/testing';
-import { VerdocsOrganizationCard } from './verdocs-organization-card';
-import { h } from '@stencil/core';
+import {IOrganization} from '@verdocs/js-sdk';
+import {newSpecPage} from '@stencil/core/testing';
+import {VerdocsOrganizationCard} from './verdocs-organization-card';
+import {h} from '@stencil/core';
 
 describe('verdocs-organization-card', () => {
-  const baseOrg = {
+  const baseOrg: IOrganization = {
+    address: '',
+    address2: '',
+    contact_email: '',
+    parent_id: '',
+    phone: '',
+    updated_at: '',
     id: 'org1',
     name: 'Test Org',
     thumbnail_url: '',
     full_logo_url: '',
-    created_at: '2021-01-01T00:00:00Z'
+    created_at: '2021-01-01T00:00:00Z',
   };
 
   it('renders with minimal organization data', async () => {
     const page = await newSpecPage({
       components: [VerdocsOrganizationCard],
-      template: () => <verdocs-organization-card organization={{ ...baseOrg }} />,
+      template: () => <verdocs-organization-card organization={{...baseOrg}} />,
     });
     await page.waitForChanges();
     expect(page.root).toMatchSnapshot();
@@ -24,7 +31,7 @@ describe('verdocs-organization-card', () => {
     const org = {
       ...baseOrg,
       thumbnail_url: 'https://example.com/thumb.png',
-      full_logo_url: 'https://example.com/logo.png'
+      full_logo_url: 'https://example.com/logo.png',
     };
     const page = await newSpecPage({
       components: [VerdocsOrganizationCard],
@@ -35,12 +42,18 @@ describe('verdocs-organization-card', () => {
   });
 
   it('renders with only name', async () => {
-    const org = {
+    const org: IOrganization = {
+      address: '',
+      address2: '',
+      contact_email: '',
+      parent_id: '',
+      phone: '',
+      updated_at: '',
       id: 'org2',
       name: 'Name Only',
       thumbnail_url: '',
       full_logo_url: '',
-      created_at: '2022-02-02T00:00:00Z'
+      created_at: '2022-02-02T00:00:00Z',
     };
     const page = await newSpecPage({
       components: [VerdocsOrganizationCard],

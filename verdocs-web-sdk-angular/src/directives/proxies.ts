@@ -1249,7 +1249,8 @@ export class VerdocsInitialDialog {
 
 export declare interface VerdocsInitialDialog extends Components.VerdocsInitialDialog {
   /**
-   * Event fired when the initials are adopted.
+   * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string
+representation of the initials adopted.
    */
   next: EventEmitter<CustomEvent<string>>;
   /**

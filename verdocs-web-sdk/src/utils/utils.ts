@@ -269,6 +269,7 @@ export const removeCssTransform = (el: HTMLElement) => {
   // el.style.transform = currentTransform.replace(new RegExp(`\(${key}\\(.+?\\)\)`), '');
 };
 
+// TODO: Shift to getDownloadLilnk
 export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvelope, documentId: string) => {
   // e.g. "Colorado-Motor-Vehicle-Bill-of-Sale.pdf"
   const date = format(new Date(envelope.updated_at), FORMAT_DATE);

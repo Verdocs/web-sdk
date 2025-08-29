@@ -23,7 +23,7 @@ export class VerdocsOrganizationCard {
   /**
    * The organization to display
    */
-  @Prop() organization: IOrganization;
+  @Prop() organization: Partial<IOrganization>;
 
   @State()
   hovered: boolean = false;

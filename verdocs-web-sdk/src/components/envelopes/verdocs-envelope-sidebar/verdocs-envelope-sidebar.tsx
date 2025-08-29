@@ -1,7 +1,7 @@
 import {format} from 'date-fns';
 import {IEnvelope, IRecipient, updateRecipient} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
-import {cancelEnvelope, capitalize, formatFullName, getEnvelope, resendInvitation, updateEnvelope, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {cancelEnvelope, capitalize, formatFullName, getEnvelope, resetRecipient, remindRecipient, updateEnvelope, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -192,7 +192,7 @@ export class VerdocsEnvelopeSidebar {
         break;
 
       case 'reminder':
-        resendInvitation(this.endpoint, this.envelopeId, recipient.role_name)
+        remindRecipient(this.endpoint, this.envelopeId, recipient.role_name)
           .then(() => {
             VerdocsToast('Reminder Sent', {style: 'success'});
           })
@@ -204,14 +204,6 @@ export class VerdocsEnvelopeSidebar {
 
       case 'reinvite':
         this.showReinviteDialog = recipient.role_name;
-        // resendInvitation(this.endpoint, this.envelopeId, recipient.role_name)
-        //   .then(() => {
-        //     VerdocsToast('Reminder Sent', {style: 'success'});
-        //   })
-        //   .catch(e => {
-        //     console.log('[SIDEBAR] Error resending invitation', e);
-        //     VerdocsToast('Error resending invitation: ' + e.message, {style: 'error'});
-        //   });
         break;
 
       case 'inperson':
@@ -655,8 +647,16 @@ export class VerdocsEnvelopeSidebar {
             heading="Re-invite Recipient?"
             message={'This will reset the recipient\'s KBA status and send a new signing invitation. If you just want to send a reminder, please click "Send Reminder" instead.'}
             onNext={() => {
-              this.showReinviteDialog = '';
-              // this.handleCancelEnvelope();
+              resetRecipient(this.endpoint, this.envelopeId, this.showReinviteDialog)
+                .then(() => {
+                  VerdocsToast('Recipient Reset', {style: 'success'});
+                  this.showReinviteDialog = '';
+                })
+                .catch(e => {
+                  console.log('[SIDEBAR] Error resetting recipient', e);
+                  VerdocsToast('Error resetting recipient: ' + e.message, {style: 'error'});
+                  this.showReinviteDialog = '';
+                });
             }}
           />
         )}
