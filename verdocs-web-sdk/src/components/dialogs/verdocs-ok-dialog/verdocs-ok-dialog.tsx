@@ -32,6 +32,11 @@ export class VerdocsOkDialog {
   @Prop() showCancel: boolean = false;
 
   /**
+   * Should the field be disabled?
+   */
+  @Prop() disabled: boolean = false;
+
+  /**
    * Event fired when the user clicks the OK button.
    */
   @Event({composed: true}) next: EventEmitter;
@@ -92,7 +97,7 @@ export class VerdocsOkDialog {
                 Cancel
               </button>
             )}
-            <button class={!this.showCancel ? 'ok single' : 'ok'} onClick={() => this.handleOk()}>
+            <button disabled={this.disabled} class={!this.showCancel ? 'ok single' : 'ok'} onClick={() => this.handleOk()}>
               OK
             </button>
           </div>

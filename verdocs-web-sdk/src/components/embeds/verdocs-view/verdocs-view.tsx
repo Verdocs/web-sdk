@@ -3,6 +3,7 @@ import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State}
 import {saveEnvelopesAsZip} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
+import { VerdocsToast } from '../../../utils/Toast';
 
 /**
  * Render the documents attached to an envelope in read-only (view) mode. All documents are
@@ -100,6 +101,7 @@ export class VerdocsView {
         console.log('[VIEW] Loaded envelope', this.envelope);
       } catch (e) {
         this.showLoadError = true;
+        VerdocsToast('Unable to load envelope, please try again later', {style: 'error'});
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
     }
@@ -165,6 +167,7 @@ export class VerdocsView {
             .catch(e => {
               this.canceling = false;
               console.log('[VIEW] Error canceling envelope', e);
+              VerdocsToast('Unable to cancel envelope, please try again later', {style: 'error'});
               this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
             });
           this.showCancelDone = true;
@@ -213,6 +216,8 @@ export class VerdocsView {
           })
           .catch(e => {
             console.log('Error downloading Zip', e);
+            VerdocsToast('Unable to download envelope, please try again later', {style: 'error'});
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
           });
         break;
     }

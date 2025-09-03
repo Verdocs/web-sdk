@@ -2,6 +2,8 @@ import {Component, h, Event, EventEmitter, Fragment, Prop, State} from '@stencil
 import {formatFullName, getActiveEntitlements, IEntitlement, IProfile, IRecipient, isValidEmail, TEntitlement, TRecipientAuthMethod, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {getFeatureFlags, IFeatureFlags} from '../../../utils/Unleash';
 import {convertToE164} from '../../../utils/utils';
+import { SDKError } from '../../../utils/errors';
+import { VerdocsToast } from '../../../utils/Toast';
 
 const addrBookIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-user"><path d="M15 13a3 3 0 1 0-6 0"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><circle cx="12" cy="8" r="2"/></svg>`;
 
@@ -70,6 +72,12 @@ export class VerdocsContactPicker {
   @Event({composed: true}) searchContacts: EventEmitter<IContactSearchEvent>;
 
   /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+   * terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
+
+  /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
   @Event({composed: true}) exit: EventEmitter;
@@ -125,7 +133,11 @@ export class VerdocsContactPicker {
         this.activeEntitlements = r;
         console.log('[CONTACT PICKER] Loaded entitlements', r);
       })
-      .catch(e => console.log('[CONTACT PICKER] Error loading entitlements, some features may be disabled.', e));
+      .catch(e => {
+        console.log('[CONTACT PICKER] Error loading entitlements, some features may be disabled.', e);
+        VerdocsToast('Unable to load entitlements, please try again later', {style: 'error'});
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      });
 
     getFeatureFlags()
       .then(flags => {
@@ -134,6 +146,8 @@ export class VerdocsContactPicker {
       })
       .catch(e => {
         console.log('[CONTACT PICKER] Unable to fetch feature flags, some features may be disabled.', e);
+        VerdocsToast('Unable to load feature flags, please try again later', {style: 'error'});
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
   }
 

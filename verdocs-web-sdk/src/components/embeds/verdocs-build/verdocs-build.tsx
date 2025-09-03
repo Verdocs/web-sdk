@@ -2,6 +2,7 @@ import {getTemplate, ICreateEnvelopeRecipientFromTemplate, IRole, ITemplate, Ver
 import {Component, Prop, h, Element, Event, EventEmitter, Host, Watch, State} from '@stencil/core';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
+import { VerdocsToast } from '../../../utils/Toast';
 
 export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview';
 
@@ -118,10 +119,12 @@ export class VerdocsBuild {
         this.loadTemplate(this.templateId).catch(e => console.log('[BUILD] Unable to load template', e));
       } catch (e) {
         console.log('[BUILD] Error loading template', e);
+        VerdocsToast('Unable to load template: ' + e.message, {style: 'error'});
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
     } catch (e) {
       console.log('[BUILD] Error with builder session', e);
+      VerdocsToast('Unable to load template: ' + e.message, {style: 'error'});
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }

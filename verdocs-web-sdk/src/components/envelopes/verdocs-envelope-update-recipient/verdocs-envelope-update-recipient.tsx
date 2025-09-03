@@ -2,6 +2,7 @@ import {Component, Prop, Host, h, State, Event, EventEmitter} from '@stencil/cor
 import {getEnvelope, IEnvelope, IRecipient, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
+import { VerdocsToast } from '../../../utils/Toast';
 
 /**
  * Displays a single recipient from an envelope, with the opportunity to copy an in-person
@@ -28,6 +29,11 @@ export class VerdocsEnvelopeUpdateRecipient {
    * The role to load.
    */
   @Prop() roleName: string = '';
+
+  /**
+   * Should the field be disabled?
+   */
+  @Prop() disabled: boolean = false;
 
   /**
    * Event fired when the user clicks Done to proceed. It is up to the host application
@@ -67,6 +73,7 @@ export class VerdocsEnvelopeUpdateRecipient {
       this.listenToEnvelope();
     } catch (e) {
       console.log('[UPDATE_RECIPIENT] Error loading envelope', e);
+      VerdocsToast('Unable to load template: ' + e.message, {style: 'error'});
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -174,8 +181,8 @@ export class VerdocsEnvelopeUpdateRecipient {
           </div>
 
           <div class="buttons">
-            <verdocs-button variant="outline" size="small" label="Cancel" onClick={e => this.handleCancel(e)} />
-            <verdocs-button size="small" label="Save" onClick={e => this.handleSave(e)} />
+            <verdocs-button disabled={this.disabled} variant="outline" size="small" label="Cancel" onClick={e => this.handleCancel(e)} />
+            <verdocs-button disabled={this.disabled} size="small" label="Save" onClick={e => this.handleSave(e)} />
           </div>
         </div>
       </Host>

@@ -278,6 +278,7 @@ export class VerdocsSign {
             saveAttachment(this.endpoint, this.envelope, firstDoc.id).catch(e => {
               VerdocsToast('Unable to download PDF, please try again later', {style: 'error'});
               console.log('[SIGN] Error downloading PDF', e);
+              this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
             });
             this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
           }
@@ -359,6 +360,7 @@ export class VerdocsSign {
             console.log('Error updating initials', e);
             VerdocsToast('Unable to save initials, please try again later', {style: 'error'});
             this.showSpinner = false;
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
           });
 
       case 'signature':
@@ -382,6 +384,7 @@ export class VerdocsSign {
             console.warn('[SIGN] Error updating signature', e);
             VerdocsToast('Unable to save signature, please try again later', {style: 'error'});
             this.showSpinner = false;
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
           });
 
       case 'date':
@@ -468,8 +471,10 @@ export class VerdocsSign {
         document.getElementById('air-datepicker-global-container')?.remove();
 
         this.submitting = true;
+        this.showSpinner = true;
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
         console.log('[SIGN] Submitted successfully', result);
+        this.showSpinner = false;
         // TODO: The "proper" way is generating an error from Stencil
         //  NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which
         //  the new node is to be inserted is not a child of this node.
@@ -492,6 +497,9 @@ export class VerdocsSign {
         //   });
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
+        VerdocsToast('Unable to submit sign, please try again later', {style: 'error'});
+        this.showSpinner = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
 
       return;
@@ -591,6 +599,7 @@ export class VerdocsSign {
         console.log('Error uploading attachment', e);
         VerdocsToast('Unable to upload attachment, please try again later', {style: 'error'});
         this.showSpinner = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
     });
     el.addEventListener('deleted', async (e: any) => {
@@ -610,6 +619,7 @@ export class VerdocsSign {
         console.log('Error uploading attachment', e);
         VerdocsToast('Unable to upload attachment, please try again later', {style: 'error'});
         this.showSpinner = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       }
     });
     el.addEventListener('focusout', e => {
@@ -684,9 +694,11 @@ export class VerdocsSign {
 
   handleAuthenticateSigner(params: TAuthenticateRecipientRequest) {
     console.log('[SIGN] Submitting authentication step', params);
+    this.showSpinner = true;
     verifySigner(this.endpoint, params)
       .then(r => {
         console.log('[SIGN] Verification successful', r);
+        this.showSpinner = false;
         this.processAuthResponse(r);
       })
       .catch(e => {
@@ -698,6 +710,8 @@ export class VerdocsSign {
         } else {
           VerdocsToast(e.response?.data?.error || 'Unable to verify your identity. Please try again.', {style: 'error'});
         }
+        this.showSpinner = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
   }
 
@@ -804,6 +818,7 @@ export class VerdocsSign {
                 .catch(e => {
                   console.log('[SIGN] Error delegating request', e);
                   VerdocsToast('Unable to process delegation request. Please try again later.', {style: 'error'});
+                  this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
                 });
             }}
           />
@@ -828,6 +843,7 @@ export class VerdocsSign {
               .catch(e => {
                 console.warn('[SIGN] Error declining signing session', e);
                 VerdocsToast('Unable to decline, please try again later', {style: 'error'});
+                this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
               });
           }}
         />

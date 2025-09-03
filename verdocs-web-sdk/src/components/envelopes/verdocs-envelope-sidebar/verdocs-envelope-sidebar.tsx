@@ -110,6 +110,7 @@ export class VerdocsEnvelopeSidebar {
   @State() followupReminders: number | null = null;
 
   @State() loading = true;
+  @State() processing = true;
   @State() envelope: IEnvelope | null = null;
 
   async componentWillLoad() {
@@ -130,6 +131,7 @@ export class VerdocsEnvelopeSidebar {
     } catch (e) {
       console.log('[SIDEBAR] Error loading envelope', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      VerdocsToast('Error loading envelope: ' + e.message, {style: 'error'});
     }
   }
 
@@ -198,6 +200,7 @@ export class VerdocsEnvelopeSidebar {
           })
           .catch(e => {
             console.log('[SIDEBAR] Error resending invitation', e);
+            this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
             VerdocsToast('Error resending invitation: ' + e.message, {style: 'error'});
           });
         break;
@@ -224,6 +227,7 @@ export class VerdocsEnvelopeSidebar {
 
   handleCancelEnvelope() {
     this.loading = true;
+    this.processing = true;
     cancelEnvelope(this.endpoint, this.envelopeId)
       .then(async r => {
         console.log('[SIDEBAR] Envelope canceled', r);
@@ -235,12 +239,15 @@ export class VerdocsEnvelopeSidebar {
         Store.updateEnvelope(this.envelopeId, newEnvelope);
 
         this.loading = false;
+        this.processing = false;
         this.panelOpen = false;
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: newEnvelope, event: 'canceled'});
       })
       .catch(e => {
         console.log('[SIDEBAR] Error canceling envelope', e);
         this.loading = false;
+        this.processing = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         VerdocsToast('Error canceling envelope: ' + e.message, {style: 'error'});
       });
   }
@@ -265,6 +272,7 @@ export class VerdocsEnvelopeSidebar {
     }
 
     if (Object.keys(fields).length > 0) {
+      this.processing = true;
       updateRecipient(this.endpoint, this.envelopeId, originalRecipient.role_name, fields)
         .then(r => {
           // TODO: Reload the envelope?
@@ -272,10 +280,14 @@ export class VerdocsEnvelopeSidebar {
           console.log('[SIDEBAR] Updated recipient', r);
           Store.getEnvelope(this.endpoint, this.envelopeId, true);
           this.showUpdateDialog = '';
+          this.processing = false;
         })
         .catch(e => {
+          console.log('[SIDEBAR] Error updating recipient', e);
           VerdocsToast(e.response.data.error, {style: 'error'});
           this.showUpdateDialog = '';
+          this.processing = false;
+          this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         });
     } else {
       this.showUpdateDialog = '';
@@ -467,6 +479,7 @@ export class VerdocsEnvelopeSidebar {
         this.followupReminders = this.envelope?.followup_reminders;
         this.remindersEnabled = !!this.envelope?.initial_reminder;
         this.updatingReminders = false;
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         VerdocsToast(e.response.data.error, {style: 'error'});
       });
   }
@@ -634,6 +647,7 @@ export class VerdocsEnvelopeSidebar {
         {this.showCancelDialog && (
           <verdocs-ok-dialog
             heading="Cancel Envelope?"
+            disabled={this.processing}
             message={'Are you sure you want to cancel this Envelope? This action cannot be undone.'}
             onNext={() => {
               this.showCancelDialog = false;
@@ -645,6 +659,7 @@ export class VerdocsEnvelopeSidebar {
         {this.showReinviteDialog && (
           <verdocs-ok-dialog
             heading="Re-invite Recipient?"
+            disabled={this.processing}
             message={'This will reset the recipient\'s KBA status and send a new signing invitation. If you just want to send a reminder, please click "Send Reminder" instead.'}
             onNext={() => {
               resetRecipient(this.endpoint, this.envelopeId, this.showReinviteDialog)
@@ -664,6 +679,7 @@ export class VerdocsEnvelopeSidebar {
         {this.showUpdateDialog && (
           <verdocs-envelope-update-recipient
             envelopeId={this.envelopeId}
+            disabled={this.processing}
             roleName={this.showUpdateDialog}
             onNext={e => {
               console.log('next', e.detail);

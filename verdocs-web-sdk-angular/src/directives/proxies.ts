@@ -291,12 +291,13 @@ export class VerdocsContactPicker {
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'exit', 'next']);
+    proxyOutputs(this, this.el, ['searchContacts', 'sdkError', 'exit', 'next']);
   }
 }
 
 
 import type { IContactSearchEvent as IVerdocsContactPickerIContactSearchEvent } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsContactPickerSDKError } from '@verdocs/web-sdk/components';
 import type { IContactSelectEvent as IVerdocsContactPickerIContactSelectEvent } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsContactPicker extends Components.VerdocsContactPicker {
@@ -305,6 +306,11 @@ export declare interface VerdocsContactPicker extends Components.VerdocsContactP
 the `contactSuggestions` property.
    */
   searchContacts: EventEmitter<CustomEvent<IVerdocsContactPickerIContactSearchEvent>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsContactPickerSDKError>>;
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */
@@ -636,14 +642,14 @@ to redirect the user to the appropriate next workflow step.
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsEnvelopeUpdateRecipient,
-  inputs: ['endpoint', 'envelopeId', 'roleName']
+  inputs: ['disabled', 'endpoint', 'envelopeId', 'roleName']
 })
 @Component({
   selector: 'verdocs-envelope-update-recipient',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'envelopeId', 'roleName'],
+  inputs: ['disabled', 'endpoint', 'envelopeId', 'roleName'],
 })
 export class VerdocsEnvelopeUpdateRecipient {
   protected el: HTMLVerdocsEnvelopeUpdateRecipientElement;
@@ -1379,14 +1385,14 @@ export declare interface VerdocsMultiselect extends Components.VerdocsMultiselec
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsOkDialog,
-  inputs: ['buttonLabel', 'heading', 'message', 'showCancel']
+  inputs: ['buttonLabel', 'disabled', 'heading', 'message', 'showCancel']
 })
 @Component({
   selector: 'verdocs-ok-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['buttonLabel', 'heading', 'message', 'showCancel'],
+  inputs: ['buttonLabel', 'disabled', 'heading', 'message', 'showCancel'],
 })
 export class VerdocsOkDialog {
   protected el: HTMLVerdocsOkDialogElement;

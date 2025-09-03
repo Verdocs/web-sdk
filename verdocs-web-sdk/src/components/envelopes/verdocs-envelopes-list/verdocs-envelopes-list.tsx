@@ -283,6 +283,7 @@ export class VerdocsEnvelopesList {
     } catch (e) {
       this.loading = false;
       console.log('[ENVELOPES] Error listing envelopes', e);
+      VerdocsToast('Unable to list envelopes: ' + e.message, {style: 'error'});
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
   }
@@ -294,6 +295,7 @@ export class VerdocsEnvelopesList {
       })
       .catch(e => {
         console.log('[ENVELOPES] Download error', e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         VerdocsToast('Download error: ' + e.message, {style: 'error'});
       });
   }
@@ -301,6 +303,7 @@ export class VerdocsEnvelopesList {
   downloadEnvelope(envelope: IEnvelope) {
     saveEnvelopesAsZip(this.endpoint, [envelope]).catch(e => {
       console.log('[ENVELOPES] Download error', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       VerdocsToast('Download error: ' + e.message, {style: 'error'});
     });
   }
@@ -435,7 +438,11 @@ export class VerdocsEnvelopesList {
                         if (window.confirm('Are you sure you want to cancel this envelope?')) {
                           cancelEnvelope(this.endpoint, envelope.id)
                             .then(() => VerdocsToast('Envelope canceled'))
-                            .catch(e => VerdocsToast('Unable to cancel envelope: ' + e.messabge, {style: 'error'}));
+                            .catch(e => {
+                              console.log('[ENVELOPES] Cancel error', e);
+                              this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+                              VerdocsToast('Unable to cancel envelope: ' + e.message, {style: 'error'});
+                            });
                           this.queryEnvelopes().catch(() => {});
                         }
                         break;
