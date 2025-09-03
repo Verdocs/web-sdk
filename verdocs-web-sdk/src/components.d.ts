@@ -87,7 +87,7 @@ export namespace Components {
      * <verdocs-build
      *   templateId={TEMPLATE_ID} step="preview"
      *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
      *   />
      * ```
      */
@@ -2690,7 +2690,7 @@ declare global {
      * <verdocs-build
      *   templateId={TEMPLATE_ID} step="preview"
      *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
      *   />
      * ```
      */
@@ -4448,7 +4448,7 @@ declare namespace LocalJSX {
      * <verdocs-build
      *   templateId={TEMPLATE_ID} step="preview"
      *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
      *   />
      * ```
      */
@@ -7436,7 +7436,7 @@ declare module "@stencil/core" {
              * <verdocs-build
              *   templateId={TEMPLATE_ID} step="preview"
              *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
-             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
              *   />
              * ```
              */
