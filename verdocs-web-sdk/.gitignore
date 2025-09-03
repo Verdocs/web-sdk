@@ -28,3 +28,4 @@ UserInterfaceState.xcuserstate
 
 *storybook.log
 coverage
+coverage/lcov-report/*

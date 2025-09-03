@@ -1,5 +1,5 @@
 import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {Meta} from '@storybook/web-components-vite';
 
 // This component is heavily commented so it can be used as a reference for developing other components. Please use the comments here
 // as a guide / resource, but do not copy them to new components (so we don't create a maintenance hassle). If you copy this component

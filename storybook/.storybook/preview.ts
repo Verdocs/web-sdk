@@ -1,5 +1,5 @@
-import {Preview} from '@storybook/react';
-import {setCustomElementsManifest} from '@storybook/web-components';
+import {Preview} from '@storybook/react-vite';
+import {setCustomElementsManifest} from '@storybook/web-components-vite';
 import customElements from '../../verdocs-web-sdk/dist/custom-elements.json';
 
 import {defineCustomElements} from '../../verdocs-web-sdk/dist/esm/loader';
