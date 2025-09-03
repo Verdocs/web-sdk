@@ -50,8 +50,8 @@ const DEFAULT_DISCLOSURES = `
  *   envelopeId={ENVELOPE_ID}
  *   roleId={ROLE_ID}
  *   inviteCode={INVITE_CODE}
- *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
- *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+ *   onEnvelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+ *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
  *   />
  * ```
  */
