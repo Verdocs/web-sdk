@@ -5,18 +5,24 @@ import { VerdocsSign } from "@verdocs/web-sdk-vue";
 const ENVELOPE_ID = "<ENVELOPE_ID>";
 const ROLE_ID = "<ROLE_ID>";
 const INVITE_CODE = "<INVITE_CODE>";
+
+function onEnvelopeUpdated(event: CustomEvent) {
+    console.log("Envelope updated state:", event.detail);
+}
+
+function onSdkError(event: CustomEvent) {
+    console.log("SDK error", event.detail);
+}
 </script>
 
 <template>
-    <div>
-        <a href="https://vite.dev" target="_blank">
-            <img src="/vite.svg" class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://vuejs.org/" target="_blank">
-            <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-        </a>
-    </div>
-    <VerdocsSign />
+    <VerdocsSign
+        :envelope-id="ENVELOPE_ID"
+        :role-id="ROLE_ID"
+        :invite-code="INVITE_CODE"
+        @envelope-updated="onEnvelopeUpdated"
+        @sdk-error="onSdkError"
+    />
 </template>
 
 <style scoped>

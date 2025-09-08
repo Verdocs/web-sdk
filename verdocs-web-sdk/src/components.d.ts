@@ -1805,8 +1805,8 @@ export namespace Components {
      *   envelopeId={ENVELOPE_ID}
      *   roleId={ROLE_ID}
      *   inviteCode={INVITE_CODE}
-     *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   onEnvelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
      *   />
      * ```
      */
@@ -3780,8 +3780,8 @@ declare global {
      *   envelopeId={ENVELOPE_ID}
      *   roleId={ROLE_ID}
      *   inviteCode={INVITE_CODE}
-     *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   onEnvelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
      *   />
      * ```
      */
@@ -6494,8 +6494,8 @@ declare namespace LocalJSX {
      *   envelopeId={ENVELOPE_ID}
      *   roleId={ROLE_ID}
      *   inviteCode={INVITE_CODE}
-     *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+     *   onEnvelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
      *   />
      * ```
      */
@@ -7821,8 +7821,8 @@ declare module "@stencil/core" {
              *   envelopeId={ENVELOPE_ID}
              *   roleId={ROLE_ID}
              *   inviteCode={INVITE_CODE}
-             *   envelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
-             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
+             *   onEnvelopeUpdated={({ detail }) => console.log('Envelope updated state:', detail) }
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
              *   />
              * ```
              */
