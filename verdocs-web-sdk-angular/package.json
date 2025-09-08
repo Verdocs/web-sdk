@@ -30,8 +30,12 @@
   "peerDependencies": {
     "@angular/core": "^19.2.6"
   },
+  "dependencies": {
+    "@verdocs/web-sdk": "^6.0.4"
+  },
   "devDependencies": {
     "@angular/animations": "^19.2.14",
+    "@angular/compiler-cli": "^19.2.6",
     "@types/node": "^24.1.0",
     "fs-extra": "^11.3.0",
     "glob": "^11.0.3",
