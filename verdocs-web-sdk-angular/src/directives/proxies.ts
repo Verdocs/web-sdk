@@ -1,87 +1,87 @@
 /* tslint:disable */
 /* auto-generated angular directive proxies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, NgZone } from '@angular/core';
 
-import { ProxyCmp, proxyOutputs } from './angular-component-lib/utils';
+import { ProxyCmp } from './angular-component-lib/utils';
 
-import type { Components } from '@verdocs/web-sdk/components';
+import type { Components , IRecipient} from '@verdocs/web-sdk';
 
-import { defineCustomElement as defineVerdocsAuth } from '@verdocs/web-sdk/components/verdocs-auth.js';
-import { defineCustomElement as defineVerdocsBuild } from '@verdocs/web-sdk/components/verdocs-build.js';
-import { defineCustomElement as defineVerdocsButton } from '@verdocs/web-sdk/components/verdocs-button.js';
-import { defineCustomElement as defineVerdocsButtonPanel } from '@verdocs/web-sdk/components/verdocs-button-panel.js';
-import { defineCustomElement as defineVerdocsCheckbox } from '@verdocs/web-sdk/components/verdocs-checkbox.js';
-import { defineCustomElement as defineVerdocsComponentError } from '@verdocs/web-sdk/components/verdocs-component-error.js';
-import { defineCustomElement as defineVerdocsContactPicker } from '@verdocs/web-sdk/components/verdocs-contact-picker.js';
-import { defineCustomElement as defineVerdocsDateInput } from '@verdocs/web-sdk/components/verdocs-date-input.js';
-import { defineCustomElement as defineVerdocsDelegateDialog } from '@verdocs/web-sdk/components/verdocs-delegate-dialog.js';
-import { defineCustomElement as defineVerdocsDialog } from '@verdocs/web-sdk/components/verdocs-dialog.js';
-import { defineCustomElement as defineVerdocsDisclosureDialog } from '@verdocs/web-sdk/components/verdocs-disclosure-dialog.js';
-import { defineCustomElement as defineVerdocsDropdown } from '@verdocs/web-sdk/components/verdocs-dropdown.js';
-import { defineCustomElement as defineVerdocsEnvelopeDocumentPage } from '@verdocs/web-sdk/components/verdocs-envelope-document-page.js';
-import { defineCustomElement as defineVerdocsEnvelopeRecipientLink } from '@verdocs/web-sdk/components/verdocs-envelope-recipient-link.js';
-import { defineCustomElement as defineVerdocsEnvelopeRecipientSummary } from '@verdocs/web-sdk/components/verdocs-envelope-recipient-summary.js';
-import { defineCustomElement as defineVerdocsEnvelopeSidebar } from '@verdocs/web-sdk/components/verdocs-envelope-sidebar.js';
-import { defineCustomElement as defineVerdocsEnvelopeUpdateRecipient } from '@verdocs/web-sdk/components/verdocs-envelope-update-recipient.js';
-import { defineCustomElement as defineVerdocsEnvelopesList } from '@verdocs/web-sdk/components/verdocs-envelopes-list.js';
-import { defineCustomElement as defineVerdocsFieldAttachment } from '@verdocs/web-sdk/components/verdocs-field-attachment.js';
-import { defineCustomElement as defineVerdocsFieldCheckbox } from '@verdocs/web-sdk/components/verdocs-field-checkbox.js';
-import { defineCustomElement as defineVerdocsFieldDate } from '@verdocs/web-sdk/components/verdocs-field-date.js';
-import { defineCustomElement as defineVerdocsFieldDropdown } from '@verdocs/web-sdk/components/verdocs-field-dropdown.js';
-import { defineCustomElement as defineVerdocsFieldInitial } from '@verdocs/web-sdk/components/verdocs-field-initial.js';
-import { defineCustomElement as defineVerdocsFieldPayment } from '@verdocs/web-sdk/components/verdocs-field-payment.js';
-import { defineCustomElement as defineVerdocsFieldRadio } from '@verdocs/web-sdk/components/verdocs-field-radio.js';
-import { defineCustomElement as defineVerdocsFieldSignature } from '@verdocs/web-sdk/components/verdocs-field-signature.js';
-import { defineCustomElement as defineVerdocsFieldTextarea } from '@verdocs/web-sdk/components/verdocs-field-textarea.js';
-import { defineCustomElement as defineVerdocsFieldTextbox } from '@verdocs/web-sdk/components/verdocs-field-textbox.js';
-import { defineCustomElement as defineVerdocsFieldTimestamp } from '@verdocs/web-sdk/components/verdocs-field-timestamp.js';
-import { defineCustomElement as defineVerdocsFileChooser } from '@verdocs/web-sdk/components/verdocs-file-chooser.js';
-import { defineCustomElement as defineVerdocsHelpIcon } from '@verdocs/web-sdk/components/verdocs-help-icon.js';
-import { defineCustomElement as defineVerdocsInitialDialog } from '@verdocs/web-sdk/components/verdocs-initial-dialog.js';
-import { defineCustomElement as defineVerdocsKbaDialog } from '@verdocs/web-sdk/components/verdocs-kba-dialog.js';
-import { defineCustomElement as defineVerdocsLoader } from '@verdocs/web-sdk/components/verdocs-loader.js';
-import { defineCustomElement as defineVerdocsMenuPanel } from '@verdocs/web-sdk/components/verdocs-menu-panel.js';
-import { defineCustomElement as defineVerdocsMultiselect } from '@verdocs/web-sdk/components/verdocs-multiselect.js';
-import { defineCustomElement as defineVerdocsOkDialog } from '@verdocs/web-sdk/components/verdocs-ok-dialog.js';
-import { defineCustomElement as defineVerdocsOrganizationCard } from '@verdocs/web-sdk/components/verdocs-organization-card.js';
-import { defineCustomElement as defineVerdocsOtpDialog } from '@verdocs/web-sdk/components/verdocs-otp-dialog.js';
-import { defineCustomElement as defineVerdocsPagination } from '@verdocs/web-sdk/components/verdocs-pagination.js';
-import { defineCustomElement as defineVerdocsPortal } from '@verdocs/web-sdk/components/verdocs-portal.js';
-import { defineCustomElement as defineVerdocsPreview } from '@verdocs/web-sdk/components/verdocs-preview.js';
-import { defineCustomElement as defineVerdocsProgressBar } from '@verdocs/web-sdk/components/verdocs-progress-bar.js';
-import { defineCustomElement as defineVerdocsQuickFilter } from '@verdocs/web-sdk/components/verdocs-quick-filter.js';
-import { defineCustomElement as defineVerdocsQuickFunctions } from '@verdocs/web-sdk/components/verdocs-quick-functions.js';
-import { defineCustomElement as defineVerdocsRadioButton } from '@verdocs/web-sdk/components/verdocs-radio-button.js';
-import { defineCustomElement as defineVerdocsSearchBox } from '@verdocs/web-sdk/components/verdocs-search-box.js';
-import { defineCustomElement as defineVerdocsSearchTabs } from '@verdocs/web-sdk/components/verdocs-search-tabs.js';
-import { defineCustomElement as defineVerdocsSelectInput } from '@verdocs/web-sdk/components/verdocs-select-input.js';
-import { defineCustomElement as defineVerdocsSend } from '@verdocs/web-sdk/components/verdocs-send.js';
-import { defineCustomElement as defineVerdocsSign } from '@verdocs/web-sdk/components/verdocs-sign.js';
-import { defineCustomElement as defineVerdocsSignatureDialog } from '@verdocs/web-sdk/components/verdocs-signature-dialog.js';
-import { defineCustomElement as defineVerdocsSpinner } from '@verdocs/web-sdk/components/verdocs-spinner.js';
-import { defineCustomElement as defineVerdocsStatusIndicator } from '@verdocs/web-sdk/components/verdocs-status-indicator.js';
-import { defineCustomElement as defineVerdocsSwitch } from '@verdocs/web-sdk/components/verdocs-switch.js';
-import { defineCustomElement as defineVerdocsTable } from '@verdocs/web-sdk/components/verdocs-table.js';
-import { defineCustomElement as defineVerdocsTabs } from '@verdocs/web-sdk/components/verdocs-tabs.js';
-import { defineCustomElement as defineVerdocsTemplateAttachments } from '@verdocs/web-sdk/components/verdocs-template-attachments.js';
-import { defineCustomElement as defineVerdocsTemplateBuildTabs } from '@verdocs/web-sdk/components/verdocs-template-build-tabs.js';
-import { defineCustomElement as defineVerdocsTemplateCard } from '@verdocs/web-sdk/components/verdocs-template-card.js';
-import { defineCustomElement as defineVerdocsTemplateCreate } from '@verdocs/web-sdk/components/verdocs-template-create.js';
-import { defineCustomElement as defineVerdocsTemplateDocumentPage } from '@verdocs/web-sdk/components/verdocs-template-document-page.js';
-import { defineCustomElement as defineVerdocsTemplateFieldProperties } from '@verdocs/web-sdk/components/verdocs-template-field-properties.js';
-import { defineCustomElement as defineVerdocsTemplateFields } from '@verdocs/web-sdk/components/verdocs-template-fields.js';
-import { defineCustomElement as defineVerdocsTemplateRoleProperties } from '@verdocs/web-sdk/components/verdocs-template-role-properties.js';
-import { defineCustomElement as defineVerdocsTemplateRoles } from '@verdocs/web-sdk/components/verdocs-template-roles.js';
-import { defineCustomElement as defineVerdocsTemplateSettings } from '@verdocs/web-sdk/components/verdocs-template-settings.js';
-import { defineCustomElement as defineVerdocsTemplateStar } from '@verdocs/web-sdk/components/verdocs-template-star.js';
-import { defineCustomElement as defineVerdocsTemplateTags } from '@verdocs/web-sdk/components/verdocs-template-tags.js';
-import { defineCustomElement as defineVerdocsTemplatesList } from '@verdocs/web-sdk/components/verdocs-templates-list.js';
-import { defineCustomElement as defineVerdocsTextInput } from '@verdocs/web-sdk/components/verdocs-text-input.js';
-import { defineCustomElement as defineVerdocsToggle } from '@verdocs/web-sdk/components/verdocs-toggle.js';
-import { defineCustomElement as defineVerdocsToggleButton } from '@verdocs/web-sdk/components/verdocs-toggle-button.js';
-import { defineCustomElement as defineVerdocsToolbarIcon } from '@verdocs/web-sdk/components/verdocs-toolbar-icon.js';
-import { defineCustomElement as defineVerdocsUploadDialog } from '@verdocs/web-sdk/components/verdocs-upload-dialog.js';
-import { defineCustomElement as defineVerdocsView } from '@verdocs/web-sdk/components/verdocs-view.js';
+import { defineCustomElement as defineVerdocsAuth } from '@verdocs/web-sdk/dist/components/verdocs-auth.js';
+import { defineCustomElement as defineVerdocsBuild } from '@verdocs/web-sdk/dist/components/verdocs-build.js';
+import { defineCustomElement as defineVerdocsButton } from '@verdocs/web-sdk/dist/components/verdocs-button.js';
+import { defineCustomElement as defineVerdocsButtonPanel } from '@verdocs/web-sdk/dist/components/verdocs-button-panel.js';
+import { defineCustomElement as defineVerdocsCheckbox } from '@verdocs/web-sdk/dist/components/verdocs-checkbox.js';
+import { defineCustomElement as defineVerdocsComponentError } from '@verdocs/web-sdk/dist/components/verdocs-component-error.js';
+import { defineCustomElement as defineVerdocsContactPicker } from '@verdocs/web-sdk/dist/components/verdocs-contact-picker.js';
+import { defineCustomElement as defineVerdocsDateInput } from '@verdocs/web-sdk/dist/components/verdocs-date-input.js';
+import { defineCustomElement as defineVerdocsDelegateDialog } from '@verdocs/web-sdk/dist/components/verdocs-delegate-dialog.js';
+import { defineCustomElement as defineVerdocsDialog } from '@verdocs/web-sdk/dist/components/verdocs-dialog.js';
+import { defineCustomElement as defineVerdocsDisclosureDialog } from '@verdocs/web-sdk/dist/components/verdocs-disclosure-dialog.js';
+import { defineCustomElement as defineVerdocsDropdown } from '@verdocs/web-sdk/dist/components/verdocs-dropdown.js';
+import { defineCustomElement as defineVerdocsEnvelopeDocumentPage } from '@verdocs/web-sdk/dist/components/verdocs-envelope-document-page.js';
+import { defineCustomElement as defineVerdocsEnvelopeRecipientLink } from '@verdocs/web-sdk/dist/components/verdocs-envelope-recipient-link.js';
+import { defineCustomElement as defineVerdocsEnvelopeRecipientSummary } from '@verdocs/web-sdk/dist/components/verdocs-envelope-recipient-summary.js';
+import { defineCustomElement as defineVerdocsEnvelopeSidebar } from '@verdocs/web-sdk/dist/components/verdocs-envelope-sidebar.js';
+import { defineCustomElement as defineVerdocsEnvelopeUpdateRecipient } from '@verdocs/web-sdk/dist/components/verdocs-envelope-update-recipient.js';
+import { defineCustomElement as defineVerdocsEnvelopesList } from '@verdocs/web-sdk/dist/components/verdocs-envelopes-list.js';
+import { defineCustomElement as defineVerdocsFieldAttachment } from '@verdocs/web-sdk/dist/components/verdocs-field-attachment.js';
+import { defineCustomElement as defineVerdocsFieldCheckbox } from '@verdocs/web-sdk/dist/components/verdocs-field-checkbox.js';
+import { defineCustomElement as defineVerdocsFieldDate } from '@verdocs/web-sdk/dist/components/verdocs-field-date.js';
+import { defineCustomElement as defineVerdocsFieldDropdown } from '@verdocs/web-sdk/dist/components/verdocs-field-dropdown.js';
+import { defineCustomElement as defineVerdocsFieldInitial } from '@verdocs/web-sdk/dist/components/verdocs-field-initial.js';
+import { defineCustomElement as defineVerdocsFieldPayment } from '@verdocs/web-sdk/dist/components/verdocs-field-payment.js';
+import { defineCustomElement as defineVerdocsFieldRadio } from '@verdocs/web-sdk/dist/components/verdocs-field-radio.js';
+import { defineCustomElement as defineVerdocsFieldSignature } from '@verdocs/web-sdk/dist/components/verdocs-field-signature.js';
+import { defineCustomElement as defineVerdocsFieldTextarea } from '@verdocs/web-sdk/dist/components/verdocs-field-textarea.js';
+import { defineCustomElement as defineVerdocsFieldTextbox } from '@verdocs/web-sdk/dist/components/verdocs-field-textbox.js';
+import { defineCustomElement as defineVerdocsFieldTimestamp } from '@verdocs/web-sdk/dist/components/verdocs-field-timestamp.js';
+import { defineCustomElement as defineVerdocsFileChooser } from '@verdocs/web-sdk/dist/components/verdocs-file-chooser.js';
+import { defineCustomElement as defineVerdocsHelpIcon } from '@verdocs/web-sdk/dist/components/verdocs-help-icon.js';
+import { defineCustomElement as defineVerdocsInitialDialog } from '@verdocs/web-sdk/dist/components/verdocs-initial-dialog.js';
+import { defineCustomElement as defineVerdocsKbaDialog } from '@verdocs/web-sdk/dist/components/verdocs-kba-dialog.js';
+import { defineCustomElement as defineVerdocsLoader } from '@verdocs/web-sdk/dist/components/verdocs-loader.js';
+import { defineCustomElement as defineVerdocsMenuPanel } from '@verdocs/web-sdk/dist/components/verdocs-menu-panel.js';
+import { defineCustomElement as defineVerdocsMultiselect } from '@verdocs/web-sdk/dist/components/verdocs-multiselect.js';
+import { defineCustomElement as defineVerdocsOkDialog } from '@verdocs/web-sdk/dist/components/verdocs-ok-dialog.js';
+import { defineCustomElement as defineVerdocsOrganizationCard } from '@verdocs/web-sdk/dist/components/verdocs-organization-card.js';
+import { defineCustomElement as defineVerdocsOtpDialog } from '@verdocs/web-sdk/dist/components/verdocs-otp-dialog.js';
+import { defineCustomElement as defineVerdocsPagination } from '@verdocs/web-sdk/dist/components/verdocs-pagination.js';
+import { defineCustomElement as defineVerdocsPortal } from '@verdocs/web-sdk/dist/components/verdocs-portal.js';
+import { defineCustomElement as defineVerdocsPreview } from '@verdocs/web-sdk/dist/components/verdocs-preview.js';
+import { defineCustomElement as defineVerdocsProgressBar } from '@verdocs/web-sdk/dist/components/verdocs-progress-bar.js';
+import { defineCustomElement as defineVerdocsQuickFilter } from '@verdocs/web-sdk/dist/components/verdocs-quick-filter.js';
+import { defineCustomElement as defineVerdocsQuickFunctions } from '@verdocs/web-sdk/dist/components/verdocs-quick-functions.js';
+import { defineCustomElement as defineVerdocsRadioButton } from '@verdocs/web-sdk/dist/components/verdocs-radio-button.js';
+import { defineCustomElement as defineVerdocsSearchBox } from '@verdocs/web-sdk/dist/components/verdocs-search-box.js';
+import { defineCustomElement as defineVerdocsSearchTabs } from '@verdocs/web-sdk/dist/components/verdocs-search-tabs.js';
+import { defineCustomElement as defineVerdocsSelectInput } from '@verdocs/web-sdk/dist/components/verdocs-select-input.js';
+import { defineCustomElement as defineVerdocsSend } from '@verdocs/web-sdk/dist/components/verdocs-send.js';
+import { defineCustomElement as defineVerdocsSign } from '@verdocs/web-sdk/dist/components/verdocs-sign.js';
+import { defineCustomElement as defineVerdocsSignatureDialog } from '@verdocs/web-sdk/dist/components/verdocs-signature-dialog.js';
+import { defineCustomElement as defineVerdocsSpinner } from '@verdocs/web-sdk/dist/components/verdocs-spinner.js';
+import { defineCustomElement as defineVerdocsStatusIndicator } from '@verdocs/web-sdk/dist/components/verdocs-status-indicator.js';
+import { defineCustomElement as defineVerdocsSwitch } from '@verdocs/web-sdk/dist/components/verdocs-switch.js';
+import { defineCustomElement as defineVerdocsTable } from '@verdocs/web-sdk/dist/components/verdocs-table.js';
+import { defineCustomElement as defineVerdocsTabs } from '@verdocs/web-sdk/dist/components/verdocs-tabs.js';
+import { defineCustomElement as defineVerdocsTemplateAttachments } from '@verdocs/web-sdk/dist/components/verdocs-template-attachments.js';
+import { defineCustomElement as defineVerdocsTemplateBuildTabs } from '@verdocs/web-sdk/dist/components/verdocs-template-build-tabs.js';
+import { defineCustomElement as defineVerdocsTemplateCard } from '@verdocs/web-sdk/dist/components/verdocs-template-card.js';
+import { defineCustomElement as defineVerdocsTemplateCreate } from '@verdocs/web-sdk/dist/components/verdocs-template-create.js';
+import { defineCustomElement as defineVerdocsTemplateDocumentPage } from '@verdocs/web-sdk/dist/components/verdocs-template-document-page.js';
+import { defineCustomElement as defineVerdocsTemplateFieldProperties } from '@verdocs/web-sdk/dist/components/verdocs-template-field-properties.js';
+import { defineCustomElement as defineVerdocsTemplateFields } from '@verdocs/web-sdk/dist/components/verdocs-template-fields.js';
+import { defineCustomElement as defineVerdocsTemplateRoleProperties } from '@verdocs/web-sdk/dist/components/verdocs-template-role-properties.js';
+import { defineCustomElement as defineVerdocsTemplateRoles } from '@verdocs/web-sdk/dist/components/verdocs-template-roles.js';
+import { defineCustomElement as defineVerdocsTemplateSettings } from '@verdocs/web-sdk/dist/components/verdocs-template-settings.js';
+import { defineCustomElement as defineVerdocsTemplateStar } from '@verdocs/web-sdk/dist/components/verdocs-template-star.js';
+import { defineCustomElement as defineVerdocsTemplateTags } from '@verdocs/web-sdk/dist/components/verdocs-template-tags.js';
+import { defineCustomElement as defineVerdocsTemplatesList } from '@verdocs/web-sdk/dist/components/verdocs-templates-list.js';
+import { defineCustomElement as defineVerdocsTextInput } from '@verdocs/web-sdk/dist/components/verdocs-text-input.js';
+import { defineCustomElement as defineVerdocsToggle } from '@verdocs/web-sdk/dist/components/verdocs-toggle.js';
+import { defineCustomElement as defineVerdocsToggleButton } from '@verdocs/web-sdk/dist/components/verdocs-toggle-button.js';
+import { defineCustomElement as defineVerdocsToolbarIcon } from '@verdocs/web-sdk/dist/components/verdocs-toolbar-icon.js';
+import { defineCustomElement as defineVerdocsUploadDialog } from '@verdocs/web-sdk/dist/components/verdocs-upload-dialog.js';
+import { defineCustomElement as defineVerdocsView } from '@verdocs/web-sdk/dist/components/verdocs-view.js';
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsAuth,
   inputs: ['displayMode', 'endpoint', 'logo', 'visible']
@@ -92,19 +92,21 @@ import { defineCustomElement as defineVerdocsView } from '@verdocs/web-sdk/compo
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['displayMode', 'endpoint', 'logo', 'visible'],
+  outputs: ['authenticated', 'sdkError'],
 })
 export class VerdocsAuth {
   protected el: HTMLVerdocsAuthElement;
+  @Output() authenticated = new EventEmitter<CustomEvent<IVerdocsAuthIAuthStatus>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsAuthSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['authenticated', 'sdkError']);
   }
 }
 
 
-import type { IAuthStatus as IVerdocsAuthIAuthStatus } from '@verdocs/web-sdk/components';
-import type { SDKError as IVerdocsAuthSDKError } from '@verdocs/web-sdk/components';
+import type { IAuthStatus as IVerdocsAuthIAuthStatus } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsAuthSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsAuth extends Components.VerdocsAuth {
   /**
@@ -131,23 +133,30 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'step', 'templateId'],
+  outputs: ['cancel', 'sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated', 'rolesUpdated'],
 })
 export class VerdocsBuild {
   protected el: HTMLVerdocsBuildElement;
+  @Output() cancel = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsBuildSDKError>>();
+  @Output() stepChanged = new EventEmitter<CustomEvent<IVerdocsBuildTVerdocsBuildStep>>();
+  @Output() send = new EventEmitter<CustomEvent<{recipients: IVerdocsBuildICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string}>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: IVerdocsBuildITemplate; event: string}>>();
+  @Output() templateCreated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: IVerdocsBuildITemplate; event: string}>>();
+  @Output() rolesUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsBuildIRole[]}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated', 'rolesUpdated']);
   }
 }
 
 
-import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk/components';
-import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk/components';
-import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsBuildICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk/components';
-import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsBuildSDKError } from '@verdocs/web-sdk';
+import type { TVerdocsBuildStep as IVerdocsBuildTVerdocsBuildStep } from '@verdocs/web-sdk';
+import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsBuildICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsBuildVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsBuildITemplate } from '@verdocs/web-sdk';
+import type { IRole as IVerdocsBuildIRole } from '@verdocs/web-sdk';
 
 export declare interface VerdocsBuild extends Components.VerdocsBuild {
   /**
@@ -285,19 +294,22 @@ export declare interface VerdocsComponentError extends Components.VerdocsCompone
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['contactSuggestions', 'endpoint', 'templateRole'],
+  outputs: ['searchContacts', 'exit', 'next'],
 })
 export class VerdocsContactPicker {
   protected el: HTMLVerdocsContactPickerElement;
+  @Output() searchContacts = new EventEmitter<CustomEvent<IVerdocsContactPickerIContactSearchEvent>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<IVerdocsContactPickerIContactSelectEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'exit', 'next']);
   }
 }
 
 
-import type { IContactSearchEvent as IVerdocsContactPickerIContactSearchEvent } from '@verdocs/web-sdk/components';
-import type { IContactSelectEvent as IVerdocsContactPickerIContactSelectEvent } from '@verdocs/web-sdk/components';
+import type { IContactSearchEvent as IVerdocsContactPickerIContactSearchEvent } from '@verdocs/web-sdk';
+import type { IContactSelectEvent as IVerdocsContactPickerIContactSelectEvent } from '@verdocs/web-sdk';
 
 export declare interface VerdocsContactPicker extends Components.VerdocsContactPicker {
   /**
@@ -350,13 +362,15 @@ export declare interface VerdocsDateInput extends Components.VerdocsDateInput {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelope'],
+  outputs: ['exit', 'next'],
 })
 export class VerdocsDelegateDialog {
   protected el: HTMLVerdocsDelegateDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next']);
   }
 }
 
@@ -382,13 +396,14 @@ export declare interface VerdocsDelegateDialog extends Components.VerdocsDelegat
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: [],
+  outputs: ['exit'],
 })
 export class VerdocsDialog {
   protected el: HTMLVerdocsDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit']);
   }
 }
 
@@ -411,13 +426,16 @@ export declare interface VerdocsDialog extends Components.VerdocsDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['delegator', 'disclosures'],
+  outputs: ['decline', 'delegate', 'accept'],
 })
 export class VerdocsDisclosureDialog {
   protected el: HTMLVerdocsDisclosureDialogElement;
+  @Output() decline = new EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>();
+  @Output() delegate = new EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>();
+  @Output() accept = new EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['decline', 'delegate', 'accept']);
   }
 }
 
@@ -448,18 +466,19 @@ export declare interface VerdocsDisclosureDialog extends Components.VerdocsDiscl
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['options'],
+  outputs: ['optionSelected'],
 })
 export class VerdocsDropdown {
   protected el: HTMLVerdocsDropdownElement;
+  @Output() optionSelected = new EventEmitter<CustomEvent<IVerdocsDropdownIMenuOption>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['optionSelected']);
   }
 }
 
 
-import type { IMenuOption as IVerdocsDropdownIMenuOption } from '@verdocs/web-sdk/components';
+import type { IMenuOption as IVerdocsDropdownIMenuOption } from '@verdocs/web-sdk';
 
 export declare interface VerdocsDropdown extends Components.VerdocsDropdown {
   /**
@@ -480,18 +499,19 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['documentId', 'endpoint', 'envelopeId', 'layers', 'pageNumber', 'type', 'virtualHeight', 'virtualWidth'],
+  outputs: ['pageRendered'],
 })
 export class VerdocsEnvelopeDocumentPage {
   protected el: HTMLVerdocsEnvelopeDocumentPageElement;
+  @Output() pageRendered = new EventEmitter<CustomEvent<IVerdocsEnvelopeDocumentPageIDocumentPageInfo>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['pageRendered']);
   }
 }
 
 
-import type { IDocumentPageInfo as IVerdocsEnvelopeDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk/components';
+import type { IDocumentPageInfo as IVerdocsEnvelopeDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeDocumentPage extends Components.VerdocsEnvelopeDocumentPage {
   /**
@@ -511,19 +531,21 @@ export declare interface VerdocsEnvelopeDocumentPage extends Components.VerdocsE
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId', 'roleName'],
+  outputs: ['next', 'sdkError'],
 })
 export class VerdocsEnvelopeRecipientLink {
   protected el: HTMLVerdocsEnvelopeRecipientLinkElement;
+  @Output() next = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientLinkIEnvelope}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientLinkSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'sdkError']);
   }
 }
 
 
-import type { IEnvelope as IVerdocsEnvelopeRecipientLinkIEnvelope } from '@verdocs/web-sdk/components';
-import type { SDKError as IVerdocsEnvelopeRecipientLinkSDKError } from '@verdocs/web-sdk/components';
+import type { IEnvelope as IVerdocsEnvelopeRecipientLinkIEnvelope } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsEnvelopeRecipientLinkSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeRecipientLink extends Components.VerdocsEnvelopeRecipientLink {
   /**
@@ -549,19 +571,23 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelopeId'],
+  outputs: ['another', 'view', 'next', 'sdkError'],
 })
 export class VerdocsEnvelopeRecipientSummary {
   protected el: HTMLVerdocsEnvelopeRecipientSummaryElement;
+  @Output() another = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>();
+  @Output() view = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>();
+  @Output() next = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientSummarySDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['another', 'view', 'next', 'sdkError']);
   }
 }
 
 
-import type { IEnvelope as IVerdocsEnvelopeRecipientSummaryIEnvelope } from '@verdocs/web-sdk/components';
-import type { SDKError as IVerdocsEnvelopeRecipientSummarySDKError } from '@verdocs/web-sdk/components';
+import type { IEnvelope as IVerdocsEnvelopeRecipientSummaryIEnvelope } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsEnvelopeRecipientSummarySDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeRecipientSummary extends Components.VerdocsEnvelopeRecipientSummary {
   /**
@@ -597,20 +623,24 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId'],
+  outputs: ['sdkError', 'envelopeUpdated', 'toggle', 'another'],
 })
 export class VerdocsEnvelopeSidebar {
   protected el: HTMLVerdocsEnvelopeSidebarElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopeSidebarSDKError>>();
+  @Output() envelopeUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopeSidebarVerdocsEndpoint; envelope: IVerdocsEnvelopeSidebarIEnvelope; event: string}>>();
+  @Output() toggle = new EventEmitter<CustomEvent<{open: boolean}>>();
+  @Output() another = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeSidebarIEnvelope}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated', 'toggle', 'another']);
   }
 }
 
 
-import type { SDKError as IVerdocsEnvelopeSidebarSDKError } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsEnvelopeSidebarVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { IEnvelope as IVerdocsEnvelopeSidebarIEnvelope } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsEnvelopeSidebarSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsEnvelopeSidebarVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsEnvelopeSidebarIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeSidebar extends Components.VerdocsEnvelopeSidebar {
   /**
@@ -644,26 +674,27 @@ to redirect the user to the appropriate next workflow step.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId', 'roleName'],
+  outputs: ['next', 'sdkError'],
 })
 export class VerdocsEnvelopeUpdateRecipient {
   protected el: HTMLVerdocsEnvelopeUpdateRecipientElement;
+  @Output() next = new EventEmitter<CustomEvent<{action: 'cancel' | 'save'; originalRecipient: IRecipient; updatedRecipient: IRecipient}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopeUpdateRecipientSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'sdkError']);
   }
 }
 
 
-import type { IRecipient as IVerdocsEnvelopeUpdateRecipientIRecipient } from '@verdocs/web-sdk/components';
-import type { SDKError as IVerdocsEnvelopeUpdateRecipientSDKError } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsEnvelopeUpdateRecipientSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopeUpdateRecipient extends Components.VerdocsEnvelopeUpdateRecipient {
   /**
    * Event fired when the user clicks Done to proceed. It is up to the host application
 to save any updates and proceed to the next step.
    */
-  next: EventEmitter<CustomEvent<{action: 'cancel' | 'save'; originalRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient; updatedRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient}>>;
+  next: EventEmitter<CustomEvent<{action: 'cancel' | 'save'; originalRecipient: IRecipient; updatedRecipient: IRecipient}>>;
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
 terminate the process, and the calling application should correct the condition and re-render the component.
@@ -682,21 +713,28 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'match', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'status', 'view'],
+  outputs: ['changeView', 'changeStatus', 'changeSort', 'changeMatch', 'sdkError', 'viewEnvelope', 'finishEnvelope'],
 })
 export class VerdocsEnvelopesList {
   protected el: HTMLVerdocsEnvelopesListElement;
+  @Output() changeView = new EventEmitter<CustomEvent<'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting'>>();
+  @Output() changeStatus = new EventEmitter<CustomEvent<IVerdocsEnvelopesListTEnvelopeStatus | 'all'>>();
+  @Output() changeSort = new EventEmitter<CustomEvent<'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status'>>();
+  @Output() changeMatch = new EventEmitter<CustomEvent<string>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopesListSDKError>>();
+  @Output() viewEnvelope = new EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IVerdocsEnvelopesListIEnvelope}>>();
+  @Output() finishEnvelope = new EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IVerdocsEnvelopesListIEnvelope}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['changeView', 'changeStatus', 'changeSort', 'changeMatch', 'sdkError', 'viewEnvelope', 'finishEnvelope']);
   }
 }
 
 
-import type { TEnvelopeStatus as IVerdocsEnvelopesListTEnvelopeStatus } from '@verdocs/web-sdk/components';
-import type { SDKError as IVerdocsEnvelopesListSDKError } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsEnvelopesListVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { IEnvelope as IVerdocsEnvelopesListIEnvelope } from '@verdocs/web-sdk/components';
+import type { TEnvelopeStatus as IVerdocsEnvelopesListTEnvelopeStatus } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsEnvelopesListSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsEnvelopesListVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsEnvelopesListIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsEnvelopesList extends Components.VerdocsEnvelopesList {
   /**
@@ -746,19 +784,22 @@ to the envelope detail view.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'attached', 'deleted'],
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLVerdocsFieldAttachmentElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldAttachmentITemplateField}>>();
+  @Output() attached = new EventEmitter<CustomEvent<IVerdocsFieldAttachmentISelectedFile>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'attached', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldAttachmentITemplateField } from '@verdocs/web-sdk/components';
-import type { ISelectedFile as IVerdocsFieldAttachmentISelectedFile } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldAttachmentITemplateField } from '@verdocs/web-sdk';
+import type { ISelectedFile as IVerdocsFieldAttachmentISelectedFile } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldAttachment extends Components.VerdocsFieldAttachment {
   /**
@@ -788,18 +829,20 @@ Build) not for any attachments (during signing).
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldCheckbox {
   protected el: HTMLVerdocsFieldCheckboxElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldCheckboxITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldCheckboxITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldCheckboxITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldCheckbox {
   /**
@@ -824,18 +867,21 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsPress', 'settingsChanged', 'deleted'],
 })
 export class VerdocsFieldDate {
   protected el: HTMLVerdocsFieldDateElement;
+  @Output() settingsPress = new EventEmitter<CustomEvent<any>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldDateITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsPress', 'settingsChanged', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldDateITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldDateITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   /**
@@ -864,18 +910,21 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['fieldChange', 'settingsChanged', 'deleted'],
 })
 export class VerdocsFieldDropdown {
   protected el: HTMLVerdocsFieldDropdownElement;
+  @Output() fieldChange = new EventEmitter<CustomEvent<string>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldDropdownITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange', 'settingsChanged', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldDropdownITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldDropdownITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldDropdown extends Components.VerdocsFieldDropdown {
   /**
@@ -906,18 +955,24 @@ keypress.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'initials', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['adopt', 'exit', 'fieldChange', 'settingsChanged', 'settingsPress', 'deleted'],
 })
 export class VerdocsFieldInitial {
   protected el: HTMLVerdocsFieldInitialElement;
+  @Output() adopt = new EventEmitter<CustomEvent<string>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() fieldChange = new EventEmitter<CustomEvent<string>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldInitialITemplateField}>>();
+  @Output() settingsPress = new EventEmitter<CustomEvent<any>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['adopt', 'exit', 'fieldChange', 'settingsChanged', 'settingsPress', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldInitialITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldInitialITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldInitial extends Components.VerdocsFieldInitial {
   /**
@@ -960,18 +1015,20 @@ keypress.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'done', 'editable', 'field', 'fieldId', 'fieldname', 'fields', 'moveable', 'pageNum', 'pagenumber', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldPayment {
   protected el: HTMLVerdocsFieldPaymentElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldPaymentITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldPaymentITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldPaymentITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPayment {
   /**
@@ -996,18 +1053,20 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'required', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldRadio {
   protected el: HTMLVerdocsFieldRadioElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldRadioITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldRadioITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldRadioITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio {
   /**
@@ -1032,18 +1091,22 @@ export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'name', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['fieldChange', 'settingsPress', 'settingsChanged', 'deleted'],
 })
 export class VerdocsFieldSignature {
   protected el: HTMLVerdocsFieldSignatureElement;
+  @Output() fieldChange = new EventEmitter<CustomEvent<string>>();
+  @Output() settingsPress = new EventEmitter<CustomEvent<any>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldSignatureITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange', 'settingsPress', 'settingsChanged', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldSignatureITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldSignatureITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSignature {
   /**
@@ -1076,18 +1139,20 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldTextarea {
   protected el: HTMLVerdocsFieldTextareaElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldTextareaITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldTextareaITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldTextareaITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTextarea {
   /**
@@ -1112,18 +1177,20 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'multiline', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLVerdocsFieldTextboxElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldTextboxITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldTextboxITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldTextboxITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldTextbox {
   /**
@@ -1148,18 +1215,20 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldTimestamp {
   protected el: HTMLVerdocsFieldTimestampElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldTimestampITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsFieldTimestampITemplateField } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsFieldTimestampITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTimestamp {
   /**
@@ -1183,13 +1252,14 @@ export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTi
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint'],
+  outputs: ['fileSelected'],
 })
 export class VerdocsFileChooser {
   protected el: HTMLVerdocsFileChooserElement;
+  @Output() fileSelected = new EventEmitter<CustomEvent<{file: File | null}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fileSelected']);
   }
 }
 
@@ -1236,13 +1306,15 @@ export declare interface VerdocsHelpIcon extends Components.VerdocsHelpIcon {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['initials'],
+  outputs: ['next', 'exit'],
 })
 export class VerdocsInitialDialog {
   protected el: HTMLVerdocsInitialDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<string>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit']);
   }
 }
 
@@ -1270,18 +1342,20 @@ representation of the initials adopted.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'recipient', 'step', 'steps'],
+  outputs: ['exit', 'pinEntered', 'next'],
 })
 export class VerdocsKbaDialog {
   protected el: HTMLVerdocsKbaDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() pinEntered = new EventEmitter<CustomEvent<string | IRecipient>>();
+  @Output() next = new EventEmitter<CustomEvent<string | IRecipient | string[]>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'pinEntered', 'next']);
   }
 }
 
 
-import type { IRecipient as IVerdocsKbaDialogIRecipient } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
   /**
@@ -1292,12 +1366,12 @@ export declare interface VerdocsKbaDialog extends Components.VerdocsKbaDialog {
    * Event fired when the dialog is closed. The event data will contain the value selected,
 or the new recipient details if the mode is 'identity'.
    */
-  pinEntered: EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IRecipient>>;
+  pinEntered: EventEmitter<CustomEvent<string | IRecipient>>;
   /**
    * Event fired when the dialog is closed. The event data will contain the value selected,
 or the new recipient details if the mode is 'identity'.
    */
-  next: EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IVerdocsKbaDialogIRecipient | string[]>>;
+  next: EventEmitter<CustomEvent<string | IRecipient | string[]>>;
 }
 
 
@@ -1333,13 +1407,14 @@ export declare interface VerdocsLoader extends Components.VerdocsLoader {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['overlay', 'side', 'width'],
+  outputs: ['close'],
 })
 export class VerdocsMenuPanel {
   protected el: HTMLVerdocsMenuPanelElement;
+  @Output() close = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close']);
   }
 }
 
@@ -1360,13 +1435,14 @@ export declare interface VerdocsMenuPanel extends Components.VerdocsMenuPanel {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['label', 'options', 'placeholder', 'selectedOptions'],
+  outputs: ['selectionChanged'],
 })
 export class VerdocsMultiselect {
   protected el: HTMLVerdocsMultiselectElement;
+  @Output() selectionChanged = new EventEmitter<CustomEvent<{selectedOptions: string[]}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['selectionChanged']);
   }
 }
 
@@ -1387,13 +1463,15 @@ export declare interface VerdocsMultiselect extends Components.VerdocsMultiselec
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['buttonLabel', 'heading', 'message', 'showCancel'],
+  outputs: ['next', 'exit'],
 })
 export class VerdocsOkDialog {
   protected el: HTMLVerdocsOkDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<any>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit']);
   }
 }
 
@@ -1443,18 +1521,20 @@ export declare interface VerdocsOrganizationCard extends Components.VerdocsOrgan
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'method', 'recipient'],
+  outputs: ['exit', 'next'],
 })
 export class VerdocsOtpDialog {
   protected el: HTMLVerdocsOtpDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<{response: IVerdocsOtpDialogISignerTokenResponse}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next']);
   }
 }
 
 
-import type { ISignerTokenResponse as IVerdocsOtpDialogISignerTokenResponse } from '@verdocs/web-sdk/components';
+import type { ISignerTokenResponse as IVerdocsOtpDialogISignerTokenResponse } from '@verdocs/web-sdk';
 
 export declare interface VerdocsOtpDialog extends Components.VerdocsOtpDialog {
   /**
@@ -1478,13 +1558,14 @@ export declare interface VerdocsOtpDialog extends Components.VerdocsOtpDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['itemCount', 'perPage', 'selectedPage'],
+  outputs: ['selectPage'],
 })
 export class VerdocsPagination {
   protected el: HTMLVerdocsPaginationElement;
+  @Output() selectPage = new EventEmitter<CustomEvent<{selectedPage: number}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['selectPage']);
   }
 }
 
@@ -1507,13 +1588,14 @@ export declare interface VerdocsPagination extends Components.VerdocsPagination 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['anchor', 'voffset'],
+  outputs: ['clickAway'],
 })
 export class VerdocsPortal {
   protected el: HTMLVerdocsPortalElement;
+  @Output() clickAway = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['clickAway']);
   }
 }
 
@@ -1534,18 +1616,19 @@ export declare interface VerdocsPortal extends Components.VerdocsPortal {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId'],
+  outputs: ['sdkError'],
 })
 export class VerdocsPreview {
   protected el: HTMLVerdocsPreviewElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsPreviewSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError']);
   }
 }
 
 
-import type { SDKError as IVerdocsPreviewSDKError } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsPreviewSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsPreview extends Components.VerdocsPreview {
   /**
@@ -1589,18 +1672,19 @@ export declare interface VerdocsProgressBar extends Components.VerdocsProgressBa
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['label', 'options', 'placeholder', 'value'],
+  outputs: ['optionSelected'],
 })
 export class VerdocsQuickFilter {
   protected el: HTMLVerdocsQuickFilterElement;
+  @Output() optionSelected = new EventEmitter<CustomEvent<IVerdocsQuickFilterIFilterOption>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['optionSelected']);
   }
 }
 
 
-import type { IFilterOption as IVerdocsQuickFilterIFilterOption } from '@verdocs/web-sdk/components';
+import type { IFilterOption as IVerdocsQuickFilterIFilterOption } from '@verdocs/web-sdk';
 
 export declare interface VerdocsQuickFilter extends Components.VerdocsQuickFilter {
   /**
@@ -1621,13 +1705,15 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint'],
+  outputs: ['createTemplate', 'createDocument'],
 })
 export class VerdocsQuickFunctions {
   protected el: HTMLVerdocsQuickFunctionsElement;
+  @Output() createTemplate = new EventEmitter<CustomEvent<any>>();
+  @Output() createDocument = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['createTemplate', 'createDocument']);
   }
 }
 
@@ -1678,19 +1764,22 @@ export declare interface VerdocsRadioButton extends Components.VerdocsRadioButto
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'grabsFocus', 'placeholder', 'query', 'type'],
+  outputs: ['searchClicked', 'typeChanged', 'queryChanged'],
 })
 export class VerdocsSearchBox {
   protected el: HTMLVerdocsSearchBoxElement;
+  @Output() searchClicked = new EventEmitter<CustomEvent<IVerdocsSearchBoxISearchEvent>>();
+  @Output() typeChanged = new EventEmitter<CustomEvent<IVerdocsSearchBoxTContentType>>();
+  @Output() queryChanged = new EventEmitter<CustomEvent<string>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchClicked', 'typeChanged', 'queryChanged']);
   }
 }
 
 
-import type { ISearchEvent as IVerdocsSearchBoxISearchEvent } from '@verdocs/web-sdk/components';
-import type { TContentType as IVerdocsSearchBoxTContentType } from '@verdocs/web-sdk/components';
+import type { ISearchEvent as IVerdocsSearchBoxISearchEvent } from '@verdocs/web-sdk';
+import type { TContentType as IVerdocsSearchBoxTContentType } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSearchBox extends Components.VerdocsSearchBox {
   /**
@@ -1764,22 +1853,27 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'environment', 'templateId'],
+  outputs: ['beforeSend', 'send', 'exit', 'sdkError', 'searchContacts'],
 })
 export class VerdocsSend {
   protected el: HTMLVerdocsSendElement;
+  @Output() beforeSend = new EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: IVerdocsSendITemplate}>>();
+  @Output() send = new EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsSendSDKError>>();
+  @Output() searchContacts = new EventEmitter<CustomEvent<IVerdocsSendIContactSearchEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['beforeSend', 'send', 'exit', 'sdkError', 'searchContacts']);
   }
 }
 
 
-import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsSendICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk/components';
-import type { ITemplate as IVerdocsSendITemplate } from '@verdocs/web-sdk/components';
-import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk/components';
-import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk/components';
-import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk/components';
+import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsSendICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsSendITemplate } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk';
+import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
@@ -1817,20 +1911,23 @@ the `contactSuggestions` property.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId'],
+  outputs: ['sdkError', 'envelopeLoaded', 'envelopeUpdated'],
 })
 export class VerdocsSign {
   protected el: HTMLVerdocsSignElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsSignSDKError>>();
+  @Output() envelopeLoaded = new EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope}>>();
+  @Output() envelopeUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope; event: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'envelopeLoaded', 'envelopeUpdated']);
   }
 }
 
 
-import type { SDKError as IVerdocsSignSDKError } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsSignVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { IEnvelope as IVerdocsSignIEnvelope } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsSignSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsSignVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsSignIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsSign extends Components.VerdocsSign {
   /**
@@ -1859,13 +1956,15 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['name'],
+  outputs: ['next', 'exit'],
 })
 export class VerdocsSignatureDialog {
   protected el: HTMLVerdocsSignatureDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<string>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit']);
   }
 }
 
@@ -1939,13 +2038,14 @@ export declare interface VerdocsStatusIndicator extends Components.VerdocsStatus
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['checked', 'disabled', 'theme'],
+  outputs: ['checkedChange'],
 })
 export class VerdocsSwitch {
   protected el: HTMLVerdocsSwitchElement;
+  @Output() checkedChange = new EventEmitter<CustomEvent<boolean>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['checkedChange']);
   }
 }
 
@@ -1966,24 +2066,26 @@ export declare interface VerdocsSwitch extends Components.VerdocsSwitch {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['columns', 'data'],
+  outputs: ['colHeaderClick', 'rowClick'],
 })
 export class VerdocsTable {
   protected el: HTMLVerdocsTableElement;
+  @Output() colHeaderClick = new EventEmitter<CustomEvent<{col: any}>>();
+  @Output() rowClick = new EventEmitter<CustomEvent<{row: any}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['colHeaderClick', 'rowClick']);
   }
 }
 
 
-import type { IColumn as IVerdocsTableIColumn } from '@verdocs/web-sdk/components';
+import type { IColumn as IVerdocsTableIColumn } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTable extends Components.VerdocsTable {
   /**
    * Event fired when the user clicks a column header. This may be used to manage sorting options.
    */
-  colHeaderClick: EventEmitter<CustomEvent<{col: [object Object]}>>;
+  colHeaderClick: EventEmitter<CustomEvent<{col: any}>>;
   /**
    * Event fired when the user clicks a row.
    */
@@ -2001,25 +2103,26 @@ export declare interface VerdocsTable extends Components.VerdocsTable {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['selectedTab', 'tabs'],
+  outputs: ['selectTab'],
 })
 export class VerdocsTabs {
   protected el: HTMLVerdocsTabsElement;
+  @Output() selectTab = new EventEmitter<CustomEvent<{tab: any; index: number}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['selectTab']);
   }
 }
 
 
-import type { ITab as IVerdocsTabsITab } from '@verdocs/web-sdk/components';
+import type { ITab as IVerdocsTabsITab } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTabs extends Components.VerdocsTabs {
   /**
    * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate
 to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
    */
-  selectTab: EventEmitter<CustomEvent<{tab: [object Object]; index: number}>>;
+  selectTab: EventEmitter<CustomEvent<{tab: any; index: number}>>;
 }
 
 
@@ -2033,20 +2136,24 @@ to the template preview. This is also fired when the user selects "Preview/Send"
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId'],
+  outputs: ['exit', 'next', 'templateUpdated', 'sdkError'],
 })
 export class VerdocsTemplateAttachments {
   protected el: HTMLVerdocsTemplateAttachmentsElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<{template: IVerdocsTemplateAttachmentsITemplate}>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateAttachmentsVerdocsEndpoint; template: IVerdocsTemplateAttachmentsITemplate; event: string}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateAttachmentsSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next', 'templateUpdated', 'sdkError']);
   }
 }
 
 
-import type { ITemplate as IVerdocsTemplateAttachmentsITemplate } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsTemplateAttachmentsVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { SDKError as IVerdocsTemplateAttachmentsSDKError } from '@verdocs/web-sdk/components';
+import type { ITemplate as IVerdocsTemplateAttachmentsITemplate } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateAttachmentsVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateAttachmentsSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateAttachments extends Components.VerdocsTemplateAttachments {
   /**
@@ -2079,19 +2186,21 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'step', 'templateId'],
+  outputs: ['sdkError', 'stepChanged'],
 })
 export class VerdocsTemplateBuildTabs {
   protected el: HTMLVerdocsTemplateBuildTabsElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateBuildTabsSDKError>>();
+  @Output() stepChanged = new EventEmitter<CustomEvent<IVerdocsTemplateBuildTabsTVerdocsBuildStep>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'stepChanged']);
   }
 }
 
 
-import type { SDKError as IVerdocsTemplateBuildTabsSDKError } from '@verdocs/web-sdk/components';
-import type { TVerdocsBuildStep as IVerdocsTemplateBuildTabsTVerdocsBuildStep } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplateBuildTabsSDKError } from '@verdocs/web-sdk';
+import type { TVerdocsBuildStep as IVerdocsTemplateBuildTabsTVerdocsBuildStep } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateBuildTabs extends Components.VerdocsTemplateBuildTabs {
   /**
@@ -2139,20 +2248,24 @@ export declare interface VerdocsTemplateCard extends Components.VerdocsTemplateC
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'maxSize'],
+  outputs: ['exit', 'next', 'sdkError', 'templateCreated'],
 })
 export class VerdocsTemplateCreate {
   protected el: HTMLVerdocsTemplateCreateElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<IVerdocsTemplateCreateITemplate>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateCreateSDKError>>();
+  @Output() templateCreated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateCreateVerdocsEndpoint; template: IVerdocsTemplateCreateITemplate; templateId: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next', 'sdkError', 'templateCreated']);
   }
 }
 
 
-import type { ITemplate as IVerdocsTemplateCreateITemplate } from '@verdocs/web-sdk/components';
-import type { SDKError as IVerdocsTemplateCreateSDKError } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsTemplateCreateVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { ITemplate as IVerdocsTemplateCreateITemplate } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateCreateSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateCreateVerdocsEndpoint } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateCreate extends Components.VerdocsTemplateCreate {
   /**
@@ -2185,18 +2298,19 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'documentId', 'done', 'editable', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth'],
+  outputs: ['pageRendered'],
 })
 export class VerdocsTemplateDocumentPage {
   protected el: HTMLVerdocsTemplateDocumentPageElement;
+  @Output() pageRendered = new EventEmitter<CustomEvent<IVerdocsTemplateDocumentPageIDocumentPageInfo>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['pageRendered']);
   }
 }
 
 
-import type { IDocumentPageInfo as IVerdocsTemplateDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk/components';
+import type { IDocumentPageInfo as IVerdocsTemplateDocumentPageIDocumentPageInfo } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateDocumentPage extends Components.VerdocsTemplateDocumentPage {
   /**
@@ -2216,19 +2330,23 @@ export declare interface VerdocsTemplateDocumentPage extends Components.VerdocsT
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'fieldName', 'helpText', 'templateId'],
+  outputs: ['close', 'delete', 'settingsChanged', 'sdkError'],
 })
 export class VerdocsTemplateFieldProperties {
   protected el: HTMLVerdocsTemplateFieldPropertiesElement;
+  @Output() close = new EventEmitter<CustomEvent<any>>();
+  @Output() delete = new EventEmitter<CustomEvent<{templateId: string; roleName: string}>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsTemplateFieldPropertiesITemplateField}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateFieldPropertiesSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'delete', 'settingsChanged', 'sdkError']);
   }
 }
 
 
-import type { ITemplateField as IVerdocsTemplateFieldPropertiesITemplateField } from '@verdocs/web-sdk/components';
-import type { SDKError as IVerdocsTemplateFieldPropertiesSDKError } from '@verdocs/web-sdk/components';
+import type { ITemplateField as IVerdocsTemplateFieldPropertiesITemplateField } from '@verdocs/web-sdk';
+import type { SDKError as IVerdocsTemplateFieldPropertiesSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateFieldProperties extends Components.VerdocsTemplateFieldProperties {
   /**
@@ -2262,21 +2380,24 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId', 'toolbarTargetId'],
+  outputs: ['sdkError', 'templateUpdated', 'fieldsUpdated'],
 })
 export class VerdocsTemplateFields {
   protected el: HTMLVerdocsTemplateFieldsElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateFieldsSDKError>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; template: IVerdocsTemplateFieldsITemplate; event: string}>>();
+  @Output() fieldsUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: IVerdocsTemplateFieldsITemplateField[]}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'templateUpdated', 'fieldsUpdated']);
   }
 }
 
 
-import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsTemplateFieldsVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk/components';
-import type { ITemplateField as IVerdocsTemplateFieldsITemplateField } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateFieldsVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk';
+import type { ITemplateField as IVerdocsTemplateFieldsITemplateField } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
   /**
@@ -2303,18 +2424,21 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'roleName', 'templateId'],
+  outputs: ['close', 'delete', 'sdkError'],
 })
 export class VerdocsTemplateRoleProperties {
   protected el: HTMLVerdocsTemplateRolePropertiesElement;
+  @Output() close = new EventEmitter<CustomEvent<any>>();
+  @Output() delete = new EventEmitter<CustomEvent<{templateId: string; roleName: string}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateRolePropertiesSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'delete', 'sdkError']);
   }
 }
 
 
-import type { SDKError as IVerdocsTemplateRolePropertiesSDKError } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplateRolePropertiesSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateRoleProperties extends Components.VerdocsTemplateRoleProperties {
   /**
@@ -2344,20 +2468,24 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId'],
+  outputs: ['next', 'exit', 'sdkError', 'rolesUpdated'],
 })
 export class VerdocsTemplateRoles {
   protected el: HTMLVerdocsTemplateRolesElement;
+  @Output() next = new EventEmitter<CustomEvent<any>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateRolesSDKError>>();
+  @Output() rolesUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateRolesVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsTemplateRolesIRole[]}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit', 'sdkError', 'rolesUpdated']);
   }
 }
 
 
-import type { SDKError as IVerdocsTemplateRolesSDKError } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsTemplateRolesVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { IRole as IVerdocsTemplateRolesIRole } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplateRolesSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateRolesVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IRole as IVerdocsTemplateRolesIRole } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateRoles extends Components.VerdocsTemplateRoles {
   /**
@@ -2390,20 +2518,24 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId'],
+  outputs: ['next', 'exit', 'sdkError', 'templateUpdated'],
 })
 export class VerdocsTemplateSettings {
   protected el: HTMLVerdocsTemplateSettingsElement;
+  @Output() next = new EventEmitter<CustomEvent<any>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateSettingsSDKError>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateSettingsVerdocsEndpoint; template: IVerdocsTemplateSettingsITemplate; event: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit', 'sdkError', 'templateUpdated']);
   }
 }
 
 
-import type { SDKError as IVerdocsTemplateSettingsSDKError } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsTemplateSettingsVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { ITemplate as IVerdocsTemplateSettingsITemplate } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplateSettingsSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplateSettingsVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplateSettingsITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateSettings extends Components.VerdocsTemplateSettings {
   /**
@@ -2436,18 +2568,20 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'template'],
+  outputs: ['starChange', 'sdkError'],
 })
 export class VerdocsTemplateStar {
   protected el: HTMLVerdocsTemplateStarElement;
+  @Output() starChange = new EventEmitter<CustomEvent<{templateId: string; starred: boolean; count: number}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateStarSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['starChange', 'sdkError']);
   }
 }
 
 
-import type { SDKError as IVerdocsTemplateStarSDKError } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplateStarSDKError } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplateStar extends Components.VerdocsTemplateStar {
   /**
@@ -2496,20 +2630,30 @@ export declare interface VerdocsTemplateTags extends Components.VerdocsTemplateT
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'starred', 'visibility'],
+  outputs: ['sdkError', 'viewTemplate', 'signNow', 'submittedData', 'editTemplate', 'templateDeleted', 'changeSort', 'changeVisibility', 'changeStarred', 'changeName'],
 })
 export class VerdocsTemplatesList {
   protected el: HTMLVerdocsTemplatesListElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplatesListSDKError>>();
+  @Output() viewTemplate = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() signNow = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() submittedData = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() editTemplate = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() templateDeleted = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() changeSort = new EventEmitter<CustomEvent<string>>();
+  @Output() changeVisibility = new EventEmitter<CustomEvent<'private_shared' | 'private' | 'shared' | 'public'>>();
+  @Output() changeStarred = new EventEmitter<CustomEvent<'all' | 'starred' | 'unstarred'>>();
+  @Output() changeName = new EventEmitter<CustomEvent<string>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewTemplate', 'signNow', 'submittedData', 'editTemplate', 'templateDeleted', 'changeSort', 'changeVisibility', 'changeStarred', 'changeName']);
   }
 }
 
 
-import type { SDKError as IVerdocsTemplatesListSDKError } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsTemplatesListVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { ITemplate as IVerdocsTemplatesListITemplate } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsTemplatesListSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsTemplatesListVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { ITemplate as IVerdocsTemplatesListITemplate } from '@verdocs/web-sdk';
 
 export declare interface VerdocsTemplatesList extends Components.VerdocsTemplatesList {
   /**
@@ -2617,13 +2761,14 @@ export declare interface VerdocsToggle extends Components.VerdocsToggle {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['active', 'icon', 'label', 'size'],
+  outputs: ['toggle'],
 })
 export class VerdocsToggleButton {
   protected el: HTMLVerdocsToggleButtonElement;
+  @Output() toggle = new EventEmitter<CustomEvent<{active: boolean}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['toggle']);
   }
 }
 
@@ -2669,13 +2814,16 @@ export declare interface VerdocsToolbarIcon extends Components.VerdocsToolbarIco
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['existingFile', 'maxSize'],
+  outputs: ['exit', 'next', 'remove'],
 })
 export class VerdocsUploadDialog {
   protected el: HTMLVerdocsUploadDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<File[]>>();
+  @Output() remove = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next', 'remove']);
   }
 }
 
@@ -2707,20 +2855,25 @@ responsible for the actual removal.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId', 'headerTargetId'],
+  outputs: ['sdkError', 'envelopeUpdated', 'another', 'view', 'next'],
 })
 export class VerdocsView {
   protected el: HTMLVerdocsViewElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsViewSDKError>>();
+  @Output() envelopeUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsViewVerdocsEndpoint; envelope: IVerdocsViewIEnvelope; event: string}>>();
+  @Output() another = new EventEmitter<CustomEvent<any>>();
+  @Output() view = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated', 'another', 'view', 'next']);
   }
 }
 
 
-import type { SDKError as IVerdocsViewSDKError } from '@verdocs/web-sdk/components';
-import type { VerdocsEndpoint as IVerdocsViewVerdocsEndpoint } from '@verdocs/web-sdk/components';
-import type { IEnvelope as IVerdocsViewIEnvelope } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsViewSDKError } from '@verdocs/web-sdk';
+import type { VerdocsEndpoint as IVerdocsViewVerdocsEndpoint } from '@verdocs/web-sdk';
+import type { IEnvelope as IVerdocsViewIEnvelope } from '@verdocs/web-sdk';
 
 export declare interface VerdocsView extends Components.VerdocsView {
   /**

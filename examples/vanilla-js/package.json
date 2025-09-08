@@ -1,0 +1,19 @@
+{
+  "name": "vanilla-js",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^7.1.2"
+  },
+  "dependencies": {
+    "@verdocs/js-sdk": "^6.1.0",
+    "@verdocs/web-sdk": "^6.1.4",
+    "axios": "^1.11.0"
+  }
+}
