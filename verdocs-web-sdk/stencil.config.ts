@@ -40,6 +40,7 @@ export const config: Config = {
       componentCorePackage: '@verdocs/web-sdk',
       directivesProxyFile: '../verdocs-web-sdk-angular/src/directives/proxies.ts',
       valueAccessorConfigs: angularValueAccessorBindings,
+      customElementsDir: 'dist/components',
     }),
     reactOutputTarget({
       outDir: '../verdocs-web-sdk-react/src',
@@ -58,14 +59,11 @@ export const config: Config = {
     },
     {
       type: 'dist-custom-elements',
-      customElementsExportBehavior: 'bundle',
-      // customElementsExportBehavior: 'auto-define-custom-elements',
+      // customElementsExportBehavior: 'bundle',
+      customElementsExportBehavior: 'auto-define-custom-elements',
       generateTypeDeclarations: true,
       externalRuntime: false,
     },
-    // {
-    //   type: 'dist-custom-elements-bundle',
-    // },
     // We actually don't need these docs, we want Storybook to use "inline" docs instead. But commenting out this block
     // didn't appear to actually disable their generation. Overriding the target directory gets them out of the way so
     // storybook can do its job.

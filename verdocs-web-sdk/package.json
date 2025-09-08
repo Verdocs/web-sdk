@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "@verdocs/web-sdk",
   "version": "6.1.4",
   "private": false,
@@ -18,7 +19,9 @@
   ],
   "scripts": {
     "push": "npm run build && npm publish",
-    "build": "stencil build --docs",
+    "build": "stencil build --docs && npm run build-vanilla",
+    "build-vanilla": "rollup -c rollup.config.mjs",
+    "postbuild": "node ../fix-angular-proxies.js",
     "serve": "stencil build --dev --watch --serve",
     "start": "stencil build --dev --watch --docs",
     "test": "stencil test --spec",
@@ -39,6 +42,7 @@
     "imask": "^7.6.1",
     "interactjs": "^1.10.27",
     "jszip": "^3.10.1",
+    "rollup": "^4.48.1",
     "sortablejs": "^1.15.6",
     "tinybase": "^6.5.2",
     "workflow-svg.js": "^3.0.2"
@@ -46,7 +50,9 @@
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "@interactjs/types": "^1.10.27",
-    "@stencil/angular-output-target": "^1.1.0",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@stencil/angular-output-target": "^1.1.1",
     "@stencil/react-output-target": "^1.2.0",
     "@stencil/sass": "^3.2.2",
     "@stencil/vue-output-target": "^0.10.8",
