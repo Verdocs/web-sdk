@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* auto-generated angular directive proxies */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, NgZone } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, NgZone } from '@angular/core';
 
-import { ProxyCmp, proxyOutputs } from './angular-component-lib/utils';
+import { ProxyCmp } from './angular-component-lib/utils';
 
 import type { Components } from '@verdocs/web-sdk/components';
 
@@ -92,13 +92,15 @@ import { defineCustomElement as defineVerdocsView } from '@verdocs/web-sdk/compo
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['displayMode', 'endpoint', 'logo', 'visible'],
+  outputs: ['authenticated', 'sdkError'],
 })
 export class VerdocsAuth {
   protected el: HTMLVerdocsAuthElement;
+  @Output() authenticated = new EventEmitter<CustomEvent<IVerdocsAuthIAuthStatus>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsAuthSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['authenticated', 'sdkError']);
   }
 }
 
@@ -131,13 +133,20 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'step', 'templateId'],
+  outputs: ['cancel', 'sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated', 'rolesUpdated'],
 })
 export class VerdocsBuild {
   protected el: HTMLVerdocsBuildElement;
+  @Output() cancel = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsBuildSDKError>>();
+  @Output() stepChanged = new EventEmitter<CustomEvent<IVerdocsBuildTVerdocsBuildStep>>();
+  @Output() send = new EventEmitter<CustomEvent<{recipients: IVerdocsBuildICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string}>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: IVerdocsBuildITemplate; event: string}>>();
+  @Output() templateCreated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; template: IVerdocsBuildITemplate; event: string}>>();
+  @Output() rolesUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsBuildIRole[]}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['cancel', 'sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated', 'rolesUpdated']);
   }
 }
 
@@ -285,13 +294,16 @@ export declare interface VerdocsComponentError extends Components.VerdocsCompone
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['contactSuggestions', 'endpoint', 'templateRole'],
+  outputs: ['searchContacts', 'exit', 'next'],
 })
 export class VerdocsContactPicker {
   protected el: HTMLVerdocsContactPickerElement;
+  @Output() searchContacts = new EventEmitter<CustomEvent<IVerdocsContactPickerIContactSearchEvent>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<IVerdocsContactPickerIContactSelectEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchContacts', 'exit', 'next']);
   }
 }
 
@@ -350,13 +362,15 @@ export declare interface VerdocsDateInput extends Components.VerdocsDateInput {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelope'],
+  outputs: ['exit', 'next'],
 })
 export class VerdocsDelegateDialog {
   protected el: HTMLVerdocsDelegateDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next']);
   }
 }
 
@@ -382,13 +396,14 @@ export declare interface VerdocsDelegateDialog extends Components.VerdocsDelegat
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: [],
+  outputs: ['exit'],
 })
 export class VerdocsDialog {
   protected el: HTMLVerdocsDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit']);
   }
 }
 
@@ -411,13 +426,16 @@ export declare interface VerdocsDialog extends Components.VerdocsDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['delegator', 'disclosures'],
+  outputs: ['decline', 'delegate', 'accept'],
 })
 export class VerdocsDisclosureDialog {
   protected el: HTMLVerdocsDisclosureDialogElement;
+  @Output() decline = new EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>();
+  @Output() delegate = new EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>();
+  @Output() accept = new EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['decline', 'delegate', 'accept']);
   }
 }
 
@@ -448,13 +466,14 @@ export declare interface VerdocsDisclosureDialog extends Components.VerdocsDiscl
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['options'],
+  outputs: ['optionSelected'],
 })
 export class VerdocsDropdown {
   protected el: HTMLVerdocsDropdownElement;
+  @Output() optionSelected = new EventEmitter<CustomEvent<IVerdocsDropdownIMenuOption>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['optionSelected']);
   }
 }
 
@@ -480,13 +499,14 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['documentId', 'endpoint', 'envelopeId', 'layers', 'pageNumber', 'type', 'virtualHeight', 'virtualWidth'],
+  outputs: ['pageRendered'],
 })
 export class VerdocsEnvelopeDocumentPage {
   protected el: HTMLVerdocsEnvelopeDocumentPageElement;
+  @Output() pageRendered = new EventEmitter<CustomEvent<IVerdocsEnvelopeDocumentPageIDocumentPageInfo>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['pageRendered']);
   }
 }
 
@@ -511,13 +531,15 @@ export declare interface VerdocsEnvelopeDocumentPage extends Components.VerdocsE
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId', 'roleName'],
+  outputs: ['next', 'sdkError'],
 })
 export class VerdocsEnvelopeRecipientLink {
   protected el: HTMLVerdocsEnvelopeRecipientLinkElement;
+  @Output() next = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientLinkIEnvelope}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientLinkSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'sdkError']);
   }
 }
 
@@ -549,13 +571,17 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['canDone', 'canSendAnother', 'canView', 'endpoint', 'envelopeId'],
+  outputs: ['another', 'view', 'next', 'sdkError'],
 })
 export class VerdocsEnvelopeRecipientSummary {
   protected el: HTMLVerdocsEnvelopeRecipientSummaryElement;
+  @Output() another = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>();
+  @Output() view = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>();
+  @Output() next = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeRecipientSummaryIEnvelope}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopeRecipientSummarySDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['another', 'view', 'next', 'sdkError']);
   }
 }
 
@@ -597,13 +623,17 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId'],
+  outputs: ['sdkError', 'envelopeUpdated', 'toggle', 'another'],
 })
 export class VerdocsEnvelopeSidebar {
   protected el: HTMLVerdocsEnvelopeSidebarElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopeSidebarSDKError>>();
+  @Output() envelopeUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopeSidebarVerdocsEndpoint; envelope: IVerdocsEnvelopeSidebarIEnvelope; event: string}>>();
+  @Output() toggle = new EventEmitter<CustomEvent<{open: boolean}>>();
+  @Output() another = new EventEmitter<CustomEvent<{envelope: IVerdocsEnvelopeSidebarIEnvelope}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated', 'toggle', 'another']);
   }
 }
 
@@ -644,13 +674,15 @@ to redirect the user to the appropriate next workflow step.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId', 'roleName'],
+  outputs: ['next', 'sdkError'],
 })
 export class VerdocsEnvelopeUpdateRecipient {
   protected el: HTMLVerdocsEnvelopeUpdateRecipientElement;
+  @Output() next = new EventEmitter<CustomEvent<{action: 'cancel' | 'save'; originalRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient; updatedRecipient: IVerdocsEnvelopeUpdateRecipientIRecipient}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopeUpdateRecipientSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'sdkError']);
   }
 }
 
@@ -682,13 +714,20 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'match', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'status', 'view'],
+  outputs: ['changeView', 'changeStatus', 'changeSort', 'changeMatch', 'sdkError', 'viewEnvelope', 'finishEnvelope'],
 })
 export class VerdocsEnvelopesList {
   protected el: HTMLVerdocsEnvelopesListElement;
+  @Output() changeView = new EventEmitter<CustomEvent<'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting'>>();
+  @Output() changeStatus = new EventEmitter<CustomEvent<IVerdocsEnvelopesListTEnvelopeStatus | 'all'>>();
+  @Output() changeSort = new EventEmitter<CustomEvent<'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status'>>();
+  @Output() changeMatch = new EventEmitter<CustomEvent<string>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsEnvelopesListSDKError>>();
+  @Output() viewEnvelope = new EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IVerdocsEnvelopesListIEnvelope}>>();
+  @Output() finishEnvelope = new EventEmitter<CustomEvent<{endpoint: IVerdocsEnvelopesListVerdocsEndpoint; envelope: IVerdocsEnvelopesListIEnvelope}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['changeView', 'changeStatus', 'changeSort', 'changeMatch', 'sdkError', 'viewEnvelope', 'finishEnvelope']);
   }
 }
 
@@ -746,13 +785,16 @@ to the envelope detail view.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'attached', 'deleted'],
 })
 export class VerdocsFieldAttachment {
   protected el: HTMLVerdocsFieldAttachmentElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldAttachmentITemplateField}>>();
+  @Output() attached = new EventEmitter<CustomEvent<IVerdocsFieldAttachmentISelectedFile>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'attached', 'deleted']);
   }
 }
 
@@ -788,13 +830,15 @@ Build) not for any attachments (during signing).
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldCheckbox {
   protected el: HTMLVerdocsFieldCheckboxElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldCheckboxITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -824,13 +868,16 @@ export declare interface VerdocsFieldCheckbox extends Components.VerdocsFieldChe
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsPress', 'settingsChanged', 'deleted'],
 })
 export class VerdocsFieldDate {
   protected el: HTMLVerdocsFieldDateElement;
+  @Output() settingsPress = new EventEmitter<CustomEvent<any>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldDateITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsPress', 'settingsChanged', 'deleted']);
   }
 }
 
@@ -864,13 +911,16 @@ export declare interface VerdocsFieldDate extends Components.VerdocsFieldDate {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['fieldChange', 'settingsChanged', 'deleted'],
 })
 export class VerdocsFieldDropdown {
   protected el: HTMLVerdocsFieldDropdownElement;
+  @Output() fieldChange = new EventEmitter<CustomEvent<string>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldDropdownITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange', 'settingsChanged', 'deleted']);
   }
 }
 
@@ -906,13 +956,19 @@ keypress.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'initials', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['adopt', 'exit', 'fieldChange', 'settingsChanged', 'settingsPress', 'deleted'],
 })
 export class VerdocsFieldInitial {
   protected el: HTMLVerdocsFieldInitialElement;
+  @Output() adopt = new EventEmitter<CustomEvent<string>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() fieldChange = new EventEmitter<CustomEvent<string>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldInitialITemplateField}>>();
+  @Output() settingsPress = new EventEmitter<CustomEvent<any>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['adopt', 'exit', 'fieldChange', 'settingsChanged', 'settingsPress', 'deleted']);
   }
 }
 
@@ -960,13 +1016,15 @@ keypress.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['currentInitial', 'currentInitialId', 'currentSignature', 'currentSignatureId', 'disabled', 'done', 'editable', 'field', 'fieldId', 'fieldname', 'fields', 'moveable', 'pageNum', 'pagenumber', 'pdfPages', 'recipients', 'roleName', 'roleindex', 'selectedRoleName', 'signed', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldPayment {
   protected el: HTMLVerdocsFieldPaymentElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldPaymentITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -996,13 +1054,15 @@ export declare interface VerdocsFieldPayment extends Components.VerdocsFieldPaym
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'required', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldRadio {
   protected el: HTMLVerdocsFieldRadioElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldRadioITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -1032,13 +1092,17 @@ export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'name', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['fieldChange', 'settingsPress', 'settingsChanged', 'deleted'],
 })
 export class VerdocsFieldSignature {
   protected el: HTMLVerdocsFieldSignatureElement;
+  @Output() fieldChange = new EventEmitter<CustomEvent<string>>();
+  @Output() settingsPress = new EventEmitter<CustomEvent<any>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldSignatureITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fieldChange', 'settingsPress', 'settingsChanged', 'deleted']);
   }
 }
 
@@ -1076,13 +1140,15 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'endpoint', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldTextarea {
   protected el: HTMLVerdocsFieldTextareaElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldTextareaITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -1112,13 +1178,15 @@ export declare interface VerdocsFieldTextarea extends Components.VerdocsFieldTex
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'multiline', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldTextbox {
   protected el: HTMLVerdocsFieldTextboxElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldTextboxITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -1148,13 +1216,15 @@ export declare interface VerdocsFieldTextbox extends Components.VerdocsFieldText
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['settingsChanged', 'deleted'],
 })
 export class VerdocsFieldTimestamp {
   protected el: HTMLVerdocsFieldTimestampElement;
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldTimestampITemplateField}>>();
+  @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['settingsChanged', 'deleted']);
   }
 }
 
@@ -1183,13 +1253,14 @@ export declare interface VerdocsFieldTimestamp extends Components.VerdocsFieldTi
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint'],
+  outputs: ['fileSelected'],
 })
 export class VerdocsFileChooser {
   protected el: HTMLVerdocsFileChooserElement;
+  @Output() fileSelected = new EventEmitter<CustomEvent<{file: File | null}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['fileSelected']);
   }
 }
 
@@ -1236,13 +1307,15 @@ export declare interface VerdocsHelpIcon extends Components.VerdocsHelpIcon {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['initials'],
+  outputs: ['next', 'exit'],
 })
 export class VerdocsInitialDialog {
   protected el: HTMLVerdocsInitialDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<string>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit']);
   }
 }
 
@@ -1270,13 +1343,16 @@ representation of the initials adopted.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['choices', 'helptext', 'helptitle', 'label', 'mode', 'placeholder', 'recipient', 'step', 'steps'],
+  outputs: ['exit', 'pinEntered', 'next'],
 })
 export class VerdocsKbaDialog {
   protected el: HTMLVerdocsKbaDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() pinEntered = new EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IRecipient>>();
+  @Output() next = new EventEmitter<CustomEvent<IVerdocsKbaDialogstring | IVerdocsKbaDialogIRecipient | string[]>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'pinEntered', 'next']);
   }
 }
 
@@ -1333,13 +1409,14 @@ export declare interface VerdocsLoader extends Components.VerdocsLoader {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['overlay', 'side', 'width'],
+  outputs: ['close'],
 })
 export class VerdocsMenuPanel {
   protected el: HTMLVerdocsMenuPanelElement;
+  @Output() close = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close']);
   }
 }
 
@@ -1360,13 +1437,14 @@ export declare interface VerdocsMenuPanel extends Components.VerdocsMenuPanel {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['label', 'options', 'placeholder', 'selectedOptions'],
+  outputs: ['selectionChanged'],
 })
 export class VerdocsMultiselect {
   protected el: HTMLVerdocsMultiselectElement;
+  @Output() selectionChanged = new EventEmitter<CustomEvent<{selectedOptions: string[]}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['selectionChanged']);
   }
 }
 
@@ -1387,13 +1465,15 @@ export declare interface VerdocsMultiselect extends Components.VerdocsMultiselec
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['buttonLabel', 'heading', 'message', 'showCancel'],
+  outputs: ['next', 'exit'],
 })
 export class VerdocsOkDialog {
   protected el: HTMLVerdocsOkDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<any>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit']);
   }
 }
 
@@ -1443,13 +1523,15 @@ export declare interface VerdocsOrganizationCard extends Components.VerdocsOrgan
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'method', 'recipient'],
+  outputs: ['exit', 'next'],
 })
 export class VerdocsOtpDialog {
   protected el: HTMLVerdocsOtpDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<{response: IVerdocsOtpDialogISignerTokenResponse}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next']);
   }
 }
 
@@ -1478,13 +1560,14 @@ export declare interface VerdocsOtpDialog extends Components.VerdocsOtpDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['itemCount', 'perPage', 'selectedPage'],
+  outputs: ['selectPage'],
 })
 export class VerdocsPagination {
   protected el: HTMLVerdocsPaginationElement;
+  @Output() selectPage = new EventEmitter<CustomEvent<{selectedPage: number}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['selectPage']);
   }
 }
 
@@ -1507,13 +1590,14 @@ export declare interface VerdocsPagination extends Components.VerdocsPagination 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['anchor', 'voffset'],
+  outputs: ['clickAway'],
 })
 export class VerdocsPortal {
   protected el: HTMLVerdocsPortalElement;
+  @Output() clickAway = new EventEmitter<CustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['clickAway']);
   }
 }
 
@@ -1534,13 +1618,14 @@ export declare interface VerdocsPortal extends Components.VerdocsPortal {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId'],
+  outputs: ['sdkError'],
 })
 export class VerdocsPreview {
   protected el: HTMLVerdocsPreviewElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsPreviewSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError']);
   }
 }
 
@@ -1589,13 +1674,14 @@ export declare interface VerdocsProgressBar extends Components.VerdocsProgressBa
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['label', 'options', 'placeholder', 'value'],
+  outputs: ['optionSelected'],
 })
 export class VerdocsQuickFilter {
   protected el: HTMLVerdocsQuickFilterElement;
+  @Output() optionSelected = new EventEmitter<CustomEvent<IVerdocsQuickFilterIFilterOption>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['optionSelected']);
   }
 }
 
@@ -1621,13 +1707,15 @@ Web Component events need to be "composed" to cross the Shadow DOM and be receiv
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint'],
+  outputs: ['createTemplate', 'createDocument'],
 })
 export class VerdocsQuickFunctions {
   protected el: HTMLVerdocsQuickFunctionsElement;
+  @Output() createTemplate = new EventEmitter<CustomEvent<any>>();
+  @Output() createDocument = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['createTemplate', 'createDocument']);
   }
 }
 
@@ -1678,13 +1766,16 @@ export declare interface VerdocsRadioButton extends Components.VerdocsRadioButto
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'grabsFocus', 'placeholder', 'query', 'type'],
+  outputs: ['searchClicked', 'typeChanged', 'queryChanged'],
 })
 export class VerdocsSearchBox {
   protected el: HTMLVerdocsSearchBoxElement;
+  @Output() searchClicked = new EventEmitter<CustomEvent<IVerdocsSearchBoxISearchEvent>>();
+  @Output() typeChanged = new EventEmitter<CustomEvent<IVerdocsSearchBoxTContentType>>();
+  @Output() queryChanged = new EventEmitter<CustomEvent<string>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['searchClicked', 'typeChanged', 'queryChanged']);
   }
 }
 
@@ -1764,13 +1855,18 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'environment', 'templateId'],
+  outputs: ['beforeSend', 'send', 'exit', 'sdkError', 'searchContacts'],
 })
 export class VerdocsSend {
   protected el: HTMLVerdocsSendElement;
+  @Output() beforeSend = new EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: IVerdocsSendITemplate}>>();
+  @Output() send = new EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsSendSDKError>>();
+  @Output() searchContacts = new EventEmitter<CustomEvent<IVerdocsSendIContactSearchEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['beforeSend', 'send', 'exit', 'sdkError', 'searchContacts']);
   }
 }
 
@@ -1817,13 +1913,16 @@ the `contactSuggestions` property.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId'],
+  outputs: ['sdkError', 'envelopeLoaded', 'envelopeUpdated'],
 })
 export class VerdocsSign {
   protected el: HTMLVerdocsSignElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsSignSDKError>>();
+  @Output() envelopeLoaded = new EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope}>>();
+  @Output() envelopeUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope; event: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'envelopeLoaded', 'envelopeUpdated']);
   }
 }
 
@@ -1859,13 +1958,15 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['name'],
+  outputs: ['next', 'exit'],
 })
 export class VerdocsSignatureDialog {
   protected el: HTMLVerdocsSignatureDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<string>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit']);
   }
 }
 
@@ -1939,13 +2040,14 @@ export declare interface VerdocsStatusIndicator extends Components.VerdocsStatus
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['checked', 'disabled', 'theme'],
+  outputs: ['checkedChange'],
 })
 export class VerdocsSwitch {
   protected el: HTMLVerdocsSwitchElement;
+  @Output() checkedChange = new EventEmitter<CustomEvent<boolean>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['checkedChange']);
   }
 }
 
@@ -1966,13 +2068,15 @@ export declare interface VerdocsSwitch extends Components.VerdocsSwitch {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['columns', 'data'],
+  outputs: ['colHeaderClick', 'rowClick'],
 })
 export class VerdocsTable {
   protected el: HTMLVerdocsTableElement;
+  @Output() colHeaderClick = new EventEmitter<CustomEvent<{col: [object Object]}>>();
+  @Output() rowClick = new EventEmitter<CustomEvent<{row: any}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['colHeaderClick', 'rowClick']);
   }
 }
 
@@ -2001,13 +2105,14 @@ export declare interface VerdocsTable extends Components.VerdocsTable {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['selectedTab', 'tabs'],
+  outputs: ['selectTab'],
 })
 export class VerdocsTabs {
   protected el: HTMLVerdocsTabsElement;
+  @Output() selectTab = new EventEmitter<CustomEvent<{tab: [object Object]; index: number}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['selectTab']);
   }
 }
 
@@ -2033,13 +2138,17 @@ to the template preview. This is also fired when the user selects "Preview/Send"
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId'],
+  outputs: ['exit', 'next', 'templateUpdated', 'sdkError'],
 })
 export class VerdocsTemplateAttachments {
   protected el: HTMLVerdocsTemplateAttachmentsElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<{template: IVerdocsTemplateAttachmentsITemplate}>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateAttachmentsVerdocsEndpoint; template: IVerdocsTemplateAttachmentsITemplate; event: string}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateAttachmentsSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next', 'templateUpdated', 'sdkError']);
   }
 }
 
@@ -2079,13 +2188,15 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'step', 'templateId'],
+  outputs: ['sdkError', 'stepChanged'],
 })
 export class VerdocsTemplateBuildTabs {
   protected el: HTMLVerdocsTemplateBuildTabsElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateBuildTabsSDKError>>();
+  @Output() stepChanged = new EventEmitter<CustomEvent<IVerdocsTemplateBuildTabsTVerdocsBuildStep>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'stepChanged']);
   }
 }
 
@@ -2139,13 +2250,17 @@ export declare interface VerdocsTemplateCard extends Components.VerdocsTemplateC
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'maxSize'],
+  outputs: ['exit', 'next', 'sdkError', 'templateCreated'],
 })
 export class VerdocsTemplateCreate {
   protected el: HTMLVerdocsTemplateCreateElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<IVerdocsTemplateCreateITemplate>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateCreateSDKError>>();
+  @Output() templateCreated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateCreateVerdocsEndpoint; template: IVerdocsTemplateCreateITemplate; templateId: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next', 'sdkError', 'templateCreated']);
   }
 }
 
@@ -2185,13 +2300,14 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'documentId', 'done', 'editable', 'endpoint', 'layers', 'pageNumber', 'templateId', 'virtualHeight', 'virtualWidth'],
+  outputs: ['pageRendered'],
 })
 export class VerdocsTemplateDocumentPage {
   protected el: HTMLVerdocsTemplateDocumentPageElement;
+  @Output() pageRendered = new EventEmitter<CustomEvent<IVerdocsTemplateDocumentPageIDocumentPageInfo>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['pageRendered']);
   }
 }
 
@@ -2216,13 +2332,17 @@ export declare interface VerdocsTemplateDocumentPage extends Components.VerdocsT
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'fieldName', 'helpText', 'templateId'],
+  outputs: ['close', 'delete', 'settingsChanged', 'sdkError'],
 })
 export class VerdocsTemplateFieldProperties {
   protected el: HTMLVerdocsTemplateFieldPropertiesElement;
+  @Output() close = new EventEmitter<CustomEvent<any>>();
+  @Output() delete = new EventEmitter<CustomEvent<{templateId: string; roleName: string}>>();
+  @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsTemplateFieldPropertiesITemplateField}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateFieldPropertiesSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'delete', 'settingsChanged', 'sdkError']);
   }
 }
 
@@ -2262,13 +2382,16 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId', 'toolbarTargetId'],
+  outputs: ['sdkError', 'templateUpdated', 'fieldsUpdated'],
 })
 export class VerdocsTemplateFields {
   protected el: HTMLVerdocsTemplateFieldsElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateFieldsSDKError>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; template: IVerdocsTemplateFieldsITemplate; event: string}>>();
+  @Output() fieldsUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: IVerdocsTemplateFieldsITemplateField[]}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'templateUpdated', 'fieldsUpdated']);
   }
 }
 
@@ -2303,13 +2426,16 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'roleName', 'templateId'],
+  outputs: ['close', 'delete', 'sdkError'],
 })
 export class VerdocsTemplateRoleProperties {
   protected el: HTMLVerdocsTemplateRolePropertiesElement;
+  @Output() close = new EventEmitter<CustomEvent<any>>();
+  @Output() delete = new EventEmitter<CustomEvent<{templateId: string; roleName: string}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateRolePropertiesSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['close', 'delete', 'sdkError']);
   }
 }
 
@@ -2344,13 +2470,17 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId'],
+  outputs: ['next', 'exit', 'sdkError', 'rolesUpdated'],
 })
 export class VerdocsTemplateRoles {
   protected el: HTMLVerdocsTemplateRolesElement;
+  @Output() next = new EventEmitter<CustomEvent<any>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateRolesSDKError>>();
+  @Output() rolesUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateRolesVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsTemplateRolesIRole[]}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit', 'sdkError', 'rolesUpdated']);
   }
 }
 
@@ -2390,13 +2520,17 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId'],
+  outputs: ['next', 'exit', 'sdkError', 'templateUpdated'],
 })
 export class VerdocsTemplateSettings {
   protected el: HTMLVerdocsTemplateSettingsElement;
+  @Output() next = new EventEmitter<CustomEvent<any>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateSettingsSDKError>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateSettingsVerdocsEndpoint; template: IVerdocsTemplateSettingsITemplate; event: string}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['next', 'exit', 'sdkError', 'templateUpdated']);
   }
 }
 
@@ -2436,13 +2570,15 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'template'],
+  outputs: ['starChange', 'sdkError'],
 })
 export class VerdocsTemplateStar {
   protected el: HTMLVerdocsTemplateStarElement;
+  @Output() starChange = new EventEmitter<CustomEvent<{templateId: string; starred: boolean; count: number}>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateStarSDKError>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['starChange', 'sdkError']);
   }
 }
 
@@ -2496,13 +2632,23 @@ export declare interface VerdocsTemplateTags extends Components.VerdocsTemplateT
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['allowedActions', 'endpoint', 'name', 'rowsPerPage', 'selectedPage', 'showPagination', 'sort', 'starred', 'visibility'],
+  outputs: ['sdkError', 'viewTemplate', 'signNow', 'submittedData', 'editTemplate', 'templateDeleted', 'changeSort', 'changeVisibility', 'changeStarred', 'changeName'],
 })
 export class VerdocsTemplatesList {
   protected el: HTMLVerdocsTemplatesListElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplatesListSDKError>>();
+  @Output() viewTemplate = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() signNow = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() submittedData = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() editTemplate = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() templateDeleted = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplatesListVerdocsEndpoint; template: IVerdocsTemplatesListITemplate}>>();
+  @Output() changeSort = new EventEmitter<CustomEvent<string>>();
+  @Output() changeVisibility = new EventEmitter<CustomEvent<'private_shared' | 'private' | 'shared' | 'public'>>();
+  @Output() changeStarred = new EventEmitter<CustomEvent<'all' | 'starred' | 'unstarred'>>();
+  @Output() changeName = new EventEmitter<CustomEvent<string>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'viewTemplate', 'signNow', 'submittedData', 'editTemplate', 'templateDeleted', 'changeSort', 'changeVisibility', 'changeStarred', 'changeName']);
   }
 }
 
@@ -2617,13 +2763,14 @@ export declare interface VerdocsToggle extends Components.VerdocsToggle {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['active', 'icon', 'label', 'size'],
+  outputs: ['toggle'],
 })
 export class VerdocsToggleButton {
   protected el: HTMLVerdocsToggleButtonElement;
+  @Output() toggle = new EventEmitter<CustomEvent<{active: boolean}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['toggle']);
   }
 }
 
@@ -2669,13 +2816,16 @@ export declare interface VerdocsToolbarIcon extends Components.VerdocsToolbarIco
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['existingFile', 'maxSize'],
+  outputs: ['exit', 'next', 'remove'],
 })
 export class VerdocsUploadDialog {
   protected el: HTMLVerdocsUploadDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<File[]>>();
+  @Output() remove = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['exit', 'next', 'remove']);
   }
 }
 
@@ -2707,13 +2857,18 @@ responsible for the actual removal.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId', 'headerTargetId'],
+  outputs: ['sdkError', 'envelopeUpdated', 'another', 'view', 'next'],
 })
 export class VerdocsView {
   protected el: HTMLVerdocsViewElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsViewSDKError>>();
+  @Output() envelopeUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsViewVerdocsEndpoint; envelope: IVerdocsViewIEnvelope; event: string}>>();
+  @Output() another = new EventEmitter<CustomEvent<any>>();
+  @Output() view = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
-    proxyOutputs(this, this.el, ['sdkError', 'envelopeUpdated', 'another', 'view', 'next']);
   }
 }
 

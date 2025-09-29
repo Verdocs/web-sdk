@@ -1,13 +1,14 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
 
 export default {
   title: 'Embeds/Sign',
   component: 'verdocs-sign',
   args: {
-    envelopeId: '',
-    roleId: '',
-    inviteCode: '',
+    envelopeId: 'd9547f59-94ff-461b-8bc7-87ea83d8c8bd',
+    roleId: 'Taxpayer',
+    inviteCode: 'eh1nuwixocisf55t19qw13lq',
   },
   argTypes: {
     // envelopeId: {

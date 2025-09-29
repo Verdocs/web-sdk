@@ -1,9 +1,9 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {integerSequence, isValidEmail, isValidPhone, updateEnvelopeFieldInitials} from '@verdocs/js-sdk';
+import {DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid} from '@verdocs/js-sdk';
+import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod} from '@verdocs/js-sdk';
 import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
 import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
-import {updateEnvelopeFieldSignature, uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
 import {DefaultEndpoint} from '../../../utils/Environment';
@@ -11,22 +11,6 @@ import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
-
-const DEFAULT_DISCLOSURES = `
-<ul>
-  <li>
-    Agree to use electronic records and signatures, and confirm you have read the
-    <a href="https://verdocs.com/en/electronic-record-signature-disclosure/" target="_blank">
-      Electronic Record and Signatures Disclosure</a>.</li>
-  <li>
-    Agree to Verdocs'
-    <a href="https://verdocs.com/en/eula" target="_blank">
-      End User License Agreement</a>
-    and confirm you have read Verdocs'
-    <a href="https://verdocs.com/en/privacy-policy/" target="_blank">
-      Privacy Policy</a>.
-  </li>
-</ul>`;
 
 /**
  * Display an envelope signing experience. This will display the envelope's attached
@@ -301,7 +285,7 @@ export class VerdocsSign {
 
   saveFieldChange(fieldName: string, fields: Record<string, any>) {
     console.log('[SIGN] saveFieldChange', fieldName, fields);
-    updateEnvelopeField(this.endpoint, this.envelopeId, fieldName, fields) //
+    updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldName, fields) //
       .then(updateResult => this.updateRecipientFieldValue(fieldName, updateResult))
       .catch(e => {
         if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
@@ -351,7 +335,7 @@ export class VerdocsSign {
         const initialsBlob = await (await fetch(e.detail)).blob();
         return createInitials(this.endpoint, 'initial', initialsBlob) //
           .then(async newInitials => {
-            const updateResult = await updateEnvelopeFieldInitials(this.endpoint, this.envelopeId, field.name, newInitials.id);
+            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newInitials.id);
             this.updateRecipientFieldValue(field.name, updateResult);
             this.showSpinner = false;
           })
@@ -374,7 +358,7 @@ export class VerdocsSign {
         return createSignature(this.endpoint, 'signature', signatureBlob) //
           .then(async newSignature => {
             console.log('Signature update result', newSignature);
-            const updateResult = await updateEnvelopeFieldSignature(this.endpoint, this.envelopeId, field.name, newSignature.id);
+            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newSignature.id);
             this.updateRecipientFieldValue(field.name, updateResult);
             this.showSpinner = false;
           })
@@ -399,60 +383,6 @@ export class VerdocsSign {
         console.log('[SIGN] Unhandled field update', {value, checked}, field);
         break;
     }
-  }
-
-  isFieldFilled(field: IEnvelopeField) {
-    const {value = ''} = field;
-    switch (field.type as any) {
-      case 'textarea':
-      case 'textbox':
-        switch (field.validator || '') {
-          case 'email':
-            return isValidEmail(value);
-          case 'phone':
-            return isValidPhone(value);
-          default:
-            return (value || '').trim() !== '';
-        }
-
-      case 'signature':
-        return value === 'signed';
-
-      case 'initial':
-        return value === 'initialed';
-
-      // Timestamp fields get automatically filled when the envelope is submitted.
-      case 'timestamp':
-        return true;
-
-      case 'date':
-        return !!value;
-
-      case 'attachment':
-        return value === 'attached';
-
-      case 'dropdown':
-        return value !== '';
-
-      case 'checkbox':
-        return value === 'true';
-
-      case 'radio':
-        if (!!field.group) {
-          return this.getRecipientFields()
-            .filter(f => f.group === field.group)
-            .some(field => field.value === 'true');
-        }
-
-        return field.value === 'true';
-
-      default:
-        return false;
-    }
-  }
-
-  isFieldValid(field: IEnvelopeField) {
-    return !field.required || this.isFieldFilled(field);
   }
 
   getSortedFillableFields() {
@@ -498,7 +428,7 @@ export class VerdocsSign {
     }
 
     // Find and focus the next incomplete field (that is fillable)
-    const emptyFields = this.getSortedFillableFields().filter(field => field.required && !this.isFieldFilled(field));
+    const emptyFields = this.getSortedFillableFields().filter(field => field.required && !isFieldFilled(field, this.getRecipientFields()));
     sortFields(emptyFields);
 
     const focusedIndex = emptyFields.findIndex(field => field.name === this.focusedField);
@@ -540,7 +470,7 @@ export class VerdocsSign {
 
   // See if everything that "needs to be" filled in is, and all "fillable fields" are valid
   checkRecipientFields() {
-    const invalidFields = this.getRecipientFields().filter(field => !this.isFieldValid(field));
+    const invalidFields = this.getRecipientFields().filter(field => !isFieldValid(field, this.getRecipientFields()));
     if (invalidFields.length < 1) {
       this.nextButtonLabel = 'Finish';
       if (!this.nextSubmits) {
@@ -579,7 +509,7 @@ export class VerdocsSign {
       console.log('[SIGN] onAttached', e.detail, e.target.value);
       this.showSpinner = true;
       try {
-        const updateResult = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name, e.detail);
+        const updateResult = await uploadEnvelopeFieldAttachment(this.endpoint, this.envelopeId, this.roleId, field.name, e.detail);
         this.updateRecipientFieldValue(field.name, updateResult);
         this.checkRecipientFields();
 
@@ -597,7 +527,7 @@ export class VerdocsSign {
       console.log('[SIGN] onDeleted', e.detail, e.target.value);
       this.showSpinner = true;
       try {
-        const updateResult = await deleteEnvelopeFieldAttachment(this.endpoint, this.envelopeId, field.name);
+        const updateResult = await deleteEnvelopeFieldAttachment(this.endpoint, this.envelopeId, this.roleId, field.name);
         console.log('[SIGN] Deleted attachment', updateResult);
         this.updateRecipientFieldValue(field.name, updateResult);
         this.checkRecipientFields();
@@ -1015,7 +945,7 @@ export class VerdocsSign {
       inProgressMenuOptions.unshift({id: 'delegate', label: 'Delegate'});
     }
 
-    const invalidFields = this.getRecipientFields().filter(field => !this.isFieldValid(field));
+    const invalidFields = this.getRecipientFields().filter(field => !isFieldValid(field,this.getRecipientFields()));
     invalidFields.length > 0
       ? console.log(
           '[SIGN] Invalid fields remaining',

@@ -21,11 +21,14 @@ export const config: Config = {
   devServer: {
     openBrowser: false,
   },
-   testing: {
+  testing: {
     setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
-    transformIgnorePatterns: [
-      '/node_modules/(?!(tinybase|@verdocs/js-sdk|imask|sortablejs|axios)/)'
-    ],
+    transformIgnorePatterns: ['/node_modules/(?!(tinybase|@verdocs/js-sdk|imask|sortablejs|axios)/)'],
+  },
+  rollupConfig: {
+    inputOptions: {
+      external: ['@verdocs/js-sdk'],
+    },
   },
   rollupPlugins: {
     // before: [typescript()],
@@ -97,6 +100,14 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  plugins: [sass()],
+  plugins: [
+    sass({
+      // Silence a deprecation warning. We know about it and are planning to move to
+      // CSS variables for most global/shared styling, but aren't ready to do it yet
+      // and this is just cluttering up the build logs.
+      // Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0
+      silenceDeprecations: ['import'],
+    }),
+  ],
   // plugins: [inlineSvg(), sass()],
 };

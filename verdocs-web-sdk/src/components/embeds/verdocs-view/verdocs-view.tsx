@@ -1,6 +1,5 @@
-import {cancelEnvelope, getDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, userCanCancelEnvelope, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {cancelEnvelope, getEnvelopeDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, userCanCancelEnvelope, VerdocsEndpoint, getEnvelopesZip} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
-import {saveEnvelopesAsZip} from '../../../utils/utils';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
@@ -182,7 +181,7 @@ export class VerdocsView {
         {
           const firstDoc = this.envelope.documents.find(doc => doc.type === 'attachment');
           if (firstDoc) {
-            const url = await getDocumentDownloadLink(this.endpoint, this.envelopeId, firstDoc.id);
+            const url = await getEnvelopeDocumentDownloadLink(this.endpoint, firstDoc.id);
             window.open(url, '_blank');
           }
         }
@@ -193,7 +192,7 @@ export class VerdocsView {
         {
           const firstCert = this.envelope.documents.find(doc => doc.type === 'certificate');
           if (firstCert) {
-            const url = await getDocumentDownloadLink(this.endpoint, this.envelopeId, firstCert.id);
+            const url = await getEnvelopeDocumentDownloadLink(this.endpoint, firstCert.id);
             window.open(url, '_blank');
           }
         }
@@ -207,7 +206,7 @@ export class VerdocsView {
         break;
 
       case 'download-all':
-        saveEnvelopesAsZip(this.endpoint, [this.envelope])
+        getEnvelopesZip(this.endpoint, [this.envelope.id])
           .then(() => {
             this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
           })

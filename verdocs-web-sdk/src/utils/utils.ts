@@ -1,6 +1,5 @@
-import jszip from 'jszip';
 import {format} from 'date-fns';
-import {downloadBlob, getEnvelopeFile, getFieldAttachment, IEnvelope, IEnvelopeField, ITemplateField, rescale, TFieldType, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {downloadBlob, getEnvelopeFile, getEnvelopesZip, IEnvelope, IEnvelopeField, ITemplateField, rescale, TFieldType, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {FORMAT_DATE, IDocumentPageInfo} from './Types';
 
 export const defaultWidth = (type: TFieldType) => {
@@ -274,42 +273,19 @@ export const saveAttachment = async (endpoint: VerdocsEndpoint, envelope: IEnvel
   // e.g. "Colorado-Motor-Vehicle-Bill-of-Sale.pdf"
   const date = format(new Date(envelope.updated_at), FORMAT_DATE);
   const fileName = `${envelope.name} - ${date}.pdf`;
-  const data = await getEnvelopeFile(endpoint, envelope.id, documentId);
+  const data = await getEnvelopeFile(endpoint, documentId);
   downloadBlob(data, fileName);
 };
 
 export const saveEnvelopesAsZip = async (endpoint: VerdocsEndpoint, envelopes: IEnvelope[]) => {
-  const zip = new jszip();
-
-  for await (let envelope of envelopes) {
-    const date = format(new Date(envelope.updated_at), FORMAT_DATE);
-    const subFolder = envelopes.length > 0 ? zip.folder(`${envelope.id} - ${envelope.name} - ${date}`) : null;
-    for await (let document of envelope.documents) {
-      const documentFileName = document.type === 'certificate' ? `${envelope.name}_certificate.pdf` : `${document.name.replace('.pdf', '').replace(/\//g, '_')}.pdf`;
-      const data = await getEnvelopeFile(endpoint, envelope.id, document.id);
-
-      if (subFolder) {
-        subFolder.file(documentFileName, data, {compression: 'DEFLATE'});
-      } else {
-        zip.file(documentFileName, data, {compression: 'DEFLATE'});
-      }
-
-      const attachFields = envelope.fields?.filter(field => field.type === 'attachment' && field.settings['name']) || [];
-      if (attachFields.length > 0) {
-        const attachmentsFolder = subFolder ? subFolder.folder('attachments') : zip.folder('attachments');
-        for await (let attachField of attachFields) {
-          const attachData = await getFieldAttachment(endpoint, envelope.id, attachField.name);
-          attachmentsFolder.file(attachField.settings['name'].replace(/\//g, '_'), attachData, {compression: 'DEFLATE'});
-        }
-      }
-    }
-  }
-
-  // e.g. "Colorado Motor Vehicle Bill of Sale - 01-18-23.zip" or "Verdocs-Envelopes-02-13-23.zip"
   const formattedDate = format(envelopes.length === 1 ? new Date(envelopes[0].updated_at) : new Date(), FORMAT_DATE);
   const zipFileName = envelopes.length === 1 ? `${envelopes[0].name} - ${formattedDate}.zip` : `Verdocs-Envelopes-${formattedDate}`;
-  const zipped = await zip.generateAsync({type: 'blob', compression: 'DEFLATE'});
-  downloadBlob(zipped, zipFileName);
+  console.log('Downloading envelopes as ZIP', envelopes, zipFileName);
+  const result = await getEnvelopesZip(
+    endpoint,
+    envelopes.map(e => e.id),
+  );
+  downloadBlob(result.data, zipFileName);
 };
 
 /**

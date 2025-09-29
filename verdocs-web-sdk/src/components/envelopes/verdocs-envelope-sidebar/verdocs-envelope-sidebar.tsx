@@ -1,5 +1,5 @@
 import {format} from 'date-fns';
-import {IEnvelope, IRecipient, updateRecipient} from '@verdocs/js-sdk';
+import {getRecipientsWithActions, IEnvelope, IRecipient, recipientCanAct, updateRecipient} from '@verdocs/js-sdk';
 import {Component, h, Event, EventEmitter, Fragment, Host, Prop, State} from '@stencil/core';
 import {cancelEnvelope, capitalize, formatFullName, getEnvelope, resetRecipient, remindRecipient, updateEnvelope, userIsEnvelopeOwner, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
@@ -480,6 +480,7 @@ export class VerdocsEnvelopeSidebar {
     const isEnvelopeOwner = userIsEnvelopeOwner(this.endpoint.profile, this.envelope);
     const historyEntries = this.prepareHistoryEntries();
     const functionsDisabled = this.envelope?.status !== 'pending' && this.envelope?.status !== 'in progress';
+    const recipientsWithActions = getRecipientsWithActions(this.envelope);
 
     return (
       <Host class={this.panelOpen ? 'open' : ''}>
@@ -520,7 +521,7 @@ export class VerdocsEnvelopeSidebar {
           <div class="content">
             <div class="title">Recipients</div>
             {this.envelope?.recipients.map((recipient, index) => {
-              const canGetInPersonLink = recipient.status !== 'submitted' && recipient.status !== 'canceled' && recipient.status !== 'declined';
+              const canGetInPersonLink = recipientCanAct(recipient, recipientsWithActions);
               const canUpdate = recipient.status !== 'submitted';
               const canSendReminder = this.canResendRecipient(recipient);
               const fullName = formatFullName(recipient);

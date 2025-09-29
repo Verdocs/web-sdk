@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "6.1.4",
+  "version": "6.2.0-beta.5",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -31,16 +31,15 @@
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "@stencil/core": "^4.36.1",
-    "@svgdotjs/svg.js": "^3.2.4",
-    "@verdocs/js-sdk": "^6.1.0",
+    "@svgdotjs/svg.js": "^3.2.5",
+    "@verdocs/js-sdk": "^6.2.0-beta.5",
     "air-datepicker": "^3.6.0",
     "choices.js": "^11.1.0",
     "date-fns": "^4.1.0",
     "imask": "^7.6.1",
     "interactjs": "^1.10.27",
-    "jszip": "^3.10.1",
     "sortablejs": "^1.15.6",
-    "tinybase": "^6.5.2",
+    "tinybase": "^6.6.1",
     "workflow-svg.js": "^3.0.2"
   },
   "devDependencies": {
