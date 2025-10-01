@@ -283,9 +283,9 @@ export class VerdocsSign {
     });
   }
 
-  saveFieldChange(fieldName: string, fields: Record<string, any>) {
-    console.log('[SIGN] saveFieldChange', fieldName, fields);
-    updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldName, fields) //
+  saveFieldChange(fieldName: string, value: string, prepared: boolean) {
+    console.log('[SIGN] saveFieldChange', fieldName, {value, prepared});
+    updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldName, value, prepared)
       .then(updateResult => this.updateRecipientFieldValue(fieldName, updateResult))
       .catch(e => {
         if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
@@ -308,20 +308,20 @@ export class VerdocsSign {
       // TODO: Remove legacy type when no longer needed
       case 'textarea':
       case 'textbox':
-        return this.saveFieldChange(field.name, {prepared: false, value});
+        return this.saveFieldChange(field.name, value, false);
 
       case 'checkbox': {
-        return this.saveFieldChange(field.name, {prepared: false, value: String(e.target.checked)});
+        return this.saveFieldChange(field.name, String(e.target.checked), false);
       }
 
       case 'radio': {
-        return this.saveFieldChange(field.name, {prepared: false, value: String(e.target.checked)});
+        return this.saveFieldChange(field.name, String(e.target.checked), false);
       }
 
       case 'dropdown':
         // TODO: Set prepared to false server-side.
         console.log('Saving dropdown', field.name, e.detail);
-        return this.saveFieldChange(field.name, {prepared: false, value: e.detail});
+        return this.saveFieldChange(field.name, e.detail, false);
 
       case 'initial':
         // This can be caused by a focus-out event if the user clicks the field
@@ -335,7 +335,7 @@ export class VerdocsSign {
         const initialsBlob = await (await fetch(e.detail)).blob();
         return createInitials(this.endpoint, 'initial', initialsBlob) //
           .then(async newInitials => {
-            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newInitials.id);
+            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newInitials.id, false);
             this.updateRecipientFieldValue(field.name, updateResult);
             this.showSpinner = false;
           })
@@ -358,7 +358,7 @@ export class VerdocsSign {
         return createSignature(this.endpoint, 'signature', signatureBlob) //
           .then(async newSignature => {
             console.log('Signature update result', newSignature);
-            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newSignature.id);
+            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newSignature.id, false);
             this.updateRecipientFieldValue(field.name, updateResult);
             this.showSpinner = false;
           })
@@ -371,7 +371,7 @@ export class VerdocsSign {
       case 'date':
         const {formattedDate} = e.detail;
         if (formattedDate) {
-          return this.saveFieldChange(field.name, {prepared: false, value: formattedDate});
+          return this.saveFieldChange(field.name, formattedDate, false);
         }
         break;
 
