@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "6.2.0-beta.7",
+  "version": "6.2.0-beta.8",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -33,7 +33,7 @@
     "@popperjs/core": "^2.11.8",
     "@stencil/core": "^4.36.1",
     "@svgdotjs/svg.js": "^3.2.5",
-    "@verdocs/js-sdk": "^6.2.0-beta.6",
+    "@verdocs/js-sdk": "^6.2.0-beta.8",
     "air-datepicker": "^3.6.0",
     "choices.js": "^11.1.0",
     "date-fns": "^4.1.0",

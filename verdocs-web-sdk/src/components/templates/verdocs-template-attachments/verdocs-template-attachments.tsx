@@ -158,7 +158,7 @@ export class VerdocsTemplateAttachments {
   }
 
   async confirmDelete() {
-    await deleteTemplateDocument(this.endpoint, this.templateId, this.confirmDeleteDocument.id);
+    await deleteTemplateDocument(this.endpoint, this.confirmDeleteDocument.id);
     // TODO: Update it in place
     this.template = await Store.getTemplate(this.endpoint, this.templateId, true);
     console.log('[ATTACHMENTS] New template', this.template);
