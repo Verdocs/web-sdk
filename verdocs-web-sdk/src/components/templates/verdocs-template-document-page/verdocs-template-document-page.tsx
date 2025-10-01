@@ -208,7 +208,7 @@ export class VerdocsTemplateDocumentPage {
             <div class="verdocs-template-document-page-layer" id={`${this.containerId}-${layer.name}`} style={{height}}>
               {layer.name === 'controls' &&
                 (this.template?.fields || [])
-                  .filter(field => field && field.page === this.pageNumber)
+                  .filter(field => field && field.document_id === this.documentId && field.page === this.pageNumber)
                   .map(field => {
                     const id = getFieldId(field);
                     let {name, type, multiline} = field;

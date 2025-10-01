@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "6.2.0-beta.5",
+  "version": "6.2.0-beta.7",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "push": "npm run build && npm publish",
+    "push-beta": "npm run build && npm publish --tag beta",
     "build": "stencil build --docs",
     "serve": "stencil build --dev --watch --serve",
     "start": "stencil build --dev --watch --docs",
@@ -32,7 +33,7 @@
     "@popperjs/core": "^2.11.8",
     "@stencil/core": "^4.36.1",
     "@svgdotjs/svg.js": "^3.2.5",
-    "@verdocs/js-sdk": "^6.2.0-beta.5",
+    "@verdocs/js-sdk": "^6.2.0-beta.6",
     "air-datepicker": "^3.6.0",
     "choices.js": "^11.1.0",
     "date-fns": "^4.1.0",

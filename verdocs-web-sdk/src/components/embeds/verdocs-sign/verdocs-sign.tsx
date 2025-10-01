@@ -572,22 +572,20 @@ export class VerdocsSign {
     console.log('[SIGN] Rendering fields for page', pageInfo.pageNumber, recipientFields);
 
     // First render the fields for the signer
-    recipientFields.forEach((field, tabIndex) => {
-      if (field.document_id !== pageInfo.documentId || field.page !== pageInfo.pageNumber) {
-        return;
-      }
+    recipientFields
+      .filter(field => field && field.document_id === pageInfo.documentId && field.page === pageInfo.pageNumber)
+      .forEach((field, tabIndex) => {
+        const el = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
+        if (!el) {
+          return;
+        }
 
-      const el = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
-      if (!el) {
-        return;
-      }
-
-      if (Array.isArray(el)) {
-        el.map(e => this.attachFieldAttributes(pageInfo, field, e));
-      } else {
-        this.attachFieldAttributes(pageInfo, field, el);
-      }
-    });
+        if (Array.isArray(el)) {
+          el.map(e => this.attachFieldAttributes(pageInfo, field, e));
+        } else {
+          this.attachFieldAttributes(pageInfo, field, el);
+        }
+      });
 
     // Now render the fields for other signers who have yet to act
     this.envelope.recipients
@@ -945,7 +943,7 @@ export class VerdocsSign {
       inProgressMenuOptions.unshift({id: 'delegate', label: 'Delegate'});
     }
 
-    const invalidFields = this.getRecipientFields().filter(field => !isFieldValid(field,this.getRecipientFields()));
+    const invalidFields = this.getRecipientFields().filter(field => !isFieldValid(field, this.getRecipientFields()));
     invalidFields.length > 0
       ? console.log(
           '[SIGN] Invalid fields remaining',

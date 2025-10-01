@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk-react",
-  "version": "6.2.0-beta.4",
+  "version": "6.2.0-beta.7",
   "description": "Verdocs Web SDK for React",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "push": "npm i && npm run build && npm publish",
+    "push-beta": "npm i && npm run build && npm publish --tag beta",
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf dist",
     "compile": "npm run tsc",
@@ -18,8 +19,8 @@
     "rollup": "rollup -c"
   },
   "dependencies": {
-    "@verdocs/web-sdk": "^6.2.0-beta.4",
-    "@stencil/react-output-target": "^1.0.2"
+    "@verdocs/web-sdk": "^6.2.0-beta.7",
+    "@stencil/react-output-target": "^1.2.0"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
