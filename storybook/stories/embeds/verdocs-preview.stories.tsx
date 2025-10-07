@@ -1,12 +1,13 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
+import {loadStoryDefaults} from '../utils';
 
 export default {
   title: 'Embeds/Preview',
   component: 'verdocs-preview',
-  args: {
+  args: loadStoryDefaults('embeds-preview', {
     templateId: '',
-  },
+  }),
   parameters: {
     layout: 'fullscreen',
   },

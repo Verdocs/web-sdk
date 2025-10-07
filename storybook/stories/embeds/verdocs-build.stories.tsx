@@ -1,13 +1,14 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
+import {loadStoryDefaults} from '../utils';
 
 export default {
   title: 'Embeds/Build',
   component: 'verdocs-build',
-  args: {
+  args: loadStoryDefaults('embeds-build', {
     templateId: '',
     step: 'preview',
-  },
+  }),
   step: {
     control: 'select',
     options: ['attachments', 'roles', 'settings', 'fields', 'preview'],

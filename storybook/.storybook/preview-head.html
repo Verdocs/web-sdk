@@ -15,26 +15,6 @@
     padding: 1rem 20px;
   }
 
-  /*
-  .innerZoomElementWrapper {
-    min-height: 500px;
-  }
-
-  /* We need this to be wider than the Sign widget's max align-center width of 1028px to be able to see that effect. * /
-  .sbdocs.sbdocs-content {
-    max-width: 1000px;
-  }
-
-  #story--embeds-view--view {
-    overflow-y: scroll;
-    max-height: 600px;
-  }
-
-  #story--controls-button-panel--button-panel {
-    background: #4c56cb;
-    padding: 20px;
-  }
-*/
   #storybook-docs .sbdocs > * {
     font-family: 'Inter', 'Open Sans', sans-serif;
     font-size: 16px;
@@ -44,63 +24,6 @@
     font-family: 'Inter', 'Open Sans', sans-serif;
     font-size: 16px;
   }
-
-  /* Fix up some of the worst of the code formatting issues */
-  /*#storybook-docs .docblock-source .prismjs .token {
-    /*
-    color: #b6ad9a;
-    color: #063289;
-    color: #b29762;
-    color: #2d2006;
-    color: #896724;
-    color: #728fcb;
-    color: #93abdc;
-    color: #2d2006;
-    color: #896724;
-     * /
-    color: #896724;
-  }
-
-  #storybook-docs .docblock-source .prismjs .token.punctuation {
-    color: #93abdc;
-  }
-
-  #storybook-docs .docblock-source .prismjs .token.selector {
-    color: #063289;
-  }
-
-  #storybook-docs .docblock-source .prismjs .token.keyword {
-    color: #2d2006;
-  }
-
-  #storybook-docs .docblock-source .prismjs .token.maybe-class-name {
-    color: #375498;
-  }
-
-  #storybook-docs .docblock-source .prismjs .token.property {
-    color: #896724;
-  }
-
-  / * Improve Code block readability (inline code e.g. `asdf`) * /
-  #storybook-docs .sbdocs code {
-    line-height: 1;
-    padding: 3px 6px;
-    white-space: nowrap;
-    border-radius: 3px;
-    font-size: 13px;
-    border: 1px solid #654dcb5f;
-    color: #1f1f1f;
-    background-color: #654dcb0f;
-  }
-
-  #storybook-docs .sbdocs h1 {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #dddddd;
-  }
-*/
 
   /* Fix up control form fields */
 
@@ -324,3 +247,26 @@
     color: #ff6666;
   }
 </style>
+
+<script>
+  document.addEventListener(
+    'input',
+    e => {
+      // Parse the story ID from the URL query parameters
+      // viewMode=docs&id=embeds-send--docs&globals=
+      const storyId = (new URLSearchParams(location.search).get('id') || '').replace('--docs', '');
+      if (storyId && (e.target.type === 'textarea' || e.target.type === 'text')) {
+        try {
+          const existing = localStorage.getItem(`sb-default-${storyId}`) || '{}';
+          const existingObj = JSON.parse(existing);
+          existingObj[e.target.name] = e.target.value;
+          localStorage.setItem(`sb-default-${storyId}`, JSON.stringify(existingObj));
+          console.log('Input', e.target.type, storyId, existingObj);
+        } catch (e) {
+          // NOOP - If this fails, just skip it
+        }
+      }
+    },
+    {passive: true},
+  );
+</script>
