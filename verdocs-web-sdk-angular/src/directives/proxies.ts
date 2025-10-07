@@ -1846,7 +1846,7 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsSend,
-  inputs: ['endpoint', 'environment', 'templateId'],
+  inputs: ['endpoint', 'environment', 'showCancel', 'templateId'],
   methods: ['reset']
 })
 @Component({
@@ -1854,7 +1854,7 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'environment', 'templateId'],
+  inputs: ['endpoint', 'environment', 'showCancel', 'templateId'],
   outputs: ['beforeSend', 'send', 'exit', 'sdkError', 'searchContacts'],
 })
 export class VerdocsSend {

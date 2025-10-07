@@ -199,7 +199,7 @@ export class VerdocsFieldTextbox {
   render() {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
-    let {required = false, placeholder = '', label = '', width = 150, default: value = '', multiline = false} = field || {};
+    let {required = false, placeholder = '', label = '', width = 150, readonly = false, default: value = '', multiline = false} = field || {};
     const backgroundColor = getRGBA(index);
 
     // TODO: Consolidate value/defaultValue handling between template and envelope fields.
@@ -226,9 +226,9 @@ export class VerdocsFieldTextbox {
         {multiline ? (
           <textarea
             name={fieldname}
-            disabled={disabled}
             required={required}
             placeholder={placeholder}
+            disabled={readonly || disabled}
             ref={el => (this.inputEl = el)}
             onFocus={() => (this.focused = true)}
             onBlur={() => (this.focused = false)}
@@ -238,12 +238,12 @@ export class VerdocsFieldTextbox {
         ) : (
           <input
             type="text"
-            name={fieldname}
             value={value}
-            disabled={disabled}
+            name={fieldname}
             required={required}
-            placeholder={placeholder}
             maxlength={maxlength}
+            placeholder={placeholder}
+            disabled={readonly || disabled}
             ref={el => (this.inputEl = el)}
             onFocus={() => (this.focused = true)}
             onBlur={() => (this.focused = false)}

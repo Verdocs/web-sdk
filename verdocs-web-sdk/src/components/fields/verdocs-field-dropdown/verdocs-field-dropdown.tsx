@@ -126,8 +126,13 @@ export class VerdocsFieldDropdown {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
-    let {required = false, value = '', label = '', options} = field || {};
+    let {required = false, value = '', label = '', options, readonly = false} = field || {};
     const backgroundColor = getRGBA(index);
+
+    // TODO: Consolidate value/defaultValue handling between template and envelope fields.
+    if ((field as any)?.value) {
+      value = (field as any)?.value;
+    }
 
     if (done) {
       return <Host class={{done}}>{value}</Host>;
@@ -141,14 +146,18 @@ export class VerdocsFieldDropdown {
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
         {label && <label>{label}</label>}
 
-        <select disabled={disabled} onChange={e => this.handleChange(e)} ref={el => (this.selectEl = el as HTMLSelectElement)}>
+        <select disabled={readonly || disabled} onChange={e => this.handleChange(e)} ref={el => (this.selectEl = el as HTMLSelectElement)}>
           <option value="">Select...</option>
           {options.map(option => (
             <option value={option.id} selected={option.id === value}>
               {option.label}
             </option>
           ))}
-          {!options.length && <option value="NA">N/A</option>}
+          {!options.length && (
+            <option value="NA" selected={'NA' === value}>
+              N/A
+            </option>
+          )}
         </select>
 
         {editable && (

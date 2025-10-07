@@ -119,7 +119,7 @@ export class VerdocsFieldRadio {
   render() {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
-    const {name, required = false, label = '', group = '', value = false} = field || {};
+    const {name, required = false, label = '', group = '', value = false, readonly = false} = field || {};
     const backgroundColor = getRGBA(index);
 
     const selected = value === 'true';
@@ -137,7 +137,7 @@ export class VerdocsFieldRadio {
         {label && <div class="label">{label}</div>}
         {editable && group && <div class="group">{group}</div>}
 
-        <input id={fieldname} type="radio" name={group || fieldname} value={name} checked={!!selected} disabled={disabled} required={required} />
+        <input id={fieldname} type="radio" name={group || fieldname} value={name} checked={!!selected} disabled={readonly || disabled} required={required} />
         <label htmlFor={fieldname} />
 
         {editable && (

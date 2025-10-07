@@ -64,6 +64,12 @@ export class VerdocsSend {
   @Prop() environment: string = '';
 
   /**
+   * Whether to show the cancel button. It may be useful to disable this in environments where
+   * the embed is shown in a non-wizard flow with its own navigation for the user to exit.
+   */
+  @Prop() showCancel = true;
+
+  /**
    * The user is sending an envelope the form and clicked send.
    */
   @Event({composed: true}) beforeSend: EventEmitter<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: ITemplate}>;
@@ -390,7 +396,7 @@ export class VerdocsSend {
         </div>
 
         <div class="buttons">
-          <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} disabled={this.sending} />
+          {this.showCancel && <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} disabled={this.sending} />}
           <verdocs-button label="Send" size="small" disabled={!allRolesAssigned || this.sending} onClick={e => this.handleSend(e)} />
           {this.sending && <verdocs-spinner />}
         </div>

@@ -144,7 +144,7 @@ export class VerdocsFieldDate {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
-    const {required = false, placeholder = 'Date...', value = '', label = ''} = field || {};
+    const {required = false, placeholder = 'Date...', value = '', label = '', readonly = false} = field || {};
     const backgroundColor = getRGBA(index);
 
     const formattedValue = value ? format(new Date(value), FORMAT_DATE) : '';
@@ -163,8 +163,8 @@ export class VerdocsFieldDate {
           type="text"
           value={formattedValue}
           id={this.containerId}
-          disabled={disabled}
           placeholder={placeholder}
+          disabled={readonly || disabled}
           onFocus={() => (this.focused = true)}
           onBlur={() => (this.focused = false)}
         />

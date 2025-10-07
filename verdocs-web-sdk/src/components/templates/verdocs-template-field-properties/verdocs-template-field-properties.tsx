@@ -71,6 +71,7 @@ export class VerdocsTemplateFieldProperties {
   @State() type = 'textbox' as TFieldType;
   @State() name = '';
   @State() required = false;
+  @State() readonly = false;
   @State() roleName = '';
   @State() group = '';
   @State() fieldType = '';
@@ -87,7 +88,6 @@ export class VerdocsTemplateFieldProperties {
   }
 
   async listenToTemplate() {
-    console.log('[SENT] Loading template', this.templateId);
     this.unlistenToTemplate();
     Store.subscribe(
       'templates',
@@ -95,7 +95,6 @@ export class VerdocsTemplateFieldProperties {
       () => getTemplate(this.endpoint, this.templateId),
       false,
       (template: ITemplate) => {
-        console.log('[SEND] Template Updated', template);
         this.template = template;
         this.loading = false;
         this.resetForm();
@@ -150,6 +149,7 @@ export class VerdocsTemplateFieldProperties {
     this.group = field.group;
     this.roleName = field.role_name;
     this.required = field.required;
+    this.readonly = field.readonly;
     this.fieldType = field.type;
     this.options = field.options || [];
     this.placeholder = field.placeholder || '';
@@ -181,7 +181,6 @@ export class VerdocsTemplateFieldProperties {
     } as Partial<ITemplateField>;
 
     this.cleanupOptions();
-    console.log('[FIELD PROPERTIES] Will update', this.fieldName, newProperties);
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
       .then(updatedField => {
         console.log('[FIELD PROPERTIES] Updated', updatedField);
@@ -317,7 +316,7 @@ export class VerdocsTemplateFieldProperties {
                 label="Default Value"
                 value={this.defaultValue}
                 autocomplete="off"
-                placeholder="Pre-filled value..."
+                placeholder={this.readonly && !this.defaultValue ? 'Default value required' : 'Pre-filled value...'}
                 onInput={(e: any) => {
                   this.defaultValue = e.target.value;
                   this.dirty = true;
@@ -378,6 +377,22 @@ export class VerdocsTemplateFieldProperties {
             />
           </div>
 
+          <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
+            <label htmlFor="verdocs-is-readonly" class="input-label">
+              Read-only
+            </label>
+            <verdocs-checkbox
+              id="verdocs-is-readonly"
+              name="is-readonly"
+              checked={this.readonly}
+              value="on"
+              onInput={(e: any) => {
+                this.readonly = e.target.checked;
+                this.dirty = true;
+              }}
+            />
+          </div>
+
           {this.type === 'dropdown' && (
             <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
               <label htmlFor="verdocs-is-required" class="input-label">
@@ -431,7 +446,7 @@ export class VerdocsTemplateFieldProperties {
             <button class="delete-button" disabled={this.dirty} onClick={e => this.handleDelete(e)} innerHTML={TrashIcon} />
             <div style={{flex: '1'}} />
             <verdocs-button size="small" variant="outline" label="Cancel" disabled={!this.dirty} onClick={e => this.handleCancel(e)} />
-            <verdocs-button size="small" label="Save" disabled={saveDisabled} onClick={e => !saveDisabled && this.handleSave(e)} />
+            <verdocs-button size="small" label="Save" disabled={saveDisabled || (this.readonly && !this.defaultValue)} onClick={e => !saveDisabled && this.handleSave(e)} />
           </div>
         </form>
       </Host>

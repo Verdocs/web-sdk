@@ -180,7 +180,7 @@ export class VerdocsFieldTextarea {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
-    const {required = false, placeholder = '', value = '', label = ''} = field || {};
+    const {required = false, placeholder = '', value = '', label = '', readonly = false} = field || {};
     const backgroundColor = getRGBA(index);
 
     if (done) {
@@ -193,9 +193,9 @@ export class VerdocsFieldTextarea {
 
         <textarea
           name={fieldname}
-          disabled={disabled}
           required={required}
           placeholder={placeholder}
+          disabled={readonly || disabled}
           ref={el => (this.inputEl = el)}
           onFocus={() => (this.focused = true)}
           onBlur={() => (this.focused = false)}

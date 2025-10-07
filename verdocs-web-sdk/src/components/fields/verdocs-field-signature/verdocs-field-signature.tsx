@@ -1,7 +1,9 @@
-import {ITemplateField, getRGBA, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State} from '@stencil/core';
+import interact from 'interactjs';
+import {ITemplateField, getRGBA, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
+import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State, Element} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
+import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 
 /**
  * Displays a signature field. If a signature already exists, it will be displayed and the field
@@ -18,6 +20,8 @@ import {Store} from '../../../utils/Datastore';
   shadow: false,
 })
 export class VerdocsFieldSignature {
+  @Element() el: HTMLElement;
+
   /**
    * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
@@ -112,6 +116,87 @@ export class VerdocsFieldSignature {
 
   private dialog?: any;
 
+  componentDidRender() {
+    interact.dynamicDrop(true);
+
+    if (this.editable) {
+      interact(this.el).resizable({
+        edges: {
+          top: '.edge-top',
+          left: '.edge-left',
+          bottom: '.edge-bottom',
+          right: '.edge-right',
+        },
+        modifiers: [
+          interact.modifiers.restrictSize({
+            min: {width: 71, height: 36},
+          }),
+        ],
+        listeners: {
+          start: this.handleResizeStart.bind(this),
+          move: this.handleResize.bind(this),
+          end: this.handleResizeEnd.bind(this),
+        },
+      });
+    }
+  }
+
+  handleResizeStart(e: ResizeEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.target.dataset.originalBottom = e.target.style.bottom;
+  }
+
+  handleResize(e: any) {
+    let {width, height} = e.rect;
+
+    const dX = e.deltaRect.left;
+    const dY = e.deltaRect.bottom;
+    const currentLeft = parseFloat(e.target.style.left);
+    const currentBottom = parseFloat(e.target.style.bottom);
+
+    width /= this.xscale;
+    height /= this.yscale;
+
+    Object.assign(e.target.style, {
+      width: `${width}px`,
+      height: `${height}px`,
+      left: `${currentLeft + dX}px`,
+      bottom: `${currentBottom - dY}px`,
+    });
+  }
+
+  async handleResizeEnd(e: any) {
+    const {sourceid, fieldname} = this;
+
+    const width = Math.round(parseFloat(e.target.style.width));
+    let height = Math.round(parseFloat(e.target.style.height));
+    if (height < 20) {
+      height = 15;
+    }
+
+    const newBottom = parseFloat(e.target.style.bottom);
+    const originalBottom = parseFloat(e.target.dataset.originalBottom);
+    const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
+    const oldField = template.fields.find(f => f.name === fieldname);
+    const y = newBottom !== originalBottom ? newBottom / this.yscale : oldField?.y;
+
+    updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, y})
+      .then(async updatedField => {
+        const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
+        const newTemplate = JSON.parse(JSON.stringify(template)) as ITemplate;
+        const fieldIndex = newTemplate.fields.findIndex(field => field.name === fieldname);
+        if (fieldIndex > -1) {
+          newTemplate.fields[fieldIndex] = updatedField;
+        }
+        Store.updateTemplate(this.sourceid, newTemplate);
+
+        this.settingsChanged?.emit({fieldName: fieldname, field: updatedField});
+        Object.assign(e.target.dataset, {x: 0, y: 0, h: 0});
+      })
+      .catch(e => console.log('Field update failed', e));
+  }
+
   hideDialog() {
     this.dialog?.remove();
     this.dialog = null;
@@ -166,6 +251,11 @@ export class VerdocsFieldSignature {
 
     return (
       <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+        {editable && <div class="edge-right" />}
+        {editable && <div class="edge-left" />}
+        {editable && <div class="edge-top" />}
+        {editable && <div class="edge-bottom" />}
+
         {label && <label>{label}</label>}
 
         {base64 ? <img src={base64} alt="" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}

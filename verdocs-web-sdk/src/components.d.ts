@@ -1781,6 +1781,11 @@ export namespace Components {
         "environment": string;
         "reset": () => Promise<void>;
         /**
+          * Whether to show the cancel button. It may be useful to disable this in environments where the embed is shown in a non-wizard flow with its own navigation for the user to exit.
+          * @default true
+         */
+        "showCancel": boolean;
+        /**
           * The ID of the template to create the document from.
           * @default null
          */
@@ -6469,6 +6474,11 @@ declare namespace LocalJSX {
           * The user completed the form and clicked send.
          */
         "onSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>) => void;
+        /**
+          * Whether to show the cancel button. It may be useful to disable this in environments where the embed is shown in a non-wizard flow with its own navigation for the user to exit.
+          * @default true
+         */
+        "showCancel"?: boolean;
         /**
           * The ID of the template to create the document from.
           * @default null

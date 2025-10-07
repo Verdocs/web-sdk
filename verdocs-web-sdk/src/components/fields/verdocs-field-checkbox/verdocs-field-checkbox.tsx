@@ -110,7 +110,7 @@ export class VerdocsFieldCheckbox {
   render() {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
-    const {required = false, label = '', value = false} = field || {};
+    const {required = false, label = '', value = false, readonly = false} = field || {};
     const backgroundColor = getRGBA(index);
 
     const checked = value === 'true';
@@ -124,7 +124,7 @@ export class VerdocsFieldCheckbox {
         {label && <div class="label">{label}</div>}
 
         <label htmlFor={fieldname}>
-          <input id={fieldname} name={fieldname} type="checkbox" checked={checked} disabled={disabled} required={required} />
+          <input id={fieldname} name={fieldname} type="checkbox" checked={checked} disabled={readonly || disabled} required={required} />
           <span />
 
           {editable && (

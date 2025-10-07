@@ -84,8 +84,9 @@ verdocs-field-radio {
         width: 12px;
         height: 12px;
         position: absolute;
-        left: 0;
-        top: 0;
+        // This looks off in Storybook but correct in apps.
+        left: 1px;
+        top: 1px;
         cursor: pointer;
         text-align: center;
         transition: all 250ms ease;

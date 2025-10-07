@@ -686,6 +686,7 @@ export const VerdocsSend: StencilVueComponent<JSX.VerdocsSend> = /*@__PURE__*/ d
   'endpoint',
   'templateId',
   'environment',
+  'showCancel',
   'beforeSend',
   'send',
   'exit',
