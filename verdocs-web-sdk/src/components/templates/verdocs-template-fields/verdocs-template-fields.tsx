@@ -146,7 +146,6 @@ export class VerdocsTemplateFields {
     const toolbarTarget = this.toolbarTargetId ? document.getElementById(this.toolbarTargetId) : null;
     const toolbarEl = document.getElementById('verdocs-template-fields-toolbar');
     if (toolbarTarget && toolbarEl) {
-      console.log('[FIELDS] Moving toolbar');
       toolbarEl.remove();
       toolbarTarget.append(toolbarEl);
     }
@@ -354,7 +353,7 @@ export class VerdocsTemplateFields {
         template_id: this.templateId,
         document_id: cachedPage.documentId,
         type: this.placing,
-        required: this.placing !== 'radio',
+        required: this.placing !== 'radio' && this.placing !== 'attachment' && this.placing !== 'checkbox',
         page: pageNumber,
         validator: null,
         label: null,
