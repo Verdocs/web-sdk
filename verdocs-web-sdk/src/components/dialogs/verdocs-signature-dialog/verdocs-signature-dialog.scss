@@ -3,91 +3,227 @@
 verdocs-signature-dialog {
   font-family: $primary-font;
   box-sizing: border-box;
-  position: fixed;
-  z-index: 10000;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #0000007f;
-
-  .dialog {
-    width: 100%;
-    max-width: 340px;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
-    background: $dialog-bg;
-  }
-
-  .heading {
-    display: flex;
-    flex-direction: row;
-    padding: 20px 20px 0 20px;
-    line-height: 28px;
-    font-size: 20px;
-    font-weight: 500;
-  }
 
   .content {
-    font-size: 14px;
-    padding: 20px;
-  }
-
-  .buttons {
     display: flex;
-    margin: 20px 0 0 0;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-
-    verdocs-button {
-      margin-left: 16px;
-    }
+    flex-direction: column;
   }
 
   canvas {
     background: $verdocs-grey-4;
-    box-sizing: border-box;
-    margin: 0 auto;
     width: 300px;
-    // TODO: The original app had an aspect ratio of (80 / 305) * (signatureBodyWidth - 20)
     height: 79px;
     max-width: 100%;
+    margin: 20px auto;
+    box-sizing: border-box;
     box-shadow: 0 0 6px 0 #0000001f;
   }
 
   .disclaimer {
-    text-align: justify;
     padding: 8px 0;
     font-size: 11px;
     line-height: 14px;
-    color: rgba(0, 0, 0, 0.54);
-  }
-
-  .as-shown {
-    font-size: 11px;
-    margin: 4px 0 20px 4px;
+    text-align: justify;
     color: rgba(0, 0, 0, 0.54);
   }
 
   .tabs {
     display: flex;
     flex-direction: row;
+    margin: -20px -20px 0 -20px;
+    border-bottom: 1px solid #eeeeee;
 
     .tab {
-      padding: 8px 15px;
+      flex: 1;
+      gap: 4px;
+      display: flex;
       cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 10px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
 
       &.active {
-        border-bottom: 2px solid $light-border-color;
+        background: #f9f5fe;
+        border-bottom: 2px solid $border-color;
       }
 
       &:hover {
         color: $primary-color;
+      }
+
+      .icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  // We use fixed heights for these sections to avoid layout shifts when switching tabs.
+  .type {
+    display: none;
+    height: 100px;
+    margin-top: 20px;
+    flex-direction: column;
+
+    &.active {
+      display: flex;
+    }
+  }
+
+  .draw {
+    height: 100px;
+    display: none;
+    margin-top: 20px;
+    flex-direction: column;
+
+    &.active {
+      display: flex;
+    }
+
+    .draw-instructions {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.6);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    canvas {
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .draw-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 12px;
+
+      .clear-button {
+        border: 1px solid #d0d0d0;
+        background-color: #ffffff;
+        color: #333333;
+        padding: 6px 16px;
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: #f5f5f5;
+          border-color: #b0b0b0;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  .upload {
+    height: 100px;
+    display: none;
+    margin-top: 20px;
+    flex-direction: column;
+
+    &.active {
+      display: flex;
+    }
+
+    .upload-instructions {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.6);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .upload-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 8px;
+
+      .upload-button {
+        border: 1px solid $primary-color;
+        background-color: $primary-color;
+        color: #ffffff;
+        padding: 8px 20px;
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: darken($primary-color, 10%);
+          border-color: darken($primary-color, 10%);
+        }
+      }
+
+      .clear-button {
+        border: 1px solid #d0d0d0;
+        background-color: #ffffff;
+        color: #333333;
+        padding: 8px 16px;
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: #f5f5f5;
+          border-color: #b0b0b0;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .upload-filename {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.6);
+      text-align: center;
+      margin-top: 8px;
+      font-style: italic;
+    }
+  }
+
+  /* TODO: We're getting positive feedback. Add this as a formal button variant. */
+  .buttons {
+    gap: 20px;
+    display: flex;
+    margin-top: 14px;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    button {
+      flex: 1;
+      border: 0;
+      height: 38px;
+      display: flex;
+      color: #ffffff;
+      font-size: 14px;
+      //font-size: 16px;
+      cursor: pointer;
+      align-items: center;
+      border-radius: 6px;
+      justify-content: center;
+
+      &.cancel {
+        background-color: $verdocs-button-purple;
+      }
+
+      &.proceed {
+        background-color: $verdocs-button-green;
+      }
+
+      &:disabled {
+        background-color: $verdocs-button-disabled;
       }
     }
   }

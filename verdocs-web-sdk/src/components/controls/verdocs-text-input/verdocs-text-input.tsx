@@ -41,6 +41,11 @@ export class VerdocsTextInput {
   @Prop() placeholder: string = '';
 
   /**
+   * Displayed below the field in a small font, typically used for instructions or reminders.
+   */
+  @Prop() description: string = '';
+
+  /**
    * If desired, the autocomplete attribute to set.
    */
   @Prop() autocomplete: string = '';
@@ -113,6 +118,8 @@ export class VerdocsTextInput {
               ref={el => (this.inputEl = el as HTMLInputElement)}
               onInput={(e: any) => (this.value = e.target.value)}
             />
+
+            {this.description && <div class="description">{this.description}</div>}
 
             {this.clearable && this.value && (
               <span

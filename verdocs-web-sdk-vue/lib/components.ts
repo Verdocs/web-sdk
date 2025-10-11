@@ -964,6 +964,7 @@ export const VerdocsTextInput: StencilVueComponent<JSX.VerdocsTextInput> = /*@__
   'value',
   'label',
   'placeholder',
+  'description',
   'autocomplete',
   'helpText',
   'clearable',

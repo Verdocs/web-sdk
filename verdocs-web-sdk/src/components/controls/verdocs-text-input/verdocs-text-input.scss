@@ -37,15 +37,21 @@ verdocs-text-input {
   .input-label {
     display: block;
     color: $label-color-light;
-    font-weight: 700;
-    font-size: 14px;
-    margin: 0 0 4px 0;
+    font-weight: 600;
+    font-size: 13px;
+    margin: 0 0 2px 0;
   }
 
   .required {
     color: red;
     margin-left: 2px;
     display: inline-block;
+  }
+
+  .description {
+    font-size: 11px;
+    margin: 0 0 0 4px;
+    color: rgba(0, 0, 0, 0.54);
   }
 
   // @see https://community.logmein.com/t5/LastPass-Support-Discussions/placeholder-text-overrides-data-lpignore-quot-true-quot/td-p/295135

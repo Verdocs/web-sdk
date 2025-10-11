@@ -2709,14 +2709,14 @@ probably not their search terms.
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsTextInput,
-  inputs: ['autocomplete', 'clearable', 'copyable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value']
+  inputs: ['autocomplete', 'clearable', 'copyable', 'description', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value']
 })
 @Component({
   selector: 'verdocs-text-input',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autocomplete', 'clearable', 'copyable', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value'],
+  inputs: ['autocomplete', 'clearable', 'copyable', 'description', 'disabled', 'helpText', 'label', 'placeholder', 'required', 'type', 'value'],
 })
 export class VerdocsTextInput {
   protected el: HTMLVerdocsTextInputElement;

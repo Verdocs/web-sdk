@@ -2274,6 +2274,11 @@ export namespace Components {
          */
         "copyable": boolean;
         /**
+          * Displayed below the field in a small font, typically used for instructions or reminders.
+          * @default ''
+         */
+        "description": string;
+        /**
           * Should the field be disabled?
           * @default false
          */
@@ -7161,6 +7166,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "copyable"?: boolean;
+        /**
+          * Displayed below the field in a small font, typically used for instructions or reminders.
+          * @default ''
+         */
+        "description"?: string;
         /**
           * Should the field be disabled?
           * @default false
