@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk-angular",
-  "version": "6.1.5",
+  "version": "6.2.4",
   "description": "Verdocs Web SDK for Angular",
   "license": "MIT",
   "scripts": {
@@ -25,7 +25,7 @@
     "dist/"
   ],
   "dependencies": {
-    "@verdocs/web-sdk": "^6.1.5"
+    "@verdocs/web-sdk": "^6.2.4"
   },
   "peerDependencies": {
     "@angular/core": "^19.2.6"

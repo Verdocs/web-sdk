@@ -144,10 +144,6 @@ export class VerdocsAuth {
       org_name: this.org_name,
     })
       .then(r => {
-        if (r.intercom_key) {
-          localStorage.setItem('intercom_key', r.intercom_key);
-        }
-
         console.log('[AUTH] Profile creation result', r);
         this.tempAuthEndpoint.setToken(r.access_token);
         // We can't clearForms because we need email to stick around
@@ -187,10 +183,6 @@ export class VerdocsAuth {
     this.clearForms();
     this.tempAuthEndpoint.clearSession();
     this.endpoint.setToken(result.access_token);
-
-    if (result.intercom_key) {
-      localStorage.setItem('intercom_key', result.intercom_key);
-    }
   }
 
   async loginAndCheckVerification() {
@@ -206,10 +198,6 @@ export class VerdocsAuth {
       const authResult = await authenticate(this.tempAuthEndpoint, {username: this.email.trim(), password: this.password, grant_type: 'password'});
       console.log('[AUTH] Authenticated, checking email verification');
       this.tempAuthEndpoint.setToken(authResult.access_token);
-
-      if (authResult.intercom_key) {
-        localStorage.setItem('intercom_key', authResult.intercom_key);
-      }
 
       const user = await getMyUser(this.tempAuthEndpoint);
       console.log('Got user', user);
