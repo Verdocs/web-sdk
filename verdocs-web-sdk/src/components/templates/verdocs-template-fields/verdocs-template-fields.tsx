@@ -24,8 +24,8 @@ const iconSignature =
 const iconInitial =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M6.225 20.775V7h-5V3.225H15V7h-5v13.775Zm9.775 0v-8h-3V9h9.775v3.775h-3v8Z"/></svg>';
 
-const iconTimestamp =
-  '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M9 1h6v2H9zm10.03 6.39 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM13 14h-2V8h2v6z"></path></svg>';
+// const iconTimestamp =
+//   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path fill="#ffffff" d="M9 1h6v2H9zm10.03 6.39 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM13 14h-2V8h2v6z"></path></svg>';
 
 const iconDropdown =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" stroke-width="1.5" stroke="currentColor"><path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" /></svg>';
@@ -45,7 +45,7 @@ const menuOptions = [
   {id: 'dropdown', tooltip: 'Dropdown', icon: iconDropdown, class: 'dropdown'},
   {id: 'sep2', tooltip: '', icon: separator, class: 'separator'},
   {id: 'date', tooltip: 'Date', icon: iconDatepicker, class: 'date'},
-  {id: 'timestamp', tooltip: 'Timestamp', icon: iconTimestamp, class: 'timestamp'},
+  // {id: 'timestamp', tooltip: 'Timestamp', icon: iconTimestamp, class: 'timestamp'},
   // {id: 'sep3', tooltip: '', icon: separator},
   {id: 'attachment', tooltip: 'Attachment', icon: iconAttachment, class: 'attachment'},
   // {id: 'payment', tooltip: 'Payment', icon: 'P'},
