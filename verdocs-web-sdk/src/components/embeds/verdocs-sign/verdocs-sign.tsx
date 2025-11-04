@@ -284,6 +284,14 @@ export class VerdocsSign {
   }
 
   saveFieldChange(fieldName: string, value: string, prepared: boolean) {
+    // Although the inputs disable themselves, the blur handler can still try to re-save
+    // the value already in the field. Bypassing that here is easier than adding yet more
+    // logic to the fields.
+    const field = this.getRecipientFields().find(field => field.name === fieldName);
+    if (field?.readonly) {
+      return;
+    }
+
     console.log('[SIGN] saveFieldChange', fieldName, {value, prepared});
     updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldName, value, prepared)
       .then(updateResult => this.updateRecipientFieldValue(fieldName, updateResult))

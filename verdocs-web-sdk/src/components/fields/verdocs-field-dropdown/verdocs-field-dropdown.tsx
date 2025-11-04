@@ -99,7 +99,13 @@ export class VerdocsFieldDropdown {
       this.focused = false;
     }, 500);
 
-    this.selectEl?.showPicker();
+    const {source, sourceid, fieldname} = this;
+    const {field} = Store.getField(source, sourceid, fieldname, this.field);
+    const {readonly = false} = field || {};
+
+    if (!readonly) {
+      this.selectEl?.showPicker();
+    }
   }
 
   handleChange(e: any) {

@@ -108,17 +108,23 @@ export class VerdocsFieldDate {
   picker: AirDatepicker<HTMLElement> | null = null;
 
   componentDidLoad() {
-    this.picker = new AirDatepicker<HTMLElement>(`#${this.containerId}`, {
-      locale: localeEn,
-      isMobile: true,
-      autoClose: true,
-      onShow: () => (this.focused = true),
-      onHide: () => (this.focused = false),
-      onSelect: ({date, formattedDate}) => {
-        const event = new CustomEvent('fieldChange', {detail: {date, formattedDate}});
-        this.hostEl.dispatchEvent(event);
-      },
-    });
+    const {source, sourceid, fieldname} = this;
+    const {field} = Store.getField(source, sourceid, fieldname, this.field);
+    const {readonly = false} = field || {};
+
+    if (!readonly) {
+      this.picker = new AirDatepicker<HTMLElement>(`#${this.containerId}`, {
+        locale: localeEn,
+        isMobile: true,
+        autoClose: true,
+        onShow: () => (this.focused = true),
+        onHide: () => (this.focused = false),
+        onSelect: ({date, formattedDate}) => {
+          const event = new CustomEvent('fieldChange', {detail: {date, formattedDate}});
+          this.hostEl.dispatchEvent(event);
+        },
+      });
+    }
   }
 
   @Method()
