@@ -173,6 +173,7 @@ export class VerdocsTemplateFieldProperties {
       name: this.name,
       role_name: this.roleName,
       required: this.required,
+      readonly: this.readonly,
       label: this.label,
       group: this.group,
       placeholder: this.placeholder,
