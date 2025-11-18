@@ -1614,6 +1614,17 @@ export namespace Components {
         "showPercent": boolean;
     }
     /**
+     * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
+     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+     * It can also be dismissed by clicking the background overlay.
+     */
+    interface VerdocsQuestionDialog {
+        /**
+          * @default ''
+         */
+        "question": string;
+    }
+    /**
      * Display a drop-down menu of quick filter options.
      * ```ts
      * <verdocs-quick-filter options={[...options]} value={1} label="Filter" placeholder="All" />
@@ -1818,7 +1829,7 @@ export namespace Components {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-          * @default DefaultEndpoint
+          * @default new VerdocsEndpoint({sessionType: 'signing'})
          */
         "endpoint": VerdocsEndpoint;
         /**
@@ -1841,6 +1852,27 @@ export namespace Components {
           * @default null
          */
         "roleId": string | null;
+    }
+    /**
+     * Typically presented by the `verdocs-sign` component. Displays a footer toolbar
+     * with a few convenience functions for the envelope recipient to use.
+     */
+    interface VerdocsSignFooter {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+          * @default ''
+         */
+        "envelopeId": string;
+        /**
+          * If the recipient is "done," some buttons will be hidden.
+          * @default false
+         */
+        "isDone": boolean;
     }
     /**
      * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
@@ -2557,6 +2589,10 @@ export interface VerdocsPreviewCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsPreviewElement;
 }
+export interface VerdocsQuestionDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsQuestionDialogElement;
+}
 export interface VerdocsQuickFilterCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsQuickFilterElement;
@@ -2576,6 +2612,10 @@ export interface VerdocsSendCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsSignCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSignElement;
+}
+export interface VerdocsSignFooterCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSignFooterElement;
 }
 export interface VerdocsSignatureDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3617,6 +3657,29 @@ declare global {
         prototype: HTMLVerdocsProgressBarElement;
         new (): HTMLVerdocsProgressBarElement;
     };
+    interface HTMLVerdocsQuestionDialogElementEventMap {
+        "next": {question: string};
+        "exit": any;
+    }
+    /**
+     * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
+     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+     * It can also be dismissed by clicking the background overlay.
+     */
+    interface HTMLVerdocsQuestionDialogElement extends Components.VerdocsQuestionDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsQuestionDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsQuestionDialogElement, ev: VerdocsQuestionDialogCustomEvent<HTMLVerdocsQuestionDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsQuestionDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsQuestionDialogElement, ev: VerdocsQuestionDialogCustomEvent<HTMLVerdocsQuestionDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsQuestionDialogElement: {
+        prototype: HTMLVerdocsQuestionDialogElement;
+        new (): HTMLVerdocsQuestionDialogElement;
+    };
     interface HTMLVerdocsQuickFilterElementEventMap {
         "optionSelected": IFilterOption;
     }
@@ -3808,6 +3871,30 @@ declare global {
     var HTMLVerdocsSignElement: {
         prototype: HTMLVerdocsSignElement;
         new (): HTMLVerdocsSignElement;
+    };
+    interface HTMLVerdocsSignFooterElementEventMap {
+        "askQuestion": {question: string};
+        "decline": any;
+        "finishLater": any;
+        "sdkError": SDKError;
+    }
+    /**
+     * Typically presented by the `verdocs-sign` component. Displays a footer toolbar
+     * with a few convenience functions for the envelope recipient to use.
+     */
+    interface HTMLVerdocsSignFooterElement extends Components.VerdocsSignFooter, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSignFooterElementEventMap>(type: K, listener: (this: HTMLVerdocsSignFooterElement, ev: VerdocsSignFooterCustomEvent<HTMLVerdocsSignFooterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSignFooterElementEventMap>(type: K, listener: (this: HTMLVerdocsSignFooterElement, ev: VerdocsSignFooterCustomEvent<HTMLVerdocsSignFooterElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsSignFooterElement: {
+        prototype: HTMLVerdocsSignFooterElement;
+        new (): HTMLVerdocsSignFooterElement;
     };
     interface HTMLVerdocsSignatureDialogElementEventMap {
         "next": string;
@@ -4369,6 +4456,7 @@ declare global {
         "verdocs-portal": HTMLVerdocsPortalElement;
         "verdocs-preview": HTMLVerdocsPreviewElement;
         "verdocs-progress-bar": HTMLVerdocsProgressBarElement;
+        "verdocs-question-dialog": HTMLVerdocsQuestionDialogElement;
         "verdocs-quick-filter": HTMLVerdocsQuickFilterElement;
         "verdocs-quick-functions": HTMLVerdocsQuickFunctionsElement;
         "verdocs-radio-button": HTMLVerdocsRadioButtonElement;
@@ -4377,6 +4465,7 @@ declare global {
         "verdocs-select-input": HTMLVerdocsSelectInputElement;
         "verdocs-send": HTMLVerdocsSendElement;
         "verdocs-sign": HTMLVerdocsSignElement;
+        "verdocs-sign-footer": HTMLVerdocsSignFooterElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
         "verdocs-spinner": HTMLVerdocsSpinnerElement;
         "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
@@ -6271,6 +6360,25 @@ declare namespace LocalJSX {
         "showPercent"?: boolean;
     }
     /**
+     * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
+     * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+     * It can also be dismissed by clicking the background overlay.
+     */
+    interface VerdocsQuestionDialog {
+        /**
+          * Event fired when Cancel is pressed. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+         */
+        "onExit"?: (event: VerdocsQuestionDialogCustomEvent<any>) => void;
+        /**
+          * Event fired when the user clicks the OK button.
+         */
+        "onNext"?: (event: VerdocsQuestionDialogCustomEvent<{question: string}>) => void;
+        /**
+          * @default ''
+         */
+        "question"?: string;
+    }
+    /**
      * Display a drop-down menu of quick filter options.
      * ```ts
      * <verdocs-quick-filter options={[...options]} value={1} label="Filter" placeholder="All" />
@@ -6517,7 +6625,7 @@ declare namespace LocalJSX {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-          * @default DefaultEndpoint
+          * @default new VerdocsEndpoint({sessionType: 'signing'})
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6552,6 +6660,43 @@ declare namespace LocalJSX {
           * @default null
          */
         "roleId"?: string | null;
+    }
+    /**
+     * Typically presented by the `verdocs-sign` component. Displays a footer toolbar
+     * with a few convenience functions for the envelope recipient to use.
+     */
+    interface VerdocsSignFooter {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * The envelope ID to render. Set ONE OF templateId or envelopeId. If both are set, envelopeId will be ignored.
+          * @default ''
+         */
+        "envelopeId"?: string;
+        /**
+          * If the recipient is "done," some buttons will be hidden.
+          * @default false
+         */
+        "isDone"?: boolean;
+        /**
+          * Event fired if the user asks the sender a question. The parent component is responsible for handling this.
+         */
+        "onAskQuestion"?: (event: VerdocsSignFooterCustomEvent<{question: string}>) => void;
+        /**
+          * Event fired if the user asks the sender a question. The parent component is responsible for handling this.
+         */
+        "onDecline"?: (event: VerdocsSignFooterCustomEvent<any>) => void;
+        /**
+          * Event fired if the user asks the sender a question. The parent component is responsible for handling this.
+         */
+        "onFinishLater"?: (event: VerdocsSignFooterCustomEvent<any>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsSignFooterCustomEvent<SDKError>) => void;
     }
     /**
      * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
@@ -7393,6 +7538,7 @@ declare namespace LocalJSX {
         "verdocs-portal": VerdocsPortal;
         "verdocs-preview": VerdocsPreview;
         "verdocs-progress-bar": VerdocsProgressBar;
+        "verdocs-question-dialog": VerdocsQuestionDialog;
         "verdocs-quick-filter": VerdocsQuickFilter;
         "verdocs-quick-functions": VerdocsQuickFunctions;
         "verdocs-radio-button": VerdocsRadioButton;
@@ -7401,6 +7547,7 @@ declare namespace LocalJSX {
         "verdocs-select-input": VerdocsSelectInput;
         "verdocs-send": VerdocsSend;
         "verdocs-sign": VerdocsSign;
+        "verdocs-sign-footer": VerdocsSignFooter;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
         "verdocs-spinner": VerdocsSpinner;
         "verdocs-status-indicator": VerdocsStatusIndicator;
@@ -7760,6 +7907,12 @@ declare module "@stencil/core" {
              */
             "verdocs-progress-bar": LocalJSX.VerdocsProgressBar & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
             /**
+             * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
+             * box with a message and optional header/title. An OK button is shown that will dismiss the message.
+             * It can also be dismissed by clicking the background overlay.
+             */
+            "verdocs-question-dialog": LocalJSX.VerdocsQuestionDialog & JSXBase.HTMLAttributes<HTMLVerdocsQuestionDialogElement>;
+            /**
              * Display a drop-down menu of quick filter options.
              * ```ts
              * <verdocs-quick-filter options={[...options]} value={1} label="Filter" placeholder="All" />
@@ -7847,6 +8000,11 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
+            /**
+             * Typically presented by the `verdocs-sign` component. Displays a footer toolbar
+             * with a few convenience functions for the envelope recipient to use.
+             */
+            "verdocs-sign-footer": LocalJSX.VerdocsSignFooter & JSXBase.HTMLAttributes<HTMLVerdocsSignFooterElement>;
             /**
              * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
              * based on their full name, or by hand-drawing their signature with a mouse or tablet.

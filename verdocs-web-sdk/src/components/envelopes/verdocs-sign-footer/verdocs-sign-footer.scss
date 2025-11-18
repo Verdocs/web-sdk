@@ -1,0 +1,99 @@
+@import '../../../theme.scss';
+
+verdocs-sign-footer {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  display: flex;
+  color: #616161;
+  position: fixed;
+  font-size: 12px;
+  padding: 0 24px;
+  align-items: center;
+  flex-direction: row;
+  background: #ffffff;
+  container-type: inline-size;
+  border-top: 1px solid #e0e0e0;
+  justify-content: space-between;
+  font-family: $verdocs-primary-font;
+  transition: 0.5s cubic-bezier(0.35, 0, 0.25, 1);
+
+  a {
+    color: #616161;
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px dotted #616161;
+  }
+
+  &.loading {
+    display: none;
+  }
+
+  .powered-by {
+    white-space: nowrap;
+  }
+
+  .buttons {
+    flex: 0;
+    gap: 16px;
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+    align-items: center;
+
+    button {
+      gap: 4px;
+      border: none;
+      display: flex;
+      outline: none;
+      cursor: pointer;
+      flex-direction: row;
+      align-items: center;
+      background: transparent;
+    }
+
+    div {
+      gap: 4px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .links {
+    flex: 0;
+    gap: 8px;
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+  }
+
+  &.just-buttons {
+    .buttons {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+
+  @container (max-width: 720px) {
+    &.has-buttons .powered-by {
+      display: none;
+    }
+  }
+
+  @container (max-width: 540px) {
+    &.no-buttons .powered-by {
+      display: none;
+    }
+
+    &.has-buttons .links {
+      display: none;
+    }
+
+    .buttons {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+}

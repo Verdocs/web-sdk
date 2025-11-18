@@ -249,24 +249,42 @@
 </style>
 
 <script>
-  document.addEventListener(
-    'input',
-    e => {
-      // Parse the story ID from the URL query parameters
-      // viewMode=docs&id=embeds-send--docs&globals=
-      const storyId = (new URLSearchParams(location.search).get('id') || '').replace('--docs', '');
-      if (storyId && (e.target.type === 'textarea' || e.target.type === 'text')) {
-        try {
-          const existing = localStorage.getItem(`sb-default-${storyId}`) || '{}';
-          const existingObj = JSON.parse(existing);
-          existingObj[e.target.name] = e.target.value;
-          localStorage.setItem(`sb-default-${storyId}`, JSON.stringify(existingObj));
-          console.log('Input', e.target.type, storyId, existingObj);
-        } catch (e) {
-          // NOOP - If this fails, just skip it
+  setTimeout(() => {
+    // Ensure the DOM is ready
+    document.addEventListener(
+      'input',
+      e => {
+        // Parse the story ID from the URL query parameters
+        // viewMode=docs&id=embeds-send--docs&globals=
+        const storyId = (new URLSearchParams(location.search).get('id') || '').replace('--docs', '');
+        const {name, type, value} = e.target;
+
+        if (storyId && (type === 'textarea' || type === 'text')) {
+          try {
+            const existing = localStorage.getItem(`sb-default-${storyId}`) || '{}';
+            const existingObj = JSON.parse(existing);
+            existingObj[name] = value;
+            localStorage.setItem(`sb-default-${storyId}`, JSON.stringify(existingObj));
+            console.log('Input', type, storyId, existingObj);
+          } catch (e) {
+            // NOOP - If this fails, just skip it
+          }
         }
-      }
-    },
-    {passive: true},
-  );
+
+        if (storyId && type === 'select-one') {
+          console.log('sel', {storyId, type, name, value});
+          // try {
+          //   const existing = localStorage.getItem(`sb-default-${storyId}`) || '{}';
+          //   const existingObj = JSON.parse(existing);
+          //   existingObj[e.target.name] = e.target.value;
+          //   localStorage.setItem(`sb-default-${storyId}`, JSON.stringify(existingObj));
+          //   console.log('Input', e.target.type, storyId, existingObj);
+          // } catch (e) {
+          //   // NOOP - If this fails, just skip it
+          // }
+        }
+      },
+      {passive: true},
+    );
+  }, 500);
 </script>

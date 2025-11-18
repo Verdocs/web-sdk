@@ -1,12 +1,11 @@
 import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid} from '@verdocs/js-sdk';
+import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid} from '@verdocs/js-sdk';
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod} from '@verdocs/js-sdk';
 import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
 import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, saveAttachment, updateDocumentFieldValue} from '../../../utils/utils';
-import {DefaultEndpoint} from '../../../utils/Environment';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -48,7 +47,7 @@ export class VerdocsSign {
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
-  @Prop({mutable: true}) endpoint: VerdocsEndpoint = DefaultEndpoint;
+  @Prop({mutable: true}) endpoint: VerdocsEndpoint = new VerdocsEndpoint({sessionType: 'signing'});
 
   /**
    * The ID of the envelope to sign.
@@ -123,15 +122,6 @@ export class VerdocsSign {
   @State() loading = true;
   @State() envelope: IEnvelope | null = null;
 
-  // recipientIndex: number = -1;
-
-  componentWillLoad() {
-    if (!this.endpoint) {
-      console.log('[SIGN] Creating signing endpoint');
-      this.endpoint = new VerdocsEndpoint({sessionType: 'signing'});
-    }
-  }
-
   async componentDidLoad() {
     if (!this.envelopeId) {
       this.sdkError?.emit(new SDKError('[SIGN] Missing required envelopId', 500, ''));
@@ -182,6 +172,7 @@ export class VerdocsSign {
     this.delegated = !!recipient.delegated_to;
     this.agreed = recipient.agreed;
     this.submitted = recipient.status === 'submitted';
+    this.loading = false;
     this.isDone = this.submitted;
     this.showDone = this.submitted;
     Store.updateEnvelope(this.envelopeId, envelope);
@@ -1037,6 +1028,24 @@ export class VerdocsSign {
               <verdocs-spinner />
             </div>
           </verdocs-portal>
+        )}
+
+        {!this.loading && !this.isDone && (
+          <verdocs-sign-footer
+            endpoint={this.endpoint}
+            envelopeId={this.envelopeId}
+            isDone={this.isDone}
+            onAskQuestion={(e: any) => {
+              askQuestion(this.endpoint, this.envelopeId, this.roleId, {question: e.detail.question})
+                .then(() => VerdocsToast('Your question has been sent.', {style: 'success'}))
+                .catch(e => {
+                  console.log('Error asking question', e);
+                  VerdocsToast('Unable to send question, please try again later.', {style: 'error'});
+                });
+            }}
+            onDecline={() => (this.declining = true)}
+            onFinishLater={() => (this.showFinishLater = true)}
+          />
         )}
       </Host>
     );

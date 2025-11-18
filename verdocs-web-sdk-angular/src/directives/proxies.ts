@@ -49,6 +49,7 @@ import { defineCustomElement as defineVerdocsPagination } from '@verdocs/web-sdk
 import { defineCustomElement as defineVerdocsPortal } from '@verdocs/web-sdk/components/verdocs-portal.js';
 import { defineCustomElement as defineVerdocsPreview } from '@verdocs/web-sdk/components/verdocs-preview.js';
 import { defineCustomElement as defineVerdocsProgressBar } from '@verdocs/web-sdk/components/verdocs-progress-bar.js';
+import { defineCustomElement as defineVerdocsQuestionDialog } from '@verdocs/web-sdk/components/verdocs-question-dialog.js';
 import { defineCustomElement as defineVerdocsQuickFilter } from '@verdocs/web-sdk/components/verdocs-quick-filter.js';
 import { defineCustomElement as defineVerdocsQuickFunctions } from '@verdocs/web-sdk/components/verdocs-quick-functions.js';
 import { defineCustomElement as defineVerdocsRadioButton } from '@verdocs/web-sdk/components/verdocs-radio-button.js';
@@ -57,6 +58,7 @@ import { defineCustomElement as defineVerdocsSearchTabs } from '@verdocs/web-sdk
 import { defineCustomElement as defineVerdocsSelectInput } from '@verdocs/web-sdk/components/verdocs-select-input.js';
 import { defineCustomElement as defineVerdocsSend } from '@verdocs/web-sdk/components/verdocs-send.js';
 import { defineCustomElement as defineVerdocsSign } from '@verdocs/web-sdk/components/verdocs-sign.js';
+import { defineCustomElement as defineVerdocsSignFooter } from '@verdocs/web-sdk/components/verdocs-sign-footer.js';
 import { defineCustomElement as defineVerdocsSignatureDialog } from '@verdocs/web-sdk/components/verdocs-signature-dialog.js';
 import { defineCustomElement as defineVerdocsSpinner } from '@verdocs/web-sdk/components/verdocs-spinner.js';
 import { defineCustomElement as defineVerdocsStatusIndicator } from '@verdocs/web-sdk/components/verdocs-status-indicator.js';
@@ -1665,6 +1667,41 @@ export declare interface VerdocsProgressBar extends Components.VerdocsProgressBa
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsQuestionDialog,
+  inputs: ['question']
+})
+@Component({
+  selector: 'verdocs-question-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['question'],
+  outputs: ['next', 'exit'],
+})
+export class VerdocsQuestionDialog {
+  protected el: HTMLVerdocsQuestionDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<{question: string}>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsQuestionDialog extends Components.VerdocsQuestionDialog {
+  /**
+   * Event fired when the user clicks the OK button.
+   */
+  next: EventEmitter<CustomEvent<{question: string}>>;
+  /**
+   * Event fired when Cancel is pressed. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+}
+
+
+@ProxyCmp({
   defineCustomElementFn: defineVerdocsQuickFilter,
   inputs: ['label', 'options', 'placeholder', 'value']
 })
@@ -1945,6 +1982,54 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the envelope is updated in any way.
    */
   envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope; event: string}>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsSignFooter,
+  inputs: ['endpoint', 'envelopeId', 'isDone']
+})
+@Component({
+  selector: 'verdocs-sign-footer',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'envelopeId', 'isDone'],
+  outputs: ['askQuestion', 'decline', 'finishLater', 'sdkError'],
+})
+export class VerdocsSignFooter {
+  protected el: HTMLVerdocsSignFooterElement;
+  @Output() askQuestion = new EventEmitter<CustomEvent<{question: string}>>();
+  @Output() decline = new EventEmitter<CustomEvent<any>>();
+  @Output() finishLater = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsSignFooterSDKError>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { SDKError as IVerdocsSignFooterSDKError } from '@verdocs/web-sdk/components';
+
+export declare interface VerdocsSignFooter extends Components.VerdocsSignFooter {
+  /**
+   * Event fired if the user asks the sender a question. The parent component is responsible for handling this.
+   */
+  askQuestion: EventEmitter<CustomEvent<{question: string}>>;
+  /**
+   * Event fired if the user asks the sender a question. The parent component is responsible for handling this.
+   */
+  decline: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if the user asks the sender a question. The parent component is responsible for handling this.
+   */
+  finishLater: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsSignFooterSDKError>>;
 }
 
 

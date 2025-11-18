@@ -1,12 +1,14 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
+import {loadStoryDefaults} from '../utils';
 
 export default {
   title: 'Embeds/View',
   component: 'verdocs-view',
-  args: {
+  args: loadStoryDefaults('embeds-view', {
     envelopeId: '',
-  },
+  }),
+
   argTypes: {
     envelopeId: {
       name: 'envelopeId',

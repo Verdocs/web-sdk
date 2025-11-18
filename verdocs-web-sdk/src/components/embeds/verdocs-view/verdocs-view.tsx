@@ -1,5 +1,6 @@
 import {cancelEnvelope, getEnvelopeDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, userCanCancelEnvelope, VerdocsEndpoint, getEnvelopesZip} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
+import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
@@ -91,7 +92,8 @@ export class VerdocsView {
       return;
     }
 
-    this.listenToEnvelope();
+    await this.listenToEnvelope();
+
     if (!this.envelope) {
       try {
         console.log('[VIEW] Loading envelope...');
@@ -119,7 +121,7 @@ export class VerdocsView {
   }
 
   async listenToEnvelope() {
-    console.log('[SIDEBAR] Loading envelope', this.envelopeId);
+    console.log('[VIEW] Loading envelope', this.envelopeId);
     this.unlistenToEnvelope();
     Store.subscribe(
       'envelopes',
@@ -178,12 +180,15 @@ export class VerdocsView {
 
       case 'download-attachments':
         // TODO: Multiple document support
-        {
+        try {
           const firstDoc = this.envelope.documents.find(doc => doc.type === 'attachment');
           if (firstDoc) {
             const url = await getEnvelopeDocumentDownloadLink(this.endpoint, firstDoc.id);
             window.open(url, '_blank');
           }
+        } catch (e) {
+          console.log('Unable to download document', e);
+          VerdocsToast(e.response?.data?.error || 'Unable to download document. Please try again later.', {style: 'error'});
         }
         break;
 
@@ -259,6 +264,9 @@ export class VerdocsView {
       menuOptions.push({id: 'cancel', label: 'Cancel'});
     }
 
+    // TODO: Review whether we want a different trigger for this.
+    const showFooter = userCanCancelEnvelope(this.endpoint.profile, this.envelope);
+
     // Add download options to the menu
     const hasAttachments = this.envelope.documents.length > 0;
     const normalDocCount = this.envelope.documents.filter(doc => doc.type === 'attachment').length;
@@ -320,6 +328,7 @@ export class VerdocsView {
               );
             })}
         </div>
+
         {this.showCancelDone && (
           <verdocs-ok-dialog
             heading="Cancelled"
@@ -329,10 +338,15 @@ export class VerdocsView {
             }}
           />
         )}
+
         {this.canceling && (
           <div class="loading-indicator">
             <verdocs-loader />
           </div>
+        )}
+
+        {!showFooter && (
+          <verdocs-sign-footer endpoint={this.endpoint} envelopeId={this.envelopeId} isDone={true} onAskQuestion={() => {}} onDecline={() => {}} onFinishLater={() => {}} />
         )}
       </Host>
     );

@@ -626,6 +626,16 @@ export const VerdocsProgressBar: StencilVueComponent<JSX.VerdocsProgressBar> = /
 ]);
 
 
+export const VerdocsQuestionDialog: StencilVueComponent<JSX.VerdocsQuestionDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsQuestionDialog>('verdocs-question-dialog', undefined, [
+  'question',
+  'next',
+  'exit'
+], [
+  'next',
+  'exit'
+]);
+
+
 export const VerdocsQuickFilter: StencilVueComponent<JSX.VerdocsQuickFilter> = /*@__PURE__*/ defineContainer<JSX.VerdocsQuickFilter>('verdocs-quick-filter', undefined, [
   'options',
   'label',
@@ -714,6 +724,22 @@ export const VerdocsSign: StencilVueComponent<JSX.VerdocsSign> = /*@__PURE__*/ d
   'sdkError',
   'envelopeLoaded',
   'envelopeUpdated'
+]);
+
+
+export const VerdocsSignFooter: StencilVueComponent<JSX.VerdocsSignFooter> = /*@__PURE__*/ defineContainer<JSX.VerdocsSignFooter>('verdocs-sign-footer', undefined, [
+  'endpoint',
+  'envelopeId',
+  'isDone',
+  'askQuestion',
+  'decline',
+  'finishLater',
+  'sdkError'
+], [
+  'askQuestion',
+  'decline',
+  'finishLater',
+  'sdkError'
 ]);
 
 
