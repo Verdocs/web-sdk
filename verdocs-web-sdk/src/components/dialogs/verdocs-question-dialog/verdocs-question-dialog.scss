@@ -1,6 +1,11 @@
 @import '../../../theme.scss';
 
 verdocs-question-dialog {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
   box-sizing: border-box;
   font-family: $primary-font;
 
