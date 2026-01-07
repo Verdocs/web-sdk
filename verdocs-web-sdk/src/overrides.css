@@ -1,0 +1,26 @@
+/**
+ * Client-specific overrides for Verdocs Web SDK.
+ * Clients can include this file to customize the look and feel.
+ */
+
+:root.verdocs-custom-theme {
+  /* Global Theming */
+  --verdocs-primary-color: #0065ff;
+  /* NOTE: This is not an Open Source / Google font. Just illustrating it here as an example. */
+  --verdocs-primary-font: 'Segoe UI', 'Inter', sans-serif;
+  --verdocs-button-radius: 8px;
+  --verdocs-dialog-radius: 8px;
+
+  /* Dialogs */
+  --verdocs-dialog-backdrop-color: rgba(66, 66, 66, 0.25);
+  --verdocs-dialog-backdrop-filter: blur(4px);
+  --verdocs-dialog-title-weight: 600;
+  --verdocs-bullet-color: #707070;
+  --verdocs-link-color: #0054dc;
+  --verdocs-link-border: 1px solid #0054dc;
+  --verdocs-checkbox-color: #0065ff;
+
+  /* Signing Fields */
+  --verdocs-field-background: rgba(26, 115, 232, 0.1);
+  --verdocs-field-border: none;
+}

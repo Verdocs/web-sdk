@@ -3,13 +3,13 @@
 verdocs-button {
   button {
     font-family: $verdocs-primary-font;
-    text-transform: uppercase;
     justify-content: center;
     display: inline-flex;
     align-items: center;
-    font-weight: 700;
+    font-weight: 500;
     cursor: pointer;
     margin: 0;
+    width: 100%;
 
     &:disabled {
       cursor: inherit;

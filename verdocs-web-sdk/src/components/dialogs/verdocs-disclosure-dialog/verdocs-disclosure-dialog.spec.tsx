@@ -1,5 +1,5 @@
-import { newSpecPage } from '@stencil/core/testing';
-import { VerdocsDisclosureDialog } from './verdocs-disclosure-dialog';
+import {newSpecPage} from '@stencil/core/testing';
+import {VerdocsDisclosureDialog} from './verdocs-disclosure-dialog';
 
 describe('verdocs-disclosure-dialog', () => {
   it('renders without crashing', async () => {

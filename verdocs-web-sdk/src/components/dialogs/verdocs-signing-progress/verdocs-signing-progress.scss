@@ -1,0 +1,145 @@
+@import '../../../theme.scss';
+
+verdocs-signing-progress {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 900;
+    display: block;
+    font-family: $verdocs-primary-font;
+
+    @media (max-width: 768px) {
+        display: none;
+    }
+
+    .card {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        width: 340px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .header {
+        font-size: 16px;
+        color: #111827;
+    }
+
+    .header-completed {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #111827;
+    }
+
+    .description {
+        font-size: 14px;
+        line-height: 20px;
+        color: #374151;
+    }
+
+    .field-label {
+        font-family: var(--verdocs-primary-font, $verdocs-primary-font);
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        font-weight: 400;
+        color: var(--verdocs-body-color, #242424);
+    }
+
+    .field-completed {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        font-weight: 400;
+        color: var(--verdocs-body-color, #242424);
+
+        .text {
+            position: relative;
+            top: -2px;
+        }
+    }
+
+    .separator {
+        height: 1px;
+        background-color: #e5e7eb;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        height: 40px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        cursor: pointer;
+        border: 1px solid transparent; // Default border
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:disabled {
+            background-color: #f0f0f0;
+            border: 1px solid #e0e0e0;
+            color: #bdbdbd;
+            cursor: not-allowed;
+            opacity: 1;
+        }
+
+        &.start,
+        &.submit,
+        &.next {
+            background-color: var(--verdocs-primary-color, #0065FF);
+            color: white;
+
+            &:hover:not(:disabled) {
+                background-color: var(--verdocs-primary-color-hover, #0054dc);
+            }
+
+            &:disabled {
+                background-color: #f0f0f0;
+                border: 1px solid #e0e0e0;
+                color: #bdbdbd;
+                cursor: not-allowed;
+                opacity: 1;
+            }
+        }
+
+        &.prev,
+        &.previous {
+            background-color: #f3f4f6;
+            color: #374151;
+
+            &:hover:not(:disabled) {
+                background-color: #e5e7eb;
+            }
+
+            &:disabled {
+                background-color: #f0f0f0;
+                border: 1px solid #e0e0e0;
+                color: #bdbdbd;
+                cursor: not-allowed;
+                opacity: 1;
+            }
+        }
+    }
+
+    .nav-buttons {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+
+        .btn {
+            flex: 1;
+        }
+    }
+}

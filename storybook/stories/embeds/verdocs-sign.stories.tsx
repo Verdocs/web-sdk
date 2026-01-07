@@ -1,6 +1,5 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
-import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import {loadStoryDefaults} from '../utils';
 
 export default {

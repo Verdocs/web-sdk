@@ -1,0 +1,267 @@
+@import '../../../theme.scss';
+
+verdocs-adopt-signature-dialog {
+  font-family: $primary-font;
+  box-sizing: border-box;
+
+  verdocs-dialog {
+    border-radius: 4px;
+  }
+
+  .heading {
+    color: #201f1e;
+    font-weight: 400;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .content {
+    display: flex;
+    padding-top: 12px;
+    flex-direction: column;
+  }
+
+  verdocs-text-input .input-label {
+    color: #242424;
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  verdocs-text-input .input-element {
+    border: 1px solid #e0e0e0;
+  }
+
+  verdocs-radio-button {
+    transform: scale(0.9);
+  }
+
+  canvas {
+    width: 100%;
+    height: 79px;
+    margin: 10px 0;
+    border-radius: 4px;
+    background: #fafafa;
+    box-sizing: border-box;
+    border: 1px solid #d1d1d1;
+  }
+
+  .disclaimer {
+    padding: 8px 0;
+    font-size: 11px;
+    line-height: 14px;
+    text-align: justify;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  .tabs {
+    display: flex;
+    flex-direction: row;
+    margin: -20px -20px 0 -20px;
+    border-bottom: 1px solid #eeeeee;
+
+    .tab {
+      flex: 1;
+      gap: 4px;
+      display: flex;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 10px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
+      &.active {
+        background: #f9f5fe;
+        border-bottom: 2px solid $border-color;
+      }
+
+      &:hover {
+        color: $primary-color;
+      }
+
+      .icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  // We use fixed heights for these sections to avoid layout shifts when switching tabs.
+  .type {
+    display: none;
+    flex-direction: column;
+
+    &.active {
+      display: flex;
+    }
+  }
+
+  .draw {
+    height: 100px;
+    display: none;
+    margin-top: 20px;
+    flex-direction: column;
+
+    &.active {
+      display: flex;
+    }
+
+    .draw-instructions {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.6);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    canvas {
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .draw-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 12px;
+
+      .clear-button {
+        border: 1px solid #d0d0d0;
+        background-color: #ffffff;
+        color: #333333;
+        padding: 6px 16px;
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: #f5f5f5;
+          border-color: #b0b0b0;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  .upload {
+    height: 100px;
+    display: none;
+    margin-top: 20px;
+    flex-direction: column;
+
+    &.active {
+      display: flex;
+    }
+
+    .upload-instructions {
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.6);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .upload-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 8px;
+
+      .upload-button {
+        border: 1px solid var(--verdocs-primary-color, #1a73e8);
+        background-color: var(--verdocs-primary-color, #1a73e8);
+        color: #ffffff;
+        padding: 8px 20px;
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: var(--verdocs-button-radius, 4px);
+        transition: all 0.2s ease;
+
+        &:hover {
+          filter: brightness(0.9);
+        }
+      }
+
+      .clear-button {
+        border: 1px solid #d0d0d0;
+        background-color: #ffffff;
+        color: #333333;
+        padding: 8px 16px;
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: #f5f5f5;
+          border-color: #b0b0b0;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .upload-filename {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.6);
+      text-align: center;
+      margin-top: 8px;
+      font-style: italic;
+    }
+  }
+
+  /* TODO: We're getting positive feedback. Add this as a formal button variant. */
+  .buttons {
+    gap: 20px;
+    display: flex;
+    margin-top: 14px;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    button {
+      flex: 1;
+      border: 0;
+      height: 38px;
+      display: flex;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      align-items: center;
+      border-radius: var(--verdocs-button-radius, 6px);
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      &.cancel {
+        background-color: transparent;
+        border: 1px solid #d1d5db;
+        color: #374151;
+
+        &:hover {
+          background-color: #f9fafb;
+        }
+      }
+
+      &.proceed {
+        background-color: var(--verdocs-primary-color, #1a73e8);
+        border: 1px solid transparent;
+        color: #ffffff;
+
+        &:hover {
+          background-color: #1557b0;
+        }
+      }
+
+      &:disabled {
+        background-color: #e5e7eb;
+        color: #9ca3af;
+        cursor: not-allowed;
+      }
+    }
+  }
+}

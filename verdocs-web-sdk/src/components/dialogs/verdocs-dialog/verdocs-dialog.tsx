@@ -22,22 +22,21 @@ export class VerdocsDialog {
     }
   }
 
-
   render() {
     return (
       <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
             <slot name="heading">
-              <div class="heading">Title</div>
+              <div class="heading"></div>
             </slot>
 
             <slot name="content">
-              <div class="content">Content</div>
+              <div class="content"></div>
             </slot>
 
             <slot name="footer">
-              <div class="footer">Footer</div>
+              <div class="footer"></div>
             </slot>
           </div>
         </div>

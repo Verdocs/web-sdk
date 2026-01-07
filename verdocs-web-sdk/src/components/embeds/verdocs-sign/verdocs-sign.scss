@@ -7,7 +7,12 @@ verdocs-sign {
   min-height: 600px;
   flex-direction: column;
   box-sizing: border-box;
+  background-color: #f5f5f5;
   font-family: $verdocs-primary-font;
+
+  verdocs-button > button.standard {
+    background: #2a63f6;
+  }
 
   div {
     display: block;
@@ -120,6 +125,14 @@ verdocs-sign {
       font-weight: 400;
       padding: 0 10px;
     }
+  }
+
+  .flag {
+    width: 100px;
+    height: 40px;
+    padding-left: 14px;
+    background-color: #13a10e;
+    clip-path: polygon(0% 50%, 15% 0, 100% 0, 100% 100%, 15% 100%);
   }
 }
 

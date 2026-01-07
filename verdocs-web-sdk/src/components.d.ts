@@ -43,6 +43,17 @@ export { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs
 export { Placement } from "@popperjs/core/lib/enums";
 export namespace Components {
     /**
+     * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
+     * based on their full name, or by hand-drawing their signature with a mouse or tablet.
+     */
+    interface VerdocsAdoptSignatureDialog {
+        /**
+          * Initial signature text
+          * @default ''
+         */
+        "name": string;
+    }
+    /**
      * Display an authentication dialog that allows the user to login or sign up. If the user is
      * already authenticated with a valid session, this component will hide itself and fire the
      * success callback immediately. It is up to the host application to render the next appropriate
@@ -339,9 +350,9 @@ export namespace Components {
         "delegator": boolean;
         /**
           * The disclosures to display.
-          * @default null
+          * @default DEFAULT_DISCLOSURES
          */
-        "disclosures": string | null;
+        "disclosures": string;
     }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
@@ -1885,6 +1896,33 @@ export namespace Components {
          */
         "name": string;
     }
+    interface VerdocsSigningProgress {
+        /**
+          * Current field index (1-based)
+          * @default 0
+         */
+        "current": number;
+        /**
+          * Whether the current field has been completed (shows success message)
+          * @default false
+         */
+        "fieldCompleted": boolean;
+        /**
+          * Label to display for the current field
+          * @default ''
+         */
+        "fieldLabel": string;
+        /**
+          * Display mode
+          * @default 'start'
+         */
+        "mode": 'start' | 'signing' | 'completed';
+        /**
+          * Total number of fields
+          * @default 0
+         */
+        "total": number;
+    }
     /**
      * Display a small loading spinner.
      * ```ts
@@ -2453,6 +2491,10 @@ export namespace Components {
         "headerTargetId": string | null;
     }
 }
+export interface VerdocsAdoptSignatureDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsAdoptSignatureDialogElement;
+}
 export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsAuthElement;
@@ -2621,6 +2663,10 @@ export interface VerdocsSignatureDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSignatureDialogElement;
 }
+export interface VerdocsSigningProgressCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsSigningProgressElement;
+}
 export interface VerdocsSwitchCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsSwitchElement;
@@ -2690,6 +2736,28 @@ export interface VerdocsViewCustomEvent<T> extends CustomEvent<T> {
     target: HTMLVerdocsViewElement;
 }
 declare global {
+    interface HTMLVerdocsAdoptSignatureDialogElementEventMap {
+        "next": {signature: string; initials: string};
+        "exit": any;
+    }
+    /**
+     * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
+     * based on their full name, or by hand-drawing their signature with a mouse or tablet.
+     */
+    interface HTMLVerdocsAdoptSignatureDialogElement extends Components.VerdocsAdoptSignatureDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsAdoptSignatureDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsAdoptSignatureDialogElement, ev: VerdocsAdoptSignatureDialogCustomEvent<HTMLVerdocsAdoptSignatureDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsAdoptSignatureDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsAdoptSignatureDialogElement, ev: VerdocsAdoptSignatureDialogCustomEvent<HTMLVerdocsAdoptSignatureDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsAdoptSignatureDialogElement: {
+        prototype: HTMLVerdocsAdoptSignatureDialogElement;
+        new (): HTMLVerdocsAdoptSignatureDialogElement;
+    };
     interface HTMLVerdocsAuthElementEventMap {
         "authenticated": IAuthStatus;
         "sdkError": SDKError;
@@ -2909,9 +2977,9 @@ declare global {
         new (): HTMLVerdocsDialogElement;
     };
     interface HTMLVerdocsDisclosureDialogElementEventMap {
-        "decline": {first_name: string; last_name: string; email: string; phone: string; message: string};
-        "delegate": {first_name: string; last_name: string; email: string; phone: string; message: string};
-        "accept": {first_name: string; last_name: string; email: string; phone: string; message: string};
+        "decline": { first_name: string; last_name: string; email: string; phone: string; message: string };
+        "delegate": { first_name: string; last_name: string; email: string; phone: string; message: string };
+        "accept": { first_name: string; last_name: string; email: string; phone: string; message: string };
     }
     /**
      * Display e-signing disclosures with options to delegate, decline or proceed.
@@ -3918,6 +3986,26 @@ declare global {
         prototype: HTMLVerdocsSignatureDialogElement;
         new (): HTMLVerdocsSignatureDialogElement;
     };
+    interface HTMLVerdocsSigningProgressElementEventMap {
+        "start": any;
+        "next": any;
+        "previous": any;
+        "submit": any;
+    }
+    interface HTMLVerdocsSigningProgressElement extends Components.VerdocsSigningProgress, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsSigningProgressElementEventMap>(type: K, listener: (this: HTMLVerdocsSigningProgressElement, ev: VerdocsSigningProgressCustomEvent<HTMLVerdocsSigningProgressElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsSigningProgressElementEventMap>(type: K, listener: (this: HTMLVerdocsSigningProgressElement, ev: VerdocsSigningProgressCustomEvent<HTMLVerdocsSigningProgressElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsSigningProgressElement: {
+        prototype: HTMLVerdocsSigningProgressElement;
+        new (): HTMLVerdocsSigningProgressElement;
+    };
     /**
      * Display a small loading spinner.
      * ```ts
@@ -4413,6 +4501,7 @@ declare global {
         new (): HTMLVerdocsViewElement;
     };
     interface HTMLElementTagNameMap {
+        "verdocs-adopt-signature-dialog": HTMLVerdocsAdoptSignatureDialogElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-button": HTMLVerdocsButtonElement;
@@ -4467,6 +4556,7 @@ declare global {
         "verdocs-sign": HTMLVerdocsSignElement;
         "verdocs-sign-footer": HTMLVerdocsSignFooterElement;
         "verdocs-signature-dialog": HTMLVerdocsSignatureDialogElement;
+        "verdocs-signing-progress": HTMLVerdocsSigningProgressElement;
         "verdocs-spinner": HTMLVerdocsSpinnerElement;
         "verdocs-status-indicator": HTMLVerdocsStatusIndicatorElement;
         "verdocs-switch": HTMLVerdocsSwitchElement;
@@ -4494,6 +4584,25 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    /**
+     * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
+     * based on their full name, or by hand-drawing their signature with a mouse or tablet.
+     */
+    interface VerdocsAdoptSignatureDialog {
+        /**
+          * Initial signature text
+          * @default ''
+         */
+        "name"?: string;
+        /**
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+         */
+        "onExit"?: (event: VerdocsAdoptSignatureDialogCustomEvent<any>) => void;
+        /**
+          * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string representation of the signature adopted.
+         */
+        "onNext"?: (event: VerdocsAdoptSignatureDialogCustomEvent<{signature: string; initials: string}>) => void;
+    }
     /**
      * Display an authentication dialog that allows the user to login or sign up. If the user is
      * already authenticated with a valid session, this component will hide itself and fire the
@@ -4847,21 +4956,21 @@ declare namespace LocalJSX {
         "delegator"?: boolean;
         /**
           * The disclosures to display.
-          * @default null
+          * @default DEFAULT_DISCLOSURES
          */
-        "disclosures"?: string | null;
+        "disclosures"?: string;
         /**
           * Event fired when the user chooses to proceed.
          */
-        "onAccept"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
+        "onAccept"?: (event: VerdocsDisclosureDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>) => void;
         /**
           * Event fired when the user chooses to decline.
          */
-        "onDecline"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
+        "onDecline"?: (event: VerdocsDisclosureDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>) => void;
         /**
           * Event fired when the user chooses to delegate signing.
          */
-        "onDelegate"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
+        "onDelegate"?: (event: VerdocsDisclosureDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>) => void;
     }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
@@ -6717,6 +6826,49 @@ declare namespace LocalJSX {
          */
         "onNext"?: (event: VerdocsSignatureDialogCustomEvent<string>) => void;
     }
+    interface VerdocsSigningProgress {
+        /**
+          * Current field index (1-based)
+          * @default 0
+         */
+        "current"?: number;
+        /**
+          * Whether the current field has been completed (shows success message)
+          * @default false
+         */
+        "fieldCompleted"?: boolean;
+        /**
+          * Label to display for the current field
+          * @default ''
+         */
+        "fieldLabel"?: string;
+        /**
+          * Display mode
+          * @default 'start'
+         */
+        "mode"?: 'start' | 'signing' | 'completed';
+        /**
+          * Emitted when user clicks Next
+         */
+        "onNext"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
+        /**
+          * Emitted when user clicks Previous
+         */
+        "onPrevious"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
+        /**
+          * Emitted when user clicks Start
+         */
+        "onStart"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
+        /**
+          * Emitted when user clicks Submit
+         */
+        "onSubmit"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
+        /**
+          * Total number of fields
+          * @default 0
+         */
+        "total"?: number;
+    }
     /**
      * Display a small loading spinner.
      * ```ts
@@ -7495,6 +7647,7 @@ declare namespace LocalJSX {
         "onView"?: (event: VerdocsViewCustomEvent<any>) => void;
     }
     interface IntrinsicElements {
+        "verdocs-adopt-signature-dialog": VerdocsAdoptSignatureDialog;
         "verdocs-auth": VerdocsAuth;
         "verdocs-build": VerdocsBuild;
         "verdocs-button": VerdocsButton;
@@ -7549,6 +7702,7 @@ declare namespace LocalJSX {
         "verdocs-sign": VerdocsSign;
         "verdocs-sign-footer": VerdocsSignFooter;
         "verdocs-signature-dialog": VerdocsSignatureDialog;
+        "verdocs-signing-progress": VerdocsSigningProgress;
         "verdocs-spinner": VerdocsSpinner;
         "verdocs-status-indicator": VerdocsStatusIndicator;
         "verdocs-switch": VerdocsSwitch;
@@ -7579,6 +7733,11 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
+             * based on their full name, or by hand-drawing their signature with a mouse or tablet.
+             */
+            "verdocs-adopt-signature-dialog": LocalJSX.VerdocsAdoptSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsAdoptSignatureDialogElement>;
             /**
              * Display an authentication dialog that allows the user to login or sign up. If the user is
              * already authenticated with a valid session, this component will hide itself and fire the
@@ -8010,6 +8169,7 @@ declare module "@stencil/core" {
              * based on their full name, or by hand-drawing their signature with a mouse or tablet.
              */
             "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
+            "verdocs-signing-progress": LocalJSX.VerdocsSigningProgress & JSXBase.HTMLAttributes<HTMLVerdocsSigningProgressElement>;
             /**
              * Display a small loading spinner.
              * ```ts

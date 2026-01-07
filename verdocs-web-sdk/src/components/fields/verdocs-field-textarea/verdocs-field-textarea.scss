@@ -8,10 +8,10 @@ verdocs-field-textarea {
   position: relative;
   scroll-margin: 20px 0;
   box-sizing: border-box;
-  background-color: transparent;
+  background-color: var(--verdocs-field-background, transparent);
   transform-origin: bottom left;
   font-family: $verdocs-primary-font;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: var(--verdocs-field-border, 1px solid rgba(0, 0, 0, 0.2));
 
   textarea {
     // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
@@ -110,9 +110,11 @@ verdocs-field-textarea {
   0% {
     background-color: rgba(0, 0, 0, 0.35);
   }
+
   50% {
     background-color: rgba(0, 0, 0, 0);
   }
+
   100% {
     background-color: rgba(0, 0, 0, 0.35);
   }

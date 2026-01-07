@@ -1,10 +1,92 @@
 @import '../../../theme.scss';
 
 verdocs-disclosure-dialog {
-  .footer {
-    .accept {
-      margin: 0 0 28px 28px;
-      color: $verdocs-dialog-content;
+
+  /* Content styles specifically for disclosure dialog */
+  .heading {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+
+    .close-button {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      border-radius: 50%;
+      color: #6b7280;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+      }
+
+      svg {
+        stroke: currentColor;
+      }
+    }
+  }
+
+  .content {
+    ul {
+      list-style: none;
+      /* Remove default bullets */
+      padding: 0;
+      margin: 0 0 16px 0;
+
+      li {
+        position: relative;
+        padding-left: 42px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        line-height: 20px;
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: -2px;
+          width: 24px;
+          height: 24px;
+          background-color: var(--verdocs-bullet-color, #707070);
+          // Use masking to allow recovering the icon via background-color
+          -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.53033 12.9697C4.23744 12.6768 3.76256 12.6768 3.46967 12.9697C3.17678 13.2626 3.17678 13.7374 3.46967 14.0303L7.96967 18.5303C8.26256 18.8232 8.73744 18.8232 9.03033 18.5303L20.0303 7.53033C20.3232 7.23744 20.3232 6.76256 20.0303 6.46967C19.7374 6.17678 19.2626 6.17678 18.9697 6.46967L8.5 16.9393L4.53033 12.9697Z' fill='%23707070'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.53033 12.9697C4.23744 12.6768 3.76256 12.6768 3.46967 12.9697C3.17678 13.2626 3.17678 13.7374 3.46967 14.0303L7.96967 18.5303C8.26256 18.8232 8.73744 18.8232 9.03033 18.5303L20.0303 7.53033C20.3232 7.23744 20.3232 6.76256 20.0303 6.46967C19.7374 6.17678 19.2626 6.17678 18.9697 6.46967L8.5 16.9393L4.53033 12.9697Z' fill='%23707070'/%3E%3C/svg%3E");
+          mask-size: contain;
+          -webkit-mask-size: contain;
+          -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+          -webkit-mask-position: center;
+          mask-position: center;
+        }
+      }
+    }
+  }
+
+  .accept {
+    margin: 0;
+    color: var(--verdocs-dialog-content-color, #424242);
+
+    verdocs-checkbox {
+      font-size: 14px;
+      line-height: 20px;
+
+      label>input[type='checkbox']+* {
+        display: flex;
+        align-items: flex-start;
+      }
+
+      label>input[type='checkbox']+*::before {
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        margin-right: 26px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
     }
   }
 
@@ -12,54 +94,61 @@ verdocs-disclosure-dialog {
     color: $verdocs-purple-shade;
   }
 
-  verdocs-checkbox {
-    font-size: 14px;
-    line-height: 20px;
 
-    label > input[type='checkbox'] + *::before {
-      width: 16px;
-      height: 16px;
-      line-height: 16px;
-      margin-left: -28px;
-      vertical-align: middle;
-    }
-  }
-
-  /* TODO: Evalute making formal components for these */
   .buttons {
-    gap: 20px;
+    gap: 12px;
     display: flex;
-    margin-top: 14px;
+    margin-top: 0;
     flex-direction: row;
     justify-content: flex-end;
 
     button {
-      flex: 1;
-      border: 0;
-      height: 38px;
+      padding: 8px 16px;
+      height: 40px;
+      /* From design implied/standard */
       display: flex;
-      color: #ffffff;
       font-size: 14px;
-      //font-size: 16px;
+      font-weight: 500;
       cursor: pointer;
       align-items: center;
-      border-radius: 6px;
+      border-radius: var(--verdocs-button-radius, 8px);
       justify-content: center;
+      transition: all 0.2s ease;
 
       &.decline {
-        background-color: $verdocs-button-purple;
+        background-color: transparent;
+        border: 1px solid #d1d5db;
+        /* #d1d1d1 per request approx */
+        color: #374151;
+
+        &:hover {
+          background-color: #f9fafb;
+        }
       }
 
       &.delegate {
-        background-color: $verdocs-button-green;
+        background-color: transparent;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        margin-right: auto;
+        /* Push to left if needed or just keep with decline? Layout unclear */
       }
 
       &.proceed {
-        background-color: $verdocs-button-green;
+        background-color: var(--verdocs-primary-color, $verdocs-green);
+        border: 1px solid transparent;
+        color: #ffffff;
+
+        &:hover {
+          background-color: var(--verdocs-primary-color-hover, $verdocs-green-shade);
+          /* Slightly darker */
+        }
       }
 
       &:disabled {
-        background-color: $verdocs-button-disabled;
+        background-color: #e5e7eb;
+        color: #9ca3af;
+        cursor: not-allowed;
       }
     }
   }

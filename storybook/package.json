@@ -1,6 +1,6 @@
 {
   "name": "werdocs-web-sdk-storybook",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,26 +10,27 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@verdocs/js-sdk": "^6.3.3"
+    "@verdocs/js-sdk": "^6.4.0"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^3.2.6",
-    "@storybook/addon-docs": "^8.6.12",
-    "@storybook/addon-essentials": "^8.6.12",
-    "@storybook/addon-interactions": "^8.6.12",
-    "@storybook/addon-links": "^8.6.12",
-    "@storybook/addon-themes": "^8.6.12",
-    "@storybook/blocks": "^8.6.12",
-    "@storybook/manager-api": "^8.6.12",
-    "@storybook/react": "^8.6.12",
-    "@storybook/react-vite": "^8.6.12",
-    "@storybook/test": "^8.6.12",
-    "@storybook/theming": "^8.6.12",
-    "@storybook/web-components-vite": "^8.6.12",
+    "@chromatic-com/storybook": "^3.2.7",
+    "@storybook/addon-docs": "^8.6.15",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/addon-links": "^8.6.15",
+    "@storybook/addon-themes": "^8.6.15",
+    "@storybook/blocks": "^8.6.14",
+    "@storybook/manager-api": "^8.6.14",
+    "@storybook/react": "^8.6.15",
+    "@storybook/react-vite": "^8.6.15",
+    "@storybook/test": "^8.6.14",
+    "@storybook/theming": "^8.6.14",
+    "@storybook/web-components-vite": "^8.6.15",
+    "es-toolkit": "^1.43.0",
     "lit-html": "^3.3.1",
-    "prettier": "^3.6.2",
+    "prettier": "^3.7.4",
     "prop-types": "^15.8.1",
     "remark-gfm": "^4.0.1",
-    "storybook": "^8.6.12"
+    "storybook": "^8.6.15"
   }
 }

@@ -10,9 +10,9 @@ verdocs-field-textbox {
   position: relative;
   scroll-margin: 20px 0;
   letter-spacing: -0.2px;
-  background-color: transparent;
+  background-color: var(--verdocs-field-background, transparent);
   transform-origin: bottom left;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: var(--verdocs-field-border, 1px solid rgba(0, 0, 0, 0.2));
 
   .edge-top,
   .edge-right,
@@ -180,9 +180,11 @@ verdocs-field-textbox {
   0% {
     background-color: rgba(0, 0, 0, 0.35);
   }
+
   50% {
     background-color: rgba(0, 0, 0, 0);
   }
+
   100% {
     background-color: rgba(0, 0, 0, 0.35);
   }

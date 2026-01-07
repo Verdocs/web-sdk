@@ -5,11 +5,11 @@ verdocs-checkbox {
   line-height: 18px;
   font-family: $verdocs-primary-font;
 
-  label > input[type='checkbox'] {
+  label>input[type='checkbox'] {
     display: none;
   }
 
-  label > input[type='checkbox'] + *::before {
+  label>input[type='checkbox']+*::before {
     content: '';
     width: 20px;
     height: 20px;
@@ -24,31 +24,28 @@ verdocs-checkbox {
     border-color: $verdocs-grey-2;
   }
 
-  label > input[type='checkbox']:checked + * {
-    color: $verdocs-green;
-  }
 
-  label > input[type='checkbox']:checked + *::before {
+  label>input[type='checkbox']:checked+*::before {
     content: '✓';
     color: white;
     text-align: center;
-    background: $verdocs-green;
-    border-color: $verdocs-green;
+    background: var(--verdocs-checkbox-color, $verdocs-green);
+    border-color: var(--verdocs-checkbox-color, $verdocs-green);
   }
 
   &.dark {
-    label > input[type='checkbox'] + *::before {
+    label>input[type='checkbox']+*::before {
       border-color: $verdocs-grey-4;
     }
 
-    label > input[type='checkbox']:checked + *::before {
-      background: $verdocs-green;
-      border-color: $verdocs-green;
+    label>input[type='checkbox']:checked+*::before {
+      background: var(--verdocs-checkbox-color, $verdocs-green);
+      border-color: var(--verdocs-checkbox-color, $verdocs-green);
     }
   }
 
   &.small {
-    label > input[type='checkbox'] + *::before {
+    label>input[type='checkbox']+*::before {
       width: 16px;
       height: 16px;
       line-height: 16px;

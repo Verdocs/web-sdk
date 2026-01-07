@@ -17,100 +17,62 @@ verdocs-dialog {
     z-index: 10000;
     position: absolute;
     align-items: center;
-    background: #0000007f;
+    background: var(--verdocs-dialog-backdrop-color, rgba(0, 0, 0, 0.5));
+    backdrop-filter: var(--verdocs-dialog-backdrop-filter, none);
+    -webkit-backdrop-filter: var(--verdocs-dialog-backdrop-filter, none);
     justify-content: center;
   }
 
   .dialog {
-    width: 420px;
+    width: 520px;
     display: flex;
-    max-width: 100%;
+    max-width: 95%;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: var(--verdocs-dialog-radius, 8px);
     background: #ffffff;
     flex-direction: column;
-    border: 1px solid #aeb4bf;
-    box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
   }
 
   .heading {
-    gap: 12px;
-    padding: 20px;
     display: flex;
-    font-size: 16px;
-    font-weight: 500;
-    flex-direction: row;
-    color: $verdocs-grey-4;
-    border-bottom: 1.5px solid #e5e7eb;
+    padding: 16px 24px;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
 
     .icon {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      flex-shrink: 0;
-      border-radius: 8px;
-      align-items: center;
-      justify-content: center;
-      background: $verdocs-purple;
+      display: none; // Hiding old icon structure based on new design which has strict title + close
     }
 
     .title {
-      flex: 1;
-      height: 40px;
-      display: flex;
-      font-size: 20px;
-      font-weight: 500;
-      align-items: center;
-      color: $verdocs-grey-0;
+      font-size: 1.5rem; // 24px
+      font-weight: var(--verdocs-dialog-title-weight, 500);
+      color: var(--verdocs-dialog-title-color, #242424);
+      line-height: 2rem; // 32px
+      font-family: $verdocs-primary-font;
     }
   }
 
   .content {
-    padding: 20px 20px 0 20px;
-    font-size: 16px;
-    line-height: 26px;
-    color: $verdocs-dialog-content;
+    padding: 24px;
+    font-size: 0.875rem; // 14px
+    line-height: 1.25rem; // 20px
+    color: var(--verdocs-dialog-content-color, #424242);
+
+    a {
+      color: var(--verdocs-link-color, #4c56cb);
+      border-bottom: var(--verdocs-link-border, 1px dotted #4c56cb);
+      text-decoration: none;
+    }
 
     p {
-      margin: 0 0 1em 0;
+      margin: 0 0 16px 0;
     }
 
-    ul {
-      margin: 0 0 1em 0;
-      padding: 0 0 0 20px;
-
-      li {
-        font-size: 14px;
-        line-height: 20px;
-        margin: 0 0 12px 0;
-        padding: 0 0 0 8px;
-      }
-
-      li::marker {
-        font-size: 18px;
-        color: $verdocs-purple;
-      }
-    }
-
-    ol {
-      margin: 0 0 1em 0;
-      padding: 0 0 0 20px;
-
-      li {
-        font-size: 14px;
-        line-height: 20px;
-        margin: 0 0 12px 0;
-        padding: 0 0 0 8px;
-      }
-
-      li::marker {
-        font-weight: 500;
-        color: $verdocs-purple;
-      }
-    }
   }
 
   .footer {
-    padding: 0 20px 20px 20px;
+    padding: 0 24px 24px 24px;
   }
 }

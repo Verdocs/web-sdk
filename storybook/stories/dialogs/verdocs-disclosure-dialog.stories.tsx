@@ -1,27 +1,12 @@
 import {html} from 'lit-html';
 import {Meta} from '@storybook/web-components';
+import {DEFAULT_DISCLOSURES} from '@verdocs/js-sdk';
 
 export default {
   title: 'Dialogs/Disclosure Dialog',
   component: 'verdocs-disclosure-dialog',
   args: {
-    disclosures: `<div>
-  <p>To proceed, please acknowledge and agree to the following Terms and Conditions for digitally signing this document.</p>
-  <ul>
-  <li>
-    Agree to use electronic records and signatures, and confirm you have read the
-    <a href="https://verdocs.com/en/electronic-record-signature-disclosure/" target="_blank">
-      Electronic Record and Signatures Disclosure</a>.</li>
-  <li>
-    Agree to Verdocs'
-    <a href="https://verdocs.com/en/eula" target="_blank">
-      End User License Agreement</a>
-    and confirm you have read Verdocs'
-    <a href="https://verdocs.com/en/privacy-policy/" target="_blank">
-      Privacy Policy</a>.
-  </li>
-</ul>
-</div>`,
+    disclosures: DEFAULT_DISCLOSURES,
   },
   argTypes: {
     onNext: {

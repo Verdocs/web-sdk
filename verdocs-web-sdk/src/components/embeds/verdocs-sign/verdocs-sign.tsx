@@ -11,6 +11,12 @@ import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
+const Chart = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.0046 1.90735e-06C24.8412 1.90735e-06 32.0034 7.16345 32.0018 16C32.0003 24.8366 24.8356 32 15.999 32C7.16247 32 0.000272273 24.8366 0.00181279 16C0.00335331 7.16345 7.16805 1.90735e-06 16.0046 1.90735e-06ZM15.9995 29.12C23.2455 29.12 29.1205 23.246 29.1218 16C29.1231 8.75403 23.2501 2.88 16.0041 2.88C8.75812 2.88 2.88308 8.75403 2.88181 16C2.88055 23.246 8.75355 29.12 15.9995 29.12Z" fill="#E0E0E0"/>
+<path d="M11.0713 19.7832C10.3421 19.7832 9.77246 19.4854 9.3623 18.8896C8.9554 18.2939 8.75195 17.4329 8.75195 16.3066C8.75195 15.0697 8.96517 14.1338 9.3916 13.499C9.81803 12.8643 10.4333 12.5469 11.2373 12.5469C12.777 12.5469 13.5469 13.7432 13.5469 16.1357C13.5469 17.3206 13.3288 18.2256 12.8926 18.8506C12.4596 19.4723 11.8525 19.7832 11.0713 19.7832ZM11.1836 13.4502C10.334 13.4502 9.90918 14.3861 9.90918 16.2578C9.90918 18.0091 10.3258 18.8848 11.1592 18.8848C11.9795 18.8848 12.3896 17.9945 12.3896 16.2139C12.3896 14.3714 11.9876 13.4502 11.1836 13.4502ZM18.1611 12.6641L14.7773 20.8281H13.7471L17.1162 12.6641H18.1611ZM18.6689 19.4072L18.6689 18.3428C19.1247 18.7041 19.639 18.8848 20.2119 18.8848C20.6774 18.8848 21.0485 18.779 21.3252 18.5674C21.6051 18.3558 21.7451 18.0693 21.7451 17.708C21.7451 16.9137 21.138 16.5166 19.9238 16.5166H19.3818L19.3818 15.6084H19.8994C20.9769 15.6084 21.5156 15.234 21.5156 14.4854C21.5156 13.7952 21.0957 13.4502 20.2559 13.4502C19.7871 13.4502 19.346 13.6178 18.9326 13.9531L18.9326 12.9473C19.4079 12.6803 19.9694 12.5469 20.6172 12.5469C21.2389 12.5469 21.737 12.7031 22.1113 13.0156C22.4857 13.3281 22.6729 13.7285 22.6729 14.2168C22.6729 15.138 22.2041 15.7305 21.2666 15.9941L21.2666 16.0137C21.7712 16.0625 22.1699 16.2399 22.4629 16.5459C22.7559 16.8486 22.9023 17.2279 22.9023 17.6836C22.9023 18.3118 22.6663 18.8197 22.1943 19.207C21.7223 19.5911 21.1006 19.7832 20.3291 19.7832C19.6357 19.7832 19.0824 19.6579 18.6689 19.4072Z" fill="#242424"/>
+</svg>
+`;
+
 /**
  * Display an envelope signing experience. This will display the envelope's attached
  * documents with signing fields overlaid on each page.
@@ -105,6 +111,7 @@ export class VerdocsSign {
   @State() submitted = false;
   @State() isDone = false;
   @State() showDone = false;
+  @State() showAdoptSignature = false;
   @State() showLoadError = false;
   @State() finishLater = false;
   @State() showFinishLater = false;
@@ -117,6 +124,7 @@ export class VerdocsSign {
   @State() declining = false;
   @State() delegating = false;
   @State() delegated = false;
+  @State() startedSigning = false;
   @State() kbaChoices = [];
 
   @State() loading = true;
@@ -464,7 +472,7 @@ export class VerdocsSign {
   }
 
   getRecipientFields() {
-    return this.envelope.fields.filter(field => field.role_name === this.recipient.role_name);
+    return this.envelope?.fields.filter(field => field.role_name === this.recipient.role_name) || [];
   }
 
   // See if everything that "needs to be" filled in is, and all "fillable fields" are valid
@@ -479,6 +487,19 @@ export class VerdocsSign {
       this.nextButtonLabel = 'Next';
       this.nextSubmits = false;
     }
+  }
+
+  getNextRequiredField() {
+    const emptyFields = this.getSortedFillableFields().filter(field => field.required && !isFieldFilled(field, this.getRecipientFields()));
+    sortFields(emptyFields);
+
+    const focusedIndex = emptyFields.findIndex(field => field.name === this.focusedField);
+    let nextFocusedIndex = focusedIndex + 1;
+    if (nextFocusedIndex >= emptyFields.length) {
+      nextFocusedIndex = 0;
+    }
+
+    return {index: nextFocusedIndex, field: emptyFields[nextFocusedIndex]};
   }
 
   attachFieldAttributes(pageInfo, field, el) {
@@ -629,6 +650,10 @@ export class VerdocsSign {
   }
 
   render() {
+    const myFields = this.getRecipientFields();
+    const myInvalidFields = myFields;
+    const nextField = this.getNextRequiredField();
+
     if (this.showLoadError) {
       return (
         <Host>
@@ -965,7 +990,65 @@ export class VerdocsSign {
           </div>
         </div>
 
-        <div class="document" style={{paddingTop: '15px'}}>
+        <div
+          class="left-sidebar"
+          style={{width: '22%', left: '15px', top: '59px', position: 'fixed', borderRadius: '4px', backgroundColor: 'white', padding: '24px', fontSize: '14px', fontWeight: '300'}}
+        >
+          <div style={{flexDirection: 'row', display: 'flex', justifyContent: 'space-between', marginBottom: '10px'}}>
+            <div>
+              {myFields.length - myInvalidFields.length} of {myFields.length} fields completed
+            </div>
+            <div innerHTML={Chart} />
+          </div>
+          {!this.startedSigning && <verdocs-button size="xsmall" label="Start Signing" style={{marginTop: '15px'}} onClick={() => (this.startedSigning = true)} />}
+          {this.startedSigning && (
+            <div style={{display: 'flex', flexDirection: 'row', gap: '10px'}}>
+              <div style={{display: 'flex', flex: '1'}}>
+                <verdocs-button size="xsmall" label="Previous" disabled={true} onClick={() => (this.showAdoptSignature = true)} />
+              </div>
+              <div style={{display: 'flex', flex: '1'}}>
+                <verdocs-button size="xsmall" label="Next" onClick={() => (this.showAdoptSignature = true)} />
+              </div>
+            </div>
+          )}
+          {this.startedSigning && <div style={{marginTop: '10px'}}>{(nextField?.index || 0) + 1}. Required Signature Field.*</div>}
+          <button style={{border: 'none', background: 'none', cursor: 'pointer', marginTop: '12px', padding: '0px'}}>Edit Signature</button>
+        </div>
+
+        {/* Adopt Signature Button */}
+        {/*<div*/}
+        {/*  class="left-sidebar"*/}
+        {/*  style={{width: '22%', left: '15px', top: '59px', position: 'fixed', borderRadius: '4px', backgroundColor: 'white', padding: '24px', fontSize: '14px', fontWeight: '300'}}*/}
+        {/*>*/}
+        {/*  Please select the "Adopt signature" button to type or draw your signature to be applied to the document.*/}
+        {/*  <div style={{display: 'flex', justifyContent: 'center', marginTop: '5px'}}>*/}
+        {/*    <verdocs-button size="xsmall" label="Adopt Signature" style={{marginTop: '15px', marginHorizontal: 'auto'}} onClick={() => (this.showAdoptSignature = true)} />*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+
+        {/* Filler for the flags */}
+        <div class="right-sidebar" style={{width: '22%', height: '100%', right: '15px', top: '59px', position: 'fixed', alignItems: 'stretch', zIndex: '10'}}>
+          <div style={{width: '100%', height: '100%', position: 'relative'}}>
+            <div
+              class="flag"
+              style={{
+                color: 'white',
+                alignItems: 'center',
+                justifyContent: 'center',
+                display: 'flex',
+                width: '97px',
+                height: '24px',
+                position: 'relative',
+                top: '81px',
+                left: '-24px',
+              }}
+            >
+              FILL
+            </div>
+          </div>
+        </div>
+
+        <div class="document" style={{width: '54%'}}>
           {(this.envelope.documents || []).map(envelopeDocument => {
             const pageNumbers = integerSequence(1, envelopeDocument.pages);
 
@@ -1007,7 +1090,10 @@ export class VerdocsSign {
           <verdocs-ok-dialog
             heading="You've saved your document to finish later."
             message={`To complete the ${this.documentsSingularPlural}, use the link in the original email notification inviting you to review and finish the document.`}
-            onNext={() => (this.showFinishLater = false)}
+            onNext={() => {
+              this.isDone = true;
+              this.showFinishLater = false;
+            }}
           />
         )}
 
@@ -1018,6 +1104,17 @@ export class VerdocsSign {
             onNext={() => {
               this.showDone = false;
               this.isDone = true;
+            }}
+          />
+        )}
+
+        {this.showAdoptSignature && (
+          <verdocs-adopt-signature-dialog
+            onNext={() => {
+              this.showAdoptSignature = false;
+            }}
+            onExit={() => {
+              this.showAdoptSignature = false;
             }}
           />
         )}
