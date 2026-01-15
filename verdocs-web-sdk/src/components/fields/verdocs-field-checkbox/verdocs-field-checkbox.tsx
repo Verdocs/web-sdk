@@ -1,4 +1,4 @@
-import {ITemplateField, getRGBA, IEnvelopeField} from '@verdocs/js-sdk';
+import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, Fragment, h, Host, Method, Prop, State} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
@@ -111,7 +111,7 @@ export class VerdocsFieldCheckbox {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     const {required = false, label = '', value = false, readonly = false} = field || {};
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
 
     const checked = value === 'true';
 
@@ -120,7 +120,7 @@ export class VerdocsFieldCheckbox {
     }
 
     return (
-      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
         {label && <div class="label">{label}</div>}
 
         <label htmlFor={fieldname}>

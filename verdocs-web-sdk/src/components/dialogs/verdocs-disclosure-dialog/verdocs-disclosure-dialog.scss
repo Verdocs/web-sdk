@@ -39,7 +39,7 @@ verdocs-disclosure-dialog {
 
       li {
         position: relative;
-        padding-left: 42px;
+        padding-left: 34px;
         margin-bottom: 12px;
         font-size: 14px;
         line-height: 20px;
@@ -83,7 +83,7 @@ verdocs-disclosure-dialog {
         width: 16px;
         height: 16px;
         line-height: 16px;
-        margin-right: 26px;
+        margin-right: 12px;
         flex-shrink: 0;
         margin-top: 2px;
       }
@@ -108,10 +108,10 @@ verdocs-disclosure-dialog {
       /* From design implied/standard */
       display: flex;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 400;
       cursor: pointer;
       align-items: center;
-      border-radius: var(--verdocs-button-radius, 8px);
+      border-radius: 4px;
       justify-content: center;
       transition: all 0.2s ease;
 

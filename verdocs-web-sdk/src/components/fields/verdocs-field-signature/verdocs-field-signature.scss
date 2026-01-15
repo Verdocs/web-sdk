@@ -12,6 +12,7 @@ verdocs-field-signature {
   background-color: var(--verdocs-field-background, transparent);
   transform-origin: bottom left;
   border: var(--verdocs-field-border, 1px solid rgba(0, 0, 0, 0.2));
+  border-radius: var(--verdocs-field-radius);
 
   label {
     top: -14px;
@@ -62,7 +63,7 @@ verdocs-field-signature {
   }
 
   &.required {
-    border: 1px solid rgb(204, 0, 0);
+    border: 1px solid var(--verdocs-required-field-border);
   }
 
   &.focused {

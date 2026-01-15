@@ -15,8 +15,8 @@ export default {
     current: {control: 'number'},
     total: {control: 'number'},
     mode: {control: 'radio', options: ['start', 'signing', 'completed']},
-    onStart: {
-      action: 'start',
+    onStarted: {
+      action: 'started',
       table: {disable: true},
     },
     onNext: {
@@ -27,8 +27,8 @@ export default {
       action: 'previous',
       table: {disable: true},
     },
-    onSubmit: {
-      action: 'submitEvent',
+    onExit: {
+      action: 'exit',
       table: {disable: true},
     },
   },

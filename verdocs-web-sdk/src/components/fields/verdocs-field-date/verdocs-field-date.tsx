@@ -1,5 +1,5 @@
 import {format} from 'date-fns';
-import {getRGBA} from '@verdocs/js-sdk';
+// import {getRGBA} from '@verdocs/js-sdk';
 import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
 import type {ITemplateField} from '@verdocs/js-sdk';
@@ -151,7 +151,7 @@ export class VerdocsFieldDate {
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     const {required = false, placeholder = 'Date...', value = '', label = '', readonly = false} = field || {};
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
 
     const formattedValue = value ? format(new Date(value), FORMAT_DATE) : '';
 
@@ -160,7 +160,7 @@ export class VerdocsFieldDate {
     }
 
     return (
-      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
         {label && <label>{label}</label>}
 
         <input

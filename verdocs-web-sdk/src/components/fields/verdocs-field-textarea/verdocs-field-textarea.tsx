@@ -1,6 +1,5 @@
 import interact from 'interactjs';
-import {IEnvelopeField, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {ITemplateField, updateField, getRGBA} from '@verdocs/js-sdk';
+import {IEnvelopeField, VerdocsEndpoint, ITemplateField, updateField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
@@ -181,14 +180,14 @@ export class VerdocsFieldTextarea {
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     const {required = false, placeholder = '', value = '', label = '', readonly = false} = field || {};
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
 
     if (done) {
       return <Host class={{done}}>{value}</Host>;
     }
 
     return (
-      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
         {label && <label>{label}</label>}
 
         <textarea

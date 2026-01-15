@@ -1,11 +1,14 @@
 /**
- * Client-specific overrides for Verdocs Web SDK.
- * Clients can include this file to customize the look and feel.
+ * Sample theme for client overrides for Verdocs Web SDK default styles.
+ * Customize and include this file in your project to override default styles.
  */
 
+/* Remove the .verdocs-custom-theme if you are customizing this file. */
+/* It is here to support Storybook presentation in our documentation. */
 :root.verdocs-custom-theme {
   /* Global Theming */
   --verdocs-primary-color: #0065ff;
+  --verdocs-primary-color-hover: #0054dc;
   /* NOTE: This is not an Open Source / Google font. Just illustrating it here as an example. */
   --verdocs-primary-font: 'Segoe UI', 'Inter', sans-serif;
   --verdocs-button-radius: 8px;
@@ -23,4 +26,145 @@
   /* Signing Fields */
   --verdocs-field-background: rgba(26, 115, 232, 0.1);
   --verdocs-field-border: none;
+  --verdocs-required-field-border: transparent;
+  --verdocs-field-radius: 4px;
+  --verdocs-field-text-color: #ffffff;
+  --verdocs-attachment-icon-color: #ffffff;
+
+  /* Signer Colors (Override Theme) */
+  --signer-1-color: #13a10e;
+  --signer-2-color: #021cc4;
+  --signer-3-color: #a34ed4;
+  --signer-4-color: #be9202;
+  --signer-5-color: #8ba700;
+  --signer-6-color: #0065ff;
+  --signer-7-color: #e04aa4;
+  --signer-8-color: #39804c;
+  --signer-9-color: #02a2be;
+  --signer-10-color: #e57200;
+
+  /* Signer Colors Faded (Override 75%) */
+  --signer-1-color-faded: #13a10ebf;
+  --signer-2-color-faded: #021cc4bf;
+  --signer-3-color-faded: #a34ed4bf;
+  --signer-4-color-faded: #be9202bf;
+  --signer-5-color-faded: #8ba700bf;
+  --signer-6-color-faded: #0065ffbf;
+  --signer-7-color-faded: #e04aa4bf;
+  --signer-8-color-faded: #39804cbf;
+  --signer-9-color-faded: #02a2bebf;
+  --signer-10-color-faded: #e57200bf;
+}
+
+:root {
+  /* Default Theme Variables */
+  --verdocs-required-field-border: #cc0000;
+  --verdocs-field-radius: 0;
+  --verdocs-field-text-color: #000000;
+  --verdocs-attachment-icon-color: #339933;
+
+  /* Signer Colors (Default Theme) */
+  --signer-1-color: #ffe69c;
+  --signer-2-color: #e3c3e9;
+  --signer-3-color: #c1e1fb;
+  --signer-4-color: #dce775;
+  --signer-5-color: #7986cb;
+  --signer-6-color: #4db6ac;
+  --signer-7-color: #ffcaa5;
+  --signer-8-color: #02f7be;
+  --signer-9-color: #ff8a65;
+  --signer-10-color: #52ff4f;
+
+  /* Signer Colors Faded (Default 90%) */
+  --signer-1-color-faded: #ffe69ce6;
+  --signer-2-color-faded: #e3c3e9e6;
+  --signer-3-color-faded: #c1e1fbe6;
+  --signer-4-color-faded: #dce775e6;
+  --signer-5-color-faded: #7986cbe6;
+  --signer-6-color-faded: #4db6ace6;
+  --signer-7-color-faded: #ffcaa5e6;
+  --signer-8-color-faded: #02f7bee6;
+  --signer-9-color-faded: #ff8a65e6;
+  --signer-10-color-faded: #52ff4fe6;
+}
+
+/* Signer Color Utility Classes */
+.signer-1 {
+  background-color: var(--signer-1-color-faded) !important;
+}
+
+.signer-1:hover {
+  background-color: var(--signer-1-color) !important;
+}
+
+.signer-2 {
+  background-color: var(--signer-2-color-faded) !important;
+}
+
+.signer-2:hover {
+  background-color: var(--signer-2-color) !important;
+}
+
+.signer-3 {
+  background-color: var(--signer-3-color-faded) !important;
+}
+
+.signer-3:hover {
+  background-color: var(--signer-3-color) !important;
+}
+
+.signer-4 {
+  background-color: var(--signer-4-color-faded) !important;
+}
+
+.signer-4:hover {
+  background-color: var(--signer-4-color) !important;
+}
+
+.signer-5 {
+  background-color: var(--signer-5-color-faded) !important;
+}
+
+.signer-5:hover {
+  background-color: var(--signer-5-color) !important;
+}
+
+.signer-6 {
+  background-color: var(--signer-6-color-faded) !important;
+}
+
+.signer-6:hover {
+  background-color: var(--signer-6-color) !important;
+}
+
+.signer-7 {
+  background-color: var(--signer-7-color-faded) !important;
+}
+
+.signer-7:hover {
+  background-color: var(--signer-7-color) !important;
+}
+
+.signer-8 {
+  background-color: var(--signer-8-color-faded) !important;
+}
+
+.signer-8:hover {
+  background-color: var(--signer-8-color) !important;
+}
+
+.signer-9 {
+  background-color: var(--signer-9-color-faded) !important;
+}
+
+.signer-9:hover {
+  background-color: var(--signer-9-color) !important;
+}
+
+.signer-10 {
+  background-color: var(--signer-10-color-faded) !important;
+}
+
+.signer-10:hover {
+  background-color: var(--signer-10-color) !important;
 }

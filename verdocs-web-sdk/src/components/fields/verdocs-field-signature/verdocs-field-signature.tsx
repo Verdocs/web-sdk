@@ -1,9 +1,9 @@
 import interact from 'interactjs';
-import {ITemplateField, getRGBA, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
+import {ResizeEvent} from '@interactjs/actions/resize/plugin';
+import {ITemplateField, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State, Element} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
-import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 
 /**
  * Displays a signature field. If a signature already exists, it will be displayed and the field
@@ -243,14 +243,14 @@ export class VerdocsFieldSignature {
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     const {required = false, value = '', label = '', settings = {}} = field || {};
     const {base64} = settings;
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
 
     if (done) {
       return <Host class={{done}}>{value && <img src={base64} alt="" />}</Host>;
     }
 
     return (
-      <Host class={{required, disabled, done, focused, filled: !!base64}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused, filled: !!base64, [signerClass]: true}}>
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}
         {editable && <div class="edge-top" />}

@@ -39,13 +39,14 @@ verdocs-field-date {
     cursor: inherit;
 
     box-sizing: border-box;
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--verdocs-field-text-color, rgba(0, 0, 0, 0.87));
     font-weight: 500;
     transform-origin: 0 0;
     height: 100%;
     width: 100%;
     background: none;
     border: var(--verdocs-field-border, 1px solid $light-border-color);
+    border-radius: var(--verdocs-field-radius);
     appearance: none;
 
     &.hide {
@@ -59,7 +60,7 @@ verdocs-field-date {
 
   &.required {
     input {
-      border: 1px solid $verdocs-red-1;
+      border: 1px solid var(--verdocs-required-field-border);
     }
   }
 

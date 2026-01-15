@@ -13,6 +13,7 @@ verdocs-field-textbox {
   background-color: var(--verdocs-field-background, transparent);
   transform-origin: bottom left;
   border: var(--verdocs-field-border, 1px solid rgba(0, 0, 0, 0.2));
+  border-radius: var(--verdocs-field-radius);
 
   .edge-top,
   .edge-right,
@@ -65,7 +66,7 @@ verdocs-field-textbox {
     position: absolute;
     transform-origin: 0 0;
     box-sizing: border-box;
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--verdocs-field-text-color, rgba(0, 0, 0, 0.87));
 
     &.hide {
       display: none;
@@ -92,7 +93,7 @@ verdocs-field-textbox {
     line-height: 13px;
     transform-origin: 0 0;
     box-sizing: border-box;
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--verdocs-field-text-color, rgba(0, 0, 0, 0.87));
 
     &.hide {
       display: none;
@@ -118,7 +119,9 @@ verdocs-field-textbox {
   }
 
   &.required {
-    border: 1px solid rgb(204, 0, 0);
+    &.required {
+      border: 1px solid var(--verdocs-required-field-border);
+    }
   }
 
   &.focused {

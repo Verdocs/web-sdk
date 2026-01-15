@@ -1,4 +1,4 @@
-import {ITemplateField, getRGBA, IEnvelopeField} from '@verdocs/js-sdk';
+import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
@@ -120,7 +120,7 @@ export class VerdocsFieldRadio {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     const {name, required = false, label = '', group = '', value = false, readonly = false} = field || {};
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
 
     const selected = value === 'true';
 
@@ -133,7 +133,7 @@ export class VerdocsFieldRadio {
     }
 
     return (
-      <Host class={{required: this.required || required, disabled, done, focused}} style={{backgroundColor}}>
+      <Host class={{required: this.required || required, disabled, done, focused, [signerClass]: true}}>
         {label && <div class="label">{label}</div>}
         {editable && group && <div class="group">{group}</div>}
 

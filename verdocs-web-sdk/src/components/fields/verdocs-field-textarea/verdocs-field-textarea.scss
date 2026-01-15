@@ -12,6 +12,7 @@ verdocs-field-textarea {
   transform-origin: bottom left;
   font-family: $verdocs-primary-font;
   border: var(--verdocs-field-border, 1px solid rgba(0, 0, 0, 0.2));
+  border-radius: var(--verdocs-field-radius);
 
   textarea {
     // This is needed to bring down the cursor from the parent element, which is where interactjs applies it
@@ -28,7 +29,7 @@ verdocs-field-textarea {
     font-weight: 500;
     transform-origin: 0 0;
     box-sizing: border-box;
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--verdocs-field-text-color, rgba(0, 0, 0, 0.87));
 
     &.hide {
       display: none;
@@ -54,7 +55,9 @@ verdocs-field-textarea {
   }
 
   &.required {
-    border: 1px solid rgb(204, 0, 0);
+    &.required {
+      border: 1px solid var(--verdocs-required-field-border);
+    }
   }
 
   &.focused {

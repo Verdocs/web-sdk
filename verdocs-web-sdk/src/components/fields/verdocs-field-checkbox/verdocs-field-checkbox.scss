@@ -55,7 +55,7 @@ verdocs-field-checkbox {
     height: 12px;
     display: block;
     line-height: 12px;
-    border-radius: 2px;
+    border-radius: var(--verdocs-field-radius);
     box-sizing: border-box;
     border: 1px solid $verdocs-grey-2;
   }
@@ -74,7 +74,7 @@ verdocs-field-checkbox {
   }
 
   &.required {
-    border: 1px solid $verdocs-red-1;
+    border: 1px solid var(--verdocs-required-field-border);
   }
 
   &.hide {
@@ -114,9 +114,11 @@ verdocs-field-checkbox {
   0% {
     background-color: rgba(0, 0, 0, 0.35);
   }
+
   50% {
     background-color: rgba(0, 0, 0, 0);
   }
+
   100% {
     background-color: rgba(0, 0, 0, 0.35);
   }

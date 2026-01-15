@@ -1,4 +1,4 @@
-import {ITemplateField, getRGBA, IEnvelopeField} from '@verdocs/js-sdk';
+import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
@@ -148,7 +148,7 @@ export class VerdocsFieldPayment {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
 
     if (!field) {
       return <Fragment />;
@@ -159,7 +159,7 @@ export class VerdocsFieldPayment {
     }
 
     return (
-      <Host class={{focused, disabled}} style={{backgroundColor}}>
+      <Host class={{focused, disabled, [signerClass]: true}}>
         <button class={{hide: this.signed}}>$</button>
         {this.signed ? <div class="frame" /> : <div style={{display: 'none'}} />}
         <img width="100%" height="100%" src={this.signatureUrl} alt="Payment Icon" />

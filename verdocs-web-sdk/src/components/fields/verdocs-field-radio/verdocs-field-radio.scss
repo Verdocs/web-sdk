@@ -131,7 +131,7 @@ verdocs-field-radio {
   }
 
   &.required {
-    border: 1px solid $verdocs-red-1;
+    border: 1px solid var(--verdocs-required-field-border);
   }
 
   &.hide {
@@ -170,9 +170,11 @@ verdocs-field-radio {
   0% {
     background-color: rgba(0, 0, 0, 0.35);
   }
+
   50% {
     background-color: rgba(0, 0, 0, 0);
   }
+
   100% {
     background-color: rgba(0, 0, 0, 0.35);
   }

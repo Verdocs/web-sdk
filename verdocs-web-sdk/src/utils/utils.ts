@@ -329,3 +329,60 @@ export const convertToE164 = (input: string) => {
   // already entering a prefix so they'd shortcut out of this routine via the + prefix check.
   return `+1${temp}`;
 };
+
+export interface IFlagOptions {
+  variant: 'fill' | 'next';
+  label: string;
+  showSkip?: boolean;
+  onSkip?: () => void;
+  onClick?: () => void;
+  id?: string;
+}
+
+export const renderDocumentFlag = (
+  docPage: IDocumentPageInfo,
+  y: number, // Bottom position from field
+  height: number, // Field height
+  options: IFlagOptions,
+) => {
+  const controlsDiv = document.getElementById(docPage.containerId + '-controls');
+  if (!controlsDiv) {
+    return;
+  }
+
+  const el: any = document.createElement('verdocs-flag');
+  el.variant = options.variant;
+  el.label = options.label;
+  el.showSkip = options.showSkip;
+  if (options.id) {
+    el.setAttribute('id', options.id);
+  }
+  el.classList.add('verdocs-flag-instance'); // Marker class for easy removal
+
+  if (options.onSkip) {
+    el.addEventListener('skip', options.onSkip);
+  }
+  if (options.onClick) {
+    el.addEventListener('flagClick', options.onClick);
+  }
+
+  // Position the flag to stick out of the right edge of the page
+  el.style.position = 'absolute';
+  el.style.left = '100%';
+
+  /*
+   * Positioning Logic:
+   * Field Y is distance from bottom.
+   * We want to center the flag (fixed ~32px height) on the field's visual center.
+   */
+  const flagHeight = 32; // Matches CSS
+  const scaledY = rescale(docPage.yScale, y);
+  const scaledHeight = rescale(docPage.yScale, height);
+  const centerY = scaledY + scaledHeight / 2;
+  const bottom = centerY - flagHeight / 2;
+
+  el.style.bottom = `${bottom}px`;
+
+  controlsDiv.appendChild(el);
+  return el;
+};

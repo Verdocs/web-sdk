@@ -2,8 +2,8 @@
 
 verdocs-signing-progress {
     position: fixed;
-    top: 24px;
-    left: 24px;
+    top: 64px;
+    left: 20px;
     z-index: 900;
     display: block;
     font-family: $verdocs-primary-font;
@@ -14,18 +14,18 @@ verdocs-signing-progress {
 
     .card {
         background: white;
-        padding: 24px;
+        padding: 16px;
         border-radius: 8px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        width: 340px;
+        width: 240px;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
     }
 
     .header {
-        font-size: 16px;
+        font-size: 14px;
         color: #111827;
     }
 
@@ -33,21 +33,21 @@ verdocs-signing-progress {
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 500;
         color: #111827;
     }
 
     .description {
-        font-size: 14px;
-        line-height: 20px;
+        font-size: 12px;
+        line-height: 16px;
         color: #374151;
     }
 
     .field-label {
         font-family: var(--verdocs-primary-font, $verdocs-primary-font);
-        font-size: 0.875rem;
-        line-height: 1.25rem;
+        font-size: 0.75rem;
+        line-height: 1rem;
         font-weight: 400;
         color: var(--verdocs-body-color, #242424);
     }
@@ -56,8 +56,8 @@ verdocs-signing-progress {
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
+        font-size: 0.75rem;
+        line-height: 1rem;
         font-weight: 400;
         color: var(--verdocs-body-color, #242424);
 
@@ -75,11 +75,11 @@ verdocs-signing-progress {
 
     .btn {
         width: 100%;
-        height: 40px;
+        height: 32px;
         border-radius: 4px;
         font-weight: 600;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
+        font-size: 0.75rem;
+        line-height: 1rem;
         cursor: pointer;
         border: 1px solid transparent; // Default border
         transition: all 0.2s;
@@ -98,11 +98,11 @@ verdocs-signing-progress {
         &.start,
         &.submit,
         &.next {
-            background-color: var(--verdocs-primary-color, #0065FF);
+            background-color: var(--verdocs-primary-color, #55bc81);
             color: white;
 
             &:hover:not(:disabled) {
-                background-color: var(--verdocs-primary-color-hover, #0054dc);
+                background-color: var(--verdocs-primary-color-hover, #2b995b);
             }
 
             &:disabled {

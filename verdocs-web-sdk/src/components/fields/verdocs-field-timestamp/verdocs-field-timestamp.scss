@@ -7,7 +7,7 @@ verdocs-field-timestamp {
   font-size: 9px;
   position: relative;
   scroll-margin: 20px 0;
-  background-color: transparent;
+  background-color: var(--verdocs-field-background, transparent);
   transform-origin: bottom left;
   font-family: $verdocs-primary-font;
 
@@ -29,8 +29,9 @@ verdocs-field-timestamp {
     font-weight: 500;
     transform-origin: 0 0;
     box-sizing: border-box;
-    color: rgba(0, 0, 0, 0.87);
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: var(--verdocs-field-text-color, rgba(0, 0, 0, 0.87));
+    border: var(--verdocs-field-border, 1px solid rgba(0, 0, 0, 0.2));
+    border-radius: var(--verdocs-field-radius);
 
     &.hide {
       display: none;
@@ -52,7 +53,7 @@ verdocs-field-timestamp {
   }
 
   &.required {
-    border: 1px solid rgb(204, 0, 0);
+    border: 1px solid var(--verdocs-required-field-border);
   }
 
   &.focused {

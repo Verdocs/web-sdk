@@ -1,9 +1,9 @@
-import {ITemplateField, getRGBA, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
+import interact from 'interactjs';
+import {ResizeEvent} from '@interactjs/actions/resize/plugin';
+import {ITemplateField, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
-import interact from 'interactjs';
-import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 
 /**
  * Displays an initial field. If an initial already exists, it will be displayed and the field
@@ -253,7 +253,7 @@ export class VerdocsFieldInitial {
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     const {required = false, value = '', label = '', settings = {}} = field || {};
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
     const {base64} = settings;
 
     if (done) {
@@ -261,7 +261,7 @@ export class VerdocsFieldInitial {
     }
 
     return (
-      <Host class={{required, disabled, done, focused, filled: !!base64}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused, filled: !!base64, [signerClass]: true}}>
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}
         {editable && <div class="edge-top" />}

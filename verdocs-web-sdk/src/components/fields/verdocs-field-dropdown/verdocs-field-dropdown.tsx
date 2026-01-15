@@ -1,4 +1,4 @@
-import {ITemplateField, getRGBA, IEnvelopeField} from '@verdocs/js-sdk';
+import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
@@ -133,7 +133,7 @@ export class VerdocsFieldDropdown {
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     let {required = false, value = '', label = '', options, readonly = false} = field || {};
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
 
     // TODO: Consolidate value/defaultValue handling between template and envelope fields.
     if ((field as any)?.value) {
@@ -149,7 +149,7 @@ export class VerdocsFieldDropdown {
     options ||= [];
 
     return (
-      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
         {label && <label>{label}</label>}
 
         <select disabled={readonly || disabled} onChange={e => this.handleChange(e)} ref={el => (this.selectEl = el as HTMLSelectElement)}>

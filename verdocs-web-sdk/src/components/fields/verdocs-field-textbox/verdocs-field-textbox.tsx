@@ -1,9 +1,9 @@
 import interact from 'interactjs';
-import {getRGBA, IEnvelopeField, ITemplate, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {ResizeEvent} from '@interactjs/actions/resize/plugin';
+import {IEnvelopeField, ITemplate, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
-import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 
 /**
  * Display a simple 1-line text input field.
@@ -200,7 +200,7 @@ export class VerdocsFieldTextbox {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     let {required = false, placeholder = '', label = '', width = 150, readonly = false, default: value = '', multiline = false} = field || {};
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
 
     // TODO: Consolidate value/defaultValue handling between template and envelope fields.
     if ((field as any)?.value) {
@@ -215,7 +215,7 @@ export class VerdocsFieldTextbox {
     }
 
     return (
-      <Host class={{required, disabled, done, focused}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
         {editable && <div class="edge-top" />}
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}

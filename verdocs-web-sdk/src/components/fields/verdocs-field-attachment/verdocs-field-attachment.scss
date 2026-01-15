@@ -51,11 +51,12 @@ verdocs-field-attachment {
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: var(--verdocs-field-radius);
   }
 
   &.required {
     .attach {
-      border: 1px solid $verdocs-red-1;
+      border: 1px solid var(--verdocs-required-field-border);
     }
   }
 
@@ -108,9 +109,11 @@ verdocs-field-attachment {
   0% {
     background-color: rgba(0, 0, 0, 0.35);
   }
+
   50% {
     background-color: rgba(0, 0, 0, 0);
   }
+
   100% {
     background-color: rgba(0, 0, 0, 0.35);
   }

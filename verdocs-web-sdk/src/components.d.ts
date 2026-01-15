@@ -1319,6 +1319,23 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
     }
+    interface VerdocsFlag {
+        /**
+          * The text label to display in the flag.
+          * @default 'FILL'
+         */
+        "label": string;
+        /**
+          * If true, shows "or SKIP" link.
+          * @default false
+         */
+        "showSkip": boolean;
+        /**
+          * The type of flag to display.
+          * @default 'fill'
+         */
+        "variant": 'fill' | 'next';
+    }
     /**
      * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
      * ```ts
@@ -1840,7 +1857,7 @@ export namespace Components {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-          * @default new VerdocsEndpoint({sessionType: 'signing'})
+          * @default new VerdocsEndpoint({ sessionType: 'signing' })
          */
         "endpoint": VerdocsEndpoint;
         /**
@@ -2594,6 +2611,10 @@ export interface VerdocsFieldTimestampCustomEvent<T> extends CustomEvent<T> {
 export interface VerdocsFileChooserCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFileChooserElement;
+}
+export interface VerdocsFlagCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsFlagElement;
 }
 export interface VerdocsInitialDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3446,6 +3467,24 @@ declare global {
         prototype: HTMLVerdocsFileChooserElement;
         new (): HTMLVerdocsFileChooserElement;
     };
+    interface HTMLVerdocsFlagElementEventMap {
+        "skip": void;
+        "flagClick": void;
+    }
+    interface HTMLVerdocsFlagElement extends Components.VerdocsFlag, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsFlagElementEventMap>(type: K, listener: (this: HTMLVerdocsFlagElement, ev: VerdocsFlagCustomEvent<HTMLVerdocsFlagElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsFlagElementEventMap>(type: K, listener: (this: HTMLVerdocsFlagElement, ev: VerdocsFlagCustomEvent<HTMLVerdocsFlagElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsFlagElement: {
+        prototype: HTMLVerdocsFlagElement;
+        new (): HTMLVerdocsFlagElement;
+    };
     /**
      * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
      * ```ts
@@ -3899,8 +3938,8 @@ declare global {
     };
     interface HTMLVerdocsSignElementEventMap {
         "sdkError": SDKError;
-        "envelopeLoaded": {endpoint: VerdocsEndpoint; envelope: IEnvelope};
-        "envelopeUpdated": {endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string};
+        "envelopeLoaded": { endpoint: VerdocsEndpoint; envelope: IEnvelope };
+        "envelopeUpdated": { endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string };
     }
     /**
      * Display an envelope signing experience. This will display the envelope's attached
@@ -3987,10 +4026,10 @@ declare global {
         new (): HTMLVerdocsSignatureDialogElement;
     };
     interface HTMLVerdocsSigningProgressElementEventMap {
-        "start": any;
+        "started": any;
         "next": any;
         "previous": any;
-        "submit": any;
+        "exit": any;
     }
     interface HTMLVerdocsSigningProgressElement extends Components.VerdocsSigningProgress, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsSigningProgressElementEventMap>(type: K, listener: (this: HTMLVerdocsSigningProgressElement, ev: VerdocsSigningProgressCustomEvent<HTMLVerdocsSigningProgressElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4532,6 +4571,7 @@ declare global {
         "verdocs-field-textbox": HTMLVerdocsFieldTextboxElement;
         "verdocs-field-timestamp": HTMLVerdocsFieldTimestampElement;
         "verdocs-file-chooser": HTMLVerdocsFileChooserElement;
+        "verdocs-flag": HTMLVerdocsFlagElement;
         "verdocs-help-icon": HTMLVerdocsHelpIconElement;
         "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
         "verdocs-kba-dialog": HTMLVerdocsKbaDialogElement;
@@ -6116,6 +6156,31 @@ declare namespace LocalJSX {
          */
         "onFileSelected"?: (event: VerdocsFileChooserCustomEvent<{file: File | null}>) => void;
     }
+    interface VerdocsFlag {
+        /**
+          * The text label to display in the flag.
+          * @default 'FILL'
+         */
+        "label"?: string;
+        /**
+          * Emitted when the main flag body is clicked (e.g. to focus field).
+         */
+        "onFlagClick"?: (event: VerdocsFlagCustomEvent<void>) => void;
+        /**
+          * Emitted when the "SKIP" link is clicked.
+         */
+        "onSkip"?: (event: VerdocsFlagCustomEvent<void>) => void;
+        /**
+          * If true, shows "or SKIP" link.
+          * @default false
+         */
+        "showSkip"?: boolean;
+        /**
+          * The type of flag to display.
+          * @default 'fill'
+         */
+        "variant"?: 'fill' | 'next';
+    }
     /**
      * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
      * ```ts
@@ -6734,7 +6799,7 @@ declare namespace LocalJSX {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-          * @default new VerdocsEndpoint({sessionType: 'signing'})
+          * @default new VerdocsEndpoint({ sessionType: 'signing' })
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6755,11 +6820,11 @@ declare namespace LocalJSX {
         /**
           * Event fired when the envelope is loaded for the first time.
          */
-        "onEnvelopeLoaded"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        "onEnvelopeLoaded"?: (event: VerdocsSignCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope }>) => void;
         /**
           * Event fired when the envelope is updated in any way.
          */
-        "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
+        "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string }>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
@@ -6848,6 +6913,10 @@ declare namespace LocalJSX {
          */
         "mode"?: 'start' | 'signing' | 'completed';
         /**
+          * Emitted when user clicks Submit
+         */
+        "onExit"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
+        /**
           * Emitted when user clicks Next
          */
         "onNext"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
@@ -6858,11 +6927,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when user clicks Start
          */
-        "onStart"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
-        /**
-          * Emitted when user clicks Submit
-         */
-        "onSubmit"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
+        "onStarted"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
         /**
           * Total number of fields
           * @default 0
@@ -7678,6 +7743,7 @@ declare namespace LocalJSX {
         "verdocs-field-textbox": VerdocsFieldTextbox;
         "verdocs-field-timestamp": VerdocsFieldTimestamp;
         "verdocs-file-chooser": VerdocsFileChooser;
+        "verdocs-flag": VerdocsFlag;
         "verdocs-help-icon": VerdocsHelpIcon;
         "verdocs-initial-dialog": VerdocsInitialDialog;
         "verdocs-kba-dialog": VerdocsKbaDialog;
@@ -7955,6 +8021,7 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-file-chooser": LocalJSX.VerdocsFileChooser & JSXBase.HTMLAttributes<HTMLVerdocsFileChooserElement>;
+            "verdocs-flag": LocalJSX.VerdocsFlag & JSXBase.HTMLAttributes<HTMLVerdocsFlagElement>;
             /**
              * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
              * ```ts

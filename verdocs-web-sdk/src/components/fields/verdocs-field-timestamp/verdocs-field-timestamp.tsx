@@ -1,5 +1,5 @@
 import {format} from 'date-fns/format';
-import {ITemplateField, getRGBA, IEnvelopeField} from '@verdocs/js-sdk';
+import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {SettingsIcon} from '../../../utils/Icons';
@@ -112,7 +112,7 @@ export class VerdocsFieldTimestamp {
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     const {required = false, placeholder = '', value = '', label = ''} = field || {};
-    const backgroundColor = getRGBA(index);
+    const signerClass = `signer-${(index % 10) + 1}`;
 
     const formatted = format(new Date(value || new Date().toISOString()), FORMAT_TIMESTAMP);
 
@@ -121,7 +121,7 @@ export class VerdocsFieldTimestamp {
     }
 
     return (
-      <Host class={{required, disabled, done}} style={{backgroundColor}}>
+      <Host class={{required, disabled, done, [signerClass]: true}}>
         {label && <label>{label}</label>}
         <input type="text" placeholder={placeholder} value={formatted} disabled={true} ref={el => (this.el = el)} />
 
