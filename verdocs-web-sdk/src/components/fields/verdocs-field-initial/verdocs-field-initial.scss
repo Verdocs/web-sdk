@@ -18,7 +18,7 @@ verdocs-field-initial {
     top: -14px;
     left: -1px;
     height: 14px;
-    color: white;
+    color: var(--verdocs-field-text-color, white);
     padding: 0 4px;
     font-size: 9px;
     line-height: 13px;
@@ -49,7 +49,7 @@ verdocs-field-initial {
 
     box-sizing: border-box;
     border: none;
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--verdocs-field-text-color, rgba(0, 0, 0, 0.87));
     font-weight: 500;
     transform-origin: 0 0;
     height: 100%;

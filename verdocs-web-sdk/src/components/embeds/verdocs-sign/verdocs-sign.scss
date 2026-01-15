@@ -30,6 +30,9 @@ verdocs-sign {
     align-self: center;
     display: flex;
     padding: 15px;
+    // We add extra padding here so the flags (which are absolutely positioned "outside" the page)
+    // are still visible within the scrollable area.
+    padding-right: 140px;
     row-gap: 15px;
     max-width: 1200px;
     min-height: 200px;
@@ -125,14 +128,6 @@ verdocs-sign {
       font-weight: 400;
       padding: 0 10px;
     }
-  }
-
-  .flag {
-    width: 100px;
-    height: 40px;
-    padding-left: 14px;
-    background-color: #13a10e;
-    clip-path: polygon(0% 50%, 15% 0, 100% 0, 100% 100%, 15% 100%);
   }
 }
 

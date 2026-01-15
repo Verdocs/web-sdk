@@ -237,8 +237,6 @@ export const renderDocumentField = (
   }
 };
 
-// export const getFieldSettings = (field: ITemplateField | IEnvelopeField | undefined) => field?.settings || {};
-
 /**
  * Helper function to safely set/update components in a CSS transform attribute. Transform is normally set as a string of
  * `operation1(param) operation2(param) ...` components, which makes updating them a bit of a pain. This will remove the
@@ -368,20 +366,30 @@ export const renderDocumentFlag = (
 
   // Position the flag to stick out of the right edge of the page
   el.style.position = 'absolute';
-  el.style.left = '100%';
+
+  // The flag has a left-pointing arrow that is 14px wide (15% of 97px ~= 14.5px).
+  // We want the "body" of the rectangle (starting after the arrow) to align with the
+  // right edge of the page.
+  el.style.left = 'calc(100% - 14px)';
 
   /*
    * Positioning Logic:
    * Field Y is distance from bottom.
-   * We want to center the flag (fixed ~32px height) on the field's visual center.
+   * Fields have `transform-origin: bottom left`.
+   * Visual Bottom = y * scale.
+   * Visual Top = (y * scale) + (height * scale).
+   * Visual Center = (y * scale) + (height * scale) / 2.
    */
-  const flagHeight = 32; // Matches CSS
+  // const flagHeight = 24; // Matches CSS
   const scaledY = rescale(docPage.yScale, y);
   const scaledHeight = rescale(docPage.yScale, height);
-  const centerY = scaledY + scaledHeight / 2;
-  const bottom = centerY - flagHeight / 2;
+
+  // Align Flag Bottom with Field Top
+  const bottom = scaledY + scaledHeight;
 
   el.style.bottom = `${bottom}px`;
+
+  console.log(`[FLAG-V4] ${options.label} y=${y} h=${height} scY=${scaledY} scH=${scaledHeight} bottom=${bottom}`);
 
   controlsDiv.appendChild(el);
   return el;
