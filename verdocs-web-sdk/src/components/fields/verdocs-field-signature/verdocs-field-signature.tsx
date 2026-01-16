@@ -85,6 +85,12 @@ export class VerdocsFieldSignature {
   @Prop({reflect: true}) pagenumber?: number = 1;
 
   /**
+   * If set, provides the ID of an already-adopted signature. If present, clicking the field (when empty)
+   * will immediately use this signature instead of showing the adoption dialog.
+   */
+  @Prop({reflect: true}) signatureid?: string;
+
+  /**
    * Event emitted when the field has changed.
    */
   @Event({composed: true}) fieldChange: EventEmitter<string>;
@@ -249,6 +255,7 @@ export class VerdocsFieldSignature {
       return <Host class={{done}}>{value && <img src={base64} alt="" />}</Host>;
     }
 
+    console.log('sid', this.signatureid);
     return (
       <Host class={{required, disabled, done, focused, filled: !!base64, [signerClass]: true}}>
         {editable && <div class="edge-right" />}
@@ -258,7 +265,32 @@ export class VerdocsFieldSignature {
 
         {label && <label>{label}</label>}
 
-        {base64 ? <img src={base64} alt="" /> : <button onClick={() => !disabled && this.handleShow()}>Signature</button>}
+        {base64 ? (
+          <img
+            src={base64}
+            alt=""
+            onClick={() => {
+              if (disabled) return;
+              console.log('[SIGNATURE] Clearing signature');
+              this.fieldChange?.emit(null);
+            }}
+          />
+        ) : (
+          <button
+            onClick={() => {
+              if (disabled) return;
+              // If we already have a signature ID, use it immediately
+              if (this.signatureid) {
+                console.log('[SIGNATURE] Reusing existing signature', this.signatureid);
+                this.fieldChange?.emit(this.signatureid);
+              } else {
+                this.handleShow();
+              }
+            }}
+          >
+            Signature
+          </button>
+        )}
 
         {editable && (
           <Fragment>

@@ -85,6 +85,12 @@ export class VerdocsFieldInitial {
   @Prop({reflect: true}) pagenumber?: number = 1;
 
   /**
+   * If set, provides the ID of already-adopted initials. If present, clicking the field (when empty)
+   * will immediately use these initials instead of showing the adoption dialog.
+   */
+  @Prop({reflect: true}) initialid?: string;
+
+  /**
    * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
    */
   @Event({composed: true}) adopt: EventEmitter<string>;
@@ -269,7 +275,32 @@ export class VerdocsFieldInitial {
 
         {label && <label>{label}</label>}
 
-        {base64 ? <img src={base64} alt="Initial" /> : <button onClick={() => !disabled && this.handleShow()}>Initial</button>}
+        {base64 ? (
+          <img
+            src={base64}
+            alt="Initial"
+            onClick={() => {
+              if (disabled) return;
+              console.log('[INITIAL] Clearing initials');
+              this.fieldChange?.emit(null);
+            }}
+          />
+        ) : (
+          <button
+            onClick={() => {
+              if (disabled) return;
+              // If we already have an initial ID, use it immediately
+              if (this.initialid) {
+                console.log('[INITIAL] Reusing existing initials', this.initialid);
+                this.fieldChange?.emit(this.initialid);
+              } else {
+                this.handleShow();
+              }
+            }}
+          >
+            Initial
+          </button>
+        )}
 
         {editable && (
           <Fragment>

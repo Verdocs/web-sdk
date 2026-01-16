@@ -389,8 +389,6 @@ export const renderDocumentFlag = (
 
   el.style.bottom = `${bottom}px`;
 
-  console.log(`[FLAG-V4] ${options.label} y=${y} h=${height} scY=${scaledY} scH=${scaledHeight} bottom=${bottom}`);
-
   controlsDiv.appendChild(el);
   return el;
 };

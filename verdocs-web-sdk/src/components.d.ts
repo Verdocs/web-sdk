@@ -843,6 +843,10 @@ export namespace Components {
         "focusField": () => Promise<void>;
         "hideSettingsPanel": () => Promise<void>;
         /**
+          * If set, provides the ID of already-adopted initials. If present, clicking the field (when empty) will immediately use these initials instead of showing the adoption dialog.
+         */
+        "initialid"?: string;
+        /**
           * The document or template field to display.
           * @default ''
          */
@@ -1083,6 +1087,10 @@ export namespace Components {
          */
         "pagenumber"?: number;
         "showSettingsPanel": () => Promise<void>;
+        /**
+          * If set, provides the ID of an already-adopted signature. If present, clicking the field (when empty) will immediately use this signature instead of showing the adoption dialog.
+         */
+        "signatureid"?: string;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
           * @default 'template'
@@ -5615,6 +5623,10 @@ declare namespace LocalJSX {
          */
         "fieldname"?: string;
         /**
+          * If set, provides the ID of already-adopted initials. If present, clicking the field (when empty) will immediately use these initials instead of showing the adoption dialog.
+         */
+        "initialid"?: string;
+        /**
           * The document or template field to display.
           * @default ''
          */
@@ -5901,6 +5913,10 @@ declare namespace LocalJSX {
           * @default 1
          */
         "pagenumber"?: number;
+        /**
+          * If set, provides the ID of an already-adopted signature. If present, clicking the field (when empty) will immediately use this signature instead of showing the adoption dialog.
+         */
+        "signatureid"?: string;
         /**
           * Fields may be attached to templates or envelopes, but only template fields may be edited.
           * @default 'template'

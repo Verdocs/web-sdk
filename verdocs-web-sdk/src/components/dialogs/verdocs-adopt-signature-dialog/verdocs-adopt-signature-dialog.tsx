@@ -47,10 +47,7 @@ export class VerdocsAdoptSignatureDialog {
 
   componentWillLoad() {
     this.enteredName = this.name;
-    this.enteredInitials = this.name
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase())
-      .join('');
+    this.computeEnteredInitials(this.name);
 
     const ds = new FontFace('Dancing Script', 'url(https://fonts.gstatic.com/s/dancingscript/v19/If2cXTr6YS-zF4S-kcSWSVi_sxjsohD9F50Ruu7BMSo3Sup6hNX6plRP.woff)');
     ds.load().then(font => {
@@ -97,7 +94,7 @@ export class VerdocsAdoptSignatureDialog {
       fontSize -= 2;
       sigContext.font = `${fontSize}px Dancing Script`;
       metrics = sigContext.measureText(this.enteredName);
-    } while (metrics.width > sigCanvasWidth - 32 && metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent > sigCanvasHeight - 24);
+    } while (metrics.width > sigCanvasWidth - 24 || metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent + 24 > sigCanvasHeight);
 
     sigContext.textAlign = 'center';
     sigContext.textBaseline = 'middle';
@@ -121,7 +118,7 @@ export class VerdocsAdoptSignatureDialog {
       fontSize -= 2;
       context.font = `${fontSize}px Dancing Script`;
       metrics = context.measureText(this.enteredInitials);
-    } while (metrics.width > initialsCanvasWidth - 32 && metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent > initialsCanvasHeight - 24);
+    } while (metrics.width > initialsCanvasWidth - 24 || metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent + 24 > initialsCanvasHeight);
 
     context.textAlign = 'center';
     context.textBaseline = 'middle';
@@ -215,10 +212,16 @@ export class VerdocsAdoptSignatureDialog {
 
   handleNameChange(e: any) {
     this.enteredName = e.target.value;
-    this.enteredInitials = e.target.value
+    this.computeEnteredInitials(e.target.value);
+  }
+
+  computeEnteredInitials(name: string) {
+    const nameComponents = name
+      .trim()
       .split(' ')
-      .map(word => word.charAt(0).toUpperCase())
-      .join('');
+      .filter(part => part.length > 0);
+
+    this.enteredInitials = nameComponents.length > 1 ? nameComponents.map(word => word.charAt(0).toUpperCase()).join('') : nameComponents[0].toUpperCase();
   }
 
   handleCancel(e: any) {

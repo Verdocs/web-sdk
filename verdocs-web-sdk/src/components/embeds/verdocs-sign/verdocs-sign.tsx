@@ -105,11 +105,13 @@ export class VerdocsSign {
   @State() submitted = false;
   @State() isDone = false;
   @State() showDone = false;
-  @State() showAdoptSignature = false;
+  @State() adoptingSignature = false;
   @State() showLoadError = false;
   @State() finishLater = false;
   @State() showFinishLater = false;
   @State() agreed = false;
+  @State() signatureId: string | null = null;
+  @State() initialId: string | null = null;
   @State() documentsSingularPlural = 'document';
   @State() authStep: string | null = null;
   @State() authMethodStates: Partial<Record<TRecipientAuthMethod, string>> = {};
@@ -118,7 +120,6 @@ export class VerdocsSign {
   @State() declining = false;
   @State() delegating = false;
   @State() delegated = false;
-  @State() startedSigning = false;
   @State() kbaChoices = [];
 
   @State() loading = true;
@@ -175,6 +176,8 @@ export class VerdocsSign {
     this.authStep = auth_step;
     this.delegated = !!recipient.delegated_to;
     this.agreed = recipient.agreed;
+    this.signatureId = response.signatures?.[0]?.id || null;
+    this.initialId = response.initials?.[0]?.id || null;
     this.submitted = recipient.status === 'submitted';
     this.loading = false;
     this.isDone = this.submitted;
@@ -330,8 +333,23 @@ export class VerdocsSign {
         // This can be caused by a focus-out event if the user clicks the field
         // after it's already filled in, then clicks something else like a textbox.
         // We don't visually indicate the focus, but it's still there.
-        if (!e.detail) {
+        // NOTE: We now allow null to clear the field
+        if (e.detail === undefined) {
           return;
+        }
+
+        if (e.detail === null) {
+          console.log('[SIGN] Clearing initial');
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, null, false);
+          return this.updateRecipientFieldValue(field.name, updateResult);
+        }
+
+        // If it's a UUID, it's an existing initial ID we can just reuse
+        if (typeof e.detail === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.detail)) {
+          console.log('[SIGN] Reusing initial', e.detail);
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, e.detail, false);
+          this.initialId = e.detail;
+          return this.updateRecipientFieldValue(field.name, updateResult);
         }
 
         this.showSpinner = true;
@@ -340,6 +358,7 @@ export class VerdocsSign {
           .then(async newInitials => {
             const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newInitials.id, false);
             this.updateRecipientFieldValue(field.name, updateResult);
+            this.initialId = newInitials.id;
             this.showSpinner = false;
           })
           .catch(e => {
@@ -352,17 +371,34 @@ export class VerdocsSign {
         // This can be caused by a focus-out event if the user clicks the field
         // after it's already filled in, then clicks something else like a textbox.
         // We don't visually indicate the focus, but it's still there.
-        if (!e.detail) {
+        // NOTE: We now allow null to clear the field
+        if (e.detail === undefined) {
           return;
+        }
+
+        if (e.detail === null) {
+          console.log('[SIGN] Clearing signature');
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, null, false);
+          return this.updateRecipientFieldValue(field.name, updateResult);
+        }
+
+        // If it's a UUID, it's an existing signature ID we can just reuse
+        if (typeof e.detail === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.detail)) {
+          console.log('[SIGN] Reusing signature', e.detail);
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, e.detail, false);
+          this.signatureId = e.detail;
+          return this.updateRecipientFieldValue(field.name, updateResult);
         }
 
         this.showSpinner = true;
         const signatureBlob = await (await fetch(e.detail)).blob();
+        console.log('[SIGN] Creating new signature');
         return createSignature(this.endpoint, 'signature', signatureBlob) //
           .then(async newSignature => {
             console.log('Signature update result', newSignature);
             const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newSignature.id, false);
             this.updateRecipientFieldValue(field.name, updateResult);
+            this.signatureId = newSignature.id;
             this.showSpinner = false;
           })
           .catch(e => {
@@ -603,7 +639,6 @@ export class VerdocsSign {
           }
         }
 
-        console.log('[SIGN] Render flag', winner.name, winner.y, winner.height);
         renderDocumentFlag(pageInfo, winner.y, winner.height || defaultHeight(winner.type), {
           variant,
           label,
@@ -701,6 +736,12 @@ export class VerdocsSign {
     const fullName = formatFullName(this.recipient);
     el.setAttribute('initials', fullNameToInitials(fullName));
     el.setAttribute('name', fullName);
+    if (this.signatureId) {
+      el.setAttribute('signatureid', this.signatureId);
+    }
+    if (this.initialId) {
+      el.setAttribute('initialid', this.initialId);
+    }
   }
 
   handlePageRendered(e: any) {
@@ -1115,14 +1156,14 @@ export class VerdocsSign {
           const focusedFieldObj = this.getSortedFillableFields().find(f => f.name === this.focusedField);
           return (
             <verdocs-signing-progress
-              mode={this.nextSubmits ? 'completed' : this.startedSigning ? 'signing' : 'start'}
+              mode={this.nextSubmits ? 'completed' : false && this.signatureId && this.initialId ? 'signing' : 'start'}
               current={Math.max(1, this.getSortedFillableFields().findIndex(f => f.name === this.focusedField) + 1)}
               total={this.getSortedFillableFields().length}
               fieldLabel={focusedFieldObj?.label || focusedFieldObj?.name || ''}
               fieldCompleted={focusedFieldObj ? !!isFieldFilled(focusedFieldObj, this.getRecipientFields()) : false}
               onStarted={() => {
-                this.startedSigning = true;
-                this.handleNext();
+                this.adoptingSignature = true;
+                // this.handleNext();
               }}
               onNext={() => this.handleNext()}
               onPrevious={() => this.handlePrev()}
@@ -1130,17 +1171,6 @@ export class VerdocsSign {
             />
           );
         })()}
-
-        {/* Adopt Signature Button */}
-        {/*<div*/}
-        {/*  class="left-sidebar"*/}
-        {/*  style={{width: '22%', left: '15px', top: '59px', position: 'fixed', borderRadius: '4px', backgroundColor: 'white', padding: '24px', fontSize: '14px', fontWeight: '300'}}*/}
-        {/*>*/}
-        {/*  Please select the "Adopt signature" button to type or draw your signature to be applied to the document.*/}
-        {/*  <div style={{display: 'flex', justifyContent: 'center', marginTop: '5px'}}>*/}
-        {/*    <verdocs-button size="xsmall" label="Adopt Signature" style={{marginTop: '15px', marginHorizontal: 'auto'}} onClick={() => (this.showAdoptSignature = true)} />*/}
-        {/*  </div>*/}
-        {/*</div>*/}
 
         <div class="document" style={{width: '64%', marginLeft: '260px'}}>
           {(this.envelope.documents || []).map(envelopeDocument => {
@@ -1202,14 +1232,29 @@ export class VerdocsSign {
           />
         )}
 
-        {this.showAdoptSignature && (
+        {this.adoptingSignature && (
           <verdocs-adopt-signature-dialog
-            onNext={() => {
-              this.showAdoptSignature = false;
+            name={formatFullName(this.recipient)}
+            onNext={async e => {
+              console.log('[SIGN] Adopting signature/initials block', e.detail);
+
+              this.showSpinner = true;
+
+              // These arrive as base-64 encoded data URLs
+              const signatureBlob = await (await fetch(e.detail.signature)).blob();
+              const initialsBlob = await (await fetch(e.detail.initials)).blob();
+
+              const sigResult = await createSignature(this.endpoint, 'signature', signatureBlob);
+              console.log('[SIGN] Created signature', sigResult);
+              this.signatureId = sigResult.id;
+
+              const initResult = await createInitials(this.endpoint, 'initial', initialsBlob);
+              console.log('[SIGN] Created initials', initResult);
+              this.initialId = initResult.id;
+
+              this.showSpinner = false;
             }}
-            onExit={() => {
-              this.showAdoptSignature = false;
-            }}
+            onExit={() => (this.adoptingSignature = false)}
           />
         )}
 
