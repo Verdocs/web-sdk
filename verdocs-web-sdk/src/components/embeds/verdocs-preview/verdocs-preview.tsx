@@ -1,5 +1,7 @@
 import {getTemplate, integerSequence, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Event, EventEmitter, Host, Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
+import {renderDocumentField} from '../../../utils/utils';
+import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
@@ -22,6 +24,7 @@ import {Store} from '../../../utils/Datastore';
 })
 export class VerdocsPreview {
   private templateListenerId = null;
+  private renderedPages: Record<string, IDocumentPageInfo> = {};
 
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -93,11 +96,22 @@ export class VerdocsPreview {
     }
   }
 
-  handlePageRendered(_e: any) {
-    // const pageInfo = e.detail as IDocumentPageInfo;
-    // const fields = (this.template?.fields || []).filter(field => field.page === pageInfo.pageNumber);
+  handlePageRendered(e: any) {
+    const pageInfo = e.detail as IDocumentPageInfo;
+    this.renderedPages[`${pageInfo.documentId}:${pageInfo.pageNumber}`] = pageInfo;
+
+    const fields = (this.template?.fields || []).filter(field => {
+      // Templates created on the new builder have document_id set, but old ones may not.
+      // If document_id is missing, we assume it's for the first document or use legacy logic.
+      // However, for this fix, we primarily care about multi-doc templates which should have IDs.
+      if (field['document_id']) {
+        return field['document_id'] === pageInfo.documentId && field.page === pageInfo.pageNumber;
+      }
+      return field.page === pageInfo.pageNumber;
+    });
+
     // console.log('[PREVIEW] Page rendered', pageInfo, fields);
-    // fields.forEach(field => renderDocumentField(field, pageInfo, {disabled: true, editable: false, draggable: false}));
+    fields.forEach(field => renderDocumentField('template', field, pageInfo, {disabled: true, editable: false, draggable: false}));
   }
 
   render() {
