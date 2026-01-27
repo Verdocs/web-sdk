@@ -157,7 +157,7 @@ export const Store = {
       const roleNames = (envelope.recipients || []).map(recipient => recipient.role_name);
       const index = roleNames.findIndex(name => name === field.role_name);
 
-      return {index, field: fieldOverride || field};
+      return {index: Math.max(index, 0), field: fieldOverride || field};
     }
   },
 };

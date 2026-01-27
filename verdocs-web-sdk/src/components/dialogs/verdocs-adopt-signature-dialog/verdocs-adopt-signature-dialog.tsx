@@ -590,8 +590,9 @@ export class VerdocsAdoptSignatureDialog {
           <div style={{fontSize: '13px', fontWeight: '400', marginTop: '8px'}}>Signature Preview</div>
           <canvas
             ref={el => (this.signatureElement = el as HTMLCanvasElement)}
-            width="300"
+            // width="300"
             height="79"
+            class="signature-canvas"
             onPointerDown={this.handleSigPointerDown}
             onPointerMove={this.handleSigPointerMove}
             onPointerUp={this.handleSigPointerUp}
@@ -602,8 +603,9 @@ export class VerdocsAdoptSignatureDialog {
           <div style={{fontSize: '13px', fontWeight: '400', marginTop: '8px'}}>Initials Preview</div>
           <canvas
             ref={el => (this.initialsElement = el as HTMLCanvasElement)}
-            width="300"
+            // width="300"
             height="79"
+            class="initials-canvas"
             onPointerDown={this.handleInitialsPointerDown}
             onPointerMove={this.handleInitialsPointerMove}
             onPointerUp={this.handleInitialsPointerUp}

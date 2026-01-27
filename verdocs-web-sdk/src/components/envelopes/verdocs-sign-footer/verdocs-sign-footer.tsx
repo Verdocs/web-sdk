@@ -188,7 +188,7 @@ export class VerdocsSignFooter {
       <Host class={{'has-buttons': hasButtons, 'no-buttons': !hasButtons, 'has-powered-by': hasPoweredBy, 'has-links': hasLinks, 'just-buttons': !hasPoweredBy && !hasLinks}}>
         {this.envelope?.organization?.powered_by_label && (
           <div class="powered-by">
-            {this.envelope?.organization?.powered_by_label ? (
+            {this.envelope?.organization?.powered_by_url ? (
               <a href={this.envelope?.organization?.powered_by_url} target="_blank" rel="noopener noreferrer">
                 <span>{this.envelope?.organization?.powered_by_label}</span>
               </a>

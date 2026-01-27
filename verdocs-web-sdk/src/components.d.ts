@@ -3006,9 +3006,9 @@ declare global {
         new (): HTMLVerdocsDialogElement;
     };
     interface HTMLVerdocsDisclosureDialogElementEventMap {
-        "decline": { first_name: string; last_name: string; email: string; phone: string; message: string };
-        "delegate": { first_name: string; last_name: string; email: string; phone: string; message: string };
-        "accept": { first_name: string; last_name: string; email: string; phone: string; message: string };
+        "decline": {first_name: string; last_name: string; email: string; phone: string; message: string};
+        "delegate": {first_name: string; last_name: string; email: string; phone: string; message: string};
+        "accept": {first_name: string; last_name: string; email: string; phone: string; message: string};
     }
     /**
      * Display e-signing disclosures with options to delegate, decline or proceed.
@@ -5010,15 +5010,15 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user chooses to proceed.
          */
-        "onAccept"?: (event: VerdocsDisclosureDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>) => void;
+        "onAccept"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
         /**
           * Event fired when the user chooses to decline.
          */
-        "onDecline"?: (event: VerdocsDisclosureDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>) => void;
+        "onDecline"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
         /**
           * Event fired when the user chooses to delegate signing.
          */
-        "onDelegate"?: (event: VerdocsDisclosureDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>) => void;
+        "onDelegate"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
     }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden

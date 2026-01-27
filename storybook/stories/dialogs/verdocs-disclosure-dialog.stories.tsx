@@ -7,6 +7,7 @@ export default {
   component: 'verdocs-disclosure-dialog',
   args: {
     disclosures: DEFAULT_DISCLOSURES,
+    delegator: false,
   },
   argTypes: {
     onNext: {
@@ -20,7 +21,7 @@ export default {
   },
 } as Meta;
 
-export const DisclosureDialog = ({disclosures, onNext, onExit}) =>
+export const DisclosureDialog = ({disclosures, delegator, onNext, onExit}) =>
   html`<div style="width: 500px; height: 600px;">
-    <verdocs-disclosure-dialog .disclosures=${disclosures} @exit=${onExit} @next=${onNext} />
+    <verdocs-disclosure-dialog .disclosures=${disclosures} .delegator=${delegator} @exit=${onExit} @next=${onNext} />
   </div>`;

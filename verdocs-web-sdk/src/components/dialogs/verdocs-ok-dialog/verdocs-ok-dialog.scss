@@ -9,38 +9,44 @@ verdocs-ok-dialog {
   }
 
   .buttons {
-    gap: 20px;
+    gap: 12px;
     display: flex;
-    margin-top: 24px;
+    margin-top: 0;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-end;
 
     button {
-      flex: 1;
-      border: 0;
-      height: 38px;
+      padding: 8px 16px;
+      height: 40px;
       display: flex;
-      color: #ffffff;
       font-size: 14px;
+      font-weight: 400;
       cursor: pointer;
-      border-radius: 6px;
       align-items: center;
+      border-radius: var(--verdocs-button-radius, 4px);
       justify-content: center;
+      transition: all 0.2s ease;
 
       &.cancel {
-        background-color: $verdocs-button-purple;
+        background-color: transparent;
+        border: var(--verdocs-button-secondary-border, 1px solid #d1d5db);
+        color: var(--verdocs-button-secondary-color, #374151);
       }
 
       &.ok {
-        background-color: $verdocs-button-green;
+        background-color: var(--verdocs-primary-color, $verdocs-green);
+        border: 1px solid transparent;
+        color: #ffffff;
 
-        &.single {
-          max-width: 150px;
+        &:hover {
+          background-color: var(--verdocs-primary-color-hover, $verdocs-green-shade);
         }
       }
 
       &:disabled {
-        background-color: $verdocs-button-disabled;
+        background-color: var(--verdocs-button-disabled-bg, #e5e7eb);
+        color: var(--verdocs-button-disabled-color, #9ca3af);
+        cursor: not-allowed;
       }
     }
   }

@@ -1,0 +1,112 @@
+:root {
+  /* Default Theme Variables */
+  --verdocs-required-field-border: #cc0000;
+  --verdocs-field-radius: 0;
+  --verdocs-field-text-color: #000000;
+  --verdocs-attachment-icon-color: #339933;
+
+  /* Signer Colors (Default Theme) */
+  --signer-1-color: #ffe69c;
+  --signer-2-color: #e3c3e9;
+  --signer-3-color: #c1e1fb;
+  --signer-4-color: #dce775;
+  --signer-5-color: #7986cb;
+  --signer-6-color: #4db6ac;
+  --signer-7-color: #ffcaa5;
+  --signer-8-color: #02f7be;
+  --signer-9-color: #ff8a65;
+  --signer-10-color: #52ff4f;
+
+  /* Signer Colors Faded (Default 90%) */
+  --signer-1-color-faded: #ffe69ce6;
+  --signer-2-color-faded: #e3c3e9e6;
+  --signer-3-color-faded: #c1e1fbe6;
+  --signer-4-color-faded: #dce775e6;
+  --signer-5-color-faded: #7986cbe6;
+  --signer-6-color-faded: #4db6ace6;
+  --signer-7-color-faded: #ffcaa5e6;
+  --signer-8-color-faded: #02f7bee6;
+  --signer-9-color-faded: #ff8a65e6;
+  --signer-10-color-faded: #52ff4fe6;
+}
+
+/* Signer Color Utility Classes */
+.signer-1 {
+  background-color: var(--signer-1-color-faded) !important;
+}
+
+.signer-1:hover {
+  background-color: var(--signer-1-color) !important;
+}
+
+.signer-2 {
+  background-color: var(--signer-2-color-faded) !important;
+}
+
+.signer-2:hover {
+  background-color: var(--signer-2-color) !important;
+}
+
+.signer-3 {
+  background-color: var(--signer-3-color-faded) !important;
+}
+
+.signer-3:hover {
+  background-color: var(--signer-3-color) !important;
+}
+
+.signer-4 {
+  background-color: var(--signer-4-color-faded) !important;
+}
+
+.signer-4:hover {
+  background-color: var(--signer-4-color) !important;
+}
+
+.signer-5 {
+  background-color: var(--signer-5-color-faded) !important;
+}
+
+.signer-5:hover {
+  background-color: var(--signer-5-color) !important;
+}
+
+.signer-6 {
+  background-color: var(--signer-6-color-faded) !important;
+}
+
+.signer-6:hover {
+  background-color: var(--signer-6-color) !important;
+}
+
+.signer-7 {
+  background-color: var(--signer-7-color-faded) !important;
+}
+
+.signer-7:hover {
+  background-color: var(--signer-7-color) !important;
+}
+
+.signer-8 {
+  background-color: var(--signer-8-color-faded) !important;
+}
+
+.signer-8:hover {
+  background-color: var(--signer-8-color) !important;
+}
+
+.signer-9 {
+  background-color: var(--signer-9-color-faded) !important;
+}
+
+.signer-9:hover {
+  background-color: var(--signer-9-color) !important;
+}
+
+.signer-10 {
+  background-color: var(--signer-10-color-faded) !important;
+}
+
+.signer-10:hover {
+  background-color: var(--signer-10-color) !important;
+}

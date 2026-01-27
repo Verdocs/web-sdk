@@ -3,6 +3,7 @@ import {setCustomElementsManifest} from '@storybook/web-components';
 import customElements from '../../verdocs-web-sdk/dist/custom-elements.json';
 import {defineCustomElements} from '../../verdocs-web-sdk/dist/esm/loader';
 
+import '../../verdocs-web-sdk/src/globals.css';
 import '../../verdocs-web-sdk/src/overrides.css';
 
 defineCustomElements();

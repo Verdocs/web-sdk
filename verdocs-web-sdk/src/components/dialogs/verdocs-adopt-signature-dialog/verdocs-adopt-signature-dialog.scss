@@ -43,6 +43,10 @@ verdocs-adopt-signature-dialog {
     background: #fafafa;
     box-sizing: border-box;
     border: 1px solid #d1d1d1;
+
+    &.initials-canvas {
+      max-width: 50%;
+    }
   }
 
   .disclaimer {

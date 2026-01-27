@@ -91,8 +91,6 @@ export class VerdocsSign {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
-  // @State() roleNames: string[] = [];
-  // @State() sortedRecipients: IRecipient[] = [];
   @State() recipient: IRecipient | null = null;
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
@@ -125,7 +123,7 @@ export class VerdocsSign {
   @State() loading = true;
   @State() envelope: IEnvelope | null = null;
 
-  private renderedPages: Record<number, IDocumentPageInfo> = {};
+  private renderedPages: Record<string, IDocumentPageInfo> = {};
 
   async componentDidLoad() {
     if (!this.envelopeId) {
@@ -169,6 +167,10 @@ export class VerdocsSign {
 
   processAuthResponse(response: ISignerTokenResponse) {
     const {envelope, recipient} = response;
+
+    // TODO: Temporary fix for multi-doc ordering until the server-side ordering is fixed
+    envelope.documents?.sort((a, b) => (a.order !== b.order ? b.order - a.order : b.created_at.localeCompare(a.created_at)));
+
     const {auth_step} = recipient;
     this.recipient = recipient;
     this.envelope = envelope;
@@ -344,6 +346,13 @@ export class VerdocsSign {
           return this.updateRecipientFieldValue(field.name, updateResult);
         }
 
+        // If we already have an initials block, apply it
+        if (this.initialId) {
+          console.log('[SIGN] Reusing initial', this.initialId);
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, this.initialId, false);
+          return this.updateRecipientFieldValue(field.name, updateResult);
+        }
+
         // If it's a UUID, it's an existing initial ID we can just reuse
         if (typeof e.detail === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.detail)) {
           console.log('[SIGN] Reusing initial', e.detail);
@@ -379,6 +388,13 @@ export class VerdocsSign {
         if (e.detail === null) {
           console.log('[SIGN] Clearing signature');
           const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, null, false);
+          return this.updateRecipientFieldValue(field.name, updateResult);
+        }
+
+        // If we already have a signature block, apply it
+        if (this.signatureId) {
+          console.log('[SIGN] Reusing signature', this.signatureId);
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, this.signatureId, false);
           return this.updateRecipientFieldValue(field.name, updateResult);
         }
 
@@ -430,14 +446,14 @@ export class VerdocsSign {
     return recipientFields;
   }
 
-  async handleNext() {
+  handleNext() {
     if (this.nextSubmits) {
       try {
         // Patches the date picker to be forcibly removed if still showing during submission
         document.getElementById('air-datepicker-global-container')?.remove();
 
         this.submitting = true;
-        const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
+        const result = envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId);
         console.log('[SIGN] Submitted successfully', result);
         // TODO: The "proper" way is generating an error from Stencil
         //  NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which
@@ -466,33 +482,7 @@ export class VerdocsSign {
       return;
     }
 
-    // Find and focus the next incomplete field (that is fillable)
-    const emptyFields = this.getSortedFillableFields().filter(field => field.required && !isFieldFilled(field, this.getRecipientFields()));
-    sortFields(emptyFields);
-
-    const focusedIndex = emptyFields.findIndex(field => field.name === this.focusedField);
-    let nextFocusedIndex = focusedIndex + 1;
-    if (nextFocusedIndex >= emptyFields.length) {
-      nextFocusedIndex = 0;
-    }
-
-    let nextRequiredField = emptyFields[nextFocusedIndex];
-    // console.log('Next field', nextRequiredField, emptyFields);
-
-    // Skip signature and initial fields that are already filled in. We have to count our "skips" just in case, to avoid infinite loops.
-    let skips = 0;
-    if (skips < emptyFields.length && ['signature', 'initial'].includes(nextRequiredField.type) && ['initialed', 'signed'].includes(nextRequiredField.value)) {
-      skips++;
-      nextFocusedIndex++;
-      if (nextFocusedIndex >= emptyFields.length) {
-        nextFocusedIndex = 0;
-      }
-      nextRequiredField = emptyFields[nextFocusedIndex];
-    }
-
-    if (skips >= emptyFields.length) {
-      nextRequiredField = null;
-    }
+    const nextRequiredField = this.getNextRequiredField();
 
     if (nextRequiredField) {
       const id = getFieldId(nextRequiredField);
@@ -523,16 +513,44 @@ export class VerdocsSign {
   }
 
   getNextRequiredField() {
+    // Find and focus the next incomplete field (that is fillable)
     const emptyFields = this.getSortedFillableFields().filter(field => field.required && !isFieldFilled(field, this.getRecipientFields()));
     sortFields(emptyFields);
 
-    const focusedIndex = emptyFields.findIndex(field => field.name === this.focusedField);
+    // If everything required is filled, try optional fields?
+    // The previous logic only looked for required fields for "Next".
+    // If we want "Fill or Skip", we should probably look for ANY unfilled field if we want to guide them to optionals too.
+    // BUT the requirement said: "just want to show a single flag for whatever the next field is the recipient needs to fill out."
+    // "Needs to fill out" strongly implies required.
+    // However, goal #4 says: "If it is optional, it should say 'Fill or Skip'".
+    // This implies we DO want to catch optional fields too.
+    if (emptyFields.length === 0) {
+      const allUnfilled = this.getSortedFillableFields().filter(field => !isFieldFilled(field, this.getRecipientFields()));
+      sortFields(allUnfilled);
+      if (allUnfilled.length > 0) {
+        // If we are here, there are no required fields left, but there are optional ones.
+        // We need to decide if "Next" should jump to them.
+        // Assuming yes based on "Fill or Skip".
+        // Let's use the same logic but with the optional list.
+        return this.getNextFieldFromList(allUnfilled);
+      }
+      return null;
+    }
+
+    return this.getNextFieldFromList(emptyFields);
+  }
+
+  getNextFieldFromList(fields: IEnvelopeField[]) {
+    const focusedIndex = fields.findIndex(field => field.name === this.focusedField);
     let nextFocusedIndex = focusedIndex + 1;
-    if (nextFocusedIndex >= emptyFields.length) {
+    if (nextFocusedIndex >= fields.length) {
       nextFocusedIndex = 0;
     }
 
-    return {index: nextFocusedIndex, field: emptyFields[nextFocusedIndex]};
+    let nextRequiredField = fields[nextFocusedIndex];
+
+    // Note: isFieldFilled check above should handle 'initialed'/'signed'.
+    return nextRequiredField;
   }
 
   handlePrev() {
@@ -549,13 +567,12 @@ export class VerdocsSign {
   }
 
   updateAllFlags() {
-    Object.keys(this.renderedPages).forEach(pageNumber => {
-      this.updateFlagsForPage(Number(pageNumber));
+    Object.values(this.renderedPages).forEach(pageInfo => {
+      this.updateFlagsForPage(pageInfo);
     });
   }
 
-  updateFlagsForPage(pageNumber: number) {
-    const pageInfo = this.renderedPages[pageNumber];
+  updateFlagsForPage(pageInfo: IDocumentPageInfo) {
     if (!pageInfo) return;
 
     const controlsDiv = document.getElementById(pageInfo.containerId + '-controls');
@@ -565,6 +582,36 @@ export class VerdocsSign {
     const existingFlags = controlsDiv.querySelectorAll('.verdocs-flag-instance');
     existingFlags.forEach(el => el.remove());
 
+    const nextField = this.getNextRequiredField();
+    if (nextField && nextField.page === pageInfo.pageNumber && nextField.document_id === pageInfo.documentId) {
+      const variant = 'fill';
+      let label = 'FILL';
+      let showSkip = false;
+
+      if (!nextField.required) {
+        label = 'FILL or SKIP';
+        showSkip = true; // Use the X to skip? Or just text? "Fill or Skip" implies maybe just text.
+        // But the previous implementation set `showSkip = true` if not required.
+      }
+
+      renderDocumentFlag(pageInfo, nextField.y, nextField.height || defaultHeight(nextField.type), {
+        variant,
+        label,
+        showSkip,
+        onSkip: () => {
+          this.handleNext();
+        },
+        onClick: () => {
+          const id = getFieldId(nextField);
+          const el = document.getElementById(id) as any;
+          el?.scrollIntoView({behavior: 'smooth', block: 'center'});
+          el?.focusField?.();
+        },
+      });
+    }
+
+    // LEGACY FLAG LOGIC - Commented out for now
+    /*
     // Get fields for this page
     const myFields = this.getRecipientFields().filter(f => f.document_id === pageInfo.documentId && f.page === pageNumber);
     // Sort priority:
@@ -655,6 +702,7 @@ export class VerdocsSign {
         });
       }
     });
+    */
   }
 
   attachFieldAttributes(pageInfo, field, el) {
@@ -746,7 +794,7 @@ export class VerdocsSign {
 
   handlePageRendered(e: any) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    this.renderedPages[pageInfo.pageNumber] = pageInfo;
+    this.renderedPages[`${pageInfo.documentId}:${pageInfo.pageNumber}`] = pageInfo;
 
     console.log('Page rendered', pageInfo);
 
@@ -792,7 +840,7 @@ export class VerdocsSign {
       });
 
     this.checkRecipientFields();
-    this.updateFlagsForPage(pageInfo.pageNumber);
+    this.updateFlagsForPage(pageInfo);
   }
 
   handleAuthenticateSigner(params: TAuthenticateRecipientRequest) {
@@ -926,24 +974,34 @@ export class VerdocsSign {
 
     if (this.declining) {
       return (
-        <verdocs-ok-dialog
-          heading="Decline Signing Request"
-          message={`If you decline to sign this request, you will not be able to sign again in the future. The envelope sender will be notified.`}
-          buttonLabel="OK"
-          showCancel={true}
-          onExit={() => (this.declining = false)}
-          onNext={() => {
-            envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId)
-              .then(r => {
-                console.log('[SIGN] Decline result', r);
-                window.location.reload();
-              })
-              .catch(e => {
-                console.warn('[SIGN] Error declining signing session', e);
-                VerdocsToast('Unable to decline, please try again later', {style: 'error'});
-              });
-          }}
-        />
+        <Host class="agreed">
+          <div class="document" style={{paddingTop: '15px'}}>
+            <img
+              src="https://public-assets.verdocs.com/loading-placeholder.png"
+              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              alt="Placeholder page"
+            />
+          </div>
+
+          <verdocs-ok-dialog
+            heading="Decline Signing Request"
+            message={`If you decline to sign this request, you will not be able to sign again in the future. The envelope sender will be notified.`}
+            buttonLabel="OK"
+            showCancel={true}
+            onExit={() => (this.declining = false)}
+            onNext={() => {
+              envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId)
+                .then(r => {
+                  console.log('[SIGN] Decline result', r);
+                  window.location.reload();
+                })
+                .catch(e => {
+                  console.warn('[SIGN] Error declining signing session', e);
+                  VerdocsToast('Unable to decline, please try again later', {style: 'error'});
+                });
+            }}
+          />
+        </Host>
       );
     }
 
@@ -1172,12 +1230,24 @@ export class VerdocsSign {
           );
         })()}
 
-        <div class="document" style={{width: '64%', marginLeft: '260px'}}>
+        <div class="document signed-document-container">
           {(this.envelope.documents || []).map(envelopeDocument => {
             const pageNumbers = integerSequence(1, envelopeDocument.pages);
 
             return (
               <Fragment>
+                {this.envelope.documents.length > 1 && (
+                  <div class="document-separator">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M20 2H8C6.9 2 6 2.9 6 4V16C6 17.1 6.9 18 8 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H8V4H20V16ZM4 6H2V20C2 21.1 2.9 22 4 22H18V20H4V6ZM16 12V9C16 8.45 15.55 8 15 8H10V14H15C15.55 14 16 13.55 16 13V12ZM14.5 9.5L14.5001 12.5H11.5V9.5H14.5Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <span>{envelopeDocument.name}</span>
+                  </div>
+                )}
+
                 {pageNumbers.map(pageNumber => {
                   const pageSize = envelopeDocument.page_sizes?.[pageNumber] || {width: 612, height: 792};
 
@@ -1253,6 +1323,7 @@ export class VerdocsSign {
               this.initialId = initResult.id;
 
               this.showSpinner = false;
+              this.adoptingSignature = false;
             }}
             onExit={() => (this.adoptingSignature = false)}
           />

@@ -47,6 +47,54 @@ verdocs-sign {
       width: 100%;
       max-width: 1028px;
     }
+
+    .document-separator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      width: 100%;
+      max-width: 1028px; // Match standard page width + margins
+      box-sizing: border-box;
+      background-color: $verdocs-grey-1;
+      color: white;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      margin-top: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      svg {
+        flex-shrink: 0;
+      }
+
+      // Remove margin for the very first one if desired, but 20px spacing is probably good even for the first one
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+  }
+
+  // Formerly inline styles, moved here for responsive control
+  .signed-document-container {
+    width: 64%;
+    margin-left: 260px;
+  }
+
+  @media (max-width: 600px) {
+    .signed-document-container {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    > .document {
+      padding-right: 15px;
+    }
+
+    // Hide flags on mobile
+    .verdocs-flag-instance {
+      display: none !important;
+    }
   }
 
   .cover {

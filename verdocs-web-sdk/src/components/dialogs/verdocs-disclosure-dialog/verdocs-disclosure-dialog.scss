@@ -1,7 +1,6 @@
 @import '../../../theme.scss';
 
 verdocs-disclosure-dialog {
-
   /* Content styles specifically for disclosure dialog */
   .heading {
     display: flex;
@@ -16,16 +15,16 @@ verdocs-disclosure-dialog {
       justify-content: center;
       padding: 4px;
       border-radius: 50%;
-      color: #6b7280;
+      color: var(--verdocs-close-button-color, #6b7280);
       transition: all 0.2s ease;
 
       &:hover {
-        background-color: #f3f4f6;
-        color: #111827;
+        background-color: var(--verdocs-close-button-hover-bg, #f3f4f6);
+        color: var(--verdocs-close-button-hover-color, #111827);
       }
 
       svg {
-        stroke: currentColor;
+        fill: currentColor;
       }
     }
   }
@@ -74,12 +73,12 @@ verdocs-disclosure-dialog {
       font-size: 14px;
       line-height: 20px;
 
-      label>input[type='checkbox']+* {
+      label > input[type='checkbox'] + * {
         display: flex;
         align-items: flex-start;
       }
 
-      label>input[type='checkbox']+*::before {
+      label > input[type='checkbox'] + *::before {
         width: 16px;
         height: 16px;
         line-height: 16px;
@@ -91,9 +90,8 @@ verdocs-disclosure-dialog {
   }
 
   a {
-    color: $verdocs-purple-shade;
+    color: var(--verdocs-link-color, $verdocs-purple-shade);
   }
-
 
   .buttons {
     gap: 12px;
@@ -105,33 +103,30 @@ verdocs-disclosure-dialog {
     button {
       padding: 8px 16px;
       height: 40px;
-      /* From design implied/standard */
       display: flex;
       font-size: 14px;
       font-weight: 400;
       cursor: pointer;
       align-items: center;
-      border-radius: 4px;
+      border-radius: var(--verdocs-button-radius, 4px);
       justify-content: center;
       transition: all 0.2s ease;
 
       &.decline {
+        margin-right: auto;
         background-color: transparent;
-        border: 1px solid #d1d5db;
-        /* #d1d1d1 per request approx */
-        color: #374151;
+        border: var(--verdocs-button-secondary-border, 1px solid #d1d5db);
+        color: var(--verdocs-button-secondary-color, #374151);
 
         &:hover {
-          background-color: #f9fafb;
+          background-color: var(--verdocs-button-secondary-hover-bg, #f9fafb);
         }
       }
 
       &.delegate {
         background-color: transparent;
-        border: 1px solid #d1d5db;
-        color: #374151;
-        margin-right: auto;
-        /* Push to left if needed or just keep with decline? Layout unclear */
+        border: var(--verdocs-button-secondary-border, 1px solid #d1d5db);
+        color: var(--verdocs-button-secondary-color, #374151);
       }
 
       &.proceed {
@@ -141,13 +136,12 @@ verdocs-disclosure-dialog {
 
         &:hover {
           background-color: var(--verdocs-primary-color-hover, $verdocs-green-shade);
-          /* Slightly darker */
         }
       }
 
       &:disabled {
-        background-color: #e5e7eb;
-        color: #9ca3af;
+        background-color: var(--verdocs-button-disabled-bg, #e5e7eb);
+        color: var(--verdocs-button-disabled-color, #9ca3af);
         cursor: not-allowed;
       }
     }
