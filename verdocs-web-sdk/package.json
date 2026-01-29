@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "6.5.0-beta.6",
+  "version": "6.5.0-beta.8",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -19,7 +19,8 @@
   "scripts": {
     "push": "npm run build && npm publish",
     "push-beta": "npm run build && npm publish --tag beta",
-    "build": "stencil build --docs",
+    "build": "stencil build --docs && npm run copy-assets",
+    "copy-assets": "cp src/globals.css dist/ && cp src/overrides.css dist/ && cp src/globals.css ../verdocs-web-sdk-react/src/ && cp src/overrides.css ../verdocs-web-sdk-react/src/ && cp src/globals.css ../verdocs-web-sdk-angular/src/ && cp src/overrides.css ../verdocs-web-sdk-angular/src/ && cp src/globals.css ../verdocs-web-sdk-vue/lib/ && cp src/overrides.css ../verdocs-web-sdk-vue/lib/",
     "serve": "stencil build --dev --watch --serve",
     "start": "stencil build --dev --watch --docs",
     "test": "stencil test --spec",

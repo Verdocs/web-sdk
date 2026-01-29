@@ -76,6 +76,11 @@ verdocs-kba-dialog {
     verdocs-text-input {
       width: 100%;
       margin-bottom: 0;
+
+      .input-element {
+        color: #5f5c5c;
+        font-size: 14px;
+      }
     }
 
     verdocs-select-input {
@@ -105,6 +110,7 @@ verdocs-kba-dialog {
 
     label {
       flex: 0 0 120px;
+      font-size: 12px;
       font-weight: 500;
       line-height: 10px;
       text-align: right;
@@ -117,6 +123,7 @@ verdocs-kba-dialog {
 
       input {
         width: 100%;
+        color: #5f5c5c;
         box-sizing: border-box;
       }
     }

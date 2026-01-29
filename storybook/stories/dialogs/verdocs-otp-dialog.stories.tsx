@@ -6,26 +6,12 @@ export default {
   component: 'verdocs-otp-dialog',
   args: {
     method: 'email',
-    helptitle: 'Previous Addresses',
-    helptext: 'Please select the address below that you have most recently lived at.',
-    label: 'Enter Your PIN:',
-    placeholder: 'Please enter your PIN...',
-    step: 1,
-    steps: 3,
-    choices: ['553 Arbor Dr', '18 Lacey Ln', '23A Ball Ct', '2375 Cavallo Blvd', '23-1 RR-7', '151 Boulder Rd'],
-    recipient: {
-      first_name: 'John',
-      last_name: 'Smith',
-      address: '18 Lacey Ln',
-      zip: '12345',
-      dob: null,
-    },
   },
   argTypes: {
-    mode: {
+    method: {
       control: 'select',
-      options: ['text', 'choice', 'identity'],
-      description: 'Choose between text-input and multiple-choice responses.',
+      options: ['email', 'sms'],
+      description: 'How should the OTP be sent to the user?',
     },
     onNext: {
       action: 'next',

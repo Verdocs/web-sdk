@@ -70,4 +70,16 @@
   --signer-8-color-faded: #39804cbf;
   --signer-9-color-faded: #02a2bebf;
   --signer-10-color-faded: #e57200bf;
+
+  /* Input Field Overrides */
+  verdocs-text-input input,
+  verdocs-text-input .input-element,
+  verdocs-select-input select,
+  verdocs-date-input input,
+  input.date-input {
+    border: 1px solid #d1d1d1 !important;
+    border-bottom: 1px solid #616161 !important;
+    border-radius: 4px !important;
+    color: #242424 !important;
+  }
 }

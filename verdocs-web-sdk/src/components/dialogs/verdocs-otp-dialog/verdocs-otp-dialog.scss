@@ -8,36 +8,19 @@ verdocs-otp-dialog {
     box-sizing: border-box;
   }
 
-  .background-overlay {
-    position: fixed;
-    z-index: 10000;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0000007f;
-  }
-
-  .dialog {
-    width: 440px;
-    display: flex;
-    flex-direction: column;
-    border-radius: 4px;
-    overflow: hidden;
-    background: #fff;
-    padding: 16px;
-    gap: 10px;
-    box-shadow: 3px 3px 5px 1px rgba(40, 40, 40, 0.4);
-  }
+  // NOTE: background-overlay and .dialog are handled by verdocs-dialog
 
   .heading {
     display: flex;
     flex-direction: row;
-    font-size: 20px;
-    font-weight: 500;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+
+    .title {
+      font-size: 20px;
+      font-weight: 500;
+    }
   }
 
   .step {
@@ -46,24 +29,20 @@ verdocs-otp-dialog {
   }
 
   .help-box {
-    background-color: $border-color;
     display: flex;
     flex-direction: row;
-    padding: 14px;
+    padding: 0;
     align-items: center;
-    color: white;
+    color: black;
+    margin-bottom: 20px;
   }
 
   .help-details {
     display: flex;
     flex-direction: column;
-    margin-left: 15px;
+    margin-left: 0;
     font-size: 14px;
-  }
-
-  .help-icon {
-    width: 40px;
-    height: 40px;
+    gap: 5px;
   }
 
   .help-title {
@@ -80,7 +59,7 @@ verdocs-otp-dialog {
     flex-direction: row;
     gap: 10px;
     align-items: center;
-    margin: 16px 0 32px;
+    margin: 16px 0 0px; // Removed bottom margin as footer handles spacing
 
     label {
       flex: 0;
@@ -170,6 +149,7 @@ verdocs-otp-dialog {
     align-items: center;
     flex-direction: row;
     justify-content: flex-end;
+    width: 100%;
 
     verdocs-button {
       margin-left: 16px;

@@ -338,6 +338,11 @@ export namespace Components {
      * Display a simple dialog where the contents are provided via slots.
      */
     interface VerdocsDialog {
+        /**
+          * If true, clicking on the background overlay will not close the dialog.
+          * @default false
+         */
+        "persistent": boolean;
     }
     /**
      * Display e-signing disclosures with options to delegate, decline or proceed.
@@ -1540,11 +1545,6 @@ export namespace Components {
           * @default 'email'
          */
         "method": 'email' | 'sms';
-        /**
-          * For identity confirmation, the current recipient details.
-          * @default null
-         */
-        "recipient": IRecipient | null;
     }
     /**
      * Display a simple pagination control with individual buttons to move through the data set.
@@ -4992,6 +4992,11 @@ declare namespace LocalJSX {
           * Event fired when the dialog is dismissed by clicking the background overlay.
          */
         "onExit"?: (event: VerdocsDialogCustomEvent<any>) => void;
+        /**
+          * If true, clicking on the background overlay will not close the dialog.
+          * @default false
+         */
+        "persistent"?: boolean;
     }
     /**
      * Display e-signing disclosures with options to delegate, decline or proceed.
@@ -6431,11 +6436,6 @@ declare namespace LocalJSX {
           * Event fired when the process has completed successfully.
          */
         "onNext"?: (event: VerdocsOtpDialogCustomEvent<{response: ISignerTokenResponse}>) => void;
-        /**
-          * For identity confirmation, the current recipient details.
-          * @default null
-         */
-        "recipient"?: IRecipient | null;
     }
     /**
      * Display a simple pagination control with individual buttons to move through the data set.

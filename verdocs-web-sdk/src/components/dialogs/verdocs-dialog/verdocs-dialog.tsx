@@ -1,4 +1,4 @@
-import {Component, h, Event, EventEmitter, Host} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Host, Prop} from '@stencil/core';
 
 /**
  * Display a simple dialog where the contents are provided via slots.
@@ -13,9 +13,18 @@ export class VerdocsDialog {
    */
   @Event({composed: true}) exit: EventEmitter;
 
+  /**
+   * If true, clicking on the background overlay will not close the dialog.
+   */
+  @Prop() persistent = false;
+
   // We need a separate event handler for clicking the background because it can
   // receive events "through" other child components
   handleDismiss(e: any) {
+    if (this.persistent) {
+      return;
+    }
+
     if (e.target.className === 'background-overlay') {
       e.preventDefault();
       this.exit?.emit();
