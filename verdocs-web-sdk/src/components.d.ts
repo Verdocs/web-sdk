@@ -1575,6 +1575,16 @@ export namespace Components {
         "selectedPage": number;
     }
     /**
+     * Prompt the user to confirm their identity with a passcode.
+     */
+    interface VerdocsPasscodeDialog {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
+         */
+        "endpoint": VerdocsEndpoint;
+    }
+    /**
      * Display a child component in a "portal", popping it out of the main DOM tree
      * to allow it to escape the bounds set by its parent.
      * @credit https://github.com/tomas-teston/stencil-portal for the basic
@@ -2652,6 +2662,10 @@ export interface VerdocsPaginationCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsPaginationElement;
 }
+export interface VerdocsPasscodeDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsPasscodeDialogElement;
+}
 export interface VerdocsPortalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsPortalElement;
@@ -3697,6 +3711,27 @@ declare global {
         prototype: HTMLVerdocsPaginationElement;
         new (): HTMLVerdocsPaginationElement;
     };
+    interface HTMLVerdocsPasscodeDialogElementEventMap {
+        "exit": any;
+        "next": {response: ISignerTokenResponse};
+    }
+    /**
+     * Prompt the user to confirm their identity with a passcode.
+     */
+    interface HTMLVerdocsPasscodeDialogElement extends Components.VerdocsPasscodeDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsPasscodeDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsPasscodeDialogElement, ev: VerdocsPasscodeDialogCustomEvent<HTMLVerdocsPasscodeDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsPasscodeDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsPasscodeDialogElement, ev: VerdocsPasscodeDialogCustomEvent<HTMLVerdocsPasscodeDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsPasscodeDialogElement: {
+        prototype: HTMLVerdocsPasscodeDialogElement;
+        new (): HTMLVerdocsPasscodeDialogElement;
+    };
     interface HTMLVerdocsPortalElementEventMap {
         "clickAway": void;
     }
@@ -4590,6 +4625,7 @@ declare global {
         "verdocs-organization-card": HTMLVerdocsOrganizationCardElement;
         "verdocs-otp-dialog": HTMLVerdocsOtpDialogElement;
         "verdocs-pagination": HTMLVerdocsPaginationElement;
+        "verdocs-passcode-dialog": HTMLVerdocsPasscodeDialogElement;
         "verdocs-portal": HTMLVerdocsPortalElement;
         "verdocs-preview": HTMLVerdocsPreviewElement;
         "verdocs-progress-bar": HTMLVerdocsProgressBarElement;
@@ -6470,6 +6506,24 @@ declare namespace LocalJSX {
         "selectedPage"?: number;
     }
     /**
+     * Prompt the user to confirm their identity with a passcode.
+     */
+    interface VerdocsPasscodeDialog {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default DefaultEndpoint
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+         */
+        "onExit"?: (event: VerdocsPasscodeDialogCustomEvent<any>) => void;
+        /**
+          * Event fired when the process has completed successfully.
+         */
+        "onNext"?: (event: VerdocsPasscodeDialogCustomEvent<{response: ISignerTokenResponse}>) => void;
+    }
+    /**
      * Display a child component in a "portal", popping it out of the main DOM tree
      * to allow it to escape the bounds set by its parent.
      * @credit https://github.com/tomas-teston/stencil-portal for the basic
@@ -7770,6 +7824,7 @@ declare namespace LocalJSX {
         "verdocs-organization-card": VerdocsOrganizationCard;
         "verdocs-otp-dialog": VerdocsOtpDialog;
         "verdocs-pagination": VerdocsPagination;
+        "verdocs-passcode-dialog": VerdocsPasscodeDialog;
         "verdocs-portal": VerdocsPortal;
         "verdocs-preview": VerdocsPreview;
         "verdocs-progress-bar": VerdocsProgressBar;
@@ -8110,6 +8165,10 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-pagination": LocalJSX.VerdocsPagination & JSXBase.HTMLAttributes<HTMLVerdocsPaginationElement>;
+            /**
+             * Prompt the user to confirm their identity with a passcode.
+             */
+            "verdocs-passcode-dialog": LocalJSX.VerdocsPasscodeDialog & JSXBase.HTMLAttributes<HTMLVerdocsPasscodeDialogElement>;
             /**
              * Display a child component in a "portal", popping it out of the main DOM tree
              * to allow it to escape the bounds set by its parent.

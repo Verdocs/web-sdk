@@ -547,10 +547,8 @@ export class VerdocsSign {
       nextFocusedIndex = 0;
     }
 
-    let nextRequiredField = fields[nextFocusedIndex];
-
     // Note: isFieldFilled check above should handle 'initialed'/'signed'.
-    return nextRequiredField;
+    return fields[nextFocusedIndex];
   }
 
   handlePrev() {
@@ -1028,39 +1026,7 @@ export class VerdocsSign {
     }
 
     if (this.authStep === 'passcode') {
-      return (
-        <Host class="kba">
-          <div id="verdocs-sign-header">
-            <div class="inner">
-              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-              <div class="title">{this.envelope.name}</div>
-            </div>
-          </div>
-
-          <div class="document" style={{paddingTop: '15px'}}>
-            <img
-              src="https://public-assets.verdocs.com/loading-placeholder.png"
-              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
-              alt="Placeholder page"
-            />
-          </div>
-
-          <div class="cover">
-            <div class="kba">
-              <verdocs-kba-dialog
-                mode="text"
-                step={1}
-                steps={1}
-                placeholder="Enter your passcode..."
-                helptitle="Document is protected by a Passcode"
-                helptext="Please enter your Passcode to proceed. If you do not have one, please contact the sender."
-                label="Passcode"
-                onNext={e => this.handleAuthenticateSigner({auth_method: 'passcode', code: e.detail as string})}
-              />
-            </div>
-          </div>
-        </Host>
-      );
+      return <verdocs-passcode-dialog endpoint={this.endpoint} onNext={e => this.processAuthResponse(e.detail.response)} />;
     }
 
     if (this.authStep === 'email') {

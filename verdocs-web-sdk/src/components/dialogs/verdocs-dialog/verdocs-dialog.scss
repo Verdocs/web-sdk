@@ -28,10 +28,10 @@ verdocs-dialog {
     display: flex;
     max-width: 95%;
     overflow: hidden;
-    border-radius: var(--verdocs-dialog-radius, 8px);
     background: #ffffff;
     flex-direction: column;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+    border-radius: var(--verdocs-dialog-radius, 8px);
   }
 
   .heading {
@@ -69,7 +69,6 @@ verdocs-dialog {
     p {
       margin: 0 0 16px 0;
     }
-
   }
 
   .footer {

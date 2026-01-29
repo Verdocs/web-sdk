@@ -1,6 +1,6 @@
 @import '../../../theme.scss';
 
-verdocs-otp-dialog {
+verdocs-passcode-dialog {
   font-family: $primary-font;
   box-sizing: border-box;
 
@@ -11,10 +11,10 @@ verdocs-otp-dialog {
   // NOTE: background-overlay and .dialog are handled by verdocs-dialog
 
   .heading {
-    display: flex;
-    flex-direction: row;
     width: 100%;
+    display: flex;
     align-items: center;
+    flex-direction: row;
     justify-content: space-between;
 
     .title {
@@ -24,25 +24,25 @@ verdocs-otp-dialog {
   }
 
   .step {
-    margin-left: 6px;
     color: #666;
+    margin-left: 6px;
   }
 
   .help-box {
+    padding: 0;
+    color: black;
     display: flex;
     flex-direction: row;
-    padding: 0;
     align-items: center;
-    color: black;
     margin-bottom: 20px;
   }
 
   .help-details {
+    gap: 5px;
     display: flex;
-    flex-direction: column;
     margin-left: 0;
     font-size: 14px;
-    gap: 5px;
+    flex-direction: column;
   }
 
   .help-title {
@@ -55,11 +55,11 @@ verdocs-otp-dialog {
   }
 
   .buttons {
+    width: 100%;
     display: flex;
     align-items: center;
     flex-direction: row;
     justify-content: flex-end;
-    width: 100%;
 
     verdocs-button {
       margin-left: 16px;
