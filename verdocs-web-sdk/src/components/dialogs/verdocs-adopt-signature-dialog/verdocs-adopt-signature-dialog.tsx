@@ -1,4 +1,5 @@
 import {Component, Prop, h, Event, EventEmitter, State} from '@stencil/core';
+import {SignatureXIcon} from '../../../utils/Icons';
 
 /**
  * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
@@ -36,6 +37,7 @@ export class VerdocsAdoptSignatureDialog {
   @State() mode: 'type' | 'draw' = 'type';
   @State() isDrawing = false;
   @State() hasDrawnSignature = false;
+  @State() hasDrawnInitials = false;
 
   private currentSigStroke: Array<{x: number; y: number}> = [];
   private allSigStrokes: Array<Array<{x: number; y: number}>> = [];
@@ -245,7 +247,7 @@ export class VerdocsAdoptSignatureDialog {
         return !this.enteredName || this.enteredName.trim().length === 0;
       case 'draw':
         // Disable if nothing has been drawn
-        return !this.hasDrawnSignature || this.allSigStrokes.length === 0 || this.allInitialsStrokes.length === 0;
+        return (!this.hasDrawnSignature && !this.hasDrawnInitials) || this.allSigStrokes.length === 0 || this.allInitialsStrokes.length === 0;
       default:
         return true;
     }
@@ -344,14 +346,14 @@ export class VerdocsAdoptSignatureDialog {
     this.currentInitialsStroke = [];
     this.allInitialsStrokes = [];
     this.lastInitialsPoint = null;
-    this.hasDrawnSignature = false;
+    this.hasDrawnInitials = false;
   }
 
-  handleClearDrawing(e: any) {
+  handleClearDrawing(e: any, type: 'signature' | 'initials' | 'all' = 'all') {
     e.stopPropagation();
     e.preventDefault();
-    this.clearSignatureCanvas();
-    this.clearInitialsCanvas();
+    if (type === 'all' || type === 'signature') this.clearSignatureCanvas();
+    if (type === 'all' || type === 'initials') this.clearInitialsCanvas();
   }
 
   getSigCanvasCoordinates(e: PointerEvent): {x: number; y: number} {
@@ -480,7 +482,7 @@ export class VerdocsAdoptSignatureDialog {
     }
 
     this.isDrawing = true;
-    this.hasDrawnSignature = true;
+    this.hasDrawnInitials = true;
 
     const point = this.getInitialsCanvasCoordinates(e);
     this.currentInitialsStroke = [point];
@@ -581,37 +583,57 @@ export class VerdocsAdoptSignatureDialog {
             <label>Drawn with touch, mouse, or stylus</label>
           </div>
 
-          <div class="draw-actions">
-            <button class="clear-button" onClick={e => this.handleClearDrawing(e)} disabled={!this.hasDrawnSignature}>
-              Clear
-            </button>
+          <div class="preview-header">
+            <div style={{fontSize: '13px', fontWeight: '400'}}>Signature Preview</div>
+            {this.mode === 'draw' && (
+              <button class="clear-button-text" onClick={e => this.handleClearDrawing(e, 'signature')} disabled={!this.hasDrawnSignature}>
+                Clear
+              </button>
+            )}
+          </div>
+          <div class="canvas-container signature-container">
+            <div class="signing-indicator">
+              <div class="x-icon" innerHTML={SignatureXIcon}></div>
+              <div class="signing-line"></div>
+            </div>
+            <canvas
+              ref={el => (this.signatureElement = el as HTMLCanvasElement)}
+              // width="300"
+              height="79"
+              class="signature-canvas"
+              onPointerDown={this.handleSigPointerDown}
+              onPointerMove={this.handleSigPointerMove}
+              onPointerUp={this.handleSigPointerUp}
+              onPointerCancel={this.handleSigPointerCancel}
+              style={{touchAction: 'none', cursor: 'crosshair'}}
+            />
           </div>
 
-          <div style={{fontSize: '13px', fontWeight: '400', marginTop: '8px'}}>Signature Preview</div>
-          <canvas
-            ref={el => (this.signatureElement = el as HTMLCanvasElement)}
-            // width="300"
-            height="79"
-            class="signature-canvas"
-            onPointerDown={this.handleSigPointerDown}
-            onPointerMove={this.handleSigPointerMove}
-            onPointerUp={this.handleSigPointerUp}
-            onPointerCancel={this.handleSigPointerCancel}
-            style={{touchAction: 'none', cursor: 'crosshair'}}
-          />
-
-          <div style={{fontSize: '13px', fontWeight: '400', marginTop: '8px'}}>Initials Preview</div>
-          <canvas
-            ref={el => (this.initialsElement = el as HTMLCanvasElement)}
-            // width="300"
-            height="79"
-            class="initials-canvas"
-            onPointerDown={this.handleInitialsPointerDown}
-            onPointerMove={this.handleInitialsPointerMove}
-            onPointerUp={this.handleInitialsPointerUp}
-            onPointerCancel={this.handleInitialsPointerCancel}
-            style={{touchAction: 'none', cursor: 'crosshair'}}
-          />
+          <div class="preview-header">
+            <div style={{fontSize: '13px', fontWeight: '400'}}>Initials Preview</div>
+            {this.mode === 'draw' && (
+              <button class="clear-button-text" onClick={e => this.handleClearDrawing(e, 'initials')} disabled={!this.hasDrawnInitials}>
+                Clear
+              </button>
+            )}
+          </div>
+          <div class="canvas-container initials-container">
+            <div class="signing-indicator">
+              <div class="x-icon" innerHTML={SignatureXIcon}></div>
+              <div class="signing-line"></div>
+            </div>
+            <canvas
+              ref={el => (this.initialsElement = el as HTMLCanvasElement)}
+              // width="300"
+              height="79"
+              class="initials-canvas"
+              onPointerDown={this.handleInitialsPointerDown}
+              onPointerMove={this.handleInitialsPointerMove}
+              onPointerUp={this.handleInitialsPointerUp}
+              onPointerCancel={this.handleInitialsPointerCancel}
+              style={{touchAction: 'none', cursor: 'crosshair'}}
+            />
+          </div>
 
           <div class="disclaimer">
             By clicking «Adopt Signature», I agree that the signature and initials above will be the electronic representation of my signature and initials for all purposes when I

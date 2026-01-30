@@ -50,6 +50,16 @@ export class VerdocsSigningProgress {
    */
   @Event({composed: true}) exit: EventEmitter;
 
+  /**
+   * List of remaining fields to complete
+   */
+  @Prop() remainingFields: any[] = [];
+
+  /**
+   * Detailed progress counts for required and optional fields
+   */
+  @Prop() progress: {required: {remaining: number; total: number}; optional: {remaining: number; total: number}} | null = null;
+
   renderSuccessIcon() {
     return (
       <svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -70,7 +80,7 @@ export class VerdocsSigningProgress {
       return (
         <div class="field-completed">
           <div class="icon">{this.renderSuccessIcon()}</div>
-          <span class="text">Successfully signed!</span>
+          <span class="text">Ready to submit.</span>
         </div>
       );
     }
@@ -104,7 +114,7 @@ export class VerdocsSigningProgress {
       <div class="card completed">
         <div class="header-completed">
           <div class="icon">{this.renderSuccessIcon()}</div>
-          Completed
+          Ready to Submit
         </div>
         <div class="description">You have entered all requested signatures. Select Submit to complete the signing process.</div>
         <div class="separator" />
@@ -123,7 +133,20 @@ export class VerdocsSigningProgress {
     return (
       <div class="card">
         <div class="header">
-          {this.current} of {this.total} fields
+          {this.progress
+            ? [
+                <div class="progress-line">
+                  {this.progress.required.remaining} of {this.progress.required.total} required fields remaining
+                </div>,
+                this.progress.optional.total > 0 ? (
+                  <div class="progress-line optional">
+                    {this.progress.optional.remaining} of {this.progress.optional.total} optional fields remaining
+                  </div>
+                ) : null,
+              ]
+            : this.remainingFields && this.remainingFields.length > 0
+              ? `${this.remainingFields.length} fields remaining`
+              : `${this.current} of ${this.total} fields`}
         </div>
 
         <div class="body">{this.renderContent()}</div>

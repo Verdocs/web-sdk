@@ -1898,6 +1898,11 @@ export namespace Components {
           * @default null
          */
         "roleId": string | null;
+        /**
+          * The style of the toolbar to display.
+          * @default 'controls'
+         */
+        "toolbarStyle": 'controls' | 'menu';
     }
     /**
      * Typically presented by the `verdocs-sign` component. Displays a footer toolbar
@@ -1952,6 +1957,16 @@ export namespace Components {
           * @default 'start'
          */
         "mode": 'start' | 'signing' | 'completed';
+        /**
+          * Detailed progress counts for required and optional fields
+          * @default null
+         */
+        "progress": {required: {remaining: number; total: number}; optional: {remaining: number; total: number}} | null;
+        /**
+          * List of remaining fields to complete
+          * @default []
+         */
+        "remainingFields": any[];
         /**
           * Total number of fields
           * @default 0
@@ -3377,6 +3392,7 @@ declare global {
         "settingsPress": any;
         "settingsChanged": {fieldName: string; field: ITemplateField};
         "deleted": {fieldName: string};
+        "adopt": any;
     }
     /**
      * Displays a signature field. If a signature already exists, it will be displayed and the field
@@ -5933,6 +5949,7 @@ declare namespace LocalJSX {
           * @default ''
          */
         "name"?: string;
+        "onAdopt"?: (event: VerdocsFieldSignatureCustomEvent<any>) => void;
         /**
           * Event fired when the field is deleted.
          */
@@ -6904,6 +6921,11 @@ declare namespace LocalJSX {
           * @default null
          */
         "roleId"?: string | null;
+        /**
+          * The style of the toolbar to display.
+          * @default 'controls'
+         */
+        "toolbarStyle"?: 'controls' | 'menu';
     }
     /**
      * Typically presented by the `verdocs-sign` component. Displays a footer toolbar
@@ -6998,6 +7020,16 @@ declare namespace LocalJSX {
           * Emitted when user clicks Start
          */
         "onStarted"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
+        /**
+          * Detailed progress counts for required and optional fields
+          * @default null
+         */
+        "progress"?: {required: {remaining: number; total: number}; optional: {remaining: number; total: number}} | null;
+        /**
+          * List of remaining fields to complete
+          * @default []
+         */
+        "remainingFields"?: any[];
         /**
           * Total number of fields
           * @default 0

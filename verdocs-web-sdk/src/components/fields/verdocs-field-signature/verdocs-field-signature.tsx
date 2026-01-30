@@ -1,8 +1,8 @@
 import interact from 'interactjs';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {ITemplateField, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State, Element} from '@stencil/core';
-import {SettingsIcon} from '../../../utils/Icons';
+import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State, Element, Listen} from '@stencil/core';
+import {SettingsIcon, PencilIcon, EraserIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
 /**
@@ -113,14 +113,15 @@ export class VerdocsFieldSignature {
   @State() showingProperties?: boolean = false;
   @State() focused?: boolean = false;
 
+  @Event({composed: true}) adopt: EventEmitter;
+
   @Method() async focusField() {
-    this.handleShow();
+    this.el.focus();
+    this.focused = true;
   }
 
   @State()
   tempSignature: string = '';
-
-  private dialog?: any;
 
   componentDidRender() {
     interact.dynamicDrop(true);
@@ -145,6 +146,11 @@ export class VerdocsFieldSignature {
         },
       });
     }
+  }
+
+  @Listen('blur')
+  onBlur() {
+    this.focused = false;
   }
 
   handleResizeStart(e: ResizeEvent) {
@@ -203,29 +209,6 @@ export class VerdocsFieldSignature {
       .catch(e => console.log('Field update failed', e));
   }
 
-  hideDialog() {
-    this.dialog?.remove();
-    this.dialog = null;
-    this.focused = false;
-  }
-
-  handleAdopt(e: any) {
-    console.log('[SIGNATURE] Adopted signature');
-    this.tempSignature = e.detail;
-    this.fieldChange?.emit(this.tempSignature);
-    this.hideDialog();
-  }
-
-  handleShow() {
-    this.dialog = document.createElement('verdocs-signature-dialog');
-    this.dialog.setAttribute('name', this.name);
-    // this.dialog.setAttribute('roleindex', this.roleindex);
-    this.dialog.addEventListener('exit', () => this.hideDialog());
-    this.dialog.addEventListener('next', (e: any) => this.handleAdopt(e));
-    document.body.append(this.dialog);
-    this.focused = true;
-  }
-
   @Method()
   async showSettingsPanel() {
     const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
@@ -266,15 +249,33 @@ export class VerdocsFieldSignature {
         {label && <label>{label}</label>}
 
         {base64 ? (
-          <img
-            src={base64}
-            alt=""
-            onClick={() => {
-              if (disabled) return;
-              console.log('[SIGNATURE] Clearing signature');
-              this.fieldChange?.emit(null);
-            }}
-          />
+          <div class="signature-container">
+            <img src={base64} alt="Signature" />
+            <div class="overlay">
+              <button
+                class="icon-button"
+                innerHTML={PencilIcon}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (disabled) return;
+                  // EDIT action: always open dialog
+                  console.log('[SIGNATURE] Editing signature');
+                  this.adopt.emit();
+                }}
+              />
+              <button
+                class="icon-button"
+                innerHTML={EraserIcon}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (disabled) return;
+                  // CLEAR action
+                  console.log('[SIGNATURE] Clearing signature');
+                  this.fieldChange?.emit(null);
+                }}
+              />
+            </div>
+          </div>
         ) : (
           <button
             onClick={() => {
@@ -284,7 +285,7 @@ export class VerdocsFieldSignature {
                 console.log('[SIGNATURE] Reusing existing signature', this.signatureid);
                 this.fieldChange?.emit(this.signatureid);
               } else {
-                this.handleShow();
+                this.adopt.emit();
               }
             }}
           >

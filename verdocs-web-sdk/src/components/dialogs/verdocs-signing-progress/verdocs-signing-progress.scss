@@ -29,6 +29,13 @@ verdocs-signing-progress {
   .header {
     font-size: 14px;
     color: #111827;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .progress-line.optional {
+      color: #6b7280;
+    }
   }
 
   .header-completed {

@@ -1,15 +1,45 @@
-import {Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid} from '@verdocs/js-sdk';
+import {Element, Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod} from '@verdocs/js-sdk';
+import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid} from '@verdocs/js-sdk';
 import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
 import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, renderDocumentFlag, saveAttachment, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
+import {DocumentPageIcon} from '../../../utils/Icons';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
+
+const ToolbarMinusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11 8C11.2761 8 11.5 8.22386 11.5 8.5C11.5 8.77614 11.2761 9 11 9H6C5.72386 9 5.5 8.77614 5.5 8.5C5.5 8.22386 5.72386 8 6 8H11ZM14 8.5C14 5.46243 11.5376 3 8.5 3C5.46243 3 3 5.46243 3 8.5C3 11.5376 5.46243 14 8.5 14C9.83879 14 11.0659 13.5217 12.0196 12.7266L16.1464 16.8536L16.2157 16.9114C16.4106 17.0464 16.68 17.0271 16.8536 16.8536C17.0488 16.6583 17.0488 16.3417 16.8536 16.1464L12.7266 12.0196C13.5217 11.0659 14 9.83879 14 8.5ZM4 8.5C4 6.01472 6.01472 4 8.5 4C10.9853 4 13 6.01472 13 8.5C13 10.9853 10.9853 13 8.5 13C6.01472 13 4 10.9853 4 8.5Z" fill="#424242" /></svg>`;
+const ToolbarPlusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 8.5C11.5 8.22386 11.2761 8 11 8H9V6C9 5.72386 8.77614 5.5 8.5 5.5C8.22386 5.5 8 5.72386 8 6V8H6C5.72386 8 5.5 8.22386 5.5 8.5C5.5 8.77614 5.72386 9 6 9H8V11C8 11.2761 8.22386 11.5 8.5 11.5C8.77614 11.5 9 11.2761 9 11V9H11C11.2761 9 11.5 8.77614 11.5 8.5ZM8.5 3C11.5376 3 14 5.46243 14 8.5C14 9.83879 13.5217 11.0659 12.7266 12.0196L16.8536 16.1464C17.0488 16.3417 17.0488 16.6583 16.8536 16.8536C16.68 17.0271 16.4106 17.0464 16.2157 16.9114L16.1464 16.8536L12.0196 12.7266C11.0659 13.5217 9.83879 14 8.5 14C5.46243 14 3 11.5376 3 8.5C3 5.46243 5.46243 3 8.5 3ZM8.5 4C6.01472 4 4 6.01472 4 8.5C4 10.9853 6.01472 13 8.5 13C10.9853 13 13 10.9853 13 8.5C13 6.01472 10.9853 4 8.5 4Z" fill="#424242" /></svg>`;
+const ToolbarDownloadIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 16.9988C15.7761 16.9988 16 17.2226 16 17.4988C16 17.7442 15.8231 17.9484 15.5899 17.9907L15.5 17.9988H4.5C4.22386 17.9988 4 17.7749 4 17.4988C4 17.2533 4.17688 17.0492 4.41012 17.0068L4.5 16.9988H15.5ZM10.0001 2.00098C10.2456 2.00098 10.4497 2.17798 10.492 2.41124L10.5 2.50112L10.496 14.295L14.1414 10.6466C14.3148 10.4729 14.5842 10.4534 14.7792 10.5882L14.8485 10.646C15.0222 10.8194 15.0418 11.0888 14.907 11.2838L14.8492 11.3531L10.3574 15.8531C10.285 15.9257 10.1957 15.9714 10.1021 15.9901L9.99608 15.9999C9.83511 15.9999 9.69192 15.9237 9.60051 15.8056L5.14386 11.3537C4.94846 11.1586 4.94823 10.842 5.14336 10.6466C5.3168 10.4729 5.58621 10.4534 5.78117 10.5883L5.85046 10.6461L9.496 14.287L9.5 2.50083C9.50008 2.22469 9.724 2.00098 10.0001 2.00098Z" fill="#424242"/></svg>`;
+const ToolbarPrintIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 4.5C5 3.67157 5.67157 3 6.5 3H13.5C14.3284 3 15 3.67157 15 4.5V5H15.5C16.8807 5 18 6.11929 18 7.5V12.5C18 13.3284 17.3284 14 16.5 14H15V15.5C15 16.3284 14.3284 17 13.5 17H6.5C5.67157 17 5 16.3284 5 15.5V14H3.5C2.67157 14 2 13.3284 2 12.5V7.5C2 6.11929 3.11929 5 4.5 5H5V4.5ZM6 5H14V4.5C14 4.22386 13.7761 4 13.5 4H6.5C6.22386 4 6 4.22386 6 4.5V5ZM5 13V11.5C5 10.6716 5.67157 10 6.5 10H13.5C14.3284 10 15 10.6716 15 11.5V13H16.5C16.7761 13 17 12.7761 17 12.5V7.5C17 6.67157 16.3284 6 15.5 6H4.5C3.67157 6 3 6.67157 3 7.5V12.5C3 12.7761 3.22386 13 3.5 13H5ZM6.5 11C6.22386 11 6 11.2239 6 11.5V15.5C6 15.7761 6.22386 16 6.5 16H13.5C13.7761 16 14 15.7761 14 15.5V11.5C14 11.2239 13.7761 11 13.5 11H6.5Z" fill="#424242"/></svg>`;
+
+/**
+ * Helper to generate a human-readable label for a field.
+ */
+const getFieldLabel = (field: IEnvelopeField) => {
+  if (!field) return '';
+  const typeMap: Record<string, string> = {
+    signature: 'Signature',
+    initial: 'Initials',
+    date: 'Date',
+    textbox: 'Text Field',
+    checkbox: 'Checkbox',
+    radio: 'Radio Button',
+    dropdown: 'Dropdown',
+    attachment: 'Attachment',
+    payment: 'Payment',
+  };
+
+  const typeName = typeMap[field.type] || 'Field';
+  if (field.required) {
+    return `Required ${typeName}*`;
+  }
+  return `Optional ${typeName}`;
+};
 
 /**
  * Display an envelope signing experience. This will display the envelope's attached
@@ -44,6 +74,8 @@ import {Store} from '../../../utils/Datastore';
   shadow: false,
 })
 export class VerdocsSign {
+  @Element() el: HTMLElement;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -76,6 +108,11 @@ export class VerdocsSign {
   @Prop() headerTargetId: string | null = null;
 
   /**
+   * The style of the toolbar to display.
+   */
+  @Prop() toolbarStyle: 'controls' | 'menu' = 'controls';
+
+  /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
@@ -99,6 +136,7 @@ export class VerdocsSign {
   @State() fatalErrorMessage = '';
   @State() focusedField = '';
   @State() disclosures = DEFAULT_DISCLOSURES;
+  @State() fieldUpdateCounter = 0;
   @State() submitting = false;
   @State() submitted = false;
   @State() isDone = false;
@@ -110,11 +148,14 @@ export class VerdocsSign {
   @State() agreed = false;
   @State() signatureId: string | null = null;
   @State() initialId: string | null = null;
+
   @State() documentsSingularPlural = 'document';
   @State() authStep: string | null = null;
   @State() authMethodStates: Partial<Record<TRecipientAuthMethod, string>> = {};
+  @State() pageNumber = 1;
   @State() kbaQuestions: IKBAQuestion[] | null = null;
   @State() showSpinner = false;
+  // @State() fieldUpdateCounter = 0;
   @State() declining = false;
   @State() delegating = false;
   @State() delegated = false;
@@ -148,6 +189,13 @@ export class VerdocsSign {
       // session and might have a different "view" of the envelope.
       const response = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
       this.processAuthResponse(response);
+
+      const fillable = this.getSortedFillableFields();
+      if (fillable.length > 0) {
+        setTimeout(() => {
+          this.focusedField = fillable[0].name;
+        }, 500);
+      }
     } catch (e) {
       console.log('[SIGN] Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -234,6 +282,23 @@ export class VerdocsSign {
       });
   }
 
+  handlePageSelect(e: any) {
+    const pageNumber = parseInt(e.target.value);
+    if (!isNaN(pageNumber)) {
+      this.pageNumber = pageNumber;
+      // We manually scroll the container to the top of the page element.
+      // This avoids issues where the page might be nested or scrollIntoView behaves unexpectedly.
+      const container = this.el.querySelector('.signed-document-container');
+      const pageEl = this.el.querySelector(`#page-${pageNumber}`) as HTMLElement;
+
+      if (container && pageEl) {
+        // 20px buffer for visual spacing
+        const top = pageEl.offsetTop - 20;
+        container.scrollTo({top, behavior: 'smooth'});
+      }
+    }
+  }
+
   async handleOptionSelected(e: any) {
     switch (e.detail.id) {
       case 'later':
@@ -278,6 +343,7 @@ export class VerdocsSign {
         // TODO: Keeping this while attachments still rely on it
         oldField.settings = updateResult.settings;
         updateDocumentFieldValue(oldField);
+        this.fieldUpdateCounter++;
         this.checkRecipientFields();
       }
     });
@@ -459,22 +525,6 @@ export class VerdocsSign {
         //  NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which
         //  the new node is to be inserted is not a child of this node.
         window.location.reload();
-        // this.recipient.status = 'submitted';
-        // this.showDone = true;
-        // console.log('[SIGN] Reloading envelope');
-        // getEnvelope(this.endpoint, this.envelopeId)
-        //   .then(envelope => {
-        //     this.envelope = envelope;
-        //     // The show-done dialog does this
-        //     // this.isDone = true;
-        //     this.submitting = false;
-        //   })
-        //   .catch(e => {
-        //     // this.isDone = true;
-        //     console.log('[SIGN] Error reloading envelope', e);
-        //     VerdocsToast('Unable to save changes, please try again later', {style: 'error'});
-        //     this.submitting = false;
-        //   });
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
       }
@@ -517,21 +567,16 @@ export class VerdocsSign {
     const emptyFields = this.getSortedFillableFields().filter(field => field.required && !isFieldFilled(field, this.getRecipientFields()));
     sortFields(emptyFields);
 
-    // If everything required is filled, try optional fields?
-    // The previous logic only looked for required fields for "Next".
-    // If we want "Fill or Skip", we should probably look for ANY unfilled field if we want to guide them to optionals too.
-    // BUT the requirement said: "just want to show a single flag for whatever the next field is the recipient needs to fill out."
-    // "Needs to fill out" strongly implies required.
-    // However, goal #4 says: "If it is optional, it should say 'Fill or Skip'".
-    // This implies we DO want to catch optional fields too.
+    console.log(
+      '[SIGN] Pending fields',
+      emptyFields.map(f => `${f.name} (${f.type}) req=${f.required}`),
+    );
+
     if (emptyFields.length === 0) {
       const allUnfilled = this.getSortedFillableFields().filter(field => !isFieldFilled(field, this.getRecipientFields()));
       sortFields(allUnfilled);
       if (allUnfilled.length > 0) {
         // If we are here, there are no required fields left, but there are optional ones.
-        // We need to decide if "Next" should jump to them.
-        // Assuming yes based on "Fill or Skip".
-        // Let's use the same logic but with the optional list.
         return this.getNextFieldFromList(allUnfilled);
       }
       return null;
@@ -580,16 +625,24 @@ export class VerdocsSign {
     const existingFlags = controlsDiv.querySelectorAll('.verdocs-flag-instance');
     existingFlags.forEach(el => el.remove());
 
-    const nextField = this.getNextRequiredField();
+    let nextField = this.getNextRequiredField();
+    const focusedFieldObj = this.getRecipientFields().find(f => f.name === this.focusedField);
+
+    // If the currently focused field is unfilled, we should point the flag to IT, not the next one.
+    // getNextRequiredField() is designed for the "Next" button (skipping current), but the visual flag
+    // should guide the user to the current task if it's incomplete.
+    if (focusedFieldObj && !isFieldFilled(focusedFieldObj, this.getRecipientFields())) {
+      nextField = focusedFieldObj;
+    }
+
     if (nextField && nextField.page === pageInfo.pageNumber && nextField.document_id === pageInfo.documentId) {
       const variant = 'fill';
       let label = 'FILL';
       let showSkip = false;
 
       if (!nextField.required) {
-        label = 'FILL or SKIP';
+        label = 'FILL';
         showSkip = true; // Use the X to skip? Or just text? "Fill or Skip" implies maybe just text.
-        // But the previous implementation set `showSkip = true` if not required.
       }
 
       renderDocumentFlag(pageInfo, nextField.y, nextField.height || defaultHeight(nextField.type), {
@@ -607,100 +660,6 @@ export class VerdocsSign {
         },
       });
     }
-
-    // LEGACY FLAG LOGIC - Commented out for now
-    /*
-    // Get fields for this page
-    const myFields = this.getRecipientFields().filter(f => f.document_id === pageInfo.documentId && f.page === pageNumber);
-    // Sort priority:
-    // 1. Vertical: Top to Bottom (Descending Y)
-    // 2. Horizontal: Left to Right (Ascending X) - for stability
-    myFields.sort((a, b) => {
-      if (Math.abs(b.y - a.y) > 1) {
-        return b.y - a.y;
-      }
-      return a.x - b.x;
-    });
-
-    // console.log('[SIGN] Sorted fields for page', pageNumber, myFields.map(f => `${f.name}:${f.y}`));
-
-    const flagGroups: IEnvelopeField[][] = [];
-    const FLAG_HEIGHT = 24;
-
-    myFields.forEach(field => {
-      if (flagGroups.length === 0) {
-        flagGroups.push([field]);
-        return;
-      }
-
-      const lastGroup = flagGroups[flagGroups.length - 1];
-      const lastField = lastGroup[lastGroup.length - 1];
-
-      // Compute rendered centers (pixels)
-      // Note: We need rescale logic here. Since we don't have the import, we'll replicate the simple math: val * scale
-      // assuming standard coordinate scaling.
-      const getCenterY = (f: IEnvelopeField) => f.y * pageInfo.yScale + ((f.height || defaultHeight(f.type)) * pageInfo.yScale) / 2;
-
-      const lastCenter = getCenterY(lastField);
-      const currCenter = getCenterY(field);
-      const dist = Math.abs(lastCenter - currCenter);
-
-      // console.log(`[SIGN] Check overlap ${lastField.name} vs ${field.name}: dist=${dist} vs ${FLAG_HEIGHT}`, {lastCenter, currCenter});
-
-      // If centers are closer than Flag Height, they overlap visually.
-      if (dist < FLAG_HEIGHT) {
-        lastGroup.push(field);
-      } else {
-        flagGroups.push([field]);
-      }
-    });
-
-    // console.log('[SIGN] Flag groups', flagGroups.map(g => g.map(f => f.name).join(',')));
-
-    flagGroups.forEach(group => {
-      // Priority: First Unfilled Required > First Unfilled Optional > First Next
-      let winner = group.find(f => f.required && !isFieldFilled(f, this.getRecipientFields()));
-      if (!winner) {
-        winner = group.find(f => !f.required && !isFieldFilled(f, this.getRecipientFields()));
-      }
-      if (!winner) {
-        // Fallback to first (Top-most) if all filled
-        winner = group[0];
-      }
-
-      if (winner) {
-        const isFilled = isFieldFilled(winner, this.getRecipientFields());
-
-        let variant: 'fill' | 'next' = 'fill';
-        let label = 'FILL';
-        let showSkip = false;
-
-        if (isFilled) {
-          variant = 'next';
-          label = 'NEXT';
-        } else {
-          if (!winner.required) {
-            showSkip = true;
-          }
-        }
-
-        renderDocumentFlag(pageInfo, winner.y, winner.height || defaultHeight(winner.type), {
-          variant,
-          label,
-          showSkip,
-          onSkip: () => {
-            this.handleNext();
-          },
-          onClick: () => {
-            const id = getFieldId(winner);
-            const el = document.getElementById(id) as any;
-            el?.scrollIntoView({behavior: 'smooth', block: 'center'});
-            el?.focusField?.();
-          },
-        });
-      }
-    });
-    */
   }
 
   attachFieldAttributes(pageInfo, field, el) {
@@ -764,13 +723,18 @@ export class VerdocsSign {
       }
     });
     el.addEventListener('focusout', e => {
-      // These field types trigger focusout as they're used, even without a value change
-      if (field.type !== 'dropdown' && field.type !== 'attachment') {
+      // These field types trigger focusout as they're used, even without a value change.
+      // Signature/Initial fields handle their own changes via fieldChange/adopt events, so we ignore focusout to prevent double-saves.
+      if (field.type !== 'dropdown' && field.type !== 'attachment' && field.type !== 'signature' && field.type !== 'initial') {
         this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
       }
     });
     el.addEventListener('fieldChange', e => {
       this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
+    });
+    el.addEventListener('adopt', () => {
+      this.focusedField = field.name;
+      this.adoptingSignature = true;
     });
 
     el.setAttribute('templateid', this.envelope.template_id);
@@ -850,6 +814,7 @@ export class VerdocsSign {
       })
       .catch(e => {
         console.log('[SIGN] Error submitting authentication step', e);
+        console.log(e.response?.data);
         if (e.response?.data?.error?.includes('failed')) {
           this.fatalErrorHeader = 'Recipient Verification Failed';
           this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
@@ -1160,30 +1125,95 @@ export class VerdocsSign {
         )
       : console.log('[SIGN] All field valid');
 
+    const totalPages = this.envelope.documents.reduce((acc, doc) => acc + doc.pages, 0);
+    const pageOptions = integerSequence(1, totalPages).map(p => ({label: p.toString(), value: p.toString()}));
+    let globalPageCounter = 0;
+
     return (
       <Host>
-        <div id="verdocs-sign-header">
-          <div class="inner">
-            <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
-            <div class="title">{this.envelope.name}</div>
-            <div style={{flex: '1'}} />
+        {this.toolbarStyle === 'menu' && (
+          <div id="verdocs-sign-header">
+            <div class="inner">
+              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+              <div class="title">{this.envelope.name}</div>
+              <div style={{flex: '1'}} />
 
-            {!this.finishLater && <verdocs-button size="xsmall" label={this.nextButtonLabel} disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />}
+              {!this.finishLater && <verdocs-button size="xsmall" label={this.nextButtonLabel} disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />}
 
-            <div style={{marginLeft: '10px'}} />
-            <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+              <div style={{marginLeft: '10px'}} />
+              <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+            </div>
           </div>
-        </div>
+        )}
+
+        {this.toolbarStyle === 'controls' && (
+          <div class="controls-toolbar">
+            <div class="left-controls">
+              <div class="title">{this.envelope.name}</div>
+            </div>
+            <div class="center-controls">
+              <span class="label">Page</span>
+              <div class="select-wrapper">
+                <verdocs-select-input options={pageOptions} value={this.pageNumber.toString()} onInput={e => this.handlePageSelect(e)} />
+              </div>
+              <span class="count">of {totalPages}</span>
+            </div>
+            <div class="right-controls">
+              <div class="icon-button minus" innerHTML={ToolbarMinusIcon} />
+              <div class="icon-button plus" innerHTML={ToolbarPlusIcon} />
+              <div class="icon-button download" innerHTML={ToolbarDownloadIcon} onClick={() => this.handleOptionSelected({detail: {id: 'download'}})} />
+              <div class="icon-button print" innerHTML={ToolbarPrintIcon} onClick={() => this.handleOptionSelected({detail: {id: 'print'}})} />
+            </div>
+          </div>
+        )}
 
         {/* Progress Card */}
         {(() => {
+          // Dependencies: focusedField, fieldUpdateCounter (to force re-calc)
+          // console.log('[SIGN] Render progress', this.focusedField, this.fieldUpdateCounter);
+          // Calculate detailed progress
+          const allFields = this.getSortedFillableFields();
+          const recipientFields = this.getRecipientFields();
+
+          const requiredFields = allFields.filter(f => f.required);
+          const requiredRemaining = requiredFields.filter(f => !isFieldFilled(f, recipientFields)).length;
+
+          const optionalFields = allFields.filter(f => !f.required);
+          const optionalRemaining = optionalFields.filter(f => !isFieldFilled(f, recipientFields)).length;
+
+          const progress = {
+            required: {
+              remaining: requiredRemaining,
+              total: requiredFields.length,
+            },
+            optional: {
+              remaining: optionalRemaining,
+              total: optionalFields.length,
+            },
+          };
+
           const focusedFieldObj = this.getSortedFillableFields().find(f => f.name === this.focusedField);
+          const currentIndex = this.getSortedFillableFields().findIndex(f => f.name === this.focusedField) + 1;
+          const totalFields = this.getSortedFillableFields().length;
+          const remainingFields = this.getSortedFillableFields()
+            .filter(f => f.required && !isFieldFilled(f, this.getRecipientFields()))
+            .map(f => ({name: f.name, type: f.type, required: f.required}));
+
+          let mode: 'start' | 'signing' | 'completed' = 'start';
+          if (this.nextSubmits) {
+            mode = 'completed';
+          } else if (this.signatureId || this.initialId) {
+            mode = 'signing';
+          }
+
           return (
             <verdocs-signing-progress
-              mode={this.nextSubmits ? 'completed' : false && this.signatureId && this.initialId ? 'signing' : 'start'}
-              current={Math.max(1, this.getSortedFillableFields().findIndex(f => f.name === this.focusedField) + 1)}
-              total={this.getSortedFillableFields().length}
-              fieldLabel={focusedFieldObj?.label || focusedFieldObj?.name || ''}
+              mode={mode}
+              current={Math.max(1, currentIndex)}
+              total={totalFields}
+              remainingFields={remainingFields}
+              progress={progress}
+              fieldLabel={getFieldLabel(focusedFieldObj)}
               fieldCompleted={focusedFieldObj ? !!isFieldFilled(focusedFieldObj, this.getRecipientFields()) : false}
               onStarted={() => {
                 this.adoptingSignature = true;
@@ -1204,18 +1234,14 @@ export class VerdocsSign {
               <Fragment>
                 {this.envelope.documents.length > 1 && (
                   <div class="document-separator">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M20 2H8C6.9 2 6 2.9 6 4V16C6 17.1 6.9 18 8 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H8V4H20V16ZM4 6H2V20C2 21.1 2.9 22 4 22H18V20H4V6ZM16 12V9C16 8.45 15.55 8 15 8H10V14H15C15.55 14 16 13.55 16 13V12ZM14.5 9.5L14.5001 12.5H11.5V9.5H14.5Z"
-                        fill="currentColor"
-                      />
-                    </svg>
+                    <div innerHTML={DocumentPageIcon} />
                     <span>{envelopeDocument.name}</span>
                   </div>
                 )}
 
                 {pageNumbers.map(pageNumber => {
                   const pageSize = envelopeDocument.page_sizes?.[pageNumber] || {width: 612, height: 792};
+                  globalPageCounter++;
 
                   // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
                   // where everything went. This is also a visual indicator when optional fields weren't filled in by previous actors, or
@@ -1226,6 +1252,7 @@ export class VerdocsSign {
                   // console.log('tp', templatePage, page);
                   return (
                     <verdocs-envelope-document-page
+                      id={`page-${globalPageCounter}`}
                       envelopeId={this.envelopeId}
                       documentId={envelopeDocument.id}
                       endpoint={this.endpoint}
@@ -1290,6 +1317,22 @@ export class VerdocsSign {
 
               this.showSpinner = false;
               this.adoptingSignature = false;
+
+              // If we have a focused field, we should auto-apply the new signature/initials to it
+              if (this.focusedField) {
+                const field = this.getRecipientFields().find(f => f.name === this.focusedField);
+                if (field) {
+                  console.log('[SIGN] Auto-applying adopted signature to focused field', field.name);
+                  if (field.type === 'signature') {
+                    const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, this.signatureId, false);
+                    this.updateRecipientFieldValue(field.name, updateResult);
+                  } else if (field.type === 'initial') {
+                    const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, this.initialId, false);
+                    this.updateRecipientFieldValue(field.name, updateResult);
+                  }
+                  this.checkRecipientFields();
+                }
+              }
             }}
             onExit={() => (this.adoptingSignature = false)}
           />

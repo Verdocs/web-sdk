@@ -1,8 +1,8 @@
 import interact from 'interactjs';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {ITemplateField, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
-import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element} from '@stencil/core';
-import {SettingsIcon} from '../../../utils/Icons';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element, Listen} from '@stencil/core';
+import {SettingsIcon, PencilIcon, EraserIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
 /**
@@ -126,13 +126,12 @@ export class VerdocsFieldInitial {
   @State() focused?: boolean = false;
 
   @Method() async focusField() {
-    this.handleShow();
+    this.el.focus();
+    this.focused = true;
   }
 
   @State()
   tempInitials: string = '';
-
-  private dialog?: any;
 
   componentDidRender() {
     interact.dynamicDrop(true);
@@ -157,6 +156,11 @@ export class VerdocsFieldInitial {
         },
       });
     }
+  }
+
+  @Listen('blur')
+  onBlur() {
+    this.focused = false;
   }
 
   handleResizeStart(e: ResizeEvent) {
@@ -215,29 +219,6 @@ export class VerdocsFieldInitial {
       .catch(e => console.log('Field update failed', e));
   }
 
-  hideDialog() {
-    this.dialog?.remove();
-    this.dialog = null;
-    this.focused = false;
-  }
-
-  handleAdopt(e: any) {
-    console.log('[INITIAL] Adopted initials');
-    this.tempInitials = e.detail;
-    this.fieldChange?.emit(this.tempInitials);
-    this.hideDialog();
-  }
-
-  handleShow() {
-    this.dialog = document.createElement('verdocs-initial-dialog');
-    this.dialog.setAttribute('initials', this.initials);
-    // this.dialog.setAttribute('roleindex', this.roleindex);
-    this.dialog.addEventListener('exit', () => this.hideDialog());
-    this.dialog.addEventListener('next', (e: any) => this.handleAdopt(e));
-    document.body.append(this.dialog);
-    this.focused = true;
-  }
-
   @Method()
   async showSettingsPanel() {
     const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
@@ -276,15 +257,33 @@ export class VerdocsFieldInitial {
         {label && <label>{label}</label>}
 
         {base64 ? (
-          <img
-            src={base64}
-            alt="Initial"
-            onClick={() => {
-              if (disabled) return;
-              console.log('[INITIAL] Clearing initials');
-              this.fieldChange?.emit(null);
-            }}
-          />
+          <div class="initial-container">
+            <img src={base64} alt="Initial" />
+            <div class="overlay">
+              <button
+                class="icon-button"
+                innerHTML={PencilIcon}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (disabled) return;
+                  // EDIT action: always open dialog
+                  console.log('[INITIAL] Editing initials');
+                  this.adopt.emit();
+                }}
+              />
+              <button
+                class="icon-button"
+                innerHTML={EraserIcon}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (disabled) return;
+                  // CLEAR action
+                  console.log('[INITIAL] Clearing initials');
+                  this.fieldChange?.emit(null);
+                }}
+              />
+            </div>
+          </div>
         ) : (
           <button
             onClick={() => {
@@ -294,7 +293,7 @@ export class VerdocsFieldInitial {
                 console.log('[INITIAL] Reusing existing initials', this.initialid);
                 this.fieldChange?.emit(this.initialid);
               } else {
-                this.handleShow();
+                this.adopt.emit();
               }
             }}
           >

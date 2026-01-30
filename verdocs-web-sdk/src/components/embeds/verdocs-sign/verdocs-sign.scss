@@ -41,7 +41,6 @@ verdocs-sign {
     align-items: center;
     box-sizing: border-box;
     flex-direction: column;
-    //justify-content: center;
 
     .inner {
       width: 100%;
@@ -238,4 +237,117 @@ verdocs-sign {
   align-items: center;
   background: #0000007f;
   justify-content: center;
+}
+
+.controls-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 54px;
+  // 24px by design but the design had the right-most icon flush against the edge.
+  // Since we have extra padding on the icons to make them more clickable, we need
+  // to reduce the right padding here.
+  padding: 0 12px 0 24px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: none;
+  font-family: 'Inter', sans-serif;
+  color: #424242;
+  z-index: 1000;
+
+  .left-controls {
+    flex: 1;
+    display: flex;
+    align-items: center;
+
+    .title {
+      font-weight: 500;
+      font-size: 16px;
+      color: #242424;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .center-controls {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+
+    .label {
+      color: #000000;
+      font-weight: 300;
+    }
+
+    .select-wrapper {
+      // Wrapper styles from before were mainly for the native select arrow logic.
+      // With verdocs-select-input, we might not need as much here, but let's keep it clean.
+      display: flex;
+      align-items: center;
+
+      verdocs-select-input {
+        margin: 0;
+
+        // Hide the label block inside the component
+        .input-label {
+          display: none;
+        }
+
+        .input-element {
+          background: transparent;
+          border: 1px solid #e0e0e0;
+          height: 32px; // Match button height
+          padding: 2px 8px;
+          min-width: 60px;
+          text-align: center;
+          font-family: inherit;
+          color: #424242;
+
+          &:focus {
+            border-color: #2a63f6;
+          }
+        }
+      }
+    }
+
+    .count {
+      color: #000000;
+      font-weight: 300;
+    }
+  }
+
+  .right-controls {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    // NOTE: This is the expected gap, but we built it into additional padding in the icons
+    // to make them more clickable.
+    // gap: 12px;
+
+    .icon-button {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      color: #424242;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+
+      svg {
+        display: block;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
 }
