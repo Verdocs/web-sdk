@@ -170,6 +170,8 @@ export class VerdocsSign {
   private observer: IntersectionObserver;
 
   async componentDidLoad() {
+    this.updateZoomFromWindow();
+    window.addEventListener('resize', () => this.updateZoomFromWindow());
     if (!this.envelopeId) {
       this.sdkError?.emit(new SDKError('[SIGN] Missing required envelopId', 500, ''));
       return;
@@ -220,6 +222,18 @@ export class VerdocsSign {
 
   disconnectedCallback() {
     this.observer?.disconnect();
+    window.removeEventListener('resize', () => this.updateZoomFromWindow());
+  }
+
+  updateZoomFromWindow() {
+    const width = window.innerWidth;
+    if (width < 768) {
+      if (this.zoomLevel !== 'zoom2') this.zoomLevel = 'zoom2';
+    } else if (width < 1024) {
+      if (this.zoomLevel !== 'zoom1') this.zoomLevel = 'zoom1';
+    } else {
+      if (this.zoomLevel !== 'normal') this.zoomLevel = 'normal';
+    }
   }
 
   setupIntersectionObserver() {
@@ -585,7 +599,7 @@ export class VerdocsSign {
     if (nextRequiredField) {
       const id = getFieldId(nextRequiredField);
       const el = document.getElementById(id) as any;
-      el?.scrollIntoView({behavior: 'smooth'});
+      el?.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'});
       el?.focusField();
       this.focusedField = nextRequiredField.name;
     }
@@ -874,7 +888,6 @@ export class VerdocsSign {
   }
 
   render() {
-    console.log('[SIGN] Render cycle');
     if (this.showLoadError) {
       return (
         <Host>
@@ -1208,6 +1221,7 @@ export class VerdocsSign {
               <span class="count">of {totalPages}</span>
             </div>
             <div class="right-controls">
+              <verdocs-button class="mobile-next-button" label={this.nextButtonLabel} size="xsmall" disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />
               <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
               <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
               <div class="icon-button download" innerHTML={ToolbarDownloadIcon} onClick={() => this.handleOptionSelected({detail: {id: 'download'}})} />

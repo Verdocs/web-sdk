@@ -28,7 +28,7 @@ export class VerdocsDownloadDialog {
   render() {
     return (
       <verdocs-dialog onExit={() => this.exit.emit()}>
-        <h3 slot="heading" style={{margin: '0', fontSize: '1.25rem', fontWeight: '600'}}>
+        <h3 slot="heading" style={{margin: '0', fontSize: '1.25rem', fontWeight: '600', padding: '16px 24px'}}>
           Download
         </h3>
 

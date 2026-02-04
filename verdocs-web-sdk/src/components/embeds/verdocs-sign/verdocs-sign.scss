@@ -101,10 +101,18 @@ verdocs-sign {
     }
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 768px) {
     .signed-document-container {
       width: 100%;
       margin-left: 0;
+
+      // Ensure specific zoom levels don't override the mobile layout
+      &.zoom-normal,
+      &.zoom-zoom1,
+      &.zoom-zoom2 {
+        width: 100%;
+        margin-left: 0;
+      }
     }
 
     > .document {
@@ -114,6 +122,25 @@ verdocs-sign {
     // Hide flags on mobile
     .verdocs-flag-instance {
       display: none !important;
+    }
+
+    // Hide toolbars on mobile
+    .controls-toolbar {
+      .center-controls {
+        display: none;
+      }
+
+      .right-controls {
+        .mobile-next-button {
+          display: block;
+          margin-right: 10px;
+        }
+
+        .minus,
+        .plus {
+          display: none;
+        }
+      }
     }
   }
 
@@ -374,6 +401,10 @@ verdocs-sign {
     // NOTE: This is the expected gap, but we built it into additional padding in the icons
     // to make them more clickable.
     // gap: 12px;
+
+    .mobile-next-button {
+      display: none;
+    }
 
     .icon-button {
       width: 32px;
