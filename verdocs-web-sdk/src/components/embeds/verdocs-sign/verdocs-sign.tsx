@@ -1,11 +1,11 @@
 import {Element, Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod} from '@verdocs/js-sdk';
+import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
 import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid} from '@verdocs/js-sdk';
 import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
 import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
-import {getFieldId, renderDocumentField, renderDocumentFlag, saveAttachment, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
+import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
 import {DocumentPageIcon} from '../../../utils/Icons';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -160,11 +160,14 @@ export class VerdocsSign {
   @State() delegating = false;
   @State() delegated = false;
   @State() kbaChoices = [];
+  @State() showDownloadDialog = false;
 
   @State() loading = true;
   @State() envelope: IEnvelope | null = null;
+  @State() zoomLevel: 'normal' | 'zoom1' | 'zoom2' = 'normal';
 
   private renderedPages: Record<string, IDocumentPageInfo> = {};
+  private observer: IntersectionObserver;
 
   async componentDidLoad() {
     if (!this.envelopeId) {
@@ -211,6 +214,44 @@ export class VerdocsSign {
       headerEl.remove();
       headerTarget.append(headerEl);
     }
+
+    this.setupIntersectionObserver();
+  }
+
+  disconnectedCallback() {
+    this.observer?.disconnect();
+  }
+
+  setupIntersectionObserver() {
+    // We only want to set this up once the elements exist
+    const pages = this.el.querySelectorAll('verdocs-envelope-document-page');
+    if (pages.length === 0) return;
+
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+
+    const container = this.el.querySelector('.signed-document-container');
+    const options = {
+      root: container,
+      rootMargin: '-40% 0px -40% 0px', // Helper to trigger when the middle 20% is visible
+      threshold: 0,
+    };
+
+    this.observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const pageId = entry.target.id; // page-1
+          const pageNum = parseInt(pageId.replace('page-', ''), 10);
+          if (!isNaN(pageNum) && this.pageNumber !== pageNum) {
+            // console.log('[SIGN] Updated page number via scroll', pageNum);
+            this.pageNumber = pageNum;
+          }
+        }
+      });
+    }, options);
+
+    pages.forEach(page => this.observer.observe(page));
   }
 
   processAuthResponse(response: ISignerTokenResponse) {
@@ -321,17 +362,24 @@ export class VerdocsSign {
         break;
 
       case 'download':
-        {
-          const firstDoc = this.envelope.documents.find(doc => doc.type === 'attachment');
-          if (firstDoc) {
-            saveAttachment(this.endpoint, this.envelope, firstDoc.id).catch(e => {
-              VerdocsToast('Unable to download PDF, please try again later', {style: 'error'});
-              console.log('[SIGN] Error downloading PDF', e);
-            });
-            this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
-          }
-        }
+        this.showDownloadDialog = true;
         break;
+    }
+  }
+
+  handleZoomIn() {
+    if (this.zoomLevel === 'normal') {
+      this.zoomLevel = 'zoom1';
+    } else if (this.zoomLevel === 'zoom1') {
+      this.zoomLevel = 'zoom2';
+    }
+  }
+
+  handleZoomOut() {
+    if (this.zoomLevel === 'zoom1') {
+      this.zoomLevel = 'normal';
+    } else if (this.zoomLevel === 'zoom2') {
+      this.zoomLevel = 'zoom1';
     }
   }
 
@@ -507,7 +555,7 @@ export class VerdocsSign {
   }
 
   getSortedFillableFields() {
-    const recipientFields = this.getRecipientFields().filter(field => field.type !== 'timestamp');
+    const recipientFields = this.getRecipientFields().filter(field => field.type !== 'timestamp' && !field.readonly);
     sortFields(recipientFields);
     return recipientFields;
   }
@@ -567,10 +615,10 @@ export class VerdocsSign {
     const emptyFields = this.getSortedFillableFields().filter(field => field.required && !isFieldFilled(field, this.getRecipientFields()));
     sortFields(emptyFields);
 
-    console.log(
-      '[SIGN] Pending fields',
-      emptyFields.map(f => `${f.name} (${f.type}) req=${f.required}`),
-    );
+    // console.log(
+    //   '[SIGN] Pending fields',
+    //   emptyFields.map(f => `${f.name} (${f.type}) req=${f.required}`),
+    // );
 
     if (emptyFields.length === 0) {
       const allUnfilled = this.getSortedFillableFields().filter(field => !isFieldFilled(field, this.getRecipientFields()));
@@ -758,12 +806,12 @@ export class VerdocsSign {
     const pageInfo = e.detail as IDocumentPageInfo;
     this.renderedPages[`${pageInfo.documentId}:${pageInfo.pageNumber}`] = pageInfo;
 
-    console.log('Page rendered', pageInfo);
+    // console.log('Page rendered', pageInfo);
 
     // NOTE: We don't filter on pageNumber here because we need the position in the
     // entire list to set the tabIndex.
     const recipientFields = this.getSortedFillableFields();
-    console.log('[SIGN] Rendering fields for page', pageInfo.pageNumber, recipientFields);
+    // console.log('[SIGN] Rendering fields for page', pageInfo.pageNumber, recipientFields);
 
     // First render the fields for the signer
     recipientFields
@@ -826,6 +874,7 @@ export class VerdocsSign {
   }
 
   render() {
+    console.log('[SIGN] Render cycle');
     if (this.showLoadError) {
       return (
         <Host>
@@ -1159,8 +1208,8 @@ export class VerdocsSign {
               <span class="count">of {totalPages}</span>
             </div>
             <div class="right-controls">
-              <div class="icon-button minus" innerHTML={ToolbarMinusIcon} />
-              <div class="icon-button plus" innerHTML={ToolbarPlusIcon} />
+              <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
+              <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
               <div class="icon-button download" innerHTML={ToolbarDownloadIcon} onClick={() => this.handleOptionSelected({detail: {id: 'download'}})} />
               <div class="icon-button print" innerHTML={ToolbarPrintIcon} onClick={() => this.handleOptionSelected({detail: {id: 'print'}})} />
             </div>
@@ -1175,11 +1224,13 @@ export class VerdocsSign {
           const allFields = this.getSortedFillableFields();
           const recipientFields = this.getRecipientFields();
 
+          const isFilled = (f: IEnvelopeField) => isFieldFilled(f, recipientFields) && (f.type !== 'dropdown' || !!f.value);
+
           const requiredFields = allFields.filter(f => f.required);
-          const requiredRemaining = requiredFields.filter(f => !isFieldFilled(f, recipientFields)).length;
+          const requiredRemaining = requiredFields.filter(f => !isFilled(f)).length;
 
           const optionalFields = allFields.filter(f => !f.required);
-          const optionalRemaining = optionalFields.filter(f => !isFieldFilled(f, recipientFields)).length;
+          const optionalRemaining = optionalFields.filter(f => !isFilled(f)).length;
 
           const progress = {
             required: {
@@ -1196,13 +1247,25 @@ export class VerdocsSign {
           const currentIndex = this.getSortedFillableFields().findIndex(f => f.name === this.focusedField) + 1;
           const totalFields = this.getSortedFillableFields().length;
           const remainingFields = this.getSortedFillableFields()
-            .filter(f => f.required && !isFieldFilled(f, this.getRecipientFields()))
+            .filter(f => f.required && !isFilled(f))
             .map(f => ({name: f.name, type: f.type, required: f.required}));
 
+          console.log('[SIGN] Progress Debug:', {
+            allFields: allFields.length,
+            requiredFields: requiredFields.length,
+            requiredRemaining,
+            optionalFields: optionalFields.length,
+            optionalRemaining,
+            filledFields: recipientFields.filter(f => isFilled(f)).map(f => ({name: f.name, type: f.type, val: f.value})),
+          });
+
           let mode: 'start' | 'signing' | 'completed' = 'start';
+          // We only consider the user to have started "signing" if they have filled out at least one *fillable* field.
+          // Readonly fields do not count.
+          const anyFieldFilled = requiredRemaining < requiredFields.length || optionalRemaining < optionalFields.length;
           if (this.nextSubmits) {
             mode = 'completed';
-          } else if (this.signatureId || this.initialId) {
+          } else if (anyFieldFilled) {
             mode = 'signing';
           }
 
@@ -1214,7 +1277,7 @@ export class VerdocsSign {
               remainingFields={remainingFields}
               progress={progress}
               fieldLabel={getFieldLabel(focusedFieldObj)}
-              fieldCompleted={focusedFieldObj ? !!isFieldFilled(focusedFieldObj, this.getRecipientFields()) : false}
+              fieldCompleted={focusedFieldObj ? !!isFilled(focusedFieldObj) : false}
               onStarted={() => {
                 this.adoptingSignature = true;
                 // this.handleNext();
@@ -1226,7 +1289,7 @@ export class VerdocsSign {
           );
         })()}
 
-        <div class="document signed-document-container">
+        <div class={`document signed-document-container zoom-${this.zoomLevel}`}>
           {(this.envelope.documents || []).map(envelopeDocument => {
             const pageNumbers = integerSequence(1, envelopeDocument.pages);
 
@@ -1344,6 +1407,65 @@ export class VerdocsSign {
               <verdocs-spinner />
             </div>
           </verdocs-portal>
+        )}
+
+        {this.showDownloadDialog && (
+          <verdocs-download-dialog
+            onExit={() => (this.showDownloadDialog = false)}
+            onNext={async e => {
+              this.showDownloadDialog = false;
+              const {action} = e.detail;
+              console.log('[SIGN] Download action selected:', action);
+
+              try {
+                if (action === 'document') {
+                  // Download main document(s)
+                  const attachments = this.envelope.documents.filter(d => d.type === 'attachment');
+                  if (attachments.length === 1) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, attachments[0].id);
+                    window.open(url, '_blank');
+                  } else {
+                    // If multiple docs, we might want to zip them or just download the first one for now as per previous logic?
+                    // The requirement says "Document", implies the PDF.
+                    // Users might have multiple files though.
+                    // For now let's just do the zip of everything if multiple? Or loop?
+                    // Let's stick to the previous behavior "firstDoc" strategy if we can't do better,
+                    // or use getEnvelopeDocumentDownloadLink for each?
+                    // Best user experience for "Document" if multiple is probably just the first one or a zip of docs.
+                    // But "All Files" covers zip.
+                    // Let's assume the main document is the primary intent.
+                    const firstDoc = attachments[0];
+                    if (firstDoc) {
+                      const url = await getEnvelopeDocumentDownloadLink(this.endpoint, firstDoc.id);
+                      window.open(url, '_blank');
+                    }
+                  }
+                } else if (action === 'certificate') {
+                  const cert = this.envelope.documents.find(d => d.type === 'certificate');
+                  if (cert) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
+                    window.open(url, '_blank');
+                  } else {
+                    VerdocsToast('Certificate not yet available.', {style: 'info'});
+                  }
+                } else if (action === 'zip') {
+                  // The helper in verdocs-view used getEnvelopesZip with an array
+                  const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
+                  const url = window.URL.createObjectURL(blob.data);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${this.envelope.name}.zip`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  window.URL.revokeObjectURL(url);
+                }
+              } catch (err) {
+                console.error('Download error', err);
+                VerdocsToast('Unable to complete download request.', {style: 'error'});
+              }
+            }}
+          />
         )}
 
         {!this.loading && !this.isDone && (

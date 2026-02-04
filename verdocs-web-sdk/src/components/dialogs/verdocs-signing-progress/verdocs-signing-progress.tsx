@@ -92,19 +92,27 @@ export class VerdocsSigningProgress {
     if (this.mode === 'start') {
       return (
         <button class="btn start" onClick={() => this.started.emit()}>
-          Start
+          Start Signing
         </button>
       );
     }
 
     return (
       <div class="nav-buttons">
-        <button class="btn previous" disabled={this.current <= 1} onClick={() => this.previous.emit()}>
-          Previous
-        </button>
-        <button class="btn next" disabled={this.current >= this.total} onClick={() => this.next.emit()}>
-          Next
-        </button>
+        {this.progress && this.progress.required.remaining === 0 ? (
+          <button class="btn submit" onClick={() => this.exit.emit()}>
+            Submit
+          </button>
+        ) : (
+          [
+            <button class="btn previous" disabled={this.current <= 1} onClick={() => this.previous.emit()}>
+              Previous
+            </button>,
+            <button class="btn next" disabled={this.current >= this.total} onClick={() => this.next.emit()}>
+              Next
+            </button>,
+          ]
+        )}
       </div>
     );
   }

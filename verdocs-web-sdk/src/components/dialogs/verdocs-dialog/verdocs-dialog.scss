@@ -32,6 +32,26 @@ verdocs-dialog {
     flex-direction: column;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
     border-radius: var(--verdocs-dialog-radius, 8px);
+    position: relative; // For absolute positioning of close button
+
+    .close-button {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #9ca3af;
+      transition: color 0.2s;
+      z-index: 10;
+
+      &:hover {
+        color: #4b5563;
+      }
+    }
   }
 
   .heading {

@@ -1,0 +1,66 @@
+@import '../../../theme.scss';
+
+verdocs-download-dialog {
+  box-sizing: border-box;
+  font-family: $primary-font;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 24px 20px 24px;
+  }
+
+  .download-option {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 15px;
+    background: white;
+
+    &:hover {
+      border-color: $verdocs-primary-color;
+      background-color: #f9fafb;
+    }
+
+    .icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: #f3f4f6;
+      border-radius: 50%;
+      color: #4b5563;
+      flex-shrink: 0;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .text-container {
+      flex: 1;
+
+      .label {
+        font-weight: 500;
+        color: #111827;
+        margin-bottom: 2px;
+      }
+
+      .description {
+        font-size: 13px;
+        color: #6b7280;
+      }
+    }
+
+    .arrow {
+      color: #9ca3af;
+    }
+  }
+}

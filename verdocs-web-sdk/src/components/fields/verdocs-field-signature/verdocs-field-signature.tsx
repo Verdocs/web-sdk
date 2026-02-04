@@ -238,7 +238,6 @@ export class VerdocsFieldSignature {
       return <Host class={{done}}>{value && <img src={base64} alt="" />}</Host>;
     }
 
-    console.log('sid', this.signatureid);
     return (
       <Host class={{required, disabled, done, focused, filled: !!base64, [signerClass]: true}}>
         {editable && <div class="edge-right" />}

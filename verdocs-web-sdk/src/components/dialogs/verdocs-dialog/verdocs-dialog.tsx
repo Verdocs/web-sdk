@@ -1,4 +1,4 @@
-import {Component, h, Event, EventEmitter, Host, Prop} from '@stencil/core';
+import { Component, h, Event, EventEmitter, Host, Prop } from '@stencil/core';
 
 /**
  * Display a simple dialog where the contents are provided via slots.
@@ -11,7 +11,7 @@ export class VerdocsDialog {
   /**
    * Event fired when the dialog is dismissed by clicking the background overlay.
    */
-  @Event({composed: true}) exit: EventEmitter;
+  @Event({ composed: true }) exit: EventEmitter;
 
   /**
    * If true, clicking on the background overlay will not close the dialog.
@@ -36,6 +36,13 @@ export class VerdocsDialog {
       <Host>
         <div class="background-overlay" onClick={e => this.handleDismiss(e)}>
           <div class="dialog">
+            <div class="close-button" onClick={() => this.exit.emit()}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+
             <slot name="heading">
               <div class="heading"></div>
             </slot>

@@ -359,6 +359,8 @@ export namespace Components {
          */
         "disclosures": string;
     }
+    interface VerdocsDownloadDialog {
+    }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
      * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
@@ -2569,6 +2571,10 @@ export interface VerdocsDisclosureDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDisclosureDialogElement;
 }
+export interface VerdocsDownloadDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsDownloadDialogElement;
+}
 export interface VerdocsDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsDropdownElement;
@@ -3055,6 +3061,24 @@ declare global {
     var HTMLVerdocsDisclosureDialogElement: {
         prototype: HTMLVerdocsDisclosureDialogElement;
         new (): HTMLVerdocsDisclosureDialogElement;
+    };
+    interface HTMLVerdocsDownloadDialogElementEventMap {
+        "next": {action: 'document' | 'certificate' | 'zip'};
+        "exit": any;
+    }
+    interface HTMLVerdocsDownloadDialogElement extends Components.VerdocsDownloadDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsDownloadDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsDownloadDialogElement, ev: VerdocsDownloadDialogCustomEvent<HTMLVerdocsDownloadDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsDownloadDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsDownloadDialogElement, ev: VerdocsDownloadDialogCustomEvent<HTMLVerdocsDownloadDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsDownloadDialogElement: {
+        prototype: HTMLVerdocsDownloadDialogElement;
+        new (): HTMLVerdocsDownloadDialogElement;
     };
     interface HTMLVerdocsDropdownElementEventMap {
         "optionSelected": IMenuOption;
@@ -4611,6 +4635,7 @@ declare global {
         "verdocs-delegate-dialog": HTMLVerdocsDelegateDialogElement;
         "verdocs-dialog": HTMLVerdocsDialogElement;
         "verdocs-disclosure-dialog": HTMLVerdocsDisclosureDialogElement;
+        "verdocs-download-dialog": HTMLVerdocsDownloadDialogElement;
         "verdocs-dropdown": HTMLVerdocsDropdownElement;
         "verdocs-envelope-document-page": HTMLVerdocsEnvelopeDocumentPageElement;
         "verdocs-envelope-recipient-link": HTMLVerdocsEnvelopeRecipientLinkElement;
@@ -5076,6 +5101,16 @@ declare namespace LocalJSX {
           * Event fired when the user chooses to delegate signing.
          */
         "onDelegate"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
+    }
+    interface VerdocsDownloadDialog {
+        /**
+          * Event fired when Cancel is pressed or background is clicked.
+         */
+        "onExit"?: (event: VerdocsDownloadDialogCustomEvent<any>) => void;
+        /**
+          * Event fired when an option is selected.
+         */
+        "onNext"?: (event: VerdocsDownloadDialogCustomEvent<{action: 'document' | 'certificate' | 'zip'}>) => void;
     }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
@@ -7826,6 +7861,7 @@ declare namespace LocalJSX {
         "verdocs-delegate-dialog": VerdocsDelegateDialog;
         "verdocs-dialog": VerdocsDialog;
         "verdocs-disclosure-dialog": VerdocsDisclosureDialog;
+        "verdocs-download-dialog": VerdocsDownloadDialog;
         "verdocs-dropdown": VerdocsDropdown;
         "verdocs-envelope-document-page": VerdocsEnvelopeDocumentPage;
         "verdocs-envelope-recipient-link": VerdocsEnvelopeRecipientLink;
@@ -8014,6 +8050,7 @@ declare module "@stencil/core" {
              * Display e-signing disclosures with options to delegate, decline or proceed.
              */
             "verdocs-disclosure-dialog": LocalJSX.VerdocsDisclosureDialog & JSXBase.HTMLAttributes<HTMLVerdocsDisclosureDialogElement>;
+            "verdocs-download-dialog": LocalJSX.VerdocsDownloadDialog & JSXBase.HTMLAttributes<HTMLVerdocsDownloadDialogElement>;
             /**
              * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
              * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.

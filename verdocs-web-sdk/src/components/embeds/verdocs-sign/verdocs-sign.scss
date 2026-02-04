@@ -78,6 +78,27 @@ verdocs-sign {
   .signed-document-container {
     width: 64%;
     margin-left: 260px;
+    transition: all 0.3s ease;
+
+    &.zoom-normal {
+      width: 64%;
+      margin-left: 260px;
+    }
+
+    &.zoom-zoom1 {
+      width: 80%;
+      margin-left: 200px;
+    }
+
+    &.zoom-zoom2 {
+      width: 100%;
+      margin-left: 150px;
+
+      .verdocs-flag-instance {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
   }
 
   @media (max-width: 600px) {
@@ -179,8 +200,33 @@ verdocs-sign {
 }
 
 @media print {
-  verdocs-sign .header {
-    display: none;
+  verdocs-sign .header,
+  .controls-toolbar,
+  .verdocs-flag-instance,
+  verdocs-signing-progress {
+    display: none !important;
+  }
+
+  verdocs-sign {
+    min-height: auto;
+    background-color: white;
+
+    > .document {
+      overflow: visible;
+      height: auto;
+      display: block; // Flex can cause print issues
+      padding: 0;
+      margin: 0;
+
+      .document-separator {
+        display: none;
+      }
+    }
+
+    .signed-document-container {
+      width: 100%;
+      margin: 0;
+    }
   }
 }
 
@@ -341,6 +387,11 @@ verdocs-sign {
 
       &:hover {
         background-color: #f5f5f5;
+      }
+
+      &.disabled {
+        opacity: 0.3;
+        pointer-events: none;
       }
 
       svg {
