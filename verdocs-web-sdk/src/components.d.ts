@@ -360,6 +360,11 @@ export namespace Components {
         "disclosures": string;
     }
     interface VerdocsDownloadDialog {
+        /**
+          * If true, the envelope has a certificate available for download.
+          * @default false
+         */
+        "hasCertificate": boolean;
     }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
@@ -1877,7 +1882,7 @@ export namespace Components {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-          * @default new VerdocsEndpoint({sessionType: 'signing'})
+          * @default new VerdocsEndpoint({ sessionType: 'signing' })
          */
         "endpoint": VerdocsEndpoint;
         /**
@@ -4021,8 +4026,8 @@ declare global {
     };
     interface HTMLVerdocsSignElementEventMap {
         "sdkError": SDKError;
-        "envelopeLoaded": {endpoint: VerdocsEndpoint; envelope: IEnvelope};
-        "envelopeUpdated": {endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string};
+        "envelopeLoaded": { endpoint: VerdocsEndpoint; envelope: IEnvelope };
+        "envelopeUpdated": { endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string };
     }
     /**
      * Display an envelope signing experience. This will display the envelope's attached
@@ -5103,6 +5108,11 @@ declare namespace LocalJSX {
         "onDelegate"?: (event: VerdocsDisclosureDialogCustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>) => void;
     }
     interface VerdocsDownloadDialog {
+        /**
+          * If true, the envelope has a certificate available for download.
+          * @default false
+         */
+        "hasCertificate"?: boolean;
         /**
           * Event fired when Cancel is pressed or background is clicked.
          */
@@ -6921,7 +6931,7 @@ declare namespace LocalJSX {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-          * @default new VerdocsEndpoint({sessionType: 'signing'})
+          * @default new VerdocsEndpoint({ sessionType: 'signing' })
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6942,11 +6952,11 @@ declare namespace LocalJSX {
         /**
           * Event fired when the envelope is loaded for the first time.
          */
-        "onEnvelopeLoaded"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
+        "onEnvelopeLoaded"?: (event: VerdocsSignCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope }>) => void;
         /**
           * Event fired when the envelope is updated in any way.
          */
-        "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
+        "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string }>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */

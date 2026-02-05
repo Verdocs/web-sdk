@@ -1,16 +1,16 @@
-import {Element, Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
-import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
-import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid} from '@verdocs/js-sdk';
-import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
-import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
-import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
-import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
-import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
-import {DocumentPageIcon} from '../../../utils/Icons';
-import {IDocumentPageInfo} from '../../../utils/Types';
-import {VerdocsToast} from '../../../utils/Toast';
-import {SDKError} from '../../../utils/errors';
-import {Store} from '../../../utils/Datastore';
+import { Element, Event, EventEmitter, Host, Fragment, Component, Prop, State, h } from '@stencil/core';
+import { uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip } from '@verdocs/js-sdk';
+import { askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid } from '@verdocs/js-sdk';
+import { verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest } from '@verdocs/js-sdk';
+import { fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName } from '@verdocs/js-sdk';
+import { updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient } from '@verdocs/js-sdk';
+import { createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit } from '@verdocs/js-sdk';
+import { getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight } from '../../../utils/utils';
+import { DocumentPageIcon } from '../../../utils/Icons';
+import { IDocumentPageInfo } from '../../../utils/Types';
+import { VerdocsToast } from '../../../utils/Toast';
+import { SDKError } from '../../../utils/errors';
+import { Store } from '../../../utils/Datastore';
 
 const ToolbarMinusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11 8C11.2761 8 11.5 8.22386 11.5 8.5C11.5 8.77614 11.2761 9 11 9H6C5.72386 9 5.5 8.77614 5.5 8.5C5.5 8.22386 5.72386 8 6 8H11ZM14 8.5C14 5.46243 11.5376 3 8.5 3C5.46243 3 3 5.46243 3 8.5C3 11.5376 5.46243 14 8.5 14C9.83879 14 11.0659 13.5217 12.0196 12.7266L16.1464 16.8536L16.2157 16.9114C16.4106 17.0464 16.68 17.0271 16.8536 16.8536C17.0488 16.6583 17.0488 16.3417 16.8536 16.1464L12.7266 12.0196C13.5217 11.0659 14 9.83879 14 8.5ZM4 8.5C4 6.01472 6.01472 4 8.5 4C10.9853 4 13 6.01472 13 8.5C13 10.9853 10.9853 13 8.5 13C6.01472 13 4 10.9853 4 8.5Z" fill="#424242" /></svg>`;
 const ToolbarPlusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 8.5C11.5 8.22386 11.2761 8 11 8H9V6C9 5.72386 8.77614 5.5 8.5 5.5C8.22386 5.5 8 5.72386 8 6V8H6C5.72386 8 5.5 8.22386 5.5 8.5C5.5 8.77614 5.72386 9 6 9H8V11C8 11.2761 8.22386 11.5 8.5 11.5C8.77614 11.5 9 11.2761 9 11V9H11C11.2761 9 11.5 8.77614 11.5 8.5ZM8.5 3C11.5376 3 14 5.46243 14 8.5C14 9.83879 13.5217 11.0659 12.7266 12.0196L16.8536 16.1464C17.0488 16.3417 17.0488 16.6583 16.8536 16.8536C16.68 17.0271 16.4106 17.0464 16.2157 16.9114L16.1464 16.8536L12.0196 12.7266C11.0659 13.5217 9.83879 14 8.5 14C5.46243 14 3 11.5376 3 8.5C3 5.46243 5.46243 3 8.5 3ZM8.5 4C6.01472 4 4 6.01472 4 8.5C4 10.9853 6.01472 13 8.5 13C10.9853 13 13 10.9853 13 8.5C13 6.01472 10.9853 4 8.5 4Z" fill="#424242" /></svg>`;
@@ -79,22 +79,22 @@ export class VerdocsSign {
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
-  @Prop({mutable: true}) endpoint: VerdocsEndpoint = new VerdocsEndpoint({sessionType: 'signing'});
+  @Prop({ mutable: true }) endpoint: VerdocsEndpoint = new VerdocsEndpoint({ sessionType: 'signing' });
 
   /**
    * The ID of the envelope to sign.
    */
-  @Prop({reflect: true}) envelopeId: string | null = null;
+  @Prop({ reflect: true }) envelopeId: string | null = null;
 
   /**
    * The ID of the role that will be signing e.g. 'Recipient 1'
    */
-  @Prop({reflect: true}) roleId: string | null = null;
+  @Prop({ reflect: true }) roleId: string | null = null;
 
   /**
    * The invite code for the signer.
    */
-  @Prop({reflect: true}) inviteCode: string | null = null;
+  @Prop({ reflect: true }) inviteCode: string | null = null;
 
   /**
    * If set, (recommended), the host application should create a <DIV> element with a unique ID. When this
@@ -116,17 +116,17 @@ export class VerdocsSign {
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
-  @Event({composed: true}) sdkError: EventEmitter<SDKError>;
+  @Event({ composed: true }) sdkError: EventEmitter<SDKError>;
 
   /**
    * Event fired when the envelope is loaded for the first time.
    */
-  @Event({composed: true}) envelopeLoaded: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>;
+  @Event({ composed: true }) envelopeLoaded: EventEmitter<{ endpoint: VerdocsEndpoint; envelope: IEnvelope }>;
 
   /**
    * Event fired when the envelope is updated in any way.
    */
-  @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
+  @Event({ composed: true }) envelopeUpdated: EventEmitter<{ endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string }>;
 
   @State() recipient: IRecipient | null = null;
   @State() hasSignature = false;
@@ -269,12 +269,12 @@ export class VerdocsSign {
   }
 
   processAuthResponse(response: ISignerTokenResponse) {
-    const {envelope, recipient} = response;
+    const { envelope, recipient } = response;
 
     // TODO: Temporary fix for multi-doc ordering until the server-side ordering is fixed
     envelope.documents?.sort((a, b) => (a.order !== b.order ? b.order - a.order : b.created_at.localeCompare(a.created_at)));
 
-    const {auth_step} = recipient;
+    const { auth_step } = recipient;
     this.recipient = recipient;
     this.envelope = envelope;
     this.disclosures = this.envelope?.organization?.disclaimer || DEFAULT_DISCLOSURES;
@@ -315,7 +315,7 @@ export class VerdocsSign {
     }
 
     this.checkRecipientFields();
-    this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
+    this.envelopeLoaded?.emit({ endpoint: this.endpoint, envelope: this.envelope });
   }
 
   handleClickAgree() {
@@ -327,11 +327,11 @@ export class VerdocsSign {
         this.recipient.agreed = true;
         this.submitting = false;
         this.agreed = true; // The server returns a recipient object but it's not "deep" so we track this locally
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'agreed'});
+        this.envelopeUpdated?.emit({ endpoint: this.endpoint, envelope: this.envelope, event: 'agreed' });
       })
       .catch(e => {
         console.log('[SIGN] Unable to accept disclosures', e);
-        VerdocsToast('Unable to accept disclosures, please try again later', {style: 'error'});
+        VerdocsToast('Unable to accept disclosures, please try again later', { style: 'error' });
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
         this.submitting = false;
       });
@@ -349,7 +349,7 @@ export class VerdocsSign {
       if (container && pageEl) {
         // 20px buffer for visual spacing
         const top = pageEl.offsetTop - 20;
-        container.scrollTo({top, behavior: 'smooth'});
+        container.scrollTo({ top, behavior: 'smooth' });
       }
     }
   }
@@ -359,7 +359,7 @@ export class VerdocsSign {
       case 'later':
         this.finishLater = true;
         this.showFinishLater = true;
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'later'});
+        this.envelopeUpdated?.emit({ endpoint: this.endpoint, envelope: this.envelope, event: 'later' });
         break;
 
       case 'delegate':
@@ -372,7 +372,7 @@ export class VerdocsSign {
 
       case 'print':
         window.print();
-        this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'printed'});
+        this.envelopeUpdated?.emit({ endpoint: this.endpoint, envelope: this.envelope, event: 'printed' });
         break;
 
       case 'download':
@@ -420,7 +420,7 @@ export class VerdocsSign {
       return;
     }
 
-    console.log('[SIGN] saveFieldChange', fieldName, {value, prepared});
+    console.log('[SIGN] saveFieldChange', fieldName, { value, prepared });
     updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldName, value, prepared)
       .then(updateResult => this.updateRecipientFieldValue(fieldName, updateResult))
       .catch(e => {
@@ -430,7 +430,7 @@ export class VerdocsSign {
           this.fatalErrorMessage = 'Please reload your browser to continue.';
         } else {
           console.log('[SIGN] Server error', e);
-          VerdocsToast('Unable to save change, please try again later', {style: 'error'});
+          VerdocsToast('Unable to save change, please try again later', { style: 'error' });
         }
 
         this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -438,7 +438,7 @@ export class VerdocsSign {
   }
 
   async handleFieldChange(field: IEnvelopeField, e: any) {
-    const {value, checked} = e.target;
+    const { value, checked } = e.target;
 
     switch (field.type as any) {
       // TODO: Remove legacy type when no longer needed
@@ -500,7 +500,7 @@ export class VerdocsSign {
           })
           .catch(e => {
             console.log('Error updating initials', e);
-            VerdocsToast('Unable to save initials, please try again later', {style: 'error'});
+            VerdocsToast('Unable to save initials, please try again later', { style: 'error' });
             this.showSpinner = false;
           });
 
@@ -547,23 +547,23 @@ export class VerdocsSign {
           })
           .catch(e => {
             console.warn('[SIGN] Error updating signature', e);
-            VerdocsToast('Unable to save signature, please try again later', {style: 'error'});
+            VerdocsToast('Unable to save signature, please try again later', { style: 'error' });
             this.showSpinner = false;
           });
 
       case 'date':
-        const {formattedDate} = e.detail;
+        const { formattedDate } = e.detail;
         if (formattedDate) {
           return this.saveFieldChange(field.name, formattedDate, false);
         }
         break;
 
       case 'timestamp':
-        console.log('[SIGN] Updating timestamp', {value, ts: e.target.getAttribute('timestamp')});
+        console.log('[SIGN] Updating timestamp', { value, ts: e.target.getAttribute('timestamp') });
         break;
 
       default:
-        console.log('[SIGN] Unhandled field update', {value, checked}, field);
+        console.log('[SIGN] Unhandled field update', { value, checked }, field);
         break;
     }
   }
@@ -599,7 +599,7 @@ export class VerdocsSign {
     if (nextRequiredField) {
       const id = getFieldId(nextRequiredField);
       const el = document.getElementById(id) as any;
-      el?.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'});
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
       el?.focusField();
       this.focusedField = nextRequiredField.name;
     }
@@ -665,7 +665,7 @@ export class VerdocsSign {
       const prevField = allFields[focusedIndex - 1];
       const id = getFieldId(prevField);
       const el = document.getElementById(id) as any;
-      el?.scrollIntoView({behavior: 'smooth', block: 'center'});
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       el?.focusField?.();
       this.focusedField = prevField.name;
     }
@@ -717,7 +717,7 @@ export class VerdocsSign {
         onClick: () => {
           const id = getFieldId(nextField);
           const el = document.getElementById(id) as any;
-          el?.scrollIntoView({behavior: 'smooth', block: 'center'});
+          el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
           el?.focusField?.();
         },
       });
@@ -755,13 +755,13 @@ export class VerdocsSign {
         this.updateRecipientFieldValue(field.name, updateResult);
         this.checkRecipientFields();
 
-        const newEl = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
+        const newEl = renderDocumentField('envelope', field, pageInfo, { disabled: false, editable: false, draggable: false, done: this.isDone });
         this.attachFieldAttributes(pageInfo, field, newEl);
 
         this.showSpinner = false;
       } catch (e) {
         console.log('Error uploading attachment', e);
-        VerdocsToast('Unable to upload attachment, please try again later', {style: 'error'});
+        VerdocsToast('Unable to upload attachment, please try again later', { style: 'error' });
         this.showSpinner = false;
       }
     });
@@ -774,13 +774,13 @@ export class VerdocsSign {
         this.updateRecipientFieldValue(field.name, updateResult);
         this.checkRecipientFields();
 
-        const newEl = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone});
+        const newEl = renderDocumentField('envelope', field, pageInfo, { disabled: false, editable: false, draggable: false, done: this.isDone });
         this.attachFieldAttributes(pageInfo, field, newEl);
 
         this.showSpinner = false;
       } catch (e) {
         console.log('Error uploading attachment', e);
-        VerdocsToast('Unable to upload attachment, please try again later', {style: 'error'});
+        VerdocsToast('Unable to upload attachment, please try again later', { style: 'error' });
         this.showSpinner = false;
       }
     });
@@ -831,7 +831,7 @@ export class VerdocsSign {
     recipientFields
       .filter(field => field && field.document_id === pageInfo.documentId && field.page === pageInfo.pageNumber)
       .forEach((field, tabIndex) => {
-        const el = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
+        const el = renderDocumentField('envelope', field, pageInfo, { disabled: false, editable: false, draggable: false, done: this.isDone }, tabIndex);
         if (!el) {
           return;
         }
@@ -850,7 +850,7 @@ export class VerdocsSign {
         this.getRecipientFields()
           .filter(field => field.document_id === pageInfo.documentId && field.page === pageInfo.pageNumber)
           .forEach(field => {
-            const el = renderDocumentField('envelope', field, pageInfo, {disabled: true, editable: false, draggable: false, done: this.isDone});
+            const el = renderDocumentField('envelope', field, pageInfo, { disabled: true, editable: false, draggable: false, done: this.isDone });
             if (!el) {
               return;
             }
@@ -882,7 +882,7 @@ export class VerdocsSign {
           this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
           this.isDone = true;
         } else {
-          VerdocsToast(e.response?.data?.error || 'Unable to verify your identity. Please try again.', {style: 'error'});
+          VerdocsToast(e.response?.data?.error || 'Unable to verify your identity. Please try again.', { style: 'error' });
         }
       });
   }
@@ -913,7 +913,7 @@ export class VerdocsSign {
 
     if (this.fatalErrorMessage) {
       return (
-        <Host class={{agreed: this.agreed}}>
+        <Host class={{ agreed: this.agreed }}>
           <div class="fatal-error">
             <div class="message">
               <div class="header">{this.fatalErrorHeader}</div>
@@ -926,7 +926,7 @@ export class VerdocsSign {
 
     if (this.delegated) {
       return (
-        <Host class={{agreed: false}}>
+        <Host class={{ agreed: false }}>
           <div class="fatal-error">
             <div class="message">
               <div class="header">Delegated Signing Request</div>
@@ -939,7 +939,7 @@ export class VerdocsSign {
 
     if (this.isDone) {
       return (
-        <Host class={{agreed: this.agreed}}>
+        <Host class={{ agreed: this.agreed }}>
           <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
 
           {this.showDone && (
@@ -967,10 +967,10 @@ export class VerdocsSign {
     if (this.delegating) {
       return (
         <Host class="agreed">
-          <div class="document" style={{paddingTop: '15px'}}>
+          <div class="document" style={{ paddingTop: '15px' }}>
             <img
               src="https://public-assets.verdocs.com/loading-placeholder.png"
-              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              style={{ width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px' }}
               alt="Placeholder page"
             />
           </div>
@@ -982,14 +982,14 @@ export class VerdocsSign {
             onNext={(e: any) => {
               delegateRecipient(this.endpoint, this.envelopeId, this.roleId, e.detail)
                 .then(r => {
-                  VerdocsToast('Delegation request submitted.', {style: 'success'});
+                  VerdocsToast('Delegation request submitted.', { style: 'success' });
                   console.log('[SIGN] Delegated successfully', r);
                   this.delegated = true;
                   this.delegating = false;
                 })
                 .catch(e => {
                   console.log('[SIGN] Error delegating request', e);
-                  VerdocsToast('Unable to process delegation request. Please try again later.', {style: 'error'});
+                  VerdocsToast('Unable to process delegation request. Please try again later.', { style: 'error' });
                 });
             }}
           />
@@ -1000,10 +1000,10 @@ export class VerdocsSign {
     if (this.declining) {
       return (
         <Host class="agreed">
-          <div class="document" style={{paddingTop: '15px'}}>
+          <div class="document" style={{ paddingTop: '15px' }}>
             <img
               src="https://public-assets.verdocs.com/loading-placeholder.png"
-              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              style={{ width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px' }}
               alt="Placeholder page"
             />
           </div>
@@ -1022,7 +1022,7 @@ export class VerdocsSign {
                 })
                 .catch(e => {
                   console.warn('[SIGN] Error declining signing session', e);
-                  VerdocsToast('Unable to decline, please try again later', {style: 'error'});
+                  VerdocsToast('Unable to decline, please try again later', { style: 'error' });
                 });
             }}
           />
@@ -1033,10 +1033,10 @@ export class VerdocsSign {
     if (!this.agreed) {
       return (
         <Host class="agreed">
-          <div class="document" style={{paddingTop: '15px'}}>
+          <div class="document" style={{ paddingTop: '15px' }}>
             <img
               src="https://public-assets.verdocs.com/loading-placeholder.png"
-              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              style={{ width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px' }}
               alt="Placeholder page"
             />
           </div>
@@ -1078,10 +1078,10 @@ export class VerdocsSign {
             </div>
           </div>
 
-          <div class="document" style={{paddingTop: '15px'}}>
+          <div class="document" style={{ paddingTop: '15px' }}>
             <img
               src="https://public-assets.verdocs.com/loading-placeholder.png"
-              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              style={{ width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px' }}
               alt="Placeholder page"
             />
           </div>
@@ -1125,10 +1125,10 @@ export class VerdocsSign {
             </div>
           </div>
 
-          <div class="document" style={{paddingTop: '15px'}}>
+          <div class="document" style={{ paddingTop: '15px' }}>
             <img
               src="https://public-assets.verdocs.com/loading-placeholder.png"
-              style={{width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px'}}
+              style={{ width: '612px', height: '792px', boxShadow: '0 0 10px 5px #0000000f', marginTop: '15px' }}
               alt="Placeholder page"
             />
           </div>
@@ -1149,9 +1149,9 @@ export class VerdocsSign {
                     const answer = e.detail as string;
                     this.kbaChoices = [...this.kbaChoices, answer];
                     if (this.kbaChoices.length >= this.kbaQuestions.length) {
-                      const responses = this.kbaQuestions.map((q, i) => ({type: q.type, answer: this.kbaChoices[i]}));
+                      const responses = this.kbaQuestions.map((q, i) => ({ type: q.type, answer: this.kbaChoices[i] }));
                       console.log('Submitting KBA responses', this.kbaChoices, responses);
-                      this.handleAuthenticateSigner({auth_method: 'kba', responses});
+                      this.handleAuthenticateSigner({ auth_method: 'kba', responses });
                     }
                   }}
                 />
@@ -1163,32 +1163,32 @@ export class VerdocsSign {
     }
 
     const inProgressMenuOptions = [
-      {id: 'later', label: 'Finish Later'}, //
+      { id: 'later', label: 'Finish Later' }, //
       // {id: 'claim', label: 'Claim the Document', disabled: true},
-      {id: 'decline', label: 'Decline to Sign'},
-      {id: 'print', label: 'Print Without Signing'},
-      {id: 'download', label: 'Download'},
+      { id: 'decline', label: 'Decline to Sign' },
+      { id: 'print', label: 'Print Without Signing' },
+      { id: 'download', label: 'Download' },
     ];
 
     const doneMenuOptions = [
-      {id: 'print', label: 'Print'},
-      {id: 'download', label: 'Download'},
+      { id: 'print', label: 'Print' },
+      { id: 'download', label: 'Download' },
     ];
 
     if (this.recipient.delegator) {
-      inProgressMenuOptions.unshift({id: 'delegate', label: 'Delegate'});
+      inProgressMenuOptions.unshift({ id: 'delegate', label: 'Delegate' });
     }
 
     const invalidFields = this.getRecipientFields().filter(field => !isFieldValid(field, this.getRecipientFields()));
     invalidFields.length > 0
       ? console.log(
-          '[SIGN] Invalid fields remaining',
-          invalidFields.map(field => field.name),
-        )
+        '[SIGN] Invalid fields remaining',
+        invalidFields.map(field => field.name),
+      )
       : console.log('[SIGN] All field valid');
 
     const totalPages = this.envelope.documents.reduce((acc, doc) => acc + doc.pages, 0);
-    const pageOptions = integerSequence(1, totalPages).map(p => ({label: p.toString(), value: p.toString()}));
+    const pageOptions = integerSequence(1, totalPages).map(p => ({ label: p.toString(), value: p.toString() }));
     let globalPageCounter = 0;
 
     return (
@@ -1198,11 +1198,11 @@ export class VerdocsSign {
             <div class="inner">
               <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
               <div class="title">{this.envelope.name}</div>
-              <div style={{flex: '1'}} />
+              <div style={{ flex: '1' }} />
 
               {!this.finishLater && <verdocs-button size="xsmall" label={this.nextButtonLabel} disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />}
 
-              <div style={{marginLeft: '10px'}} />
+              <div style={{ marginLeft: '10px' }} />
               <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
             </div>
           </div>
@@ -1222,10 +1222,10 @@ export class VerdocsSign {
             </div>
             <div class="right-controls">
               <verdocs-button class="mobile-next-button" label={this.nextButtonLabel} size="xsmall" disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />
-              <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
-              <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
-              <div class="icon-button download" innerHTML={ToolbarDownloadIcon} onClick={() => this.handleOptionSelected({detail: {id: 'download'}})} />
-              <div class="icon-button print" innerHTML={ToolbarPrintIcon} onClick={() => this.handleOptionSelected({detail: {id: 'print'}})} />
+              <div class={{ 'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal' }} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
+              <div class={{ 'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2' }} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
+              <div class="icon-button download" innerHTML={ToolbarDownloadIcon} onClick={() => this.handleOptionSelected({ detail: { id: 'download' } })} />
+              <div class="icon-button print" innerHTML={ToolbarPrintIcon} onClick={() => this.handleOptionSelected({ detail: { id: 'print' } })} />
             </div>
           </div>
         )}
@@ -1262,7 +1262,7 @@ export class VerdocsSign {
           const totalFields = this.getSortedFillableFields().length;
           const remainingFields = this.getSortedFillableFields()
             .filter(f => f.required && !isFilled(f))
-            .map(f => ({name: f.name, type: f.type, required: f.required}));
+            .map(f => ({ name: f.name, type: f.type, required: f.required }));
 
           console.log('[SIGN] Progress Debug:', {
             allFields: allFields.length,
@@ -1270,7 +1270,7 @@ export class VerdocsSign {
             requiredRemaining,
             optionalFields: optionalFields.length,
             optionalRemaining,
-            filledFields: recipientFields.filter(f => isFilled(f)).map(f => ({name: f.name, type: f.type, val: f.value})),
+            filledFields: recipientFields.filter(f => isFilled(f)).map(f => ({ name: f.name, type: f.type, val: f.value })),
           });
 
           let mode: 'start' | 'signing' | 'completed' = 'start';
@@ -1317,7 +1317,7 @@ export class VerdocsSign {
                 )}
 
                 {pageNumbers.map(pageNumber => {
-                  const pageSize = envelopeDocument.page_sizes?.[pageNumber] || {width: 612, height: 792};
+                  const pageSize = envelopeDocument.page_sizes?.[pageNumber] || { width: 612, height: 792 };
                   globalPageCounter++;
 
                   // In signing mode we show the original template page with all the recipient fields so we can show source formatting and
@@ -1339,8 +1339,8 @@ export class VerdocsSign {
                       onPageRendered={e => this.handlePageRendered(e)}
                       type="filled"
                       layers={[
-                        {name: 'page', type: 'canvas'},
-                        {name: 'controls', type: 'div'},
+                        { name: 'page', type: 'canvas' },
+                        { name: 'controls', type: 'div' },
                       ]}
                     />
                   );
@@ -1425,10 +1425,11 @@ export class VerdocsSign {
 
         {this.showDownloadDialog && (
           <verdocs-download-dialog
+            hasCertificate={this.envelope?.documents?.some(d => d.type === 'certificate')}
             onExit={() => (this.showDownloadDialog = false)}
             onNext={async e => {
               this.showDownloadDialog = false;
-              const {action} = e.detail;
+              const { action } = e.detail;
               console.log('[SIGN] Download action selected:', action);
 
               try {
@@ -1460,7 +1461,7 @@ export class VerdocsSign {
                     const url = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
                     window.open(url, '_blank');
                   } else {
-                    VerdocsToast('Certificate not yet available.', {style: 'info'});
+                    VerdocsToast('Certificate not yet available.', { style: 'info' });
                   }
                 } else if (action === 'zip') {
                   // The helper in verdocs-view used getEnvelopesZip with an array
@@ -1476,7 +1477,7 @@ export class VerdocsSign {
                 }
               } catch (err) {
                 console.error('Download error', err);
-                VerdocsToast('Unable to complete download request.', {style: 'error'});
+                VerdocsToast('Unable to complete download request.', { style: 'error' });
               }
             }}
           />
@@ -1488,11 +1489,11 @@ export class VerdocsSign {
             envelopeId={this.envelopeId}
             isDone={this.isDone}
             onAskQuestion={(e: any) => {
-              askQuestion(this.endpoint, this.envelopeId, this.roleId, {question: e.detail.question})
-                .then(() => VerdocsToast('Your question has been sent.', {style: 'success'}))
+              askQuestion(this.endpoint, this.envelopeId, this.roleId, { question: e.detail.question })
+                .then(() => VerdocsToast('Your question has been sent.', { style: 'success' }))
                 .catch(e => {
                   console.log('Error asking question', e);
-                  VerdocsToast('Unable to send question, please try again later.', {style: 'error'});
+                  VerdocsToast('Unable to send question, please try again later.', { style: 'error' });
                 });
             }}
             onDecline={() => (this.declining = true)}

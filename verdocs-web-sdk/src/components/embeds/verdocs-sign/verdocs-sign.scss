@@ -102,6 +102,18 @@ verdocs-sign {
   }
 
   @media (max-width: 768px) {
+    verdocs-sign-footer {
+      padding: 0 10px;
+
+      .buttons {
+        gap: 8px;
+
+        button {
+          font-size: 10px;
+        }
+      }
+    }
+
     .signed-document-container {
       width: 100%;
       margin-left: 0;
