@@ -2520,16 +2520,6 @@ export namespace Components {
          */
         "maxSize": number;
     }
-    /**
-     * Render the documents attached to an envelope in read-only (view) mode. All documents are
-     * displayed in order.
-     * ```ts
-     * <verdocs-view
-     *   envelopeId={ENVELOPE_ID}
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
-     *   />
-     * ```
-     */
     interface VerdocsView {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -4598,21 +4588,11 @@ declare global {
     };
     interface HTMLVerdocsViewElementEventMap {
         "sdkError": SDKError;
-        "envelopeUpdated": {endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string};
+        "envelopeUpdated": { endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string };
         "another": any;
         "view": any;
         "next": any;
     }
-    /**
-     * Render the documents attached to an envelope in read-only (view) mode. All documents are
-     * displayed in order.
-     * ```ts
-     * <verdocs-view
-     *   envelopeId={ENVELOPE_ID}
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
-     *   />
-     * ```
-     */
     interface HTMLVerdocsViewElement extends Components.VerdocsView, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsViewElementEventMap>(type: K, listener: (this: HTMLVerdocsViewElement, ev: VerdocsViewCustomEvent<HTMLVerdocsViewElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -7811,16 +7791,6 @@ declare namespace LocalJSX {
          */
         "onRemove"?: (event: VerdocsUploadDialogCustomEvent<any>) => void;
     }
-    /**
-     * Render the documents attached to an envelope in read-only (view) mode. All documents are
-     * displayed in order.
-     * ```ts
-     * <verdocs-view
-     *   envelopeId={ENVELOPE_ID}
-     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
-     *   />
-     * ```
-     */
     interface VerdocsView {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -7844,7 +7814,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
          */
-        "onEnvelopeUpdated"?: (event: VerdocsViewCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
+        "onEnvelopeUpdated"?: (event: VerdocsViewCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string }>) => void;
         /**
           * Event fired when the user clicks Done to proceed. It is up to the host application to redirect the user to the appropriate next workflow step.
          */
@@ -8530,16 +8500,6 @@ declare module "@stencil/core" {
              * To represent an existing attachment, set the existingFile property.
              */
             "verdocs-upload-dialog": LocalJSX.VerdocsUploadDialog & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
-            /**
-             * Render the documents attached to an envelope in read-only (view) mode. All documents are
-             * displayed in order.
-             * ```ts
-             * <verdocs-view
-             *   envelopeId={ENVELOPE_ID}
-             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }
-             *   />
-             * ```
-             */
             "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
         }
     }

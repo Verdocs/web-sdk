@@ -5,10 +5,10 @@ verdocs-view {
   overflow: hidden;
   min-height: 600px;
   position: relative;
-  align-items: center;
   flex-direction: column;
   box-sizing: border-box;
   font-family: $verdocs-primary-font;
+  background-color: #f5f5f5;
 
   div,
   canvas {
@@ -20,7 +20,7 @@ verdocs-view {
     width: 100%;
     height: 100%;
     display: flex;
-    padding: 15px;
+    // padding: 15px; // Reduced padding for zoom container
     row-gap: 15px;
     min-height: 200px;
     max-width: 1200px;
@@ -29,11 +29,62 @@ verdocs-view {
     align-items: center;
     box-sizing: border-box;
     flex-direction: column;
-    //justify-content: center;
+    padding-right: 15px;
 
     .inner {
       width: 100%;
       max-width: 1028px;
+    }
+  }
+
+  .signed-document-container {
+    width: 64%;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+
+    &.zoom-normal {
+      width: 64%;
+    }
+
+    &.zoom-zoom1 {
+      width: 80%;
+    }
+
+    &.zoom-zoom2 {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .signed-document-container {
+      width: 100%;
+
+      &.zoom-normal,
+      &.zoom-zoom1,
+      &.zoom-zoom2 {
+        width: 100%;
+      }
+    }
+
+    // Hide toolbars on mobile
+    .controls-toolbar {
+      .center-controls {
+        display: none;
+      }
+
+      .right-controls {
+        .icon-button {
+          &.minus,
+          &.plus {
+            display: none;
+          }
+        }
+      }
     }
   }
 
@@ -46,56 +97,110 @@ verdocs-view {
     z-index: 10000;
     position: fixed;
     background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+  }
+
+  verdocs-ok-dialog .background-overlay {
+    align-items: flex-start;
+    padding-top: 100px;
   }
 }
 
-// Styled separately because the header is often re-parented
+// Styled separately because this toolbar can be reparented
 #verdocs-view-header {
-  width: 100%;
-  color: #fff;
+  // Use .controls-toolbar styles here
   display: flex;
-  z-index: 1000;
-  flex: 0 0 56px;
-  padding: 0 20px;
-  font-size: 12px;
-  column-gap: 15px;
   align-items: center;
-  flex-direction: row;
-  transition: all 0.25s;
-  background-color: $medium-bg;
-  box-shadow:
-    0 4px 4px 0 rgb(0 0 0 / 24%),
-    0 0 4px 0 rgb(0 0 0 / 12%);
+  justify-content: space-between;
+  height: 54px;
+  padding: 0 12px 0 24px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: none;
+  font-family: 'Inter', sans-serif;
+  color: #424242;
+  z-index: 1000;
+  width: 100%;
+  box-sizing: border-box;
 
-  @media all and (max-width: 500px) {
-    padding: 0 10px;
-  }
-
-  .inner {
-    width: 100%;
+  .left-controls {
+    flex: 1;
     display: flex;
-    margin: 0 auto;
-    padding: 0 20px;
-    max-width: 1200px;
     align-items: center;
-    flex-direction: row;
 
-    @media all and (max-width: 500px) {
-      padding: 0 10px;
+    .title {
+      font-weight: 500;
+      font-size: 16px;
+      color: #242424;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
-  .logo {
-    width: 80px;
-    display: none;
-    margin: -6px 0 0 0;
+  .center-controls {
+    flex: 1;
+    display: none; // Hidden for now
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
   }
 
-  .title {
-    font-size: 18px;
-    font-weight: 500;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  .right-controls {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .icon-button {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      color: #424242;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+
+      &.disabled {
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      svg {
+        display: block;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+@media print {
+  #verdocs-view-header {
+    display: none !important;
+  }
+
+  verdocs-view {
+    min-height: auto;
+    background-color: white;
+
+    .document {
+      overflow: visible;
+      height: auto;
+      display: block;
+      padding: 0;
+    }
+
+    .signed-document-container {
+      width: 100%;
+      margin: 0;
+    }
   }
 }

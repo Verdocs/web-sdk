@@ -15,6 +15,11 @@ import {Store} from '../../../utils/Datastore';
  *   />
  * ```
  */
+const ToolbarMinusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11 8C11.2761 8 11.5 8.22386 11.5 8.5C11.5 8.77614 11.2761 9 11 9H6C5.72386 9 5.5 8.77614 5.5 8.5C5.5 8.22386 5.72386 8 6 8H11ZM14 8.5C14 5.46243 11.5376 3 8.5 3C5.46243 3 3 5.46243 3 8.5C3 11.5376 5.46243 14 8.5 14C9.83879 14 11.0659 13.5217 12.0196 12.7266L16.1464 16.8536L16.2157 16.9114C16.4106 17.0464 16.68 17.0271 16.8536 16.8536C17.0488 16.6583 17.0488 16.3417 16.8536 16.1464L12.7266 12.0196C13.5217 11.0659 14 9.83879 14 8.5ZM4 8.5C4 6.01472 6.01472 4 8.5 4C10.9853 4 13 6.01472 13 8.5C13 10.9853 10.9853 13 8.5 13C6.01472 13 4 10.9853 4 8.5Z" fill="#424242" /></svg>`;
+const ToolbarPlusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 8.5C11.5 8.22386 11.2761 8 11 8H9V6C9 5.72386 8.77614 5.5 8.5 5.5C8.22386 5.5 8 5.72386 8 6V8H6C5.72386 8 5.5 8.22386 5.5 8.5C5.5 8.77614 5.72386 9 6 9H8V11C8 11.2761 8.22386 11.5 8.5 11.5C8.77614 11.5 9 11.2761 9 11V9H11C11.2761 9 11.5 8.77614 11.5 8.5ZM8.5 3C11.5376 3 14 5.46243 14 8.5C14 9.83879 13.5217 11.0659 12.7266 12.0196L16.8536 16.1464C17.0488 16.3417 17.0488 16.6583 16.8536 16.8536C16.68 17.0271 16.4106 17.0464 16.2157 16.9114L16.1464 16.8536L12.0196 12.7266C11.0659 13.5217 9.83879 14 8.5 14C5.46243 14 3 11.5376 3 8.5C3 5.46243 5.46243 3 8.5 3ZM8.5 4C6.01472 4 4 6.01472 4 8.5C4 10.9853 6.01472 13 8.5 13C10.9853 13 13 10.9853 13 8.5C13 6.01472 10.9853 4 8.5 4Z" fill="#424242" /></svg>`;
+const ToolbarDownloadIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 16.9988C15.7761 16.9988 16 17.2226 16 17.4988C16 17.7442 15.8231 17.9484 15.5899 17.9907L15.5 17.9988H4.5C4.22386 17.9988 4 17.7749 4 17.4988C4 17.2533 4.17688 17.0492 4.41012 17.0068L4.5 16.9988H15.5ZM10.0001 2.00098C10.2456 2.00098 10.4497 2.17798 10.492 2.41124L10.5 2.50112L10.496 14.295L14.1414 10.6466C14.3148 10.4729 14.5842 10.4534 14.7792 10.5882L14.8485 10.646C15.0222 10.8194 15.0418 11.0888 14.907 11.2838L14.8492 11.3531L10.3574 15.8531C10.285 15.9257 10.1957 15.9714 10.1021 15.9901L9.99608 15.9999C9.83511 15.9999 9.69192 15.9237 9.60051 15.8056L5.14386 11.3537C4.94846 11.1586 4.94823 10.842 5.14336 10.6466C5.3168 10.4729 5.58621 10.4534 5.78117 10.5883L5.85046 10.6461L9.496 14.287L9.5 2.50083C9.50008 2.22469 9.724 2.00098 10.0001 2.00098Z" fill="#424242"/></svg>`;
+const ToolbarPrintIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 4.5C5 3.67157 5.67157 3 6.5 3H13.5C14.3284 3 15 3.67157 15 4.5V5H15.5C16.8807 5 18 6.11929 18 7.5V12.5C18 13.3284 17.3284 14 16.5 14H15V15.5C15 16.3284 14.3284 17 13.5 17H6.5C5.67157 17 5 16.3284 5 15.5V14H3.5C2.67157 14 2 13.3284 2 12.5V7.5C2 6.11929 3.11929 5 4.5 5H5V4.5ZM6 5H14V4.5C14 4.22386 13.7761 4 13.5 4H6.5C6.22386 4 6 4.22386 6 4.5V5ZM5 13V11.5C5 10.6716 5.67157 10 6.5 10H13.5C14.3284 10 15 10.6716 15 11.5V13H16.5C16.7761 13 17 12.7761 17 12.5V7.5C17 6.67157 16.3284 6 15.5 6H4.5C3.67157 6 3 6.67157 3 7.5V12.5C3 12.7761 3.22386 13 3.5 13H5ZM6.5 11C6.22386 11 6 11.2239 6 11.5V15.5C6 15.7761 6.22386 16 6.5 16H13.5C13.7761 16 14 15.7761 14 15.5V11.5C14 11.2239 13.7761 11 13.5 11H6.5Z" fill="#424242"/></svg>`;
+
 @Component({
   tag: 'verdocs-view',
   styleUrl: 'verdocs-view.scss',
@@ -80,8 +85,12 @@ export class VerdocsView {
 
   @State() loading = true;
   @State() envelope: IEnvelope | null = null;
+  @State() zoomLevel: 'normal' | 'zoom1' | 'zoom2' = 'normal';
+  @State() showDownloadDialog = false;
 
   async componentWillLoad() {
+    this.updateZoomFromWindow();
+    window.addEventListener('resize', () => this.updateZoomFromWindow());
     if (!this.endpoint) {
       this.endpoint = VerdocsEndpoint.getDefault();
       this.endpoint.loadSession();
@@ -118,6 +127,18 @@ export class VerdocsView {
 
   disconnectedCallback() {
     this.unlistenToEnvelope();
+    window.removeEventListener('resize', () => this.updateZoomFromWindow());
+  }
+
+  updateZoomFromWindow() {
+    const width = window.innerWidth;
+    if (width < 768) {
+      if (this.zoomLevel !== 'zoom2') this.zoomLevel = 'zoom2';
+    } else if (width < 1024) {
+      if (this.zoomLevel !== 'zoom1') this.zoomLevel = 'zoom1';
+    } else {
+      if (this.zoomLevel !== 'normal') this.zoomLevel = 'normal';
+    }
   }
 
   async listenToEnvelope() {
@@ -178,6 +199,10 @@ export class VerdocsView {
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'printed'});
         break;
 
+      case 'download':
+        this.showDownloadDialog = true;
+        break;
+
       case 'download-attachments':
         // TODO: Multiple document support
         try {
@@ -201,13 +226,6 @@ export class VerdocsView {
             window.open(url, '_blank');
           }
         }
-        // saveCertificate(this.endpoint, this.envelope, this.envelope.certificate_document_id)
-        //   .then(() => {
-        //     this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'downloaded'});
-        //   })
-        //   .catch(e => {
-        //     console.log('Error downloading PDF', e);
-        //   });
         break;
 
       case 'download-all':
@@ -219,6 +237,22 @@ export class VerdocsView {
             console.log('Error downloading Zip', e);
           });
         break;
+    }
+  }
+
+  handleZoomIn() {
+    if (this.zoomLevel === 'normal') {
+      this.zoomLevel = 'zoom1';
+    } else if (this.zoomLevel === 'zoom1') {
+      this.zoomLevel = 'zoom2';
+    }
+  }
+
+  handleZoomOut() {
+    if (this.zoomLevel === 'zoom1') {
+      this.zoomLevel = 'normal';
+    } else if (this.zoomLevel === 'zoom2') {
+      this.zoomLevel = 'zoom1';
     }
   }
 
@@ -258,45 +292,25 @@ export class VerdocsView {
       );
     }
 
-    const menuOptions: any[] = [{id: 'print', label: 'Print'}];
-
-    if (userCanCancelEnvelope(this.endpoint.profile, this.envelope)) {
-      menuOptions.push({id: 'cancel', label: 'Cancel'});
-    }
-
     // TODO: Review whether we want a different trigger for this.
     const showFooter = userCanCancelEnvelope(this.endpoint.profile, this.envelope);
 
-    // Add download options to the menu
-    const hasAttachments = this.envelope.documents.length > 0;
-    const normalDocCount = this.envelope.documents.filter(doc => doc.type === 'attachment').length;
-    const hasCertificate = this.envelope.documents.find(doc => doc.type === 'certificate') !== undefined;
-    if (hasAttachments || hasCertificate) {
-      menuOptions.push({label: ''});
-      if (hasAttachments) {
-        menuOptions.push({id: 'download-attachments', label: normalDocCount > 1 ? 'Download Documents' : 'Download Document'});
-      }
-      if (hasCertificate) {
-        menuOptions.push({id: 'download-certificate', label: 'Download Certificate'});
-      }
-      if (hasAttachments && hasCertificate) {
-        menuOptions.push({id: 'download-all', label: 'Download All Files'});
-      }
-    }
-
     return (
       <Host>
-        <div id="verdocs-view-header">
-          <div class="inner">
-            <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
+        <div class="controls-toolbar" id="verdocs-view-header">
+          <div class="left-controls">
             <div class="title">{this.envelope.name}</div>
-            <div style={{flex: '1'}} />
-            <div style={{marginLeft: '10px'}} />
-            <verdocs-dropdown options={menuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+          </div>
+          <div class="center-controls">{/* Pagination controls hidden for now */}</div>
+          <div class="right-controls">
+            <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
+            <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
+            <div class="icon-button download" innerHTML={ToolbarDownloadIcon} onClick={() => this.handleOptionSelected({detail: {id: 'download'}})} />
+            <div class="icon-button print" innerHTML={ToolbarPrintIcon} onClick={() => this.handleOptionSelected({detail: {id: 'print'}})} />
           </div>
         </div>
 
-        <div class="document" style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
+        <div class={`document signed-document-container zoom-${this.zoomLevel}`} style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
           {(this.envelope?.documents || [])
             .filter(document => document.type !== 'certificate')
             .map(envelopeDocument => {
@@ -343,6 +357,55 @@ export class VerdocsView {
           <div class="loading-indicator">
             <verdocs-loader />
           </div>
+        )}
+
+        {this.showDownloadDialog && (
+          <verdocs-download-dialog
+            hasCertificate={this.envelope?.documents?.some(d => d.type === 'certificate')}
+            onExit={() => (this.showDownloadDialog = false)}
+            onNext={async e => {
+              this.showDownloadDialog = false;
+              const {action} = e.detail;
+              console.log('[VIEW] Download action selected:', action);
+
+              try {
+                if (action === 'document') {
+                  const attachments = this.envelope.documents.filter(d => d.type === 'attachment');
+                  if (attachments.length === 1) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, attachments[0].id);
+                    window.open(url, '_blank');
+                  } else {
+                    const firstDoc = attachments[0];
+                    if (firstDoc) {
+                      const url = await getEnvelopeDocumentDownloadLink(this.endpoint, firstDoc.id);
+                      window.open(url, '_blank');
+                    }
+                  }
+                } else if (action === 'certificate') {
+                  const cert = this.envelope.documents.find(d => d.type === 'certificate');
+                  if (cert) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
+                    window.open(url, '_blank');
+                  } else {
+                    VerdocsToast('Certificate not yet available.', {style: 'info'});
+                  }
+                } else if (action === 'zip') {
+                  const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
+                  const url = window.URL.createObjectURL(blob.data);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${this.envelope.name}.zip`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  window.URL.revokeObjectURL(url);
+                }
+              } catch (err) {
+                console.error('Download error', err);
+                VerdocsToast('Unable to complete download request.', {style: 'error'});
+              }
+            }}
+          />
         )}
 
         {!showFooter && (

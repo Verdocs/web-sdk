@@ -58,7 +58,7 @@ export class VerdocsDownloadDialog {
             <div class="icon-container" innerHTML={CertificateIcon}></div>
             <div class="text-container">
               <div class="label">Certificate</div>
-              <div class="description">Download the value and history certificate</div>
+              <div class="description">Download the certificate</div>
             </div>
             <div class="arrow" innerHTML={ChevronRight}></div>
           </div>
