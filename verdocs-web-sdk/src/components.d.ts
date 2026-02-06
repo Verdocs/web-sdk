@@ -1882,7 +1882,7 @@ export namespace Components {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-          * @default new VerdocsEndpoint({ sessionType: 'signing' })
+          * @default new VerdocsEndpoint({sessionType: 'signing'})
          */
         "endpoint": VerdocsEndpoint;
         /**
@@ -4016,8 +4016,8 @@ declare global {
     };
     interface HTMLVerdocsSignElementEventMap {
         "sdkError": SDKError;
-        "envelopeLoaded": { endpoint: VerdocsEndpoint; envelope: IEnvelope };
-        "envelopeUpdated": { endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string };
+        "envelopeLoaded": {endpoint: VerdocsEndpoint; envelope: IEnvelope};
+        "envelopeUpdated": {endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string};
     }
     /**
      * Display an envelope signing experience. This will display the envelope's attached
@@ -4588,7 +4588,7 @@ declare global {
     };
     interface HTMLVerdocsViewElementEventMap {
         "sdkError": SDKError;
-        "envelopeUpdated": { endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string };
+        "envelopeUpdated": {endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string};
         "another": any;
         "view": any;
         "next": any;
@@ -6911,7 +6911,7 @@ declare namespace LocalJSX {
     interface VerdocsSign {
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
-          * @default new VerdocsEndpoint({ sessionType: 'signing' })
+          * @default new VerdocsEndpoint({sessionType: 'signing'})
          */
         "endpoint"?: VerdocsEndpoint;
         /**
@@ -6932,11 +6932,11 @@ declare namespace LocalJSX {
         /**
           * Event fired when the envelope is loaded for the first time.
          */
-        "onEnvelopeLoaded"?: (event: VerdocsSignCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope }>) => void;
+        "onEnvelopeLoaded"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope}>) => void;
         /**
           * Event fired when the envelope is updated in any way.
          */
-        "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string }>) => void;
+        "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
@@ -7814,7 +7814,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the envelope is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
          */
-        "onEnvelopeUpdated"?: (event: VerdocsViewCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string }>) => void;
+        "onEnvelopeUpdated"?: (event: VerdocsViewCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
         /**
           * Event fired when the user clicks Done to proceed. It is up to the host application to redirect the user to the appropriate next workflow step.
          */
