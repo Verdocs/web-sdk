@@ -1307,14 +1307,6 @@ export class VerdocsSign {
               fieldCompleted={focusedFieldObj ? !!isFilled(focusedFieldObj) : false}
               onStarted={() => {
                 this.adoptingSignature = true;
-                const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
-                if (!startedEnvelopes.includes(this.envelopeId)) {
-                  startedEnvelopes.push(this.envelopeId);
-                  while (startedEnvelopes.length > 10) {
-                    startedEnvelopes.shift();
-                  }
-                  localStorage.setItem('startedEnvelopes', JSON.stringify(startedEnvelopes));
-                }
               }}
               onNext={() => this.handleNext()}
               onPrevious={() => this.handlePrev()}
@@ -1414,6 +1406,15 @@ export class VerdocsSign {
 
               this.showSpinner = false;
               this.adoptingSignature = false;
+
+              const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
+              if (!startedEnvelopes.includes(this.envelopeId)) {
+                startedEnvelopes.push(this.envelopeId);
+                while (startedEnvelopes.length > 10) {
+                  startedEnvelopes.shift();
+                }
+                localStorage.setItem('startedEnvelopes', JSON.stringify(startedEnvelopes));
+              }
             }}
             onExit={() => (this.adoptingSignature = false)}
           />
