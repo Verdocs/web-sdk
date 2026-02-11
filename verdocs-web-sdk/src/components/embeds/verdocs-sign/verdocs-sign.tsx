@@ -1276,12 +1276,23 @@ export class VerdocsSign {
           });
 
           let mode: 'start' | 'signing' | 'completed' = 'start';
-          // We only consider the user to have started "signing" if they have filled out at least one *fillable* field.
-          // Readonly fields do not count.
-          const anyFieldFilled = requiredRemaining < requiredFields.length || optionalRemaining < optionalFields.length;
+
+          // We need a way to know if the user has started signing. But after trying two
+          // obvious ways (has the user adopted a signature? are any fields filled in yet?)
+          // they both had flaws (we could be carrying over a sig from a previous session,
+          // and things like defaults and auto-filled fields make the filled-field approach
+          // tricky to maintain).
+
+          // This is sort of a Hail Mary but it works well for now. We just keep a variable
+          // in localStorage that tracks the last 10 envelopes the user has "started".
+          // We never get a chance to clean them up but 10 GUIDs is tiny compared to what
+          // many apps store in a user's browser.
+          const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
+          const hasStarted = startedEnvelopes.includes(this.envelopeId);
+
           if (this.nextSubmits) {
             mode = 'completed';
-          } else if (anyFieldFilled) {
+          } else if (hasStarted) {
             mode = 'signing';
           }
 
@@ -1296,7 +1307,14 @@ export class VerdocsSign {
               fieldCompleted={focusedFieldObj ? !!isFilled(focusedFieldObj) : false}
               onStarted={() => {
                 this.adoptingSignature = true;
-                // this.handleNext();
+                const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
+                if (!startedEnvelopes.includes(this.envelopeId)) {
+                  startedEnvelopes.push(this.envelopeId);
+                  while (startedEnvelopes.length > 10) {
+                    startedEnvelopes.shift();
+                  }
+                  localStorage.setItem('startedEnvelopes', JSON.stringify(startedEnvelopes));
+                }
               }}
               onNext={() => this.handleNext()}
               onPrevious={() => this.handlePrev()}
