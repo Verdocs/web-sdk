@@ -4,6 +4,9 @@ const DocumentIcon = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.
 const CertificateIcon = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15C15.866 15 19 11.866 19 8C19 4.13401 15.866 1 12 1C8.13401 1 5 4.13401 5 8C5 11.866 8.13401 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.21 13.89L7 23L12 20L17 23L15.79 13.88" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const ZipIcon = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 16V22H14V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 16H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 22H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12L12 16L16 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16V4H20V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const ChevronRight = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CheckIcon = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CircleIcon = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg>`;
+const RefreshIcon = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M23 4V10H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 15A9 9 0 1 1 21.23 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 @Component({
   tag: 'verdocs-download-dialog',
@@ -14,7 +17,10 @@ export class VerdocsDownloadDialog {
   /**
    * Event fired when an option is selected.
    */
-  @Event({composed: true}) next: EventEmitter<{action: 'document' | 'certificate' | 'zip'}>;
+  /**
+   * Event fired when an option is selected.
+   */
+  @Event({composed: true}) next: EventEmitter<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>;
 
   /**
    * Event fired when Cancel is pressed or background is clicked.
@@ -22,38 +28,74 @@ export class VerdocsDownloadDialog {
   @Event({composed: true}) exit: EventEmitter;
 
   /**
+   * If true, the envelope is considered signed.
+   */
+  @Prop() signed = false;
+
+  /**
+   * If true, we are currently polling the server for updates.
+   */
+  @Prop() polling = false;
+
+  /**
+   * The list of documents in the envelope.
+   */
+  @Prop() documents: any[] = [];
+
+  /**
    * If true, the envelope has a certificate available for download.
    */
   @Prop() hasCertificate = false;
 
-  handleOptionClick(action: 'document' | 'certificate' | 'zip') {
-    if ((action === 'certificate' || action === 'zip') && !this.hasCertificate) {
+  handleOptionClick(action: 'document' | 'certificate' | 'zip', documentId?: string) {
+    const hasCert = this.documents.some(d => d.type === 'certificate') || this.hasCertificate;
+    const canDownloadCert = this.signed && hasCert;
+
+    if ((action === 'certificate' || action === 'zip') && !canDownloadCert) {
       return;
     }
-    this.next.emit({action});
+    this.next.emit({action, documentId} as any);
   }
 
   render() {
+    const attachments = this.documents.filter(d => d.type === 'attachment');
+    const hasCertificateDoc = this.documents.some(d => d.type === 'certificate') || this.hasCertificate;
+    const canDownloadFinals = this.signed && hasCertificateDoc;
+
     return (
       <verdocs-dialog onExit={() => this.exit.emit()}>
-        <h3 slot="heading" style={{margin: '0', fontSize: '1.25rem', fontWeight: '600', padding: '16px 24px'}}>
-          Download
-        </h3>
+        <div slot="heading" class="heading-container">
+          <h3 style={{margin: '0', fontSize: '1.25rem', fontWeight: '600', padding: '16px 24px'}}>Download</h3>
+          {this.polling && (
+            <div class="polling-indicator" title="Checking for updates...">
+              <div class="spinner" innerHTML={RefreshIcon} />
+            </div>
+          )}
+        </div>
 
         <div slot="content" class="content">
-          <div class="download-option" onClick={() => this.handleOptionClick('document')}>
-            <div class="icon-container" innerHTML={DocumentIcon}></div>
-            <div class="text-container">
-              <div class="label">Document</div>
-              <div class="description">Download the signed document (PDF)</div>
-            </div>
-            <div class="arrow" innerHTML={ChevronRight}></div>
-          </div>
+          {attachments.length <= 2 &&
+            attachments.map(doc => (
+              <div class="download-option" onClick={() => this.handleOptionClick('document', doc.id)}>
+                <div class="icon-container" innerHTML={DocumentIcon}></div>
+                <div class="text-container">
+                  <div class="label">{doc.name}</div>
+                  <div class="description">{this.signed ? 'Download the document' : 'Download the document'}</div>
+                </div>
+                <div class="status-indicator">
+                  {this.signed ? <div class="signed" innerHTML={CheckIcon}></div> : <div class="unsigned" innerHTML={CircleIcon}></div>}
+                  <span>{this.signed ? 'Signed' : 'In Progress'}</span>
+                </div>
+                <div class="arrow" innerHTML={ChevronRight}></div>
+              </div>
+            ))}
+
+          {attachments.length > 2 && <div class="info-message">Multiple documents attached. Please use the ZIP option below to download all files.</div>}
 
           <div
-            class={{'download-option': true, 'disabled': !this.hasCertificate}}
+            class={{'download-option': true, 'disabled': !canDownloadFinals}}
             onClick={() => this.handleOptionClick('certificate')}
-            title={!this.hasCertificate ? 'Certificate not yet available' : ''}
+            title={!canDownloadFinals ? 'Certificate not yet available' : ''}
           >
             <div class="icon-container" innerHTML={CertificateIcon}></div>
             <div class="text-container">
@@ -64,9 +106,9 @@ export class VerdocsDownloadDialog {
           </div>
 
           <div
-            class={{'download-option': true, 'disabled': !this.hasCertificate}}
+            class={{'download-option': true, 'disabled': !canDownloadFinals}}
             onClick={() => this.handleOptionClick('zip')}
-            title={!this.hasCertificate ? 'Certificate not yet available' : ''}
+            title={!canDownloadFinals ? 'Certificate not yet available' : ''}
           >
             <div class="icon-container" innerHTML={ZipIcon}></div>
             <div class="text-container">

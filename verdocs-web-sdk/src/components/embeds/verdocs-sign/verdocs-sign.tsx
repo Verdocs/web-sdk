@@ -1,6 +1,6 @@
 import {Element, Event, EventEmitter, Host, Fragment, Component, Prop, State, h} from '@stencil/core';
 import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid} from '@verdocs/js-sdk';
-import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest} from '@verdocs/js-sdk';
+import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest, getEnvelope} from '@verdocs/js-sdk';
 import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, formatFullName} from '@verdocs/js-sdk';
 import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
@@ -16,30 +16,6 @@ const ToolbarMinusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns=
 const ToolbarPlusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 8.5C11.5 8.22386 11.2761 8 11 8H9V6C9 5.72386 8.77614 5.5 8.5 5.5C8.22386 5.5 8 5.72386 8 6V8H6C5.72386 8 5.5 8.22386 5.5 8.5C5.5 8.77614 5.72386 9 6 9H8V11C8 11.2761 8.22386 11.5 8.5 11.5C8.77614 11.5 9 11.2761 9 11V9H11C11.2761 9 11.5 8.77614 11.5 8.5ZM8.5 3C11.5376 3 14 5.46243 14 8.5C14 9.83879 13.5217 11.0659 12.7266 12.0196L16.8536 16.1464C17.0488 16.3417 17.0488 16.6583 16.8536 16.8536C16.68 17.0271 16.4106 17.0464 16.2157 16.9114L16.1464 16.8536L12.0196 12.7266C11.0659 13.5217 9.83879 14 8.5 14C5.46243 14 3 11.5376 3 8.5C3 5.46243 5.46243 3 8.5 3ZM8.5 4C6.01472 4 4 6.01472 4 8.5C4 10.9853 6.01472 13 8.5 13C10.9853 13 13 10.9853 13 8.5C13 6.01472 10.9853 4 8.5 4Z" fill="#424242" /></svg>`;
 const ToolbarDownloadIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 16.9988C15.7761 16.9988 16 17.2226 16 17.4988C16 17.7442 15.8231 17.9484 15.5899 17.9907L15.5 17.9988H4.5C4.22386 17.9988 4 17.7749 4 17.4988C4 17.2533 4.17688 17.0492 4.41012 17.0068L4.5 16.9988H15.5ZM10.0001 2.00098C10.2456 2.00098 10.4497 2.17798 10.492 2.41124L10.5 2.50112L10.496 14.295L14.1414 10.6466C14.3148 10.4729 14.5842 10.4534 14.7792 10.5882L14.8485 10.646C15.0222 10.8194 15.0418 11.0888 14.907 11.2838L14.8492 11.3531L10.3574 15.8531C10.285 15.9257 10.1957 15.9714 10.1021 15.9901L9.99608 15.9999C9.83511 15.9999 9.69192 15.9237 9.60051 15.8056L5.14386 11.3537C4.94846 11.1586 4.94823 10.842 5.14336 10.6466C5.3168 10.4729 5.58621 10.4534 5.78117 10.5883L5.85046 10.6461L9.496 14.287L9.5 2.50083C9.50008 2.22469 9.724 2.00098 10.0001 2.00098Z" fill="#424242"/></svg>`;
 const ToolbarPrintIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 4.5C5 3.67157 5.67157 3 6.5 3H13.5C14.3284 3 15 3.67157 15 4.5V5H15.5C16.8807 5 18 6.11929 18 7.5V12.5C18 13.3284 17.3284 14 16.5 14H15V15.5C15 16.3284 14.3284 17 13.5 17H6.5C5.67157 17 5 16.3284 5 15.5V14H3.5C2.67157 14 2 13.3284 2 12.5V7.5C2 6.11929 3.11929 5 4.5 5H5V4.5ZM6 5H14V4.5C14 4.22386 13.7761 4 13.5 4H6.5C6.22386 4 6 4.22386 6 4.5V5ZM5 13V11.5C5 10.6716 5.67157 10 6.5 10H13.5C14.3284 10 15 10.6716 15 11.5V13H16.5C16.7761 13 17 12.7761 17 12.5V7.5C17 6.67157 16.3284 6 15.5 6H4.5C3.67157 6 3 6.67157 3 7.5V12.5C3 12.7761 3.22386 13 3.5 13H5ZM6.5 11C6.22386 11 6 11.2239 6 11.5V15.5C6 15.7761 6.22386 16 6.5 16H13.5C13.7761 16 14 15.7761 14 15.5V11.5C14 11.2239 13.7761 11 13.5 11H6.5Z" fill="#424242"/></svg>`;
-
-/**
- * Helper to generate a human-readable label for a field.
- */
-const getFieldLabel = (field: IEnvelopeField) => {
-  if (!field) return '';
-  const typeMap: Record<string, string> = {
-    signature: 'Signature',
-    initial: 'Initials',
-    date: 'Date',
-    textbox: 'Text Field',
-    checkbox: 'Checkbox',
-    radio: 'Radio Button',
-    dropdown: 'Dropdown',
-    attachment: 'Attachment',
-    payment: 'Payment',
-  };
-
-  const typeName = typeMap[field.type] || 'Field';
-  if (field.required) {
-    return `Required ${typeName}*`;
-  }
-  return `Optional ${typeName}`;
-};
 
 /**
  * Display an envelope signing experience. This will display the envelope's attached
@@ -165,9 +141,12 @@ export class VerdocsSign {
   @State() loading = true;
   @State() envelope: IEnvelope | null = null;
   @State() zoomLevel: 'normal' | 'zoom1' | 'zoom2' = 'normal';
+  @State() signingProgressMode: 'start' | 'signing' | 'completed' = 'start';
+  @State() polling = false;
 
   private renderedPages: Record<string, IDocumentPageInfo> = {};
   private observer: IntersectionObserver;
+  private pollingInterval: any = null;
 
   async componentDidLoad() {
     this.updateZoomFromWindow();
@@ -194,13 +173,6 @@ export class VerdocsSign {
       // session and might have a different "view" of the envelope.
       const response = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
       this.processAuthResponse(response);
-
-      const fillable = this.getSortedFillableFields();
-      if (fillable.length > 0) {
-        setTimeout(() => {
-          this.focusedField = fillable[0].name;
-        }, 500);
-      }
     } catch (e) {
       console.log('[SIGN] Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -221,6 +193,7 @@ export class VerdocsSign {
   }
 
   disconnectedCallback() {
+    this.stopPolling();
     this.observer?.disconnect();
     window.removeEventListener('resize', () => this.updateZoomFromWindow());
   }
@@ -377,8 +350,54 @@ export class VerdocsSign {
 
       case 'download':
         this.showDownloadDialog = true;
+        this.startPolling();
         break;
     }
+  }
+
+  startPolling() {
+    this.stopPolling();
+
+    const checkPollingConditions = () => {
+      // NOTE: Polling logic for finalizing envelope
+      const isSigned = this.envelope?.status === 'complete' || !!this.envelope?.signed;
+      const hasCertificate = this.envelope?.documents?.some(d => d.type === 'certificate');
+      const allRecipientsSubmitted = this.envelope?.recipients?.every(r => r.status === 'submitted');
+
+      if (isSigned && hasCertificate) return false;
+      if (!allRecipientsSubmitted) return false;
+
+      return true;
+    };
+
+    if (!checkPollingConditions()) {
+      return;
+    }
+
+    this.polling = true;
+    this.pollingInterval = setInterval(async () => {
+      try {
+        const envelope = await getEnvelope(this.endpoint, this.envelopeId);
+        this.envelope = envelope;
+        Store.updateEnvelope(this.envelopeId, envelope);
+        this.checkRecipientFields();
+
+        if (!checkPollingConditions()) {
+          this.stopPolling();
+        }
+      } catch (e) {
+        console.error('[SIGN] Polling error', e);
+        this.stopPolling();
+      }
+    }, 5000);
+  }
+
+  stopPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+    }
+    this.polling = false;
   }
 
   handleZoomIn() {
@@ -596,14 +615,16 @@ export class VerdocsSign {
       return;
     }
 
-    const nextRequiredField = this.getNextRequiredField();
+    // Find all unfilled fields and move to the next one in sequence
+    const allUnfilled = this.getSortedFillableFields().filter(f => !this.isFieldActuallyFilled(f));
+    const nextUnfilled = this.getNextFieldFromList(allUnfilled);
 
-    if (nextRequiredField) {
-      const id = getFieldId(nextRequiredField);
+    if (nextUnfilled) {
+      const id = getFieldId(nextUnfilled);
       const el = document.getElementById(id) as any;
       el?.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'});
       el?.focusField();
-      this.focusedField = nextRequiredField.name;
+      this.focusedField = nextUnfilled.name;
     }
   }
 
@@ -623,21 +644,54 @@ export class VerdocsSign {
       this.nextButtonLabel = 'Next';
       this.nextSubmits = false;
     }
+
     this.updateAllFlags();
+
+    // We need a way to know if the user has started signing. But after trying two
+    // obvious ways (has the user adopted a signature? are any fields filled in yet?)
+    // they both had flaws (we could be carrying over a sig from a previous session,
+    // and things like defaults and auto-filled fields make the filled-field approach
+    // tricky to maintain).
+
+    // This is sort of a Hail Mary but it works well for now. We just keep a variable
+    // in localStorage that tracks the last 10 envelopes the user has "started".
+    // We never get a chance to clean them up but 10 GUIDs is tiny compared to what
+    // many apps store in a user's browser.
+    const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
+    const hasStarted = startedEnvelopes.includes(this.envelopeId);
+
+    if (this.nextSubmits) {
+      this.signingProgressMode = 'completed';
+    } else if (hasStarted) {
+      this.signingProgressMode = 'signing';
+    } else {
+      this.signingProgressMode = 'start';
+    }
+  }
+
+  isFieldActuallyFilled(field: IEnvelopeField) {
+    if (field.type === 'radio' && field.group) {
+      const groupFilled = this.getRecipientFields().some(f => f.group === field.group && f.value === 'true');
+      if (groupFilled) {
+        return true;
+      }
+    }
+
+    return (
+      isFieldFilled(field, this.getRecipientFields()) &&
+      (field.type !== 'dropdown' || !!field.value) &&
+      (field.type !== 'radio' || field.value === 'true') &&
+      (field.type !== 'checkbox' || field.value === 'true')
+    );
   }
 
   getNextRequiredField() {
     // Find and focus the next incomplete field (that is fillable)
-    const emptyFields = this.getSortedFillableFields().filter(field => field.required && !isFieldFilled(field, this.getRecipientFields()));
+    const emptyFields = this.getSortedFillableFields().filter(field => field.required && !this.isFieldActuallyFilled(field));
     sortFields(emptyFields);
 
-    // console.log(
-    //   '[SIGN] Pending fields',
-    //   emptyFields.map(f => `${f.name} (${f.type}) req=${f.required}`),
-    // );
-
     if (emptyFields.length === 0) {
-      const allUnfilled = this.getSortedFillableFields().filter(field => !isFieldFilled(field, this.getRecipientFields()));
+      const allUnfilled = this.getSortedFillableFields().filter(field => !this.isFieldActuallyFilled(field));
       sortFields(allUnfilled);
       if (allUnfilled.length > 0) {
         // If we are here, there are no required fields left, but there are optional ones.
@@ -1232,88 +1286,18 @@ export class VerdocsSign {
           </div>
         )}
 
-        {/* Progress Card */}
-        {(() => {
-          // Dependencies: focusedField, fieldUpdateCounter (to force re-calc)
-          // console.log('[SIGN] Render progress', this.focusedField, this.fieldUpdateCounter);
-          // Calculate detailed progress
-          const allFields = this.getSortedFillableFields();
-          const recipientFields = this.getRecipientFields();
-
-          const isFilled = (f: IEnvelopeField) => isFieldFilled(f, recipientFields) && (f.type !== 'dropdown' || !!f.value);
-
-          const requiredFields = allFields.filter(f => f.required);
-          const requiredRemaining = requiredFields.filter(f => !isFilled(f)).length;
-
-          const optionalFields = allFields.filter(f => !f.required);
-          const optionalRemaining = optionalFields.filter(f => !isFilled(f)).length;
-
-          const progress = {
-            required: {
-              remaining: requiredRemaining,
-              total: requiredFields.length,
-            },
-            optional: {
-              remaining: optionalRemaining,
-              total: optionalFields.length,
-            },
-          };
-
-          const focusedFieldObj = this.getSortedFillableFields().find(f => f.name === this.focusedField);
-          const currentIndex = this.getSortedFillableFields().findIndex(f => f.name === this.focusedField) + 1;
-          const totalFields = this.getSortedFillableFields().length;
-          const remainingFields = this.getSortedFillableFields()
-            .filter(f => f.required && !isFilled(f))
-            .map(f => ({name: f.name, type: f.type, required: f.required}));
-
-          console.log('[SIGN] Progress Debug:', {
-            allFields: allFields.length,
-            requiredFields: requiredFields.length,
-            requiredRemaining,
-            optionalFields: optionalFields.length,
-            optionalRemaining,
-            filledFields: recipientFields.filter(f => isFilled(f)).map(f => ({name: f.name, type: f.type, val: f.value})),
-          });
-
-          let mode: 'start' | 'signing' | 'completed' = 'start';
-
-          // We need a way to know if the user has started signing. But after trying two
-          // obvious ways (has the user adopted a signature? are any fields filled in yet?)
-          // they both had flaws (we could be carrying over a sig from a previous session,
-          // and things like defaults and auto-filled fields make the filled-field approach
-          // tricky to maintain).
-
-          // This is sort of a Hail Mary but it works well for now. We just keep a variable
-          // in localStorage that tracks the last 10 envelopes the user has "started".
-          // We never get a chance to clean them up but 10 GUIDs is tiny compared to what
-          // many apps store in a user's browser.
-          const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
-          const hasStarted = startedEnvelopes.includes(this.envelopeId);
-
-          if (this.nextSubmits) {
-            mode = 'completed';
-          } else if (hasStarted) {
-            mode = 'signing';
-          }
-
-          return (
-            <verdocs-signing-progress
-              mode={mode}
-              current={Math.max(1, currentIndex)}
-              total={totalFields}
-              remainingFields={remainingFields}
-              progress={progress}
-              fieldLabel={getFieldLabel(focusedFieldObj)}
-              fieldCompleted={focusedFieldObj ? !!isFilled(focusedFieldObj) : false}
-              onStarted={() => {
-                this.adoptingSignature = true;
-              }}
-              onNext={() => this.handleNext()}
-              onPrevious={() => this.handlePrev()}
-              onExit={() => this.handleNext()}
-            />
-          );
-        })()}
+        <verdocs-signing-progress
+          mode={this.signingProgressMode}
+          focusedField={this.focusedField}
+          fields={this.getSortedFillableFields()}
+          recipientFields={this.getRecipientFields()}
+          onStarted={() => {
+            this.adoptingSignature = true;
+          }}
+          onNext={() => this.handleNext()}
+          onPrevious={() => this.handlePrev()}
+          onExit={() => this.handleNext()}
+        />
 
         <div class={`document signed-document-container zoom-${this.zoomLevel}`}>
           {(this.envelope.documents || []).map(envelopeDocument => {
@@ -1415,6 +1399,30 @@ export class VerdocsSign {
                 }
                 localStorage.setItem('startedEnvelopes', JSON.stringify(startedEnvelopes));
               }
+
+              // Special case: if we were focusing a specific field, apply the new signature/initials to it immediately.
+              // This is the "secondary flow" where the user clicks a field directly before adopting.
+              if (this.focusedField) {
+                const fieldObj = this.getRecipientFields().find(f => f.name === this.focusedField);
+                if (fieldObj) {
+                  if (fieldObj.type === 'signature') {
+                    await this.handleFieldChange(fieldObj, {detail: this.signatureId});
+                  } else if (fieldObj.type === 'initial') {
+                    await this.handleFieldChange(fieldObj, {detail: this.initialId});
+                  }
+                }
+                this.focusedField = '';
+              }
+
+              // Update any existing field elements in the DOM with the new IDs. This prevents them from
+              // needing to show the adoption dialog again if they are clicked.
+              const sigFields = this.el.querySelectorAll('verdocs-field-signature');
+              sigFields.forEach(el => el.setAttribute('signatureid', this.signatureId));
+
+              const initFields = this.el.querySelectorAll('verdocs-field-initial');
+              initFields.forEach(el => el.setAttribute('initialid', this.initialId));
+
+              this.checkRecipientFields();
             }}
             onExit={() => (this.adoptingSignature = false)}
           />
@@ -1430,26 +1438,26 @@ export class VerdocsSign {
 
         {this.showDownloadDialog && (
           <verdocs-download-dialog
-            hasCertificate={this.envelope?.documents?.some(d => d.type === 'certificate')}
-            onExit={() => (this.showDownloadDialog = false)}
+            signed={this.envelope.status === 'complete' || this.envelope.signed}
+            polling={this.polling}
+            documents={this.envelope.documents}
+            onExit={() => {
+              this.showDownloadDialog = false;
+              this.stopPolling();
+            }}
             onNext={async e => {
               this.showDownloadDialog = false;
-              const {action} = e.detail;
-              console.log('[SIGN] Download action selected:', action);
+              this.stopPolling();
+              const {action, documentId} = e.detail as any;
+              console.log('[SIGN] Download action selected:', action, documentId);
 
               try {
                 if (action === 'document') {
                   // Download main document(s)
-                  const attachments = this.envelope.documents.filter(d => d.type === 'attachment');
-                  if (attachments.length === 1) {
-                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, attachments[0].id);
+                  const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
+                  if (targetDocId) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
                     window.open(url, '_blank');
-                  } else {
-                    const firstDoc = attachments[0];
-                    if (firstDoc) {
-                      const url = await getEnvelopeDocumentDownloadLink(this.endpoint, firstDoc.id);
-                      window.open(url, '_blank');
-                    }
                   }
                 } else if (action === 'certificate') {
                   const cert = this.envelope.documents.find(d => d.type === 'certificate');

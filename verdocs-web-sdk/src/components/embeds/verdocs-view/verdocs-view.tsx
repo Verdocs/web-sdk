@@ -87,6 +87,9 @@ export class VerdocsView {
   @State() envelope: IEnvelope | null = null;
   @State() zoomLevel: 'normal' | 'zoom1' | 'zoom2' = 'normal';
   @State() showDownloadDialog = false;
+  @State() polling = false;
+
+  private pollingInterval: any = null;
 
   async componentWillLoad() {
     this.updateZoomFromWindow();
@@ -126,6 +129,7 @@ export class VerdocsView {
   }
 
   disconnectedCallback() {
+    this.stopPolling();
     this.unlistenToEnvelope();
     window.removeEventListener('resize', () => this.updateZoomFromWindow());
   }
@@ -201,6 +205,7 @@ export class VerdocsView {
 
       case 'download':
         this.showDownloadDialog = true;
+        this.startPolling();
         break;
 
       case 'download-attachments':
@@ -238,6 +243,50 @@ export class VerdocsView {
           });
         break;
     }
+  }
+
+  startPolling() {
+    this.stopPolling();
+
+    const checkPollingConditions = () => {
+      // NOTE: Polling logic for finalizing envelope
+      const isSigned = this.envelope?.status === 'complete' || !!this.envelope?.signed;
+      const hasCertificate = this.envelope?.documents?.some(d => d.type === 'certificate');
+      const allRecipientsSubmitted = this.envelope?.recipients?.every(r => r.status === 'submitted');
+
+      if (isSigned && hasCertificate) return false;
+      if (!allRecipientsSubmitted) return false;
+
+      return true;
+    };
+
+    if (!checkPollingConditions()) {
+      return;
+    }
+
+    this.polling = true;
+    this.pollingInterval = setInterval(async () => {
+      try {
+        const envelope = await getEnvelope(this.endpoint, this.envelopeId);
+        this.envelope = envelope;
+        Store.updateEnvelope(this.envelopeId, envelope);
+
+        if (!checkPollingConditions()) {
+          this.stopPolling();
+        }
+      } catch (e) {
+        console.error('[VIEW] Polling error', e);
+        this.stopPolling();
+      }
+    }, 5000);
+  }
+
+  stopPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+    }
+    this.polling = false;
   }
 
   handleZoomIn() {
@@ -361,25 +410,25 @@ export class VerdocsView {
 
         {this.showDownloadDialog && (
           <verdocs-download-dialog
-            hasCertificate={this.envelope?.documents?.some(d => d.type === 'certificate')}
-            onExit={() => (this.showDownloadDialog = false)}
+            signed={this.envelope.status === 'complete' || this.envelope.signed}
+            polling={this.polling}
+            documents={this.envelope.documents}
+            onExit={() => {
+              this.showDownloadDialog = false;
+              this.stopPolling();
+            }}
             onNext={async e => {
               this.showDownloadDialog = false;
-              const {action} = e.detail;
-              console.log('[VIEW] Download action selected:', action);
+              this.stopPolling();
+              const {action, documentId} = e.detail as any;
+              console.log('[VIEW] Download action selected:', action, documentId);
 
               try {
                 if (action === 'document') {
-                  const attachments = this.envelope.documents.filter(d => d.type === 'attachment');
-                  if (attachments.length === 1) {
-                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, attachments[0].id);
+                  const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
+                  if (targetDocId) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
                     window.open(url, '_blank');
-                  } else {
-                    const firstDoc = attachments[0];
-                    if (firstDoc) {
-                      const url = await getEnvelopeDocumentDownloadLink(this.endpoint, firstDoc.id);
-                      window.open(url, '_blank');
-                    }
                   }
                 } else if (action === 'certificate') {
                   const cert = this.envelope.documents.find(d => d.type === 'certificate');

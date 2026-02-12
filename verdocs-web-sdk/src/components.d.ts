@@ -361,10 +361,25 @@ export namespace Components {
     }
     interface VerdocsDownloadDialog {
         /**
+          * The list of documents in the envelope.
+          * @default []
+         */
+        "documents": any[];
+        /**
           * If true, the envelope has a certificate available for download.
           * @default false
          */
         "hasCertificate": boolean;
+        /**
+          * If true, we are currently polling the server for updates.
+          * @default false
+         */
+        "polling": boolean;
+        /**
+          * If true, the envelope is considered signed.
+          * @default false
+         */
+        "signed": boolean;
     }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
@@ -1945,40 +1960,25 @@ export namespace Components {
     }
     interface VerdocsSigningProgress {
         /**
-          * Current field index (1-based)
-          * @default 0
+          * All fillable fields for the current recipient
+          * @default []
          */
-        "current": number;
+        "fields": IEnvelopeField[];
         /**
-          * Whether the current field has been completed (shows success message)
-          * @default false
-         */
-        "fieldCompleted": boolean;
-        /**
-          * Label to display for the current field
+          * The name of the currently focused field (to highlight it and show its label)
           * @default ''
          */
-        "fieldLabel": string;
+        "focusedField": string;
         /**
           * Display mode
           * @default 'start'
          */
         "mode": 'start' | 'signing' | 'completed';
         /**
-          * Detailed progress counts for required and optional fields
-          * @default null
-         */
-        "progress": {required: {remaining: number; total: number}; optional: {remaining: number; total: number}} | null;
-        /**
-          * List of remaining fields to complete
+          * All fields for the recipient, used to check filled status (may include non-fillable)
           * @default []
          */
-        "remainingFields": any[];
-        /**
-          * Total number of fields
-          * @default 0
-         */
-        "total": number;
+        "recipientFields": IEnvelopeField[];
     }
     /**
      * Display a small loading spinner.
@@ -3058,7 +3058,7 @@ declare global {
         new (): HTMLVerdocsDisclosureDialogElement;
     };
     interface HTMLVerdocsDownloadDialogElementEventMap {
-        "next": {action: 'document' | 'certificate' | 'zip'};
+        "next": {action: 'document' | 'certificate' | 'zip'; documentId?: string};
         "exit": any;
     }
     interface HTMLVerdocsDownloadDialogElement extends Components.VerdocsDownloadDialog, HTMLStencilElement {
@@ -5089,6 +5089,11 @@ declare namespace LocalJSX {
     }
     interface VerdocsDownloadDialog {
         /**
+          * The list of documents in the envelope.
+          * @default []
+         */
+        "documents"?: any[];
+        /**
           * If true, the envelope has a certificate available for download.
           * @default false
          */
@@ -5100,7 +5105,17 @@ declare namespace LocalJSX {
         /**
           * Event fired when an option is selected.
          */
-        "onNext"?: (event: VerdocsDownloadDialogCustomEvent<{action: 'document' | 'certificate' | 'zip'}>) => void;
+        "onNext"?: (event: VerdocsDownloadDialogCustomEvent<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>) => void;
+        /**
+          * If true, we are currently polling the server for updates.
+          * @default false
+         */
+        "polling"?: boolean;
+        /**
+          * If true, the envelope is considered signed.
+          * @default false
+         */
+        "signed"?: boolean;
     }
     /**
      * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
@@ -7010,20 +7025,15 @@ declare namespace LocalJSX {
     }
     interface VerdocsSigningProgress {
         /**
-          * Current field index (1-based)
-          * @default 0
+          * All fillable fields for the current recipient
+          * @default []
          */
-        "current"?: number;
+        "fields"?: IEnvelopeField[];
         /**
-          * Whether the current field has been completed (shows success message)
-          * @default false
-         */
-        "fieldCompleted"?: boolean;
-        /**
-          * Label to display for the current field
+          * The name of the currently focused field (to highlight it and show its label)
           * @default ''
          */
-        "fieldLabel"?: string;
+        "focusedField"?: string;
         /**
           * Display mode
           * @default 'start'
@@ -7046,20 +7056,10 @@ declare namespace LocalJSX {
          */
         "onStarted"?: (event: VerdocsSigningProgressCustomEvent<any>) => void;
         /**
-          * Detailed progress counts for required and optional fields
-          * @default null
-         */
-        "progress"?: {required: {remaining: number; total: number}; optional: {remaining: number; total: number}} | null;
-        /**
-          * List of remaining fields to complete
+          * All fields for the recipient, used to check filled status (may include non-fillable)
           * @default []
          */
-        "remainingFields"?: any[];
-        /**
-          * Total number of fields
-          * @default 0
-         */
-        "total"?: number;
+        "recipientFields"?: IEnvelopeField[];
     }
     /**
      * Display a small loading spinner.

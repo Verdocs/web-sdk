@@ -1,5 +1,5 @@
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -91,13 +91,15 @@ export class VerdocsFieldDropdown {
   @State() showingProperties?: boolean = false;
   @State() focused = false;
 
+  @Listen('blur', {capture: true})
+  handleBlur() {
+    this.focused = false;
+  }
+
   @Method()
   async focusField() {
-    // Our input field is fake, so we fake the flash too
+    this.selectEl.focus();
     this.focused = true;
-    setTimeout(() => {
-      this.focused = false;
-    }, 500);
 
     const {source, sourceid, fieldname} = this;
     const {field} = Store.getField(source, sourceid, fieldname, this.field);
@@ -152,7 +154,7 @@ export class VerdocsFieldDropdown {
       <Host class={{required, disabled, done, focused, [signerClass]: true}}>
         {label && <label>{label}</label>}
 
-        <select disabled={readonly || disabled} onChange={e => this.handleChange(e)} ref={el => (this.selectEl = el as HTMLSelectElement)}>
+        <select disabled={readonly || disabled} onChange={e => this.handleChange(e)} onFocus={() => (this.focused = true)} ref={el => (this.selectEl = el as HTMLSelectElement)}>
           <option value="">Select...</option>
           {options.map(option => (
             <option value={option.id} selected={option.id === value}>

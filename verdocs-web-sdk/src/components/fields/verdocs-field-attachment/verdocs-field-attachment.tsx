@@ -1,5 +1,5 @@
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment, Element} from '@stencil/core';
+import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -104,14 +104,16 @@ export class VerdocsFieldAttachment {
   @State() selectedFile?: ISelectedFile | null = null;
   @State() focused = false;
 
+  @Listen('blur')
+  handleBlur() {
+    this.focused = false;
+  }
+
   @Method()
   async focusField() {
-    // Our input field is fake, so we fake the flash too
+    this.el.focus();
     this.focused = true;
     this.dialogOpen = true;
-    setTimeout(() => {
-      this.focused = false;
-    }, 500);
   }
 
   @Method()

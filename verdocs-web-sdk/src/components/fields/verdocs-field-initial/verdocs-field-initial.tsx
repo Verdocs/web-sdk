@@ -159,7 +159,7 @@ export class VerdocsFieldInitial {
   }
 
   @Listen('blur')
-  onBlur() {
+  handleBlur() {
     this.focused = false;
   }
 

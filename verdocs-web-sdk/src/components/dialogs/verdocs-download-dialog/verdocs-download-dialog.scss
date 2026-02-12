@@ -4,17 +4,38 @@ verdocs-download-dialog {
   box-sizing: border-box;
   font-family: $primary-font;
 
+  .heading-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .polling-indicator {
+      padding: 0 24px;
+      color: #9ca3af;
+
+      .spinner {
+        display: flex;
+        animation: rotate 2s linear infinite;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+
   .content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 10px 24px 20px 24px;
+    gap: 15px; // Reduced slightly
+    padding: 0 24px 20px 24px; // Adjusted top padding
   }
 
   .download-option {
     display: flex;
     align-items: center;
-    padding: 15px;
+    padding: 12px 15px; // Reduced padding slightly
     border: 1px solid #e5e7eb;
     border-radius: 6px;
     cursor: pointer;
@@ -42,16 +63,16 @@ verdocs-download-dialog {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 36px; // Reduced slightly
+    height: 36px;
     background-color: #f3f4f6;
     border-radius: 50%;
     color: #4b5563;
     flex-shrink: 0;
 
     svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
     }
   }
 
@@ -70,7 +91,47 @@ verdocs-download-dialog {
     }
   }
 
+  .status-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 11px;
+    color: #9ca3af;
+    min-width: 50px;
+
+    .signed {
+      color: #10b981;
+    }
+
+    .unsigned {
+      color: #9ca3af;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .info-message {
+    font-size: 13px;
+    color: #6b7280;
+    font-style: italic;
+    padding: 0 4px;
+  }
+
   .arrow {
     color: #9ca3af;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }

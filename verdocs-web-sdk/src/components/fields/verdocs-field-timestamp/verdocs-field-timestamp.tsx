@@ -1,6 +1,6 @@
 import {format} from 'date-fns/format';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
+import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State, Listen} from '@stencil/core';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
@@ -85,9 +85,16 @@ export class VerdocsFieldTimestamp {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
+  @State() focused = false;
+
+  @Listen('blur', {capture: true})
+  handleBlur() {
+    this.focused = false;
+  }
 
   @Method() async focusField() {
     this.el.focus();
+    this.focused = true;
   }
 
   @Method()
@@ -108,7 +115,7 @@ export class VerdocsFieldTimestamp {
   }
 
   render() {
-    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, xscale = 1, yscale = 1} = this;
+    const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
     const {required = false, placeholder = '', value = '', label = ''} = field || {};
@@ -121,9 +128,9 @@ export class VerdocsFieldTimestamp {
     }
 
     return (
-      <Host class={{required, disabled, done, [signerClass]: true}}>
+      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
         {label && <label>{label}</label>}
-        <input type="text" placeholder={placeholder} value={formatted} disabled={true} ref={el => (this.el = el)} />
+        <input type="text" placeholder={placeholder} value={formatted} disabled={true} ref={el => (this.el = el)} onFocus={() => (this.focused = true)} />
 
         {editable && (
           <Fragment>

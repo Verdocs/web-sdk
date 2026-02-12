@@ -12,10 +12,6 @@ verdocs-field-date {
   background-color: var(--verdocs-field-background, transparent);
   transform-origin: bottom left;
 
-  &.focused {
-    animation: verdocs-field-pulse 0.4s 1;
-  }
-
   label {
     top: -14px;
     left: 0;
@@ -940,16 +936,12 @@ verdocs-field-date {
     width 0s;
 }
 
-@keyframes verdocs-field-pulse {
-  0% {
-    background-color: rgba(0, 0, 0, 0.35);
+@keyframes adp-spin {
+  from {
+    transform: rotate(0deg);
   }
 
-  50% {
-    background-color: rgba(0, 0, 0, 0);
-  }
-
-  100% {
-    background-color: rgba(0, 0, 0, 0.35);
+  to {
+    transform: rotate(360deg);
   }
 }

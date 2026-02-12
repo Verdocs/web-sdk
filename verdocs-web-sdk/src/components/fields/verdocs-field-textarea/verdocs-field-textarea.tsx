@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 import {IEnvelopeField, VerdocsEndpoint, ITemplateField, updateField} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State} from '@stencil/core';
+import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -84,6 +84,7 @@ export class VerdocsFieldTextarea {
   @Method()
   async focusField() {
     this.inputEl.focus();
+    this.focused = true;
   }
 
   /**
@@ -114,7 +115,12 @@ export class VerdocsFieldTextarea {
     }
   }
 
-  @State() focused?: boolean = false;
+  @State() focused = false;
+
+  @Listen('blur', {capture: true})
+  handleBlur() {
+    this.focused = false;
+  }
 
   componentDidRender() {
     interact.dynamicDrop(true);

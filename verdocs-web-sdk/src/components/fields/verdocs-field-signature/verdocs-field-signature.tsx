@@ -111,11 +111,17 @@ export class VerdocsFieldSignature {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
-  @State() focused?: boolean = false;
+  @State() focused = false;
+
+  @Listen('blur')
+  handleBlur() {
+    this.focused = false;
+  }
 
   @Event({composed: true}) adopt: EventEmitter;
 
-  @Method() async focusField() {
+  @Method()
+  async focusField() {
     this.el.focus();
     this.focused = true;
   }

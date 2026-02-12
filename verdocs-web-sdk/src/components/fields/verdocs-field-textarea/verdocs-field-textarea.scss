@@ -60,10 +60,6 @@ verdocs-field-textarea {
     }
   }
 
-  &.focused {
-    animation: verdocs-field-pulse 0.4s 1;
-  }
-
   verdocs-button-panel {
     top: -3px;
     left: -2px;
@@ -106,19 +102,5 @@ verdocs-field-textarea {
     &:hover {
       opacity: 1;
     }
-  }
-}
-
-@keyframes verdocs-field-pulse {
-  0% {
-    background-color: rgba(0, 0, 0, 0.35);
-  }
-
-  50% {
-    background-color: rgba(0, 0, 0, 0);
-  }
-
-  100% {
-    background-color: rgba(0, 0, 0, 0.35);
   }
 }

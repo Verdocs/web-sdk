@@ -1,4 +1,6 @@
+import {IEnvelopeField, isFieldFilled} from '@verdocs/js-sdk';
 import {Component, Prop, h, Event, EventEmitter} from '@stencil/core';
+import {getFieldLabel} from '../../../utils/utils';
 
 @Component({
   tag: 'verdocs-signing-progress',
@@ -6,29 +8,24 @@ import {Component, Prop, h, Event, EventEmitter} from '@stencil/core';
 })
 export class VerdocsSigningProgress {
   /**
-   * Current field index (1-based)
-   */
-  @Prop() current: number = 0;
-
-  /**
-   * Total number of fields
-   */
-  @Prop() total: number = 0;
-
-  /**
    * Display mode
    */
   @Prop() mode: 'start' | 'signing' | 'completed' = 'start';
 
   /**
-   * Label to display for the current field
+   * The name of the currently focused field (to highlight it and show its label)
    */
-  @Prop() fieldLabel: string = '';
+  @Prop() focusedField: string = '';
 
   /**
-   * Whether the current field has been completed (shows success message)
+   * All fillable fields for the current recipient
    */
-  @Prop() fieldCompleted: boolean = false;
+  @Prop() fields: IEnvelopeField[] = [];
+
+  /**
+   * All fields for the recipient, used to check filled status (may include non-fillable)
+   */
+  @Prop() recipientFields: IEnvelopeField[] = [];
 
   /**
    * Emitted when user clicks Start
@@ -50,16 +47,6 @@ export class VerdocsSigningProgress {
    */
   @Event({composed: true}) exit: EventEmitter;
 
-  /**
-   * List of remaining fields to complete
-   */
-  @Prop() remainingFields: any[] = [];
-
-  /**
-   * Detailed progress counts for required and optional fields
-   */
-  @Prop() progress: {required: {remaining: number; total: number}; optional: {remaining: number; total: number}} | null = null;
-
   renderSuccessIcon() {
     return (
       <svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,12 +58,12 @@ export class VerdocsSigningProgress {
     );
   }
 
-  renderContent() {
+  renderContent(fieldLabel: string, fieldCompleted: boolean) {
     if (this.mode === 'start') {
-      return <div class="field-label">{this.fieldLabel}</div>;
+      return <div class="field-label">{fieldLabel}</div>;
     }
 
-    if (this.fieldCompleted) {
+    if (fieldCompleted) {
       return (
         <div class="field-completed">
           <div class="icon">{this.renderSuccessIcon()}</div>
@@ -85,10 +72,10 @@ export class VerdocsSigningProgress {
       );
     }
 
-    return <div class="field-label">{this.fieldLabel}</div>;
+    return <div class="field-label">{fieldLabel}</div>;
   }
 
-  renderFooter() {
+  renderFooter(current: number, total: number, requiredRemaining: number) {
     if (this.mode === 'start') {
       return (
         <button class="btn start" onClick={() => this.started.emit()}>
@@ -99,16 +86,16 @@ export class VerdocsSigningProgress {
 
     return (
       <div class="nav-buttons">
-        {this.progress && this.progress.required.remaining === 0 ? (
+        {requiredRemaining === 0 ? (
           <button class="btn submit" onClick={() => this.exit.emit()}>
             Submit
           </button>
         ) : (
           [
-            <button class="btn previous" disabled={this.current <= 1} onClick={() => this.previous.emit()}>
+            <button class="btn previous" disabled={current <= 1} onClick={() => this.previous.emit()}>
               Previous
             </button>,
-            <button class="btn next" disabled={this.current >= this.total} onClick={() => this.next.emit()}>
+            <button class="btn next" disabled={current >= total} onClick={() => this.next.emit()}>
               Next
             </button>,
           ]
@@ -138,30 +125,37 @@ export class VerdocsSigningProgress {
       return this.renderCompleted();
     }
 
+    const isFilled = (f: IEnvelopeField) =>
+      isFieldFilled(f, this.recipientFields) && (f.type !== 'dropdown' || !!f.value) && (f.type !== 'radio' || f.value === 'true') && (f.type !== 'checkbox' || f.value === 'true');
+
+    const requiredFields = this.fields.filter(f => f.required);
+    const requiredRemaining = requiredFields.filter(f => !isFilled(f)).length;
+
+    const optionalFields = this.fields.filter(f => !f.required);
+    const optionalRemaining = optionalFields.filter(f => !isFilled(f)).length;
+
+    const focusedFieldObj = this.fields.find(f => f.name === this.focusedField);
+    const currentIndex = this.fields.findIndex(f => f.name === this.focusedField) + 1;
+    const totalFields = this.fields.length;
+
     return (
       <div class="card">
         <div class="header">
-          {this.progress
-            ? [
-                <div class="progress-line">
-                  {this.progress.required.remaining} of {this.progress.required.total} required fields remaining
-                </div>,
-                this.progress.optional.total > 0 ? (
-                  <div class="progress-line optional">
-                    {this.progress.optional.remaining} of {this.progress.optional.total} optional fields remaining
-                  </div>
-                ) : null,
-              ]
-            : this.remainingFields && this.remainingFields.length > 0
-              ? `${this.remainingFields.length} fields remaining`
-              : `${this.current} of ${this.total} fields`}
+          <div class="progress-line">
+            {requiredRemaining} of {requiredFields.length} required fields remaining
+          </div>
+          {optionalFields.length > 0 && (
+            <div class="progress-line optional">
+              {optionalRemaining} of {optionalFields.length} optional fields remaining
+            </div>
+          )}
         </div>
 
-        <div class="body">{this.renderContent()}</div>
+        <div class="body">{this.renderContent(getFieldLabel(focusedFieldObj), focusedFieldObj ? !!isFilled(focusedFieldObj) : false)}</div>
 
         <div class="separator" />
 
-        {this.renderFooter()}
+        {this.renderFooter(Math.max(1, currentIndex), totalFields, requiredRemaining)}
       </div>
     );
   }

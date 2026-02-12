@@ -13,10 +13,6 @@ verdocs-field-radio {
   transform-origin: bottom left;
   border-radius: 100%;
 
-  &.focused {
-    animation: verdocs-field-pulse 0.4s 1;
-  }
-
   svg {
     margin-top: 4px;
   }
@@ -138,10 +134,6 @@ verdocs-field-radio {
     display: none;
   }
 
-  &.focused {
-    animation: verdocs-field-pulse 0.4s 1;
-  }
-
   verdocs-button-panel {
     margin-left: -20px;
     margin-top: -7px;
@@ -163,19 +155,5 @@ verdocs-field-radio {
     &:hover {
       opacity: 1;
     }
-  }
-}
-
-@keyframes verdocs-field-pulse {
-  0% {
-    background-color: rgba(0, 0, 0, 0.35);
-  }
-
-  50% {
-    background-color: rgba(0, 0, 0, 0);
-  }
-
-  100% {
-    background-color: rgba(0, 0, 0, 0.35);
   }
 }

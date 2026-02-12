@@ -1,7 +1,7 @@
 import interact from 'interactjs';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {IEnvelopeField, ITemplate, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State} from '@stencil/core';
+import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -90,11 +90,17 @@ export class VerdocsFieldTextbox {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
-  @State() focused?: boolean = false;
+  @State() focused = false;
+
+  @Listen('blur', {capture: true})
+  handleBlur() {
+    this.focused = false;
+  }
 
   @Method()
   async focusField() {
     this.inputEl.focus();
+    this.focused = true;
   }
 
   @Method()

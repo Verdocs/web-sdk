@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk-react",
-  "version": "6.3.1",
+  "version": "6.5.0-beta.30",
   "description": "Verdocs Web SDK for React",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -14,12 +14,12 @@
     "push-beta": "npm i && npm run build && npm publish --tag beta",
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf dist",
-    "compile": "npm run tsc",
+    "compile": "npm run tsc && cp src/globals.css dist/globals.css && cp src/overrides.css dist/overrides.css",
     "tsc": "tsc -p .",
     "rollup": "rollup -c"
   },
   "dependencies": {
-    "@verdocs/web-sdk": "^6.3.1",
+    "@verdocs/web-sdk": "^6.5.0-beta.30",
     "@stencil/react-output-target": "^1.2.0"
   },
   "peerDependencies": {
@@ -33,7 +33,7 @@
     "@types/react-dom": "^19.2.1",
     "jest": "^29.7.0",
     "jest-dom": "^4.0.0",
-    "prettier": "^3.6.2",
+    "prettier": "^3.7.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.9.3"

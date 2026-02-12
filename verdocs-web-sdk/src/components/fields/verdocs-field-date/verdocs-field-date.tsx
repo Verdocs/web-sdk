@@ -3,7 +3,7 @@ import {format} from 'date-fns';
 import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
 import type {ITemplateField} from '@verdocs/js-sdk';
-import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
+import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {FORMAT_DATE} from '../../../utils/Types';
 import {Store} from '../../../utils/Datastore';
@@ -17,8 +17,8 @@ import {Store} from '../../../utils/Datastore';
   shadow: false,
 })
 export class VerdocsFieldDate {
-  @Element()
-  private hostEl: HTMLInputElement;
+  @Element() el: HTMLElement;
+  private inputEl: HTMLInputElement;
 
   /**
    * Fields may be attached to templates or envelopes, but only template fields may be edited.
@@ -95,14 +95,17 @@ export class VerdocsFieldDate {
 
   @State() showingProperties?: boolean = false;
 
+  @State() focused = false;
+
+  @Listen('blur', {capture: true})
+  handleBlur() {
+    this.focused = false;
+  }
+
   @Method()
   async focusField() {
-    // Our input field is fake, so we fake the flash too
+    this.inputEl.focus();
     this.focused = true;
-    this.picker?.show();
-    setTimeout(() => {
-      this.focused = false;
-    }, 500);
   }
 
   picker: AirDatepicker<HTMLElement> | null = null;
@@ -121,7 +124,7 @@ export class VerdocsFieldDate {
         onHide: () => (this.focused = false),
         onSelect: ({date, formattedDate}) => {
           const event = new CustomEvent('fieldChange', {detail: {date, formattedDate}});
-          this.hostEl.dispatchEvent(event);
+          this.el.dispatchEvent(event);
         },
       });
     }
@@ -142,8 +145,6 @@ export class VerdocsFieldDate {
       settingsPanel.hidePanel();
     }
   }
-
-  @State() focused?: boolean = false;
 
   // NOTE: We don't use a "date" field here because browsers vary widely in their formatting of it.
   render() {
@@ -171,6 +172,7 @@ export class VerdocsFieldDate {
           id={this.containerId}
           placeholder={placeholder}
           disabled={readonly || disabled}
+          ref={el => (this.inputEl = el)}
           onFocus={() => (this.focused = true)}
           onBlur={() => (this.focused = false)}
         />

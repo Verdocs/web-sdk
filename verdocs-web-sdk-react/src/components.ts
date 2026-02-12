@@ -9,7 +9,8 @@
 
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
-import { type IAuthStatus, type IColumn, type IContactSearchEvent, type IContactSelectEvent, type ICreateEnvelopeRecipientFromTemplate, type IDocumentPageInfo, type IEnvelope, type IFilterOption, type IMenuOption, type IRecipient, type IRole, type ISearchEvent, type ISelectedFile, type ISignerTokenResponse, type ITab, type ITemplate, type ITemplateField, type SDKError, type TContentType, type TEnvelopeStatus, type TVerdocsBuildStep, type VerdocsAuthCustomEvent, type VerdocsBuildCustomEvent, type VerdocsContactPickerCustomEvent, type VerdocsDropdownCustomEvent, type VerdocsEndpoint, type VerdocsEnvelopeDocumentPageCustomEvent, type VerdocsEnvelopeRecipientLinkCustomEvent, type VerdocsEnvelopeRecipientSummaryCustomEvent, type VerdocsEnvelopeSidebarCustomEvent, type VerdocsEnvelopeUpdateRecipientCustomEvent, type VerdocsEnvelopesListCustomEvent, type VerdocsFieldAttachmentCustomEvent, type VerdocsFieldCheckboxCustomEvent, type VerdocsFieldDateCustomEvent, type VerdocsFieldDropdownCustomEvent, type VerdocsFieldInitialCustomEvent, type VerdocsFieldPaymentCustomEvent, type VerdocsFieldRadioCustomEvent, type VerdocsFieldSignatureCustomEvent, type VerdocsFieldTextareaCustomEvent, type VerdocsFieldTextboxCustomEvent, type VerdocsFieldTimestampCustomEvent, type VerdocsFileChooserCustomEvent, type VerdocsKbaDialogCustomEvent, type VerdocsOtpDialogCustomEvent, type VerdocsPreviewCustomEvent, type VerdocsQuickFilterCustomEvent, type VerdocsSearchBoxCustomEvent, type VerdocsSendCustomEvent, type VerdocsSignCustomEvent, type VerdocsSignFooterCustomEvent, type VerdocsTableCustomEvent, type VerdocsTabsCustomEvent, type VerdocsTemplateAttachmentsCustomEvent, type VerdocsTemplateBuildTabsCustomEvent, type VerdocsTemplateCreateCustomEvent, type VerdocsTemplateDocumentPageCustomEvent, type VerdocsTemplateFieldPropertiesCustomEvent, type VerdocsTemplateFieldsCustomEvent, type VerdocsTemplateRolePropertiesCustomEvent, type VerdocsTemplateRolesCustomEvent, type VerdocsTemplateSettingsCustomEvent, type VerdocsTemplateStarCustomEvent, type VerdocsTemplatesListCustomEvent, type VerdocsUploadDialogCustomEvent, type VerdocsViewCustomEvent } from "@verdocs/web-sdk";
+import { type IAuthStatus, type IColumn, type IContactSearchEvent, type IContactSelectEvent, type ICreateEnvelopeRecipientFromTemplate, type IDocumentPageInfo, type IEnvelope, type IFilterOption, type IMenuOption, type IRecipient, type IRole, type ISearchEvent, type ISelectedFile, type ISignerTokenResponse, type ITab, type ITemplate, type ITemplateField, type SDKError, type TContentType, type TEnvelopeStatus, type TVerdocsBuildStep, type VerdocsAuthCustomEvent, type VerdocsBuildCustomEvent, type VerdocsContactPickerCustomEvent, type VerdocsDropdownCustomEvent, type VerdocsEndpoint, type VerdocsEnvelopeDocumentPageCustomEvent, type VerdocsEnvelopeRecipientLinkCustomEvent, type VerdocsEnvelopeRecipientSummaryCustomEvent, type VerdocsEnvelopeSidebarCustomEvent, type VerdocsEnvelopeUpdateRecipientCustomEvent, type VerdocsEnvelopesListCustomEvent, type VerdocsFieldAttachmentCustomEvent, type VerdocsFieldCheckboxCustomEvent, type VerdocsFieldDateCustomEvent, type VerdocsFieldDropdownCustomEvent, type VerdocsFieldInitialCustomEvent, type VerdocsFieldPaymentCustomEvent, type VerdocsFieldRadioCustomEvent, type VerdocsFieldSignatureCustomEvent, type VerdocsFieldTextareaCustomEvent, type VerdocsFieldTextboxCustomEvent, type VerdocsFieldTimestampCustomEvent, type VerdocsFileChooserCustomEvent, type VerdocsKbaDialogCustomEvent, type VerdocsOtpDialogCustomEvent, type VerdocsPasscodeDialogCustomEvent, type VerdocsPreviewCustomEvent, type VerdocsQuickFilterCustomEvent, type VerdocsSearchBoxCustomEvent, type VerdocsSendCustomEvent, type VerdocsSignCustomEvent, type VerdocsSignFooterCustomEvent, type VerdocsTableCustomEvent, type VerdocsTabsCustomEvent, type VerdocsTemplateAttachmentsCustomEvent, type VerdocsTemplateBuildTabsCustomEvent, type VerdocsTemplateCreateCustomEvent, type VerdocsTemplateDocumentPageCustomEvent, type VerdocsTemplateFieldPropertiesCustomEvent, type VerdocsTemplateFieldsCustomEvent, type VerdocsTemplateRolePropertiesCustomEvent, type VerdocsTemplateRolesCustomEvent, type VerdocsTemplateSettingsCustomEvent, type VerdocsTemplateStarCustomEvent, type VerdocsTemplatesListCustomEvent, type VerdocsUploadDialogCustomEvent, type VerdocsViewCustomEvent } from "@verdocs/web-sdk";
+import { VerdocsAdoptSignatureDialog as VerdocsAdoptSignatureDialogElement, defineCustomElement as defineVerdocsAdoptSignatureDialog } from "@verdocs/web-sdk/dist/components/verdocs-adopt-signature-dialog.js";
 import { VerdocsAuth as VerdocsAuthElement, defineCustomElement as defineVerdocsAuth } from "@verdocs/web-sdk/dist/components/verdocs-auth.js";
 import { VerdocsBuild as VerdocsBuildElement, defineCustomElement as defineVerdocsBuild } from "@verdocs/web-sdk/dist/components/verdocs-build.js";
 import { VerdocsButtonPanel as VerdocsButtonPanelElement, defineCustomElement as defineVerdocsButtonPanel } from "@verdocs/web-sdk/dist/components/verdocs-button-panel.js";
@@ -21,6 +22,7 @@ import { VerdocsDateInput as VerdocsDateInputElement, defineCustomElement as def
 import { VerdocsDelegateDialog as VerdocsDelegateDialogElement, defineCustomElement as defineVerdocsDelegateDialog } from "@verdocs/web-sdk/dist/components/verdocs-delegate-dialog.js";
 import { VerdocsDialog as VerdocsDialogElement, defineCustomElement as defineVerdocsDialog } from "@verdocs/web-sdk/dist/components/verdocs-dialog.js";
 import { VerdocsDisclosureDialog as VerdocsDisclosureDialogElement, defineCustomElement as defineVerdocsDisclosureDialog } from "@verdocs/web-sdk/dist/components/verdocs-disclosure-dialog.js";
+import { VerdocsDownloadDialog as VerdocsDownloadDialogElement, defineCustomElement as defineVerdocsDownloadDialog } from "@verdocs/web-sdk/dist/components/verdocs-download-dialog.js";
 import { VerdocsDropdown as VerdocsDropdownElement, defineCustomElement as defineVerdocsDropdown } from "@verdocs/web-sdk/dist/components/verdocs-dropdown.js";
 import { VerdocsEnvelopeDocumentPage as VerdocsEnvelopeDocumentPageElement, defineCustomElement as defineVerdocsEnvelopeDocumentPage } from "@verdocs/web-sdk/dist/components/verdocs-envelope-document-page.js";
 import { VerdocsEnvelopeRecipientLink as VerdocsEnvelopeRecipientLinkElement, defineCustomElement as defineVerdocsEnvelopeRecipientLink } from "@verdocs/web-sdk/dist/components/verdocs-envelope-recipient-link.js";
@@ -40,6 +42,7 @@ import { VerdocsFieldTextarea as VerdocsFieldTextareaElement, defineCustomElemen
 import { VerdocsFieldTextbox as VerdocsFieldTextboxElement, defineCustomElement as defineVerdocsFieldTextbox } from "@verdocs/web-sdk/dist/components/verdocs-field-textbox.js";
 import { VerdocsFieldTimestamp as VerdocsFieldTimestampElement, defineCustomElement as defineVerdocsFieldTimestamp } from "@verdocs/web-sdk/dist/components/verdocs-field-timestamp.js";
 import { VerdocsFileChooser as VerdocsFileChooserElement, defineCustomElement as defineVerdocsFileChooser } from "@verdocs/web-sdk/dist/components/verdocs-file-chooser.js";
+import { VerdocsFlag as VerdocsFlagElement, defineCustomElement as defineVerdocsFlag } from "@verdocs/web-sdk/dist/components/verdocs-flag.js";
 import { VerdocsHelpIcon as VerdocsHelpIconElement, defineCustomElement as defineVerdocsHelpIcon } from "@verdocs/web-sdk/dist/components/verdocs-help-icon.js";
 import { VerdocsInitialDialog as VerdocsInitialDialogElement, defineCustomElement as defineVerdocsInitialDialog } from "@verdocs/web-sdk/dist/components/verdocs-initial-dialog.js";
 import { VerdocsKbaDialog as VerdocsKbaDialogElement, defineCustomElement as defineVerdocsKbaDialog } from "@verdocs/web-sdk/dist/components/verdocs-kba-dialog.js";
@@ -50,6 +53,7 @@ import { VerdocsOkDialog as VerdocsOkDialogElement, defineCustomElement as defin
 import { VerdocsOrganizationCard as VerdocsOrganizationCardElement, defineCustomElement as defineVerdocsOrganizationCard } from "@verdocs/web-sdk/dist/components/verdocs-organization-card.js";
 import { VerdocsOtpDialog as VerdocsOtpDialogElement, defineCustomElement as defineVerdocsOtpDialog } from "@verdocs/web-sdk/dist/components/verdocs-otp-dialog.js";
 import { VerdocsPagination as VerdocsPaginationElement, defineCustomElement as defineVerdocsPagination } from "@verdocs/web-sdk/dist/components/verdocs-pagination.js";
+import { VerdocsPasscodeDialog as VerdocsPasscodeDialogElement, defineCustomElement as defineVerdocsPasscodeDialog } from "@verdocs/web-sdk/dist/components/verdocs-passcode-dialog.js";
 import { VerdocsPortal as VerdocsPortalElement, defineCustomElement as defineVerdocsPortal } from "@verdocs/web-sdk/dist/components/verdocs-portal.js";
 import { VerdocsPreview as VerdocsPreviewElement, defineCustomElement as defineVerdocsPreview } from "@verdocs/web-sdk/dist/components/verdocs-preview.js";
 import { VerdocsProgressBar as VerdocsProgressBarElement, defineCustomElement as defineVerdocsProgressBar } from "@verdocs/web-sdk/dist/components/verdocs-progress-bar.js";
@@ -64,6 +68,7 @@ import { VerdocsSend as VerdocsSendElement, defineCustomElement as defineVerdocs
 import { VerdocsSignFooter as VerdocsSignFooterElement, defineCustomElement as defineVerdocsSignFooter } from "@verdocs/web-sdk/dist/components/verdocs-sign-footer.js";
 import { VerdocsSign as VerdocsSignElement, defineCustomElement as defineVerdocsSign } from "@verdocs/web-sdk/dist/components/verdocs-sign.js";
 import { VerdocsSignatureDialog as VerdocsSignatureDialogElement, defineCustomElement as defineVerdocsSignatureDialog } from "@verdocs/web-sdk/dist/components/verdocs-signature-dialog.js";
+import { VerdocsSigningProgress as VerdocsSigningProgressElement, defineCustomElement as defineVerdocsSigningProgress } from "@verdocs/web-sdk/dist/components/verdocs-signing-progress.js";
 import { VerdocsSpinner as VerdocsSpinnerElement, defineCustomElement as defineVerdocsSpinner } from "@verdocs/web-sdk/dist/components/verdocs-spinner.js";
 import { VerdocsStatusIndicator as VerdocsStatusIndicatorElement, defineCustomElement as defineVerdocsStatusIndicator } from "@verdocs/web-sdk/dist/components/verdocs-status-indicator.js";
 import { VerdocsSwitch as VerdocsSwitchElement, defineCustomElement as defineVerdocsSwitch } from "@verdocs/web-sdk/dist/components/verdocs-switch.js";
@@ -89,6 +94,23 @@ import { VerdocsToolbarIcon as VerdocsToolbarIconElement, defineCustomElement as
 import { VerdocsUploadDialog as VerdocsUploadDialogElement, defineCustomElement as defineVerdocsUploadDialog } from "@verdocs/web-sdk/dist/components/verdocs-upload-dialog.js";
 import { VerdocsView as VerdocsViewElement, defineCustomElement as defineVerdocsView } from "@verdocs/web-sdk/dist/components/verdocs-view.js";
 import React from 'react';
+
+export type VerdocsAdoptSignatureDialogEvents = {
+    onNext: EventName<CustomEvent<{ signature: string; initials: string }>>,
+    onExit: EventName<CustomEvent<any>>
+};
+
+export const VerdocsAdoptSignatureDialog: StencilReactComponent<VerdocsAdoptSignatureDialogElement, VerdocsAdoptSignatureDialogEvents> = /*@__PURE__*/ createComponent<VerdocsAdoptSignatureDialogElement, VerdocsAdoptSignatureDialogEvents>({
+    tagName: 'verdocs-adopt-signature-dialog',
+    elementClass: VerdocsAdoptSignatureDialogElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onNext: 'next',
+        onExit: 'exit'
+    } as VerdocsAdoptSignatureDialogEvents,
+    defineCustomElement: defineVerdocsAdoptSignatureDialog
+});
 
 export type VerdocsAuthEvents = {
     onAuthenticated: EventName<VerdocsAuthCustomEvent<IAuthStatus>>,
@@ -253,6 +275,23 @@ export const VerdocsDisclosureDialog: StencilReactComponent<VerdocsDisclosureDia
         onAccept: 'accept'
     } as VerdocsDisclosureDialogEvents,
     defineCustomElement: defineVerdocsDisclosureDialog
+});
+
+export type VerdocsDownloadDialogEvents = {
+    onNext: EventName<CustomEvent<{ action: 'document' | 'certificate' | 'zip'; documentId?: string }>>,
+    onExit: EventName<CustomEvent<any>>
+};
+
+export const VerdocsDownloadDialog: StencilReactComponent<VerdocsDownloadDialogElement, VerdocsDownloadDialogEvents> = /*@__PURE__*/ createComponent<VerdocsDownloadDialogElement, VerdocsDownloadDialogEvents>({
+    tagName: 'verdocs-download-dialog',
+    elementClass: VerdocsDownloadDialogElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onNext: 'next',
+        onExit: 'exit'
+    } as VerdocsDownloadDialogEvents,
+    defineCustomElement: defineVerdocsDownloadDialog
 });
 
 export type VerdocsDropdownEvents = { onOptionSelected: EventName<VerdocsDropdownCustomEvent<IMenuOption>> };
@@ -517,7 +556,8 @@ export type VerdocsFieldSignatureEvents = {
     onFieldChange: EventName<CustomEvent<string>>,
     onSettingsPress: EventName<CustomEvent<any>>,
     onSettingsChanged: EventName<VerdocsFieldSignatureCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>,
+    onAdopt: EventName<CustomEvent<any>>
 };
 
 export const VerdocsFieldSignature: StencilReactComponent<VerdocsFieldSignatureElement, VerdocsFieldSignatureEvents> = /*@__PURE__*/ createComponent<VerdocsFieldSignatureElement, VerdocsFieldSignatureEvents>({
@@ -529,7 +569,8 @@ export const VerdocsFieldSignature: StencilReactComponent<VerdocsFieldSignatureE
         onFieldChange: 'fieldChange',
         onSettingsPress: 'settingsPress',
         onSettingsChanged: 'settingsChanged',
-        onDeleted: 'deleted'
+        onDeleted: 'deleted',
+        onAdopt: 'adopt'
     } as VerdocsFieldSignatureEvents,
     defineCustomElement: defineVerdocsFieldSignature
 });
@@ -594,6 +635,23 @@ export const VerdocsFileChooser: StencilReactComponent<VerdocsFileChooserElement
     react: React,
     events: { onFileSelected: 'fileSelected' } as VerdocsFileChooserEvents,
     defineCustomElement: defineVerdocsFileChooser
+});
+
+export type VerdocsFlagEvents = {
+    onSkip: EventName<CustomEvent<void>>,
+    onFlagClick: EventName<CustomEvent<void>>
+};
+
+export const VerdocsFlag: StencilReactComponent<VerdocsFlagElement, VerdocsFlagEvents> = /*@__PURE__*/ createComponent<VerdocsFlagElement, VerdocsFlagEvents>({
+    tagName: 'verdocs-flag',
+    elementClass: VerdocsFlagElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onSkip: 'skip',
+        onFlagClick: 'flagClick'
+    } as VerdocsFlagEvents,
+    defineCustomElement: defineVerdocsFlag
 });
 
 export type VerdocsHelpIconEvents = NonNullable<unknown>;
@@ -730,6 +788,23 @@ export const VerdocsPagination: StencilReactComponent<VerdocsPaginationElement, 
     react: React,
     events: { onSelectPage: 'selectPage' } as VerdocsPaginationEvents,
     defineCustomElement: defineVerdocsPagination
+});
+
+export type VerdocsPasscodeDialogEvents = {
+    onExit: EventName<CustomEvent<any>>,
+    onNext: EventName<VerdocsPasscodeDialogCustomEvent<{ response: ISignerTokenResponse }>>
+};
+
+export const VerdocsPasscodeDialog: StencilReactComponent<VerdocsPasscodeDialogElement, VerdocsPasscodeDialogEvents> = /*@__PURE__*/ createComponent<VerdocsPasscodeDialogElement, VerdocsPasscodeDialogEvents>({
+    tagName: 'verdocs-passcode-dialog',
+    elementClass: VerdocsPasscodeDialogElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onExit: 'exit',
+        onNext: 'next'
+    } as VerdocsPasscodeDialogEvents,
+    defineCustomElement: defineVerdocsPasscodeDialog
 });
 
 export type VerdocsPortalEvents = { onClickAway: EventName<CustomEvent<void>> };
@@ -940,6 +1015,27 @@ export const VerdocsSignatureDialog: StencilReactComponent<VerdocsSignatureDialo
         onExit: 'exit'
     } as VerdocsSignatureDialogEvents,
     defineCustomElement: defineVerdocsSignatureDialog
+});
+
+export type VerdocsSigningProgressEvents = {
+    onStarted: EventName<CustomEvent<any>>,
+    onNext: EventName<CustomEvent<any>>,
+    onPrevious: EventName<CustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>
+};
+
+export const VerdocsSigningProgress: StencilReactComponent<VerdocsSigningProgressElement, VerdocsSigningProgressEvents> = /*@__PURE__*/ createComponent<VerdocsSigningProgressElement, VerdocsSigningProgressEvents>({
+    tagName: 'verdocs-signing-progress',
+    elementClass: VerdocsSigningProgressElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onStarted: 'started',
+        onNext: 'next',
+        onPrevious: 'previous',
+        onExit: 'exit'
+    } as VerdocsSigningProgressEvents,
+    defineCustomElement: defineVerdocsSigningProgress
 });
 
 export type VerdocsSpinnerEvents = NonNullable<unknown>;

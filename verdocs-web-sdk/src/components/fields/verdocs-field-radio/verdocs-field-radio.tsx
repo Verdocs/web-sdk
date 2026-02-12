@@ -1,5 +1,5 @@
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State} from '@stencil/core';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -16,6 +16,8 @@ const RadioIconSelected = `<svg focusable="false" aria-hidden="true" viewBox="0 
   shadow: false,
 })
 export class VerdocsFieldRadio {
+  @Element() el: HTMLElement;
+
   /**
    * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
@@ -91,13 +93,15 @@ export class VerdocsFieldRadio {
    */
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
+  @Listen('blur')
+  handleBlur() {
+    this.focused = false;
+  }
+
   @Method()
   async focusField() {
-    // Our input field is fake, so we fake the flash too
+    this.el.focus();
     this.focused = true;
-    setTimeout(() => {
-      this.focused = false;
-    }, 500);
   }
 
   @Method()

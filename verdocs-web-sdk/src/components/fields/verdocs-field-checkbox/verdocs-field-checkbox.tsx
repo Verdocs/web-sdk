@@ -1,5 +1,5 @@
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, Event, EventEmitter, Fragment, h, Host, Method, Prop, State} from '@stencil/core';
+import {Component, Event, EventEmitter, Fragment, h, Host, Method, Prop, State, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -12,6 +12,8 @@ import {Store} from '../../../utils/Datastore';
   shadow: false,
 })
 export class VerdocsFieldCheckbox {
+  @Element() el: HTMLElement;
+
   /**
    * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
@@ -80,15 +82,17 @@ export class VerdocsFieldCheckbox {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
-  @State() focused?: boolean = false;
+  @State() focused = false;
+
+  @Listen('blur')
+  handleBlur() {
+    this.focused = false;
+  }
 
   @Method()
   async focusField() {
-    // We don't have a visible input that we can actually focus on, so we fake it
+    this.el.focus();
     this.focused = true;
-    setTimeout(() => {
-      this.focused = false;
-    }, 500);
   }
 
   @Method()

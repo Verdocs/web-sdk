@@ -1,5 +1,5 @@
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment} from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -13,6 +13,8 @@ import {Store} from '../../../utils/Datastore';
   shadow: false,
 })
 export class VerdocsFieldPayment {
+  @Element() el: HTMLElement;
+
   /**
    * Fields may be attached to templates or envelopes, but only template fields may be edited.
    */
@@ -81,7 +83,12 @@ export class VerdocsFieldPayment {
   @Event({composed: true}) deleted: EventEmitter<{fieldName: string}>;
 
   @State() showingProperties?: boolean = false;
-  @State() focused?: boolean = false;
+  @State() focused = false;
+
+  @Listen('blur')
+  handleBlur() {
+    this.focused = false;
+  }
 
   @Prop() fields: any[];
   @Prop() pageNum: number;
@@ -121,11 +128,8 @@ export class VerdocsFieldPayment {
 
   @Method()
   async focusField() {
-    // We don't have a visible input that we can actually focus on, so we fake it
+    this.el.focus();
     this.focused = true;
-    setTimeout(() => {
-      this.focused = false;
-    }, 500);
   }
 
   @Method()

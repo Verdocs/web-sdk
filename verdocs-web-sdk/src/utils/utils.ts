@@ -120,6 +120,8 @@ export const renderDocumentField = (
   // console.log('[renderDocumentField] Rendering field', field);
 
   switch (field.type as any) {
+    case 'radio':
+    case 'checkbox':
     case 'attachment':
     case 'date':
     case 'dropdown':
@@ -130,8 +132,10 @@ export const renderDocumentField = (
     case 'textarea':
     case 'textbox': {
       const id = getFieldId(field);
-      const existingField = document.getElementById(id);
+      const existingField = document.getElementById(id) as any;
       if (existingField) {
+        existingField.field = field;
+        existingField.done = done;
         setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
         return existingField;
       }
@@ -154,7 +158,7 @@ export const renderDocumentField = (
         el.setAttribute('tabindex', -1);
         el.setAttribute('disabled', true);
       } else {
-        el.setAttribute('tabIndex', tabIndex);
+        el.setAttribute('tabindex', tabIndex);
       }
 
       el.setAttribute('editable', editable);
@@ -165,70 +169,6 @@ export const renderDocumentField = (
       controlsDiv.appendChild(el);
 
       return el;
-    }
-
-    case 'checkbox': {
-      const id = getFieldId(field);
-      const existingField = document.getElementById(id);
-      if (existingField) {
-        setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
-        return existingField;
-      }
-
-      const cbEl: any = document.createElement(`verdocs-field-checkbox`);
-      cbEl.field = field;
-      cbEl.setAttribute('id', id);
-      cbEl.setAttribute('option', 0);
-      cbEl.setAttribute('source', source);
-      cbEl.setAttribute('sourceid', 'template_id' in field ? field.template_id : field.envelope_id);
-      if (disabled) {
-        cbEl.setAttribute('disabled', true);
-      }
-      if (done) {
-        cbEl.setAttribute('done', true);
-      }
-      if (editable) {
-        cbEl.setAttribute('editable', true);
-      }
-      if (draggable) {
-        cbEl.setAttribute('draggable', true);
-      }
-      setControlStyles(cbEl, field, docPage.xScale, docPage.yScale);
-      controlsDiv.appendChild(cbEl);
-
-      return cbEl;
-    }
-
-    case 'radio': {
-      const id = getFieldId(field);
-      const existingField = document.getElementById(id);
-      if (existingField) {
-        setControlStyles(existingField, field, docPage.xScale, docPage.yScale);
-        return existingField;
-      }
-
-      const radioEl: any = document.createElement(`verdocs-field-radio`);
-      radioEl.field = field;
-      radioEl.setAttribute('id', id);
-      radioEl.setAttribute('option', 0);
-      radioEl.setAttribute('source', source);
-      radioEl.setAttribute('sourceid', 'template_id' in field ? field.template_id : field.envelope_id);
-      if (disabled) {
-        radioEl.setAttribute('disabled', true);
-      }
-      if (done) {
-        radioEl.setAttribute('done', true);
-      }
-      if (editable) {
-        radioEl.setAttribute('editable', true);
-      }
-      if (draggable) {
-        radioEl.setAttribute('draggable', true);
-      }
-      setControlStyles(radioEl, field, docPage.xScale, docPage.yScale);
-      controlsDiv.appendChild(radioEl);
-
-      return radioEl;
     }
 
     default:
@@ -391,4 +331,28 @@ export const renderDocumentFlag = (
 
   controlsDiv.appendChild(el);
   return el;
+};
+
+/**
+ * Helper to generate a human-readable label for a field.
+ */
+export const getFieldLabel = (field: IEnvelopeField | ITemplateField) => {
+  if (!field) return '';
+  const typeMap: Record<string, string> = {
+    signature: 'Signature',
+    initial: 'Initials',
+    date: 'Date',
+    textbox: 'Text Field',
+    checkbox: 'Checkbox',
+    radio: 'Radio Button',
+    dropdown: 'Dropdown',
+    attachment: 'Attachment',
+    payment: 'Payment',
+  };
+
+  const typeName = typeMap[field.type] || 'Field';
+  if (field.required) {
+    return `Required ${typeName}*`;
+  }
+  return `Optional ${typeName}`;
 };
