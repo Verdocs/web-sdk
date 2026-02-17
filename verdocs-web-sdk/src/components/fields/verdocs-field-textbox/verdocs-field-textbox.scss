@@ -15,6 +15,11 @@ verdocs-field-textbox {
   border: var(--verdocs-field-border, 1px solid rgba(0, 0, 0, 0.2));
   border-radius: var(--verdocs-field-radius);
 
+  &.small input,
+  &.small textarea {
+    font-size: 8px;
+  }
+
   .edge-top,
   .edge-right,
   .edge-left,

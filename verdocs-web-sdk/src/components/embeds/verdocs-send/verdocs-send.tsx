@@ -324,6 +324,8 @@ export class VerdocsSend {
     const levels = this.getSequenceNumbers();
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) && recipient.first_name && recipient.last_name);
     const allRolesAssigned = rolesAssigned.length >= getRoleNames(this.template).length;
+    const assignedEmails = rolesAssigned.map(r => r.email.toLowerCase());
+    const hasDuplicateEmails = new Set(assignedEmails).size < assignedEmails.length;
 
     return (
       <Host class={{sendable: this.template?.is_sendable}}>
@@ -396,8 +398,9 @@ export class VerdocsSend {
         </div>
 
         <div class="buttons">
+          {hasDuplicateEmails && <div class="error-message">Recipients cannot share the same email.</div>}
           {this.showCancel && <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} disabled={this.sending} />}
-          <verdocs-button label="Send" size="small" disabled={!allRolesAssigned || this.sending} onClick={e => this.handleSend(e)} />
+          <verdocs-button label="Send" size="small" disabled={!allRolesAssigned || this.sending || hasDuplicateEmails} onClick={e => this.handleSend(e)} />
           {this.sending && <verdocs-spinner />}
         </div>
       </Host>

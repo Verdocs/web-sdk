@@ -20,4 +20,5 @@ export interface IPageLayer {
 
 export const FORMAT_TIMESTAMP = 'P pp';
 // export const FORMAT_TIMESTAMP = 'Y-MM-dd hh:mm:ss a';
-export const FORMAT_DATE = 'y-MM-dd'
+export const FORMAT_DATE = 'P'
+// export const FORMAT_DATE = 'y-MM-dd'

@@ -425,9 +425,21 @@ export class VerdocsSign {
         oldField.settings = updateResult.settings;
         updateDocumentFieldValue(oldField);
         this.fieldUpdateCounter++;
+        this.markEnvelopeStarted();
         this.checkRecipientFields();
       }
     });
+  }
+
+  markEnvelopeStarted() {
+    const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
+    if (!startedEnvelopes.includes(this.envelopeId)) {
+      startedEnvelopes.push(this.envelopeId);
+      while (startedEnvelopes.length > 10) {
+        startedEnvelopes.shift();
+      }
+      localStorage.setItem('startedEnvelopes', JSON.stringify(startedEnvelopes));
+    }
   }
 
   saveFieldChange(fieldName: string, value: string, prepared: boolean) {
@@ -843,7 +855,14 @@ export class VerdocsSign {
     el.addEventListener('focusout', e => {
       // These field types trigger focusout as they're used, even without a value change.
       // Signature/Initial fields handle their own changes via fieldChange/adopt events, so we ignore focusout to prevent double-saves.
-      if (field.type !== 'dropdown' && field.type !== 'attachment' && field.type !== 'signature' && field.type !== 'initial') {
+      if (
+        field.type !== 'dropdown' &&
+        field.type !== 'attachment' &&
+        field.type !== 'signature' &&
+        field.type !== 'initial' &&
+        field.type !== 'checkbox' &&
+        field.type !== 'radio'
+      ) {
         this.handleFieldChange(field, e).finally(() => this.checkRecipientFields());
       }
     });
@@ -1438,7 +1457,7 @@ export class VerdocsSign {
 
         {this.showDownloadDialog && (
           <verdocs-download-dialog
-            signed={this.envelope.status === 'complete' || this.envelope.signed}
+            signed={this.envelope.signed}
             polling={this.polling}
             documents={this.envelope.documents}
             onExit={() => {

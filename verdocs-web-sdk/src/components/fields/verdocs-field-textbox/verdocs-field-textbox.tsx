@@ -133,7 +133,7 @@ export class VerdocsFieldTextbox {
         },
         modifiers: [
           interact.modifiers.restrictSize({
-            min: {width: 30, height: 15},
+            min: {width: 30, height: 10},
           }),
         ],
         listeners: {
@@ -175,8 +175,8 @@ export class VerdocsFieldTextbox {
 
     const width = Math.round(parseFloat(e.target.style.width));
     let height = Math.round(parseFloat(e.target.style.height));
-    if (height < 20) {
-      height = 15;
+    if (height < 10) {
+      height = 10;
     }
     const multiline = height > 15;
 
@@ -205,8 +205,9 @@ export class VerdocsFieldTextbox {
   render() {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
-    let {required = false, placeholder = '', label = '', width = 150, readonly = false, default: value = '', multiline = false} = field || {};
+    let {required = false, placeholder = '', label = '', width = 150, height = 15, readonly = false, default: value = '', multiline = false} = field || {};
     const signerClass = `signer-${(index % 10) + 1}`;
+    const small = height < 15;
 
     // TODO: Consolidate value/defaultValue handling between template and envelope fields.
     if ((field as any)?.value) {
@@ -221,7 +222,7 @@ export class VerdocsFieldTextbox {
     }
 
     return (
-      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
+      <Host class={{required, disabled, done, focused, small, [signerClass]: true}}>
         {editable && <div class="edge-top" />}
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}

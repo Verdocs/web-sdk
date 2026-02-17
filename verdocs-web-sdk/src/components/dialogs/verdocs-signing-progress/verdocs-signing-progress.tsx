@@ -58,12 +58,12 @@ export class VerdocsSigningProgress {
     );
   }
 
-  renderContent(fieldLabel: string, fieldCompleted: boolean) {
+  renderContent(fieldLabel: string, fieldCompleted: boolean, readyToSubmit: boolean) {
     if (this.mode === 'start') {
       return <div class="field-label">{fieldLabel}</div>;
     }
 
-    if (fieldCompleted) {
+    if (fieldCompleted && readyToSubmit) {
       return (
         <div class="field-completed">
           <div class="icon">{this.renderSuccessIcon()}</div>
@@ -151,7 +151,9 @@ export class VerdocsSigningProgress {
           )}
         </div>
 
-        <div class="body">{this.renderContent(getFieldLabel(focusedFieldObj), focusedFieldObj ? !!isFilled(focusedFieldObj) : false)}</div>
+        <div class="body">
+          {this.renderContent(getFieldLabel(focusedFieldObj), focusedFieldObj ? !!isFilled(focusedFieldObj) : false, requiredRemaining === 0)}
+        </div>
 
         <div class="separator" />
 

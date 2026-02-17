@@ -1,8 +1,9 @@
 import interact from 'interactjs';
-import {Component, h, Event, EventEmitter, Prop, Host, State, Listen, Watch} from '@stencil/core';
+import {Component, h, Event, EventEmitter, Fragment, Prop, Host, State, Listen, Watch} from '@stencil/core';
 import {createField, getTemplate, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
+import {DocumentPageIcon} from '../../../utils/Icons';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
@@ -200,17 +201,19 @@ export class VerdocsTemplateFields {
     });
     el.setAttribute('templateid', this.templateId);
     el.setAttribute('fieldname', field.name);
+    el.setAttribute('documentid', String(pageInfo.documentId));
     el.setAttribute('pageNumber', String(pageInfo.pageNumber));
     el.setAttribute('xScale', String(pageInfo.xScale));
     el.setAttribute('yScale', String(pageInfo.yScale));
     el.setAttribute('name', field.name);
   }
 
-  cachedPageInfo: Record<number, IDocumentPageInfo> = {};
+  cachedPageInfo: Record<string, Record<number, IDocumentPageInfo>> = {};
   handlePageRendered(e: any) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    // console.log('[FIELDS] Page rendered', pageInfo.pageNumber, pageInfo.xScale, pageInfo.yScale);
-    this.cachedPageInfo[pageInfo.pageNumber] = pageInfo;
+    console.log('[FIELDS] Page rendered', pageInfo.documentId, pageInfo.pageNumber, pageInfo.xScale, pageInfo.yScale);
+    this.cachedPageInfo[pageInfo.documentId] ??= {};
+    this.cachedPageInfo[pageInfo.documentId][pageInfo.pageNumber] = pageInfo;
 
     this.pageHeights[pageInfo.pageNumber] = pageInfo.naturalHeight;
 
@@ -222,6 +225,7 @@ export class VerdocsTemplateFields {
         if (el) {
           el.setAttribute('fieldname', field.name);
           el.setAttribute('pagenumber', String(field.page));
+          el.setAttribute('documentid', String(field.document_id));
           this.makeDraggable(el);
         }
       });
@@ -257,7 +261,8 @@ export class VerdocsTemplateFields {
     }
 
     const pageNumber = event.target.getAttribute('pagenumber');
-    let {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
+    const documentId = event.target.getAttribute('documentid');
+    let {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[documentId][pageNumber];
     const clientRect = event.target.getBoundingClientRect();
     const parent = event.target.parentElement;
     const parentRect = parent.getBoundingClientRect();
@@ -274,17 +279,17 @@ export class VerdocsTemplateFields {
     if (newY > renderedHeight) {
       newPageNumber = Math.min(newPageNumber + 1, (this.template?.documents || [])?.[0]?.pages || 1);
       newY -= renderedHeight;
-      renderedHeight = this.cachedPageInfo[newPageNumber].renderedHeight;
+      renderedHeight = this.cachedPageInfo[documentId][newPageNumber].renderedHeight;
 
       console.log('Next page', {newPageNumber, newY, renderedHeight});
     } else if (newY < 0) {
       newPageNumber = Math.max(newPageNumber - 1, 1);
-      renderedHeight = this.cachedPageInfo[newPageNumber].renderedHeight;
+      renderedHeight = this.cachedPageInfo[documentId][newPageNumber].renderedHeight;
       newY += renderedHeight;
       console.log('[FIELDS] Next page', {newPageNumber, newY, renderedHeight});
     }
 
-    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, pageNumber, naturalWidth - width, naturalHeight - height);
+    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, documentId, pageNumber, naturalWidth - width, naturalHeight - height);
     try {
       const params = {x, y, page: newPageNumber};
       const updatedField = await updateField(this.endpoint, this.templateId, name, params);
@@ -300,7 +305,7 @@ export class VerdocsTemplateFields {
       event.target.removeAttribute('posX');
       event.target.removeAttribute('posY');
       removeCssTransform(event.target);
-      const {xScale = 1, yScale = 1} = this.cachedPageInfo[pageNumber];
+      const {xScale = 1, yScale = 1} = this.cachedPageInfo[documentId][pageNumber];
       setControlStyles(event.target, updatedField, xScale, yScale);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: newTemplate, event: 'updated-field'});
     } catch (e) {
@@ -325,25 +330,26 @@ export class VerdocsTemplateFields {
   }
 
   // Scale the X,Y clicks to the virtual page dimensions. Also ensure the field doesn't go off the page.
-  viewCoordinatesToPageCoordinates(viewX: number, viewY: number, pageNumber: number, xMax: number, yMax: number) {
-    const {xScale = 1, yScale = 1, renderedHeight = 792} = this.cachedPageInfo[pageNumber];
+  viewCoordinatesToPageCoordinates(viewX: number, viewY: number, documentId: string, pageNumber: number, xMax: number, yMax: number) {
+    const {xScale = 1, yScale = 1, renderedHeight = 792} = this.cachedPageInfo[documentId][pageNumber];
     const x = Math.floor(Math.min(viewX / xScale, xMax));
     const y = Math.floor(Math.min(Math.max(renderedHeight - viewY, 0) / yScale, yMax));
     return {x, y};
   }
 
-  async handleClickPage(e: any, pageNumber: number) {
+  async handleClickPage(e: any, documentId: string, pageNumber: number) {
     if (this.placing) {
+      console.log('Placing field', {documentId, pageNumber});
       const clickedX = e.offsetX;
       const clickedY = e.offsetY;
 
       const width = defaultWidth(this.placing);
       const height = defaultHeight(this.placing);
 
-      const cachedPage = this.cachedPageInfo[pageNumber];
+      const cachedPage = this.cachedPageInfo[documentId][pageNumber];
       const {naturalWidth = 612, naturalHeight = 792} = cachedPage;
 
-      const coords = this.viewCoordinatesToPageCoordinates(clickedX, clickedY, pageNumber, naturalWidth - width, naturalHeight - height);
+      const coords = this.viewCoordinatesToPageCoordinates(clickedX, clickedY, documentId, pageNumber, naturalWidth - width, naturalHeight - height);
       const x = Math.floor(coords.x);
       const y = Math.floor(coords.y);
 
@@ -448,22 +454,31 @@ export class VerdocsTemplateFields {
               const pageSize = document.page_sizes[page];
 
               return (
-                <verdocs-template-document-page
-                  templateId={this.templateId}
-                  documentId={document.id}
-                  pageNumber={page}
-                  virtualWidth={pageSize?.width || 612}
-                  virtualHeight={pageSize?.height || 792}
-                  disabled={true}
-                  editable={true}
-                  done={false}
-                  onClick={(e: PointerEvent) => this.handleClickPage(e, page)}
-                  onPageRendered={e => this.handlePageRendered(e)}
-                  layers={[
-                    {name: 'page', type: 'canvas'},
-                    {name: 'controls', type: 'div'},
-                  ]}
-                />
+                <Fragment>
+                  {this.template?.documents.length > 1 && (
+                    <div class="document-separator">
+                      <div innerHTML={DocumentPageIcon} />
+                      <span>{document.name}</span>
+                    </div>
+                  )}
+
+                  <verdocs-template-document-page
+                    templateId={this.templateId}
+                    documentId={document.id}
+                    pageNumber={page}
+                    virtualWidth={pageSize?.width || 612}
+                    virtualHeight={pageSize?.height || 792}
+                    disabled={true}
+                    editable={true}
+                    done={false}
+                    onClick={(e: PointerEvent) => this.handleClickPage(e, document.id, page)}
+                    onPageRendered={e => this.handlePageRendered(e)}
+                    layers={[
+                      {name: 'page', type: 'canvas'},
+                      {name: 'controls', type: 'div'},
+                    ]}
+                  />
+                </Fragment>
               );
             });
           })}

@@ -46,17 +46,17 @@ export class VerdocsTemplateDocumentPage {
   /**
    * The ID of the template the document is for.
    */
-  @Prop() templateId: string = '';
+  @Prop({reflect: true}) templateId: string = '';
 
   /**
    * The ID of the document to display.
    */
-  @Prop() documentId: string = '';
+  @Prop({reflect: true}) documentId: string = '';
 
   /**
    * The page number being rendered. (Reminder: page numbers are 1-based.)
    */
-  @Prop() pageNumber: number = 1;
+  @Prop({reflect: true}) pageNumber: number = 1;
 
   /**
    * The "virtual" width of the page canvas. Defaults to 612 which at 72dpi is 8.5" wide. This is used to compute
