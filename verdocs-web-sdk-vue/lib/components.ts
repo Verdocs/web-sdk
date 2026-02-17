@@ -8,6 +8,16 @@ import type { JSX } from '@verdocs/web-sdk';
 
 
 
+export const VerdocsAdoptSignatureDialog: StencilVueComponent<JSX.VerdocsAdoptSignatureDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsAdoptSignatureDialog>('verdocs-adopt-signature-dialog', undefined, [
+  'name',
+  'next',
+  'exit'
+], [
+  'next',
+  'exit'
+]);
+
+
 export const VerdocsAuth: StencilVueComponent<JSX.VerdocsAuth> = /*@__PURE__*/ defineContainer<JSX.VerdocsAuth>('verdocs-auth', undefined, [
   'endpoint',
   'visible',
@@ -111,6 +121,7 @@ export const VerdocsDelegateDialog: StencilVueComponent<JSX.VerdocsDelegateDialo
 
 
 export const VerdocsDialog: StencilVueComponent<JSX.VerdocsDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsDialog>('verdocs-dialog', undefined, [
+  'persistent',
   'exit'
 ], [
   'exit'
@@ -127,6 +138,19 @@ export const VerdocsDisclosureDialog: StencilVueComponent<JSX.VerdocsDisclosureD
   'decline',
   'delegate',
   'accept'
+]);
+
+
+export const VerdocsDownloadDialog: StencilVueComponent<JSX.VerdocsDownloadDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsDownloadDialog>('verdocs-download-dialog', undefined, [
+  'signed',
+  'polling',
+  'documents',
+  'hasCertificate',
+  'next',
+  'exit'
+], [
+  'next',
+  'exit'
 ]);
 
 
@@ -336,6 +360,7 @@ export const VerdocsFieldInitial: StencilVueComponent<JSX.VerdocsFieldInitial> =
   'xscale',
   'yscale',
   'pagenumber',
+  'initialid',
   'adopt',
   'exit',
   'fieldChange',
@@ -419,15 +444,18 @@ export const VerdocsFieldSignature: StencilVueComponent<JSX.VerdocsFieldSignatur
   'xscale',
   'yscale',
   'pagenumber',
+  'signatureid',
   'fieldChange',
   'settingsPress',
   'settingsChanged',
-  'deleted'
+  'deleted',
+  'adopt'
 ], [
   'fieldChange',
   'settingsPress',
   'settingsChanged',
-  'deleted'
+  'deleted',
+  'adopt'
 ]);
 
 
@@ -498,6 +526,18 @@ export const VerdocsFileChooser: StencilVueComponent<JSX.VerdocsFileChooser> = /
   'fileSelected'
 ], [
   'fileSelected'
+]);
+
+
+export const VerdocsFlag: StencilVueComponent<JSX.VerdocsFlag> = /*@__PURE__*/ defineContainer<JSX.VerdocsFlag>('verdocs-flag', undefined, [
+  'variant',
+  'label',
+  'showSkip',
+  'skip',
+  'flagClick'
+], [
+  'skip',
+  'flagClick'
 ]);
 
 
@@ -582,7 +622,6 @@ export const VerdocsOrganizationCard: StencilVueComponent<JSX.VerdocsOrganizatio
 export const VerdocsOtpDialog: StencilVueComponent<JSX.VerdocsOtpDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsOtpDialog>('verdocs-otp-dialog', undefined, [
   'endpoint',
   'method',
-  'recipient',
   'exit',
   'next'
 ], [
@@ -598,6 +637,16 @@ export const VerdocsPagination: StencilVueComponent<JSX.VerdocsPagination> = /*@
   'selectPage'
 ], [
   'selectPage'
+]);
+
+
+export const VerdocsPasscodeDialog: StencilVueComponent<JSX.VerdocsPasscodeDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsPasscodeDialog>('verdocs-passcode-dialog', undefined, [
+  'endpoint',
+  'exit',
+  'next'
+], [
+  'exit',
+  'next'
 ]);
 
 
@@ -717,6 +766,7 @@ export const VerdocsSign: StencilVueComponent<JSX.VerdocsSign> = /*@__PURE__*/ d
   'roleId',
   'inviteCode',
   'headerTargetId',
+  'toolbarStyle',
   'sdkError',
   'envelopeLoaded',
   'envelopeUpdated'
@@ -749,6 +799,23 @@ export const VerdocsSignatureDialog: StencilVueComponent<JSX.VerdocsSignatureDia
   'exit'
 ], [
   'next',
+  'exit'
+]);
+
+
+export const VerdocsSigningProgress: StencilVueComponent<JSX.VerdocsSigningProgress> = /*@__PURE__*/ defineContainer<JSX.VerdocsSigningProgress>('verdocs-signing-progress', undefined, [
+  'mode',
+  'focusedField',
+  'fields',
+  'recipientFields',
+  'started',
+  'next',
+  'previous',
+  'exit'
+], [
+  'started',
+  'next',
+  'previous',
   'exit'
 ]);
 

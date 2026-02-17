@@ -234,14 +234,11 @@ export class VerdocsFieldDate {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
-    const {required = false, placeholder = 'Date...', label = '', readonly = false, height = 20, width = 74} = field || {};
+    const {required = false, placeholder = 'Date...', value = '', label = '', readonly = false, height = 20, width = 74} = field || {};
     const signerClass = `signer-${(index % 10) + 1}`;
     const small = height < 20 || width < 74;
 
-    const value = '2023-09-05T00:00:00.000Z';
     const formattedValue = value ? format(new Date(value), FORMAT_DATE) : '';
-
-    console.log('rendering date', value, formattedValue);
 
     if (this.done) {
       return <Host class={{done}}>{formattedValue}</Host>;

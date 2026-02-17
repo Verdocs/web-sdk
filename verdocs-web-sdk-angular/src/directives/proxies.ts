@@ -6,6 +6,7 @@ import { ProxyCmp } from './angular-component-lib/utils';
 
 import type { Components } from '@verdocs/web-sdk/components';
 
+import { defineCustomElement as defineVerdocsAdoptSignatureDialog } from '@verdocs/web-sdk/components/verdocs-adopt-signature-dialog.js';
 import { defineCustomElement as defineVerdocsAuth } from '@verdocs/web-sdk/components/verdocs-auth.js';
 import { defineCustomElement as defineVerdocsBuild } from '@verdocs/web-sdk/components/verdocs-build.js';
 import { defineCustomElement as defineVerdocsButton } from '@verdocs/web-sdk/components/verdocs-button.js';
@@ -17,6 +18,7 @@ import { defineCustomElement as defineVerdocsDateInput } from '@verdocs/web-sdk/
 import { defineCustomElement as defineVerdocsDelegateDialog } from '@verdocs/web-sdk/components/verdocs-delegate-dialog.js';
 import { defineCustomElement as defineVerdocsDialog } from '@verdocs/web-sdk/components/verdocs-dialog.js';
 import { defineCustomElement as defineVerdocsDisclosureDialog } from '@verdocs/web-sdk/components/verdocs-disclosure-dialog.js';
+import { defineCustomElement as defineVerdocsDownloadDialog } from '@verdocs/web-sdk/components/verdocs-download-dialog.js';
 import { defineCustomElement as defineVerdocsDropdown } from '@verdocs/web-sdk/components/verdocs-dropdown.js';
 import { defineCustomElement as defineVerdocsEnvelopeDocumentPage } from '@verdocs/web-sdk/components/verdocs-envelope-document-page.js';
 import { defineCustomElement as defineVerdocsEnvelopeRecipientLink } from '@verdocs/web-sdk/components/verdocs-envelope-recipient-link.js';
@@ -36,6 +38,7 @@ import { defineCustomElement as defineVerdocsFieldTextarea } from '@verdocs/web-
 import { defineCustomElement as defineVerdocsFieldTextbox } from '@verdocs/web-sdk/components/verdocs-field-textbox.js';
 import { defineCustomElement as defineVerdocsFieldTimestamp } from '@verdocs/web-sdk/components/verdocs-field-timestamp.js';
 import { defineCustomElement as defineVerdocsFileChooser } from '@verdocs/web-sdk/components/verdocs-file-chooser.js';
+import { defineCustomElement as defineVerdocsFlag } from '@verdocs/web-sdk/components/verdocs-flag.js';
 import { defineCustomElement as defineVerdocsHelpIcon } from '@verdocs/web-sdk/components/verdocs-help-icon.js';
 import { defineCustomElement as defineVerdocsInitialDialog } from '@verdocs/web-sdk/components/verdocs-initial-dialog.js';
 import { defineCustomElement as defineVerdocsKbaDialog } from '@verdocs/web-sdk/components/verdocs-kba-dialog.js';
@@ -46,6 +49,7 @@ import { defineCustomElement as defineVerdocsOkDialog } from '@verdocs/web-sdk/c
 import { defineCustomElement as defineVerdocsOrganizationCard } from '@verdocs/web-sdk/components/verdocs-organization-card.js';
 import { defineCustomElement as defineVerdocsOtpDialog } from '@verdocs/web-sdk/components/verdocs-otp-dialog.js';
 import { defineCustomElement as defineVerdocsPagination } from '@verdocs/web-sdk/components/verdocs-pagination.js';
+import { defineCustomElement as defineVerdocsPasscodeDialog } from '@verdocs/web-sdk/components/verdocs-passcode-dialog.js';
 import { defineCustomElement as defineVerdocsPortal } from '@verdocs/web-sdk/components/verdocs-portal.js';
 import { defineCustomElement as defineVerdocsPreview } from '@verdocs/web-sdk/components/verdocs-preview.js';
 import { defineCustomElement as defineVerdocsProgressBar } from '@verdocs/web-sdk/components/verdocs-progress-bar.js';
@@ -60,6 +64,7 @@ import { defineCustomElement as defineVerdocsSend } from '@verdocs/web-sdk/compo
 import { defineCustomElement as defineVerdocsSign } from '@verdocs/web-sdk/components/verdocs-sign.js';
 import { defineCustomElement as defineVerdocsSignFooter } from '@verdocs/web-sdk/components/verdocs-sign-footer.js';
 import { defineCustomElement as defineVerdocsSignatureDialog } from '@verdocs/web-sdk/components/verdocs-signature-dialog.js';
+import { defineCustomElement as defineVerdocsSigningProgress } from '@verdocs/web-sdk/components/verdocs-signing-progress.js';
 import { defineCustomElement as defineVerdocsSpinner } from '@verdocs/web-sdk/components/verdocs-spinner.js';
 import { defineCustomElement as defineVerdocsStatusIndicator } from '@verdocs/web-sdk/components/verdocs-status-indicator.js';
 import { defineCustomElement as defineVerdocsSwitch } from '@verdocs/web-sdk/components/verdocs-switch.js';
@@ -84,6 +89,42 @@ import { defineCustomElement as defineVerdocsToggleButton } from '@verdocs/web-s
 import { defineCustomElement as defineVerdocsToolbarIcon } from '@verdocs/web-sdk/components/verdocs-toolbar-icon.js';
 import { defineCustomElement as defineVerdocsUploadDialog } from '@verdocs/web-sdk/components/verdocs-upload-dialog.js';
 import { defineCustomElement as defineVerdocsView } from '@verdocs/web-sdk/components/verdocs-view.js';
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsAdoptSignatureDialog,
+  inputs: ['name']
+})
+@Component({
+  selector: 'verdocs-adopt-signature-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['name'],
+  outputs: ['next', 'exit'],
+})
+export class VerdocsAdoptSignatureDialog {
+  protected el: HTMLVerdocsAdoptSignatureDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<{signature: string; initials: string}>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsAdoptSignatureDialog extends Components.VerdocsAdoptSignatureDialog {
+  /**
+   * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string
+representation of the signature adopted.
+   */
+  next: EventEmitter<CustomEvent<{signature: string; initials: string}>>;
+  /**
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+}
+
+
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsAuth,
   inputs: ['displayMode', 'endpoint', 'logo', 'visible']
@@ -390,14 +431,15 @@ export declare interface VerdocsDelegateDialog extends Components.VerdocsDelegat
 
 
 @ProxyCmp({
-  defineCustomElementFn: defineVerdocsDialog
+  defineCustomElementFn: defineVerdocsDialog,
+  inputs: ['persistent']
 })
 @Component({
   selector: 'verdocs-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: [],
+  inputs: ['persistent'],
   outputs: ['exit'],
 })
 export class VerdocsDialog {
@@ -455,6 +497,41 @@ export declare interface VerdocsDisclosureDialog extends Components.VerdocsDiscl
    * Event fired when the user chooses to proceed.
    */
   accept: EventEmitter<CustomEvent<{first_name: string; last_name: string; email: string; phone: string; message: string}>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsDownloadDialog,
+  inputs: ['documents', 'hasCertificate', 'polling', 'signed']
+})
+@Component({
+  selector: 'verdocs-download-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['documents', 'hasCertificate', 'polling', 'signed'],
+  outputs: ['next', 'exit'],
+})
+export class VerdocsDownloadDialog {
+  protected el: HTMLVerdocsDownloadDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsDownloadDialog extends Components.VerdocsDownloadDialog {
+  /**
+   * Event fired when an option is selected.
+   */
+  next: EventEmitter<CustomEvent<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>>;
+  /**
+   * Event fired when Cancel is pressed or background is clicked.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
 }
 
 
@@ -949,7 +1026,7 @@ keypress.
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsFieldInitial,
-  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'initials', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'initialid', 'initials', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -957,7 +1034,7 @@ keypress.
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'initials', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'initialid', 'initials', 'moveable', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
   outputs: ['adopt', 'exit', 'fieldChange', 'settingsChanged', 'settingsPress', 'deleted'],
 })
 export class VerdocsFieldInitial {
@@ -1085,7 +1162,7 @@ export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio 
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsFieldSignature,
-  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'name', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'name', 'pagenumber', 'signatureid', 'source', 'sourceid', 'xscale', 'yscale'],
   methods: ['focusField', 'showSettingsPanel', 'hideSettingsPanel']
 })
 @Component({
@@ -1093,8 +1170,8 @@ export declare interface VerdocsFieldRadio extends Components.VerdocsFieldRadio 
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'name', 'pagenumber', 'source', 'sourceid', 'xscale', 'yscale'],
-  outputs: ['fieldChange', 'settingsPress', 'settingsChanged', 'deleted'],
+  inputs: ['disabled', 'done', 'editable', 'field', 'fieldname', 'moveable', 'name', 'pagenumber', 'signatureid', 'source', 'sourceid', 'xscale', 'yscale'],
+  outputs: ['fieldChange', 'settingsPress', 'settingsChanged', 'deleted', 'adopt'],
 })
 export class VerdocsFieldSignature {
   protected el: HTMLVerdocsFieldSignatureElement;
@@ -1102,6 +1179,7 @@ export class VerdocsFieldSignature {
   @Output() settingsPress = new EventEmitter<CustomEvent<any>>();
   @Output() settingsChanged = new EventEmitter<CustomEvent<{fieldName: string; field: IVerdocsFieldSignatureITemplateField}>>();
   @Output() deleted = new EventEmitter<CustomEvent<{fieldName: string}>>();
+  @Output() adopt = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -1128,6 +1206,8 @@ export declare interface VerdocsFieldSignature extends Components.VerdocsFieldSi
    * Event fired when the field is deleted.
    */
   deleted: EventEmitter<CustomEvent<{fieldName: string}>>;
+
+  adopt: EventEmitter<CustomEvent<any>>;
 }
 
 
@@ -1273,6 +1353,41 @@ export declare interface VerdocsFileChooser extends Components.VerdocsFileChoose
 Host applications should use this event to enable/disable buttons to upload or otherwise process the selected file.
    */
   fileSelected: EventEmitter<CustomEvent<{file: File | null}>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsFlag,
+  inputs: ['label', 'showSkip', 'variant']
+})
+@Component({
+  selector: 'verdocs-flag',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['label', 'showSkip', 'variant'],
+  outputs: ['skip', 'flagClick'],
+})
+export class VerdocsFlag {
+  protected el: HTMLVerdocsFlagElement;
+  @Output() skip = new EventEmitter<CustomEvent<void>>();
+  @Output() flagClick = new EventEmitter<CustomEvent<void>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsFlag extends Components.VerdocsFlag {
+  /**
+   * Emitted when the "SKIP" link is clicked.
+   */
+  skip: EventEmitter<CustomEvent<void>>;
+  /**
+   * Emitted when the main flag body is clicked (e.g. to focus field).
+   */
+  flagClick: EventEmitter<CustomEvent<void>>;
 }
 
 
@@ -1517,14 +1632,14 @@ export declare interface VerdocsOrganizationCard extends Components.VerdocsOrgan
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsOtpDialog,
-  inputs: ['endpoint', 'method', 'recipient']
+  inputs: ['endpoint', 'method']
 })
 @Component({
   selector: 'verdocs-otp-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'method', 'recipient'],
+  inputs: ['endpoint', 'method'],
   outputs: ['exit', 'next'],
 })
 export class VerdocsOtpDialog {
@@ -1579,6 +1694,43 @@ export declare interface VerdocsPagination extends Components.VerdocsPagination 
    * Event fired when the selected page changes. The new page number is included in the event.
    */
   selectPage: EventEmitter<CustomEvent<{selectedPage: number}>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsPasscodeDialog,
+  inputs: ['endpoint']
+})
+@Component({
+  selector: 'verdocs-passcode-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint'],
+  outputs: ['exit', 'next'],
+})
+export class VerdocsPasscodeDialog {
+  protected el: HTMLVerdocsPasscodeDialogElement;
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<{response: IVerdocsPasscodeDialogISignerTokenResponse}>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { ISignerTokenResponse as IVerdocsPasscodeDialogISignerTokenResponse } from '@verdocs/web-sdk/components';
+
+export declare interface VerdocsPasscodeDialog extends Components.VerdocsPasscodeDialog {
+  /**
+   * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the process has completed successfully.
+   */
+  next: EventEmitter<CustomEvent<{response: IVerdocsPasscodeDialogISignerTokenResponse}>>;
 }
 
 
@@ -1942,14 +2094,14 @@ the `contactSuggestions` property.
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsSign,
-  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId']
+  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId', 'toolbarStyle']
 })
 @Component({
   selector: 'verdocs-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId'],
+  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId', 'toolbarStyle'],
   outputs: ['sdkError', 'envelopeLoaded', 'envelopeUpdated'],
 })
 export class VerdocsSign {
@@ -2064,6 +2216,51 @@ representation of the signature adopted.
   next: EventEmitter<CustomEvent<string>>;
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsSigningProgress,
+  inputs: ['fields', 'focusedField', 'mode', 'recipientFields']
+})
+@Component({
+  selector: 'verdocs-signing-progress',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['fields', 'focusedField', 'mode', 'recipientFields'],
+  outputs: ['started', 'next', 'previous', 'exit'],
+})
+export class VerdocsSigningProgress {
+  protected el: HTMLVerdocsSigningProgressElement;
+  @Output() started = new EventEmitter<CustomEvent<any>>();
+  @Output() next = new EventEmitter<CustomEvent<any>>();
+  @Output() previous = new EventEmitter<CustomEvent<any>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsSigningProgress extends Components.VerdocsSigningProgress {
+  /**
+   * Emitted when user clicks Start
+   */
+  started: EventEmitter<CustomEvent<any>>;
+  /**
+   * Emitted when user clicks Next
+   */
+  next: EventEmitter<CustomEvent<any>>;
+  /**
+   * Emitted when user clicks Previous
+   */
+  previous: EventEmitter<CustomEvent<any>>;
+  /**
+   * Emitted when user clicks Submit
    */
   exit: EventEmitter<CustomEvent<any>>;
 }
