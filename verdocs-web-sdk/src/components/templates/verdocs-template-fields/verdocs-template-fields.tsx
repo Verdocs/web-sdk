@@ -154,7 +154,7 @@ export class VerdocsTemplateFields {
 
   componentWillUpdate() {
     // If a new role was added and there were none yet so far, or the "selected" role was deleted, reset our selection
-    const roles = this.template?.roles || [];
+    const roles = [...(this.template?.roles || [])].sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
     if (!this.selectedRoleName || !roles.find(role => role && role.name === this.selectedRoleName)) {
       this.selectedRoleName = roles[0]?.name || '';
       console.log('[FIELDS] Selected new role', this.selectedRoleName);
@@ -177,7 +177,8 @@ export class VerdocsTemplateFields {
         this.loading = false;
 
         if (!this.selectedRoleName) {
-          this.selectedRoleName = template.roles?.[0]?.name || '';
+          const sorted = [...(template.roles || [])].sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
+          this.selectedRoleName = sorted[0]?.name || '';
         }
       },
     );
@@ -406,7 +407,8 @@ export class VerdocsTemplateFields {
       );
     }
 
-    const selectableRoles = (this.template?.roles || []).map(role => ({value: role.name, label: role.full_name ? `${role.name}: ${role.full_name}` : role.name}));
+    const sortedRoles = [...(this.template?.roles || [])].sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
+    const selectableRoles = sortedRoles.map(role => ({value: role.name, label: role.full_name ? `${role.name}: ${role.full_name}` : role.name}));
 
     return (
       <Host class={this.placing ? {[`placing-${this.placing}`]: true} : {}} onSubmit={() => {}}>
