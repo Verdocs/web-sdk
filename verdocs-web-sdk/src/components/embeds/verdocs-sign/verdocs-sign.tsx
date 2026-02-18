@@ -431,10 +431,15 @@ export class VerdocsSign {
     });
   }
 
+  getStartedKey() {
+    return `${this.envelopeId}:${this.recipient?.role_name || ''}`;
+  }
+
   markEnvelopeStarted() {
     const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
-    if (!startedEnvelopes.includes(this.envelopeId)) {
-      startedEnvelopes.push(this.envelopeId);
+    const key = this.getStartedKey();
+    if (!startedEnvelopes.includes(key)) {
+      startedEnvelopes.push(key);
       while (startedEnvelopes.length > 10) {
         startedEnvelopes.shift();
       }
@@ -670,7 +675,7 @@ export class VerdocsSign {
     // We never get a chance to clean them up but 10 GUIDs is tiny compared to what
     // many apps store in a user's browser.
     const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
-    const hasStarted = startedEnvelopes.includes(this.envelopeId);
+    const hasStarted = startedEnvelopes.includes(this.getStartedKey());
 
     if (this.nextSubmits) {
       this.signingProgressMode = 'completed';
@@ -1410,14 +1415,7 @@ export class VerdocsSign {
               this.showSpinner = false;
               this.adoptingSignature = false;
 
-              const startedEnvelopes = JSON.parse(localStorage.getItem('startedEnvelopes') || '[]') as string[];
-              if (!startedEnvelopes.includes(this.envelopeId)) {
-                startedEnvelopes.push(this.envelopeId);
-                while (startedEnvelopes.length > 10) {
-                  startedEnvelopes.shift();
-                }
-                localStorage.setItem('startedEnvelopes', JSON.stringify(startedEnvelopes));
-              }
+              this.markEnvelopeStarted();
 
               // Special case: if we were focusing a specific field, apply the new signature/initials to it immediately.
               // This is the "secondary flow" where the user clicks a field directly before adopting.
