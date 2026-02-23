@@ -1884,6 +1884,11 @@ export namespace Components {
      * convenience of host applications that may wish to make server calls using the
      * signer's credentials once signing is complete (e.g. to obtain copies of
      * the signed attachments.)
+     * ```js
+     * document.on('sdkError', 'verdocs-sign', (e) => {
+     *     //
+     * });
+     * ```
      * ```ts
      * <verdocs-sign
      *   envelopeId={ENVELOPE_ID}
@@ -4033,6 +4038,11 @@ declare global {
      * convenience of host applications that may wish to make server calls using the
      * signer's credentials once signing is complete (e.g. to obtain copies of
      * the signed attachments.)
+     * ```js
+     * document.on('sdkError', 'verdocs-sign', (e) => {
+     *     //
+     * });
+     * ```
      * ```ts
      * <verdocs-sign
      *   envelopeId={ENVELOPE_ID}
@@ -6913,6 +6923,11 @@ declare namespace LocalJSX {
      * convenience of host applications that may wish to make server calls using the
      * signer's credentials once signing is complete (e.g. to obtain copies of
      * the signed attachments.)
+     * ```js
+     * document.on('sdkError', 'verdocs-sign', (e) => {
+     *     //
+     * });
+     * ```
      * ```ts
      * <verdocs-sign
      *   envelopeId={ENVELOPE_ID}
@@ -8339,6 +8354,11 @@ declare module "@stencil/core" {
              * convenience of host applications that may wish to make server calls using the
              * signer's credentials once signing is complete (e.g. to obtain copies of
              * the signed attachments.)
+             * ```js
+             * document.on('sdkError', 'verdocs-sign', (e) => {
+             *     //
+             * });
+             * ```
              * ```ts
              * <verdocs-sign
              *   envelopeId={ENVELOPE_ID}

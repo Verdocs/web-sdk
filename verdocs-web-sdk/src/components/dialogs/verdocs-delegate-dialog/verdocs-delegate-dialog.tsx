@@ -132,7 +132,7 @@ export class VerdocsDelegateDialog {
 
             <div>
               <label htmlFor="verdocs-delegate-phone" class="verdocs-form-label">
-                Phone Number*
+                Phone Number
               </label>
               <input
                 type="text"

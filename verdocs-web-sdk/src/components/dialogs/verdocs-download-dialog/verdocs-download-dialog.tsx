@@ -58,7 +58,7 @@ export class VerdocsDownloadDialog {
   }
 
   render() {
-    const attachments = this.documents.filter(d => d.type === 'attachment').sort((a, b) => a.order - b.order);
+    const attachments = this.documents.filter(d => d.type === 'attachment').sort((a, b) => (a.order !== b.order ? a.order - b.order : a.created_at.localeCompare(b.created_at)));
     const hasCertificateDoc = this.documents.some(d => d.type === 'certificate') || this.hasCertificate;
     const canDownloadFinals = this.signed && hasCertificateDoc;
 

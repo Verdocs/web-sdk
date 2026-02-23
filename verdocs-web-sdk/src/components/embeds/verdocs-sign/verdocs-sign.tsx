@@ -34,6 +34,12 @@ const ToolbarPrintIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns=
  * signer's credentials once signing is complete (e.g. to obtain copies of
  * the signed attachments.)
  *
+ * ```js
+ * document.on('sdkError', 'verdocs-sign', (e) => {
+ *     //
+ * });
+ * ```
+ *
  * ```ts
  * <verdocs-sign
  *   envelopeId={ENVELOPE_ID}
@@ -244,8 +250,7 @@ export class VerdocsSign {
   processAuthResponse(response: ISignerTokenResponse) {
     const {envelope, recipient} = response;
 
-    // TODO: Temporary fix for multi-doc ordering until the server-side ordering is fixed
-    envelope.documents?.sort((a, b) => (a.order !== b.order ? b.order - a.order : b.created_at.localeCompare(a.created_at)));
+    envelope.documents?.sort((a, b) => (a.order !== b.order ? a.order - b.order : a.created_at.localeCompare(b.created_at)));
 
     const {auth_step} = recipient;
     this.recipient = recipient;
@@ -474,6 +479,10 @@ export class VerdocsSign {
   }
 
   async handleFieldChange(field: IEnvelopeField, e: any) {
+    if (!e.target) {
+      return;
+    }
+
     const {value, checked} = e.target;
 
     switch (field.type as any) {
