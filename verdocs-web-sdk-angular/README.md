@@ -20,3 +20,5 @@ This is an example repo of building plugins.
 ## Step 4.
 
 - Run build on this package.
+
+> INIT
