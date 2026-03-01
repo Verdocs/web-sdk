@@ -8,35 +8,19 @@ verdocs-download-dialog {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    .polling-indicator {
-      margin: -6px 24px 0 0;
-      padding: 0 24px;
-      color: #9ca3af;
-
-      .spinner {
-        display: flex;
-        animation: rotate 2s linear infinite;
-
-        svg {
-          width: 20px;
-          height: 20px;
-        }
-      }
-    }
   }
 
   .content {
     display: flex;
     flex-direction: column;
-    gap: 15px; // Reduced slightly
-    padding: 0 24px 20px 24px; // Adjusted top padding
+    gap: 15px;
+    padding: 0 24px 20px 24px;
   }
 
   .download-option {
     display: flex;
     align-items: center;
-    padding: 12px 15px; // Reduced padding slightly
+    padding: 12px 15px;
     border: 1px solid #e5e7eb;
     border-radius: 6px;
     cursor: pointer;
@@ -64,7 +48,7 @@ verdocs-download-dialog {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px; // Reduced slightly
+    width: 36px;
     height: 36px;
     background-color: #f3f4f6;
     border-radius: 50%;
@@ -105,8 +89,10 @@ verdocs-download-dialog {
       color: #10b981;
     }
 
-    .unsigned {
+    .spinner-inline {
+      display: flex;
       color: #9ca3af;
+      animation: rotate 2s linear infinite;
     }
 
     svg {
@@ -120,10 +106,6 @@ verdocs-download-dialog {
     color: #6b7280;
     font-style: italic;
     padding: 0 4px;
-  }
-
-  .arrow {
-    color: #9ca3af;
   }
 }
 

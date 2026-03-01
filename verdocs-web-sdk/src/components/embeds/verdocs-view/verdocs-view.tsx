@@ -417,9 +417,7 @@ export class VerdocsView {
               this.showDownloadDialog = false;
               this.stopPolling();
             }}
-            onNext={async e => {
-              this.showDownloadDialog = false;
-              this.stopPolling();
+            onDownload={async e => {
               const {action, documentId} = e.detail as any;
               console.log('[VIEW] Download action selected:', action, documentId);
 

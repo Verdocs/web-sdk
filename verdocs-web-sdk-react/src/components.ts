@@ -278,7 +278,7 @@ export const VerdocsDisclosureDialog: StencilReactComponent<VerdocsDisclosureDia
 });
 
 export type VerdocsDownloadDialogEvents = {
-    onNext: EventName<CustomEvent<{ action: 'document' | 'certificate' | 'zip'; documentId?: string }>>,
+    onDownload: EventName<CustomEvent<{ action: 'document' | 'certificate' | 'zip'; documentId?: string }>>,
     onExit: EventName<CustomEvent<any>>
 };
 
@@ -288,7 +288,7 @@ export const VerdocsDownloadDialog: StencilReactComponent<VerdocsDownloadDialogE
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
     events: {
-        onNext: 'next',
+        onDownload: 'download',
         onExit: 'exit'
     } as VerdocsDownloadDialogEvents,
     defineCustomElement: defineVerdocsDownloadDialog

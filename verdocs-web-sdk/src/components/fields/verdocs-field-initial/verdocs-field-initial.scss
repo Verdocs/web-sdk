@@ -94,6 +94,10 @@ verdocs-field-initial {
     &:hover .overlay {
       display: flex;
     }
+
+    &.suppress-overlay:hover .overlay {
+      display: none;
+    }
   }
 
   &.disabled .initial-container {

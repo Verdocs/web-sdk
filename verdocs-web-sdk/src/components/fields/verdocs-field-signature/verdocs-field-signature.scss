@@ -94,6 +94,10 @@ verdocs-field-signature {
     &:hover .overlay {
       display: flex;
     }
+
+    &.suppress-overlay:hover .overlay {
+      display: none;
+    }
   }
 
   &.disabled .signature-container {

@@ -323,8 +323,9 @@ export class VerdocsTemplateRoles {
       phone: '',
       type: 'signer',
       delegator: false,
+      name_locked: false,
       // auth_method: null,
-    })
+    } as any)
       .then(async role => {
         console.log('[ROLES] Created role', role);
         // const newTemplate = JSON.parse(JSON.stringify(this.template));

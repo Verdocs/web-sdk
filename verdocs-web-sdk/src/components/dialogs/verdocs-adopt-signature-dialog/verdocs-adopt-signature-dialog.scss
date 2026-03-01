@@ -21,6 +21,12 @@ verdocs-adopt-signature-dialog {
     flex-direction: column;
   }
 
+  .name-locked-hint {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
   verdocs-text-input .input-label {
     color: #242424;
     font-size: 13px;

@@ -52,6 +52,11 @@ export namespace Components {
           * @default ''
          */
         "name": string;
+        /**
+          * If true, the name fields will be read-only. Used when the sender has locked the recipient's name.
+          * @default false
+         */
+        "nameLocked": boolean;
     }
     /**
      * Display an authentication dialog that allows the user to login or sign up. If the user is
@@ -3063,7 +3068,7 @@ declare global {
         new (): HTMLVerdocsDisclosureDialogElement;
     };
     interface HTMLVerdocsDownloadDialogElementEventMap {
-        "next": {action: 'document' | 'certificate' | 'zip'; documentId?: string};
+        "download": {action: 'document' | 'certificate' | 'zip'; documentId?: string};
         "exit": any;
     }
     interface HTMLVerdocsDownloadDialogElement extends Components.VerdocsDownloadDialog, HTMLStencilElement {
@@ -4715,6 +4720,11 @@ declare namespace LocalJSX {
          */
         "name"?: string;
         /**
+          * If true, the name fields will be read-only. Used when the sender has locked the recipient's name.
+          * @default false
+         */
+        "nameLocked"?: boolean;
+        /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
         "onExit"?: (event: VerdocsAdoptSignatureDialogCustomEvent<any>) => void;
@@ -5109,13 +5119,13 @@ declare namespace LocalJSX {
          */
         "hasCertificate"?: boolean;
         /**
+          * Event fired when an option is selected.
+         */
+        "onDownload"?: (event: VerdocsDownloadDialogCustomEvent<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>) => void;
+        /**
           * Event fired when Cancel is pressed or background is clicked.
          */
         "onExit"?: (event: VerdocsDownloadDialogCustomEvent<any>) => void;
-        /**
-          * Event fired when an option is selected.
-         */
-        "onNext"?: (event: VerdocsDownloadDialogCustomEvent<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>) => void;
         /**
           * If true, we are currently polling the server for updates.
           * @default false

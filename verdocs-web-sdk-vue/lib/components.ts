@@ -10,6 +10,7 @@ import type { JSX } from '@verdocs/web-sdk';
 
 export const VerdocsAdoptSignatureDialog: StencilVueComponent<JSX.VerdocsAdoptSignatureDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsAdoptSignatureDialog>('verdocs-adopt-signature-dialog', undefined, [
   'name',
+  'nameLocked',
   'next',
   'exit'
 ], [
@@ -146,10 +147,10 @@ export const VerdocsDownloadDialog: StencilVueComponent<JSX.VerdocsDownloadDialo
   'polling',
   'documents',
   'hasCertificate',
-  'next',
+  'download',
   'exit'
 ], [
-  'next',
+  'download',
   'exit'
 ]);
 

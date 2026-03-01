@@ -91,14 +91,14 @@ import { defineCustomElement as defineVerdocsUploadDialog } from '@verdocs/web-s
 import { defineCustomElement as defineVerdocsView } from '@verdocs/web-sdk/components/verdocs-view.js';
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsAdoptSignatureDialog,
-  inputs: ['name']
+  inputs: ['name', 'nameLocked']
 })
 @Component({
   selector: 'verdocs-adopt-signature-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['name'],
+  inputs: ['name', 'nameLocked'],
   outputs: ['next', 'exit'],
 })
 export class VerdocsAdoptSignatureDialog {
@@ -510,11 +510,11 @@ export declare interface VerdocsDisclosureDialog extends Components.VerdocsDiscl
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['documents', 'hasCertificate', 'polling', 'signed'],
-  outputs: ['next', 'exit'],
+  outputs: ['download', 'exit'],
 })
 export class VerdocsDownloadDialog {
   protected el: HTMLVerdocsDownloadDialogElement;
-  @Output() next = new EventEmitter<CustomEvent<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>>();
+  @Output() download = new EventEmitter<CustomEvent<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>>();
   @Output() exit = new EventEmitter<CustomEvent<any>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -527,7 +527,7 @@ export declare interface VerdocsDownloadDialog extends Components.VerdocsDownloa
   /**
    * Event fired when an option is selected.
    */
-  next: EventEmitter<CustomEvent<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>>;
+  download: EventEmitter<CustomEvent<{action: 'document' | 'certificate' | 'zip'; documentId?: string}>>;
   /**
    * Event fired when Cancel is pressed or background is clicked.
    */

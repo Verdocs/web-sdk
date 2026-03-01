@@ -21,6 +21,11 @@ export class VerdocsAdoptSignatureDialog {
   @Prop() name: string = '';
 
   /**
+   * If true, the name fields will be read-only. Used when the sender has locked the recipient's name.
+   */
+  @Prop() nameLocked: boolean = false;
+
+  /**
    * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string
    * representation of the signature adopted.
    */
@@ -569,7 +574,14 @@ export class VerdocsAdoptSignatureDialog {
           <div style={{fontWeight: '300', color: '#242424', fontSize: '13px'}}>Confirm your name, initials, and signature.</div>
 
           <div class={{type: true, active: this.mode === 'type'}}>
-            <verdocs-text-input label="Full Name" value={this.enteredName} onInput={e => this.handleNameChange(e)} onClick={e => e.stopPropagation()} />
+            <verdocs-text-input
+              label="Full Name"
+              value={this.enteredName}
+              disabled={this.nameLocked}
+              onInput={e => this.handleNameChange(e)}
+              onClick={e => e.stopPropagation()}
+            />
+            {this.nameLocked && <div class="name-locked-hint">Your name has been set by the sender and cannot be changed.</div>}
           </div>
 
           <div style={{fontWeight: '400', color: '#242424', fontSize: '13px'}}>Select a signature style</div>

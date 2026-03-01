@@ -16,6 +16,7 @@ export interface IContactSelectEvent {
   phone: string;
   message: string;
   delegator: boolean;
+  name_locked: boolean;
   auth_methods: TRecipientAuthMethod[];
   passcode: string;
   address: string;
@@ -89,6 +90,7 @@ export class VerdocsContactPicker {
   @State() showSuggestions: boolean = false;
   @State() showMessage: boolean = false;
   @State() delegator: boolean = false;
+  @State() name_locked: boolean = false;
   @State() auth_methods: TRecipientAuthMethod[] = [];
   @State() passcode: string = '';
 
@@ -113,7 +115,9 @@ export class VerdocsContactPicker {
 
       this.email = this.templateRole.email || '';
       this.phone = this.templateRole.phone || '';
+      // delegator and name_locked are mutually exclusive; delegator takes precedence if both are somehow set
       this.delegator = this.templateRole.delegator || false;
+      this.name_locked = this.delegator ? false : (this.templateRole.name_locked || false);
       this.message = this.templateRole.message || '';
       this.showMessage = this.message !== '';
       this.auth_methods = this.templateRole.auth_methods || [];
@@ -164,6 +168,7 @@ export class VerdocsContactPicker {
       phone: this.phone,
       message: this.message,
       delegator: this.delegator,
+      name_locked: this.name_locked,
       auth_methods: this.auth_methods,
       passcode: this.passcode,
       address: this.address,
@@ -372,18 +377,33 @@ export class VerdocsContactPicker {
         </Fragment>
 
         <div class="row pin-code">
-          <label>Delegation:</label>
+          <label style={{marginTop: '6px'}}>Options:</label>
           <div>
             <div class="option">
               <verdocs-checkbox
                 size="small"
                 id="verdocs-delegator"
                 checked={this.delegator}
+                disabled={this.name_locked}
                 onInput={(e: any) => {
                   this.delegator = e.target.checked;
+                  if (this.delegator) this.name_locked = false;
                 }}
               />
               <label htmlFor="verdocs-delegator">May delegate signing</label>
+            </div>
+            <div class="option">
+              <verdocs-checkbox
+                size="small"
+                id="verdocs-name-locked"
+                checked={this.name_locked}
+                disabled={this.delegator}
+                onInput={(e: any) => {
+                  this.name_locked = e.target.checked;
+                  if (this.name_locked) this.delegator = false;
+                }}
+              />
+              <label htmlFor="verdocs-name-locked">Name locked</label>
             </div>
           </div>
         </div>

@@ -124,6 +124,7 @@ export class VerdocsFieldInitial {
 
   @State() showingProperties?: boolean = false;
   @State() focused?: boolean = false;
+  @State() suppressOverlay = false;
 
   @Method() async focusField() {
     this.el.focus();
@@ -257,7 +258,7 @@ export class VerdocsFieldInitial {
         {label && <label>{label}</label>}
 
         {base64 ? (
-          <div class="initial-container">
+          <div class={{'initial-container': true, 'suppress-overlay': this.suppressOverlay}} onMouseLeave={() => (this.suppressOverlay = false)}>
             <img src={base64} alt="Initial" />
             <div class="overlay">
               <button
@@ -291,6 +292,7 @@ export class VerdocsFieldInitial {
               // If we already have an initial ID, use it immediately
               if (this.initialid) {
                 console.log('[INITIAL] Reusing existing initials', this.initialid);
+                this.suppressOverlay = true;
                 this.fieldChange?.emit(this.initialid);
               } else {
                 this.adopt.emit();

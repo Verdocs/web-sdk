@@ -46,7 +46,7 @@ verdocs-contact-picker {
     .pin-code {
       gap: 8px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       flex-direction: row;
 
       > input {

@@ -148,7 +148,7 @@ export class VerdocsSign {
   @State() envelope: IEnvelope | null = null;
   @State() zoomLevel: 'normal' | 'zoom1' | 'zoom2' = 'normal';
   @State() signingProgressMode: 'start' | 'signing' | 'completed' = 'start';
-  @State() polling = false;
+  @State() polling = true;
 
   private renderedPages: Record<string, IDocumentPageInfo> = {};
   private observer: IntersectionObserver;
@@ -1404,6 +1404,7 @@ export class VerdocsSign {
         {this.adoptingSignature && (
           <verdocs-adopt-signature-dialog
             name={formatFullName(this.recipient)}
+            nameLocked={!!this.recipient?.name_locked}
             onNext={async e => {
               console.log('[SIGN] Adopting signature/initials block', e.detail);
 
@@ -1471,9 +1472,7 @@ export class VerdocsSign {
               this.showDownloadDialog = false;
               this.stopPolling();
             }}
-            onNext={async e => {
-              this.showDownloadDialog = false;
-              this.stopPolling();
+            onDownload={async e => {
               const {action, documentId} = e.detail as any;
               console.log('[SIGN] Download action selected:', action, documentId);
 

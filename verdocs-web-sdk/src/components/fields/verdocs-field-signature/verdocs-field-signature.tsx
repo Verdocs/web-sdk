@@ -112,6 +112,7 @@ export class VerdocsFieldSignature {
 
   @State() showingProperties?: boolean = false;
   @State() focused = false;
+  @State() suppressOverlay = false;
 
   @Listen('blur')
   handleBlur() {
@@ -254,7 +255,7 @@ export class VerdocsFieldSignature {
         {label && <label>{label}</label>}
 
         {base64 ? (
-          <div class="signature-container">
+          <div class={{'signature-container': true, 'suppress-overlay': this.suppressOverlay}} onMouseLeave={() => (this.suppressOverlay = false)}>
             <img src={base64} alt="Signature" />
             <div class="overlay">
               <button
@@ -288,6 +289,7 @@ export class VerdocsFieldSignature {
               // If we already have a signature ID, use it immediately
               if (this.signatureid) {
                 console.log('[SIGNATURE] Reusing existing signature', this.signatureid);
+                this.suppressOverlay = true;
                 this.fieldChange?.emit(this.signatureid);
               } else {
                 this.adopt.emit();
