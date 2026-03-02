@@ -9,7 +9,7 @@
 
 import type { EventName, StencilReactComponent } from '@stencil/react-output-target/runtime';
 import { createComponent } from '@stencil/react-output-target/runtime';
-import { type IAuthStatus, type IColumn, type IContactSearchEvent, type IContactSelectEvent, type ICreateEnvelopeRecipientFromTemplate, type IDocumentPageInfo, type IEnvelope, type IFilterOption, type IMenuOption, type IRecipient, type IRole, type ISearchEvent, type ISelectedFile, type ISignerTokenResponse, type ITab, type ITemplate, type ITemplateField, type SDKError, type TContentType, type TEnvelopeStatus, type TVerdocsBuildStep, type VerdocsAdoptSignatureDialogCustomEvent, type VerdocsAuthCustomEvent, type VerdocsBuildCustomEvent, type VerdocsContactPickerCustomEvent, type VerdocsDelegateDialogCustomEvent, type VerdocsDialogCustomEvent, type VerdocsDisclosureDialogCustomEvent, type VerdocsDownloadDialogCustomEvent, type VerdocsDropdownCustomEvent, type VerdocsEndpoint, type VerdocsEnvelopeDocumentPageCustomEvent, type VerdocsEnvelopeRecipientLinkCustomEvent, type VerdocsEnvelopeRecipientSummaryCustomEvent, type VerdocsEnvelopeSidebarCustomEvent, type VerdocsEnvelopeUpdateRecipientCustomEvent, type VerdocsEnvelopesListCustomEvent, type VerdocsFieldAttachmentCustomEvent, type VerdocsFieldCheckboxCustomEvent, type VerdocsFieldDateCustomEvent, type VerdocsFieldDropdownCustomEvent, type VerdocsFieldInitialCustomEvent, type VerdocsFieldPaymentCustomEvent, type VerdocsFieldRadioCustomEvent, type VerdocsFieldSignatureCustomEvent, type VerdocsFieldTextareaCustomEvent, type VerdocsFieldTextboxCustomEvent, type VerdocsFieldTimestampCustomEvent, type VerdocsFileChooserCustomEvent, type VerdocsFlagCustomEvent, type VerdocsInitialDialogCustomEvent, type VerdocsKbaDialogCustomEvent, type VerdocsMenuPanelCustomEvent, type VerdocsMultiselectCustomEvent, type VerdocsOkDialogCustomEvent, type VerdocsOtpDialogCustomEvent, type VerdocsPaginationCustomEvent, type VerdocsPasscodeDialogCustomEvent, type VerdocsPortalCustomEvent, type VerdocsPreviewCustomEvent, type VerdocsQuestionDialogCustomEvent, type VerdocsQuickFilterCustomEvent, type VerdocsQuickFunctionsCustomEvent, type VerdocsSearchBoxCustomEvent, type VerdocsSendCustomEvent, type VerdocsSignCustomEvent, type VerdocsSignFooterCustomEvent, type VerdocsSignatureDialogCustomEvent, type VerdocsSigningProgressCustomEvent, type VerdocsSwitchCustomEvent, type VerdocsTableCustomEvent, type VerdocsTabsCustomEvent, type VerdocsTemplateAttachmentsCustomEvent, type VerdocsTemplateBuildTabsCustomEvent, type VerdocsTemplateCreateCustomEvent, type VerdocsTemplateDocumentPageCustomEvent, type VerdocsTemplateFieldPropertiesCustomEvent, type VerdocsTemplateFieldsCustomEvent, type VerdocsTemplateRolePropertiesCustomEvent, type VerdocsTemplateRolesCustomEvent, type VerdocsTemplateSettingsCustomEvent, type VerdocsTemplateStarCustomEvent, type VerdocsTemplatesListCustomEvent, type VerdocsToggleButtonCustomEvent, type VerdocsUploadDialogCustomEvent, type VerdocsViewCustomEvent } from "@verdocs/web-sdk";
+import { type IAuthStatus, type IColumn, type IContactSearchEvent, type IContactSelectEvent, type ICreateEnvelopeRecipientFromTemplate, type IDocumentPageInfo, type IEnvelope, type IFilterOption, type IMenuOption, type IRecipient, type IRole, type ISearchEvent, type ISelectedFile, type ISignerTokenResponse, type ITab, type ITemplate, type ITemplateField, type SDKError, type TContentType, type TEnvelopeStatus, type TVerdocsBuildStep, type VerdocsAuthCustomEvent, type VerdocsBuildCustomEvent, type VerdocsContactPickerCustomEvent, type VerdocsDropdownCustomEvent, type VerdocsEndpoint, type VerdocsEnvelopeDocumentPageCustomEvent, type VerdocsEnvelopeRecipientLinkCustomEvent, type VerdocsEnvelopeRecipientSummaryCustomEvent, type VerdocsEnvelopeSidebarCustomEvent, type VerdocsEnvelopeUpdateRecipientCustomEvent, type VerdocsEnvelopesListCustomEvent, type VerdocsFieldAttachmentCustomEvent, type VerdocsFieldCheckboxCustomEvent, type VerdocsFieldDateCustomEvent, type VerdocsFieldDropdownCustomEvent, type VerdocsFieldInitialCustomEvent, type VerdocsFieldPaymentCustomEvent, type VerdocsFieldRadioCustomEvent, type VerdocsFieldSignatureCustomEvent, type VerdocsFieldTextareaCustomEvent, type VerdocsFieldTextboxCustomEvent, type VerdocsFieldTimestampCustomEvent, type VerdocsFileChooserCustomEvent, type VerdocsKbaDialogCustomEvent, type VerdocsOtpDialogCustomEvent, type VerdocsPasscodeDialogCustomEvent, type VerdocsPreviewCustomEvent, type VerdocsQuickFilterCustomEvent, type VerdocsSearchBoxCustomEvent, type VerdocsSendCustomEvent, type VerdocsSignCustomEvent, type VerdocsSignFooterCustomEvent, type VerdocsTableCustomEvent, type VerdocsTabsCustomEvent, type VerdocsTemplateAttachmentsCustomEvent, type VerdocsTemplateBuildTabsCustomEvent, type VerdocsTemplateCreateCustomEvent, type VerdocsTemplateDocumentPageCustomEvent, type VerdocsTemplateFieldPropertiesCustomEvent, type VerdocsTemplateFieldsCustomEvent, type VerdocsTemplateRolePropertiesCustomEvent, type VerdocsTemplateRolesCustomEvent, type VerdocsTemplateSettingsCustomEvent, type VerdocsTemplateStarCustomEvent, type VerdocsTemplatesListCustomEvent, type VerdocsUploadDialogCustomEvent, type VerdocsViewCustomEvent } from "@verdocs/web-sdk";
 import { VerdocsAdoptSignatureDialog as VerdocsAdoptSignatureDialogElement, defineCustomElement as defineVerdocsAdoptSignatureDialog } from "@verdocs/web-sdk/dist/components/verdocs-adopt-signature-dialog.js";
 import { VerdocsAuth as VerdocsAuthElement, defineCustomElement as defineVerdocsAuth } from "@verdocs/web-sdk/dist/components/verdocs-auth.js";
 import { VerdocsBuild as VerdocsBuildElement, defineCustomElement as defineVerdocsBuild } from "@verdocs/web-sdk/dist/components/verdocs-build.js";
@@ -96,8 +96,8 @@ import { VerdocsView as VerdocsViewElement, defineCustomElement as defineVerdocs
 import React from 'react';
 
 export type VerdocsAdoptSignatureDialogEvents = {
-    onNext: EventName<VerdocsAdoptSignatureDialogCustomEvent<{ signature: string; initials: string }>>,
-    onExit: EventName<VerdocsAdoptSignatureDialogCustomEvent<any>>
+    onNext: EventName<CustomEvent<{ signature: string; initials: string }>>,
+    onExit: EventName<CustomEvent<any>>
 };
 
 export const VerdocsAdoptSignatureDialog: StencilReactComponent<VerdocsAdoptSignatureDialogElement, VerdocsAdoptSignatureDialogEvents> = /*@__PURE__*/ createComponent<VerdocsAdoptSignatureDialogElement, VerdocsAdoptSignatureDialogEvents>({
@@ -130,7 +130,7 @@ export const VerdocsAuth: StencilReactComponent<VerdocsAuthElement, VerdocsAuthE
 });
 
 export type VerdocsBuildEvents = {
-    onCancel: EventName<VerdocsBuildCustomEvent<any>>,
+    onCancel: EventName<CustomEvent<any>>,
     onSdkError: EventName<VerdocsBuildCustomEvent<SDKError>>,
     onStepChanged: EventName<VerdocsBuildCustomEvent<TVerdocsBuildStep>>,
     onSend: EventName<VerdocsBuildCustomEvent<{ recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string }>>,
@@ -202,7 +202,7 @@ export const VerdocsComponentError: StencilReactComponent<VerdocsComponentErrorE
 
 export type VerdocsContactPickerEvents = {
     onSearchContacts: EventName<VerdocsContactPickerCustomEvent<IContactSearchEvent>>,
-    onExit: EventName<VerdocsContactPickerCustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onNext: EventName<VerdocsContactPickerCustomEvent<IContactSelectEvent>>
 };
 
@@ -231,8 +231,8 @@ export const VerdocsDateInput: StencilReactComponent<VerdocsDateInputElement, Ve
 });
 
 export type VerdocsDelegateDialogEvents = {
-    onExit: EventName<VerdocsDelegateDialogCustomEvent<any>>,
-    onNext: EventName<VerdocsDelegateDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>
+    onExit: EventName<CustomEvent<any>>,
+    onNext: EventName<CustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>
 };
 
 export const VerdocsDelegateDialog: StencilReactComponent<VerdocsDelegateDialogElement, VerdocsDelegateDialogEvents> = /*@__PURE__*/ createComponent<VerdocsDelegateDialogElement, VerdocsDelegateDialogEvents>({
@@ -247,7 +247,7 @@ export const VerdocsDelegateDialog: StencilReactComponent<VerdocsDelegateDialogE
     defineCustomElement: defineVerdocsDelegateDialog
 });
 
-export type VerdocsDialogEvents = { onExit: EventName<VerdocsDialogCustomEvent<any>> };
+export type VerdocsDialogEvents = { onExit: EventName<CustomEvent<any>> };
 
 export const VerdocsDialog: StencilReactComponent<VerdocsDialogElement, VerdocsDialogEvents> = /*@__PURE__*/ createComponent<VerdocsDialogElement, VerdocsDialogEvents>({
     tagName: 'verdocs-dialog',
@@ -259,9 +259,9 @@ export const VerdocsDialog: StencilReactComponent<VerdocsDialogElement, VerdocsD
 });
 
 export type VerdocsDisclosureDialogEvents = {
-    onDecline: EventName<VerdocsDisclosureDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>,
-    onDelegate: EventName<VerdocsDisclosureDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>,
-    onAccept: EventName<VerdocsDisclosureDialogCustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>
+    onDecline: EventName<CustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>,
+    onDelegate: EventName<CustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>,
+    onAccept: EventName<CustomEvent<{ first_name: string; last_name: string; email: string; phone: string; message: string }>>
 };
 
 export const VerdocsDisclosureDialog: StencilReactComponent<VerdocsDisclosureDialogElement, VerdocsDisclosureDialogEvents> = /*@__PURE__*/ createComponent<VerdocsDisclosureDialogElement, VerdocsDisclosureDialogEvents>({
@@ -278,8 +278,8 @@ export const VerdocsDisclosureDialog: StencilReactComponent<VerdocsDisclosureDia
 });
 
 export type VerdocsDownloadDialogEvents = {
-    onDownload: EventName<VerdocsDownloadDialogCustomEvent<{ action: 'document' | 'certificate' | 'zip'; documentId?: string }>>,
-    onExit: EventName<VerdocsDownloadDialogCustomEvent<any>>
+    onDownload: EventName<CustomEvent<{ action: 'document' | 'certificate' | 'zip'; documentId?: string }>>,
+    onExit: EventName<CustomEvent<any>>
 };
 
 export const VerdocsDownloadDialog: StencilReactComponent<VerdocsDownloadDialogElement, VerdocsDownloadDialogEvents> = /*@__PURE__*/ createComponent<VerdocsDownloadDialogElement, VerdocsDownloadDialogEvents>({
@@ -357,7 +357,7 @@ export const VerdocsEnvelopeRecipientSummary: StencilReactComponent<VerdocsEnvel
 export type VerdocsEnvelopeSidebarEvents = {
     onSdkError: EventName<VerdocsEnvelopeSidebarCustomEvent<SDKError>>,
     onEnvelopeUpdated: EventName<VerdocsEnvelopeSidebarCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string }>>,
-    onToggle: EventName<VerdocsEnvelopeSidebarCustomEvent<{ open: boolean }>>,
+    onToggle: EventName<CustomEvent<{ open: boolean }>>,
     onAnother: EventName<VerdocsEnvelopeSidebarCustomEvent<{ envelope: IEnvelope }>>
 };
 
@@ -393,10 +393,10 @@ export const VerdocsEnvelopeUpdateRecipient: StencilReactComponent<VerdocsEnvelo
 });
 
 export type VerdocsEnvelopesListEvents = {
-    onChangeView: EventName<VerdocsEnvelopesListCustomEvent<'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting'>>,
+    onChangeView: EventName<CustomEvent<'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting'>>,
     onChangeStatus: EventName<VerdocsEnvelopesListCustomEvent<TEnvelopeStatus | 'all'>>,
-    onChangeSort: EventName<VerdocsEnvelopesListCustomEvent<'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status'>>,
-    onChangeMatch: EventName<VerdocsEnvelopesListCustomEvent<string>>,
+    onChangeSort: EventName<CustomEvent<'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status'>>,
+    onChangeMatch: EventName<CustomEvent<string>>,
     onSdkError: EventName<VerdocsEnvelopesListCustomEvent<SDKError>>,
     onViewEnvelope: EventName<VerdocsEnvelopesListCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope }>>,
     onFinishEnvelope: EventName<VerdocsEnvelopesListCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope }>>
@@ -422,7 +422,7 @@ export const VerdocsEnvelopesList: StencilReactComponent<VerdocsEnvelopesListEle
 export type VerdocsFieldAttachmentEvents = {
     onSettingsChanged: EventName<VerdocsFieldAttachmentCustomEvent<{ fieldName: string; field: ITemplateField }>>,
     onAttached: EventName<VerdocsFieldAttachmentCustomEvent<ISelectedFile>>,
-    onDeleted: EventName<VerdocsFieldAttachmentCustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldAttachment: StencilReactComponent<VerdocsFieldAttachmentElement, VerdocsFieldAttachmentEvents> = /*@__PURE__*/ createComponent<VerdocsFieldAttachmentElement, VerdocsFieldAttachmentEvents>({
@@ -440,7 +440,7 @@ export const VerdocsFieldAttachment: StencilReactComponent<VerdocsFieldAttachmen
 
 export type VerdocsFieldCheckboxEvents = {
     onSettingsChanged: EventName<VerdocsFieldCheckboxCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<VerdocsFieldCheckboxCustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldCheckbox: StencilReactComponent<VerdocsFieldCheckboxElement, VerdocsFieldCheckboxEvents> = /*@__PURE__*/ createComponent<VerdocsFieldCheckboxElement, VerdocsFieldCheckboxEvents>({
@@ -456,9 +456,9 @@ export const VerdocsFieldCheckbox: StencilReactComponent<VerdocsFieldCheckboxEle
 });
 
 export type VerdocsFieldDateEvents = {
-    onSettingsPress: EventName<VerdocsFieldDateCustomEvent<any>>,
+    onSettingsPress: EventName<CustomEvent<any>>,
     onSettingsChanged: EventName<VerdocsFieldDateCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<VerdocsFieldDateCustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldDate: StencilReactComponent<VerdocsFieldDateElement, VerdocsFieldDateEvents> = /*@__PURE__*/ createComponent<VerdocsFieldDateElement, VerdocsFieldDateEvents>({
@@ -475,9 +475,9 @@ export const VerdocsFieldDate: StencilReactComponent<VerdocsFieldDateElement, Ve
 });
 
 export type VerdocsFieldDropdownEvents = {
-    onFieldChange: EventName<VerdocsFieldDropdownCustomEvent<string>>,
+    onFieldChange: EventName<CustomEvent<string>>,
     onSettingsChanged: EventName<VerdocsFieldDropdownCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<VerdocsFieldDropdownCustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldDropdown: StencilReactComponent<VerdocsFieldDropdownElement, VerdocsFieldDropdownEvents> = /*@__PURE__*/ createComponent<VerdocsFieldDropdownElement, VerdocsFieldDropdownEvents>({
@@ -494,12 +494,12 @@ export const VerdocsFieldDropdown: StencilReactComponent<VerdocsFieldDropdownEle
 });
 
 export type VerdocsFieldInitialEvents = {
-    onAdopt: EventName<VerdocsFieldInitialCustomEvent<string>>,
-    onExit: EventName<VerdocsFieldInitialCustomEvent<any>>,
-    onFieldChange: EventName<VerdocsFieldInitialCustomEvent<string>>,
+    onAdopt: EventName<CustomEvent<string>>,
+    onExit: EventName<CustomEvent<any>>,
+    onFieldChange: EventName<CustomEvent<string>>,
     onSettingsChanged: EventName<VerdocsFieldInitialCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onSettingsPress: EventName<VerdocsFieldInitialCustomEvent<any>>,
-    onDeleted: EventName<VerdocsFieldInitialCustomEvent<{ fieldName: string }>>
+    onSettingsPress: EventName<CustomEvent<any>>,
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldInitial: StencilReactComponent<VerdocsFieldInitialElement, VerdocsFieldInitialEvents> = /*@__PURE__*/ createComponent<VerdocsFieldInitialElement, VerdocsFieldInitialEvents>({
@@ -520,7 +520,7 @@ export const VerdocsFieldInitial: StencilReactComponent<VerdocsFieldInitialEleme
 
 export type VerdocsFieldPaymentEvents = {
     onSettingsChanged: EventName<VerdocsFieldPaymentCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<VerdocsFieldPaymentCustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldPayment: StencilReactComponent<VerdocsFieldPaymentElement, VerdocsFieldPaymentEvents> = /*@__PURE__*/ createComponent<VerdocsFieldPaymentElement, VerdocsFieldPaymentEvents>({
@@ -537,7 +537,7 @@ export const VerdocsFieldPayment: StencilReactComponent<VerdocsFieldPaymentEleme
 
 export type VerdocsFieldRadioEvents = {
     onSettingsChanged: EventName<VerdocsFieldRadioCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<VerdocsFieldRadioCustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldRadio: StencilReactComponent<VerdocsFieldRadioElement, VerdocsFieldRadioEvents> = /*@__PURE__*/ createComponent<VerdocsFieldRadioElement, VerdocsFieldRadioEvents>({
@@ -553,11 +553,11 @@ export const VerdocsFieldRadio: StencilReactComponent<VerdocsFieldRadioElement, 
 });
 
 export type VerdocsFieldSignatureEvents = {
-    onFieldChange: EventName<VerdocsFieldSignatureCustomEvent<string>>,
-    onSettingsPress: EventName<VerdocsFieldSignatureCustomEvent<any>>,
+    onFieldChange: EventName<CustomEvent<string>>,
+    onSettingsPress: EventName<CustomEvent<any>>,
     onSettingsChanged: EventName<VerdocsFieldSignatureCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<VerdocsFieldSignatureCustomEvent<{ fieldName: string }>>,
-    onAdopt: EventName<VerdocsFieldSignatureCustomEvent<any>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>,
+    onAdopt: EventName<CustomEvent<any>>
 };
 
 export const VerdocsFieldSignature: StencilReactComponent<VerdocsFieldSignatureElement, VerdocsFieldSignatureEvents> = /*@__PURE__*/ createComponent<VerdocsFieldSignatureElement, VerdocsFieldSignatureEvents>({
@@ -577,7 +577,7 @@ export const VerdocsFieldSignature: StencilReactComponent<VerdocsFieldSignatureE
 
 export type VerdocsFieldTextareaEvents = {
     onSettingsChanged: EventName<VerdocsFieldTextareaCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<VerdocsFieldTextareaCustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldTextarea: StencilReactComponent<VerdocsFieldTextareaElement, VerdocsFieldTextareaEvents> = /*@__PURE__*/ createComponent<VerdocsFieldTextareaElement, VerdocsFieldTextareaEvents>({
@@ -594,7 +594,7 @@ export const VerdocsFieldTextarea: StencilReactComponent<VerdocsFieldTextareaEle
 
 export type VerdocsFieldTextboxEvents = {
     onSettingsChanged: EventName<VerdocsFieldTextboxCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<VerdocsFieldTextboxCustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldTextbox: StencilReactComponent<VerdocsFieldTextboxElement, VerdocsFieldTextboxEvents> = /*@__PURE__*/ createComponent<VerdocsFieldTextboxElement, VerdocsFieldTextboxEvents>({
@@ -611,7 +611,7 @@ export const VerdocsFieldTextbox: StencilReactComponent<VerdocsFieldTextboxEleme
 
 export type VerdocsFieldTimestampEvents = {
     onSettingsChanged: EventName<VerdocsFieldTimestampCustomEvent<{ fieldName: string; field: ITemplateField }>>,
-    onDeleted: EventName<VerdocsFieldTimestampCustomEvent<{ fieldName: string }>>
+    onDeleted: EventName<CustomEvent<{ fieldName: string }>>
 };
 
 export const VerdocsFieldTimestamp: StencilReactComponent<VerdocsFieldTimestampElement, VerdocsFieldTimestampEvents> = /*@__PURE__*/ createComponent<VerdocsFieldTimestampElement, VerdocsFieldTimestampEvents>({
@@ -638,8 +638,8 @@ export const VerdocsFileChooser: StencilReactComponent<VerdocsFileChooserElement
 });
 
 export type VerdocsFlagEvents = {
-    onSkip: EventName<VerdocsFlagCustomEvent<void>>,
-    onFlagClick: EventName<VerdocsFlagCustomEvent<void>>
+    onSkip: EventName<CustomEvent<void>>,
+    onFlagClick: EventName<CustomEvent<void>>
 };
 
 export const VerdocsFlag: StencilReactComponent<VerdocsFlagElement, VerdocsFlagEvents> = /*@__PURE__*/ createComponent<VerdocsFlagElement, VerdocsFlagEvents>({
@@ -666,8 +666,8 @@ export const VerdocsHelpIcon: StencilReactComponent<VerdocsHelpIconElement, Verd
 });
 
 export type VerdocsInitialDialogEvents = {
-    onNext: EventName<VerdocsInitialDialogCustomEvent<string>>,
-    onExit: EventName<VerdocsInitialDialogCustomEvent<any>>
+    onNext: EventName<CustomEvent<string>>,
+    onExit: EventName<CustomEvent<any>>
 };
 
 export const VerdocsInitialDialog: StencilReactComponent<VerdocsInitialDialogElement, VerdocsInitialDialogEvents> = /*@__PURE__*/ createComponent<VerdocsInitialDialogElement, VerdocsInitialDialogEvents>({
@@ -683,7 +683,7 @@ export const VerdocsInitialDialog: StencilReactComponent<VerdocsInitialDialogEle
 });
 
 export type VerdocsKbaDialogEvents = {
-    onExit: EventName<VerdocsKbaDialogCustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onPinEntered: EventName<VerdocsKbaDialogCustomEvent<string | IRecipient>>,
     onNext: EventName<VerdocsKbaDialogCustomEvent<string | IRecipient | string[]>>
 };
@@ -712,7 +712,7 @@ export const VerdocsLoader: StencilReactComponent<VerdocsLoaderElement, VerdocsL
     defineCustomElement: defineVerdocsLoader
 });
 
-export type VerdocsMenuPanelEvents = { onClose: EventName<VerdocsMenuPanelCustomEvent<void>> };
+export type VerdocsMenuPanelEvents = { onClose: EventName<CustomEvent<void>> };
 
 export const VerdocsMenuPanel: StencilReactComponent<VerdocsMenuPanelElement, VerdocsMenuPanelEvents> = /*@__PURE__*/ createComponent<VerdocsMenuPanelElement, VerdocsMenuPanelEvents>({
     tagName: 'verdocs-menu-panel',
@@ -723,7 +723,7 @@ export const VerdocsMenuPanel: StencilReactComponent<VerdocsMenuPanelElement, Ve
     defineCustomElement: defineVerdocsMenuPanel
 });
 
-export type VerdocsMultiselectEvents = { onSelectionChanged: EventName<VerdocsMultiselectCustomEvent<{ selectedOptions: string[] }>> };
+export type VerdocsMultiselectEvents = { onSelectionChanged: EventName<CustomEvent<{ selectedOptions: string[] }>> };
 
 export const VerdocsMultiselect: StencilReactComponent<VerdocsMultiselectElement, VerdocsMultiselectEvents> = /*@__PURE__*/ createComponent<VerdocsMultiselectElement, VerdocsMultiselectEvents>({
     tagName: 'verdocs-multiselect',
@@ -735,8 +735,8 @@ export const VerdocsMultiselect: StencilReactComponent<VerdocsMultiselectElement
 });
 
 export type VerdocsOkDialogEvents = {
-    onNext: EventName<VerdocsOkDialogCustomEvent<any>>,
-    onExit: EventName<VerdocsOkDialogCustomEvent<any>>
+    onNext: EventName<CustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>
 };
 
 export const VerdocsOkDialog: StencilReactComponent<VerdocsOkDialogElement, VerdocsOkDialogEvents> = /*@__PURE__*/ createComponent<VerdocsOkDialogElement, VerdocsOkDialogEvents>({
@@ -763,7 +763,7 @@ export const VerdocsOrganizationCard: StencilReactComponent<VerdocsOrganizationC
 });
 
 export type VerdocsOtpDialogEvents = {
-    onExit: EventName<VerdocsOtpDialogCustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onNext: EventName<VerdocsOtpDialogCustomEvent<{ response: ISignerTokenResponse }>>
 };
 
@@ -779,7 +779,7 @@ export const VerdocsOtpDialog: StencilReactComponent<VerdocsOtpDialogElement, Ve
     defineCustomElement: defineVerdocsOtpDialog
 });
 
-export type VerdocsPaginationEvents = { onSelectPage: EventName<VerdocsPaginationCustomEvent<{ selectedPage: number }>> };
+export type VerdocsPaginationEvents = { onSelectPage: EventName<CustomEvent<{ selectedPage: number }>> };
 
 export const VerdocsPagination: StencilReactComponent<VerdocsPaginationElement, VerdocsPaginationEvents> = /*@__PURE__*/ createComponent<VerdocsPaginationElement, VerdocsPaginationEvents>({
     tagName: 'verdocs-pagination',
@@ -791,7 +791,7 @@ export const VerdocsPagination: StencilReactComponent<VerdocsPaginationElement, 
 });
 
 export type VerdocsPasscodeDialogEvents = {
-    onExit: EventName<VerdocsPasscodeDialogCustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onNext: EventName<VerdocsPasscodeDialogCustomEvent<{ response: ISignerTokenResponse }>>
 };
 
@@ -807,7 +807,7 @@ export const VerdocsPasscodeDialog: StencilReactComponent<VerdocsPasscodeDialogE
     defineCustomElement: defineVerdocsPasscodeDialog
 });
 
-export type VerdocsPortalEvents = { onClickAway: EventName<VerdocsPortalCustomEvent<void>> };
+export type VerdocsPortalEvents = { onClickAway: EventName<CustomEvent<void>> };
 
 export const VerdocsPortal: StencilReactComponent<VerdocsPortalElement, VerdocsPortalEvents> = /*@__PURE__*/ createComponent<VerdocsPortalElement, VerdocsPortalEvents>({
     tagName: 'verdocs-portal',
@@ -841,8 +841,8 @@ export const VerdocsProgressBar: StencilReactComponent<VerdocsProgressBarElement
 });
 
 export type VerdocsQuestionDialogEvents = {
-    onNext: EventName<VerdocsQuestionDialogCustomEvent<{ question: string }>>,
-    onExit: EventName<VerdocsQuestionDialogCustomEvent<any>>
+    onNext: EventName<CustomEvent<{ question: string }>>,
+    onExit: EventName<CustomEvent<any>>
 };
 
 export const VerdocsQuestionDialog: StencilReactComponent<VerdocsQuestionDialogElement, VerdocsQuestionDialogEvents> = /*@__PURE__*/ createComponent<VerdocsQuestionDialogElement, VerdocsQuestionDialogEvents>({
@@ -869,8 +869,8 @@ export const VerdocsQuickFilter: StencilReactComponent<VerdocsQuickFilterElement
 });
 
 export type VerdocsQuickFunctionsEvents = {
-    onCreateTemplate: EventName<VerdocsQuickFunctionsCustomEvent<any>>,
-    onCreateDocument: EventName<VerdocsQuickFunctionsCustomEvent<any>>
+    onCreateTemplate: EventName<CustomEvent<any>>,
+    onCreateDocument: EventName<CustomEvent<any>>
 };
 
 export const VerdocsQuickFunctions: StencilReactComponent<VerdocsQuickFunctionsElement, VerdocsQuickFunctionsEvents> = /*@__PURE__*/ createComponent<VerdocsQuickFunctionsElement, VerdocsQuickFunctionsEvents>({
@@ -899,7 +899,7 @@ export const VerdocsRadioButton: StencilReactComponent<VerdocsRadioButtonElement
 export type VerdocsSearchBoxEvents = {
     onSearchClicked: EventName<VerdocsSearchBoxCustomEvent<ISearchEvent>>,
     onTypeChanged: EventName<VerdocsSearchBoxCustomEvent<TContentType>>,
-    onQueryChanged: EventName<VerdocsSearchBoxCustomEvent<string>>
+    onQueryChanged: EventName<CustomEvent<string>>
 };
 
 export const VerdocsSearchBox: StencilReactComponent<VerdocsSearchBoxElement, VerdocsSearchBoxEvents> = /*@__PURE__*/ createComponent<VerdocsSearchBoxElement, VerdocsSearchBoxEvents>({
@@ -940,7 +940,7 @@ export const VerdocsSelectInput: StencilReactComponent<VerdocsSelectInputElement
 export type VerdocsSendEvents = {
     onBeforeSend: EventName<VerdocsSendCustomEvent<{ recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: ITemplate }>>,
     onSend: EventName<VerdocsSendCustomEvent<{ recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope }>>,
-    onExit: EventName<VerdocsSendCustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onSdkError: EventName<VerdocsSendCustomEvent<SDKError>>,
     onSearchContacts: EventName<VerdocsSendCustomEvent<IContactSearchEvent>>
 };
@@ -980,9 +980,9 @@ export const VerdocsSign: StencilReactComponent<VerdocsSignElement, VerdocsSignE
 });
 
 export type VerdocsSignFooterEvents = {
-    onAskQuestion: EventName<VerdocsSignFooterCustomEvent<{ question: string }>>,
-    onDecline: EventName<VerdocsSignFooterCustomEvent<any>>,
-    onFinishLater: EventName<VerdocsSignFooterCustomEvent<any>>,
+    onAskQuestion: EventName<CustomEvent<{ question: string }>>,
+    onDecline: EventName<CustomEvent<any>>,
+    onFinishLater: EventName<CustomEvent<any>>,
     onSdkError: EventName<VerdocsSignFooterCustomEvent<SDKError>>
 };
 
@@ -1001,8 +1001,8 @@ export const VerdocsSignFooter: StencilReactComponent<VerdocsSignFooterElement, 
 });
 
 export type VerdocsSignatureDialogEvents = {
-    onNext: EventName<VerdocsSignatureDialogCustomEvent<string>>,
-    onExit: EventName<VerdocsSignatureDialogCustomEvent<any>>
+    onNext: EventName<CustomEvent<string>>,
+    onExit: EventName<CustomEvent<any>>
 };
 
 export const VerdocsSignatureDialog: StencilReactComponent<VerdocsSignatureDialogElement, VerdocsSignatureDialogEvents> = /*@__PURE__*/ createComponent<VerdocsSignatureDialogElement, VerdocsSignatureDialogEvents>({
@@ -1018,10 +1018,10 @@ export const VerdocsSignatureDialog: StencilReactComponent<VerdocsSignatureDialo
 });
 
 export type VerdocsSigningProgressEvents = {
-    onStarted: EventName<VerdocsSigningProgressCustomEvent<any>>,
-    onNext: EventName<VerdocsSigningProgressCustomEvent<any>>,
-    onPrevious: EventName<VerdocsSigningProgressCustomEvent<any>>,
-    onExit: EventName<VerdocsSigningProgressCustomEvent<any>>
+    onStarted: EventName<CustomEvent<any>>,
+    onNext: EventName<CustomEvent<any>>,
+    onPrevious: EventName<CustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>
 };
 
 export const VerdocsSigningProgress: StencilReactComponent<VerdocsSigningProgressElement, VerdocsSigningProgressEvents> = /*@__PURE__*/ createComponent<VerdocsSigningProgressElement, VerdocsSigningProgressEvents>({
@@ -1060,7 +1060,7 @@ export const VerdocsStatusIndicator: StencilReactComponent<VerdocsStatusIndicato
     defineCustomElement: defineVerdocsStatusIndicator
 });
 
-export type VerdocsSwitchEvents = { onCheckedChange: EventName<VerdocsSwitchCustomEvent<boolean>> };
+export type VerdocsSwitchEvents = { onCheckedChange: EventName<CustomEvent<boolean>> };
 
 export const VerdocsSwitch: StencilReactComponent<VerdocsSwitchElement, VerdocsSwitchEvents> = /*@__PURE__*/ createComponent<VerdocsSwitchElement, VerdocsSwitchEvents>({
     tagName: 'verdocs-switch',
@@ -1073,7 +1073,7 @@ export const VerdocsSwitch: StencilReactComponent<VerdocsSwitchElement, VerdocsS
 
 export type VerdocsTableEvents = {
     onColHeaderClick: EventName<VerdocsTableCustomEvent<{ col: IColumn }>>,
-    onRowClick: EventName<VerdocsTableCustomEvent<{ row: any }>>
+    onRowClick: EventName<CustomEvent<{ row: any }>>
 };
 
 export const VerdocsTable: StencilReactComponent<VerdocsTableElement, VerdocsTableEvents> = /*@__PURE__*/ createComponent<VerdocsTableElement, VerdocsTableEvents>({
@@ -1100,7 +1100,7 @@ export const VerdocsTabs: StencilReactComponent<VerdocsTabsElement, VerdocsTabsE
 });
 
 export type VerdocsTemplateAttachmentsEvents = {
-    onExit: EventName<VerdocsTemplateAttachmentsCustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onNext: EventName<VerdocsTemplateAttachmentsCustomEvent<{ template: ITemplate }>>,
     onTemplateUpdated: EventName<VerdocsTemplateAttachmentsCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate; event: string }>>,
     onSdkError: EventName<VerdocsTemplateAttachmentsCustomEvent<SDKError>>
@@ -1149,7 +1149,7 @@ export const VerdocsTemplateCard: StencilReactComponent<VerdocsTemplateCardEleme
 });
 
 export type VerdocsTemplateCreateEvents = {
-    onExit: EventName<VerdocsTemplateCreateCustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onNext: EventName<VerdocsTemplateCreateCustomEvent<ITemplate>>,
     onSdkError: EventName<VerdocsTemplateCreateCustomEvent<SDKError>>,
     onTemplateCreated: EventName<VerdocsTemplateCreateCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate; templateId: string }>>
@@ -1181,8 +1181,8 @@ export const VerdocsTemplateDocumentPage: StencilReactComponent<VerdocsTemplateD
 });
 
 export type VerdocsTemplateFieldPropertiesEvents = {
-    onClose: EventName<VerdocsTemplateFieldPropertiesCustomEvent<any>>,
-    onDelete: EventName<VerdocsTemplateFieldPropertiesCustomEvent<{ templateId: string; roleName: string }>>,
+    onClose: EventName<CustomEvent<any>>,
+    onDelete: EventName<CustomEvent<{ templateId: string; roleName: string }>>,
     onSettingsChanged: EventName<VerdocsTemplateFieldPropertiesCustomEvent<{ fieldName: string; field: ITemplateField }>>,
     onSdkError: EventName<VerdocsTemplateFieldPropertiesCustomEvent<SDKError>>
 };
@@ -1221,8 +1221,8 @@ export const VerdocsTemplateFields: StencilReactComponent<VerdocsTemplateFieldsE
 });
 
 export type VerdocsTemplateRolePropertiesEvents = {
-    onClose: EventName<VerdocsTemplateRolePropertiesCustomEvent<any>>,
-    onDelete: EventName<VerdocsTemplateRolePropertiesCustomEvent<{ templateId: string; roleName: string }>>,
+    onClose: EventName<CustomEvent<any>>,
+    onDelete: EventName<CustomEvent<{ templateId: string; roleName: string }>>,
     onSdkError: EventName<VerdocsTemplateRolePropertiesCustomEvent<SDKError>>
 };
 
@@ -1240,8 +1240,8 @@ export const VerdocsTemplateRoleProperties: StencilReactComponent<VerdocsTemplat
 });
 
 export type VerdocsTemplateRolesEvents = {
-    onNext: EventName<VerdocsTemplateRolesCustomEvent<any>>,
-    onExit: EventName<VerdocsTemplateRolesCustomEvent<any>>,
+    onNext: EventName<CustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onSdkError: EventName<VerdocsTemplateRolesCustomEvent<SDKError>>,
     onRolesUpdated: EventName<VerdocsTemplateRolesCustomEvent<{ endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[] }>>
 };
@@ -1261,8 +1261,8 @@ export const VerdocsTemplateRoles: StencilReactComponent<VerdocsTemplateRolesEle
 });
 
 export type VerdocsTemplateSettingsEvents = {
-    onNext: EventName<VerdocsTemplateSettingsCustomEvent<any>>,
-    onExit: EventName<VerdocsTemplateSettingsCustomEvent<any>>,
+    onNext: EventName<CustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onSdkError: EventName<VerdocsTemplateSettingsCustomEvent<SDKError>>,
     onTemplateUpdated: EventName<VerdocsTemplateSettingsCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate; event: string }>>
 };
@@ -1282,7 +1282,7 @@ export const VerdocsTemplateSettings: StencilReactComponent<VerdocsTemplateSetti
 });
 
 export type VerdocsTemplateStarEvents = {
-    onStarChange: EventName<VerdocsTemplateStarCustomEvent<{ templateId: string; starred: boolean; count: number }>>,
+    onStarChange: EventName<CustomEvent<{ templateId: string; starred: boolean; count: number }>>,
     onSdkError: EventName<VerdocsTemplateStarCustomEvent<SDKError>>
 };
 
@@ -1316,10 +1316,10 @@ export type VerdocsTemplatesListEvents = {
     onSubmittedData: EventName<VerdocsTemplatesListCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate }>>,
     onEditTemplate: EventName<VerdocsTemplatesListCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate }>>,
     onTemplateDeleted: EventName<VerdocsTemplatesListCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate }>>,
-    onChangeSort: EventName<VerdocsTemplatesListCustomEvent<string>>,
-    onChangeVisibility: EventName<VerdocsTemplatesListCustomEvent<'private_shared' | 'private' | 'shared' | 'public'>>,
-    onChangeStarred: EventName<VerdocsTemplatesListCustomEvent<'all' | 'starred' | 'unstarred'>>,
-    onChangeName: EventName<VerdocsTemplatesListCustomEvent<string>>
+    onChangeSort: EventName<CustomEvent<string>>,
+    onChangeVisibility: EventName<CustomEvent<'private_shared' | 'private' | 'shared' | 'public'>>,
+    onChangeStarred: EventName<CustomEvent<'all' | 'starred' | 'unstarred'>>,
+    onChangeName: EventName<CustomEvent<string>>
 };
 
 export const VerdocsTemplatesList: StencilReactComponent<VerdocsTemplatesListElement, VerdocsTemplatesListEvents> = /*@__PURE__*/ createComponent<VerdocsTemplatesListElement, VerdocsTemplatesListEvents>({
@@ -1364,7 +1364,7 @@ export const VerdocsToggle: StencilReactComponent<VerdocsToggleElement, VerdocsT
     defineCustomElement: defineVerdocsToggle
 });
 
-export type VerdocsToggleButtonEvents = { onToggle: EventName<VerdocsToggleButtonCustomEvent<{ active: boolean }>> };
+export type VerdocsToggleButtonEvents = { onToggle: EventName<CustomEvent<{ active: boolean }>> };
 
 export const VerdocsToggleButton: StencilReactComponent<VerdocsToggleButtonElement, VerdocsToggleButtonEvents> = /*@__PURE__*/ createComponent<VerdocsToggleButtonElement, VerdocsToggleButtonEvents>({
     tagName: 'verdocs-toggle-button',
@@ -1387,9 +1387,9 @@ export const VerdocsToolbarIcon: StencilReactComponent<VerdocsToolbarIconElement
 });
 
 export type VerdocsUploadDialogEvents = {
-    onExit: EventName<VerdocsUploadDialogCustomEvent<any>>,
+    onExit: EventName<CustomEvent<any>>,
     onNext: EventName<VerdocsUploadDialogCustomEvent<File[]>>,
-    onRemove: EventName<VerdocsUploadDialogCustomEvent<any>>
+    onRemove: EventName<CustomEvent<any>>
 };
 
 export const VerdocsUploadDialog: StencilReactComponent<VerdocsUploadDialogElement, VerdocsUploadDialogEvents> = /*@__PURE__*/ createComponent<VerdocsUploadDialogElement, VerdocsUploadDialogEvents>({
@@ -1408,9 +1408,9 @@ export const VerdocsUploadDialog: StencilReactComponent<VerdocsUploadDialogEleme
 export type VerdocsViewEvents = {
     onSdkError: EventName<VerdocsViewCustomEvent<SDKError>>,
     onEnvelopeUpdated: EventName<VerdocsViewCustomEvent<{ endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string }>>,
-    onAnother: EventName<VerdocsViewCustomEvent<any>>,
-    onView: EventName<VerdocsViewCustomEvent<any>>,
-    onNext: EventName<VerdocsViewCustomEvent<any>>
+    onAnother: EventName<CustomEvent<any>>,
+    onView: EventName<CustomEvent<any>>,
+    onNext: EventName<CustomEvent<any>>
 };
 
 export const VerdocsView: StencilReactComponent<VerdocsViewElement, VerdocsViewEvents> = /*@__PURE__*/ createComponent<VerdocsViewElement, VerdocsViewEvents>({
