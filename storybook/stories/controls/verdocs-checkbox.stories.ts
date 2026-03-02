@@ -1,10 +1,10 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 
 export default {
   title: 'Controls/Checkbox',
   component: 'verdocs-checkbox',
-  parameters: {},
+
   args: {
     label: 'Sample checkbox',
     name: 'test',
@@ -13,6 +13,7 @@ export default {
     disabled: false,
     value: '1',
   },
+
   argTypes: {
     input: {
       action: 'input',

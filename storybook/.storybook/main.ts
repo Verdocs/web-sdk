@@ -16,10 +16,7 @@ const config: StorybookConfig = {
 
   addons: [
     '@storybook/addon-links',
-    // Includes Actions, Backgrounds, Controls, Docs, Highlight, Measure & outline, Toolbars & globals, Viewport
-    '@storybook/addon-essentials',
     '@chromatic-com/storybook',
-    '@storybook/addon-interactions',
     {
       name: '@storybook/addon-docs',
       options: {

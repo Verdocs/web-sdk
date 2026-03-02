@@ -1,10 +1,10 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 
 export default {
   title: 'Controls/Table',
   component: 'verdocs-table',
-  parameters: {},
+
   args: {
     columns: [
       {id: 'id', header: 'ID'},

@@ -1,14 +1,15 @@
-import {Meta} from '@storybook/web-components';
-import {html} from 'lit-html';
+import {Meta} from '@storybook/web-components-vite';
+import {html} from 'lit';
 
 export default {
   title: 'Controls/Switch',
   component: 'verdocs-switch',
-  parameters: {},
+
   args: {
     checked: false,
     theme: 'primary',
   },
+
   argTypes: {
     checked: {type: 'boolean'},
     theme: {type: 'string', control: 'radio', options: ['primary', 'secondary'], defaultValue: 'primary'},
