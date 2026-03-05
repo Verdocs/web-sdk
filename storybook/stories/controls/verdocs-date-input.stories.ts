@@ -1,15 +1,16 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 
 export default {
   title: 'Controls/Date Input',
   component: 'verdocs-date-input',
-  parameters: {},
+
   args: {
     label: 'DOB',
     value: '',
     placeholder: 'Date of Birth...',
   },
+
   argTypes: {
     input: {
       action: 'input',

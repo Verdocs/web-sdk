@@ -1,5 +1,5 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 
 const FAKE_DOCS_PROCESSING = [
   {id: 'doc1', name: 'Fields Test (1).pdf', type: 'attachment', order: 1, created_at: '2025-01-01'},

@@ -1,5 +1,5 @@
-import {Preview} from '@storybook/react';
-import {setCustomElementsManifest} from '@storybook/web-components';
+import {Preview} from '@storybook/react-vite';
+import {setCustomElementsManifest} from '@storybook/web-components-vite';
 import customElements from '../../verdocs-web-sdk/dist/custom-elements.json';
 import {defineCustomElements} from '../../verdocs-web-sdk/dist/esm/loader';
 
@@ -73,19 +73,25 @@ const preview: Preview = {
     },
 
     backgrounds: {
-      default: 'light',
-      values: [
-        {
+      options: {
+        light: {
           name: 'light',
           value: '#f8faff',
         },
-        {
+
+        dark: {
           name: 'dark',
           value: '#333',
-        },
-      ],
+        }
+      }
     },
   },
+
+  initialGlobals: {
+    backgrounds: {
+      value: 'light'
+    }
+  }
 };
 
 export default preview;

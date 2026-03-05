@@ -1,5 +1,5 @@
-import {Meta} from '@storybook/web-components';
-import {html} from 'lit-html';
+import {Meta} from '@storybook/web-components-vite';
+import {html} from 'lit';
 
 export default {
   title: 'Envelopes/Recipient Link',
@@ -13,9 +13,8 @@ export default {
   },
 } as Meta;
 
-export const recipientLink = ({envelopeId, roleName, next}) =>
-  html`
-    <div style="width:600px; height:400px; margin: 0 auto;">
-      <verdocs-envelope-recipient-link .envelopeId="${envelopeId}" .roleName="${roleName}" @next=${next} />
-    </div>
-  `;
+export const recipientLink = ({envelopeId, roleName, next}) => html`
+  <div style="width:600px; height:400px; margin: 0 auto;">
+    <verdocs-envelope-recipient-link .envelopeId="${envelopeId}" .roleName="${roleName}" @next=${next} />
+  </div>
+`;
