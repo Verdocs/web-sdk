@@ -619,6 +619,13 @@ export class VerdocsSign {
     return recipientFields;
   }
 
+  /** Like getSortedFillableFields but includes readonly fields, for rendering purposes only. */
+  getSortedDisplayableFields() {
+    const recipientFields = this.getRecipientFields().filter(field => field.type !== 'timestamp');
+    sortFields(recipientFields);
+    return recipientFields;
+  }
+
   async handleNext() {
     if (this.nextSubmits) {
       try {
@@ -913,9 +920,8 @@ export class VerdocsSign {
 
     // NOTE: We don't filter on pageNumber here because we need the position in the
     // entire list to set the tabIndex.
-    const recipientFields = this.getSortedFillableFields();
+    const recipientFields = this.getSortedDisplayableFields();
     // console.log('[SIGN] Rendering fields for page', pageInfo.pageNumber, recipientFields);
-
     // First render the fields for the signer
     recipientFields
       .filter(field => field && field.document_id === pageInfo.documentId && field.page === pageInfo.pageNumber)
