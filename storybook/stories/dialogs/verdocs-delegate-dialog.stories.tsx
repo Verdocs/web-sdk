@@ -1,13 +1,13 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 
 export default {
   title: 'Dialogs/Delegate Dialog',
   component: 'verdocs-delegate-dialog',
   args: {
     envelope: {
-      name: 'Purchase Agreement'
-    }
+      name: 'Purchase Agreement',
+    },
   },
   argTypes: {
     onNext: {

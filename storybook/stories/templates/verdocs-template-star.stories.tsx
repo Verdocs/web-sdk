@@ -1,5 +1,5 @@
-import {Meta} from '@storybook/web-components';
-import {html} from 'lit-html';
+import {Meta} from '@storybook/web-components-vite';
+import {html} from 'lit';
 
 export default {
   title: 'Templates/Template Star',

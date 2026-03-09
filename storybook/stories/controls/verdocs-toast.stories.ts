@@ -1,5 +1,5 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 import {VerdocsToast} from '../../../verdocs-web-sdk/src/utils/Toast';
 
 // This is a story-only control with no published component. Verdocs Toast is a simple function call that works
@@ -8,7 +8,7 @@ import {VerdocsToast} from '../../../verdocs-web-sdk/src/utils/Toast';
 export default {
   title: 'Controls/Toast',
   component: 'verdocs-toast',
-  parameters: {},
+
   args: {
     text: 'Test message',
     duration: 3000,
