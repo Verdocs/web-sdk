@@ -1,4 +1,16 @@
-import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, IAuthenticateResponse, getMyUser, IProfile} from '@verdocs/js-sdk';
+import {
+  TSession,
+  VerdocsEndpoint,
+  createProfile,
+  authenticate,
+  resendVerification,
+  resetPassword,
+  verifyEmail,
+  IAuthenticateResponse,
+  getMyUser,
+  IProfile,
+  isValidEmail,
+} from '@verdocs/js-sdk';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -8,6 +20,24 @@ export interface IAuthStatus {
   session: TSession;
   profile: IProfile | null;
 }
+
+// TODO: Both of these need to be replaced with JS-SDK imports
+const DOMAIN_REGEX = /^(?!-)([a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,}$/;
+const BANNED_EMAIL_HOST = {
+  'gmail.com': true,
+  'yahoo.com': true,
+  'outlook.com': true,
+  'hotmail.com': true,
+  'aol.com': true,
+  'icloud.com`': true,
+  'protonmail.com': true,
+  'zoho.com': true,
+  'yandex.com': true,
+  'yandex.ru': true,
+  'mail.com': true,
+  'gmx.com': true,
+  'fastmail.com': true,
+};
 
 /**
  * Display an authentication dialog that allows the user to login or sign up. If the user is
@@ -78,6 +108,7 @@ export class VerdocsAuth {
   @State() verificationCode: string = '';
   @State() newPassword: string = '';
   @State() password: string = '';
+  @State() org_domain: string = '';
   @State() confirmpass: string = '';
   @State() submitting: boolean = false;
   @State() resendDisabled = false;
@@ -107,6 +138,20 @@ export class VerdocsAuth {
     });
   }
 
+  // TODO: This will be provided by js-sdk
+  isWhitelistedEmail(email: string) {
+    const isValid = isValidEmail(email);
+    if (!isValid) return false;
+    const [, domain] = email.split('@');
+    console.log({domain, isValidEmail});
+    return !BANNED_EMAIL_HOST[domain];
+  }
+
+  // TODO: This should be replaced in js-sdk
+  isValidDomain(domain: string) {
+    return DOMAIN_REGEX.test(domain);
+  }
+
   isPasswordComplex(password: string) {
     const isUppercase = (ch: string) => /[A-Z]/.test(ch);
     const isLowercase = (ch: string) => /[a-z]/.test(ch);
@@ -134,6 +179,11 @@ export class VerdocsAuth {
       return;
     }
 
+    if (!this.isWhitelistedEmail(this.email)) {
+      VerdocsToast('Please use your corporate/professional email address to sign up.');
+      return;
+    }
+
     this.submitting = true;
     this.tempAuthEndpoint.clearSession();
     createProfile(this.tempAuthEndpoint, {
@@ -142,6 +192,7 @@ export class VerdocsAuth {
       first_name: this.first_name,
       last_name: this.last_name,
       org_name: this.org_name,
+      org_domain: this.org_domain, // TODO: Ensure this gets fixed when JS-SDK gets bumped
     })
       .then(r => {
         console.log('[AUTH] Profile creation result', r);
@@ -151,6 +202,7 @@ export class VerdocsAuth {
         this.first_name = '';
         this.last_name = '';
         this.org_name = '';
+        this.org_domain = '';
         this.displayMode = 'verify';
         this.submitting = false;
       })
@@ -227,6 +279,7 @@ export class VerdocsAuth {
     this.first_name = '';
     this.last_name = '';
     this.org_name = '';
+    this.org_domain = '';
   }
 
   handleLogout() {
@@ -360,7 +413,8 @@ export class VerdocsAuth {
     }
 
     if (this.displayMode === 'signup') {
-      const invalid = this.submitting || !this.first_name || !this.last_name || !this.email || !this.password || !this.confirmpass || !this.org_name;
+      const hasValidDomain = this.isValidDomain(this.org_domain);
+      const invalid = this.submitting || !this.first_name || !this.last_name || !this.email || !this.password || !this.confirmpass || !this.org_name || !hasValidDomain;
 
       return (
         <div class="form">
@@ -425,6 +479,15 @@ export class VerdocsAuth {
               required={true}
               value={this.org_name}
               onInput={(e: any) => (this.org_name = e.target.value)}
+              disabled={this.submitting}
+              style={{flex: '1'}}
+            />
+            <verdocs-text-input
+              label="Organization Domain"
+              autocomplete="org-domain"
+              required={true}
+              value={this.org_domain}
+              onInput={(e: any) => (this.org_domain = e.target.value)}
               disabled={this.submitting}
               style={{flex: '1'}}
             />
