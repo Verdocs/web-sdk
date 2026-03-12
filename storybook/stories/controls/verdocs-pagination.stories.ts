@@ -1,5 +1,5 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 
 export default {
   title: 'Controls/Pagination',
@@ -14,9 +14,5 @@ export default {
   },
 } as Meta;
 
-export const Pagination = ({selectedPage, itemCount, perPage, onSelectPage}) => html`<verdocs-pagination
-  .selectedPage=${selectedPage}
-  .itemCount=${itemCount}
-  .perPage=${perPage}
-  @selectPage=${onSelectPage}
-/>`;
+export const Pagination = ({selectedPage, itemCount, perPage, onSelectPage}) =>
+  html`<verdocs-pagination .selectedPage=${selectedPage} .itemCount=${itemCount} .perPage=${perPage} @selectPage=${onSelectPage} />`;

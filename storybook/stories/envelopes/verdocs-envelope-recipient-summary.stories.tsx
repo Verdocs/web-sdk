@@ -1,5 +1,5 @@
-import {Meta} from '@storybook/web-components';
-import {html} from 'lit-html';
+import {Meta} from '@storybook/web-components-vite';
+import {html} from 'lit';
 
 export default {
   title: 'Envelopes/Recipient Summary',
@@ -17,12 +17,13 @@ export default {
   },
 } as Meta;
 
-export const RecipientSummary = ({envelopeId, another, view, next, canView, canDone, canSendAnother}) => html`<verdocs-envelope-recipient-summary
-  .envelopeId="${envelopeId}"
-  .canView="${canView}"
-  .canDone="${canDone}"
-  .canSendAnother="${canSendAnother}"
-  @another=${another}
-  @view=${view}
-  @next=${next}
-/>`;
+export const RecipientSummary = ({envelopeId, another, view, next, canView, canDone, canSendAnother}) =>
+  html`<verdocs-envelope-recipient-summary
+    .envelopeId="${envelopeId}"
+    .canView="${canView}"
+    .canDone="${canDone}"
+    .canSendAnother="${canSendAnother}"
+    @another=${another}
+    @view=${view}
+    @next=${next}
+  />`;

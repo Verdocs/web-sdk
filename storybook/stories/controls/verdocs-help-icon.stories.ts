@@ -1,10 +1,9 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 
 export default {
   title: 'Controls/Help Icon',
   component: 'verdocs-help-icon',
-  parameters: {},
   args: {
     text: 'Sample help text',
   },

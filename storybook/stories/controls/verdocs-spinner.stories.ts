@@ -1,10 +1,10 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 
 export default {
   title: 'Controls/Spinner',
   component: 'verdocs-spinner',
-  parameters: {},
+
   args: {
     size: 32,
     mode: 'dark',

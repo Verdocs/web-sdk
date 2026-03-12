@@ -1,5 +1,5 @@
-import {html} from 'lit-html';
-import {Meta} from '@storybook/web-components';
+import {html} from 'lit';
+import {Meta} from '@storybook/web-components-vite';
 
 export default {
   title: 'Controls/Radio Button',
@@ -19,5 +19,6 @@ export default {
   },
 } as Meta;
 
-export const RadioButton = ({checked, name, value, disabled, input}) =>
-  html` <verdocs-radio-button .checked=${checked} .name=${name} .value=${value} .disabled="${disabled}" @input=${input} /> `;
+export const RadioButton = ({checked, name, value, disabled, input}) => html`
+  <verdocs-radio-button .checked=${checked} .name=${name} .value=${value} .disabled="${disabled}" @input=${input} />
+`;

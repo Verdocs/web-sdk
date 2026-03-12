@@ -1,10 +1,10 @@
-import {Meta} from '@storybook/web-components';
-import {html} from 'lit-html';
+import {Meta} from '@storybook/web-components-vite';
+import {html} from 'lit';
 
 export default {
   title: 'Controls/Switch',
   component: 'verdocs-switch',
-  parameters: {},
+
   args: {
     checked: false,
     theme: 'primary',
