@@ -19,7 +19,7 @@
     "rollup": "rollup -c"
   },
   "dependencies": {
-    "@verdocs/web-sdk": "^6.6.3",
+    "@verdocs/web-sdk": "^6.7.2",
     "@stencil/vue-output-target": "^0.10.8"
   },
   "peerDependencies": {
