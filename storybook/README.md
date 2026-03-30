@@ -15,21 +15,3 @@ A typical development workflow would be as follows:
    as story edits here.
 
 If you'd like to run the migrations again, you can do so by running 'npx storybook automigrate'≥
-
-
-## Major Version Upgrades
-Because `storybook` heavily relies on other packages/addons, upgrading to a new major version can get a little tricky. Changing the version(s) manually in `werdocs-web-sdk-storybook/package.json` dependencies will likely become mismatched, and will result in mysterious error messages in the console.
-
-All hope is not lost! Storybook provides tools to help make the migration process easier:
-
-```sh
-# Step #1 - Attemot an automatic upgrade via:
-npx storybook@latest upgrade
-
-# Step #2 - If that didn't work, you need to continue diagnostics. Run:
-npx storybook doctor
-
-# The storybook doctor will let you know which dependencies are not matching and
-# which steps to take. Always look out for these sort of `doctor`
-# tools, as they come in handy 👍 (see `expo`).
-```
