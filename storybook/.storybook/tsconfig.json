@@ -19,7 +19,7 @@
     "resolveJsonModule": true
     //    "stripInternal": true,
     //    "sourceMap": false
-  }
+  },
   //  "include": ["src", "./typings.d.ts"],
   //  "typeRoots": ["node_modules/@types", "./typings.d.ts"],
   //  "exclude": ["node_modules", "dist-stencil", "dist-storybook"]

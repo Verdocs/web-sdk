@@ -1,5 +1,5 @@
-import {Meta} from '@storybook/web-components';
-import {html} from 'lit-html';
+import {Meta} from '@storybook/web-components-vite';
+import {html} from 'lit';
 
 const SampleDocument = {
   // Skipping non-essential fields 9that the widget doesn't care about). But this is an IDocument.
