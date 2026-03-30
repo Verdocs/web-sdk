@@ -19,14 +19,14 @@ const dummyOptions = {
 export default {
   title: 'Controls/Toggle',
   component: 'verdocs-toggle',
-
+  parameters: {},
+  args: {
+    options: dummyOptions,
+  },
   // argTypes: {
   //   options: {type: 'object', control: 'object'},
   //   theme: {type: 'string', control: 'radio', options:['light', 'dark'], defaultValue: 'light'}
   // },
-  args: {
-    options: dummyOptions,
-  },
 } as Meta;
 
 export const Toggle = ({options, theme}) => html`<verdocs-toggle .options=${options} .theme=${theme}></verdocs-toggle>`;

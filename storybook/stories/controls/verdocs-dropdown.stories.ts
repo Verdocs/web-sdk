@@ -12,15 +12,13 @@ import {Meta} from '@storybook/web-components-vite';
 export default {
   // Where in Storybook this control will be listed
   title: 'Controls/Dropdown',
-
   // Hint to help the docs addon find the component
   component: 'verdocs-dropdown',
-
+  parameters: {},
   // We can apply default args only shown in Storybook as follows
   args: {
     options: [{label: 'Option 1'}, {label: 'Disabled Option', disabled: true}, {label: ''}, {label: 'Option 2'}],
   },
-
   // Here we can apply overrides to component property documentation. Note that we don't need to (and shouldn't) specify every field
   // here. Only those that need special attention.
   argTypes: {

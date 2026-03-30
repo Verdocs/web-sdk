@@ -4,7 +4,7 @@ import {Meta} from '@storybook/web-components-vite';
 export default {
   title: 'Controls/Tabs',
   component: 'verdocs-tabs',
-
+  parameters: {},
   args: {
     tabs: [
       {id: 'tab1', label: 'Tab 1'},

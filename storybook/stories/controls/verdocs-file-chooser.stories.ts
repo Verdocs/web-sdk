@@ -4,8 +4,8 @@ import {Meta} from '@storybook/web-components-vite';
 export default {
   title: 'Controls/File Chooser',
   component: 'verdocs-file-chooser',
+  parameters: {},
   args: {},
-
   argTypes: {
     onFileSelected: {action: 'fileSelected'},
   },

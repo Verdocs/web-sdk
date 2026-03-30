@@ -4,6 +4,7 @@ import {Meta} from '@storybook/web-components-vite';
 export default {
   title: 'Controls/Loader',
   component: 'verdocs-loader',
+  parameters: {},
   args: {},
   argTypes: {},
 } as Meta;

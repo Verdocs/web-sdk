@@ -4,13 +4,12 @@ import {Meta} from '@storybook/web-components-vite';
 export default {
   title: 'Controls/Date Input',
   component: 'verdocs-date-input',
-
+  parameters: {},
   args: {
     label: 'DOB',
     value: '',
     placeholder: 'Date of Birth...',
   },
-
   argTypes: {
     input: {
       action: 'input',
