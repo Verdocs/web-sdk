@@ -91,6 +91,11 @@ export class VerdocsFieldInitial {
   @Prop({reflect: true}) initialid?: string;
 
   /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
+
+  /**
    * Event emitted when an initial block is adopted by the user. The event detail will contain the base64 string of the initial image.
    */
   @Event({composed: true}) adopt: EventEmitter<string>;
@@ -135,6 +140,10 @@ export class VerdocsFieldInitial {
   tempInitials: string = '';
 
   componentDidRender() {
+    if (this.isPreview) {
+      interact(this.el).unset();
+      return;
+    }
     interact.dynamicDrop(true);
 
     if (this.editable) {

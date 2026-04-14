@@ -4,6 +4,7 @@ import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State, 
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
+import interact from 'interactjs';
 
 /**
  * Display a timestamp. Timestamps are not editable by signers. Instead, they are automatically
@@ -37,6 +38,11 @@ export class VerdocsFieldTimestamp {
    * mutated.
    */
   @Prop() field: IEnvelopeField | null | undefined = null;
+
+  /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -112,6 +118,13 @@ export class VerdocsFieldTimestamp {
       settingsPanel.hidePanel();
     }
     this.showingProperties = false;
+  }
+
+  componentDidRender() {
+    if (this.isPreview) {
+      interact(this.el).unset();
+      return;
+    }
   }
 
   render() {

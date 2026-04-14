@@ -2,6 +2,7 @@ import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
+import interact from 'interactjs';
 
 /**
  * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
@@ -35,6 +36,11 @@ export class VerdocsFieldPayment {
    * mutated.
    */
   @Prop() field: IEnvelopeField | null | undefined = null;
+
+  /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -123,6 +129,13 @@ export class VerdocsFieldPayment {
       if (preparer) {
         this.preparedMessage = `Prepared by ${preparer['full_name']}`;
       }
+    }
+  }
+
+  componentDidRender() {
+    if (this.isPreview) {
+      interact(this.el).unset();
+      return;
     }
   }
 

@@ -2,6 +2,7 @@ import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
+import interact from 'interactjs';
 
 const RadioIconUnselected = `<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path></svg>`;
 
@@ -38,6 +39,11 @@ export class VerdocsFieldRadio {
    * mutated.
    */
   @Prop() field: IEnvelopeField | null | undefined = null;
+
+  /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
 
   /**
    * If set, overrides the field's settings object. Primarily used in Storybook mode.
@@ -117,6 +123,13 @@ export class VerdocsFieldRadio {
     const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
+    }
+  }
+
+  componentDidRender() {
+    if (this.isPreview) {
+      interact(this.el).unset();
+      return;
     }
   }
 

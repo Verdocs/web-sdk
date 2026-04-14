@@ -91,6 +91,11 @@ export class VerdocsFieldSignature {
   @Prop({reflect: true}) signatureid?: string;
 
   /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
+
+  /**
    * Event emitted when the field has changed.
    */
   @Event({composed: true}) fieldChange: EventEmitter<string>;
@@ -131,8 +136,12 @@ export class VerdocsFieldSignature {
   tempSignature: string = '';
 
   componentDidRender() {
-    interact.dynamicDrop(true);
+    if (this.isPreview) {
+      interact(this.el).unset();
+      return;
+    }
 
+    interact.dynamicDrop(true);
     if (this.editable) {
       interact(this.el).resizable({
         edges: {
