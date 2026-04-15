@@ -719,10 +719,10 @@
   resolved "https://registry.npmjs.org/@types/unist/-/unist-3.0.3.tgz"
   integrity sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==
 
-"@verdocs/js-sdk@^6.7.7":
-  version "6.7.7"
-  resolved "https://registry.yarnpkg.com/@verdocs/js-sdk/-/js-sdk-6.7.7.tgz#7e7db6d203b92a4131a12c028229346588107e5b"
-  integrity sha512-wP12W9K+c7wOIZMvSjsAP+KqcOAyE0pAvYyrX50aV5Z4QRa0fjej+AlIRyz4FzUVRbGrpo5Cib+GPy4y75lAYw==
+"@verdocs/js-sdk@^6.7.8":
+  version "6.8.1"
+  resolved "https://registry.yarnpkg.com/@verdocs/js-sdk/-/js-sdk-6.8.1.tgz#1d213d1b21a14486eddcfa1d8c91300881974817"
+  integrity sha512-jjhi/MkiILJvJn2ulMn+liNF2CXcLcDLR/VG0VxlpQgnP+pL7zYECBiyT5C21Nni1rI9lHfeVJB03HAnaBZ1LA==
   dependencies:
     axios "^1.13.5"
     axios-retry "^4.5.0"
