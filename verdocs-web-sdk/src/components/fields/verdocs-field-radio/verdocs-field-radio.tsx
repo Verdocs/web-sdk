@@ -1,3 +1,4 @@
+import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
@@ -38,6 +39,11 @@ export class VerdocsFieldRadio {
    * mutated.
    */
   @Prop() field: IEnvelopeField | null | undefined = null;
+
+  /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
 
   /**
    * If set, overrides the field's settings object. Primarily used in Storybook mode.
@@ -117,6 +123,13 @@ export class VerdocsFieldRadio {
     const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.isPreview) {
+      interact(this.el).unset();
+      return;
     }
   }
 

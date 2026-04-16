@@ -1,5 +1,6 @@
+import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen} from '@stencil/core';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen, Element} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -12,7 +13,7 @@ import {Store} from '../../../utils/Datastore';
   shadow: false,
 })
 export class VerdocsFieldDropdown {
-  selectEl: HTMLSelectElement;
+  @Element() selectEl: HTMLSelectElement;
 
   /**
    * Fields may be attached to templates or envelopes, but only template fields may be edited.
@@ -34,6 +35,11 @@ export class VerdocsFieldDropdown {
    * mutated.
    */
   @Prop() field: IEnvelopeField | null | undefined = null;
+
+  /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -127,6 +133,13 @@ export class VerdocsFieldDropdown {
     const settingsPanel = document.getElementById(`verdocs-settings-panel-${this.fieldname}`) as any;
     if (settingsPanel && settingsPanel.hidePanel) {
       settingsPanel.hidePanel();
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.isPreview) {
+      interact(this.selectEl).unset();
+      return;
     }
   }
 

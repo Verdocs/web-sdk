@@ -232,6 +232,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, xScale, yScale)}
                           />
                         );
@@ -248,6 +249,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, xScale, yScale)}
                           />
                         );
@@ -264,6 +266,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, xScale, yScale)}
                           />
                         );
@@ -280,6 +283,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, xScale, yScale)}
                           />
                         );
@@ -296,6 +300,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, xScale, yScale)}
                           />
                         );
@@ -312,6 +317,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, xScale, yScale)}
                           />
                         );
@@ -328,6 +334,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, this.xScale, this.yScale)}
                           />
                         );
@@ -344,6 +351,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, xScale, yScale)}
                           />
                         );
@@ -360,6 +368,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, xScale, yScale)}
                           />
                         );
@@ -376,6 +385,7 @@ export class VerdocsTemplateDocumentPage {
                             xscale={xScale}
                             yscale={yScale}
                             pagenumber={pageNumber}
+                            isPreview
                             style={getControlStyles(field, xScale, yScale)}
                           />
                         );

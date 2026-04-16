@@ -79,6 +79,11 @@ export class VerdocsFieldDate {
   @Prop() field?: ITemplateField;
 
   /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
+
+  /**
    * Event fired on every character entered into / deleted from the field.
    */
   @Event({composed: true}) settingsPress: EventEmitter;
@@ -129,6 +134,13 @@ export class VerdocsFieldDate {
           this.el.dispatchEvent(event);
         },
       });
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.isPreview) {
+      interact(this.el).unset();
+      return;
     }
   }
 

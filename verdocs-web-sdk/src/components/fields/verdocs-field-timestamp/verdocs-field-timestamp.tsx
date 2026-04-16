@@ -1,3 +1,4 @@
+import interact from 'interactjs';
 import {format} from 'date-fns/format';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State, Listen} from '@stencil/core';
@@ -37,6 +38,11 @@ export class VerdocsFieldTimestamp {
    * mutated.
    */
   @Prop() field: IEnvelopeField | null | undefined = null;
+
+  /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
 
   /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
@@ -112,6 +118,13 @@ export class VerdocsFieldTimestamp {
       settingsPanel.hidePanel();
     }
     this.showingProperties = false;
+  }
+
+  componentDidUpdate() {
+    if (this.isPreview) {
+      interact(this.el).unset();
+      return;
+    }
   }
 
   render() {

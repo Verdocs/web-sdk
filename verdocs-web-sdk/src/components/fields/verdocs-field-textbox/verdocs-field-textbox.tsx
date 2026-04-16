@@ -39,6 +39,11 @@ export class VerdocsFieldTextbox {
   @Prop() field: IEnvelopeField | null | undefined = null;
 
   /**
+   * If set to true, it will force interact to unset the el, resulting in no dragging the field.
+   */
+  @Prop({reflect: true}) isPreview?: boolean;
+
+  /**
    * If set, overrides the field's settings object. Primarily used to support "preview" modes where all fields are disabled.
    */
   @Prop({reflect: true}) disabled?: boolean = false;
@@ -118,6 +123,13 @@ export class VerdocsFieldTextbox {
       settingsPanel.hidePanel();
     }
     this.showingProperties = false;
+  }
+
+  componentDidUpdate() {
+    if (this.isPreview) {
+      interact(this.el).unset();
+      return;
+    }
   }
 
   componentDidRender() {
