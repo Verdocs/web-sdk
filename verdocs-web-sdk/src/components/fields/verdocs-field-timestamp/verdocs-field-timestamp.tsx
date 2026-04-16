@@ -120,7 +120,7 @@ export class VerdocsFieldTimestamp {
     this.showingProperties = false;
   }
 
-  componentDidRender() {
+  componentDidUpdate() {
     if (this.isPreview) {
       interact(this.el).unset();
       return;

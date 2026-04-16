@@ -136,7 +136,7 @@ export class VerdocsFieldDropdown {
     }
   }
 
-  componentDidRender() {
+  componentDidUpdate() {
     if (this.isPreview) {
       interact(this.selectEl).unset();
       return;

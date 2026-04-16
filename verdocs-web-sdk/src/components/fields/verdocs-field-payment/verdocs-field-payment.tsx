@@ -132,7 +132,7 @@ export class VerdocsFieldPayment {
     }
   }
 
-  componentDidRender() {
+  componentDidUpdate() {
     if (this.isPreview) {
       interact(this.el).unset();
       return;

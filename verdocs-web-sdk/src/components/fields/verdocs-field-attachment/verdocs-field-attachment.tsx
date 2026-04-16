@@ -138,7 +138,7 @@ export class VerdocsFieldAttachment {
     }
   }
 
-  componentDidRender() {
+  componentDidUpdate() {
     if (this.isPreview) {
       interact(this.el).unset();
       return;

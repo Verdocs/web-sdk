@@ -117,7 +117,7 @@ export class VerdocsFieldCheckbox {
     }
   }
 
-  componentDidRender() {
+  componentDidUpdate() {
     if (this.isPreview) {
       interact(this.el).unset();
       return;

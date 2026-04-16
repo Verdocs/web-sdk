@@ -139,11 +139,14 @@ export class VerdocsFieldInitial {
   @State()
   tempInitials: string = '';
 
-  componentDidRender() {
+  componentDidUpdate() {
     if (this.isPreview) {
       interact(this.el).unset();
       return;
     }
+  }
+
+  componentDidRender() {
     interact.dynamicDrop(true);
 
     if (this.editable) {

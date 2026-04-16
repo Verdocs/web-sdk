@@ -126,7 +126,7 @@ export class VerdocsFieldRadio {
     }
   }
 
-  componentDidRender() {
+  componentDidUpdate() {
     if (this.isPreview) {
       interact(this.el).unset();
       return;
