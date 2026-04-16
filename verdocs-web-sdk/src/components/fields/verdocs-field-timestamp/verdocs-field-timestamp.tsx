@@ -1,10 +1,10 @@
+import interact from 'interactjs';
 import {format} from 'date-fns/format';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State, Listen} from '@stencil/core';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
-import interact from 'interactjs';
 
 /**
  * Display a timestamp. Timestamps are not editable by signers. Instead, they are automatically

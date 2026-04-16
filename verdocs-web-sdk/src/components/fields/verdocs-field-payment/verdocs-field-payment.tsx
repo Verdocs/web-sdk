@@ -1,8 +1,8 @@
+import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
-import interact from 'interactjs';
 
 /**
  * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as

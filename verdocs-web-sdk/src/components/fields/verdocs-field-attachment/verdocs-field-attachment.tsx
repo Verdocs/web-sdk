@@ -1,8 +1,8 @@
+import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
-import interact from 'interactjs';
 
 export interface ISelectedFile {
   lastModified: number;

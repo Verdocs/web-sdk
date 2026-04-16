@@ -1,8 +1,8 @@
+import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, Fragment, h, Host, Method, Prop, State, Element, Listen} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
-import interact from 'interactjs';
 
 /**
  * Displays a checkbox.

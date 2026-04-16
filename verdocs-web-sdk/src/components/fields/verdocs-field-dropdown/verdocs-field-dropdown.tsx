@@ -1,8 +1,8 @@
+import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen, Element} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
-import interact from 'interactjs';
 
 /**
  * Displays a dropdown field that allows the user to choose one of a list of options.
