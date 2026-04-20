@@ -1,6 +1,6 @@
 {
   "name": "werdocs-web-sdk-storybook",
-  "version": "6.8.1",
+  "version": "6.7.8",
   "description": "",
   "main": "index.js",
   "scripts": {
