@@ -57,8 +57,9 @@ export const defaultHeight = (type: TFieldType) => {
 
 export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number) => {
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type), settings} = field;
-  const canvasWidth = settings?.canvasWidth ?? width;
-  const canvasHeight = settings?.canvasHeight ?? height;
+  const isCanvasField = field.type === 'signature' || field.type === 'initial';
+  const canvasWidth = !isCanvasField ? width : (settings?.canvasWidth ?? width);
+  const canvasHeight = !isCanvasField ? height : (settings?.canvasHeight ?? height);
 
   el.style.width = `${canvasWidth}px`;
   el.style.height = `${canvasHeight}px`;
@@ -118,8 +119,6 @@ export const renderDocumentField = (
     console.log('[renderDocumentField] No controls DIV found', docPage.containerId + '-controls', docPage);
     return;
   }
-
-  // console.log('[renderDocumentField] Rendering field', field);
 
   switch (field.type as any) {
     case 'radio':
