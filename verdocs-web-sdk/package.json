@@ -34,7 +34,7 @@
     "@popperjs/core": "^2.11.8",
     "@stencil/core": "^4.38.3",
     "@svgdotjs/svg.js": "^3.2.5",
-    "@verdocs/js-sdk": "^6.8.2",
+    "@verdocs/js-sdk": "^6.8.1",
     "air-datepicker": "^3.6.0",
     "choices.js": "^11.1.0",
     "date-fns": "^4.1.0",
