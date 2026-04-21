@@ -10,10 +10,6 @@ verdocs-sign {
   background-color: #f5f5f5;
   font-family: $verdocs-primary-font;
 
-  verdocs-button > button.standard {
-    background: #2a63f6;
-  }
-
   div {
     display: block;
     box-sizing: border-box;
@@ -294,6 +290,7 @@ verdocs-sign {
     max-width: 1200px;
     align-items: center;
     flex-direction: row;
+    column-gap: 10px;
   }
 
   .logo {
@@ -309,6 +306,71 @@ verdocs-sign {
     white-space: nowrap;
     padding: 0 10px 0 0;
     text-overflow: ellipsis;
+  }
+
+  .remaining-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 400;
+    white-space: nowrap;
+
+    .check-icon {
+      display: inline-flex;
+      align-items: center;
+
+      svg {
+        width: 16px;
+        height: 16px;
+        fill: $verdocs-green;
+      }
+    }
+
+    .separator {
+      opacity: 0.5;
+      margin: 0 2px;
+    }
+
+    .review-optional {
+      cursor: pointer;
+      text-decoration: underline;
+
+      &:hover {
+        color: $verdocs-green-highlight;
+      }
+    }
+  }
+
+  .icon-button {
+    width: 20px;
+    height: 32px;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+
+    svg path {
+      fill: #ffffff;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &.disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    // Tighten the spacing between adjacent icon buttons (e.g. the zoom in/out pair).
+    // .inner has a 10px column-gap; pulling adjacent icons closer gives a grouped feel.
+    & + .icon-button {
+      margin-left: -6px;
+    }
   }
 }
 
@@ -394,7 +456,7 @@ verdocs-sign {
           color: #424242;
 
           &:focus {
-            border-color: #2a63f6;
+            border-color: var(--verdocs-primary-color, #{$verdocs-green});
           }
         }
       }

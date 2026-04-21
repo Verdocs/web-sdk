@@ -199,6 +199,8 @@ export class VerdocsSign {
     this.stopPolling();
     this.observer?.disconnect();
     window.removeEventListener('resize', () => this.updateZoomFromWindow());
+    // Remove any org-level style overrides we injected into the document head.
+    document.getElementById(this.getOrgStyleOverridesId())?.remove();
   }
 
   updateZoomFromWindow() {
@@ -244,6 +246,31 @@ export class VerdocsSign {
     pages.forEach(page => this.observer.observe(page));
   }
 
+  private getOrgStyleOverridesId() {
+    return `verdocs-org-style-overrides-${this.envelopeId}`;
+  }
+
+  // Injects a <style> tag into the document head containing any CSS overrides defined on the
+  // envelope's organization. This allows the organization to apply custom styling to the signing
+  // UI without rebuilding the SDK.
+  // TODO: Clean up once js-sdk is updated (style_overrides is not yet in IEnvelope).
+  applyOrgStyleOverrides() {
+    const styleId = this.getOrgStyleOverridesId();
+    const existing = document.getElementById(styleId);
+    const overrides = (this.envelope?.organization as any)?.style_overrides;
+
+    if (typeof overrides === 'string') {
+      const styleEl = (existing as HTMLStyleElement) || document.createElement('style');
+      styleEl.id = styleId;
+      styleEl.textContent = overrides;
+      if (!existing) {
+        document.head.appendChild(styleEl);
+      }
+    } else if (existing) {
+      existing.remove();
+    }
+  }
+
   processAuthResponse(response: ISignerTokenResponse) {
     const {envelope, recipient} = response;
 
@@ -253,11 +280,14 @@ export class VerdocsSign {
     this.recipient = recipient;
     this.envelope = envelope;
     this.disclosures = this.envelope?.organization?.disclaimer || DEFAULT_DISCLOSURES;
+    this.applyOrgStyleOverrides();
     this.authStep = auth_step;
     this.delegated = !!recipient.delegated_to;
     this.agreed = recipient.agreed;
-    this.signatureId = response.signatures?.[0]?.id || null;
-    this.initialId = response.initials?.[0]?.id || null;
+    // Intentionally ignore any pre-existing signatures/initials from the server. We always want to prompt the user
+    // to adopt at least once per session so the signing flow is explicit after removing the up-front progress dialog.
+    this.signatureId = null;
+    this.initialId = null;
     this.submitted = recipient.status === 'submitted';
     this.loading = false;
     this.isDone = this.submitted;
@@ -1342,28 +1372,43 @@ export class VerdocsSign {
               <div class="title">{this.envelope.name}</div>
               <div style={{flex: '1'}} />
 
-              {!this.finishLater && (() => {
-                const remaining = this.getRequiredTotalCount() - this.getRequiredFilledCount();
-                const optionalLeft = this.getOptionalUnfilledCount();
-                if (remaining > 0) {
-                  return <span class="remaining-count">{remaining} required field{remaining === 1 ? '' : 's'} left</span>;
-                }
-                return (
-                  <span class="remaining-count">
-                    <span class="check-icon" innerHTML={CheckCircleIcon} />
-                    All required fields complete
-                    {optionalLeft > 0 && <span class="separator">|</span>}
-                    {optionalLeft > 0 && <span class="review-optional" onClick={() => this.handleNextOptional()}>Review {optionalLeft} optional</span>}
-                  </span>
-                );
-              })()}
+              {!this.finishLater &&
+                (() => {
+                  const remaining = this.getRequiredTotalCount() - this.getRequiredFilledCount();
+                  const optionalLeft = this.getOptionalUnfilledCount();
+                  if (remaining > 0) {
+                    return (
+                      <span class="remaining-count">
+                        {remaining} required field{remaining === 1 ? '' : 's'} left
+                      </span>
+                    );
+                  }
+                  return (
+                    <span class="remaining-count">
+                      <span class="check-icon" innerHTML={CheckCircleIcon} />
+                      All required fields complete
+                      {optionalLeft > 0 && <span class="separator">|</span>}
+                      {optionalLeft > 0 && (
+                        <span class="review-optional" onClick={() => this.handleNextOptional()}>
+                          Review {optionalLeft} optional
+                        </span>
+                      )}
+                    </span>
+                  );
+                })()}
 
-              {!this.finishLater && <verdocs-button size="xsmall" label={this.nextButtonLabel === 'Next' ? 'Next Required' : this.nextButtonLabel} disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />}
+              {!this.finishLater && (
+                <verdocs-button
+                  size="xsmall"
+                  label={this.nextButtonLabel === 'Next' ? 'Next Required' : this.nextButtonLabel}
+                  disabled={!this.agreed || this.submitting}
+                  onClick={() => this.handleNext()}
+                />
+              )}
 
               <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
               <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
 
-              <div style={{marginLeft: '10px'}} />
               <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
             </div>
           </div>
@@ -1499,15 +1544,14 @@ export class VerdocsSign {
 
               this.markEnvelopeStarted();
 
-              // Special case: if we were focusing a specific field, apply the new signature/initials to it immediately.
-              // This is the "secondary flow" where the user clicks a field directly before adopting.
+              // Apply the new signature/initials to the field that triggered the dialog.
               if (this.focusedField) {
                 const fieldObj = this.getRecipientFields().find(f => f.name === this.focusedField);
                 if (fieldObj) {
-                  if (fieldObj.type === 'signature') {
-                    await this.handleFieldChange(fieldObj, {detail: this.signatureId});
-                  } else if (fieldObj.type === 'initial') {
-                    await this.handleFieldChange(fieldObj, {detail: this.initialId});
+                  const id = fieldObj.type === 'signature' ? this.signatureId : fieldObj.type === 'initial' ? this.initialId : null;
+                  if (id) {
+                    const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldObj.name, id, false);
+                    this.updateRecipientFieldValue(fieldObj.name, updateResult);
                   }
                 }
                 this.focusedField = '';

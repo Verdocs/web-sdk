@@ -2,7 +2,7 @@ import interact from 'interactjs';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {ITemplateField, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State, Element, Listen} from '@stencil/core';
-import {SettingsIcon, PencilIcon, EraserIcon} from '../../../utils/Icons';
+import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
 /**
@@ -117,7 +117,10 @@ export class VerdocsFieldSignature {
 
   @State() showingProperties?: boolean = false;
   @State() focused = false;
-  @State() suppressOverlay = false;
+  @State() menuOpen = false;
+
+  private closeMenuTimer: any = null;
+  private outsideMenuHandler: ((e: Event) => void) | null = null;
 
   @Listen('blur')
   handleBlur() {
@@ -134,6 +137,52 @@ export class VerdocsFieldSignature {
 
   @State()
   tempSignature: string = '';
+
+  componentDidLoad() {
+    this.outsideMenuHandler = (e: Event) => {
+      if (this.menuOpen && !this.el.contains(e.target as Node)) {
+        this.closeMenu();
+      }
+    };
+    document.addEventListener('pointerdown', this.outsideMenuHandler);
+  }
+
+  disconnectedCallback() {
+    if (this.closeMenuTimer) {
+      clearTimeout(this.closeMenuTimer);
+      this.closeMenuTimer = null;
+    }
+    if (this.outsideMenuHandler) {
+      document.removeEventListener('pointerdown', this.outsideMenuHandler);
+      this.outsideMenuHandler = null;
+    }
+  }
+
+  private openMenu = () => {
+    if (this.closeMenuTimer) {
+      clearTimeout(this.closeMenuTimer);
+      this.closeMenuTimer = null;
+    }
+    this.menuOpen = true;
+  };
+
+  private scheduleCloseMenu = () => {
+    if (this.closeMenuTimer) {
+      clearTimeout(this.closeMenuTimer);
+    }
+    this.closeMenuTimer = setTimeout(() => {
+      this.menuOpen = false;
+      this.closeMenuTimer = null;
+    }, 150);
+  };
+
+  private closeMenu = () => {
+    if (this.closeMenuTimer) {
+      clearTimeout(this.closeMenuTimer);
+      this.closeMenuTimer = null;
+    }
+    this.menuOpen = false;
+  };
 
   componentDidUpdate() {
     if (this.isPreview) {
@@ -257,7 +306,7 @@ export class VerdocsFieldSignature {
     }
 
     return (
-      <Host class={{required, disabled, done, focused, filled: !!base64, [signerClass]: true}}>
+      <Host class={{required, disabled, done, focused, filled: !!base64, 'menu-open': this.menuOpen, [signerClass]: true}}>
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}
         {editable && <div class="edge-top" />}
@@ -266,32 +315,47 @@ export class VerdocsFieldSignature {
         {label && <label>{label}</label>}
 
         {base64 ? (
-          <div class={{'signature-container': true, 'suppress-overlay': this.suppressOverlay}} onMouseLeave={() => (this.suppressOverlay = false)}>
+          <div
+            class={{'signature-container': true, 'menu-open': this.menuOpen}}
+            onMouseEnter={() => !disabled && this.openMenu()}
+            onMouseLeave={() => this.scheduleCloseMenu()}
+            onClick={e => {
+              e.stopPropagation();
+              if (disabled) return;
+              this.menuOpen ? this.closeMenu() : this.openMenu();
+            }}
+          >
             <img src={base64} alt="Signature" />
-            <div class="overlay">
-              <button
-                class="icon-button"
-                innerHTML={PencilIcon}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (disabled) return;
-                  // EDIT action: always open dialog
-                  console.log('[SIGNATURE] Editing signature');
-                  this.adopt.emit();
-                }}
-              />
-              <button
-                class="icon-button"
-                innerHTML={EraserIcon}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (disabled) return;
-                  // CLEAR action
-                  console.log('[SIGNATURE] Clearing signature');
-                  this.fieldChange?.emit(null);
-                }}
-              />
-            </div>
+            {this.menuOpen && (
+              <div class="action-menu" onMouseEnter={() => this.openMenu()} onMouseLeave={() => this.scheduleCloseMenu()}>
+                <button
+                  type="button"
+                  class="menu-item"
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (disabled) return;
+                    console.log('[SIGNATURE] Editing signature');
+                    this.closeMenu();
+                    this.adopt.emit();
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="menu-item"
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (disabled) return;
+                    console.log('[SIGNATURE] Clearing signature');
+                    this.closeMenu();
+                    this.fieldChange?.emit(null);
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <button
@@ -300,7 +364,6 @@ export class VerdocsFieldSignature {
               // If we already have a signature ID, use it immediately
               if (this.signatureid) {
                 console.log('[SIGNATURE] Reusing existing signature', this.signatureid);
-                this.suppressOverlay = true;
                 this.fieldChange?.emit(this.signatureid);
               } else {
                 this.adopt.emit();

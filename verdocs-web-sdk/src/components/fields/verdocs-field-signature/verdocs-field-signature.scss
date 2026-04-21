@@ -13,6 +13,10 @@ verdocs-field-signature {
   transform-origin: bottom left;
   border: var(--verdocs-field-border, 1px solid rgba(0, 0, 0, 0.2));
   border-radius: var(--verdocs-field-radius);
+  // Host is focusable via tabindex; hide any browser-rendered text caret and use a pointer cursor
+  // so it doesn't look like an editable text area.
+  cursor: pointer;
+  caret-color: transparent;
 
   label {
     top: -14px;
@@ -33,6 +37,12 @@ verdocs-field-signature {
     opacity: 1;
   }
 
+  // When the Edit/Clear dropdown is open, raise this field above its siblings so
+  // the menu isn't clipped by neighboring fields.
+  &.menu-open {
+    z-index: 50;
+  }
+
   .signature-container {
     width: 100%;
     height: 100%;
@@ -50,55 +60,44 @@ verdocs-field-signature {
       object-fit: contain;
     }
 
-    .overlay {
+    .action-menu {
       position: absolute;
-      top: 0;
+      top: calc(100% + 4px);
       left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(220, 220, 220, 0.85);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-radius: var(--verdocs-field-radius);
-      backdrop-filter: blur(1px);
+      min-width: 90px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      font-size: 12px;
+      font-family: $verdocs-primary-font;
 
-      .icon-button {
-        background: white;
-        border: 1px solid rgba(0, 0, 0, 0.1);
+      .menu-item {
+        background: #ffffff;
+        border: none;
+        padding: 8px 12px;
+        color: #333333;
         cursor: pointer;
-        padding: 4px;
-        border-radius: 6px;
-        color: #444;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        width: auto;
+        text-align: left;
+        width: 100%;
+        font-size: 12px;
+        line-height: 1.2;
         height: auto;
+        font-family: inherit;
 
         &:hover {
-          background-color: #fafafa;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          color: #000;
+          background-color: #f0f0f0;
+          color: #000000;
         }
 
-        svg {
-          width: 14px;
-          height: 14px;
+        &:not(:last-child) {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         }
       }
-    }
-
-    &:hover .overlay {
-      display: flex;
-    }
-
-    &.suppress-overlay:hover .overlay {
-      display: none;
     }
   }
 

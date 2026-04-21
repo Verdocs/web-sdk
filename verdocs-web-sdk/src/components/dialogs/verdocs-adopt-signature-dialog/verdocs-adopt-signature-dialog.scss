@@ -194,7 +194,7 @@ verdocs-adopt-signature-dialog {
     .clear-button-text {
       background: none;
       border: none;
-      color: var(--verdocs-primary-color, #1a73e8);
+      color: var(--verdocs-primary-color, #{$verdocs-green});
       cursor: pointer;
       font-size: 13px;
       padding: 0;
@@ -236,8 +236,8 @@ verdocs-adopt-signature-dialog {
       margin-top: 8px;
 
       .upload-button {
-        border: 1px solid var(--verdocs-primary-color, #1a73e8);
-        background-color: var(--verdocs-primary-color, #1a73e8);
+        border: 1px solid var(--verdocs-primary-color, #{$verdocs-green});
+        background-color: var(--verdocs-primary-color, #{$verdocs-green});
         color: #ffffff;
         padding: 8px 20px;
         font-size: 13px;
@@ -313,12 +313,13 @@ verdocs-adopt-signature-dialog {
       }
 
       &.proceed {
-        background-color: var(--verdocs-primary-color, #1a73e8);
+        background-color: var(--verdocs-primary-color, #{$verdocs-green});
         border: 1px solid transparent;
         color: #ffffff;
 
         &:hover {
-          background-color: #1557b0;
+          background-color: var(--verdocs-primary-color-hover, #{$verdocs-green-shade});
+          filter: brightness(0.95);
         }
       }
 

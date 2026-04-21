@@ -2,7 +2,7 @@ import interact from 'interactjs';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {ITemplateField, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element, Listen} from '@stencil/core';
-import {SettingsIcon, PencilIcon, EraserIcon} from '../../../utils/Icons';
+import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
 /**
@@ -129,7 +129,10 @@ export class VerdocsFieldInitial {
 
   @State() showingProperties?: boolean = false;
   @State() focused?: boolean = false;
-  @State() suppressOverlay = false;
+  @State() menuOpen = false;
+
+  private closeMenuTimer: any = null;
+  private outsideMenuHandler: ((e: Event) => void) | null = null;
 
   @Method() async focusField() {
     this.el.focus();
@@ -138,6 +141,52 @@ export class VerdocsFieldInitial {
 
   @State()
   tempInitials: string = '';
+
+  componentDidLoad() {
+    this.outsideMenuHandler = (e: Event) => {
+      if (this.menuOpen && !this.el.contains(e.target as Node)) {
+        this.closeMenu();
+      }
+    };
+    document.addEventListener('pointerdown', this.outsideMenuHandler);
+  }
+
+  disconnectedCallback() {
+    if (this.closeMenuTimer) {
+      clearTimeout(this.closeMenuTimer);
+      this.closeMenuTimer = null;
+    }
+    if (this.outsideMenuHandler) {
+      document.removeEventListener('pointerdown', this.outsideMenuHandler);
+      this.outsideMenuHandler = null;
+    }
+  }
+
+  private openMenu = () => {
+    if (this.closeMenuTimer) {
+      clearTimeout(this.closeMenuTimer);
+      this.closeMenuTimer = null;
+    }
+    this.menuOpen = true;
+  };
+
+  private scheduleCloseMenu = () => {
+    if (this.closeMenuTimer) {
+      clearTimeout(this.closeMenuTimer);
+    }
+    this.closeMenuTimer = setTimeout(() => {
+      this.menuOpen = false;
+      this.closeMenuTimer = null;
+    }, 150);
+  };
+
+  private closeMenu = () => {
+    if (this.closeMenuTimer) {
+      clearTimeout(this.closeMenuTimer);
+      this.closeMenuTimer = null;
+    }
+    this.menuOpen = false;
+  };
 
   componentDidUpdate() {
     if (this.isPreview) {
@@ -261,7 +310,7 @@ export class VerdocsFieldInitial {
     }
 
     return (
-      <Host class={{required, disabled, done, focused, filled: !!base64, [signerClass]: true}}>
+      <Host class={{required, disabled, done, focused, filled: !!base64, 'menu-open': this.menuOpen, [signerClass]: true}}>
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}
         {editable && <div class="edge-top" />}
@@ -270,32 +319,47 @@ export class VerdocsFieldInitial {
         {label && <label>{label}</label>}
 
         {base64 ? (
-          <div class={{'initial-container': true, 'suppress-overlay': this.suppressOverlay}} onMouseLeave={() => (this.suppressOverlay = false)}>
+          <div
+            class={{'initial-container': true, 'menu-open': this.menuOpen}}
+            onMouseEnter={() => !disabled && this.openMenu()}
+            onMouseLeave={() => this.scheduleCloseMenu()}
+            onClick={e => {
+              e.stopPropagation();
+              if (disabled) return;
+              this.menuOpen ? this.closeMenu() : this.openMenu();
+            }}
+          >
             <img src={base64} alt="Initial" />
-            <div class="overlay">
-              <button
-                class="icon-button"
-                innerHTML={PencilIcon}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (disabled) return;
-                  // EDIT action: always open dialog
-                  console.log('[INITIAL] Editing initials');
-                  this.adopt.emit();
-                }}
-              />
-              <button
-                class="icon-button"
-                innerHTML={EraserIcon}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (disabled) return;
-                  // CLEAR action
-                  console.log('[INITIAL] Clearing initials');
-                  this.fieldChange?.emit(null);
-                }}
-              />
-            </div>
+            {this.menuOpen && (
+              <div class="action-menu" onMouseEnter={() => this.openMenu()} onMouseLeave={() => this.scheduleCloseMenu()}>
+                <button
+                  type="button"
+                  class="menu-item"
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (disabled) return;
+                    console.log('[INITIAL] Editing initials');
+                    this.closeMenu();
+                    this.adopt.emit();
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  class="menu-item"
+                  onClick={e => {
+                    e.stopPropagation();
+                    if (disabled) return;
+                    console.log('[INITIAL] Clearing initials');
+                    this.closeMenu();
+                    this.fieldChange?.emit(null);
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <button
@@ -304,7 +368,6 @@ export class VerdocsFieldInitial {
               // If we already have an initial ID, use it immediately
               if (this.initialid) {
                 console.log('[INITIAL] Reusing existing initials', this.initialid);
-                this.suppressOverlay = true;
                 this.fieldChange?.emit(this.initialid);
               } else {
                 this.adopt.emit();
