@@ -7,7 +7,7 @@ import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipie
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
-import {DocumentPageIcon} from '../../../utils/Icons';
+import {DocumentPageIcon, CheckCircleIcon} from '../../../utils/Icons';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
@@ -16,6 +16,9 @@ const ToolbarMinusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns=
 const ToolbarPlusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 8.5C11.5 8.22386 11.2761 8 11 8H9V6C9 5.72386 8.77614 5.5 8.5 5.5C8.22386 5.5 8 5.72386 8 6V8H6C5.72386 8 5.5 8.22386 5.5 8.5C5.5 8.77614 5.72386 9 6 9H8V11C8 11.2761 8.22386 11.5 8.5 11.5C8.77614 11.5 9 11.2761 9 11V9H11C11.2761 9 11.5 8.77614 11.5 8.5ZM8.5 3C11.5376 3 14 5.46243 14 8.5C14 9.83879 13.5217 11.0659 12.7266 12.0196L16.8536 16.1464C17.0488 16.3417 17.0488 16.6583 16.8536 16.8536C16.68 17.0271 16.4106 17.0464 16.2157 16.9114L16.1464 16.8536L12.0196 12.7266C11.0659 13.5217 9.83879 14 8.5 14C5.46243 14 3 11.5376 3 8.5C3 5.46243 5.46243 3 8.5 3ZM8.5 4C6.01472 4 4 6.01472 4 8.5C4 10.9853 6.01472 13 8.5 13C10.9853 13 13 10.9853 13 8.5C13 6.01472 10.9853 4 8.5 4Z" fill="#424242" /></svg>`;
 const ToolbarDownloadIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 16.9988C15.7761 16.9988 16 17.2226 16 17.4988C16 17.7442 15.8231 17.9484 15.5899 17.9907L15.5 17.9988H4.5C4.22386 17.9988 4 17.7749 4 17.4988C4 17.2533 4.17688 17.0492 4.41012 17.0068L4.5 16.9988H15.5ZM10.0001 2.00098C10.2456 2.00098 10.4497 2.17798 10.492 2.41124L10.5 2.50112L10.496 14.295L14.1414 10.6466C14.3148 10.4729 14.5842 10.4534 14.7792 10.5882L14.8485 10.646C15.0222 10.8194 15.0418 11.0888 14.907 11.2838L14.8492 11.3531L10.3574 15.8531C10.285 15.9257 10.1957 15.9714 10.1021 15.9901L9.99608 15.9999C9.83511 15.9999 9.69192 15.9237 9.60051 15.8056L5.14386 11.3537C4.94846 11.1586 4.94823 10.842 5.14336 10.6466C5.3168 10.4729 5.58621 10.4534 5.78117 10.5883L5.85046 10.6461L9.496 14.287L9.5 2.50083C9.50008 2.22469 9.724 2.00098 10.0001 2.00098Z" fill="#424242"/></svg>`;
 const ToolbarPrintIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 4.5C5 3.67157 5.67157 3 6.5 3H13.5C14.3284 3 15 3.67157 15 4.5V5H15.5C16.8807 5 18 6.11929 18 7.5V12.5C18 13.3284 17.3284 14 16.5 14H15V15.5C15 16.3284 14.3284 17 13.5 17H6.5C5.67157 17 5 16.3284 5 15.5V14H3.5C2.67157 14 2 13.3284 2 12.5V7.5C2 6.11929 3.11929 5 4.5 5H5V4.5ZM6 5H14V4.5C14 4.22386 13.7761 4 13.5 4H6.5C6.22386 4 6 4.22386 6 4.5V5ZM5 13V11.5C5 10.6716 5.67157 10 6.5 10H13.5C14.3284 10 15 10.6716 15 11.5V13H16.5C16.7761 13 17 12.7761 17 12.5V7.5C17 6.67157 16.3284 6 15.5 6H4.5C3.67157 6 3 6.67157 3 7.5V12.5C3 12.7761 3.22386 13 3.5 13H5ZM6.5 11C6.22386 11 6 11.2239 6 11.5V15.5C6 15.7761 6.22386 16 6.5 16H13.5C13.7761 16 14 15.7761 14 15.5V11.5C14 11.2239 13.7761 11 13.5 11H6.5Z" fill="#424242"/></svg>`;
+
+// NOTE: Removed from published documentation due to developer confusion but there is a second way to get events. Our components emit proper
+// JS "Custom Events". Those propagate/bubble, so you can do things like this as well: document.on('sdkError', 'verdocs-sign', (e) => { ... });
 
 /**
  * Display an envelope signing experience. This will display the envelope's attached
@@ -33,12 +36,6 @@ const ToolbarPrintIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns=
  * convenience of host applications that may wish to make server calls using the
  * signer's credentials once signing is complete (e.g. to obtain copies of
  * the signed attachments.)
- *
- * ```js
- * document.on('sdkError', 'verdocs-sign', (e) => {
- *     //
- * });
- * ```
  *
  * ```ts
  * <verdocs-sign
@@ -92,7 +89,7 @@ export class VerdocsSign {
   /**
    * The style of the toolbar to display.
    */
-  @Prop() toolbarStyle: 'controls' | 'menu' = 'controls';
+  @Prop() toolbarStyle: 'controls' | 'menu' = 'menu';
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -661,8 +658,32 @@ export class VerdocsSign {
     }
   }
 
+  handleNextOptional() {
+    const unfilledOptional = this.getSortedFillableFields().filter(f => !f.required && !this.isFieldActuallyFilled(f));
+    const next = this.getNextFieldFromList(unfilledOptional);
+    if (next) {
+      const id = getFieldId(next);
+      const el = document.getElementById(id) as any;
+      el?.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'});
+      el?.focusField();
+      this.focusedField = next.name;
+    }
+  }
+
   getRecipientFields() {
     return this.envelope?.fields.filter(field => field.role_name === this.recipient.role_name) || [];
+  }
+
+  getRequiredTotalCount() {
+    return this.getSortedFillableFields().filter(f => f.required).length;
+  }
+
+  getRequiredFilledCount() {
+    return this.getSortedFillableFields().filter(f => f.required && this.isFieldActuallyFilled(f)).length;
+  }
+
+  getOptionalUnfilledCount() {
+    return this.getSortedFillableFields().filter(f => !f.required && !this.isFieldActuallyFilled(f)).length;
   }
 
   // See if everything that "needs to be" filled in is, and all "fillable fields" are valid
@@ -791,9 +812,36 @@ export class VerdocsSign {
       let label = 'FILL';
       let showSkip = false;
 
+      switch (nextField.type) {
+        case 'signature':
+          label = 'SIGN';
+          break;
+        case 'initial':
+          label = 'INITIAL';
+          break;
+        case 'checkbox':
+          label = 'CHECK';
+          break;
+        case 'radio':
+          label = 'SELECT';
+          break;
+        case 'date':
+        case 'dropdown':
+          label = 'SELECT';
+          break;
+        case 'attachment':
+          label = 'ATTACH';
+          break;
+        case 'payment':
+          label = 'PAY';
+          break;
+        default:
+          label = 'FILL';
+          break;
+      }
+
       if (!nextField.required) {
-        label = 'FILL';
-        showSkip = true; // Use the X to skip? Or just text? "Fill or Skip" implies maybe just text.
+        showSkip = true;
       }
 
       renderDocumentFlag(pageInfo, nextField.y, nextField.height || defaultHeight(nextField.type), {
@@ -1291,11 +1339,29 @@ export class VerdocsSign {
         {this.toolbarStyle === 'menu' && (
           <div id="verdocs-sign-header">
             <div class="inner">
-              <img src="https://verdocs.com/assets/white-logo.svg" alt="Verdocs Logo" class="logo" />
               <div class="title">{this.envelope.name}</div>
               <div style={{flex: '1'}} />
 
-              {!this.finishLater && <verdocs-button size="xsmall" label={this.nextButtonLabel} disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />}
+              {!this.finishLater && (() => {
+                const remaining = this.getRequiredTotalCount() - this.getRequiredFilledCount();
+                const optionalLeft = this.getOptionalUnfilledCount();
+                if (remaining > 0) {
+                  return <span class="remaining-count">{remaining} required field{remaining === 1 ? '' : 's'} left</span>;
+                }
+                return (
+                  <span class="remaining-count">
+                    <span class="check-icon" innerHTML={CheckCircleIcon} />
+                    All required fields complete
+                    {optionalLeft > 0 && <span class="separator">|</span>}
+                    {optionalLeft > 0 && <span class="review-optional" onClick={() => this.handleNextOptional()}>Review {optionalLeft} optional</span>}
+                  </span>
+                );
+              })()}
+
+              {!this.finishLater && <verdocs-button size="xsmall" label={this.nextButtonLabel === 'Next' ? 'Next Required' : this.nextButtonLabel} disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />}
+
+              <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
+              <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
 
               <div style={{marginLeft: '10px'}} />
               <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
@@ -1325,18 +1391,18 @@ export class VerdocsSign {
           </div>
         )}
 
-        <verdocs-signing-progress
-          mode={this.signingProgressMode}
-          focusedField={this.focusedField}
-          fields={this.getSortedFillableFields()}
-          recipientFields={this.getRecipientFields()}
-          onStarted={() => {
-            this.adoptingSignature = true;
-          }}
-          onNext={() => this.handleNext()}
-          onPrevious={() => this.handlePrev()}
-          onExit={() => this.handleNext()}
-        />
+        {/*<verdocs-signing-progress*/}
+        {/*  mode={this.signingProgressMode}*/}
+        {/*  focusedField={this.focusedField}*/}
+        {/*  fields={this.getSortedFillableFields()}*/}
+        {/*  recipientFields={this.getRecipientFields()}*/}
+        {/*  onStarted={() => {*/}
+        {/*    this.adoptingSignature = true;*/}
+        {/*  }}*/}
+        {/*  onNext={() => this.handleNext()}*/}
+        {/*  onPrevious={() => this.handlePrev()}*/}
+        {/*  onExit={() => this.handleNext()}*/}
+        {/*/>*/}
 
         <div class={`document signed-document-container zoom-${this.zoomLevel}`}>
           {(this.envelope.documents || []).map(envelopeDocument => {

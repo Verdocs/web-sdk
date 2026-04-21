@@ -13,7 +13,8 @@ import {Store} from '../../../utils/Datastore';
   shadow: false,
 })
 export class VerdocsFieldDropdown {
-  @Element() selectEl: HTMLSelectElement;
+  @Element() el: HTMLElement;
+  private selectEl: HTMLSelectElement;
 
   /**
    * Fields may be attached to templates or envelopes, but only template fields may be edited.
@@ -138,7 +139,7 @@ export class VerdocsFieldDropdown {
 
   componentDidUpdate() {
     if (this.isPreview) {
-      interact(this.selectEl).unset();
+      interact(this.el).unset();
       return;
     }
   }

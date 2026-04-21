@@ -200,7 +200,6 @@ export class VerdocsAuth {
       this.tempAuthEndpoint.setToken(authResult.access_token);
 
       const user = await getMyUser(this.tempAuthEndpoint);
-      console.log('Got user', user);
 
       if (!user.email_verified) {
         console.log('[AUTH] Logged in, pending email address verification');
@@ -212,7 +211,7 @@ export class VerdocsAuth {
     } catch (e) {
       this.submitting = false;
       console.log('[AUTH] Auth failure', e.response?.data || e);
-      VerdocsToast('Login failed. Please check your credentials and try again.', {style: 'error'});
+      VerdocsToast(e.response?.data?.message || 'Login failed. Please check your credentials and try again.', {style: 'error'});
     }
   }
 

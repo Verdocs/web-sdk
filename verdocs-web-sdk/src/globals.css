@@ -174,3 +174,28 @@ verdocs-field-timestamp.focused::after {
 .signer-10:hover {
   background-color: var(--signer-10-color) !important;
 }
+
+/* When a field is filled, remove the signer background color */
+.filled.signer-1,
+.filled.signer-1:hover,
+.filled.signer-2,
+.filled.signer-2:hover,
+.filled.signer-3,
+.filled.signer-3:hover,
+.filled.signer-4,
+.filled.signer-4:hover,
+.filled.signer-5,
+.filled.signer-5:hover,
+.filled.signer-6,
+.filled.signer-6:hover,
+.filled.signer-7,
+.filled.signer-7:hover,
+.filled.signer-8,
+.filled.signer-8:hover,
+.filled.signer-9,
+.filled.signer-9:hover,
+.filled.signer-10,
+.filled.signer-10:hover {
+  background-color: transparent !important;
+  border: none !important;
+}
