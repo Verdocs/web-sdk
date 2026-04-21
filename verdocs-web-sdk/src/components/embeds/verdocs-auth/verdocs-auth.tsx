@@ -210,8 +210,8 @@ export class VerdocsAuth {
       }
     } catch (e) {
       this.submitting = false;
-      console.log('[AUTH] Auth failure', e.response?.data || e);
-      VerdocsToast(e.response?.data?.message || 'Login failed. Please check your credentials and try again.', {style: 'error'});
+      console.log('[AUTH] Authentication failed', e.response?.data || e);
+      VerdocsToast(e.response?.data?.error || 'Login failed. Please check your credentials and try again.', {style: 'error'});
     }
   }
 
