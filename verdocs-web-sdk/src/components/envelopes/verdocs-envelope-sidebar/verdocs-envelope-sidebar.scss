@@ -153,6 +153,16 @@ verdocs-envelope-sidebar {
     text-transform: capitalize;
   }
 
+  .recipient-email {
+    flex: 1;
+    box-sizing: border-box;
+  }
+
+  .recipient-phone {
+    flex: 1;
+    box-sizing: border-box;
+  }
+
   .recipient-status {
     flex: 0 0 100px;
     border-radius: 5px;

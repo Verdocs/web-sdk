@@ -550,8 +550,8 @@ export class VerdocsEnvelopeSidebar {
 
                   <dic class="recipient-content">
                     <div class="recipient-name">{fullName}</div>
-                    <div class="recipient-name">{recipient.email}</div>
-                    <div class="recipient-name">{recipient.phone}</div>
+                    <div class="recipient-email">{recipient.email}</div>
+                    <div class="recipient-phone">{recipient.phone}</div>
                   </dic>
                 </div>
               );
