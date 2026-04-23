@@ -75,6 +75,7 @@ export class VerdocsAuth {
   @State() first_name: string = '';
   @State() last_name: string = '';
   @State() email: string = '';
+  @State() phone: string = '';
   @State() verificationCode: string = '';
   @State() newPassword: string = '';
   @State() password: string = '';
@@ -142,12 +143,15 @@ export class VerdocsAuth {
       first_name: this.first_name,
       last_name: this.last_name,
       org_name: this.org_name,
+      // @ts-expect-error - TODO: SDK v6.8.2
+      phone: this.phone,
     })
       .then(r => {
         console.log('[AUTH] Profile creation result', r);
         this.tempAuthEndpoint.setToken(r.access_token);
         // We can't clearForms because we need email to stick around
         this.password = '';
+        this.phone = '';
         this.first_name = '';
         this.last_name = '';
         this.org_name = '';
@@ -210,8 +214,8 @@ export class VerdocsAuth {
       }
     } catch (e) {
       this.submitting = false;
-      console.log('[AUTH] Authentication failed', e.response?.data || e);
-      VerdocsToast(e.response?.data?.error || 'Login failed. Please check your credentials and try again.', {style: 'error'});
+      console.log('[AUTH] Auth failure', e.response?.data || e);
+      VerdocsToast('Login failed. Please check your credentials and try again.', {style: 'error'});
     }
   }
 
@@ -219,6 +223,7 @@ export class VerdocsAuth {
     this.submitting = false;
     this.resendDisabled = false;
     this.email = '';
+    this.phone = '';
     this.password = '';
     this.newPassword = '';
     this.confirmpass = '';
@@ -416,6 +421,15 @@ export class VerdocsAuth {
               autocomplete="off"
               value={this.confirmpass}
               onInput={(e: any) => (this.confirmpass = e.target.value)}
+              disabled={this.submitting}
+            />
+            <verdocs-text-input
+              label="Phone Number"
+              type="text"
+              required={true}
+              autocomplete="phone"
+              value={this.phone}
+              onInput={(e: any) => (this.phone = e.target.value)}
               disabled={this.submitting}
             />
             <verdocs-text-input
