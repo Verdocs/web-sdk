@@ -5,7 +5,7 @@ import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
 import {type ITemplate, type ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen} from '@stencil/core';
+import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {FORMAT_DATE} from '../../../utils/Types';
 import {Store} from '../../../utils/Datastore';
@@ -137,11 +137,17 @@ export class VerdocsFieldDate {
     }
   }
 
-  componentDidUpdate() {
-    if (this.isPreview) {
+  @Watch('editable')
+  onEditableChanged(newVal: boolean, oldVal: boolean) {
+    // When transitioning out of editable mode (e.g., builder -> preview tab), clear interact bindings
+    if (oldVal && !newVal) {
       interact(this.el).unset();
-      return;
     }
+  }
+
+  disconnectedCallback() {
+    // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
+    interact(this.el).unset();
   }
 
   componentDidRender() {
@@ -253,11 +259,11 @@ export class VerdocsFieldDate {
     const formattedValue = value ? format(new Date(value), FORMAT_DATE) : '';
 
     if (this.done) {
-      return <Host class={{done}}>{formattedValue}</Host>;
+      return <Host class={{'verdocs-field': true,done}}>{formattedValue}</Host>;
     }
 
     return (
-      <Host class={{required, disabled, done, focused, small, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,required, disabled, done, focused, small, [signerClass]: true}}>
         {editable && <div class="edge-top" />}
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}

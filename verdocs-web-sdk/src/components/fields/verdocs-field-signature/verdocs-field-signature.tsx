@@ -1,7 +1,7 @@
 import interact from 'interactjs';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {ITemplateField, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State, Element, Listen} from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State, Element, Listen, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -156,6 +156,8 @@ export class VerdocsFieldSignature {
       document.removeEventListener('pointerdown', this.outsideMenuHandler);
       this.outsideMenuHandler = null;
     }
+    // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
+    interact(this.el).unset();
   }
 
   private openMenu = () => {
@@ -184,10 +186,11 @@ export class VerdocsFieldSignature {
     this.menuOpen = false;
   };
 
-  componentDidUpdate() {
-    if (this.isPreview) {
+  @Watch('editable')
+  onEditableChanged(newVal: boolean, oldVal: boolean) {
+    // When transitioning out of editable mode (e.g., builder -> preview tab), clear interact bindings
+    if (oldVal && !newVal) {
       interact(this.el).unset();
-      return;
     }
   }
 
@@ -302,11 +305,11 @@ export class VerdocsFieldSignature {
     const signerClass = `signer-${(index % 10) + 1}`;
 
     if (done) {
-      return <Host class={{done}}>{value && <img src={base64} alt="" />}</Host>;
+      return <Host class={{'verdocs-field': true,done}}>{value && <img src={base64} alt="" />}</Host>;
     }
 
     return (
-      <Host class={{required, disabled, done, focused, filled: !!base64, 'menu-open': this.menuOpen, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,required, disabled, done, focused, filled: !!base64, 'menu-open': this.menuOpen, [signerClass]: true}}>
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}
         {editable && <div class="edge-top" />}

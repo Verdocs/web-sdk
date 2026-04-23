@@ -118,6 +118,16 @@ export class VerdocsTemplateFields {
     }
   }
 
+  @Listen('settingsChanged')
+  handleFieldSettingsChanged() {
+    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'updated-field'});
+  }
+
+  @Listen('deleted')
+  handleFieldDeleted() {
+    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'deleted-field'});
+  }
+
   async componentWillLoad() {
     try {
       this.endpoint.loadSession();
@@ -171,6 +181,7 @@ export class VerdocsTemplateFields {
       () => getTemplate(this.endpoint, this.templateId),
       false,
       (template: ITemplate) => {
+        console.log('Template updated');
         this.template = template;
         this.loading = false;
 
@@ -189,30 +200,6 @@ export class VerdocsTemplateFields {
     }
   }
 
-  attachFieldAttributes(pageInfo: IDocumentPageInfo, field: ITemplateField, el: HTMLElement) {
-    el.addEventListener('settingsChanged', () => {
-      console.log('[FIELDS] Field settings changed, updating template...');
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'updated-field'});
-    });
-
-    el.addEventListener('deleted', () => {
-      el.remove();
-      console.log('[FIELDS] Field deleted, updating template...');
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'deleted-field'});
-    });
-
-    el.setAttribute('templateid', this.templateId);
-    el.setAttribute('fieldname', field.name);
-    el.setAttribute('documentid', String(pageInfo.documentId));
-    // TODO: Merge these
-    el.setAttribute('pageNumber', String(pageInfo.pageNumber));
-    el.setAttribute('pagenumber', String(field.page));
-    el.setAttribute('xScale', String(pageInfo.xScale));
-    el.setAttribute('yScale', String(pageInfo.yScale));
-    el.setAttribute('name', field.name);
-    this.makeDraggable(el);
-  }
-
   cachedPageInfo: Record<string, Record<number, IDocumentPageInfo>> = {};
   handlePageRendered(e: any) {
     const pageInfo = e.detail as IDocumentPageInfo;
@@ -228,7 +215,13 @@ export class VerdocsTemplateFields {
         const id = getFieldId(field);
         const el = document.getElementById(id);
         if (el) {
-          this.attachFieldAttributes(pageInfo, field, el);
+          el.setAttribute('templateid', this.templateId);
+          el.setAttribute('fieldname', field.name);
+          el.setAttribute('documentid', String(field.document_id));
+          el.setAttribute('pagenumber', String(field.page));
+          el.setAttribute('xScale', String(pageInfo.xScale));
+          el.setAttribute('yScale', String(pageInfo.yScale));
+          this.makeDraggable(el);
         }
       });
   }
@@ -341,7 +334,7 @@ export class VerdocsTemplateFields {
 
   async handleClickPage(e: any, documentId: string, pageNumber: number) {
     if (this.placing) {
-      console.log('Placing field', {documentId, pageNumber});
+      // console.log('Placing field', {documentId, pageNumber});
       const clickedX = e.offsetX;
       const clickedY = e.offsetY;
 
@@ -377,13 +370,13 @@ export class VerdocsTemplateFields {
         readonly: false,
         options: this.placing === 'radio' ? [{id: 'option-1', label: 'Option 1'}] : [],
       };
-      console.log('[FIELDS] Will save new field', field);
 
       const newField = await createField(this.endpoint, this.templateId, field);
-      console.log('[FIELDS] Saved field', newField);
+      console.log('[FIELDS] Created field', newField);
 
       const newTemplate = JSON.parse(JSON.stringify(this.template));
       newTemplate.fields.push(newField);
+
       Store.updateTemplate(this.templateId, newTemplate);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: newTemplate, event: 'added-field'});
 
@@ -392,6 +385,7 @@ export class VerdocsTemplateFields {
   }
 
   render() {
+    console.log('Rendering');
     if (this.loading) {
       return (
         <Host>

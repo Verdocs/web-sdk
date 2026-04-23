@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen, Element} from '@stencil/core';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen, Element, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -137,11 +137,17 @@ export class VerdocsFieldDropdown {
     }
   }
 
-  componentDidUpdate() {
-    if (this.isPreview) {
+  @Watch('editable')
+  onEditableChanged(newVal: boolean, oldVal: boolean) {
+    // When transitioning out of editable mode (e.g., builder -> preview tab), clear interact bindings
+    if (oldVal && !newVal) {
       interact(this.el).unset();
-      return;
     }
+  }
+
+  disconnectedCallback() {
+    // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
+    interact(this.el).unset();
   }
 
   render() {
@@ -157,7 +163,7 @@ export class VerdocsFieldDropdown {
     }
 
     if (done) {
-      return <Host class={{done}}>{value}</Host>;
+      return <Host class={{'verdocs-field': true,done}}>{value}</Host>;
     }
 
     // TODO: Look for other places this mistaken assumption was made.
@@ -165,7 +171,7 @@ export class VerdocsFieldDropdown {
     options ||= [];
 
     return (
-      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,required, disabled, done, focused, [signerClass]: true}}>
         {label && <label>{label}</label>}
 
         <select disabled={readonly || disabled} onChange={e => this.handleChange(e)} onFocus={() => (this.focused = true)} ref={el => (this.selectEl = el as HTMLSelectElement)}>

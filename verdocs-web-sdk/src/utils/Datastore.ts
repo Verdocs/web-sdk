@@ -146,7 +146,7 @@ export const Store = {
       const field = (template.fields || []).find(field => field.name === fieldName);
 
       const roleNames = (template.roles || []).map(role => role.name);
-      const index = roleNames.findIndex(name => name === field.role_name);
+      const index = (roleNames || []).findIndex(name => name === field?.role_name);
 
       return {index: Math.max(index, 0), field: fieldOverride || field};
     } else {

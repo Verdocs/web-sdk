@@ -1,3 +1,4 @@
+import interact from 'interactjs';
 import {getTemplate, integerSequence, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Event, EventEmitter, Host, Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
 import {renderDocumentField} from '../../../utils/utils';
@@ -94,6 +95,16 @@ export class VerdocsPreview {
       console.log('[PREVIEW] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
+  }
+
+  componentDidRender() {
+    // Defensive hack: fields rendered in other tabs (e.g. the builder's Fields tab) may share DOM
+    // IDs with fields shown here, and interact.js — being vanilla JS — is unaware of Stencil's
+    // re-renders. Unbind any drag/resize handlers on every .verdocs-field after each render so
+    // fields stay non-interactive in preview mode regardless of where they came from.
+    document.querySelectorAll('.verdocs-field').forEach(el => {
+      interact(el as HTMLElement).unset();
+    });
   }
 
   handlePageRendered(e: any) {

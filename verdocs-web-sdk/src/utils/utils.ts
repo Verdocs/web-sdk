@@ -118,7 +118,10 @@ export const renderDocumentField = (
   const {disabled = false, editable = false, draggable = false, done = false} = fieldOptions;
   const controlsDiv = document.getElementById(docPage.containerId + '-controls');
   if (!controlsDiv) {
-    console.log('[renderDocumentField] No controls DIV found', docPage.containerId + '-controls', docPage);
+    // TODO: This gets emitted a lot by the builder naturally, when placing or updating fields, because Store.updateTemplate
+    //  triggers a re-render but we still have async code pending in contexts with references to the old/wrong controls DIV
+    //  IDs. It doesn't break anything because the re-render fixes it all up. But we do want to trap this for "other" situations.
+    // console.log('[renderDocumentField] No controls DIV found', docPage.containerId + '-controls', docPage);
     return;
   }
 
