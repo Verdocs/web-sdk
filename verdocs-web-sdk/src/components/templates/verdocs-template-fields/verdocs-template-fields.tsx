@@ -32,7 +32,7 @@ const iconDropdown =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" stroke-width="1.5" stroke="currentColor"><path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" /></svg>';
 
 const iconAttachment =
-  '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>';
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>';
 
 const separator = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.707 14.707"><g><rect x="6.275" y="0" fill="#ffffff7f" width="1" height="15"/></g></svg>';
 
@@ -94,9 +94,7 @@ export class VerdocsTemplateFields {
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
-
-  @Event({composed: true}) fieldsUpdated: EventEmitter<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: ITemplateField[]}>;
+  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'}>;
 
   @State() placing: TFieldType | null = null;
   @State() showMustSelectRole = false;
@@ -191,22 +189,28 @@ export class VerdocsTemplateFields {
     }
   }
 
-  attachFieldAttributes(pageInfo: IDocumentPageInfo, field: ITemplateField, el: HTMLInputElement) {
-    // el.addEventListener('input', e => this.handleFieldChange(field, e));
+  attachFieldAttributes(pageInfo: IDocumentPageInfo, field: ITemplateField, el: HTMLElement) {
     el.addEventListener('settingsChanged', () => {
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'added-field'});
-    });
-    el.addEventListener('deleted', () => {
-      el.remove();
+      console.log('[FIELDS] Field settings changed, updating template...');
       this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'updated-field'});
     });
+
+    el.addEventListener('deleted', () => {
+      el.remove();
+      console.log('[FIELDS] Field deleted, updating template...');
+      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'deleted-field'});
+    });
+
     el.setAttribute('templateid', this.templateId);
     el.setAttribute('fieldname', field.name);
     el.setAttribute('documentid', String(pageInfo.documentId));
+    // TODO: Merge these
     el.setAttribute('pageNumber', String(pageInfo.pageNumber));
+    el.setAttribute('pagenumber', String(field.page));
     el.setAttribute('xScale', String(pageInfo.xScale));
     el.setAttribute('yScale', String(pageInfo.yScale));
     el.setAttribute('name', field.name);
+    this.makeDraggable(el);
   }
 
   cachedPageInfo: Record<string, Record<number, IDocumentPageInfo>> = {};
@@ -224,10 +228,7 @@ export class VerdocsTemplateFields {
         const id = getFieldId(field);
         const el = document.getElementById(id);
         if (el) {
-          el.setAttribute('fieldname', field.name);
-          el.setAttribute('pagenumber', String(field.page));
-          el.setAttribute('documentid', String(field.document_id));
-          this.makeDraggable(el);
+          this.attachFieldAttributes(pageInfo, field, el);
         }
       });
   }

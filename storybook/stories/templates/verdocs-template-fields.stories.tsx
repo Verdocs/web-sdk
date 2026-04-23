@@ -16,5 +16,5 @@ export default {
 
 export const Fields = ({templateId}) =>
   html`<div style="height: 600px">
-    <verdocs-template-fields .templateId=${templateId} />
+    <verdocs-template-fields .templateId=${templateId} @templateUpdated=${e => console.log('Template updated', e)} />
   </div>`;

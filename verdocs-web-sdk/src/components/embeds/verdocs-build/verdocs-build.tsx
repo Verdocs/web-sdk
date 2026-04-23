@@ -3,7 +3,7 @@ import {Component, Prop, h, Element, Event, EventEmitter, Host, Watch, State} fr
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
-export type TVerdocsBuildStep = 'attachments' | 'roles' | 'settings' | 'fields' | 'preview';
+export type TVerdocsBuildStep = 'attachments' | 'roles' | 'fields' | 'preview';
 
 /**
  * Display a template building experience. Several event callbacks provide status updates to the
@@ -166,10 +166,12 @@ export class VerdocsBuild {
   }
 
   async handleRolesUpdated(e: any) {
+    console.log('[BUILD] Roloes updated', e);
     this.templateUpdated?.emit(e.detail);
   }
 
   async handleTemplateUpdated(e: any) {
+    console.log('[BUILD] Template updated', e);
     this.templateUpdated?.emit(e.detail);
   }
 
@@ -235,8 +237,6 @@ export class VerdocsBuild {
               onRolesUpdated={e => this.handleRolesUpdated(e)}
             />
           )}
-
-          {this.step === 'settings' && <verdocs-template-settings templateId={this.templateId} endpoint={this.endpoint} onTemplateUpdated={e => this.handleTemplateUpdated(e)} />}
 
           {this.step === 'fields' && <verdocs-template-fields templateId={this.templateId} endpoint={this.endpoint} onTemplateUpdated={e => this.handleTemplateUpdated(e)} />}
 
