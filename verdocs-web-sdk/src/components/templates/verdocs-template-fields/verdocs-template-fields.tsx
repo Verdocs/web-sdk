@@ -152,6 +152,14 @@ export class VerdocsTemplateFields {
   componentDidRender() {
     interact.dynamicDrop(true);
 
+    // Defensive re-attach: when returning to the Fields tab from Preview, the preview component
+    // may have unset interact bindings on shared field DOM elements. pageRendered doesn't always
+    // refire in that case, so ensure every .verdocs-field in the document has a drag handler.
+    // makeDraggable is idempotent (interact re-configures the same Interactable).
+    document.querySelectorAll('.verdocs-field').forEach(el => {
+      this.makeDraggable(el as HTMLElement);
+    });
+
     const toolbarTarget = this.toolbarTargetId ? document.getElementById(this.toolbarTargetId) : null;
     const toolbarEl = document.getElementById('verdocs-template-fields-toolbar');
     if (toolbarTarget && toolbarEl) {

@@ -1,5 +1,5 @@
-import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, IAuthenticateResponse, getMyUser, IProfile} from '@verdocs/js-sdk';
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
+import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, IAuthenticateResponse, getMyUser, IProfile} from '@verdocs/js-sdk';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
@@ -96,6 +96,13 @@ export class VerdocsAuth {
 
   componentWillLoad() {
     this.endpoint.loadSession();
+    this.applyHashDisplayMode();
+
+    // We need to listen to the hashchange to know when we're being sent to #forgot-password
+    if (typeof window !== 'undefined') {
+      window.addEventListener('hashchange', this.handleHashChange);
+    }
+
     VerdocsEndpoint.getDefault().onSessionChanged((_endpoint, session, profile) => {
       this.session = session;
       this.profile = profile;
@@ -105,6 +112,27 @@ export class VerdocsAuth {
         this.authenticated?.emit({authenticated: false, session, profile});
       }
     });
+  }
+
+  disconnectedCallback() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('hashchange', this.handleHashChange);
+    }
+  }
+
+  handleHashChange = () => {
+    this.applyHashDisplayMode();
+  };
+
+  applyHashDisplayMode() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const hash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
+    if (hash === 'forgot-password' || hash === 'forgot') {
+      this.displayMode = 'forgot';
+    }
   }
 
   isPasswordComplex(password: string) {
