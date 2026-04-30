@@ -100,7 +100,7 @@ export class VerdocsAuth {
     this.endpoint.loadSession();
     this.applyHashDisplayMode();
 
-    // We need to listen to the hashchange to know when we're being sent to #forgot-password
+    // We need to listen to the hashchange to know when we're being sent to #forgot
     if (typeof window !== 'undefined') {
       window.addEventListener('hashchange', this.handleHashChange);
     }
@@ -132,7 +132,7 @@ export class VerdocsAuth {
     }
 
     const hash = (window.location.hash || '').replace(/^#/, '').toLowerCase();
-    if (hash === 'forgot-password' || hash === 'forgot') {
+    if (hash === 'forgot') {
       this.displayMode = 'forgot';
     }
   }
