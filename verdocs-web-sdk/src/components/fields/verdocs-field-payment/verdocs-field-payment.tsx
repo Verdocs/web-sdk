@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment, Element, Listen} from '@stencil/core';
+import {Component, h, Host, Prop, Event, EventEmitter, State, Method, Fragment, Element, Listen, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -132,13 +132,6 @@ export class VerdocsFieldPayment {
     }
   }
 
-  componentDidUpdate() {
-    if (this.isPreview) {
-      interact(this.el).unset();
-      return;
-    }
-  }
-
   @Method()
   async focusField() {
     this.el.focus();
@@ -161,6 +154,19 @@ export class VerdocsFieldPayment {
     }
   }
 
+  @Watch('editable')
+  onEditableChanged(newVal: boolean, oldVal: boolean) {
+    // When transitioning out of editable mode (e.g., builder -> preview tab), clear interact bindings
+    if (oldVal && !newVal) {
+      interact(this.el).unset();
+    }
+  }
+
+  disconnectedCallback() {
+    // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
+    interact(this.el).unset();
+  }
+
   render() {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
 
@@ -172,11 +178,11 @@ export class VerdocsFieldPayment {
     }
 
     if (done) {
-      return <Host class={{done}}>$✓</Host>;
+      return <Host class={{'verdocs-field': true,done}}>$✓</Host>;
     }
 
     return (
-      <Host class={{focused, disabled, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,focused, disabled, [signerClass]: true}}>
         <button class={{hide: this.signed}}>$</button>
         {this.signed ? <div class="frame" /> : <div style={{display: 'none'}} />}
         <img width="100%" height="100%" src={this.signatureUrl} alt="Payment Icon" />

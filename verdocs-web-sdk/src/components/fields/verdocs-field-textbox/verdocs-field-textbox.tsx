@@ -1,7 +1,7 @@
 import interact from 'interactjs';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {IEnvelopeField, ITemplate, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State, Listen} from '@stencil/core';
+import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State, Listen, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -125,11 +125,17 @@ export class VerdocsFieldTextbox {
     this.showingProperties = false;
   }
 
-  componentDidUpdate() {
-    if (this.isPreview) {
+  @Watch('editable')
+  onEditableChanged(newVal: boolean, oldVal: boolean) {
+    // When transitioning out of editable mode (e.g., builder -> preview tab), clear interact bindings
+    if (oldVal && !newVal) {
       interact(this.el).unset();
-      return;
     }
+  }
+
+  disconnectedCallback() {
+    // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
+    interact(this.el).unset();
   }
 
   componentDidRender() {
@@ -230,11 +236,11 @@ export class VerdocsFieldTextbox {
     const maxlength = width / 5;
 
     if (done) {
-      return <Host class={{done}}>{value}</Host>;
+      return <Host class={{'verdocs-field': true,done}}>{value}</Host>;
     }
 
     return (
-      <Host class={{required, disabled, done, focused, small, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,required, disabled, done, focused, small, [signerClass]: true}}>
         {editable && <div class="edge-top" />}
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}

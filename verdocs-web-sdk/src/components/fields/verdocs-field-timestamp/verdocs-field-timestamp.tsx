@@ -1,7 +1,7 @@
 import interact from 'interactjs';
 import {format} from 'date-fns/format';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State, Listen} from '@stencil/core';
+import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State, Listen, Watch} from '@stencil/core';
 import {FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
@@ -120,10 +120,18 @@ export class VerdocsFieldTimestamp {
     this.showingProperties = false;
   }
 
-  componentDidUpdate() {
-    if (this.isPreview) {
+  @Watch('editable')
+  onEditableChanged(newVal: boolean, oldVal: boolean) {
+    // When transitioning out of editable mode (e.g., builder -> preview tab), clear interact bindings
+    if (oldVal && !newVal && this.el) {
       interact(this.el).unset();
-      return;
+    }
+  }
+
+  disconnectedCallback() {
+    // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
+    if (this.el) {
+      interact(this.el).unset();
     }
   }
 
@@ -137,11 +145,11 @@ export class VerdocsFieldTimestamp {
     const formatted = format(new Date(value || new Date().toISOString()), FORMAT_TIMESTAMP);
 
     if (done) {
-      return <Host class={{done}}>{formatted}</Host>;
+      return <Host class={{'verdocs-field': true,done}}>{formatted}</Host>;
     }
 
     return (
-      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,required, disabled, done, focused, [signerClass]: true}}>
         {label && <label>{label}</label>}
         <input type="text" placeholder={placeholder} value={formatted} disabled={true} ref={el => (this.el = el)} onFocus={() => (this.focused = true)} />
 

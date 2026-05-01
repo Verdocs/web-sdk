@@ -4394,8 +4394,7 @@ declare global {
     };
     interface HTMLVerdocsTemplateFieldsElementEventMap {
         "sdkError": SDKError;
-        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
-        "fieldsUpdated": {endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: ITemplateField[]};
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'};
     }
     /**
      * Displays a builder experience for laying out fields in a template. Note that this experience requires a large display area to
@@ -7487,7 +7486,6 @@ declare namespace LocalJSX {
           * @default VerdocsEndpoint.getDefault()
          */
         "endpoint"?: VerdocsEndpoint;
-        "onFieldsUpdated"?: (event: VerdocsTemplateFieldsCustomEvent<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: ITemplateField[]}>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
@@ -7495,7 +7493,7 @@ declare namespace LocalJSX {
         /**
           * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
          */
-        "onTemplateUpdated"?: (event: VerdocsTemplateFieldsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
+        "onTemplateUpdated"?: (event: VerdocsTemplateFieldsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'}>) => void;
         /**
           * The ID of the template to create the document from.
           * @default null

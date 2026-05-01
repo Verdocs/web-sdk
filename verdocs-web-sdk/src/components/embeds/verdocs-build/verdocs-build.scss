@@ -16,6 +16,10 @@ verdocs-build {
 
   verdocs-template-attachments,
   verdocs-template-roles {
+    display: block;
+    width: 500px;
+    max-width: 95%;
+    box-sizing: border-box;
     margin: 20px;
   }
 

@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 import {IEnvelopeField, VerdocsEndpoint, ITemplateField, updateField} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State, Listen} from '@stencil/core';
+import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State, Listen, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -127,11 +127,17 @@ export class VerdocsFieldTextarea {
     this.focused = false;
   }
 
-  componentDidUpdate() {
-    if (this.isPreview) {
+  @Watch('editable')
+  onEditableChanged(newVal: boolean, oldVal: boolean) {
+    // When transitioning out of editable mode (e.g., builder -> preview tab), clear interact bindings
+    if (oldVal && !newVal) {
       interact(this.el).unset();
-      return;
     }
+  }
+
+  disconnectedCallback() {
+    // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
+    interact(this.el).unset();
   }
 
   componentDidRender() {
@@ -201,11 +207,11 @@ export class VerdocsFieldTextarea {
     const signerClass = `signer-${(index % 10) + 1}`;
 
     if (done) {
-      return <Host class={{done}}>{value}</Host>;
+      return <Host class={{'verdocs-field': true,done}}>{value}</Host>;
     }
 
     return (
-      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,required, disabled, done, focused, [signerClass]: true}}>
         {label && <label>{label}</label>}
 
         <textarea

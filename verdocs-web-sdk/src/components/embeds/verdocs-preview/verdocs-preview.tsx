@@ -1,5 +1,6 @@
+import interact from 'interactjs';
 import {getTemplate, integerSequence, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {Event, EventEmitter, Host, Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
+import {Element, Event, EventEmitter, Host, Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
 import {renderDocumentField} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
@@ -25,6 +26,8 @@ import {Store} from '../../../utils/Datastore';
 export class VerdocsPreview {
   private templateListenerId = null;
   private renderedPages: Record<string, IDocumentPageInfo> = {};
+
+  @Element() hostEl: HTMLElement;
 
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -94,6 +97,17 @@ export class VerdocsPreview {
       console.log('[PREVIEW] Error with preview session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     }
+  }
+
+  componentDidRender() {
+    // Defensive hack: fields rendered in other tabs (e.g. the builder's Fields tab) may share DOM
+    // IDs with fields shown here, and interact.js — being vanilla JS — is unaware of Stencil's
+    // re-renders. Unbind any drag/resize handlers on fields inside our own subtree after each
+    // render so they stay non-interactive in preview mode. Scope to hostEl so we don't clobber
+    // handlers on fields belonging to a sibling component during brief tab-switch overlaps.
+    this.hostEl?.querySelectorAll('.verdocs-field').forEach(el => {
+      interact(el as HTMLElement).unset();
+    });
   }
 
   handlePageRendered(e: any) {

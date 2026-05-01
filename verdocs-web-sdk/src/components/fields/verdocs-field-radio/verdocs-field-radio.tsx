@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element, Listen} from '@stencil/core';
+import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element, Listen, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -126,11 +126,17 @@ export class VerdocsFieldRadio {
     }
   }
 
-  componentDidUpdate() {
-    if (this.isPreview) {
+  @Watch('editable')
+  onEditableChanged(newVal: boolean, oldVal: boolean) {
+    // When transitioning out of editable mode (e.g., builder -> preview tab), clear interact bindings
+    if (oldVal && !newVal) {
       interact(this.el).unset();
-      return;
     }
+  }
+
+  disconnectedCallback() {
+    // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
+    interact(this.el).unset();
   }
 
   render() {
@@ -143,14 +149,14 @@ export class VerdocsFieldRadio {
 
     if (done) {
       return (
-        <Host class={{done}} style={{maxWidth: '10px'}}>
+        <Host class={{'verdocs-field': true,done}} style={{maxWidth: '10px'}}>
           <span innerHTML={selected ? RadioIconSelected : RadioIconUnselected} />
         </Host>
       );
     }
 
     return (
-      <Host class={{required: this.required || required, disabled, done, focused, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,required: this.required || required, disabled, done, focused, [signerClass]: true}}>
         {label && <div class="label">{label}</div>}
         {editable && group && <div class="group">{group}</div>}
 

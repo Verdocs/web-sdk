@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
-import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment, Element, Listen} from '@stencil/core';
+import {Component, h, Host, Prop, Method, Event, EventEmitter, State, Fragment, Element, Listen, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -138,11 +138,17 @@ export class VerdocsFieldAttachment {
     }
   }
 
-  componentDidUpdate() {
-    if (this.isPreview) {
+  @Watch('editable')
+  onEditableChanged(newVal: boolean, oldVal: boolean) {
+    // When transitioning out of editable mode (e.g., builder -> preview tab), clear interact bindings
+    if (oldVal && !newVal) {
       interact(this.el).unset();
-      return;
     }
+  }
+
+  disconnectedCallback() {
+    // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
+    interact(this.el).unset();
   }
 
   handleShow() {
@@ -175,14 +181,14 @@ export class VerdocsFieldAttachment {
 
     if (done) {
       return (
-        <Host class={{done}}>
+        <Host class={{'verdocs-field': true,done}}>
           <div class="attach" innerHTML={hasFile ? AttachedIcon : PaperclipIcon} />
         </Host>
       );
     }
 
     return (
-      <Host class={{required, disabled, done, focused, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,required, disabled, done, focused, [signerClass]: true}}>
         {label && <label>{label}</label>}
 
         <div class="attach" innerHTML={hasFile ? AttachedIcon : PaperclipIcon} onClick={() => !disabled && !readonly && this.handleShow()} />

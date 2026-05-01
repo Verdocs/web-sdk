@@ -32,7 +32,7 @@ const iconDropdown =
   '<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" stroke-width="1.5" stroke="currentColor"><path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25" /></svg>';
 
 const iconAttachment =
-  '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>';
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>';
 
 const separator = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.707 14.707"><g><rect x="6.275" y="0" fill="#ffffff7f" width="1" height="15"/></g></svg>';
 
@@ -94,9 +94,7 @@ export class VerdocsTemplateFields {
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>;
-
-  @Event({composed: true}) fieldsUpdated: EventEmitter<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: ITemplateField[]}>;
+  @Event({composed: true}) templateUpdated: EventEmitter<{endpoint: VerdocsEndpoint; template: ITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'}>;
 
   @State() placing: TFieldType | null = null;
   @State() showMustSelectRole = false;
@@ -118,6 +116,16 @@ export class VerdocsTemplateFields {
     if (ev.key === 'Escape') {
       this.placing = null;
     }
+  }
+
+  @Listen('settingsChanged')
+  handleFieldSettingsChanged() {
+    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'updated-field'});
+  }
+
+  @Listen('deleted')
+  handleFieldDeleted() {
+    this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'deleted-field'});
   }
 
   async componentWillLoad() {
@@ -143,6 +151,14 @@ export class VerdocsTemplateFields {
 
   componentDidRender() {
     interact.dynamicDrop(true);
+
+    // Defensive re-attach: when returning to the Fields tab from Preview, the preview component
+    // may have unset interact bindings on shared field DOM elements. pageRendered doesn't always
+    // refire in that case, so ensure every .verdocs-field in the document has a drag handler.
+    // makeDraggable is idempotent (interact re-configures the same Interactable).
+    document.querySelectorAll('.verdocs-field').forEach(el => {
+      this.makeDraggable(el as HTMLElement);
+    });
 
     const toolbarTarget = this.toolbarTargetId ? document.getElementById(this.toolbarTargetId) : null;
     const toolbarEl = document.getElementById('verdocs-template-fields-toolbar');
@@ -173,6 +189,7 @@ export class VerdocsTemplateFields {
       () => getTemplate(this.endpoint, this.templateId),
       false,
       (template: ITemplate) => {
+        console.log('Template updated');
         this.template = template;
         this.loading = false;
 
@@ -191,24 +208,6 @@ export class VerdocsTemplateFields {
     }
   }
 
-  attachFieldAttributes(pageInfo: IDocumentPageInfo, field: ITemplateField, el: HTMLInputElement) {
-    // el.addEventListener('input', e => this.handleFieldChange(field, e));
-    el.addEventListener('settingsChanged', () => {
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'added-field'});
-    });
-    el.addEventListener('deleted', () => {
-      el.remove();
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'updated-field'});
-    });
-    el.setAttribute('templateid', this.templateId);
-    el.setAttribute('fieldname', field.name);
-    el.setAttribute('documentid', String(pageInfo.documentId));
-    el.setAttribute('pageNumber', String(pageInfo.pageNumber));
-    el.setAttribute('xScale', String(pageInfo.xScale));
-    el.setAttribute('yScale', String(pageInfo.yScale));
-    el.setAttribute('name', field.name);
-  }
-
   cachedPageInfo: Record<string, Record<number, IDocumentPageInfo>> = {};
   handlePageRendered(e: any) {
     const pageInfo = e.detail as IDocumentPageInfo;
@@ -224,9 +223,12 @@ export class VerdocsTemplateFields {
         const id = getFieldId(field);
         const el = document.getElementById(id);
         if (el) {
+          el.setAttribute('templateid', this.templateId);
           el.setAttribute('fieldname', field.name);
-          el.setAttribute('pagenumber', String(field.page));
           el.setAttribute('documentid', String(field.document_id));
+          el.setAttribute('pagenumber', String(field.page));
+          el.setAttribute('xScale', String(pageInfo.xScale));
+          el.setAttribute('yScale', String(pageInfo.yScale));
           this.makeDraggable(el);
         }
       });
@@ -340,7 +342,7 @@ export class VerdocsTemplateFields {
 
   async handleClickPage(e: any, documentId: string, pageNumber: number) {
     if (this.placing) {
-      console.log('Placing field', {documentId, pageNumber});
+      // console.log('Placing field', {documentId, pageNumber});
       const clickedX = e.offsetX;
       const clickedY = e.offsetY;
 
@@ -376,13 +378,13 @@ export class VerdocsTemplateFields {
         readonly: false,
         options: this.placing === 'radio' ? [{id: 'option-1', label: 'Option 1'}] : [],
       };
-      console.log('[FIELDS] Will save new field', field);
 
       const newField = await createField(this.endpoint, this.templateId, field);
-      console.log('[FIELDS] Saved field', newField);
+      console.log('[FIELDS] Created field', newField);
 
       const newTemplate = JSON.parse(JSON.stringify(this.template));
       newTemplate.fields.push(newField);
+
       Store.updateTemplate(this.templateId, newTemplate);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: newTemplate, event: 'added-field'});
 
@@ -391,6 +393,7 @@ export class VerdocsTemplateFields {
   }
 
   render() {
+    console.log('Rendering');
     if (this.loading) {
       return (
         <Host>
