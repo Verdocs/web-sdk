@@ -58,9 +58,7 @@ export const defaultHeight = (type: TFieldType) => {
 export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number) => {
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type), settings} = field;
   const isCanvasField = field.type === 'signature' || field.type === 'initial';
-  // @ts-expect-error - TODO: Type will be included in v6.8.2
   const canvasWidth = !isCanvasField ? width : (settings?.canvasWidth ?? width);
-  // @ts-expect-error - TODO: Type will be included in v6.8.2
   const canvasHeight = !isCanvasField ? height : (settings?.canvasHeight ?? height);
 
   el.style.width = `${canvasWidth}px`;

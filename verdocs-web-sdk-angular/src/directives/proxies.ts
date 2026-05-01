@@ -2664,13 +2664,12 @@ terminate the process, and the calling application should correct the condition 
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'templateId', 'toolbarTargetId'],
-  outputs: ['sdkError', 'templateUpdated', 'fieldsUpdated'],
+  outputs: ['sdkError', 'templateUpdated'],
 })
 export class VerdocsTemplateFields {
   protected el: HTMLVerdocsTemplateFieldsElement;
   @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsTemplateFieldsSDKError>>();
-  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; template: IVerdocsTemplateFieldsITemplate; event: string}>>();
-  @Output() fieldsUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: IVerdocsTemplateFieldsITemplateField[]}>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; template: IVerdocsTemplateFieldsITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2681,7 +2680,6 @@ export class VerdocsTemplateFields {
 import type { SDKError as IVerdocsTemplateFieldsSDKError } from '@verdocs/web-sdk/components';
 import type { VerdocsEndpoint as IVerdocsTemplateFieldsVerdocsEndpoint } from '@verdocs/web-sdk/components';
 import type { ITemplate as IVerdocsTemplateFieldsITemplate } from '@verdocs/web-sdk/components';
-import type { ITemplateField as IVerdocsTemplateFieldsITemplateField } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsTemplateFields extends Components.VerdocsTemplateFields {
   /**
@@ -2692,9 +2690,7 @@ terminate the process, and the calling application should correct the condition 
   /**
    * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
    */
-  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; template: IVerdocsTemplateFieldsITemplate; event: string}>>;
-
-  fieldsUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: IVerdocsTemplateFieldsITemplateField[]}>>;
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsTemplateFieldsVerdocsEndpoint; template: IVerdocsTemplateFieldsITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'}>>;
 }
 
 

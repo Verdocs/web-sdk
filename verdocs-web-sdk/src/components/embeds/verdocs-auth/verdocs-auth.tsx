@@ -1,5 +1,6 @@
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
-import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, IAuthenticateResponse, getMyUser, IProfile} from '@verdocs/js-sdk';
+import {verifyEmail, IAuthenticateResponse, getMyUser, IProfile, convertToE164} from '@verdocs/js-sdk';
+import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword} from '@verdocs/js-sdk';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
@@ -165,14 +166,16 @@ export class VerdocsAuth {
 
     this.submitting = true;
     this.tempAuthEndpoint.clearSession();
+    const formattedPhone = convertToE164(this.phone);
+
     createProfile(this.tempAuthEndpoint, {
       email: this.email,
       password: this.password,
       first_name: this.first_name,
       last_name: this.last_name,
       org_name: this.org_name,
-      // @ts-expect-error - TODO: SDK v6.8.2
-      phone: this.phone,
+      // @ts-expect-error - TODO: SDK v6.9.0
+      phone: formattedPhone,
     })
       .then(r => {
         console.log('[AUTH] Profile creation result', r);

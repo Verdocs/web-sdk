@@ -859,14 +859,6 @@
   resolved "https://registry.npmjs.org/@types/unist/-/unist-3.0.3.tgz"
   integrity sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==
 
-"@verdocs/js-sdk@^6.8.1":
-  version "6.8.1"
-  resolved "https://registry.npmjs.org/@verdocs/js-sdk/-/js-sdk-6.8.1.tgz"
-  integrity sha512-jjhi/MkiILJvJn2ulMn+liNF2CXcLcDLR/VG0VxlpQgnP+pL7zYECBiyT5C21Nni1rI9lHfeVJB03HAnaBZ1LA==
-  dependencies:
-    axios "^1.13.5"
-    axios-retry "^4.5.0"
-
 "@verdocs/js-sdk@^6.8.2":
   version "6.8.2"
   resolved "https://registry.yarnpkg.com/@verdocs/js-sdk/-/js-sdk-6.8.2.tgz#8e18a20f5e8871dfcb5c3f9e55acfd18f38c318b"
@@ -989,15 +981,6 @@ axios@1.15.0:
     follow-redirects "^1.15.11"
     form-data "^4.0.5"
     proxy-from-env "^2.1.0"
-
-axios@^1.13.5:
-  version "1.13.6"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.13.6.tgz"
-  integrity sha512-ChTCHMouEe2kn713WHbQGcuYrr6fXTBiu460OTwWrWob16g1bXn4vtz07Ope7ewMozJAnEquLk5lWQWtBig9DQ==
-  dependencies:
-    follow-redirects "^1.15.11"
-    form-data "^4.0.5"
-    proxy-from-env "^1.1.0"
 
 bail@^2.0.0:
   version "2.0.2"
@@ -2250,11 +2233,6 @@ prop-types@^15.8.1:
     loose-envify "^1.4.0"
     object-assign "^4.1.1"
     react-is "^16.13.1"
-
-proxy-from-env@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz"
-  integrity sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==
 
 proxy-from-env@^2.1.0:
   version "2.1.0"

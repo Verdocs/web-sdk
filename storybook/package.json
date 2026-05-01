@@ -11,7 +11,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@verdocs/js-sdk": "^6.8.1"
+    "@verdocs/js-sdk": "^6.8.2"
   },
   "devDependencies": {
     "@verdocs/web-sdk": "6.8.11",
