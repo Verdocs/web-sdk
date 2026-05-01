@@ -456,7 +456,7 @@ export class VerdocsAuth {
             />
             <verdocs-text-input
               label="Phone Number"
-              type="text"
+              type="tel"
               required={true}
               autocomplete="phone"
               value={this.phone}
