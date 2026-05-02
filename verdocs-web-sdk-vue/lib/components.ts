@@ -962,12 +962,10 @@ export const VerdocsTemplateFields: StencilVueComponent<JSX.VerdocsTemplateField
   'templateId',
   'toolbarTargetId',
   'sdkError',
-  'templateUpdated',
-  'fieldsUpdated'
+  'templateUpdated'
 ], [
   'sdkError',
-  'templateUpdated',
-  'fieldsUpdated'
+  'templateUpdated'
 ]);
 
 

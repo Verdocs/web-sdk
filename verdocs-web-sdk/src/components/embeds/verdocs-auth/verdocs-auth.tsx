@@ -1,5 +1,6 @@
 import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
-import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword, verifyEmail, IAuthenticateResponse, getMyUser, IProfile} from '@verdocs/js-sdk';
+import {verifyEmail, IAuthenticateResponse, getMyUser, IProfile, convertToE164} from '@verdocs/js-sdk';
+import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword} from '@verdocs/js-sdk';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
@@ -75,6 +76,7 @@ export class VerdocsAuth {
   @State() first_name: string = '';
   @State() last_name: string = '';
   @State() email: string = '';
+  @State() phone: string = '';
   @State() verificationCode: string = '';
   @State() newPassword: string = '';
   @State() password: string = '';
@@ -164,18 +166,23 @@ export class VerdocsAuth {
 
     this.submitting = true;
     this.tempAuthEndpoint.clearSession();
+    const formattedPhone = convertToE164(this.phone);
+
     createProfile(this.tempAuthEndpoint, {
       email: this.email,
       password: this.password,
       first_name: this.first_name,
       last_name: this.last_name,
       org_name: this.org_name,
+      // @ts-expect-error - TODO: SDK v6.9.0
+      phone: formattedPhone,
     })
       .then(r => {
         console.log('[AUTH] Profile creation result', r);
         this.tempAuthEndpoint.setToken(r.access_token);
         // We can't clearForms because we need email to stick around
         this.password = '';
+        this.phone = '';
         this.first_name = '';
         this.last_name = '';
         this.org_name = '';
@@ -238,8 +245,8 @@ export class VerdocsAuth {
       }
     } catch (e) {
       this.submitting = false;
-      console.log('[AUTH] Authentication failed', e.response?.data || e);
-      VerdocsToast(e.response?.data?.error || 'Login failed. Please check your credentials and try again.', {style: 'error'});
+      console.log('[AUTH] Auth failure', e.response?.data || e);
+      VerdocsToast('Login failed. Please check your credentials and try again.', {style: 'error'});
     }
   }
 
@@ -247,6 +254,7 @@ export class VerdocsAuth {
     this.submitting = false;
     this.resendDisabled = false;
     this.email = '';
+    this.phone = '';
     this.password = '';
     this.newPassword = '';
     this.confirmpass = '';
@@ -444,6 +452,15 @@ export class VerdocsAuth {
               autocomplete="off"
               value={this.confirmpass}
               onInput={(e: any) => (this.confirmpass = e.target.value)}
+              disabled={this.submitting}
+            />
+            <verdocs-text-input
+              label="Phone Number"
+              type="tel"
+              required={true}
+              autocomplete="phone"
+              value={this.phone}
+              onInput={(e: any) => (this.phone = e.target.value)}
               disabled={this.submitting}
             />
             <verdocs-text-input

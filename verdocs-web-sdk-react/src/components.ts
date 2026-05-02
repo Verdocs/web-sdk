@@ -1203,8 +1203,7 @@ export const VerdocsTemplateFieldProperties: StencilReactComponent<VerdocsTempla
 
 export type VerdocsTemplateFieldsEvents = {
     onSdkError: EventName<VerdocsTemplateFieldsCustomEvent<SDKError>>,
-    onTemplateUpdated: EventName<VerdocsTemplateFieldsCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate; event: string }>>,
-    onFieldsUpdated: EventName<VerdocsTemplateFieldsCustomEvent<{ endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; fields: ITemplateField[] }>>
+    onTemplateUpdated: EventName<VerdocsTemplateFieldsCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate; event: 'added-field' | 'updated-field' | 'deleted-field' }>>
 };
 
 export const VerdocsTemplateFields: StencilReactComponent<VerdocsTemplateFieldsElement, VerdocsTemplateFieldsEvents> = /*@__PURE__*/ createComponent<VerdocsTemplateFieldsElement, VerdocsTemplateFieldsEvents>({
@@ -1214,8 +1213,7 @@ export const VerdocsTemplateFields: StencilReactComponent<VerdocsTemplateFieldsE
     react: React,
     events: {
         onSdkError: 'sdkError',
-        onTemplateUpdated: 'templateUpdated',
-        onFieldsUpdated: 'fieldsUpdated'
+        onTemplateUpdated: 'templateUpdated'
     } as VerdocsTemplateFieldsEvents,
     defineCustomElement: defineVerdocsTemplateFields
 });
