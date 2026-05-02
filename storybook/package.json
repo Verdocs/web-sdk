@@ -11,7 +11,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@verdocs/js-sdk": "^6.8.2"
+    "@verdocs/js-sdk": "^6.9.0"
   },
   "devDependencies": {
     "@verdocs/web-sdk": "6.8.11",
@@ -23,7 +23,7 @@
     "@storybook/react": "^10.2.14",
     "@storybook/react-vite": "10.2.14",
     "@storybook/web-components-vite": "10.2.14",
-    "es-toolkit": "^1.45.0",
+    "es-toolkit": "^1.46.1",
     "lit": "3.3.2",
     "prettier": "^3.8.1",
     "prop-types": "^15.8.1",
