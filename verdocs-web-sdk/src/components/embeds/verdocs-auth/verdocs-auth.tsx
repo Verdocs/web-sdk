@@ -174,7 +174,6 @@ export class VerdocsAuth {
       first_name: this.first_name,
       last_name: this.last_name,
       org_name: this.org_name,
-      // @ts-expect-error - TODO: SDK v6.9.0
       phone: formattedPhone,
     })
       .then(r => {
