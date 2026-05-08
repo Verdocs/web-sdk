@@ -340,6 +340,12 @@ verdocs-sign {
       &:hover {
         color: $verdocs-green-highlight;
       }
+
+      @media (max-width: 650px) {
+          .review-optional {
+            display: none;
+          }
+      }
     }
   }
 
