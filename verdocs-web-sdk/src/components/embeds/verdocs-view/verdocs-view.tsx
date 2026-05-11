@@ -346,18 +346,20 @@ export class VerdocsView {
 
     return (
       <Host>
-        <div class="controls-toolbar" id="verdocs-view-header">
-          <div class="left-controls">
-            <div class="title">{this.envelope.name}</div>
+        {this.endpoint.session.session_type === 'signing' && (
+          <div class="controls-toolbar" id="verdocs-view-header">
+            <div class="left-controls">
+              <div class="title">{this.envelope.name}</div>
+            </div>
+            <div class="center-controls">{/* Pagination controls hidden for now */}</div>
+            <div class="right-controls">
+              <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
+              <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
+              <div class="icon-button download" innerHTML={ToolbarDownloadIcon} onClick={() => this.handleOptionSelected({detail: {id: 'download'}})} />
+              <div class="icon-button print" innerHTML={ToolbarPrintIcon} onClick={() => this.handleOptionSelected({detail: {id: 'print'}})} />
+            </div>
           </div>
-          <div class="center-controls">{/* Pagination controls hidden for now */}</div>
-          <div class="right-controls">
-            <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
-            <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
-            <div class="icon-button download" innerHTML={ToolbarDownloadIcon} onClick={() => this.handleOptionSelected({detail: {id: 'download'}})} />
-            <div class="icon-button print" innerHTML={ToolbarPrintIcon} onClick={() => this.handleOptionSelected({detail: {id: 'print'}})} />
-          </div>
-        </div>
+        )}
 
         <div class={`document signed-document-container zoom-${this.zoomLevel}`} style={{paddingTop: this.headerTargetId ? '70px' : '15px'}}>
           {(this.envelope?.documents || [])
