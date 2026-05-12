@@ -472,6 +472,18 @@ export class VerdocsAuth {
               style={{flex: '1'}}
             />
 
+            <div class="service-agreement">
+              By clicking the Create Account button, you agree to the{' '}
+              <a href="https://verdocs.com/eula" target="_blank">
+                End User License Agreement
+              </a>
+              . Learn about how we use and protect your data and how you can opt-out in our{' '}
+              <a href="https://verdocs.com/privacy-policy" target="_blank">
+                Privacy Policy
+              </a>
+              .
+            </div>
+
             <div style={{marginTop: '30px'}} />
 
             <verdocs-button
