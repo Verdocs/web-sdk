@@ -341,7 +341,7 @@ export class VerdocsView {
       );
     }
 
-    // TODO: Review whether we want a different trigger for this.
+    // Conditions: 1.) The profile must be be the owner of the envelope.  2.) The envelope is still "active".
     const showFooter = userCanCancelEnvelope(this.endpoint.profile, this.envelope);
 
     return (
@@ -455,7 +455,7 @@ export class VerdocsView {
           />
         )}
 
-        {!showFooter && (
+        {showFooter && (
           <verdocs-sign-footer endpoint={this.endpoint} envelopeId={this.envelopeId} isDone={true} onAskQuestion={() => {}} onDecline={() => {}} onFinishLater={() => {}} />
         )}
       </Host>
