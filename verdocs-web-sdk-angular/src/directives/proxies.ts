@@ -2354,7 +2354,7 @@ export declare interface VerdocsSwitch extends Components.VerdocsSwitch {
 })
 export class VerdocsTable {
   protected el: HTMLVerdocsTableElement;
-  @Output() colHeaderClick = new EventEmitter<CustomEvent<{col: [object Object]}>>();
+  @Output() colHeaderClick = new EventEmitter<CustomEvent<{col: IVerdocsTableIColumn}>>();
   @Output() rowClick = new EventEmitter<CustomEvent<{row: any}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -2369,7 +2369,7 @@ export declare interface VerdocsTable extends Components.VerdocsTable {
   /**
    * Event fired when the user clicks a column header. This may be used to manage sorting options.
    */
-  colHeaderClick: EventEmitter<CustomEvent<{col: [object Object]}>>;
+  colHeaderClick: EventEmitter<CustomEvent<{col: IVerdocsTableIColumn}>>;
   /**
    * Event fired when the user clicks a row.
    */
@@ -2391,7 +2391,7 @@ export declare interface VerdocsTable extends Components.VerdocsTable {
 })
 export class VerdocsTabs {
   protected el: HTMLVerdocsTabsElement;
-  @Output() selectTab = new EventEmitter<CustomEvent<{tab: [object Object]; index: number}>>();
+  @Output() selectTab = new EventEmitter<CustomEvent<{tab: IVerdocsTabsITab; index: number}>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2406,7 +2406,7 @@ export declare interface VerdocsTabs extends Components.VerdocsTabs {
    * Event fired when the user clicks a template to view it. Typically the host application will use this to navigate
 to the template preview. This is also fired when the user selects "Preview/Send" fropm the dropdown menu.
    */
-  selectTab: EventEmitter<CustomEvent<{tab: [object Object]; index: number}>>;
+  selectTab: EventEmitter<CustomEvent<{tab: IVerdocsTabsITab; index: number}>>;
 }
 
 
