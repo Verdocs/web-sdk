@@ -1,4 +1,4 @@
-import {cancelEnvelope, getEnvelopeDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, userCanCancelEnvelope, VerdocsEndpoint, getEnvelopesZip} from '@verdocs/js-sdk';
+import {cancelEnvelope, getEnvelopeDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, VerdocsEndpoint, getEnvelopesZip, TSession} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -143,6 +143,10 @@ export class VerdocsView {
     } else {
       if (this.zoomLevel !== 'normal') this.zoomLevel = 'normal';
     }
+  }
+
+  findRecipientBySession(session: TSession, envelope: IEnvelope) {
+    return (envelope?.recipients || []).find(r => r.email === session?.email);
   }
 
   async listenToEnvelope() {
@@ -341,8 +345,12 @@ export class VerdocsView {
       );
     }
 
-    // Conditions: 1.) The profile must be be the owner of the envelope.  2.) The envelope is still "active".
-    const showFooter = userCanCancelEnvelope(this.endpoint.profile, this.envelope);
+    /**
+     * Conditions for showing footer:
+     * 1.) The session user must be an envelope's recipient.
+     * 2.) The envelope's status does NOT matter.
+     */
+    const showFooter = this.findRecipientBySession(this.endpoint.session, this.envelope);
 
     return (
       <Host>
