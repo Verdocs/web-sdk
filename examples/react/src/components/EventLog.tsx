@@ -2,11 +2,12 @@ import type {LogEntry} from '../lib/eventLog';
 
 interface EventLogProps {
   entries: LogEntry[];
+  emptyMessage?: string;
 }
 
-export const EventLog = ({entries}: EventLogProps) => {
+export const EventLog = ({entries, emptyMessage = 'SDK events will appear here as you use the builder.'}: EventLogProps) => {
   if (!entries.length) {
-    return <p className="event-log-empty">SDK events will appear here as you use the builder.</p>;
+    return <p className="event-log-empty">{emptyMessage}</p>;
   }
 
   return (

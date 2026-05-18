@@ -1,10 +1,19 @@
 import {useCallback, useState} from 'react';
 import {VerdocsBuild} from '@verdocs/web-sdk-react';
-import type {IRole, ITemplate} from '@verdocs/js-sdk';
+import type {ICreateEnvelopeRecipientFromTemplate, IEnvelope, IRole, ITemplate} from '@verdocs/js-sdk';
 import {formatRolesAsText} from '../lib/formatRoles';
 import {createLogEntry, type LogEntry} from '../lib/eventLog';
+import {saveSigningContext} from '../lib/signingSession';
 
 type TVerdocsBuildStep = 'attachments' | 'roles' | 'fields' | 'preview';
+
+interface VerdocsBuildSendDetail {
+  recipients: ICreateEnvelopeRecipientFromTemplate[];
+  name: string;
+  template_id: string;
+  envelope_id: string;
+  envelope: IEnvelope;
+}
 
 interface VerdocsBuildPanelProps {
   templateId: string;
@@ -41,11 +50,13 @@ export const VerdocsBuildPanel = ({templateId, onLog}: VerdocsBuildPanelProps) =
           logTemplateRoles(e.detail.template, e.detail.event);
         }}
         onSend={e => {
+          const detail = e.detail as VerdocsBuildSendDetail;
+          saveSigningContext(detail.envelope_id, detail.envelope);
           onLog(
             createLogEntry(
               'send',
-              `Envelope sent from template.\nname: ${e.detail.name}\ntemplate_id: ${e.detail.template_id}\nrecipients: ${e.detail.recipients.length}`,
-              e.detail,
+              `Envelope sent from template.\nname: ${detail.name}\ntemplate_id: ${detail.template_id}\nenvelope_id: ${detail.envelope_id}\nrecipients: ${detail.recipients.length}\n\nOpen the Sign tab to try VerdocsSign.`,
+              detail,
             ),
           );
         }}
