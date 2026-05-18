@@ -459,7 +459,7 @@ export class VerdocsView {
           />
         )}
 
-        {showFooter && (
+        {!!showFooter && (
           <verdocs-sign-footer endpoint={this.endpoint} envelopeId={this.envelopeId} isDone={true} onAskQuestion={() => {}} onDecline={() => {}} onFinishLater={() => {}} />
         )}
       </Host>
