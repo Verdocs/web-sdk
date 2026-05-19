@@ -1,5 +1,5 @@
 {
-  "name": "verdocs-build-example",
+  "name": "verdocs-react-examples",
   "private": true,
   "version": "1.0.0",
   "description": "Reference React app for Verdocs VerdocsBuild and VerdocsSign embeds with white-label field styling",

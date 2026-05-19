@@ -1,4 +1,4 @@
-import type {LogEntry} from '../lib/eventLog';
+import type {LogEntry} from '../../lib/eventLog';
 
 interface EventLogProps {
   entries: LogEntry[];

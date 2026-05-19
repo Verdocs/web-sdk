@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { EventLog } from "../components/EventLog";
-import { SignPanel } from "../components/SignPanel";
-import { SigningCredentialsForm } from "../components/SigningCredentialsForm";
-import { ThemeBanner } from "../components/ThemeBanner";
+import { EventLog } from "../components/shared/EventLog";
+import { SignPanel } from "../components/sign/SignPanel";
+import { SigningCredentialsForm } from "../components/sign/SigningCredentialsForm";
+import { ThemeBanner } from "../components/shared/ThemeBanner";
 import { loadSigningContext } from "../lib/signingSession";
 import type { SigningParams } from "../lib/signingSession";
 import { useVerdocsTheme } from "../lib/useVerdocsTheme";

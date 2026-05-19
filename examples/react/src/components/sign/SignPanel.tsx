@@ -1,6 +1,7 @@
 import {VerdocsSign} from '@verdocs/web-sdk-react';
-import type {SigningParams} from '../lib/signingSession';
-import {createLogEntry, type LogEntry} from '../lib/eventLog';
+import type {IEnvelope} from '@verdocs/js-sdk';
+import type {SigningParams} from '../../lib/signingSession';
+import {createLogEntry, type LogEntry} from '../../lib/eventLog';
 
 interface SignPanelProps {
   params: SigningParams | null;
@@ -26,25 +27,28 @@ export const SignPanel = ({params, active, onLog}: SignPanelProps) => {
         toolbarStyle="menu"
         headerTargetId="verdocs-sign-header-host"
         onEnvelopeLoaded={e => {
+          const detail = (e as CustomEvent<{envelope: IEnvelope}>).detail;
           onLog(
             createLogEntry(
               'envelopeLoaded',
-              `Envelope loaded: ${e.detail.envelope.name ?? params.envelopeId}`,
-              e.detail,
+              `Envelope loaded: ${detail.envelope.name ?? params.envelopeId}`,
+              detail,
             ),
           );
         }}
         onEnvelopeUpdated={e => {
+          const detail = (e as CustomEvent<{envelope: IEnvelope; event: string}>).detail;
           onLog(
             createLogEntry(
               'envelopeUpdated',
-              `Envelope updated (${e.detail.event}): status ${e.detail.envelope.status}`,
-              e.detail,
+              `Envelope updated (${detail.event}): status ${detail.envelope.status}`,
+              detail,
             ),
           );
         }}
         onSdkError={e => {
-          onLog(createLogEntry('sdkError', e.detail.message ?? 'SDK error', e.detail));
+          const detail = (e as CustomEvent<{message?: string}>).detail;
+          onLog(createLogEntry('sdkError', detail.message ?? 'SDK error', detail));
         }}
       />
     </div>

@@ -1,11 +1,10 @@
-import {useCallback, useState} from 'react';
+import {useCallback} from 'react';
 import {VerdocsBuild} from '@verdocs/web-sdk-react';
 import type {ICreateEnvelopeRecipientFromTemplate, IEnvelope, IRole, ITemplate} from '@verdocs/js-sdk';
-import {formatRolesAsText} from '../lib/formatRoles';
-import {createLogEntry, type LogEntry} from '../lib/eventLog';
-import {saveSigningContext} from '../lib/signingSession';
-
-type TVerdocsBuildStep = 'attachments' | 'roles' | 'fields' | 'preview';
+import {formatRolesAsText} from '../../lib/formatRoles';
+import type {TVerdocsBuildStep} from '../../lib/buildStorage';
+import {createLogEntry, type LogEntry} from '../../lib/eventLog';
+import {saveSigningContext} from '../../lib/signingSession';
 
 interface VerdocsBuildSendDetail {
   recipients: ICreateEnvelopeRecipientFromTemplate[];
@@ -17,12 +16,12 @@ interface VerdocsBuildSendDetail {
 
 interface VerdocsBuildPanelProps {
   templateId: string;
+  step: TVerdocsBuildStep;
+  onStepChange: (step: TVerdocsBuildStep) => void;
   onLog: (entry: LogEntry) => void;
 }
 
-export const VerdocsBuildPanel = ({templateId, onLog}: VerdocsBuildPanelProps) => {
-  const [step, setStep] = useState<TVerdocsBuildStep>('attachments');
-
+export const VerdocsBuildPanel = ({templateId, step, onStepChange, onLog}: VerdocsBuildPanelProps) => {
   const logTemplateRoles = useCallback(
     (template: ITemplate | undefined, event: string) => {
       const rolesText = formatRolesAsText(template?.roles as IRole[] | undefined);
@@ -43,25 +42,28 @@ export const VerdocsBuildPanel = ({templateId, onLog}: VerdocsBuildPanelProps) =
         templateId={templateId}
         step={step}
         onStepChanged={e => {
-          setStep(e.detail);
-          onLog(createLogEntry('stepChanged', `Wizard step: ${e.detail}`));
+          const stepDetail = (e as CustomEvent<TVerdocsBuildStep>).detail;
+          onStepChange(stepDetail);
+          onLog(createLogEntry('stepChanged', `Wizard step: ${stepDetail}`));
         }}
         onTemplateUpdated={e => {
-          logTemplateRoles(e.detail.template, e.detail.event);
+          const {template, event} = (e as CustomEvent<{template: ITemplate; event: string}>).detail;
+          logTemplateRoles(template, event);
         }}
         onSend={e => {
-          const detail = e.detail as VerdocsBuildSendDetail;
+          const detail = (e as CustomEvent<VerdocsBuildSendDetail>).detail;
           saveSigningContext(detail.envelope_id, detail.envelope);
           onLog(
             createLogEntry(
               'send',
-              `Envelope sent from template.\nname: ${detail.name}\ntemplate_id: ${detail.template_id}\nenvelope_id: ${detail.envelope_id}\nrecipients: ${detail.recipients.length}\n\nOpen the Sign tab to try VerdocsSign.`,
+              `Envelope sent.\ntemplate_id: ${detail.template_id}\nenvelope_id: ${detail.envelope_id}\n\nOpen the Sign tab to try VerdocsSign.`,
               detail,
             ),
           );
         }}
         onSdkError={e => {
-          onLog(createLogEntry('sdkError', e.detail.message ?? 'SDK error', e.detail));
+          const detail = (e as CustomEvent<{message?: string}>).detail;
+          onLog(createLogEntry('sdkError', detail.message ?? 'SDK error', detail));
         }}
         onCancel={() => {
           onLog(createLogEntry('cancel', 'User cancelled attachments or roles step.'));

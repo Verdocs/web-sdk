@@ -1,96 +1,155 @@
 import {useCallback, useEffect, useState} from 'react';
-import {BuildWorkflow} from '../components/BuildWorkflow';
-import {EventLog} from '../components/EventLog';
-import {FieldStyleGallery} from '../components/FieldStyleGallery';
-import {ThemeBanner} from '../components/ThemeBanner';
-import {authenticateVerdocs, getCredentialsFromEnv, getInitialTemplateId} from '../lib/verdocsAuth';
+import {BuildWorkflow} from '../components/build/BuildWorkflow';
+import {BuildControls} from '../components/build/BuildControls';
+import {EventLog} from '../components/shared/EventLog';
+import {FieldStyleGallery} from '../components/shared/FieldStyleGallery';
+import {ThemeBanner} from '../components/shared/ThemeBanner';
+import {ColorPalette} from '../components/shared/ColorPalette';
+import {AuthPage} from './AuthPage';
+import {
+  clearBuilderSession,
+  hasBuilderSession,
+  loadBuilderSession,
+  loadStoredTemplateId,
+  saveStoredTemplateId,
+  subscribeToSession,
+} from '../lib/authSession';
+import type {TVerdocsBuildStep} from '../lib/buildStorage';
 import {useVerdocsTheme} from '../lib/useVerdocsTheme';
 import type {LogEntry} from '../lib/eventLog';
 
 export const BuildPage = () => {
-  const [authState, setAuthState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [authError, setAuthError] = useState<string | null>(null);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
+  const [templateId, setTemplateId] = useState<string | null>(null);
+  const [templateIdInput, setTemplateIdInput] = useState('');
+  const [step, setStep] = useState<TVerdocsBuildStep>('attachments');
+  const [themeRevision, setThemeRevision] = useState(0);
   const {enabled: customThemeEnabled, setEnabled: setCustomThemeEnabled} = useVerdocsTheme(true);
+
+  useEffect(() => {
+    loadBuilderSession();
+    setAuthenticated(hasBuilderSession());
+    const stored = loadStoredTemplateId();
+    if (stored) {
+      setTemplateId(stored);
+      setTemplateIdInput(stored);
+    }
+    setCheckingSession(false);
+
+    return subscribeToSession(isAuthed => {
+      setAuthenticated(isAuthed);
+    });
+  }, []);
+
+  useEffect(() => {
+    setThemeRevision(r => r + 1);
+  }, [customThemeEnabled]);
 
   const appendLog = useCallback((entry: LogEntry) => {
     setLogEntries(prev => [entry, ...prev].slice(0, 50));
   }, []);
 
-  useEffect(() => {
-    const credentials = getCredentialsFromEnv();
-    if (!credentials) {
-      setAuthState('error');
-      setAuthError('Set VITE_VERDOCS_USERNAME and VITE_VERDOCS_PASSWORD in a .env file (see .env.example).');
+  const handleUseTemplate = () => {
+    const id = templateIdInput.trim();
+    if (!id) {
       return;
     }
+    saveStoredTemplateId(id);
+    setTemplateId(id);
+    setStep('attachments');
+  };
 
-    authenticateVerdocs(credentials)
-      .then(() => setAuthState('ready'))
-      .catch((err: Error) => {
-        setAuthState('error');
-        setAuthError(err.message ?? 'Authentication failed.');
-      });
-  }, []);
+  const handleNewTemplate = () => {
+    saveStoredTemplateId(null);
+    setTemplateId(null);
+    setTemplateIdInput('');
+    setStep('attachments');
+  };
 
-  if (authState === 'loading') {
+  const handleSignOut = () => {
+    clearBuilderSession();
+    setAuthenticated(false);
+    setTemplateId(null);
+  };
+
+  if (checkingSession) {
     return (
       <div className="auth-loading">
-        <p>Authenticating with Verdocs…</p>
+        <p>Checking session…</p>
       </div>
     );
   }
 
-  if (authState === 'error') {
+  if (!authenticated) {
     return (
-      <div className="auth-error">
-        <h2>Build — authentication required</h2>
-        <p>{authError}</p>
-        <p>
-          Copy <code>.env.example</code> to <code>.env</code> and add your credentials.
-        </p>
-      </div>
+      <AuthPage
+        customThemeEnabled={customThemeEnabled}
+        onThemeChange={setCustomThemeEnabled}
+        themeRevision={themeRevision}
+        onAuthenticated={() => setAuthenticated(true)}
+      />
     );
   }
-
-  const initialTemplateId = getInitialTemplateId();
 
   return (
     <>
-      <p className="page-intro">
-        React reference for <code>VerdocsBuild</code> — template builder, recipient workflow, field placement, and send.
-        After sending, open the <strong>Sign</strong> tab to try <code>VerdocsSign</code> with the new envelope.
-      </p>
+      <div className="build-page-header">
+        <p className="page-intro">
+          React reference for <code>VerdocsBuild</code> — upload, recipients/workflow, fields, and send. After sending,
+          open <strong>Sign</strong> to try <code>VerdocsSign</code>.
+        </p>
+        <button type="button" className="sign-out-btn" onClick={handleSignOut}>
+          Sign out
+        </button>
+      </div>
 
-      <ThemeBanner enabled={customThemeEnabled} onChange={setCustomThemeEnabled} />
+      <ThemeBanner enabled={customThemeEnabled} onChange={setCustomThemeEnabled} variant="build" />
+      <ColorPalette themeRevision={themeRevision} />
+
+      <BuildControls
+        templateId={templateId}
+        step={step}
+        templateIdInput={templateIdInput}
+        onTemplateIdInputChange={setTemplateIdInput}
+        onUseTemplate={handleUseTemplate}
+        onStepChange={setStep}
+        onNewTemplate={handleNewTemplate}
+      />
 
       <section className={`section section--builder ${customThemeEnabled ? 'section--themed' : ''}`}>
         <div className="section-header">
           <h2>
             Template builder
-            {initialTemplateId && (
-              <span className="step-badge">resuming template {initialTemplateId.slice(0, 8)}…</span>
-            )}
+            {templateId && <span className="step-badge">template {templateId.slice(0, 8)}…</span>}
             {customThemeEnabled && <span className="step-badge step-badge--theme">themed</span>}
           </h2>
           <p>
-            Step 1: upload (via <code>VerdocsTemplateCreate</code>). Steps 2–4: recipients/workflow, fields, preview
-            &amp; send (via <code>VerdocsBuild</code>). In the Workflow step, drag roles to set{' '}
-            <strong>sequence</strong> (signing order levels) and <strong>order</strong> (position within a level).
+            Steps 2–4 use <code>VerdocsBuild</code>. In Workflow, drag roles to set <strong>sequence</strong> (levels)
+            and <strong>order</strong> (position within a level).
           </p>
         </div>
         <div className="section-body section-body--builder">
-          <BuildWorkflow initialTemplateId={initialTemplateId} onLog={appendLog} />
+          <BuildWorkflow
+            templateId={templateId}
+            step={step}
+            onTemplateIdChange={id => {
+              setTemplateId(id);
+              if (id) {
+                setTemplateIdInput(id);
+              }
+            }}
+            onStepChange={setStep}
+            onLog={appendLog}
+          />
         </div>
       </section>
 
       <section className="section">
         <div className="section-header">
           <h2>SDK event log</h2>
-          <p>
-            Handlers on <code>VerdocsBuild</code> — watch role sequence/order updates after template changes on the
-            Workflow step.
-          </p>
+          <p>Watch role sequence/order after template updates on the Workflow step.</p>
         </div>
         <div className="section-body">
           <EventLog entries={logEntries} />
@@ -100,10 +159,7 @@ export const BuildPage = () => {
       <section className={`section ${customThemeEnabled ? 'section--themed' : ''}`}>
         <div className="section-header">
           <h2>Field styling gallery</h2>
-          <p>
-            Signing fields use the same CSS variables as the builder Fields step. Toggle the theme banner above to
-            compare default vs. custom branding.
-          </p>
+          <p>Same CSS variables as the Fields step in the builder above.</p>
         </div>
         <div className="section-body">
           <FieldStyleGallery />

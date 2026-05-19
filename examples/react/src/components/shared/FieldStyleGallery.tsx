@@ -60,7 +60,7 @@ export const FieldStyleGallery = () => (
 
     <GalleryItem
       title="Date"
-      hint="Field input uses --verdocs-field-*; calendar popup uses --adp-accent-color and related --adp-* variables on .air-datepicker."
+      hint="Field input uses --verdocs-field-*; calendar popup uses --adp-accent-color on .air-datepicker."
       signerClass="signer-3"
     >
       <VerdocsFieldDate
@@ -76,7 +76,7 @@ export const FieldStyleGallery = () => (
 
     <GalleryItem
       title="Dropdown (select)"
-      hint="Native select styling via --verdocs-field-text-color and --verdocs-field-border on the signing field."
+      hint="Native select styling via --verdocs-field-text-color and --verdocs-field-border."
       signerClass="signer-1"
     >
       <VerdocsFieldDropdown
