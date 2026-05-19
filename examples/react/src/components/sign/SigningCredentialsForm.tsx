@@ -4,9 +4,6 @@ interface SigningCredentialsFormProps {
   inviteCode: string;
   partialFromSend: boolean;
   isSigningActive: boolean;
-  onEnvelopeIdChange: (value: string) => void;
-  onRoleIdChange: (value: string) => void;
-  onInviteCodeChange: (value: string) => void;
   onStartSigning: () => void;
   onReset: () => void;
 }
@@ -14,24 +11,14 @@ interface SigningCredentialsFormProps {
 const isComplete = (envelopeId: string, roleId: string, inviteCode: string): boolean =>
   Boolean(envelopeId.trim() && roleId.trim() && inviteCode.trim());
 
-export const SigningCredentialsForm = ({
-  envelopeId,
-  roleId,
-  inviteCode,
-  partialFromSend,
-  isSigningActive,
-  onEnvelopeIdChange,
-  onRoleIdChange,
-  onInviteCodeChange,
-  onStartSigning,
-  onReset,
-}: SigningCredentialsFormProps) => {
+export const SigningCredentialsForm = (props: SigningCredentialsFormProps) => {
+  const { envelopeId, roleId, inviteCode, partialFromSend, isSigningActive, onStartSigning, onReset } = props;
   const canStart = isComplete(envelopeId, roleId, inviteCode);
 
   return (
     <form
       className="sign-credentials-form"
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault();
         if (canStart) {
           onStartSigning();
@@ -51,7 +38,6 @@ export const SigningCredentialsForm = ({
           id="sign-envelope-id"
           type="text"
           value={envelopeId}
-          onChange={e => onEnvelopeIdChange(e.target.value)}
           placeholder="Envelope UUID"
           autoComplete="off"
           disabled={isSigningActive}
@@ -64,7 +50,6 @@ export const SigningCredentialsForm = ({
           id="sign-role-id"
           type="text"
           value={roleId}
-          onChange={e => onRoleIdChange(e.target.value)}
           placeholder="e.g. Recipient 1"
           autoComplete="off"
           disabled={isSigningActive}
@@ -77,7 +62,6 @@ export const SigningCredentialsForm = ({
           id="sign-invite-code"
           type="text"
           value={inviteCode}
-          onChange={e => onInviteCodeChange(e.target.value)}
           placeholder="From signing invitation"
           autoComplete="off"
           disabled={isSigningActive}

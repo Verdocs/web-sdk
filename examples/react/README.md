@@ -4,6 +4,7 @@ Reference Vite + React + TypeScript app for [`@verdocs/web-sdk-react`](https://w
 
 | Example | Route | Embed |
 |---------|-------|-------|
+| **Dashboard** | `#/dashboard` | Overview + Introduction Package request (profile signup) |
 | **Build** (primary) | `#/build` | `VerdocsBuild` — template builder workflow |
 | **Sign** | `#/sign` | `VerdocsSign` — envelope signing (invite credentials) |
 
@@ -20,7 +21,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173 — default route is `#/build`.
+Open http://localhost:5173 — default route is `#/dashboard`.
 
 ## Authentication (Build)
 
@@ -34,9 +35,13 @@ All example chrome and SDK overrides live in one file:
 
 **[`src/styles/example-theme.css`](src/styles/example-theme.css)**
 
-1. Edit `--example-*` tokens at the top (colors, spacing, radius, font).
-2. Toggle **Custom white-label theme** to add `.verdocs-custom-theme` on `<html>`, which maps those tokens onto Verdocs CSS variables (`--verdocs-primary-color`, `--signer-N-color`, field chrome, etc.).
-3. Use the **Color palette** panel on the auth and build screens to preview resolved values.
+1. Edit base `--example-*` tokens under `:root` (Verdocs default demo chrome).
+2. On Build and Sign, use the **White-label preset** dropdown to pick a theme. Selection sets `data-example-theme` on `<html>` and adds `.verdocs-custom-theme` for non-default presets, mapping tokens onto Verdocs CSS variables (`--verdocs-primary-color`, `--signer-N-color`, etc.).
+3. Presets:
+   - **Verdocs default** — stock SDK styling; app uses base `:root` tokens only.
+   - **Wayfair (sample)** — purple retail palette (Wayfair Homebase-inspired).
+   - **Ironclad** — green/navy CLM palette from [ironclad.design](https://ironclad.design/) (Illuminated Green `#00CA88`, Navy `#1C4044`, etc.).
+4. Use the **Color palette** panel on build screens to preview resolved values. Your choice is saved in `localStorage` (`verdocs-example-theme`).
 
 Import order in [`src/main.tsx`](src/main.tsx):
 
@@ -51,8 +56,6 @@ import './styles/example-theme.css';
 2. **Recipients / workflow** — `roles` step: add signers; drag to set **sequence** (parallel levels) and **order** (within a level).
 3. **Fields** — place signature, initial, date, dropdown, etc. (each recipient needs at least one field).
 4. **Preview & send** — assign contacts and send.
-
-Use the **Template ID** and **Step** controls above the embed to open an existing template or jump to a wizard step.
 
 > `VerdocsBuild` does not mount the initial upload UI without a `templateId`. This example composes `VerdocsTemplateCreate` first, then passes the new ID into `VerdocsBuild`.
 
@@ -80,8 +83,8 @@ Uses `envelopeId`, `roleId`, and `inviteCode` from the signer invitation — not
 ```
 src/
   pages/
-    AuthPage.tsx          # VerdocsAuth (shown when Build has no session)
     BuildPage.tsx         # Build demo
+    DashboardPage.tsx     # Overview + Introduction Package CTA
     SignPage.tsx          # Sign demo
   components/
     build/                # VerdocsBuild-specific

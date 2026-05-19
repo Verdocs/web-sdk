@@ -1,37 +1,47 @@
+import type { ExampleThemeId } from "../../lib/useVerdocsTheme";
+
+export const EXAMPLE_THEME_OPTIONS: { id: ExampleThemeId; label: string }[] = [
+  { id: "default", label: "Verdocs default" },
+  { id: "wayfair", label: "Wayfair (sample)" },
+  { id: "ironclad", label: "Ironclad" },
+];
+
+const THEME_SUBLABELS: Record<ExampleThemeId, string> = {
+  default: "Stock Verdocs styling on embeds",
+  wayfair: "Purple retail sample — maps CSS variables to the SDK",
+  ironclad: "Green CLM brand — colors from ironclad.design",
+};
+
 interface ThemeToggleProps {
-  enabled: boolean;
-  onChange: (enabled: boolean) => void;
-  variant?: 'compact' | 'prominent';
+  themeId: ExampleThemeId;
+  onChange: (themeId: ExampleThemeId) => void;
+  variant?: "compact" | "prominent";
 }
 
-export const ThemeToggle = ({enabled, onChange, variant = 'compact'}: ThemeToggleProps) => {
-  const id = variant === 'prominent' ? 'theme-toggle-prominent' : 'theme-toggle-compact';
+export const ThemeToggle = ({ themeId, onChange, variant = "compact" }: ThemeToggleProps) => {
+  const selectId = variant === "prominent" ? "theme-select-prominent" : "theme-select-compact";
 
   return (
-    <label className={`theme-toggle theme-toggle--${variant}`} htmlFor={id}>
-      <input
-        id={id}
-        type="checkbox"
-        role="switch"
-        aria-checked={enabled}
-        checked={enabled}
-        onChange={e => onChange(e.target.checked)}
-      />
-      <span className="theme-toggle-track" aria-hidden="true">
-        <span className="theme-toggle-thumb" />
-      </span>
-      <span className="theme-toggle-label">
-        {variant === 'prominent' ? (
-          <>
-            <strong>Custom white-label theme</strong>
-            <span className="theme-toggle-sublabel">
-              {enabled ? 'Active — SDK uses your CSS variables' : 'Off — Verdocs default styling'}
-            </span>
-          </>
-        ) : (
-          'Custom theme'
-        )}
-      </span>
-    </label>
+    <div className={`theme-select-wrap theme-select-wrap--${variant}`}>
+      {variant === "prominent" && (
+        <label className="theme-select-label" htmlFor={selectId}>
+          <strong>White-label preset</strong>
+        </label>
+      )}
+      <select
+        id={selectId}
+        className="theme-select"
+        value={themeId}
+        onChange={(e) => onChange(e.target.value as ExampleThemeId)}
+        aria-label="White-label theme preset"
+      >
+        {EXAMPLE_THEME_OPTIONS.map(({ id, label }) => (
+          <option key={id} value={id}>
+            {label}
+          </option>
+        ))}
+      </select>
+      {variant === "prominent" && <span className="theme-select-sublabel">{THEME_SUBLABELS[themeId]}</span>}
+    </div>
   );
 };

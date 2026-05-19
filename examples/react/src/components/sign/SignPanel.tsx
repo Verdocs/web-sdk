@@ -3,11 +3,10 @@ import type { SigningParams } from "../../lib/signingSession";
 
 interface SignPanelProps {
   params: SigningParams | null;
-  active: boolean;
 }
 
-export const SignPanel = ({ params, active }: SignPanelProps) => {
-  if (!active || !params) {
+export const SignPanel = ({ params }: SignPanelProps) => {
+  if (!params) {
     return null;
   }
 
@@ -15,7 +14,6 @@ export const SignPanel = ({ params, active }: SignPanelProps) => {
 
   return (
     <div className="sign-panel">
-      <div id="verdocs-sign-header-host" className="sign-header-host" />
       <VerdocsSign
         key={sessionKey}
         envelopeId={params.envelopeId}
@@ -23,6 +21,7 @@ export const SignPanel = ({ params, active }: SignPanelProps) => {
         inviteCode={params.inviteCode}
         toolbarStyle="menu"
         headerTargetId="verdocs-sign-header-host"
+        style={{ maxHeight: "400px", overflowY: "auto" }}
       />
     </div>
   );

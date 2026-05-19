@@ -1,6 +1,6 @@
 /**
  * Verdocs React Examples — single theme stylesheet.
- * Edit --example-* tokens below; toggle .verdocs-custom-theme on <html> to apply them to SDK embeds.
+ * Edit --example-* tokens below; set data-example-theme on <html> via the preset dropdown to apply them to SDK embeds.
  */
 
 /* ── 1) Design tokens (source of truth) ─────────────────────────────────── */
@@ -44,10 +44,10 @@
   --example-signer-10: #ea580c;
 }
 
-/* ── 2) Verdocs SDK overrides (when white-label toggle is on) ─────────── */
-/* Wayfair-inspired palette — extracted from wayfair.com Homebase tokens (May 2026). */
+/* ── 2) White-label presets (data-example-theme on <html>) ───────────── */
 
-:root.verdocs-custom-theme {
+/* Wayfair-inspired — wayfair.com Homebase tokens (May 2026). */
+:root.verdocs-custom-theme[data-example-theme='wayfair'] {
   --example-font-family: 'Barlow', 'Helvetica Neue', arial, sans-serif;
   --example-color-bg: #f5f5f5;
   --example-color-surface: #ffffff;
@@ -57,6 +57,7 @@
   --example-color-primary: #7b189f;
   --example-color-primary-hover: #893caa;
   --example-color-accent: #247139;
+  --example-surface-tint: #f8f3fa;
 
   --example-radius-xs: 2px;
   --example-radius-sm: 4px;
@@ -85,6 +86,55 @@
   --example-signer-9: #646266;
   --example-signer-10: #211e22;
 
+  --example-datepicker-selected-tint: #e5d1ec;
+}
+
+/* Ironclad — brand palette from https://ironclad.design/ */
+:root.verdocs-custom-theme[data-example-theme='ironclad'] {
+  --example-font-family: 'Inter', system-ui, sans-serif;
+  --example-color-bg: #e9e9e1;
+  --example-color-surface: #ffffff;
+  --example-color-text: #1c4044;
+  --example-color-muted: #315c62;
+  --example-color-border: #c5d5d3;
+  --example-color-primary: #00ca88;
+  --example-color-primary-hover: #00b078;
+  --example-color-accent: #a38a51;
+  --example-surface-tint: #f0fdf8;
+
+  --example-radius-xs: 4px;
+  --example-radius-sm: 6px;
+  --example-radius-md: 8px;
+  --example-radius-lg: 12px;
+  --example-radius-full: 9999px;
+
+  --example-padding-xs: 0.25rem;
+  --example-padding-sm: 0.5rem;
+  --example-padding-md: 0.75rem;
+  --example-padding-lg: 1rem;
+  --example-padding-xl: 1.5rem;
+
+  --example-spacing-sm: 0.5rem;
+  --example-spacing-md: 1rem;
+  --example-spacing-lg: 1.5rem;
+
+  --example-signer-1: #00ca88;
+  --example-signer-2: #315c62;
+  --example-signer-3: #1c4044;
+  --example-signer-4: #a38a51;
+  --example-signer-5: #6aa09d;
+  --example-signer-6: #00b078;
+  --example-signer-7: #c4f4c4;
+  --example-signer-8: #4a7c59;
+  --example-signer-9: #5c7a80;
+  --example-signer-10: #2d5a4a;
+
+  --example-datepicker-selected-tint: #c4f4c4;
+}
+
+/* Verdocs SDK variable mapping (all custom presets) */
+:root.verdocs-custom-theme[data-example-theme='wayfair'],
+:root.verdocs-custom-theme[data-example-theme='ironclad'] {
   --verdocs-primary-color: var(--example-color-primary);
   --verdocs-primary-color-hover: var(--example-color-primary-hover);
   --verdocs-primary-font: var(--example-font-family);
@@ -101,9 +151,9 @@
   --verdocs-dialog-icon-color: #ffffff;
   --verdocs-close-button-color: var(--example-color-muted);
   --verdocs-close-button-hover-color: var(--example-color-text);
-  --verdocs-close-button-hover-bg: #f8f3fa;
+  --verdocs-close-button-hover-bg: var(--example-surface-tint);
 
-  --verdocs-button-secondary-bg: #f8f3fa;
+  --verdocs-button-secondary-bg: var(--example-surface-tint);
   --verdocs-button-secondary-color: var(--example-color-text);
   --verdocs-button-secondary-border: 1px solid var(--example-color-border);
   --verdocs-button-secondary-hover-bg: #f5f5f5;
@@ -154,8 +204,8 @@
 
 :root.verdocs-custom-theme .air-datepicker {
   --adp-accent-color: var(--example-color-primary);
-  --adp-background-color-selected-other-month: #e5d1ec;
-  --adp-background-color-selected-other-month-focused: #e5d1ec;
+  --adp-background-color-selected-other-month: var(--example-datepicker-selected-tint);
+  --adp-background-color-selected-other-month-focused: var(--example-datepicker-selected-tint);
   --adp-border-radius: var(--example-radius-md);
 }
 
@@ -387,7 +437,8 @@ body {
 }
 
 .sign-panel {
-  min-height: 80vh;
+  /* min-height: 80vh; */
+  /* max-height: 900px; */
   width: 100%;
 }
 
@@ -865,77 +916,57 @@ body {
   color: var(--example-color-muted);
 }
 
-/* Theme toggle */
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  user-select: none;
-}
-
-.theme-toggle input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
-}
-
-.theme-toggle-track {
-  position: relative;
-  flex-shrink: 0;
-  width: 44px;
-  height: 24px;
-  background: #c5cad3;
-  border-radius: 999px;
-  transition: background 0.2s ease;
-}
-
-.theme-toggle input:checked + .theme-toggle-track {
-  background: var(--example-color-primary);
-}
-
-.theme-toggle-thumb {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease;
-}
-
-.theme-toggle input:checked + .theme-toggle-track .theme-toggle-thumb {
-  transform: translateX(20px);
-}
-
-.theme-toggle-label {
+/* Theme preset select */
+.theme-select-wrap {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  font-size: 0.875rem;
-  line-height: 1.3;
+  gap: 0.35rem;
+  min-width: 12rem;
 }
 
-.theme-toggle--prominent .theme-toggle-label strong {
+.theme-select-wrap--prominent {
+  flex-shrink: 0;
+  min-width: 14rem;
+}
+
+.theme-select-label {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.theme-select-label strong {
   font-size: 1rem;
   color: var(--example-color-text);
 }
 
-.theme-toggle-sublabel {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--example-color-muted);
+.theme-select {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--example-color-text);
+  background-color: var(--example-color-surface);
+  border: 1px solid var(--example-color-border);
+  border-radius: var(--example-radius-sm);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748b' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
 }
 
-.theme-toggle--compact .theme-toggle-label {
-  font-weight: 500;
+.theme-select:focus {
+  outline: 2px solid color-mix(in srgb, var(--example-color-primary) 35%, transparent);
+  border-color: var(--example-color-primary);
+}
+
+.theme-select-sublabel {
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--example-color-muted);
 }
 
 .field-gallery {
@@ -978,11 +1009,374 @@ body {
   transform-origin: center;
 }
 
+/* ── Dashboard ─────────────────────────────────────────────────────────── */
+
+.dashboard-page {
+  width: 100%;
+  max-width: 52rem;
+  margin: 0 auto;
+}
+
+.dashboard-hero {
+  padding: 2rem 0 2.25rem;
+}
+
+.dashboard-eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--example-color-primary);
+}
+
+.dashboard-headline {
+  margin: 0 0 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--example-color-text);
+}
+
+.dashboard-subline {
+  margin: 0;
+  max-width: 32rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--example-color-muted);
+}
+
+.dashboard-demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--example-spacing-md);
+  margin-bottom: var(--example-spacing-lg);
+}
+
+.dashboard-demo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--example-color-surface);
+  border: 1px solid var(--example-color-border);
+  border-radius: var(--example-radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dashboard-demo-card:hover {
+  border-color: color-mix(in srgb, var(--example-color-primary) 35%, var(--example-color-border));
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--example-color-primary) 10%, transparent);
+}
+
+.dashboard-demo-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--example-color-text);
+}
+
+.dashboard-demo-card-description {
+  margin: 0;
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--example-color-muted);
+}
+
+.dashboard-demo-card-link {
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--example-color-primary);
+  text-decoration: none;
+  background: color-mix(in srgb, var(--example-color-primary) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--example-color-primary) 25%, transparent);
+  border-radius: var(--example-radius-full);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.dashboard-demo-card-link:hover {
+  color: #fff;
+  background: var(--example-color-primary);
+  border-color: var(--example-color-primary);
+}
+
+.dashboard-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--example-color-primary) 8%, var(--example-color-surface)) 0%,
+    var(--example-color-surface) 55%
+  );
+  border: 2px solid color-mix(in srgb, var(--example-color-primary) 20%, var(--example-color-border));
+  border-radius: var(--example-radius-lg);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--example-color-primary) 10%, transparent),
+    0 4px 16px color-mix(in srgb, var(--example-color-primary) 8%, transparent);
+}
+
+.dashboard-cta-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-cta-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--example-color-text);
+}
+
+.dashboard-cta-subline {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--example-color-muted);
+}
+
+.dashboard-cta-button {
+  flex-shrink: 0;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  white-space: nowrap;
+  color: #fff;
+  background: var(--example-color-primary);
+  border: none;
+  border-radius: var(--example-radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.dashboard-cta-button:hover {
+  background: var(--example-color-primary-hover);
+}
+
+/* ── Contact modal ─────────────────────────────────────────────────────── */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--example-spacing-lg);
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(4px);
+}
+
+.modal-dialog {
+  width: 100%;
+  max-width: 32rem;
+  max-height: min(90vh, 720px);
+  overflow: auto;
+  background: var(--example-color-surface);
+  border-radius: var(--example-radius-md);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  outline: none;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--example-spacing-md);
+  padding: var(--example-spacing-md) 1.25rem;
+  border-bottom: 1px solid var(--example-color-border);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.modal-close {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 1.35rem;
+  line-height: 1;
+  font-family: inherit;
+  color: var(--example-color-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--example-radius-sm);
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  color: var(--example-color-text);
+  background: var(--example-color-bg);
+}
+
+.modal-body {
+  padding: 1.25rem;
+}
+
+.modal-intro {
+  margin: 0 0 var(--example-spacing-md);
+  font-size: 0.875rem;
+  color: var(--example-color-muted);
+  line-height: 1.5;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--example-spacing-md);
+}
+
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--example-spacing-md);
+}
+
+.contact-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.contact-form-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--example-color-text);
+}
+
+.contact-form-field input {
+  padding: 0.5rem 0.65rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  border: 1px solid var(--example-color-border);
+  border-radius: var(--example-radius-sm);
+  background: var(--example-color-surface);
+}
+
+.contact-form-field input:focus {
+  outline: 2px solid color-mix(in srgb, var(--example-color-primary) 35%, transparent);
+  border-color: var(--example-color-primary);
+}
+
+.contact-form-field input:disabled {
+  background: var(--example-color-bg);
+  color: var(--example-color-muted);
+}
+
+.contact-form-field-error {
+  font-size: 0.8rem;
+  color: #b91c1c;
+}
+
+.contact-form-error {
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.85rem;
+  color: #b91c1c;
+  background: color-mix(in srgb, #b91c1c 8%, var(--example-color-surface));
+  border-radius: var(--example-radius-sm);
+  border-left: 3px solid #b91c1c;
+}
+
+.contact-form-legal {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--example-color-muted);
+  line-height: 1.45;
+}
+
+.contact-form-legal a {
+  color: var(--example-color-primary);
+}
+
+.contact-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.contact-form-submit {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  background: var(--example-color-primary);
+  border: none;
+  border-radius: var(--example-radius-sm);
+  cursor: pointer;
+}
+
+.contact-form-submit:hover:not(:disabled) {
+  background: var(--example-color-primary-hover);
+}
+
+.contact-form-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.contact-form-success h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.contact-form-success p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--example-color-muted);
+  line-height: 1.5;
+}
+
 @media (max-width: 650px) {
   .app,
   .app--sign .sign-page .theme-banner,
   .app--sign .sign-page .page-intro {
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  .contact-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-backdrop {
+    padding: var(--example-spacing-md);
+  }
+
+  .dashboard-headline {
+    font-size: 1.45rem;
+  }
+
+  .dashboard-demo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-cta {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .dashboard-cta-button {
+    width: 100%;
+    white-space: normal;
+    text-align: center;
   }
 }
