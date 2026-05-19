@@ -938,51 +938,6 @@ body {
   font-weight: 500;
 }
 
-.event-log-empty {
-  margin: 0;
-  font-size: 0.875rem;
-  color: var(--example-color-muted);
-}
-
-.event-log {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 0.8rem;
-  max-height: 280px;
-  overflow-y: auto;
-  background: #1e293b;
-  color: #e2e8f0;
-  border-radius: var(--example-radius-sm);
-  padding: 0.75rem;
-}
-
-.event-log-entry {
-  margin-bottom: 0.65rem;
-  padding-bottom: 0.65rem;
-  border-bottom: 1px solid #334155;
-}
-
-.event-log-entry:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-.event-log-type {
-  color: #93c5fd;
-  font-weight: 600;
-}
-
-.event-log-time {
-  color: #94a3b8;
-  margin-left: 0.5rem;
-}
-
-.event-log-message {
-  margin: 0.25rem 0 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
 .field-gallery {
   display: grid;
   gap: var(--example-spacing-lg);

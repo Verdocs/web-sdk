@@ -1,11 +1,9 @@
-import {useCallback, useEffect, useState} from 'react';
-import {BuildWorkflow} from '../components/build/BuildWorkflow';
-import {BuildControls} from '../components/build/BuildControls';
-import {EventLog} from '../components/shared/EventLog';
-import {FieldStyleGallery} from '../components/shared/FieldStyleGallery';
-import {ThemeBanner} from '../components/shared/ThemeBanner';
-import {ColorPalette} from '../components/shared/ColorPalette';
-import {AuthPage} from './AuthPage';
+import { useEffect, useState } from "react";
+import { BuildWorkflow } from "../components/build/BuildWorkflow";
+import { BuildControls } from "../components/build/BuildControls";
+import { ThemeBanner } from "../components/shared/ThemeBanner";
+import { ColorPalette } from "../components/shared/ColorPalette";
+import { AuthPage } from "./AuthPage";
 import {
   clearBuilderSession,
   hasBuilderSession,
@@ -13,20 +11,18 @@ import {
   loadStoredTemplateId,
   saveStoredTemplateId,
   subscribeToSession,
-} from '../lib/authSession';
-import type {TVerdocsBuildStep} from '../lib/buildStorage';
-import {useVerdocsTheme} from '../lib/useVerdocsTheme';
-import type {LogEntry} from '../lib/eventLog';
+} from "../lib/authSession";
+import type { TVerdocsBuildStep } from "../lib/buildStorage";
+import { useVerdocsTheme } from "../lib/useVerdocsTheme";
 
 export const BuildPage = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
-  const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
   const [templateId, setTemplateId] = useState<string | null>(null);
-  const [templateIdInput, setTemplateIdInput] = useState('');
-  const [step, setStep] = useState<TVerdocsBuildStep>('attachments');
+  const [templateIdInput, setTemplateIdInput] = useState("");
+  const [step, setStep] = useState<TVerdocsBuildStep>("attachments");
   const [themeRevision, setThemeRevision] = useState(0);
-  const {enabled: customThemeEnabled, setEnabled: setCustomThemeEnabled} = useVerdocsTheme(true);
+  const { enabled: customThemeEnabled, setEnabled: setCustomThemeEnabled } = useVerdocsTheme(true);
 
   useEffect(() => {
     loadBuilderSession();
@@ -38,18 +34,14 @@ export const BuildPage = () => {
     }
     setCheckingSession(false);
 
-    return subscribeToSession(isAuthed => {
+    return subscribeToSession((isAuthed) => {
       setAuthenticated(isAuthed);
     });
   }, []);
 
   useEffect(() => {
-    setThemeRevision(r => r + 1);
+    setThemeRevision((r) => r + 1);
   }, [customThemeEnabled]);
-
-  const appendLog = useCallback((entry: LogEntry) => {
-    setLogEntries(prev => [entry, ...prev].slice(0, 50));
-  }, []);
 
   const handleUseTemplate = () => {
     const id = templateIdInput.trim();
@@ -58,14 +50,14 @@ export const BuildPage = () => {
     }
     saveStoredTemplateId(id);
     setTemplateId(id);
-    setStep('attachments');
+    setStep("attachments");
   };
 
   const handleNewTemplate = () => {
     saveStoredTemplateId(null);
     setTemplateId(null);
-    setTemplateIdInput('');
-    setStep('attachments');
+    setTemplateIdInput("");
+    setStep("attachments");
   };
 
   const handleSignOut = () => {
@@ -118,7 +110,7 @@ export const BuildPage = () => {
         onNewTemplate={handleNewTemplate}
       />
 
-      <section className={`section section--builder ${customThemeEnabled ? 'section--themed' : ''}`}>
+      <section className={`section section--builder ${customThemeEnabled ? "section--themed" : ""}`}>
         <div className="section-header">
           <h2>
             Template builder
@@ -134,29 +126,18 @@ export const BuildPage = () => {
           <BuildWorkflow
             templateId={templateId}
             step={step}
-            onTemplateIdChange={id => {
+            onTemplateIdChange={(id) => {
               setTemplateId(id);
               if (id) {
                 setTemplateIdInput(id);
               }
             }}
             onStepChange={setStep}
-            onLog={appendLog}
           />
         </div>
       </section>
 
-      <section className="section">
-        <div className="section-header">
-          <h2>SDK event log</h2>
-          <p>Watch role sequence/order after template updates on the Workflow step.</p>
-        </div>
-        <div className="section-body">
-          <EventLog entries={logEntries} />
-        </div>
-      </section>
-
-      <section className={`section ${customThemeEnabled ? 'section--themed' : ''}`}>
+      {/* <section className={`section ${customThemeEnabled ? "section--themed" : ""}`}>
         <div className="section-header">
           <h2>Field styling gallery</h2>
           <p>Same CSS variables as the Fields step in the builder above.</p>
@@ -164,7 +145,7 @@ export const BuildPage = () => {
         <div className="section-body">
           <FieldStyleGallery />
         </div>
-      </section>
+      </section> */}
     </>
   );
 };

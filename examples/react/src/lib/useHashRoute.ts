@@ -1,12 +1,15 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from "react";
 
-export type AppRoute = 'build' | 'sign';
+export type AppRoute = "build" | "sign" | "dashboard";
 
 const parseHash = (hash: string): AppRoute => {
-  if (hash === '#/sign' || hash.startsWith('#/sign?')) {
-    return 'sign';
+  if (hash === "#/sign" || hash.startsWith("#/sign?")) {
+    return "sign";
   }
-  return 'build';
+  if (hash === "#/build" || hash.startsWith("#/build?")) {
+    return "build";
+  }
+  return "dashboard";
 };
 
 export const useHashRoute = (): AppRoute => {
@@ -14,13 +17,13 @@ export const useHashRoute = (): AppRoute => {
 
   useEffect(() => {
     const onHashChange = () => setRoute(parseHash(window.location.hash));
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
   return route;
 };
 
 export const navigateToRoute = (route: AppRoute): void => {
-  window.location.hash = route === 'sign' ? '#/sign' : '#/build';
+  window.location.hash = route === "sign" ? "#/sign" : route === "build" ? "#/build" : "#/dashboard";
 };

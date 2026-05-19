@@ -85,7 +85,7 @@ src/
     SignPage.tsx          # Sign demo
   components/
     build/                # VerdocsBuild-specific
-    shared/               # Theme, palette, event log, field gallery
+    shared/               # Theme, palette, field gallery
     sign/                 # VerdocsSign-specific
   lib/
     authSession.ts        # Session + templateId localStorage helpers

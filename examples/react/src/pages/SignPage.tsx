@@ -1,15 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { EventLog } from "../components/shared/EventLog";
+import { useEffect, useMemo, useState } from "react";
 import { SignPanel } from "../components/sign/SignPanel";
 import { SigningCredentialsForm } from "../components/sign/SigningCredentialsForm";
 import { ThemeBanner } from "../components/shared/ThemeBanner";
 import { loadSigningContext } from "../lib/signingSession";
 import type { SigningParams } from "../lib/signingSession";
 import { useVerdocsTheme } from "../lib/useVerdocsTheme";
-import type { LogEntry } from "../lib/eventLog";
 
 export const SignPage = () => {
-  const [logEntries, setLogEntries] = useState<LogEntry[]>([]);
   const [envelopeId, setEnvelopeId] = useState("");
   const [roleId, setRoleId] = useState("");
   const [inviteCode, setInviteCode] = useState("");
@@ -53,10 +50,6 @@ export const SignPage = () => {
       inviteCode: trimmedInviteCode,
     };
   }, [envelopeId, roleId, inviteCode]);
-
-  const appendLog = useCallback((entry: LogEntry) => {
-    setLogEntries((prev) => [entry, ...prev].slice(0, 50));
-  }, []);
 
   const handleStartSigning = () => {
     if (signingParams) {
@@ -117,20 +110,7 @@ export const SignPage = () => {
           {!isSigningActive && (
             <p className="sign-embed-placeholder">Click &quot;Start signing&quot; above to load the embed.</p>
           )}
-          <SignPanel params={signingParams} active={isSigningActive} onLog={appendLog} />
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="section-header">
-          <h2>SDK event log</h2>
-          <p>
-            Handlers on <code>VerdocsSign</code> — <code>onEnvelopeLoaded</code>, <code>onEnvelopeUpdated</code>, and{" "}
-            <code>onSdkError</code>.
-          </p>
-        </div>
-        <div className="section-body">
-          <EventLog entries={logEntries} emptyMessage="SDK events will appear here as you sign." />
+          <SignPanel params={signingParams} active={isSigningActive} />
         </div>
       </section>
     </div>
