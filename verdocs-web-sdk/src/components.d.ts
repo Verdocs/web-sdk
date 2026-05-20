@@ -4742,8 +4742,6 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
-
     /**
      * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
      * based on their full name, or by hand-drawing their signature with a mouse or tablet.
@@ -7926,547 +7924,90 @@ declare namespace LocalJSX {
          */
         "onView"?: (event: VerdocsViewCustomEvent<any>) => void;
     }
-
-    interface VerdocsAdoptSignatureDialogAttributes {
-        "name": string;
-        "nameLocked": boolean;
-    }
-    interface VerdocsAuthAttributes {
-        "visible": boolean;
-        "logo": string;
-        "displayMode": 'login' | 'forgot' | 'reset' | 'signup' | 'verify';
-    }
-    interface VerdocsBuildAttributes {
-        "templateId": string | null;
-        "step": TVerdocsBuildStep;
-    }
-    interface VerdocsButtonAttributes {
-        "label": string;
-        "startIcon": string | null;
-        "endIcon": string | null;
-        "size": 'xsmall' | 'small' | 'normal' | 'medium' | 'large';
-        "type": 'button' | 'submit' | 'reset';
-        "variant": 'standard' | 'text' | 'outline';
-        "disabled": boolean;
-    }
-    interface VerdocsButtonPanelAttributes {
-        "icon": string;
-    }
-    interface VerdocsCheckboxAttributes {
-        "checked": boolean;
-        "name": string;
-        "label": string;
-        "value": string;
-        "theme": 'light' | 'dark';
-        "size": 'normal' | 'small';
-        "disabled": boolean;
-    }
-    interface VerdocsComponentErrorAttributes {
-        "message": string;
-    }
-    interface VerdocsDateInputAttributes {
-        "value": string;
-        "label": string;
-        "placeholder": string;
-        "helpText": string;
-        "disabled": boolean;
-        "required": boolean;
-    }
-    interface VerdocsDialogAttributes {
-        "persistent": boolean;
-    }
-    interface VerdocsDisclosureDialogAttributes {
-        "disclosures": string;
-        "delegator": boolean;
-    }
-    interface VerdocsDownloadDialogAttributes {
-        "signed": boolean;
-        "polling": boolean;
-        "hasCertificate": boolean;
-    }
-    interface VerdocsEnvelopeDocumentPageAttributes {
-        "envelopeId": string;
-        "documentId": string;
-        "pageNumber": number;
-        "virtualWidth": number;
-        "virtualHeight": number;
-        "type": 'original' | 'filled' | 'certificate';
-    }
-    interface VerdocsEnvelopeRecipientLinkAttributes {
-        "envelopeId": string;
-        "roleName": string;
-    }
-    interface VerdocsEnvelopeRecipientSummaryAttributes {
-        "envelopeId": string;
-        "canSendAnother": boolean;
-        "canView": boolean;
-        "canDone": boolean;
-    }
-    interface VerdocsEnvelopeSidebarAttributes {
-        "envelopeId": string;
-    }
-    interface VerdocsEnvelopeUpdateRecipientAttributes {
-        "envelopeId": string;
-        "roleName": string;
-    }
-    interface VerdocsEnvelopesListAttributes {
-        "view": 'all' | 'inbox' | 'sent' | 'completed' | 'action' | 'waiting';
-        "status": TEnvelopeStatus | 'all';
-        "sort": 'name' | 'created_at' | 'updated_at' | 'canceled_at' | 'status';
-        "match": string;
-        "showPagination": boolean;
-        "rowsPerPage": number;
-        "selectedPage": number;
-    }
-    interface VerdocsFieldAttachmentAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "isPreview": boolean;
-        "disabled": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "done": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-    }
-    interface VerdocsFieldCheckboxAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "isPreview": boolean;
-        "disabled": boolean;
-        "done": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-    }
-    interface VerdocsFieldDateAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "disabled": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "done": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-        "isPreview": boolean;
-    }
-    interface VerdocsFieldDropdownAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "isPreview": boolean;
-        "disabled": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "done": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-    }
-    interface VerdocsFieldInitialAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "disabled": boolean;
-        "initials": string;
-        "editable": boolean;
-        "moveable": boolean;
-        "done": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-        "initialid": string;
-        "isPreview": boolean;
-    }
-    interface VerdocsFieldPaymentAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "isPreview": boolean;
-        "disabled": boolean;
-        "done": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-        "pageNum": number;
-        "roleName": string;
-        "fieldId": string;
-        "recipients": string;
-        "selectedRoleName": string;
-        "currentSignature": string;
-        "currentSignatureId": string;
-        "currentInitial": string;
-        "currentInitialId": string;
-        "signed": boolean;
-        "roleindex": number;
-    }
-    interface VerdocsFieldRadioAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "isPreview": boolean;
-        "disabled": boolean;
-        "required": boolean;
-        "done": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-    }
-    interface VerdocsFieldSignatureAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "name": string;
-        "disabled": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "done": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-        "signatureid": string;
-        "isPreview": boolean;
-    }
-    interface VerdocsFieldTextareaAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "isPreview": boolean;
-        "disabled": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "done": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-    }
-    interface VerdocsFieldTextboxAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "isPreview": boolean;
-        "disabled": boolean;
-        "multiline": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "done": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-    }
-    interface VerdocsFieldTimestampAttributes {
-        "source": 'template' | 'envelope';
-        "sourceid": string;
-        "fieldname": string;
-        "isPreview": boolean;
-        "disabled": boolean;
-        "editable": boolean;
-        "moveable": boolean;
-        "done": boolean;
-        "xscale": number;
-        "yscale": number;
-        "pagenumber": number;
-    }
-    interface VerdocsFlagAttributes {
-        "variant": 'fill' | 'next';
-        "label": string;
-        "showSkip": boolean;
-    }
-    interface VerdocsHelpIconAttributes {
-        "text": string;
-        "icon": string;
-    }
-    interface VerdocsInitialDialogAttributes {
-        "initials": string;
-    }
-    interface VerdocsKbaDialogAttributes {
-        "step": number;
-        "steps": number;
-        "helptitle": string;
-        "helptext": string;
-        "mode": 'text' | 'choice' | 'identity';
-        "label": string;
-        "placeholder": string;
-    }
-    interface VerdocsMenuPanelAttributes {
-        "side": 'left' | 'right';
-        "overlay": boolean;
-        "width": number;
-    }
-    interface VerdocsMultiselectAttributes {
-        "label": string;
-        "placeholder": string;
-    }
-    interface VerdocsOkDialogAttributes {
-        "heading": string;
-        "message": string;
-        "buttonLabel": string;
-        "showCancel": boolean;
-    }
-    interface VerdocsOtpDialogAttributes {
-        "method": 'email' | 'sms';
-    }
-    interface VerdocsPaginationAttributes {
-        "selectedPage": number;
-        "itemCount": number;
-        "perPage": number;
-    }
-    interface VerdocsPortalAttributes {
-        "anchor": string;
-        "voffset": number;
-    }
-    interface VerdocsPreviewAttributes {
-        "templateId": string | null;
-    }
-    interface VerdocsProgressBarAttributes {
-        "label": string;
-        "showPercent": boolean;
-        "percent": number;
-    }
-    interface VerdocsQuestionDialogAttributes {
-        "question": string;
-    }
-    interface VerdocsQuickFilterAttributes {
-        "label": string;
-        "value": string;
-        "placeholder": string;
-    }
-    interface VerdocsRadioButtonAttributes {
-        "checked": boolean;
-        "name": string;
-        "value": string;
-        "disabled": boolean;
-    }
-    interface VerdocsSearchBoxAttributes {
-        "placeholder": string;
-        "type": TContentType;
-        "query": string;
-        "grabsFocus": boolean;
-    }
-    interface VerdocsSelectInputAttributes {
-        "value": string;
-        "label": string;
-        "disabled": boolean;
-    }
-    interface VerdocsSendAttributes {
-        "templateId": string | null;
-        "environment": string;
-        "showCancel": boolean;
-    }
-    interface VerdocsSignAttributes {
-        "envelopeId": string | null;
-        "roleId": string | null;
-        "inviteCode": string | null;
-        "headerTargetId": string | null;
-        "toolbarStyle": 'controls' | 'menu';
-    }
-    interface VerdocsSignFooterAttributes {
-        "envelopeId": string;
-        "isDone": boolean;
-    }
-    interface VerdocsSignatureDialogAttributes {
-        "name": string;
-    }
-    interface VerdocsSigningProgressAttributes {
-        "mode": 'start' | 'signing' | 'completed';
-        "focusedField": string;
-    }
-    interface VerdocsSpinnerAttributes {
-        "size": number;
-        "mode": 'light' | 'dark';
-    }
-    interface VerdocsStatusIndicatorAttributes {
-        "size": 'small' | 'normal';
-        "theme": 'dark' | 'light';
-        "status": TEnvelopeStatus | TRecipientStatus | 'accepted';
-    }
-    interface VerdocsSwitchAttributes {
-        "checked": boolean;
-        "theme": 'primary' | 'secondary';
-        "disabled": boolean;
-    }
-    interface VerdocsTabsAttributes {
-        "selectedTab": number;
-    }
-    interface VerdocsTemplateAttachmentsAttributes {
-        "templateId": string;
-    }
-    interface VerdocsTemplateBuildTabsAttributes {
-        "templateId": string | null;
-        "step": TVerdocsBuildStep;
-    }
-    interface VerdocsTemplateCreateAttributes {
-        "maxSize": number;
-    }
-    interface VerdocsTemplateDocumentPageAttributes {
-        "editable": boolean;
-        "disabled": boolean;
-        "done": boolean;
-        "templateId": string;
-        "documentId": string;
-        "pageNumber": number;
-        "virtualWidth": number;
-        "virtualHeight": number;
-    }
-    interface VerdocsTemplateFieldPropertiesAttributes {
-        "templateId": string;
-        "fieldName": string;
-        "helpText": string;
-    }
-    interface VerdocsTemplateFieldsAttributes {
-        "templateId": string | null;
-        "toolbarTargetId": string | null;
-    }
-    interface VerdocsTemplateRolePropertiesAttributes {
-        "templateId": string;
-        "roleName": string;
-    }
-    interface VerdocsTemplateRolesAttributes {
-        "templateId": string;
-    }
-    interface VerdocsTemplateSettingsAttributes {
-        "templateId": string;
-    }
-    interface VerdocsTemplatesListAttributes {
-        "visibility": 'private_shared' | 'private' | 'shared' | 'public';
-        "starred": 'all' | 'starred' | 'unstarred';
-        "sort": string;
-        "name": string;
-        "showPagination": boolean;
-        "rowsPerPage": number;
-        "selectedPage": number;
-    }
-    interface VerdocsTextInputAttributes {
-        "value": string;
-        "label": string;
-        "placeholder": string;
-        "description": string;
-        "autocomplete": string;
-        "helpText": string;
-        "clearable": boolean;
-        "copyable": boolean;
-        "type": 'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url';
-        "disabled": boolean;
-        "required": boolean;
-    }
-    interface VerdocsToggleAttributes {
-        "theme": 'light' | 'dark';
-    }
-    interface VerdocsToggleButtonAttributes {
-        "active": boolean;
-        "icon": string | null;
-        "label": string | null;
-        "size": 'small' | 'normal';
-    }
-    interface VerdocsToolbarIconAttributes {
-        "text": string;
-        "icon": string;
-        "placement": Placement;
-    }
-    interface VerdocsUploadDialogAttributes {
-        "maxSize": number;
-        "existingFile": string;
-    }
-    interface VerdocsViewAttributes {
-        "envelopeId": string;
-        "headerTargetId": string | null;
-    }
-
     interface IntrinsicElements {
-        "verdocs-adopt-signature-dialog": Omit<VerdocsAdoptSignatureDialog, keyof VerdocsAdoptSignatureDialogAttributes> & { [K in keyof VerdocsAdoptSignatureDialog & keyof VerdocsAdoptSignatureDialogAttributes]?: VerdocsAdoptSignatureDialog[K] } & { [K in keyof VerdocsAdoptSignatureDialog & keyof VerdocsAdoptSignatureDialogAttributes as `attr:${K}`]?: VerdocsAdoptSignatureDialogAttributes[K] } & { [K in keyof VerdocsAdoptSignatureDialog & keyof VerdocsAdoptSignatureDialogAttributes as `prop:${K}`]?: VerdocsAdoptSignatureDialog[K] };
-        "verdocs-auth": Omit<VerdocsAuth, keyof VerdocsAuthAttributes> & { [K in keyof VerdocsAuth & keyof VerdocsAuthAttributes]?: VerdocsAuth[K] } & { [K in keyof VerdocsAuth & keyof VerdocsAuthAttributes as `attr:${K}`]?: VerdocsAuthAttributes[K] } & { [K in keyof VerdocsAuth & keyof VerdocsAuthAttributes as `prop:${K}`]?: VerdocsAuth[K] };
-        "verdocs-build": Omit<VerdocsBuild, keyof VerdocsBuildAttributes> & { [K in keyof VerdocsBuild & keyof VerdocsBuildAttributes]?: VerdocsBuild[K] } & { [K in keyof VerdocsBuild & keyof VerdocsBuildAttributes as `attr:${K}`]?: VerdocsBuildAttributes[K] } & { [K in keyof VerdocsBuild & keyof VerdocsBuildAttributes as `prop:${K}`]?: VerdocsBuild[K] };
-        "verdocs-button": Omit<VerdocsButton, keyof VerdocsButtonAttributes> & { [K in keyof VerdocsButton & keyof VerdocsButtonAttributes]?: VerdocsButton[K] } & { [K in keyof VerdocsButton & keyof VerdocsButtonAttributes as `attr:${K}`]?: VerdocsButtonAttributes[K] } & { [K in keyof VerdocsButton & keyof VerdocsButtonAttributes as `prop:${K}`]?: VerdocsButton[K] } & OneOf<"label", VerdocsButton["label"], VerdocsButtonAttributes["label"]>;
-        "verdocs-button-panel": Omit<VerdocsButtonPanel, keyof VerdocsButtonPanelAttributes> & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes]?: VerdocsButtonPanel[K] } & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes as `attr:${K}`]?: VerdocsButtonPanelAttributes[K] } & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes as `prop:${K}`]?: VerdocsButtonPanel[K] };
-        "verdocs-checkbox": Omit<VerdocsCheckbox, keyof VerdocsCheckboxAttributes> & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes]?: VerdocsCheckbox[K] } & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes as `attr:${K}`]?: VerdocsCheckboxAttributes[K] } & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes as `prop:${K}`]?: VerdocsCheckbox[K] };
-        "verdocs-component-error": Omit<VerdocsComponentError, keyof VerdocsComponentErrorAttributes> & { [K in keyof VerdocsComponentError & keyof VerdocsComponentErrorAttributes]?: VerdocsComponentError[K] } & { [K in keyof VerdocsComponentError & keyof VerdocsComponentErrorAttributes as `attr:${K}`]?: VerdocsComponentErrorAttributes[K] } & { [K in keyof VerdocsComponentError & keyof VerdocsComponentErrorAttributes as `prop:${K}`]?: VerdocsComponentError[K] };
+        "verdocs-adopt-signature-dialog": VerdocsAdoptSignatureDialog;
+        "verdocs-auth": VerdocsAuth;
+        "verdocs-build": VerdocsBuild;
+        "verdocs-button": VerdocsButton;
+        "verdocs-button-panel": VerdocsButtonPanel;
+        "verdocs-checkbox": VerdocsCheckbox;
+        "verdocs-component-error": VerdocsComponentError;
         "verdocs-contact-picker": VerdocsContactPicker;
-        "verdocs-date-input": Omit<VerdocsDateInput, keyof VerdocsDateInputAttributes> & { [K in keyof VerdocsDateInput & keyof VerdocsDateInputAttributes]?: VerdocsDateInput[K] } & { [K in keyof VerdocsDateInput & keyof VerdocsDateInputAttributes as `attr:${K}`]?: VerdocsDateInputAttributes[K] } & { [K in keyof VerdocsDateInput & keyof VerdocsDateInputAttributes as `prop:${K}`]?: VerdocsDateInput[K] };
+        "verdocs-date-input": VerdocsDateInput;
         "verdocs-delegate-dialog": VerdocsDelegateDialog;
-        "verdocs-dialog": Omit<VerdocsDialog, keyof VerdocsDialogAttributes> & { [K in keyof VerdocsDialog & keyof VerdocsDialogAttributes]?: VerdocsDialog[K] } & { [K in keyof VerdocsDialog & keyof VerdocsDialogAttributes as `attr:${K}`]?: VerdocsDialogAttributes[K] } & { [K in keyof VerdocsDialog & keyof VerdocsDialogAttributes as `prop:${K}`]?: VerdocsDialog[K] };
-        "verdocs-disclosure-dialog": Omit<VerdocsDisclosureDialog, keyof VerdocsDisclosureDialogAttributes> & { [K in keyof VerdocsDisclosureDialog & keyof VerdocsDisclosureDialogAttributes]?: VerdocsDisclosureDialog[K] } & { [K in keyof VerdocsDisclosureDialog & keyof VerdocsDisclosureDialogAttributes as `attr:${K}`]?: VerdocsDisclosureDialogAttributes[K] } & { [K in keyof VerdocsDisclosureDialog & keyof VerdocsDisclosureDialogAttributes as `prop:${K}`]?: VerdocsDisclosureDialog[K] };
-        "verdocs-download-dialog": Omit<VerdocsDownloadDialog, keyof VerdocsDownloadDialogAttributes> & { [K in keyof VerdocsDownloadDialog & keyof VerdocsDownloadDialogAttributes]?: VerdocsDownloadDialog[K] } & { [K in keyof VerdocsDownloadDialog & keyof VerdocsDownloadDialogAttributes as `attr:${K}`]?: VerdocsDownloadDialogAttributes[K] } & { [K in keyof VerdocsDownloadDialog & keyof VerdocsDownloadDialogAttributes as `prop:${K}`]?: VerdocsDownloadDialog[K] };
+        "verdocs-dialog": VerdocsDialog;
+        "verdocs-disclosure-dialog": VerdocsDisclosureDialog;
+        "verdocs-download-dialog": VerdocsDownloadDialog;
         "verdocs-dropdown": VerdocsDropdown;
-        "verdocs-envelope-document-page": Omit<VerdocsEnvelopeDocumentPage, keyof VerdocsEnvelopeDocumentPageAttributes> & { [K in keyof VerdocsEnvelopeDocumentPage & keyof VerdocsEnvelopeDocumentPageAttributes]?: VerdocsEnvelopeDocumentPage[K] } & { [K in keyof VerdocsEnvelopeDocumentPage & keyof VerdocsEnvelopeDocumentPageAttributes as `attr:${K}`]?: VerdocsEnvelopeDocumentPageAttributes[K] } & { [K in keyof VerdocsEnvelopeDocumentPage & keyof VerdocsEnvelopeDocumentPageAttributes as `prop:${K}`]?: VerdocsEnvelopeDocumentPage[K] };
-        "verdocs-envelope-recipient-link": Omit<VerdocsEnvelopeRecipientLink, keyof VerdocsEnvelopeRecipientLinkAttributes> & { [K in keyof VerdocsEnvelopeRecipientLink & keyof VerdocsEnvelopeRecipientLinkAttributes]?: VerdocsEnvelopeRecipientLink[K] } & { [K in keyof VerdocsEnvelopeRecipientLink & keyof VerdocsEnvelopeRecipientLinkAttributes as `attr:${K}`]?: VerdocsEnvelopeRecipientLinkAttributes[K] } & { [K in keyof VerdocsEnvelopeRecipientLink & keyof VerdocsEnvelopeRecipientLinkAttributes as `prop:${K}`]?: VerdocsEnvelopeRecipientLink[K] };
-        "verdocs-envelope-recipient-summary": Omit<VerdocsEnvelopeRecipientSummary, keyof VerdocsEnvelopeRecipientSummaryAttributes> & { [K in keyof VerdocsEnvelopeRecipientSummary & keyof VerdocsEnvelopeRecipientSummaryAttributes]?: VerdocsEnvelopeRecipientSummary[K] } & { [K in keyof VerdocsEnvelopeRecipientSummary & keyof VerdocsEnvelopeRecipientSummaryAttributes as `attr:${K}`]?: VerdocsEnvelopeRecipientSummaryAttributes[K] } & { [K in keyof VerdocsEnvelopeRecipientSummary & keyof VerdocsEnvelopeRecipientSummaryAttributes as `prop:${K}`]?: VerdocsEnvelopeRecipientSummary[K] };
-        "verdocs-envelope-sidebar": Omit<VerdocsEnvelopeSidebar, keyof VerdocsEnvelopeSidebarAttributes> & { [K in keyof VerdocsEnvelopeSidebar & keyof VerdocsEnvelopeSidebarAttributes]?: VerdocsEnvelopeSidebar[K] } & { [K in keyof VerdocsEnvelopeSidebar & keyof VerdocsEnvelopeSidebarAttributes as `attr:${K}`]?: VerdocsEnvelopeSidebarAttributes[K] } & { [K in keyof VerdocsEnvelopeSidebar & keyof VerdocsEnvelopeSidebarAttributes as `prop:${K}`]?: VerdocsEnvelopeSidebar[K] };
-        "verdocs-envelope-update-recipient": Omit<VerdocsEnvelopeUpdateRecipient, keyof VerdocsEnvelopeUpdateRecipientAttributes> & { [K in keyof VerdocsEnvelopeUpdateRecipient & keyof VerdocsEnvelopeUpdateRecipientAttributes]?: VerdocsEnvelopeUpdateRecipient[K] } & { [K in keyof VerdocsEnvelopeUpdateRecipient & keyof VerdocsEnvelopeUpdateRecipientAttributes as `attr:${K}`]?: VerdocsEnvelopeUpdateRecipientAttributes[K] } & { [K in keyof VerdocsEnvelopeUpdateRecipient & keyof VerdocsEnvelopeUpdateRecipientAttributes as `prop:${K}`]?: VerdocsEnvelopeUpdateRecipient[K] };
-        "verdocs-envelopes-list": Omit<VerdocsEnvelopesList, keyof VerdocsEnvelopesListAttributes> & { [K in keyof VerdocsEnvelopesList & keyof VerdocsEnvelopesListAttributes]?: VerdocsEnvelopesList[K] } & { [K in keyof VerdocsEnvelopesList & keyof VerdocsEnvelopesListAttributes as `attr:${K}`]?: VerdocsEnvelopesListAttributes[K] } & { [K in keyof VerdocsEnvelopesList & keyof VerdocsEnvelopesListAttributes as `prop:${K}`]?: VerdocsEnvelopesList[K] };
-        "verdocs-field-attachment": Omit<VerdocsFieldAttachment, keyof VerdocsFieldAttachmentAttributes> & { [K in keyof VerdocsFieldAttachment & keyof VerdocsFieldAttachmentAttributes]?: VerdocsFieldAttachment[K] } & { [K in keyof VerdocsFieldAttachment & keyof VerdocsFieldAttachmentAttributes as `attr:${K}`]?: VerdocsFieldAttachmentAttributes[K] } & { [K in keyof VerdocsFieldAttachment & keyof VerdocsFieldAttachmentAttributes as `prop:${K}`]?: VerdocsFieldAttachment[K] };
-        "verdocs-field-checkbox": Omit<VerdocsFieldCheckbox, keyof VerdocsFieldCheckboxAttributes> & { [K in keyof VerdocsFieldCheckbox & keyof VerdocsFieldCheckboxAttributes]?: VerdocsFieldCheckbox[K] } & { [K in keyof VerdocsFieldCheckbox & keyof VerdocsFieldCheckboxAttributes as `attr:${K}`]?: VerdocsFieldCheckboxAttributes[K] } & { [K in keyof VerdocsFieldCheckbox & keyof VerdocsFieldCheckboxAttributes as `prop:${K}`]?: VerdocsFieldCheckbox[K] };
-        "verdocs-field-date": Omit<VerdocsFieldDate, keyof VerdocsFieldDateAttributes> & { [K in keyof VerdocsFieldDate & keyof VerdocsFieldDateAttributes]?: VerdocsFieldDate[K] } & { [K in keyof VerdocsFieldDate & keyof VerdocsFieldDateAttributes as `attr:${K}`]?: VerdocsFieldDateAttributes[K] } & { [K in keyof VerdocsFieldDate & keyof VerdocsFieldDateAttributes as `prop:${K}`]?: VerdocsFieldDate[K] };
-        "verdocs-field-dropdown": Omit<VerdocsFieldDropdown, keyof VerdocsFieldDropdownAttributes> & { [K in keyof VerdocsFieldDropdown & keyof VerdocsFieldDropdownAttributes]?: VerdocsFieldDropdown[K] } & { [K in keyof VerdocsFieldDropdown & keyof VerdocsFieldDropdownAttributes as `attr:${K}`]?: VerdocsFieldDropdownAttributes[K] } & { [K in keyof VerdocsFieldDropdown & keyof VerdocsFieldDropdownAttributes as `prop:${K}`]?: VerdocsFieldDropdown[K] };
-        "verdocs-field-initial": Omit<VerdocsFieldInitial, keyof VerdocsFieldInitialAttributes> & { [K in keyof VerdocsFieldInitial & keyof VerdocsFieldInitialAttributes]?: VerdocsFieldInitial[K] } & { [K in keyof VerdocsFieldInitial & keyof VerdocsFieldInitialAttributes as `attr:${K}`]?: VerdocsFieldInitialAttributes[K] } & { [K in keyof VerdocsFieldInitial & keyof VerdocsFieldInitialAttributes as `prop:${K}`]?: VerdocsFieldInitial[K] };
-        "verdocs-field-payment": Omit<VerdocsFieldPayment, keyof VerdocsFieldPaymentAttributes> & { [K in keyof VerdocsFieldPayment & keyof VerdocsFieldPaymentAttributes]?: VerdocsFieldPayment[K] } & { [K in keyof VerdocsFieldPayment & keyof VerdocsFieldPaymentAttributes as `attr:${K}`]?: VerdocsFieldPaymentAttributes[K] } & { [K in keyof VerdocsFieldPayment & keyof VerdocsFieldPaymentAttributes as `prop:${K}`]?: VerdocsFieldPayment[K] };
-        "verdocs-field-radio": Omit<VerdocsFieldRadio, keyof VerdocsFieldRadioAttributes> & { [K in keyof VerdocsFieldRadio & keyof VerdocsFieldRadioAttributes]?: VerdocsFieldRadio[K] } & { [K in keyof VerdocsFieldRadio & keyof VerdocsFieldRadioAttributes as `attr:${K}`]?: VerdocsFieldRadioAttributes[K] } & { [K in keyof VerdocsFieldRadio & keyof VerdocsFieldRadioAttributes as `prop:${K}`]?: VerdocsFieldRadio[K] };
-        "verdocs-field-signature": Omit<VerdocsFieldSignature, keyof VerdocsFieldSignatureAttributes> & { [K in keyof VerdocsFieldSignature & keyof VerdocsFieldSignatureAttributes]?: VerdocsFieldSignature[K] } & { [K in keyof VerdocsFieldSignature & keyof VerdocsFieldSignatureAttributes as `attr:${K}`]?: VerdocsFieldSignatureAttributes[K] } & { [K in keyof VerdocsFieldSignature & keyof VerdocsFieldSignatureAttributes as `prop:${K}`]?: VerdocsFieldSignature[K] };
-        "verdocs-field-textarea": Omit<VerdocsFieldTextarea, keyof VerdocsFieldTextareaAttributes> & { [K in keyof VerdocsFieldTextarea & keyof VerdocsFieldTextareaAttributes]?: VerdocsFieldTextarea[K] } & { [K in keyof VerdocsFieldTextarea & keyof VerdocsFieldTextareaAttributes as `attr:${K}`]?: VerdocsFieldTextareaAttributes[K] } & { [K in keyof VerdocsFieldTextarea & keyof VerdocsFieldTextareaAttributes as `prop:${K}`]?: VerdocsFieldTextarea[K] };
-        "verdocs-field-textbox": Omit<VerdocsFieldTextbox, keyof VerdocsFieldTextboxAttributes> & { [K in keyof VerdocsFieldTextbox & keyof VerdocsFieldTextboxAttributes]?: VerdocsFieldTextbox[K] } & { [K in keyof VerdocsFieldTextbox & keyof VerdocsFieldTextboxAttributes as `attr:${K}`]?: VerdocsFieldTextboxAttributes[K] } & { [K in keyof VerdocsFieldTextbox & keyof VerdocsFieldTextboxAttributes as `prop:${K}`]?: VerdocsFieldTextbox[K] };
-        "verdocs-field-timestamp": Omit<VerdocsFieldTimestamp, keyof VerdocsFieldTimestampAttributes> & { [K in keyof VerdocsFieldTimestamp & keyof VerdocsFieldTimestampAttributes]?: VerdocsFieldTimestamp[K] } & { [K in keyof VerdocsFieldTimestamp & keyof VerdocsFieldTimestampAttributes as `attr:${K}`]?: VerdocsFieldTimestampAttributes[K] } & { [K in keyof VerdocsFieldTimestamp & keyof VerdocsFieldTimestampAttributes as `prop:${K}`]?: VerdocsFieldTimestamp[K] };
+        "verdocs-envelope-document-page": VerdocsEnvelopeDocumentPage;
+        "verdocs-envelope-recipient-link": VerdocsEnvelopeRecipientLink;
+        "verdocs-envelope-recipient-summary": VerdocsEnvelopeRecipientSummary;
+        "verdocs-envelope-sidebar": VerdocsEnvelopeSidebar;
+        "verdocs-envelope-update-recipient": VerdocsEnvelopeUpdateRecipient;
+        "verdocs-envelopes-list": VerdocsEnvelopesList;
+        "verdocs-field-attachment": VerdocsFieldAttachment;
+        "verdocs-field-checkbox": VerdocsFieldCheckbox;
+        "verdocs-field-date": VerdocsFieldDate;
+        "verdocs-field-dropdown": VerdocsFieldDropdown;
+        "verdocs-field-initial": VerdocsFieldInitial;
+        "verdocs-field-payment": VerdocsFieldPayment;
+        "verdocs-field-radio": VerdocsFieldRadio;
+        "verdocs-field-signature": VerdocsFieldSignature;
+        "verdocs-field-textarea": VerdocsFieldTextarea;
+        "verdocs-field-textbox": VerdocsFieldTextbox;
+        "verdocs-field-timestamp": VerdocsFieldTimestamp;
         "verdocs-file-chooser": VerdocsFileChooser;
-        "verdocs-flag": Omit<VerdocsFlag, keyof VerdocsFlagAttributes> & { [K in keyof VerdocsFlag & keyof VerdocsFlagAttributes]?: VerdocsFlag[K] } & { [K in keyof VerdocsFlag & keyof VerdocsFlagAttributes as `attr:${K}`]?: VerdocsFlagAttributes[K] } & { [K in keyof VerdocsFlag & keyof VerdocsFlagAttributes as `prop:${K}`]?: VerdocsFlag[K] };
-        "verdocs-help-icon": Omit<VerdocsHelpIcon, keyof VerdocsHelpIconAttributes> & { [K in keyof VerdocsHelpIcon & keyof VerdocsHelpIconAttributes]?: VerdocsHelpIcon[K] } & { [K in keyof VerdocsHelpIcon & keyof VerdocsHelpIconAttributes as `attr:${K}`]?: VerdocsHelpIconAttributes[K] } & { [K in keyof VerdocsHelpIcon & keyof VerdocsHelpIconAttributes as `prop:${K}`]?: VerdocsHelpIcon[K] };
-        "verdocs-initial-dialog": Omit<VerdocsInitialDialog, keyof VerdocsInitialDialogAttributes> & { [K in keyof VerdocsInitialDialog & keyof VerdocsInitialDialogAttributes]?: VerdocsInitialDialog[K] } & { [K in keyof VerdocsInitialDialog & keyof VerdocsInitialDialogAttributes as `attr:${K}`]?: VerdocsInitialDialogAttributes[K] } & { [K in keyof VerdocsInitialDialog & keyof VerdocsInitialDialogAttributes as `prop:${K}`]?: VerdocsInitialDialog[K] };
-        "verdocs-kba-dialog": Omit<VerdocsKbaDialog, keyof VerdocsKbaDialogAttributes> & { [K in keyof VerdocsKbaDialog & keyof VerdocsKbaDialogAttributes]?: VerdocsKbaDialog[K] } & { [K in keyof VerdocsKbaDialog & keyof VerdocsKbaDialogAttributes as `attr:${K}`]?: VerdocsKbaDialogAttributes[K] } & { [K in keyof VerdocsKbaDialog & keyof VerdocsKbaDialogAttributes as `prop:${K}`]?: VerdocsKbaDialog[K] };
+        "verdocs-flag": VerdocsFlag;
+        "verdocs-help-icon": VerdocsHelpIcon;
+        "verdocs-initial-dialog": VerdocsInitialDialog;
+        "verdocs-kba-dialog": VerdocsKbaDialog;
         "verdocs-loader": VerdocsLoader;
-        "verdocs-menu-panel": Omit<VerdocsMenuPanel, keyof VerdocsMenuPanelAttributes> & { [K in keyof VerdocsMenuPanel & keyof VerdocsMenuPanelAttributes]?: VerdocsMenuPanel[K] } & { [K in keyof VerdocsMenuPanel & keyof VerdocsMenuPanelAttributes as `attr:${K}`]?: VerdocsMenuPanelAttributes[K] } & { [K in keyof VerdocsMenuPanel & keyof VerdocsMenuPanelAttributes as `prop:${K}`]?: VerdocsMenuPanel[K] };
-        "verdocs-multiselect": Omit<VerdocsMultiselect, keyof VerdocsMultiselectAttributes> & { [K in keyof VerdocsMultiselect & keyof VerdocsMultiselectAttributes]?: VerdocsMultiselect[K] } & { [K in keyof VerdocsMultiselect & keyof VerdocsMultiselectAttributes as `attr:${K}`]?: VerdocsMultiselectAttributes[K] } & { [K in keyof VerdocsMultiselect & keyof VerdocsMultiselectAttributes as `prop:${K}`]?: VerdocsMultiselect[K] };
-        "verdocs-ok-dialog": Omit<VerdocsOkDialog, keyof VerdocsOkDialogAttributes> & { [K in keyof VerdocsOkDialog & keyof VerdocsOkDialogAttributes]?: VerdocsOkDialog[K] } & { [K in keyof VerdocsOkDialog & keyof VerdocsOkDialogAttributes as `attr:${K}`]?: VerdocsOkDialogAttributes[K] } & { [K in keyof VerdocsOkDialog & keyof VerdocsOkDialogAttributes as `prop:${K}`]?: VerdocsOkDialog[K] };
+        "verdocs-menu-panel": VerdocsMenuPanel;
+        "verdocs-multiselect": VerdocsMultiselect;
+        "verdocs-ok-dialog": VerdocsOkDialog;
         "verdocs-organization-card": VerdocsOrganizationCard;
-        "verdocs-otp-dialog": Omit<VerdocsOtpDialog, keyof VerdocsOtpDialogAttributes> & { [K in keyof VerdocsOtpDialog & keyof VerdocsOtpDialogAttributes]?: VerdocsOtpDialog[K] } & { [K in keyof VerdocsOtpDialog & keyof VerdocsOtpDialogAttributes as `attr:${K}`]?: VerdocsOtpDialogAttributes[K] } & { [K in keyof VerdocsOtpDialog & keyof VerdocsOtpDialogAttributes as `prop:${K}`]?: VerdocsOtpDialog[K] };
-        "verdocs-pagination": Omit<VerdocsPagination, keyof VerdocsPaginationAttributes> & { [K in keyof VerdocsPagination & keyof VerdocsPaginationAttributes]?: VerdocsPagination[K] } & { [K in keyof VerdocsPagination & keyof VerdocsPaginationAttributes as `attr:${K}`]?: VerdocsPaginationAttributes[K] } & { [K in keyof VerdocsPagination & keyof VerdocsPaginationAttributes as `prop:${K}`]?: VerdocsPagination[K] };
+        "verdocs-otp-dialog": VerdocsOtpDialog;
+        "verdocs-pagination": VerdocsPagination;
         "verdocs-passcode-dialog": VerdocsPasscodeDialog;
-        "verdocs-portal": Omit<VerdocsPortal, keyof VerdocsPortalAttributes> & { [K in keyof VerdocsPortal & keyof VerdocsPortalAttributes]?: VerdocsPortal[K] } & { [K in keyof VerdocsPortal & keyof VerdocsPortalAttributes as `attr:${K}`]?: VerdocsPortalAttributes[K] } & { [K in keyof VerdocsPortal & keyof VerdocsPortalAttributes as `prop:${K}`]?: VerdocsPortal[K] };
-        "verdocs-preview": Omit<VerdocsPreview, keyof VerdocsPreviewAttributes> & { [K in keyof VerdocsPreview & keyof VerdocsPreviewAttributes]?: VerdocsPreview[K] } & { [K in keyof VerdocsPreview & keyof VerdocsPreviewAttributes as `attr:${K}`]?: VerdocsPreviewAttributes[K] } & { [K in keyof VerdocsPreview & keyof VerdocsPreviewAttributes as `prop:${K}`]?: VerdocsPreview[K] };
-        "verdocs-progress-bar": Omit<VerdocsProgressBar, keyof VerdocsProgressBarAttributes> & { [K in keyof VerdocsProgressBar & keyof VerdocsProgressBarAttributes]?: VerdocsProgressBar[K] } & { [K in keyof VerdocsProgressBar & keyof VerdocsProgressBarAttributes as `attr:${K}`]?: VerdocsProgressBarAttributes[K] } & { [K in keyof VerdocsProgressBar & keyof VerdocsProgressBarAttributes as `prop:${K}`]?: VerdocsProgressBar[K] };
-        "verdocs-question-dialog": Omit<VerdocsQuestionDialog, keyof VerdocsQuestionDialogAttributes> & { [K in keyof VerdocsQuestionDialog & keyof VerdocsQuestionDialogAttributes]?: VerdocsQuestionDialog[K] } & { [K in keyof VerdocsQuestionDialog & keyof VerdocsQuestionDialogAttributes as `attr:${K}`]?: VerdocsQuestionDialogAttributes[K] } & { [K in keyof VerdocsQuestionDialog & keyof VerdocsQuestionDialogAttributes as `prop:${K}`]?: VerdocsQuestionDialog[K] };
-        "verdocs-quick-filter": Omit<VerdocsQuickFilter, keyof VerdocsQuickFilterAttributes> & { [K in keyof VerdocsQuickFilter & keyof VerdocsQuickFilterAttributes]?: VerdocsQuickFilter[K] } & { [K in keyof VerdocsQuickFilter & keyof VerdocsQuickFilterAttributes as `attr:${K}`]?: VerdocsQuickFilterAttributes[K] } & { [K in keyof VerdocsQuickFilter & keyof VerdocsQuickFilterAttributes as `prop:${K}`]?: VerdocsQuickFilter[K] };
+        "verdocs-portal": VerdocsPortal;
+        "verdocs-preview": VerdocsPreview;
+        "verdocs-progress-bar": VerdocsProgressBar;
+        "verdocs-question-dialog": VerdocsQuestionDialog;
+        "verdocs-quick-filter": VerdocsQuickFilter;
         "verdocs-quick-functions": VerdocsQuickFunctions;
-        "verdocs-radio-button": Omit<VerdocsRadioButton, keyof VerdocsRadioButtonAttributes> & { [K in keyof VerdocsRadioButton & keyof VerdocsRadioButtonAttributes]?: VerdocsRadioButton[K] } & { [K in keyof VerdocsRadioButton & keyof VerdocsRadioButtonAttributes as `attr:${K}`]?: VerdocsRadioButtonAttributes[K] } & { [K in keyof VerdocsRadioButton & keyof VerdocsRadioButtonAttributes as `prop:${K}`]?: VerdocsRadioButton[K] };
-        "verdocs-search-box": Omit<VerdocsSearchBox, keyof VerdocsSearchBoxAttributes> & { [K in keyof VerdocsSearchBox & keyof VerdocsSearchBoxAttributes]?: VerdocsSearchBox[K] } & { [K in keyof VerdocsSearchBox & keyof VerdocsSearchBoxAttributes as `attr:${K}`]?: VerdocsSearchBoxAttributes[K] } & { [K in keyof VerdocsSearchBox & keyof VerdocsSearchBoxAttributes as `prop:${K}`]?: VerdocsSearchBox[K] };
+        "verdocs-radio-button": VerdocsRadioButton;
+        "verdocs-search-box": VerdocsSearchBox;
         "verdocs-search-tabs": VerdocsSearchTabs;
-        "verdocs-select-input": Omit<VerdocsSelectInput, keyof VerdocsSelectInputAttributes> & { [K in keyof VerdocsSelectInput & keyof VerdocsSelectInputAttributes]?: VerdocsSelectInput[K] } & { [K in keyof VerdocsSelectInput & keyof VerdocsSelectInputAttributes as `attr:${K}`]?: VerdocsSelectInputAttributes[K] } & { [K in keyof VerdocsSelectInput & keyof VerdocsSelectInputAttributes as `prop:${K}`]?: VerdocsSelectInput[K] };
-        "verdocs-send": Omit<VerdocsSend, keyof VerdocsSendAttributes> & { [K in keyof VerdocsSend & keyof VerdocsSendAttributes]?: VerdocsSend[K] } & { [K in keyof VerdocsSend & keyof VerdocsSendAttributes as `attr:${K}`]?: VerdocsSendAttributes[K] } & { [K in keyof VerdocsSend & keyof VerdocsSendAttributes as `prop:${K}`]?: VerdocsSend[K] };
-        "verdocs-sign": Omit<VerdocsSign, keyof VerdocsSignAttributes> & { [K in keyof VerdocsSign & keyof VerdocsSignAttributes]?: VerdocsSign[K] } & { [K in keyof VerdocsSign & keyof VerdocsSignAttributes as `attr:${K}`]?: VerdocsSignAttributes[K] } & { [K in keyof VerdocsSign & keyof VerdocsSignAttributes as `prop:${K}`]?: VerdocsSign[K] };
-        "verdocs-sign-footer": Omit<VerdocsSignFooter, keyof VerdocsSignFooterAttributes> & { [K in keyof VerdocsSignFooter & keyof VerdocsSignFooterAttributes]?: VerdocsSignFooter[K] } & { [K in keyof VerdocsSignFooter & keyof VerdocsSignFooterAttributes as `attr:${K}`]?: VerdocsSignFooterAttributes[K] } & { [K in keyof VerdocsSignFooter & keyof VerdocsSignFooterAttributes as `prop:${K}`]?: VerdocsSignFooter[K] };
-        "verdocs-signature-dialog": Omit<VerdocsSignatureDialog, keyof VerdocsSignatureDialogAttributes> & { [K in keyof VerdocsSignatureDialog & keyof VerdocsSignatureDialogAttributes]?: VerdocsSignatureDialog[K] } & { [K in keyof VerdocsSignatureDialog & keyof VerdocsSignatureDialogAttributes as `attr:${K}`]?: VerdocsSignatureDialogAttributes[K] } & { [K in keyof VerdocsSignatureDialog & keyof VerdocsSignatureDialogAttributes as `prop:${K}`]?: VerdocsSignatureDialog[K] };
-        "verdocs-signing-progress": Omit<VerdocsSigningProgress, keyof VerdocsSigningProgressAttributes> & { [K in keyof VerdocsSigningProgress & keyof VerdocsSigningProgressAttributes]?: VerdocsSigningProgress[K] } & { [K in keyof VerdocsSigningProgress & keyof VerdocsSigningProgressAttributes as `attr:${K}`]?: VerdocsSigningProgressAttributes[K] } & { [K in keyof VerdocsSigningProgress & keyof VerdocsSigningProgressAttributes as `prop:${K}`]?: VerdocsSigningProgress[K] };
-        "verdocs-spinner": Omit<VerdocsSpinner, keyof VerdocsSpinnerAttributes> & { [K in keyof VerdocsSpinner & keyof VerdocsSpinnerAttributes]?: VerdocsSpinner[K] } & { [K in keyof VerdocsSpinner & keyof VerdocsSpinnerAttributes as `attr:${K}`]?: VerdocsSpinnerAttributes[K] } & { [K in keyof VerdocsSpinner & keyof VerdocsSpinnerAttributes as `prop:${K}`]?: VerdocsSpinner[K] };
-        "verdocs-status-indicator": Omit<VerdocsStatusIndicator, keyof VerdocsStatusIndicatorAttributes> & { [K in keyof VerdocsStatusIndicator & keyof VerdocsStatusIndicatorAttributes]?: VerdocsStatusIndicator[K] } & { [K in keyof VerdocsStatusIndicator & keyof VerdocsStatusIndicatorAttributes as `attr:${K}`]?: VerdocsStatusIndicatorAttributes[K] } & { [K in keyof VerdocsStatusIndicator & keyof VerdocsStatusIndicatorAttributes as `prop:${K}`]?: VerdocsStatusIndicator[K] };
-        "verdocs-switch": Omit<VerdocsSwitch, keyof VerdocsSwitchAttributes> & { [K in keyof VerdocsSwitch & keyof VerdocsSwitchAttributes]?: VerdocsSwitch[K] } & { [K in keyof VerdocsSwitch & keyof VerdocsSwitchAttributes as `attr:${K}`]?: VerdocsSwitchAttributes[K] } & { [K in keyof VerdocsSwitch & keyof VerdocsSwitchAttributes as `prop:${K}`]?: VerdocsSwitch[K] };
+        "verdocs-select-input": VerdocsSelectInput;
+        "verdocs-send": VerdocsSend;
+        "verdocs-sign": VerdocsSign;
+        "verdocs-sign-footer": VerdocsSignFooter;
+        "verdocs-signature-dialog": VerdocsSignatureDialog;
+        "verdocs-signing-progress": VerdocsSigningProgress;
+        "verdocs-spinner": VerdocsSpinner;
+        "verdocs-status-indicator": VerdocsStatusIndicator;
+        "verdocs-switch": VerdocsSwitch;
         "verdocs-table": VerdocsTable;
-        "verdocs-tabs": Omit<VerdocsTabs, keyof VerdocsTabsAttributes> & { [K in keyof VerdocsTabs & keyof VerdocsTabsAttributes]?: VerdocsTabs[K] } & { [K in keyof VerdocsTabs & keyof VerdocsTabsAttributes as `attr:${K}`]?: VerdocsTabsAttributes[K] } & { [K in keyof VerdocsTabs & keyof VerdocsTabsAttributes as `prop:${K}`]?: VerdocsTabs[K] };
-        "verdocs-template-attachments": Omit<VerdocsTemplateAttachments, keyof VerdocsTemplateAttachmentsAttributes> & { [K in keyof VerdocsTemplateAttachments & keyof VerdocsTemplateAttachmentsAttributes]?: VerdocsTemplateAttachments[K] } & { [K in keyof VerdocsTemplateAttachments & keyof VerdocsTemplateAttachmentsAttributes as `attr:${K}`]?: VerdocsTemplateAttachmentsAttributes[K] } & { [K in keyof VerdocsTemplateAttachments & keyof VerdocsTemplateAttachmentsAttributes as `prop:${K}`]?: VerdocsTemplateAttachments[K] };
-        "verdocs-template-build-tabs": Omit<VerdocsTemplateBuildTabs, keyof VerdocsTemplateBuildTabsAttributes> & { [K in keyof VerdocsTemplateBuildTabs & keyof VerdocsTemplateBuildTabsAttributes]?: VerdocsTemplateBuildTabs[K] } & { [K in keyof VerdocsTemplateBuildTabs & keyof VerdocsTemplateBuildTabsAttributes as `attr:${K}`]?: VerdocsTemplateBuildTabsAttributes[K] } & { [K in keyof VerdocsTemplateBuildTabs & keyof VerdocsTemplateBuildTabsAttributes as `prop:${K}`]?: VerdocsTemplateBuildTabs[K] };
+        "verdocs-tabs": VerdocsTabs;
+        "verdocs-template-attachments": VerdocsTemplateAttachments;
+        "verdocs-template-build-tabs": VerdocsTemplateBuildTabs;
         "verdocs-template-card": VerdocsTemplateCard;
-        "verdocs-template-create": Omit<VerdocsTemplateCreate, keyof VerdocsTemplateCreateAttributes> & { [K in keyof VerdocsTemplateCreate & keyof VerdocsTemplateCreateAttributes]?: VerdocsTemplateCreate[K] } & { [K in keyof VerdocsTemplateCreate & keyof VerdocsTemplateCreateAttributes as `attr:${K}`]?: VerdocsTemplateCreateAttributes[K] } & { [K in keyof VerdocsTemplateCreate & keyof VerdocsTemplateCreateAttributes as `prop:${K}`]?: VerdocsTemplateCreate[K] };
-        "verdocs-template-document-page": Omit<VerdocsTemplateDocumentPage, keyof VerdocsTemplateDocumentPageAttributes> & { [K in keyof VerdocsTemplateDocumentPage & keyof VerdocsTemplateDocumentPageAttributes]?: VerdocsTemplateDocumentPage[K] } & { [K in keyof VerdocsTemplateDocumentPage & keyof VerdocsTemplateDocumentPageAttributes as `attr:${K}`]?: VerdocsTemplateDocumentPageAttributes[K] } & { [K in keyof VerdocsTemplateDocumentPage & keyof VerdocsTemplateDocumentPageAttributes as `prop:${K}`]?: VerdocsTemplateDocumentPage[K] };
-        "verdocs-template-field-properties": Omit<VerdocsTemplateFieldProperties, keyof VerdocsTemplateFieldPropertiesAttributes> & { [K in keyof VerdocsTemplateFieldProperties & keyof VerdocsTemplateFieldPropertiesAttributes]?: VerdocsTemplateFieldProperties[K] } & { [K in keyof VerdocsTemplateFieldProperties & keyof VerdocsTemplateFieldPropertiesAttributes as `attr:${K}`]?: VerdocsTemplateFieldPropertiesAttributes[K] } & { [K in keyof VerdocsTemplateFieldProperties & keyof VerdocsTemplateFieldPropertiesAttributes as `prop:${K}`]?: VerdocsTemplateFieldProperties[K] };
-        "verdocs-template-fields": Omit<VerdocsTemplateFields, keyof VerdocsTemplateFieldsAttributes> & { [K in keyof VerdocsTemplateFields & keyof VerdocsTemplateFieldsAttributes]?: VerdocsTemplateFields[K] } & { [K in keyof VerdocsTemplateFields & keyof VerdocsTemplateFieldsAttributes as `attr:${K}`]?: VerdocsTemplateFieldsAttributes[K] } & { [K in keyof VerdocsTemplateFields & keyof VerdocsTemplateFieldsAttributes as `prop:${K}`]?: VerdocsTemplateFields[K] };
-        "verdocs-template-role-properties": Omit<VerdocsTemplateRoleProperties, keyof VerdocsTemplateRolePropertiesAttributes> & { [K in keyof VerdocsTemplateRoleProperties & keyof VerdocsTemplateRolePropertiesAttributes]?: VerdocsTemplateRoleProperties[K] } & { [K in keyof VerdocsTemplateRoleProperties & keyof VerdocsTemplateRolePropertiesAttributes as `attr:${K}`]?: VerdocsTemplateRolePropertiesAttributes[K] } & { [K in keyof VerdocsTemplateRoleProperties & keyof VerdocsTemplateRolePropertiesAttributes as `prop:${K}`]?: VerdocsTemplateRoleProperties[K] };
-        "verdocs-template-roles": Omit<VerdocsTemplateRoles, keyof VerdocsTemplateRolesAttributes> & { [K in keyof VerdocsTemplateRoles & keyof VerdocsTemplateRolesAttributes]?: VerdocsTemplateRoles[K] } & { [K in keyof VerdocsTemplateRoles & keyof VerdocsTemplateRolesAttributes as `attr:${K}`]?: VerdocsTemplateRolesAttributes[K] } & { [K in keyof VerdocsTemplateRoles & keyof VerdocsTemplateRolesAttributes as `prop:${K}`]?: VerdocsTemplateRoles[K] };
-        "verdocs-template-settings": Omit<VerdocsTemplateSettings, keyof VerdocsTemplateSettingsAttributes> & { [K in keyof VerdocsTemplateSettings & keyof VerdocsTemplateSettingsAttributes]?: VerdocsTemplateSettings[K] } & { [K in keyof VerdocsTemplateSettings & keyof VerdocsTemplateSettingsAttributes as `attr:${K}`]?: VerdocsTemplateSettingsAttributes[K] } & { [K in keyof VerdocsTemplateSettings & keyof VerdocsTemplateSettingsAttributes as `prop:${K}`]?: VerdocsTemplateSettings[K] };
+        "verdocs-template-create": VerdocsTemplateCreate;
+        "verdocs-template-document-page": VerdocsTemplateDocumentPage;
+        "verdocs-template-field-properties": VerdocsTemplateFieldProperties;
+        "verdocs-template-fields": VerdocsTemplateFields;
+        "verdocs-template-role-properties": VerdocsTemplateRoleProperties;
+        "verdocs-template-roles": VerdocsTemplateRoles;
+        "verdocs-template-settings": VerdocsTemplateSettings;
         "verdocs-template-star": VerdocsTemplateStar;
         "verdocs-template-tags": VerdocsTemplateTags;
-        "verdocs-templates-list": Omit<VerdocsTemplatesList, keyof VerdocsTemplatesListAttributes> & { [K in keyof VerdocsTemplatesList & keyof VerdocsTemplatesListAttributes]?: VerdocsTemplatesList[K] } & { [K in keyof VerdocsTemplatesList & keyof VerdocsTemplatesListAttributes as `attr:${K}`]?: VerdocsTemplatesListAttributes[K] } & { [K in keyof VerdocsTemplatesList & keyof VerdocsTemplatesListAttributes as `prop:${K}`]?: VerdocsTemplatesList[K] };
-        "verdocs-text-input": Omit<VerdocsTextInput, keyof VerdocsTextInputAttributes> & { [K in keyof VerdocsTextInput & keyof VerdocsTextInputAttributes]?: VerdocsTextInput[K] } & { [K in keyof VerdocsTextInput & keyof VerdocsTextInputAttributes as `attr:${K}`]?: VerdocsTextInputAttributes[K] } & { [K in keyof VerdocsTextInput & keyof VerdocsTextInputAttributes as `prop:${K}`]?: VerdocsTextInput[K] };
-        "verdocs-toggle": Omit<VerdocsToggle, keyof VerdocsToggleAttributes> & { [K in keyof VerdocsToggle & keyof VerdocsToggleAttributes]?: VerdocsToggle[K] } & { [K in keyof VerdocsToggle & keyof VerdocsToggleAttributes as `attr:${K}`]?: VerdocsToggleAttributes[K] } & { [K in keyof VerdocsToggle & keyof VerdocsToggleAttributes as `prop:${K}`]?: VerdocsToggle[K] };
-        "verdocs-toggle-button": Omit<VerdocsToggleButton, keyof VerdocsToggleButtonAttributes> & { [K in keyof VerdocsToggleButton & keyof VerdocsToggleButtonAttributes]?: VerdocsToggleButton[K] } & { [K in keyof VerdocsToggleButton & keyof VerdocsToggleButtonAttributes as `attr:${K}`]?: VerdocsToggleButtonAttributes[K] } & { [K in keyof VerdocsToggleButton & keyof VerdocsToggleButtonAttributes as `prop:${K}`]?: VerdocsToggleButton[K] };
-        "verdocs-toolbar-icon": Omit<VerdocsToolbarIcon, keyof VerdocsToolbarIconAttributes> & { [K in keyof VerdocsToolbarIcon & keyof VerdocsToolbarIconAttributes]?: VerdocsToolbarIcon[K] } & { [K in keyof VerdocsToolbarIcon & keyof VerdocsToolbarIconAttributes as `attr:${K}`]?: VerdocsToolbarIconAttributes[K] } & { [K in keyof VerdocsToolbarIcon & keyof VerdocsToolbarIconAttributes as `prop:${K}`]?: VerdocsToolbarIcon[K] };
-        "verdocs-upload-dialog": Omit<VerdocsUploadDialog, keyof VerdocsUploadDialogAttributes> & { [K in keyof VerdocsUploadDialog & keyof VerdocsUploadDialogAttributes]?: VerdocsUploadDialog[K] } & { [K in keyof VerdocsUploadDialog & keyof VerdocsUploadDialogAttributes as `attr:${K}`]?: VerdocsUploadDialogAttributes[K] } & { [K in keyof VerdocsUploadDialog & keyof VerdocsUploadDialogAttributes as `prop:${K}`]?: VerdocsUploadDialog[K] };
-        "verdocs-view": Omit<VerdocsView, keyof VerdocsViewAttributes> & { [K in keyof VerdocsView & keyof VerdocsViewAttributes]?: VerdocsView[K] } & { [K in keyof VerdocsView & keyof VerdocsViewAttributes as `attr:${K}`]?: VerdocsViewAttributes[K] } & { [K in keyof VerdocsView & keyof VerdocsViewAttributes as `prop:${K}`]?: VerdocsView[K] };
+        "verdocs-templates-list": VerdocsTemplatesList;
+        "verdocs-text-input": VerdocsTextInput;
+        "verdocs-toggle": VerdocsToggle;
+        "verdocs-toggle-button": VerdocsToggleButton;
+        "verdocs-toolbar-icon": VerdocsToolbarIcon;
+        "verdocs-upload-dialog": VerdocsUploadDialog;
+        "verdocs-view": VerdocsView;
     }
 }
 export { LocalJSX as JSX };
@@ -8477,7 +8018,7 @@ declare module "@stencil/core" {
              * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
              * based on their full name, or by hand-drawing their signature with a mouse or tablet.
              */
-            "verdocs-adopt-signature-dialog": LocalJSX.IntrinsicElements["verdocs-adopt-signature-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsAdoptSignatureDialogElement>;
+            "verdocs-adopt-signature-dialog": LocalJSX.VerdocsAdoptSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsAdoptSignatureDialogElement>;
             /**
              * Display an authentication dialog that allows the user to login or sign up. If the user is
              * already authenticated with a valid session, this component will hide itself and fire the
@@ -8494,7 +8035,7 @@ declare module "@stencil/core" {
              *   />
              * ```
              */
-            "verdocs-auth": LocalJSX.IntrinsicElements["verdocs-auth"] & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
+            "verdocs-auth": LocalJSX.VerdocsAuth & JSXBase.HTMLAttributes<HTMLVerdocsAuthElement>;
             /**
              * Display a template building experience. Several event callbacks provide status updates to the
              * parent application to support interface updates.
@@ -8506,14 +8047,14 @@ declare module "@stencil/core" {
              *   />
              * ```
              */
-            "verdocs-build": LocalJSX.IntrinsicElements["verdocs-build"] & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
+            "verdocs-build": LocalJSX.VerdocsBuild & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
             /**
              * A simple button, with consistent styling to other controls in the design system.
              * ```ts
              * <verdocs-button label="Click Me" size="normal" variant="standard" />
              * ```
              */
-            "verdocs-button": LocalJSX.IntrinsicElements["verdocs-button"] & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
+            "verdocs-button": LocalJSX.VerdocsButton & JSXBase.HTMLAttributes<HTMLVerdocsButtonElement>;
             /**
              * Display an icon button that triggers a drop-down panel that can display
              * arbitrary child content, such as metadata, forms, or other controls.
@@ -8529,7 +8070,7 @@ declare module "@stencil/core" {
              *   </verdocs-button-panel>
              * ```
              */
-            "verdocs-button-panel": LocalJSX.IntrinsicElements["verdocs-button-panel"] & JSXBase.HTMLAttributes<HTMLVerdocsButtonPanelElement>;
+            "verdocs-button-panel": LocalJSX.VerdocsButtonPanel & JSXBase.HTMLAttributes<HTMLVerdocsButtonPanelElement>;
             /**
              * Displays a check box. Note that this is different from the `verdocs-field-checkbox` component, which is designed
              * to be used in signing experiences and contains settings that connect to template fields. This is just a simple check
@@ -8545,11 +8086,11 @@ declare module "@stencil/core" {
              * />
              * ```
              */
-            "verdocs-checkbox": LocalJSX.IntrinsicElements["verdocs-checkbox"] & JSXBase.HTMLAttributes<HTMLVerdocsCheckboxElement>;
+            "verdocs-checkbox": LocalJSX.VerdocsCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsCheckboxElement>;
             /**
              * Render a simple error message.
              */
-            "verdocs-component-error": LocalJSX.IntrinsicElements["verdocs-component-error"] & JSXBase.HTMLAttributes<HTMLVerdocsComponentErrorElement>;
+            "verdocs-component-error": LocalJSX.VerdocsComponentError & JSXBase.HTMLAttributes<HTMLVerdocsComponentErrorElement>;
             /**
              * Display a contact picker suitable for filling out Recipient objects when sending Envelopes.
              * This picker can also be integrated with a backend to provide contact list / suggestion / address-book style behavior. As the
@@ -8565,27 +8106,27 @@ declare module "@stencil/core" {
              *   />
              * ```
              */
-            "verdocs-contact-picker": LocalJSX.IntrinsicElements["verdocs-contact-picker"] & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
+            "verdocs-contact-picker": LocalJSX.VerdocsContactPicker & JSXBase.HTMLAttributes<HTMLVerdocsContactPickerElement>;
             /**
              * Display a date input field.
              * ```ts
              * <verdocs-date-input type="text" label="DOB" placeholder="Date of Birth..." value="" />
              * ```
              */
-            "verdocs-date-input": LocalJSX.IntrinsicElements["verdocs-date-input"] & JSXBase.HTMLAttributes<HTMLVerdocsDateInputElement>;
+            "verdocs-date-input": LocalJSX.VerdocsDateInput & JSXBase.HTMLAttributes<HTMLVerdocsDateInputElement>;
             /**
              * Delegate signing responsibility to another recipient.
              */
-            "verdocs-delegate-dialog": LocalJSX.IntrinsicElements["verdocs-delegate-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsDelegateDialogElement>;
+            "verdocs-delegate-dialog": LocalJSX.VerdocsDelegateDialog & JSXBase.HTMLAttributes<HTMLVerdocsDelegateDialogElement>;
             /**
              * Display a simple dialog where the contents are provided via slots.
              */
-            "verdocs-dialog": LocalJSX.IntrinsicElements["verdocs-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsDialogElement>;
+            "verdocs-dialog": LocalJSX.VerdocsDialog & JSXBase.HTMLAttributes<HTMLVerdocsDialogElement>;
             /**
              * Display e-signing disclosures with options to delegate, decline or proceed.
              */
-            "verdocs-disclosure-dialog": LocalJSX.IntrinsicElements["verdocs-disclosure-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsDisclosureDialogElement>;
-            "verdocs-download-dialog": LocalJSX.IntrinsicElements["verdocs-download-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsDownloadDialogElement>;
+            "verdocs-disclosure-dialog": LocalJSX.VerdocsDisclosureDialog & JSXBase.HTMLAttributes<HTMLVerdocsDisclosureDialogElement>;
+            "verdocs-download-dialog": LocalJSX.VerdocsDownloadDialog & JSXBase.HTMLAttributes<HTMLVerdocsDownloadDialogElement>;
             /**
              * Display a drop-down menu button. A menu of the specified options will be displayed when the button is pressed. The menu will be hidden
              * when the button is pressed again, or an option is selected. Separators may be created by supplying an entry with an empty label.
@@ -8601,52 +8142,52 @@ declare module "@stencil/core" {
              * />
              * ```
              */
-            "verdocs-dropdown": LocalJSX.IntrinsicElements["verdocs-dropdown"] & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
+            "verdocs-dropdown": LocalJSX.VerdocsDropdown & JSXBase.HTMLAttributes<HTMLVerdocsDropdownElement>;
             /**
              * Represents one document page. This is primarily a layout container used to coordinate positions of
              * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
              * on its own as an individual component.
              */
-            "verdocs-envelope-document-page": LocalJSX.IntrinsicElements["verdocs-envelope-document-page"] & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeDocumentPageElement>;
+            "verdocs-envelope-document-page": LocalJSX.VerdocsEnvelopeDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeDocumentPageElement>;
             /**
              * Displays a single recipient from an envelope, with the opportunity to copy an in-person
              * signing link for that recipient to use.
              */
-            "verdocs-envelope-recipient-link": LocalJSX.IntrinsicElements["verdocs-envelope-recipient-link"] & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientLinkElement>;
+            "verdocs-envelope-recipient-link": LocalJSX.VerdocsEnvelopeRecipientLink & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientLinkElement>;
             /**
              * Displays a list of recipients with options to get in-person signing links for each one.
              */
-            "verdocs-envelope-recipient-summary": LocalJSX.IntrinsicElements["verdocs-envelope-recipient-summary"] & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientSummaryElement>;
+            "verdocs-envelope-recipient-summary": LocalJSX.VerdocsEnvelopeRecipientSummary & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeRecipientSummaryElement>;
             /**
              * Displays a file upload mechanism suitable for the first step of creating a template.
              * This is typically the first step in a template creation workflow.
              */
-            "verdocs-envelope-sidebar": LocalJSX.IntrinsicElements["verdocs-envelope-sidebar"] & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeSidebarElement>;
+            "verdocs-envelope-sidebar": LocalJSX.VerdocsEnvelopeSidebar & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeSidebarElement>;
             /**
              * Displays a single recipient from an envelope, with the opportunity to copy an in-person
              * signing link for that recipient to use.
              */
-            "verdocs-envelope-update-recipient": LocalJSX.IntrinsicElements["verdocs-envelope-update-recipient"] & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeUpdateRecipientElement>;
+            "verdocs-envelope-update-recipient": LocalJSX.VerdocsEnvelopeUpdateRecipient & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopeUpdateRecipientElement>;
             /**
              * Displays a list of envelopes matching specified conditions.
              */
-            "verdocs-envelopes-list": LocalJSX.IntrinsicElements["verdocs-envelopes-list"] & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopesListElement>;
+            "verdocs-envelopes-list": LocalJSX.VerdocsEnvelopesList & JSXBase.HTMLAttributes<HTMLVerdocsEnvelopesListElement>;
             /**
              * Displays an attachment field.
              */
-            "verdocs-field-attachment": LocalJSX.IntrinsicElements["verdocs-field-attachment"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
+            "verdocs-field-attachment": LocalJSX.VerdocsFieldAttachment & JSXBase.HTMLAttributes<HTMLVerdocsFieldAttachmentElement>;
             /**
              * Displays a checkbox.
              */
-            "verdocs-field-checkbox": LocalJSX.IntrinsicElements["verdocs-field-checkbox"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;
+            "verdocs-field-checkbox": LocalJSX.VerdocsFieldCheckbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldCheckboxElement>;
             /**
              * Displays a date field. When tapped or clicked, the input element will display a date picker component.
              */
-            "verdocs-field-date": LocalJSX.IntrinsicElements["verdocs-field-date"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldDateElement>;
+            "verdocs-field-date": LocalJSX.VerdocsFieldDate & JSXBase.HTMLAttributes<HTMLVerdocsFieldDateElement>;
             /**
              * Displays a dropdown field that allows the user to choose one of a list of options.
              */
-            "verdocs-field-dropdown": LocalJSX.IntrinsicElements["verdocs-field-dropdown"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldDropdownElement>;
+            "verdocs-field-dropdown": LocalJSX.VerdocsFieldDropdown & JSXBase.HTMLAttributes<HTMLVerdocsFieldDropdownElement>;
             /**
              * Displays an initial field. If an initial already exists, it will be displayed and the field
              * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
@@ -8655,16 +8196,16 @@ declare module "@stencil/core" {
              * This requires operation against a live, valid envelope. If you are testing this component
              * in Storybook, it will not be visible here.
              */
-            "verdocs-field-initial": LocalJSX.IntrinsicElements["verdocs-field-initial"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldInitialElement>;
+            "verdocs-field-initial": LocalJSX.VerdocsFieldInitial & JSXBase.HTMLAttributes<HTMLVerdocsFieldInitialElement>;
             /**
              * Displays a signature field. Various field types are supported, including traditional Signature and Initials types as well as
              * input types like text and checkbox.
              */
-            "verdocs-field-payment": LocalJSX.IntrinsicElements["verdocs-field-payment"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldPaymentElement>;
+            "verdocs-field-payment": LocalJSX.VerdocsFieldPayment & JSXBase.HTMLAttributes<HTMLVerdocsFieldPaymentElement>;
             /**
              * Displays a radio button.
              */
-            "verdocs-field-radio": LocalJSX.IntrinsicElements["verdocs-field-radio"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldRadioElement>;
+            "verdocs-field-radio": LocalJSX.VerdocsFieldRadio & JSXBase.HTMLAttributes<HTMLVerdocsFieldRadioElement>;
             /**
              * Displays a signature field. If a signature already exists, it will be displayed and the field
              * will be disabled. Otherwise, a placeholder button will be shown. Clicking the button will
@@ -8673,21 +8214,21 @@ declare module "@stencil/core" {
              * This requires operation against a live, valid envelope. If you are testing this component
              * in Storybook, it will not be visible here.
              */
-            "verdocs-field-signature": LocalJSX.IntrinsicElements["verdocs-field-signature"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldSignatureElement>;
+            "verdocs-field-signature": LocalJSX.VerdocsFieldSignature & JSXBase.HTMLAttributes<HTMLVerdocsFieldSignatureElement>;
             /**
              * Display a multi-line text input field. Reminder: the "position" of the field is specified
              * as the BOTTOM-LEFT corner.
              */
-            "verdocs-field-textarea": LocalJSX.IntrinsicElements["verdocs-field-textarea"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
+            "verdocs-field-textarea": LocalJSX.VerdocsFieldTextarea & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextareaElement>;
             /**
              * Display a simple 1-line text input field.
              */
-            "verdocs-field-textbox": LocalJSX.IntrinsicElements["verdocs-field-textbox"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
+            "verdocs-field-textbox": LocalJSX.VerdocsFieldTextbox & JSXBase.HTMLAttributes<HTMLVerdocsFieldTextboxElement>;
             /**
              * Display a timestamp. Timestamps are not editable by signers. Instead, they are automatically
              * filled when the signer submits the document.
              */
-            "verdocs-field-timestamp": LocalJSX.IntrinsicElements["verdocs-field-timestamp"] & JSXBase.HTMLAttributes<HTMLVerdocsFieldTimestampElement>;
+            "verdocs-field-timestamp": LocalJSX.VerdocsFieldTimestamp & JSXBase.HTMLAttributes<HTMLVerdocsFieldTimestampElement>;
             /**
              * Displays a file picker to upload an attachment. This component is just the picker - the host application or component should
              * provide the actual upload functionality.
@@ -8695,31 +8236,31 @@ declare module "@stencil/core" {
              * <verdocs-file-chooser onFileSelected={(e) => console.log('File Selected', e.detail)} />
              * ```
              */
-            "verdocs-file-chooser": LocalJSX.IntrinsicElements["verdocs-file-chooser"] & JSXBase.HTMLAttributes<HTMLVerdocsFileChooserElement>;
-            "verdocs-flag": LocalJSX.IntrinsicElements["verdocs-flag"] & JSXBase.HTMLAttributes<HTMLVerdocsFlagElement>;
+            "verdocs-file-chooser": LocalJSX.VerdocsFileChooser & JSXBase.HTMLAttributes<HTMLVerdocsFileChooserElement>;
+            "verdocs-flag": LocalJSX.VerdocsFlag & JSXBase.HTMLAttributes<HTMLVerdocsFlagElement>;
             /**
              * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
              * ```ts
              * <verdocs-help-icon text="Sample help text" />
              * ```
              */
-            "verdocs-help-icon": LocalJSX.IntrinsicElements["verdocs-help-icon"] & JSXBase.HTMLAttributes<HTMLVerdocsHelpIconElement>;
+            "verdocs-help-icon": LocalJSX.VerdocsHelpIcon & JSXBase.HTMLAttributes<HTMLVerdocsHelpIconElement>;
             /**
              * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
              * based on their full name, or by hand-drawing their initials with a mouse or tablet.
              */
-            "verdocs-initial-dialog": LocalJSX.IntrinsicElements["verdocs-initial-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
+            "verdocs-initial-dialog": LocalJSX.VerdocsInitialDialog & JSXBase.HTMLAttributes<HTMLVerdocsInitialDialogElement>;
             /**
              * Prompt the user to confirm their identity with a PIN or a series of questions.
              */
-            "verdocs-kba-dialog": LocalJSX.IntrinsicElements["verdocs-kba-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;
+            "verdocs-kba-dialog": LocalJSX.VerdocsKbaDialog & JSXBase.HTMLAttributes<HTMLVerdocsKbaDialogElement>;
             /**
              * Animated loader placeholder. There are currently no configuration options for this control.
              * ```ts
              * <verdocs-loader />
              * ```
              */
-            "verdocs-loader": LocalJSX.IntrinsicElements["verdocs-loader"] & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
+            "verdocs-loader": LocalJSX.VerdocsLoader & JSXBase.HTMLAttributes<HTMLVerdocsLoaderElement>;
             /**
              * Display a menu panel in a left or right sidebar. The panel will animate (slide)
              * as it appears, and an background will be shown over the rest of the page. If
@@ -8730,7 +8271,7 @@ declare module "@stencil/core" {
              * </verdocs-menu-panel>
              * ```
              */
-            "verdocs-menu-panel": LocalJSX.IntrinsicElements["verdocs-menu-panel"] & JSXBase.HTMLAttributes<HTMLVerdocsMenuPanelElement>;
+            "verdocs-menu-panel": LocalJSX.VerdocsMenuPanel & JSXBase.HTMLAttributes<HTMLVerdocsMenuPanelElement>;
             /**
              * Display a dropdown that allows multiple options to be selected. Note that events "bubble" from the
              * input field to the container, so you can subscribe to the same DOM events (input, blur, etc) that a
@@ -8739,24 +8280,24 @@ declare module "@stencil/core" {
              * <verdocs-multiselect label="Methods:" value={[]} options={[...options]} onInput={() => {}} />
              * ```
              */
-            "verdocs-multiselect": LocalJSX.IntrinsicElements["verdocs-multiselect"] & JSXBase.HTMLAttributes<HTMLVerdocsMultiselectElement>;
+            "verdocs-multiselect": LocalJSX.VerdocsMultiselect & JSXBase.HTMLAttributes<HTMLVerdocsMultiselectElement>;
             /**
              * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
              * box with a message and optional header/title. An OK button is shown that will dismiss the message.
              * It can also be dismissed by clicking the background overlay.
              */
-            "verdocs-ok-dialog": LocalJSX.IntrinsicElements["verdocs-ok-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
+            "verdocs-ok-dialog": LocalJSX.VerdocsOkDialog & JSXBase.HTMLAttributes<HTMLVerdocsOkDialogElement>;
             /**
              * Display a small summary card describing an organization.
              * ```ts
              * <verdocs-organization-card organization={organization} />
              * ```
              */
-            "verdocs-organization-card": LocalJSX.IntrinsicElements["verdocs-organization-card"] & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
+            "verdocs-organization-card": LocalJSX.VerdocsOrganizationCard & JSXBase.HTMLAttributes<HTMLVerdocsOrganizationCardElement>;
             /**
              * Prompt the user to confirm their identity with a one time code via email/SMS.
              */
-            "verdocs-otp-dialog": LocalJSX.IntrinsicElements["verdocs-otp-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsOtpDialogElement>;
+            "verdocs-otp-dialog": LocalJSX.VerdocsOtpDialog & JSXBase.HTMLAttributes<HTMLVerdocsOtpDialogElement>;
             /**
              * Display a simple pagination control with individual buttons to move through the data set.
              * ```ts
@@ -8768,11 +8309,11 @@ declare module "@stencil/core" {
              * />
              * ```
              */
-            "verdocs-pagination": LocalJSX.IntrinsicElements["verdocs-pagination"] & JSXBase.HTMLAttributes<HTMLVerdocsPaginationElement>;
+            "verdocs-pagination": LocalJSX.VerdocsPagination & JSXBase.HTMLAttributes<HTMLVerdocsPaginationElement>;
             /**
              * Prompt the user to confirm their identity with a passcode.
              */
-            "verdocs-passcode-dialog": LocalJSX.IntrinsicElements["verdocs-passcode-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsPasscodeDialogElement>;
+            "verdocs-passcode-dialog": LocalJSX.VerdocsPasscodeDialog & JSXBase.HTMLAttributes<HTMLVerdocsPasscodeDialogElement>;
             /**
              * Display a child component in a "portal", popping it out of the main DOM tree
              * to allow it to escape the bounds set by its parent.
@@ -8791,7 +8332,7 @@ declare module "@stencil/core" {
              * </div>
              * ```
              */
-            "verdocs-portal": LocalJSX.IntrinsicElements["verdocs-portal"] & JSXBase.HTMLAttributes<HTMLVerdocsPortalElement>;
+            "verdocs-portal": LocalJSX.VerdocsPortal & JSXBase.HTMLAttributes<HTMLVerdocsPortalElement>;
             /**
              * Display a template preview experience. This will display the template's attached
              * documents with signing fields overlaid on each page. Fields will be color-coded
@@ -8803,33 +8344,33 @@ declare module "@stencil/core" {
              *   />
              * ```
              */
-            "verdocs-preview": LocalJSX.IntrinsicElements["verdocs-preview"] & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
+            "verdocs-preview": LocalJSX.VerdocsPreview & JSXBase.HTMLAttributes<HTMLVerdocsPreviewElement>;
             /**
              * Display a simple progress bar in a style consistent with the design system.
              * ```ts
              * <verdocs-progress-bar label="Uploading..." showPercent={true} percent={54} />
              * ```
              */
-            "verdocs-progress-bar": LocalJSX.IntrinsicElements["verdocs-progress-bar"] & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
+            "verdocs-progress-bar": LocalJSX.VerdocsProgressBar & JSXBase.HTMLAttributes<HTMLVerdocsProgressBarElement>;
             /**
              * Display a simple text dialog box with an Ok button. This adds a partially-transparent overlay and screen-centered dialog
              * box with a message and optional header/title. An OK button is shown that will dismiss the message.
              * It can also be dismissed by clicking the background overlay.
              */
-            "verdocs-question-dialog": LocalJSX.IntrinsicElements["verdocs-question-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsQuestionDialogElement>;
+            "verdocs-question-dialog": LocalJSX.VerdocsQuestionDialog & JSXBase.HTMLAttributes<HTMLVerdocsQuestionDialogElement>;
             /**
              * Display a drop-down menu of quick filter options.
              * ```ts
              * <verdocs-quick-filter options={[...options]} value={1} label="Filter" placeholder="All" />
              * ```
              */
-            "verdocs-quick-filter": LocalJSX.IntrinsicElements["verdocs-quick-filter"] & JSXBase.HTMLAttributes<HTMLVerdocsQuickFilterElement>;
+            "verdocs-quick-filter": LocalJSX.VerdocsQuickFilter & JSXBase.HTMLAttributes<HTMLVerdocsQuickFilterElement>;
             /**
              * Display quick-function buttons for creating templates and documents.
              * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
              * embed. This Element will reuse the same session produced by logging in via that Embed.
              */
-            "verdocs-quick-functions": LocalJSX.IntrinsicElements["verdocs-quick-functions"] & JSXBase.HTMLAttributes<HTMLVerdocsQuickFunctionsElement>;
+            "verdocs-quick-functions": LocalJSX.VerdocsQuickFunctions & JSXBase.HTMLAttributes<HTMLVerdocsQuickFunctionsElement>;
             /**
              * Displays a radio button. Note that this is different from the `verdocs-field-radio-button` component, which is
              * designed to be used in signing experiences and contains settings that connect to template fields. This is just a
@@ -8846,14 +8387,14 @@ declare module "@stencil/core" {
              * />
              * ```
              */
-            "verdocs-radio-button": LocalJSX.IntrinsicElements["verdocs-radio-button"] & JSXBase.HTMLAttributes<HTMLVerdocsRadioButtonElement>;
+            "verdocs-radio-button": LocalJSX.VerdocsRadioButton & JSXBase.HTMLAttributes<HTMLVerdocsRadioButtonElement>;
             /**
              * Displays a customizable input box for search queries.
              * Authentication is required to demonstrate this Element. You may do this in Storybook by using the Auth
              * embed. This Element will reuse the same session produced by logging in via that Embed.
              */
-            "verdocs-search-box": LocalJSX.IntrinsicElements["verdocs-search-box"] & JSXBase.HTMLAttributes<HTMLVerdocsSearchBoxElement>;
-            "verdocs-search-tabs": LocalJSX.IntrinsicElements["verdocs-search-tabs"] & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
+            "verdocs-search-box": LocalJSX.VerdocsSearchBox & JSXBase.HTMLAttributes<HTMLVerdocsSearchBoxElement>;
+            "verdocs-search-tabs": LocalJSX.VerdocsSearchTabs & JSXBase.HTMLAttributes<HTMLVerdocsSearchTabsElement>;
             /**
              * Display a combo box. This is just a standard HTML select field with minimal markup to fit the
              * visual styles of the other components. Note that events "bubble" from the input field to the container,
@@ -8862,7 +8403,7 @@ declare module "@stencil/core" {
              * <verdocs-select-input label="Select:" label="Select" options={[...options]} onInput={() => {}} />
              * ```
              */
-            "verdocs-select-input": LocalJSX.IntrinsicElements["verdocs-select-input"] & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;
+            "verdocs-select-input": LocalJSX.VerdocsSelectInput & JSXBase.HTMLAttributes<HTMLVerdocsSelectInputElement>;
             /**
              * Display a form to send a template to one or more recipients in an envelope for signing.
              * Host applications should ensure the template is "sendable" before displaying this component.
@@ -8879,7 +8420,7 @@ declare module "@stencil/core" {
              *   />
              * ```
              */
-            "verdocs-send": LocalJSX.IntrinsicElements["verdocs-send"] & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
+            "verdocs-send": LocalJSX.VerdocsSend & JSXBase.HTMLAttributes<HTMLVerdocsSendElement>;
             /**
              * Display an envelope signing experience. This will display the envelope's attached
              * documents with signing fields overlaid on each page.
@@ -8904,25 +8445,25 @@ declare module "@stencil/core" {
              *   />
              * ```
              */
-            "verdocs-sign": LocalJSX.IntrinsicElements["verdocs-sign"] & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
+            "verdocs-sign": LocalJSX.VerdocsSign & JSXBase.HTMLAttributes<HTMLVerdocsSignElement>;
             /**
              * Typically presented by the `verdocs-sign` component. Displays a footer toolbar
              * with a few convenience functions for the envelope recipient to use.
              */
-            "verdocs-sign-footer": LocalJSX.IntrinsicElements["verdocs-sign-footer"] & JSXBase.HTMLAttributes<HTMLVerdocsSignFooterElement>;
+            "verdocs-sign-footer": LocalJSX.VerdocsSignFooter & JSXBase.HTMLAttributes<HTMLVerdocsSignFooterElement>;
             /**
              * Display a dialog that allows the user to specify a signature image, either by using a signature-font-generated image
              * based on their full name, or by hand-drawing their signature with a mouse or tablet.
              */
-            "verdocs-signature-dialog": LocalJSX.IntrinsicElements["verdocs-signature-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
-            "verdocs-signing-progress": LocalJSX.IntrinsicElements["verdocs-signing-progress"] & JSXBase.HTMLAttributes<HTMLVerdocsSigningProgressElement>;
+            "verdocs-signature-dialog": LocalJSX.VerdocsSignatureDialog & JSXBase.HTMLAttributes<HTMLVerdocsSignatureDialogElement>;
+            "verdocs-signing-progress": LocalJSX.VerdocsSigningProgress & JSXBase.HTMLAttributes<HTMLVerdocsSigningProgressElement>;
             /**
              * Display a small loading spinner.
              * ```ts
              * <verdocs-spinner />
              * ```
              */
-            "verdocs-spinner": LocalJSX.IntrinsicElements["verdocs-spinner"] & JSXBase.HTMLAttributes<HTMLVerdocsSpinnerElement>;
+            "verdocs-spinner": LocalJSX.VerdocsSpinner & JSXBase.HTMLAttributes<HTMLVerdocsSpinnerElement>;
             /**
              * Displays an icon and message describing a document's completion status. For convenience, the status may be passed in either
              * directly as a status field or the whole document object may be passed in.
@@ -8930,14 +8471,14 @@ declare module "@stencil/core" {
              * to display a popup panel with per-recipient status data.
              * If the status is provided as a string it can be either a `TRecipientStatus` or `TDocumentStatus` value.
              */
-            "verdocs-status-indicator": LocalJSX.IntrinsicElements["verdocs-status-indicator"] & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
+            "verdocs-status-indicator": LocalJSX.VerdocsStatusIndicator & JSXBase.HTMLAttributes<HTMLVerdocsStatusIndicatorElement>;
             /**
              * Displays a toggle switch
              * ```ts
              * <verdocs-switch checked={sendReminders} onCheckedChange={setSendReminders} />
              * ```
              */
-            "verdocs-switch": LocalJSX.IntrinsicElements["verdocs-switch"] & JSXBase.HTMLAttributes<HTMLVerdocsSwitchElement>;
+            "verdocs-switch": LocalJSX.VerdocsSwitch & JSXBase.HTMLAttributes<HTMLVerdocsSwitchElement>;
             /**
              * Display a simple table of data. Columns and data cells may have custom renderers defined to
              * support creating interactive table layouts.
@@ -8945,7 +8486,7 @@ declare module "@stencil/core" {
              * <verdocs-table columns={[...columns]} data={[...data]} />
              * ```
              */
-            "verdocs-table": LocalJSX.IntrinsicElements["verdocs-table"] & JSXBase.HTMLAttributes<HTMLVerdocsTableElement>;
+            "verdocs-table": LocalJSX.VerdocsTable & JSXBase.HTMLAttributes<HTMLVerdocsTableElement>;
             /**
              * Display a simple row of selectable tabs. This is a controlled element.
              * The parent must adjust selectedTab as selection events are fired.
@@ -8953,60 +8494,60 @@ declare module "@stencil/core" {
              * <verdocs-tabs tabs={[...tabs]} />
              * ```
              */
-            "verdocs-tabs": LocalJSX.IntrinsicElements["verdocs-tabs"] & JSXBase.HTMLAttributes<HTMLVerdocsTabsElement>;
+            "verdocs-tabs": LocalJSX.VerdocsTabs & JSXBase.HTMLAttributes<HTMLVerdocsTabsElement>;
             /**
              * Displays an edit form that allows the user to view, add, or remove a template's attachments.
              * Note that an active session and valid template ID must be supplied.
              */
-            "verdocs-template-attachments": LocalJSX.IntrinsicElements["verdocs-template-attachments"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
+            "verdocs-template-attachments": LocalJSX.VerdocsTemplateAttachments & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
             /**
              * Display a set of tabs for the template builder.
              */
-            "verdocs-template-build-tabs": LocalJSX.IntrinsicElements["verdocs-template-build-tabs"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateBuildTabsElement>;
+            "verdocs-template-build-tabs": LocalJSX.VerdocsTemplateBuildTabs & JSXBase.HTMLAttributes<HTMLVerdocsTemplateBuildTabsElement>;
             /**
              * Displays a summary of a template
              */
-            "verdocs-template-card": LocalJSX.IntrinsicElements["verdocs-template-card"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
+            "verdocs-template-card": LocalJSX.VerdocsTemplateCard & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCardElement>;
             /**
              * Displays a file upload mechanism suitable for the first step of creating a template.
              * This is typically the first step in a template creation workflow.
              */
-            "verdocs-template-create": LocalJSX.IntrinsicElements["verdocs-template-create"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;
+            "verdocs-template-create": LocalJSX.VerdocsTemplateCreate & JSXBase.HTMLAttributes<HTMLVerdocsTemplateCreateElement>;
             /**
              * Represents one document page. This is primarily a layout container used to coordinate positions of
              * page-related layers such as the page itself, signature fields, etc. It is not intended to be used
              * on its own as an individual component.
              */
-            "verdocs-template-document-page": LocalJSX.IntrinsicElements["verdocs-template-document-page"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateDocumentPageElement>;
+            "verdocs-template-document-page": LocalJSX.VerdocsTemplateDocumentPage & JSXBase.HTMLAttributes<HTMLVerdocsTemplateDocumentPageElement>;
             /**
              * Displays an edit form that allows the user to adjust a field's settings.
              */
-            "verdocs-template-field-properties": LocalJSX.IntrinsicElements["verdocs-template-field-properties"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldPropertiesElement>;
+            "verdocs-template-field-properties": LocalJSX.VerdocsTemplateFieldProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldPropertiesElement>;
             /**
              * Displays a builder experience for laying out fields in a template. Note that this experience requires a large display area to
              * present all of the required controls, so it is primarily intended to be used in desktop environments.
              */
-            "verdocs-template-fields": LocalJSX.IntrinsicElements["verdocs-template-fields"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
+            "verdocs-template-fields": LocalJSX.VerdocsTemplateFields & JSXBase.HTMLAttributes<HTMLVerdocsTemplateFieldsElement>;
             /**
              * Present an editing form suitable for adjusting template-role properties.
              */
-            "verdocs-template-role-properties": LocalJSX.IntrinsicElements["verdocs-template-role-properties"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolePropertiesElement>;
+            "verdocs-template-role-properties": LocalJSX.VerdocsTemplateRoleProperties & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolePropertiesElement>;
             /**
              * Display an edit form that allows the user to adjust a template's roles and workflow.
              */
-            "verdocs-template-roles": LocalJSX.IntrinsicElements["verdocs-template-roles"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolesElement>;
+            "verdocs-template-roles": LocalJSX.VerdocsTemplateRoles & JSXBase.HTMLAttributes<HTMLVerdocsTemplateRolesElement>;
             /**
              * Display an edit form that allows the user to adjust a template's roles and workflow.
              */
-            "verdocs-template-settings": LocalJSX.IntrinsicElements["verdocs-template-settings"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSettingsElement>;
+            "verdocs-template-settings": LocalJSX.VerdocsTemplateSettings & JSXBase.HTMLAttributes<HTMLVerdocsTemplateSettingsElement>;
             /**
              * Displays a clickable star that allows users to mark frequently-used templates.
              */
-            "verdocs-template-star": LocalJSX.IntrinsicElements["verdocs-template-star"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateStarElement>;
+            "verdocs-template-star": LocalJSX.VerdocsTemplateStar & JSXBase.HTMLAttributes<HTMLVerdocsTemplateStarElement>;
             /**
              * Displays a message listing a template's tags.
              */
-            "verdocs-template-tags": LocalJSX.IntrinsicElements["verdocs-template-tags"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
+            "verdocs-template-tags": LocalJSX.VerdocsTemplateTags & JSXBase.HTMLAttributes<HTMLVerdocsTemplateTagsElement>;
             /**
              * Display a list of templates in the caller's account.
              * ```ts
@@ -9017,7 +8558,7 @@ declare module "@stencil/core" {
              *   />
              * ```
              */
-            "verdocs-templates-list": LocalJSX.IntrinsicElements["verdocs-templates-list"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplatesListElement>;
+            "verdocs-templates-list": LocalJSX.VerdocsTemplatesList & JSXBase.HTMLAttributes<HTMLVerdocsTemplatesListElement>;
             /**
              * Display a text input field. This is just a standard HTML input field with minimal markup to fit the
              * visual styles of the other components. Note that events "bubble" from the input field to the container,
@@ -9026,36 +8567,36 @@ declare module "@stencil/core" {
              * <verdocs-text-input type="text" label="Name" placeholder="Enter your name..." value="" />
              * ```
              */
-            "verdocs-text-input": LocalJSX.IntrinsicElements["verdocs-text-input"] & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
+            "verdocs-text-input": LocalJSX.VerdocsTextInput & JSXBase.HTMLAttributes<HTMLVerdocsTextInputElement>;
             /**
              * Displays a label and a set of buttons, also allowing a default selection of a button.
              * ```ts
              * <verdocs-toggle options={[...options]} theme="light"></verdocs-toggle>
              * ```
              */
-            "verdocs-toggle": LocalJSX.IntrinsicElements["verdocs-toggle"] & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;
+            "verdocs-toggle": LocalJSX.VerdocsToggle & JSXBase.HTMLAttributes<HTMLVerdocsToggleElement>;
             /**
              * Displays a single button that can be toggled on or off by clicking it.
              * ```ts
              * <verdocs-toggle-button icon={MessageIcon} size="normal" active={true} />
              * ```
              */
-            "verdocs-toggle-button": LocalJSX.IntrinsicElements["verdocs-toggle-button"] & JSXBase.HTMLAttributes<HTMLVerdocsToggleButtonElement>;
+            "verdocs-toggle-button": LocalJSX.VerdocsToggleButton & JSXBase.HTMLAttributes<HTMLVerdocsToggleButtonElement>;
             /**
              * Displays a simple help icon. Upon hover or focus, a tooltip will be displayed with help text.
              * ```ts
              * <verdocs-toolbar-icon text="Sample tooltip text" icon={CalendarIcon} />
              * ```
              */
-            "verdocs-toolbar-icon": LocalJSX.IntrinsicElements["verdocs-toolbar-icon"] & JSXBase.HTMLAttributes<HTMLVerdocsToolbarIconElement>;
+            "verdocs-toolbar-icon": LocalJSX.VerdocsToolbarIcon & JSXBase.HTMLAttributes<HTMLVerdocsToolbarIconElement>;
             /**
              * Display a file upload tool. Note that the file is not actually transmitted, so it may be used by
              * callers with a variety of workflows. Instead, data about the chosen file will be passed to the
              * caller via the onNext event handler. A delete event is also exposed to delete existing attachments.
              * To represent an existing attachment, set the existingFile property.
              */
-            "verdocs-upload-dialog": LocalJSX.IntrinsicElements["verdocs-upload-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
-            "verdocs-view": LocalJSX.IntrinsicElements["verdocs-view"] & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
+            "verdocs-upload-dialog": LocalJSX.VerdocsUploadDialog & JSXBase.HTMLAttributes<HTMLVerdocsUploadDialogElement>;
+            "verdocs-view": LocalJSX.VerdocsView & JSXBase.HTMLAttributes<HTMLVerdocsViewElement>;
         }
     }
 }
