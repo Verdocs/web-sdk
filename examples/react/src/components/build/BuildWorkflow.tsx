@@ -1,4 +1,4 @@
-import { VerdocsTemplateCreate } from "@verdocs/web-sdk-react";
+import { VerdocsBuild } from "@verdocs/web-sdk-react";
 import type { TVerdocsBuildStep } from "../../lib/buildStorage";
 import { saveStoredTemplateId } from "../../lib/authSession";
 import { VerdocsBuildPanel } from "./VerdocsBuildPanel";
@@ -14,7 +14,7 @@ export const BuildWorkflow = ({ templateId, step, onTemplateIdChange, onStepChan
   if (!templateId) {
     return (
       <div className="create-panel">
-        <VerdocsTemplateCreate
+        <VerdocsBuild
           onTemplateCreated={(e) => {
             const detail = (e as CustomEvent<{ templateId: string }>).detail;
             const id = detail.templateId;

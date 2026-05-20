@@ -70,7 +70,7 @@ export const SigningCredentialsForm = (props: SigningCredentialsFormProps) => {
 
       <p className="sign-credentials-hint">
         Unlike <code>VerdocsBuild</code>, <code>VerdocsSign</code> uses the signer&apos;s invite code — not your builder
-        username/password. Send from the <a href="#/build">Build</a> tab to pre-fill envelope and role.
+        username/password. Send from the <a href="/build">Build</a> tab to pre-fill envelope and role.
       </p>
 
       <div className="sign-credentials-actions">

@@ -42,16 +42,20 @@ export const isPasswordComplex = (password: string): boolean => {
   return password.length >= 8 && countOfLowerCase > 0 && countOfUpperCase > 0 && countOfSpecialChar > 0;
 };
 
-export const validateCreateProfileInput = (
-  input: CreateProfileInput,
-  confirmPassword: string,
-): CreateProfileFieldErrors => {
+const formatDefaultPassword = () => {
+  const firstName = "John";
+  const lastName = "bakerman";
+  const firstNameInitial = firstName.slice(0, 1).toLowerCase();
+  const formattedLastName = `${lastName.slice(0, 1).toUpperCase()}${lastName.slice(1)}`;
+  return `${firstNameInitial}${formattedLastName}952!`;
+};
+
+export const validateCreateProfileInput = (input: CreateProfileInput): CreateProfileFieldErrors => {
   const errors: CreateProfileFieldErrors = {};
   const firstName = input.first_name.trim();
   const lastName = input.last_name.trim();
   const email = input.email.trim().toLowerCase();
   const orgName = input.org_name.trim();
-  const password = input.password;
 
   if (!firstName) {
     errors.first_name = "First name is required.";
@@ -66,17 +70,6 @@ export const validateCreateProfileInput = (
   }
   if (!orgName) {
     errors.org_name = "Organization name is required.";
-  }
-  if (!password) {
-    errors.password = "Password is required.";
-  } else if (!isPasswordComplex(password)) {
-    errors.password =
-      "Password must be at least 8 characters and include uppercase, lowercase, and a special character.";
-  }
-  if (!confirmPassword) {
-    errors.confirmPassword = "Please confirm your password.";
-  } else if (password !== confirmPassword) {
-    errors.confirmPassword = "Passwords do not match.";
   }
 
   return errors;
@@ -93,7 +86,7 @@ export const submitCreateProfile = async (input: CreateProfileInput): Promise<vo
 
   await createProfile(endpoint, {
     email,
-    password: input.password,
+    password: formatDefaultPassword(),
     first_name: input.first_name.trim(),
     last_name: input.last_name.trim(),
     org_name: input.org_name.trim(),

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Verdocs demo is ready — {{company_name}}</title>
+    <style>
+      /* Preview chrome (not sent in most ESP exports — inline styles below carry the layout) */
+      body.preview-body {
+        margin: 0;
+        padding: 2rem 1rem;
+        background: #f1f5f9;
+        font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      }
+
+      .preview-note {
+        max-width: 600px;
+        margin: 0 auto 1rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+        color: #64748b;
+        background: #fff;
+        border: 1px dashed #e2e8f0;
+        border-radius: 8px;
+      }
+
+      .preview-note code {
+        font-size: 0.75rem;
+        background: #f1f5f9;
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body class="preview-body">
+    <p class="preview-note">
+      Preview only. Replace <code>{{placeholders}}</code> before sending. For production email, paste the
+      <code>&lt;table class="email-wrapper"&gt;</code> block into your ESP or use inline styles as-is.
+    </p>
+
+    <!-- Email content (table layout for client compatibility) -->
+    <table
+      class="email-wrapper"
+      role="presentation"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      width="100%"
+      style="
+        max-width: 600px;
+        margin: 0 auto;
+        font-family: 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 16px;
+        line-height: 1.55;
+        color: #0f172a;
+        background-color: #f1f5f9;
+      "
+    >
+      <tr>
+        <td style="padding: 24px 16px">
+          <table
+            role="presentation"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            width="100%"
+            style="background-color: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06)"
+          >
+            <!-- Header -->
+            <tr>
+              <td
+                style="
+                  padding: 28px 32px 24px;
+                  background: linear-gradient(135deg, #2563eb 0%, #0d9488 100%);
+                  color: #ffffff;
+                "
+              >
+                <p style="margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.9">
+                  Verdocs
+                </p>
+                <h1 style="margin: 0; font-size: 22px; font-weight: 700; line-height: 1.3">
+                  Your demo is ready
+                </h1>
+                <p style="margin: 10px 0 0; font-size: 15px; opacity: 0.95">{{company_name}}</p>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding: 32px">
+                <p style="margin: 0 0 20px">Hi {{first_name}},</p>
+
+                <p style="margin: 0 0 20px">
+                  Thank you for your interest in Verdocs. We&rsquo;re glad you took the time to explore how agreements
+                  can look and feel inside your own product&mdash;not a generic template.
+                </p>
+
+                <!-- Demo account section -->
+                <table
+                  role="presentation"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  width="100%"
+                  style="margin: 0 0 24px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px"
+                >
+                  <tr>
+                    <td style="padding: 20px 22px">
+                      <h2 style="margin: 0 0 10px; font-size: 17px; font-weight: 700; color: #2563eb">
+                        Your demo account
+                      </h2>
+                      <p style="margin: 0; font-size: 15px; color: #334155">
+                        We&rsquo;ve set up a demo account for <strong>{{company_name}}</strong> with your brand theme
+                        already applied from your company website. You can sign in, walk through <strong>Build</strong>
+                        and <strong>Sign</strong> with your colors and styling in place, and adjust the white-label
+                        preset further whenever you like.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Login instructions -->
+                <h2 style="margin: 0 0 12px; font-size: 17px; font-weight: 700; color: #0f172a">How to sign in</h2>
+                <ol style="margin: 0 0 20px; padding-left: 1.25rem; color: #334155">
+                  <li style="margin-bottom: 10px">
+                    Open your demo:
+                    <a href="{{demo_url}}" style="color: #2563eb; font-weight: 600; text-decoration: none">{{demo_url}}</a>
+                  </li>
+                  <li style="margin-bottom: 10px">
+                    Sign in with:<br />
+                    <span style="display: inline-block; margin-top: 8px; padding: 12px 16px; background: #f1f5f9; border-radius: 8px; font-size: 14px; line-height: 1.6">
+                      <strong>Email:</strong> {{login_email}}<br />
+                      <strong>Temporary password:</strong> {{temporary_password}}
+                    </span>
+                  </li>
+                  <li style="margin-bottom: 10px">
+                    On first login, you&rsquo;ll be prompted to set a new password (if your environment requires it).
+                  </li>
+                  <li style="margin-bottom: 0">
+                    From the dashboard, use the <strong>Dashboard</strong>, <strong>Build</strong>, and
+                    <strong>Sign</strong> tabs to explore the flows we discussed.
+                  </li>
+                </ol>
+
+                <p style="margin: 0 0 24px; font-size: 15px; color: #64748b">
+                  If anything doesn&rsquo;t load or you need access reset, reply to this email and we&rsquo;ll help right
+                  away.
+                </p>
+
+                <!-- Dev team section -->
+                <table
+                  role="presentation"
+                  cellpadding="0"
+                  cellspacing="0"
+                  border="0"
+                  width="100%"
+                  style="margin: 0 0 24px; border-left: 4px solid #0d9488; background-color: #f0fdfa"
+                >
+                  <tr>
+                    <td style="padding: 16px 20px">
+                      <h2 style="margin: 0 0 8px; font-size: 17px; font-weight: 700; color: #0f766e">
+                        For your development team
+                      </h2>
+                      <p style="margin: 0; font-size: 15px; color: #334155">
+                        See the <strong>attached quick-start package</strong> for your engineers. It includes source,
+                        integration notes, and a short guided walkthrough so they can run the examples locally and start
+                        embedding Verdocs in your stack.
+                      </p>
+                      <p style="margin: 12px 0 0; font-size: 13px; color: #64748b">
+                        Attachment: <strong>Verdocs_Quick_Start_{{company_slug}}.zip</strong>
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin: 0 0 28px">
+                  We&rsquo;re happy to schedule a short walkthrough if that would be useful&mdash;just reply with a few
+                  times that work for you.
+                </p>
+
+                <p style="margin: 0 0 4px">Best regards,</p>
+                <p style="margin: 0; font-weight: 600">{{sender_name}}</p>
+                <p style="margin: 4px 0 0; font-size: 14px; color: #64748b">{{sender_title}}</p>
+                <p style="margin: 16px 0 0; font-size: 14px; color: #64748b">
+                  Verdocs<br />
+                  <a href="mailto:{{sender_email}}" style="color: #2563eb; text-decoration: none">{{sender_email}}</a>
+                  &nbsp;|&nbsp; {{sender_phone}}
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  padding: 18px 32px;
+                  background-color: #f8fafc;
+                  border-top: 1px solid #e2e8f0;
+                  font-size: 12px;
+                  color: #94a3b8;
+                  text-align: center;
+                "
+              >
+                &copy; Verdocs. This message was sent because you requested a product demo.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

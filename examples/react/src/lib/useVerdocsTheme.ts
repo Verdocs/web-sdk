@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 
 export const VERDOCS_THEME_CLASS = "verdocs-custom-theme";
 
-export type ExampleThemeId = "default" | "wayfair" | "ironclad";
+export type ExampleThemeId = "default" | "wayfair" | "ironclad" | "lingscars";
 
 const THEME_STORAGE_KEY = "verdocs-example-theme";
 
 const isExampleThemeId = (value: string): value is ExampleThemeId =>
-  value === "default" || value === "wayfair" || value === "ironclad";
+  value === "default" || value === "wayfair" || value === "ironclad" || value === "lingscars";
 
 const loadStoredTheme = (fallback: ExampleThemeId): ExampleThemeId => {
   try {
@@ -27,7 +27,7 @@ const applyThemeToDocument = (themeId: ExampleThemeId): void => {
   root.classList.toggle(VERDOCS_THEME_CLASS, themeId !== "default");
 };
 
-export const useExampleTheme = (defaultTheme: ExampleThemeId = "wayfair") => {
+export const useExampleTheme = (defaultTheme: ExampleThemeId = "default") => {
   const [themeId, setThemeIdState] = useState<ExampleThemeId>(() => loadStoredTheme(defaultTheme));
 
   useEffect(() => {

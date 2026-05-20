@@ -12,14 +12,14 @@ interface ContactInformationFormProps {
   onSuccess?: () => void;
 }
 
-const emptyInput = (): CreateProfileInput => ({
+const emptyInput = {
   email: "",
   password: "",
   first_name: "",
   last_name: "",
   org_name: "",
   phone: "",
-});
+};
 
 export const ContactInformationForm = ({ onSuccess }: ContactInformationFormProps) => {
   const [input, setInput] = useState<CreateProfileInput>(emptyInput);
@@ -42,7 +42,7 @@ export const ContactInformationForm = ({ onSuccess }: ContactInformationFormProp
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const errors = validateCreateProfileInput(input, confirmPassword);
+    const errors = validateCreateProfileInput(input);
     if (hasFieldErrors(errors)) {
       setFieldErrors(errors);
       return;
@@ -171,51 +171,6 @@ export const ContactInformationForm = ({ onSuccess }: ContactInformationFormProp
           onChange={(e) => updateField("phone", e.target.value)}
           disabled={submitting}
         />
-      </div>
-
-      <div className="contact-form-field">
-        <label htmlFor="contact-password">Password</label>
-        <input
-          id="contact-password"
-          type="password"
-          autoComplete="new-password"
-          value={input.password}
-          onChange={(e) => updateField("password", e.target.value)}
-          disabled={submitting}
-          aria-invalid={Boolean(fieldErrors.password)}
-          aria-describedby={fieldErrors.password ? "contact-password-error" : undefined}
-        />
-        {fieldErrors.password && (
-          <span id="contact-password-error" className="contact-form-field-error" role="alert">
-            {fieldErrors.password}
-          </span>
-        )}
-      </div>
-
-      <div className="contact-form-field">
-        <label htmlFor="contact-confirm-password">Confirm password</label>
-        <input
-          id="contact-confirm-password"
-          type="password"
-          autoComplete="new-password"
-          value={confirmPassword}
-          onChange={(e) => {
-            setConfirmPassword(e.target.value);
-            setFieldErrors((prev) => {
-              const next = { ...prev };
-              delete next.confirmPassword;
-              return next;
-            });
-          }}
-          disabled={submitting}
-          aria-invalid={Boolean(fieldErrors.confirmPassword)}
-          aria-describedby={fieldErrors.confirmPassword ? "contact-confirm-password-error" : undefined}
-        />
-        {fieldErrors.confirmPassword && (
-          <span id="contact-confirm-password-error" className="contact-form-field-error" role="alert">
-            {fieldErrors.confirmPassword}
-          </span>
-        )}
       </div>
 
       <p className="contact-form-legal">

@@ -4,9 +4,10 @@ Reference Vite + React + TypeScript app for [`@verdocs/web-sdk-react`](https://w
 
 | Example | Route | Embed |
 |---------|-------|-------|
-| **Dashboard** | `#/dashboard` | Overview + Introduction Package request (profile signup) |
-| **Build** (primary) | `#/build` | `VerdocsBuild` — template builder workflow |
-| **Sign** | `#/sign` | `VerdocsSign` — envelope signing (invite credentials) |
+| **Brand capture** | `/` | Company website → brand preview unlock (required before other routes) |
+| **Dashboard** | `/dashboard` | Overview + Introduction Package request (profile signup) |
+| **Build** (primary) | `/build` | `VerdocsBuild` — template builder workflow |
+| **Sign** | `/sign` | `VerdocsSign` — envelope signing (invite credentials) |
 
 ## Prerequisites
 
@@ -21,7 +22,9 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173 — default route is `#/dashboard`.
+Open http://localhost:5173 — default route is `/` (brand capture). After entering your company website, `/dashboard`, `/build`, and `/sign` are available. Brand unlock is stored in `localStorage` (`verdocs-example-brand-domain`).
+
+For static hosting, configure the server to fall back to `index.html` for paths like `/build` and `/sign` (SPA history API).
 
 ## Authentication (Build)
 
@@ -41,6 +44,7 @@ All example chrome and SDK overrides live in one file:
    - **Verdocs default** — stock SDK styling; app uses base `:root` tokens only.
    - **Wayfair (sample)** — purple retail palette (Wayfair Homebase-inspired).
    - **Ironclad** — green/navy CLM palette from [ironclad.design](https://ironclad.design/) (Illuminated Green `#00CA88`, Navy `#1C4044`, etc.).
+   - **LINGsCARS** — electric blue `#0505FC` and magenta `#CF1C97` from [lingscars.com](https://www.lingscars.com/).
 4. Use the **Color palette** panel on build screens to preview resolved values. Your choice is saved in `localStorage` (`verdocs-example-theme`).
 
 Import order in [`src/main.tsx`](src/main.tsx):
@@ -74,7 +78,7 @@ import './styles/example-theme.css';
 | `onSdkError` | API or auth error |
 | `onCancel` | Cancel on attachments/roles |
 
-## Sign example (`#/sign`)
+## Sign example (`/sign`)
 
 Uses `envelopeId`, `roleId`, and `inviteCode` from the signer invitation — not builder login. After sending from Build, envelope ID and role may be pre-filled via `sessionStorage`.
 
@@ -83,15 +87,18 @@ Uses `envelopeId`, `roleId`, and `inviteCode` from the signer invitation — not
 ```
 src/
   pages/
-    BuildPage.tsx         # Build demo
-    DashboardPage.tsx     # Overview + Introduction Package CTA
-    SignPage.tsx          # Sign demo
+    BrandThemeCapturePage.tsx  # Root: company website capture
+    BuildPage.tsx              # Build demo
+    DashboardPage.tsx          # Overview + Introduction Package CTA
+    SignPage.tsx               # Sign demo
   components/
-    build/                # VerdocsBuild-specific
-    shared/               # Theme, palette, field gallery
-    sign/                 # VerdocsSign-specific
+    RequireBrandTheme.tsx      # Route guard (redirects to / if not unlocked)
+    build/                     # VerdocsBuild-specific
+    shared/                    # Theme, palette, field gallery
+    sign/                      # VerdocsSign-specific
   lib/
-    authSession.ts        # Session + templateId localStorage helpers
+    authSession.ts             # Session + templateId localStorage helpers
+    brandThemeSession.ts       # Brand domain unlock (localStorage)
     buildStorage.ts
   styles/
     example-theme.css     # Single theme stylesheet

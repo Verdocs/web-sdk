@@ -18,6 +18,8 @@ interface VerdocsBuildPanelProps {
 }
 
 export const VerdocsBuildPanel = ({ templateId, step, onStepChange }: VerdocsBuildPanelProps) => {
+  console.log("Is it here? ", templateId);
+
   return (
     <div className="build-panel">
       <VerdocsBuild

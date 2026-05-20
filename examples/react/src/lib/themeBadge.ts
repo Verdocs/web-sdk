@@ -7,5 +7,8 @@ export const getThemeBadgeLabel = (themeId: ExampleThemeId): string | null => {
   if (themeId === "wayfair") {
     return "wayfair";
   }
-  return "ironclad";
+  if (themeId === "ironclad") {
+    return "ironclad";
+  }
+  return "lingscars";
 };

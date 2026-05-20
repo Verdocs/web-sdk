@@ -4,12 +4,14 @@ export const EXAMPLE_THEME_OPTIONS: { id: ExampleThemeId; label: string }[] = [
   { id: "default", label: "Verdocs default" },
   { id: "wayfair", label: "Wayfair (sample)" },
   { id: "ironclad", label: "Ironclad" },
+  { id: "lingscars", label: "LINGsCARS" },
 ];
 
 const THEME_SUBLABELS: Record<ExampleThemeId, string> = {
   default: "Stock Verdocs styling on embeds",
   wayfair: "Purple retail sample — maps CSS variables to the SDK",
   ironclad: "Green CLM brand — colors from ironclad.design",
+  lingscars: "Car leasing — blue & magenta from lingscars.com",
 };
 
 interface ThemeToggleProps {
@@ -25,7 +27,7 @@ export const ThemeToggle = ({ themeId, onChange, variant = "compact" }: ThemeTog
     <div className={`theme-select-wrap theme-select-wrap--${variant}`}>
       {variant === "prominent" && (
         <label className="theme-select-label" htmlFor={selectId}>
-          <strong>White-label preset</strong>
+          <strong>Theme</strong>
         </label>
       )}
       <select
@@ -41,7 +43,6 @@ export const ThemeToggle = ({ themeId, onChange, variant = "compact" }: ThemeTog
           </option>
         ))}
       </select>
-      {variant === "prominent" && <span className="theme-select-sublabel">{THEME_SUBLABELS[themeId]}</span>}
     </div>
   );
 };

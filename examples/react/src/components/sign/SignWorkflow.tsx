@@ -5,7 +5,7 @@ interface SignPanelProps {
   params: SigningParams | null;
 }
 
-export const SignPanel = ({ params }: SignPanelProps) => {
+export const SignWorkflow = ({ params }: SignPanelProps) => {
   if (!params) {
     return null;
   }
@@ -21,7 +21,6 @@ export const SignPanel = ({ params }: SignPanelProps) => {
         inviteCode={params.inviteCode}
         toolbarStyle="menu"
         headerTargetId="verdocs-sign-header-host"
-        style={{ maxHeight: "400px", overflowY: "auto" }}
       />
     </div>
   );

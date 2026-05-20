@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BuildWorkflow } from "../components/build/BuildWorkflow";
 import { ThemeBanner } from "../components/shared/ThemeBanner";
-import { ColorPalette } from "../components/shared/ColorPalette";
 import { hasBuilderSession, loadBuilderSession, loadStoredTemplateId, subscribeToSession } from "../lib/authSession";
 import type { TVerdocsBuildStep } from "../lib/buildStorage";
 import { useExampleTheme } from "../lib/useVerdocsTheme";
@@ -11,9 +10,8 @@ import NavTags from "../components/navTags/NavTags";
 export const BuildPage = () => {
   const [, setAuthenticated] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
-  const [templateId, setTemplateId] = useState<string | null>(null);
+  const [templateId, setTemplateId] = useState<string | null>("6cf58bcb-b354-4804-aea3-12d711d6b732");
   const [step, setStep] = useState<TVerdocsBuildStep>("attachments");
-  const [themeRevision, setThemeRevision] = useState(0);
   const { themeId, setThemeId, isCustomTheme } = useExampleTheme("wayfair");
   const themeBadge = getThemeBadgeLabel(themeId);
 
@@ -31,10 +29,6 @@ export const BuildPage = () => {
     });
   }, []);
 
-  useEffect(() => {
-    setThemeRevision((r) => r + 1);
-  }, [themeId]);
-
   if (checkingSession) {
     return (
       <div className="auth-loading">
@@ -45,9 +39,8 @@ export const BuildPage = () => {
 
   return (
     <>
-      <ThemeBanner themeId={themeId} onChange={setThemeId} variant="build" />
+      <ThemeBanner themeId={themeId} onChange={setThemeId} />
       <NavTags />
-      <ColorPalette themeRevision={themeRevision} />
 
       <section className={`section section--builder ${isCustomTheme ? "section--themed" : ""}`}>
         <div className="section-header">

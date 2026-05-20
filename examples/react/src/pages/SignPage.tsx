@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { SignPanel } from "../components/sign/SignPanel";
+import { SignWorkflow } from "../components/sign/SignWorkflow";
 import { ThemeBanner } from "../components/shared/ThemeBanner";
 import { loadSigningContext } from "../lib/signingSession";
 import type { SigningParams } from "../lib/signingSession";
 import { useExampleTheme } from "../lib/useVerdocsTheme";
-import { getThemeBadgeLabel } from "../lib/themeBadge";
 import NavTags from "../components/navTags/NavTags";
 
 export const SignPage = () => {
@@ -12,7 +11,6 @@ export const SignPage = () => {
   const [roleId] = useState("Recipient 1");
   const [inviteCode] = useState("lecfirrf7h5bncao2ce17qd0");
   const { themeId, setThemeId, isCustomTheme } = useExampleTheme("wayfair");
-  const themeBadge = getThemeBadgeLabel(themeId);
 
   useEffect(() => {
     const context = loadSigningContext();
@@ -39,22 +37,15 @@ export const SignPage = () => {
 
   return (
     <div className="sign-page">
-      <ThemeBanner themeId={themeId} onChange={setThemeId} variant="sign" />
+      <ThemeBanner themeId={themeId} onChange={setThemeId} />
       <NavTags />
 
-      <section className={`section section--sign ${isCustomTheme ? "section--themed" : ""}`}>
+      <section className={`section section--signer ${isCustomTheme ? "section--themed" : ""}`}>
         <div className="section-header">
-          <h2>
-            Envelope signing
-            {themeBadge && <span className="step-badge step-badge--theme">{themeBadge}</span>}
-          </h2>
-          <p>
-            The embed creates its own signing session. Optional <code>headerTargetId</code> moves the toolbar into the
-            host slot above.
-          </p>
+          <h2>Envelope signing</h2>
         </div>
         <div className="section-body section-body--sign">
-          <SignPanel params={signingParams} />
+          <SignWorkflow params={signingParams} />
         </div>
       </section>
     </div>
