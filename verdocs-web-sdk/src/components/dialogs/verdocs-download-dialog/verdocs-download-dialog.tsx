@@ -47,11 +47,11 @@ export class VerdocsDownloadDialog {
   @Prop() hasCertificate = false;
 
   handleOptionClick(action: TDownloadAction, documentId?: string) {
-    const hasCert = this.documents.some(d => d.type === 'certificate') || this.hasCertificate;
+    const hasCert = this.documents.some(d => d.type === TDownloadAction.certificate) || this.hasCertificate;
     const isCertReady = this.signed && hasCert;
-    const isCertificateDisabled = action === 'certificate' && !isCertReady;
-    const isZipDisabled = action === 'zip' && (this.polling || !isCertReady);
-    const isCombinedDisabled = action === 'combined' && !isCertReady;
+    const isCertificateDisabled = action === TDownloadAction.certificate && !isCertReady;
+    const isZipDisabled = action === TDownloadAction.zip && (this.polling || !isCertReady);
+    const isCombinedDisabled = action === TDownloadAction.combined && !isCertReady;
 
     if (isCertificateDisabled || isZipDisabled || isCombinedDisabled) return;
     this.download.emit({action, documentId});
@@ -59,8 +59,10 @@ export class VerdocsDownloadDialog {
 
   render() {
     const attachments = this.documents.filter(d => d.type === 'attachment').sort((a, b) => (a.order !== b.order ? a.order - b.order : a.created_at.localeCompare(b.created_at)));
-    const hasCertificateDoc = this.documents.some(d => d.type === 'certificate') || this.hasCertificate;
+    const hasCertificateDoc = this.documents.some(d => d.type === TDownloadAction.certificate) || this.hasCertificate;
+    const hasCombinedDoc = this.documents.some(d => d.type === TDownloadAction.combined);
     const certReady = this.signed && hasCertificateDoc;
+    const isCombinedReady = this.signed && hasCombinedDoc;
     const allDone = !this.polling && certReady;
     const attachmentBusy = !this.signed;
 
@@ -117,16 +119,16 @@ export class VerdocsDownloadDialog {
           </div>
 
           <div
-            class={{'download-option': true, 'disabled': !allDone}}
+            class={{'download-option': true, 'disabled': !isCombinedReady}}
             onClick={() => this.handleOptionClick(TDownloadAction.combined)}
-            title={!allDone ? 'Waiting for all documents to be ready' : ''}
+            title={!isCombinedReady ? 'Waiting for all documents to be ready' : ''}
           >
             <div class="icon-container" innerHTML={ZipIcon}></div>
             <div class="text-container">
               <div class="label">Combined</div>
               <div class="description">Merge envelopes & certificate into a single PDF</div>
             </div>
-            {allDone ? (
+            {isCombinedReady ? (
               <div class="status-indicator">
                 <div class="signed" innerHTML={CheckIcon}></div>
                 <span>Ready</span>
