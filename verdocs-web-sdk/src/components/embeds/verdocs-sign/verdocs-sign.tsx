@@ -6,11 +6,12 @@ import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, del
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
-import {IDocumentPageInfo} from '../../../utils/Types';
+import {IDocumentPageInfo, IDownloadEvent, TDownloadAction} from '../../../utils/Types';
 import {DocumentPageIcon, CheckCircleIcon} from '../../../utils/Icons';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
+import {VerdocsDownloadDialogCustomEvent} from '../../../components';
 
 const ToolbarMinusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11 8C11.2761 8 11.5 8.22386 11.5 8.5C11.5 8.77614 11.2761 9 11 9H6C5.72386 9 5.5 8.77614 5.5 8.5C5.5 8.22386 5.72386 8 6 8H11ZM14 8.5C14 5.46243 11.5376 3 8.5 3C5.46243 3 3 5.46243 3 8.5C3 11.5376 5.46243 14 8.5 14C9.83879 14 11.0659 13.5217 12.0196 12.7266L16.1464 16.8536L16.2157 16.9114C16.4106 17.0464 16.68 17.0271 16.8536 16.8536C17.0488 16.6583 17.0488 16.3417 16.8536 16.1464L12.7266 12.0196C13.5217 11.0659 14 9.83879 14 8.5ZM4 8.5C4 6.01472 6.01472 4 8.5 4C10.9853 4 13 6.01472 13 8.5C13 10.9853 10.9853 13 8.5 13C6.01472 13 4 10.9853 4 8.5Z" fill="#424242" /></svg>`;
 const ToolbarPlusIcon = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 8.5C11.5 8.22386 11.2761 8 11 8H9V6C9 5.72386 8.77614 5.5 8.5 5.5C8.22386 5.5 8 5.72386 8 6V8H6C5.72386 8 5.5 8.22386 5.5 8.5C5.5 8.77614 5.72386 9 6 9H8V11C8 11.2761 8.22386 11.5 8.5 11.5C8.77614 11.5 9 11.2761 9 11V9H11C11.2761 9 11.5 8.77614 11.5 8.5ZM8.5 3C11.5376 3 14 5.46243 14 8.5C14 9.83879 13.5217 11.0659 12.7266 12.0196L16.8536 16.1464C17.0488 16.3417 17.0488 16.6583 16.8536 16.8536C16.68 17.0271 16.4106 17.0464 16.2157 16.9114L16.1464 16.8536L12.0196 12.7266C11.0659 13.5217 9.83879 14 8.5 14C5.46243 14 3 11.5376 3 8.5C3 5.46243 5.46243 3 8.5 3ZM8.5 4C6.01472 4 4 6.01472 4 8.5C4 10.9853 6.01472 13 8.5 13C10.9853 13 13 10.9853 13 8.5C13 6.01472 10.9853 4 8.5 4Z" fill="#424242" /></svg>`;
@@ -1060,6 +1061,55 @@ export class VerdocsSign {
       });
   }
 
+  async handleOnDownload(e: VerdocsDownloadDialogCustomEvent<IDownloadEvent>) {
+    const {action, documentId} = e.detail;
+    console.log('[SIGN] Download action selected:', action, documentId);
+
+    try {
+      switch (action) {
+        case TDownloadAction.certificate:
+          const cert = this.envelope.documents.find(d => d.type === 'certificate');
+          if (cert) {
+            const url = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
+            window.open(url, '_blank');
+          } else {
+            VerdocsToast('Certificate not yet available.', {style: 'info'});
+          }
+          break;
+        case TDownloadAction.combined:
+          // @ts-expect-error - TODO: Delete this line once JS-SDK release is pushed
+          const combinedDocumentId = documentId || this.envelope.documents.find(doc => doc.type === 'combined')?.id;
+          const combinedDocumentUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, combinedDocumentId);
+          window.open(combinedDocumentUrl, '_blank');
+          break;
+        case TDownloadAction.document:
+          const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
+          if (targetDocId) {
+            const url = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
+            window.open(url, '_blank');
+          }
+          break;
+        case TDownloadAction.zip:
+          // The helper in verdocs-view used getEnvelopesZip with an array
+          const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
+          const url = window.URL.createObjectURL(blob.data);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${this.envelope.name}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+          break;
+        default:
+          break;
+      }
+    } catch (err) {
+      console.error('Download error', err);
+      VerdocsToast('Unable to complete download request.', {style: 'error'});
+    }
+  }
+
   render() {
     if (this.showLoadError) {
       return (
@@ -1366,7 +1416,7 @@ export class VerdocsSign {
 
     return (
       <Host>
-        {this.toolbarStyle === 'menu' && (
+        {this.toolbarStyle === 'controls' && (
           <div id="verdocs-sign-header">
             <div class="inner">
               <div class="title">{this.envelope.name}</div>
@@ -1588,43 +1638,7 @@ export class VerdocsSign {
               this.showDownloadDialog = false;
               this.stopPolling();
             }}
-            onDownload={async e => {
-              const {action, documentId} = e.detail as any;
-              console.log('[SIGN] Download action selected:', action, documentId);
-
-              try {
-                if (action === 'document') {
-                  // Download main document(s)
-                  const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
-                  if (targetDocId) {
-                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
-                    window.open(url, '_blank');
-                  }
-                } else if (action === 'certificate') {
-                  const cert = this.envelope.documents.find(d => d.type === 'certificate');
-                  if (cert) {
-                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
-                    window.open(url, '_blank');
-                  } else {
-                    VerdocsToast('Certificate not yet available.', {style: 'info'});
-                  }
-                } else if (action === 'zip') {
-                  // The helper in verdocs-view used getEnvelopesZip with an array
-                  const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
-                  const url = window.URL.createObjectURL(blob.data);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `${this.envelope.name}.zip`;
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
-                  window.URL.revokeObjectURL(url);
-                }
-              } catch (err) {
-                console.error('Download error', err);
-                VerdocsToast('Unable to complete download request.', {style: 'error'});
-              }
-            }}
+            onDownload={this.handleOnDownload}
           />
         )}
 

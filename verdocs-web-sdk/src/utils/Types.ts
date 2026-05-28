@@ -20,5 +20,19 @@ export interface IPageLayer {
 
 export const FORMAT_TIMESTAMP = 'P pp';
 // export const FORMAT_TIMESTAMP = 'Y-MM-dd hh:mm:ss a';
-export const FORMAT_DATE = 'P'
+export const FORMAT_DATE = 'P';
 // export const FORMAT_DATE = 'y-MM-dd'
+
+export const TDownloadAction = {
+  document: 'document',
+  certificate: 'certificate',
+  zip: 'zip',
+  combined: 'combined',
+} as const;
+
+export type TDownloadAction = (typeof TDownloadAction)[keyof typeof TDownloadAction];
+
+export interface IDownloadEvent {
+  action: TDownloadAction;
+  documentId?: string;
+}
