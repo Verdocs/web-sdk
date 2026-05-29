@@ -324,8 +324,8 @@ export class VerdocsView {
           window.open(certificateUrl, '_blank');
           break;
         case TDownloadAction.combined:
-          // @ts-expect-error - TODO: Delete this line once JS-SDK release is pushed
-          const combinedDocumentId = documentId || this.envelope.documents.find(doc => doc.type === 'combined')?.id;
+          // The certificate & combined doc use the same envelopeDocument.id in their filename.
+          const combinedDocumentId = documentId || this.envelope.documents.find(doc => doc.type === 'certificate')?.id;
           const combinedDocumentUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, combinedDocumentId);
           window.open(combinedDocumentUrl, '_blank');
           break;

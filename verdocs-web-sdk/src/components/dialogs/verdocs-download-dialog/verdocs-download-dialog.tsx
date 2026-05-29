@@ -47,7 +47,7 @@ export class VerdocsDownloadDialog {
   @Prop() hasCertificate = false;
 
   handleOptionClick(action: TDownloadAction, documentId?: string) {
-    const hasCert = this.documents.some(d => d.type === TDownloadAction.certificate) || this.hasCertificate;
+    const hasCert = this.documents.some(d => d.type === 'certificate') || this.hasCertificate;
     const isCertReady = this.signed && hasCert;
     const isCertificateDisabled = action === TDownloadAction.certificate && !isCertReady;
     const isZipDisabled = action === TDownloadAction.zip && (this.polling || !isCertReady);
@@ -59,10 +59,9 @@ export class VerdocsDownloadDialog {
 
   render() {
     const attachments = this.documents.filter(d => d.type === 'attachment').sort((a, b) => (a.order !== b.order ? a.order - b.order : a.created_at.localeCompare(b.created_at)));
-    const hasCertificateDoc = this.documents.some(d => d.type === TDownloadAction.certificate) || this.hasCertificate;
-    const hasCombinedDoc = this.documents.some(d => d.type === TDownloadAction.combined);
+    const hasCertificateDoc = this.documents.some(d => d.type === 'certificate') || this.hasCertificate;
     const certReady = this.signed && hasCertificateDoc;
-    const isCombinedReady = this.signed && hasCombinedDoc;
+    const isCombinedReady = this.signed && hasCertificateDoc;
     const allDone = !this.polling && certReady;
     const attachmentBusy = !this.signed;
 
