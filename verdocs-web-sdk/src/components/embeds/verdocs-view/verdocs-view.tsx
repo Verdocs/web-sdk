@@ -5,6 +5,7 @@ import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 import {VerdocsDownloadDialogCustomEvent} from '../../../components';
 import {IDownloadEvent, TDownloadAction} from '../../../utils/Types';
+import {parseCertificateDocuments} from '../../../utils/EnvelopeDocuments';
 
 /**
  * Render the documents attached to an envelope in read-only (view) mode. All documents are
@@ -227,9 +228,9 @@ export class VerdocsView {
       case 'download-certificate':
         // TODO: Multiple certificate support
         {
-          const firstCert = this.envelope.documents.find(doc => doc.type === 'certificate');
-          if (firstCert) {
-            const url = await getEnvelopeDocumentDownloadLink(this.endpoint, firstCert.id);
+          const {certificate} = parseCertificateDocuments(this.envelope.documents);
+          if (certificate) {
+            const url = await getEnvelopeDocumentDownloadLink(this.endpoint, certificate.id);
             window.open(url, '_blank');
           }
         }
@@ -253,7 +254,7 @@ export class VerdocsView {
     const checkPollingConditions = () => {
       // NOTE: Polling logic for finalizing envelope
       const isSigned = this.envelope?.status === 'complete' || !!this.envelope?.signed;
-      const hasCertificate = this.envelope?.documents?.some(d => d.type === 'certificate');
+      const {hasCertificate} = parseCertificateDocuments(this.envelope.documents);
       const allRecipientsSubmitted = this.envelope?.recipients?.every(r => r.status === 'submitted');
 
       if (isSigned && hasCertificate) return false;
@@ -314,18 +315,18 @@ export class VerdocsView {
     try {
       switch (action) {
         case TDownloadAction.certificate:
-          const cert = this.envelope.documents.find(d => d.type === 'certificate');
-          if (!cert) {
+          const {certificate} = parseCertificateDocuments(this.envelope.documents);
+          if (!certificate) {
             VerdocsToast('Certificate not yet available.', {style: 'info'});
             break;
           }
 
-          const certificateUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
+          const certificateUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, certificate.id);
           window.open(certificateUrl, '_blank');
           break;
         case TDownloadAction.combined:
-          // @ts-expect-error - TODO: Delete this line once JS-SDK release is pushed
-          const combinedDocumentId = documentId || this.envelope.documents.find(doc => doc.type === 'combined')?.id;
+          const {combined} = parseCertificateDocuments(this.envelope.documents);
+          const combinedDocumentId = documentId || combined?.id;
           const combinedDocumentUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, combinedDocumentId);
           window.open(combinedDocumentUrl, '_blank');
           break;
