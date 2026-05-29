@@ -4,7 +4,7 @@ import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 import {VerdocsDownloadDialogCustomEvent} from '../../../components';
-import {IDownloadEvent, TDownloadAction} from '../../../utils/Types';
+import {IDownloadEvent, DownloadAction} from '../../../utils/Types';
 
 /**
  * Render the documents attached to an envelope in read-only (view) mode. All documents are
@@ -313,7 +313,7 @@ export class VerdocsView {
 
     try {
       switch (action) {
-        case TDownloadAction.certificate:
+        case DownloadAction.certificate:
           const cert = this.envelope.documents.find(d => d.type === 'certificate');
           if (!cert) {
             VerdocsToast('Certificate not yet available.', {style: 'info'});
@@ -323,20 +323,20 @@ export class VerdocsView {
           const certificateUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
           window.open(certificateUrl, '_blank');
           break;
-        case TDownloadAction.combined:
+        case DownloadAction.combined:
           // The certificate & combined doc use the same envelopeDocument.id in their filename.
           const combinedDocumentId = documentId || this.envelope.documents.find(doc => doc.type === 'certificate')?.id;
           const combinedDocumentUrl = await getCombinedEnvelopeDocumentDownloadLink(this.endpoint, combinedDocumentId);
           window.open(combinedDocumentUrl, '_blank');
           break;
-        case TDownloadAction.document:
+        case DownloadAction.document:
           const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
           if (!targetDocId) break;
 
           const documentUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
           window.open(documentUrl, '_blank');
           break;
-        case TDownloadAction.zip:
+        case DownloadAction.zip:
           const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
           const url = window.URL.createObjectURL(blob.data);
           const a = document.createElement('a');

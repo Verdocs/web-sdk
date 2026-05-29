@@ -23,16 +23,16 @@ export const FORMAT_TIMESTAMP = 'P pp';
 export const FORMAT_DATE = 'P';
 // export const FORMAT_DATE = 'y-MM-dd'
 
-export const TDownloadAction = {
+export const DownloadAction = {
   document: 'document',
   certificate: 'certificate',
   zip: 'zip',
   combined: 'combined',
 } as const;
 
-export type TDownloadAction = (typeof TDownloadAction)[keyof typeof TDownloadAction];
+export type DownloadAction = (typeof DownloadAction)[keyof typeof DownloadAction];
 
 export interface IDownloadEvent {
-  action: TDownloadAction;
+  action: DownloadAction;
   documentId?: string;
 }

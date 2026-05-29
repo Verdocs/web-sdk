@@ -6,7 +6,7 @@ import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, del
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
-import {IDocumentPageInfo, IDownloadEvent, TDownloadAction} from '../../../utils/Types';
+import {IDocumentPageInfo, IDownloadEvent, DownloadAction} from '../../../utils/Types';
 import {DocumentPageIcon, CheckCircleIcon} from '../../../utils/Icons';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -1067,7 +1067,7 @@ export class VerdocsSign {
 
     try {
       switch (action) {
-        case TDownloadAction.certificate:
+        case DownloadAction.certificate:
           const cert = this.envelope.documents.find(d => d.type === 'certificate');
           if (cert) {
             const url = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
@@ -1076,20 +1076,20 @@ export class VerdocsSign {
             VerdocsToast('Certificate not yet available.', {style: 'info'});
           }
           break;
-        case TDownloadAction.combined:
+        case DownloadAction.combined:
           // The certificate & combined doc use the same envelopeDocument.id in their filename.
           const combinedDocumentId = documentId || this.envelope.documents.find(doc => doc.type === 'certificate')?.id;
           const combinedDocumentUrl = await getCombinedEnvelopeDocumentDownloadLink(this.endpoint, combinedDocumentId);
           window.open(combinedDocumentUrl, '_blank');
           break;
-        case TDownloadAction.document:
+        case DownloadAction.document:
           const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
           if (targetDocId) {
             const url = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
             window.open(url, '_blank');
           }
           break;
-        case TDownloadAction.zip:
+        case DownloadAction.zip:
           // The helper in verdocs-view used getEnvelopesZip with an array
           const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
           const url = window.URL.createObjectURL(blob.data);
