@@ -1,6 +1,5 @@
 import {Component, h, Event, EventEmitter, Prop} from '@stencil/core';
 import {TDownloadAction} from '../../../utils/Types';
-import {parseCertificateDocuments} from '../../../utils/EnvelopeDocuments';
 
 const DocumentIcon = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V9L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 2V9H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const CertificateIcon = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 15C15.866 15 19 11.866 19 8C19 4.13401 15.866 1 12 1C8.13401 1 5 4.13401 5 8C5 11.866 8.13401 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.21 13.89L7 23L12 20L17 23L15.79 13.88" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -48,12 +47,11 @@ export class VerdocsDownloadDialog {
   @Prop() hasCertificate = false;
 
   handleOptionClick(action: TDownloadAction, documentId?: string) {
-    const {hasCertificate, hasCombined} = parseCertificateDocuments(this.documents);
-    const hasCert = hasCertificate || this.hasCertificate;
+    const hasCert = this.documents.some(d => d.type === TDownloadAction.certificate) || this.hasCertificate;
     const isCertReady = this.signed && hasCert;
     const isCertificateDisabled = action === TDownloadAction.certificate && !isCertReady;
     const isZipDisabled = action === TDownloadAction.zip && (this.polling || !isCertReady);
-    const isCombinedDisabled = action === TDownloadAction.combined && !hasCombined;
+    const isCombinedDisabled = action === TDownloadAction.combined && !isCertReady;
 
     if (isCertificateDisabled || isZipDisabled || isCombinedDisabled) return;
     this.download.emit({action, documentId});
@@ -61,10 +59,10 @@ export class VerdocsDownloadDialog {
 
   render() {
     const attachments = this.documents.filter(d => d.type === 'attachment').sort((a, b) => (a.order !== b.order ? a.order - b.order : a.created_at.localeCompare(b.created_at)));
-    const {hasCertificate, hasCombined} = parseCertificateDocuments(this.documents);
-    const hasCertificateDoc = hasCertificate || this.hasCertificate;
+    const hasCertificateDoc = this.documents.some(d => d.type === TDownloadAction.certificate) || this.hasCertificate;
+    const hasCombinedDoc = this.documents.some(d => d.type === TDownloadAction.combined);
     const certReady = this.signed && hasCertificateDoc;
-    const isCombinedReady = this.signed && hasCombined;
+    const isCombinedReady = this.signed && hasCombinedDoc;
     const allDone = !this.polling && certReady;
     const attachmentBusy = !this.signed;
 
