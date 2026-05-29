@@ -326,7 +326,7 @@ export class VerdocsView {
         case TDownloadAction.combined:
           // The certificate & combined doc use the same envelopeDocument.id in their filename.
           const combinedDocumentId = documentId || this.envelope.documents.find(doc => doc.type === 'certificate')?.id;
-          const combinedDocumentUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, combinedDocumentId);
+          const combinedDocumentUrl = await getCombinedEnvelopeDocumentDownloadLink(this.endpoint, combinedDocumentId);
           window.open(combinedDocumentUrl, '_blank');
           break;
         case TDownloadAction.document:
