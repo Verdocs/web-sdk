@@ -1387,11 +1387,11 @@ export class VerdocsSign {
                     <span class="remaining-count">
                       <span class="check-icon" innerHTML={CheckCircleIcon} />
                       All required fields complete
-                      {optionalLeft > 0 && <span class="separator">|</span>}
                       {optionalLeft > 0 && (
-                        <span class="review-optional" onClick={() => this.handleNextOptional()}>
-                          Review {optionalLeft} optional
-                        </span>
+                        <div class="review-optional">
+                          <span class="separator">| </span>
+                          <span onClick={() => this.handleNextOptional()}>Review {optionalLeft} optional</span>
+                        </div>
                       )}
                     </span>
                   );
@@ -1406,8 +1406,16 @@ export class VerdocsSign {
                 />
               )}
 
-              <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
-              <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
+              <div
+                class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal', 'magnify': true}}
+                innerHTML={ToolbarMinusIcon}
+                onClick={() => this.handleZoomOut()}
+              />
+              <div
+                class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2', 'magnify': true}}
+                innerHTML={ToolbarPlusIcon}
+                onClick={() => this.handleZoomIn()}
+              />
 
               <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
             </div>

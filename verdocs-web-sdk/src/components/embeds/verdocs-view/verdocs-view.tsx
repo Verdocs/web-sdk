@@ -1,4 +1,4 @@
-import {cancelEnvelope, getEnvelopeDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, userCanCancelEnvelope, VerdocsEndpoint, getEnvelopesZip} from '@verdocs/js-sdk';
+import {cancelEnvelope, getEnvelopeDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, VerdocsEndpoint, getEnvelopesZip, getMyRecipient} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -341,8 +341,12 @@ export class VerdocsView {
       );
     }
 
-    // TODO: Review whether we want a different trigger for this.
-    const showFooter = userCanCancelEnvelope(this.endpoint.profile, this.envelope);
+    /**
+     * Conditions for showing footer:
+     * 1.) The session user must be an envelope's recipient.
+     * 2.) The envelope's status does NOT matter.
+     */
+    const showFooter = getMyRecipient(this.endpoint.session, this.envelope);
 
     return (
       <Host>
@@ -455,7 +459,7 @@ export class VerdocsView {
           />
         )}
 
-        {!showFooter && (
+        {!!showFooter && (
           <verdocs-sign-footer endpoint={this.endpoint} envelopeId={this.envelopeId} isDone={true} onAskQuestion={() => {}} onDecline={() => {}} onFinishLater={() => {}} />
         )}
       </Host>

@@ -306,6 +306,10 @@ verdocs-sign {
     white-space: nowrap;
     padding: 0 10px 0 0;
     text-overflow: ellipsis;
+
+    @media(max-width: $screen-mobile-lg){
+      font-size: 14px;
+    }
   }
 
   .remaining-count {
@@ -340,6 +344,14 @@ verdocs-sign {
       &:hover {
         color: $verdocs-green-highlight;
       }
+
+      @media(max-width: $screen-mobile-lg){
+        display: none;
+      }
+    }
+
+    @media(max-width: $screen-mobile-lg){
+      font-size: 12px;
     }
   }
 
@@ -370,6 +382,12 @@ verdocs-sign {
     // .inner has a 10px column-gap; pulling adjacent icons closer gives a grouped feel.
     & + .icon-button {
       margin-left: -6px;
+    }
+
+    &.magnify {
+      @media(max-width: $screen-mobile-lg){
+        display: none
+      }
     }
   }
 }
