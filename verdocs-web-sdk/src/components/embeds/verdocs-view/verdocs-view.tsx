@@ -1,3 +1,4 @@
+import {getCombinedEnvelopeDocumentDownloadLink} from '@verdocs/js-sdk';
 import {cancelEnvelope, getEnvelopeDocumentDownloadLink, getEnvelope, IEnvelope, integerSequence, VerdocsEndpoint, getEnvelopesZip, getMyRecipient} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State} from '@stencil/core';
 import {VerdocsToast} from '../../../utils/Toast';
