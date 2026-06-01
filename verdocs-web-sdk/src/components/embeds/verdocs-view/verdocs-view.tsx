@@ -3,6 +3,8 @@ import {Component, h, Element, Event, Host, Prop, EventEmitter, Fragment, State}
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
+import {VerdocsDownloadDialogCustomEvent} from '../../../components';
+import {IDownloadEvent, DownloadAction} from '../../../utils/Types';
 
 /**
  * Render the documents attached to an envelope in read-only (view) mode. All documents are
@@ -305,6 +307,55 @@ export class VerdocsView {
     }
   }
 
+  async handleDownloadDocuments(e: VerdocsDownloadDialogCustomEvent<IDownloadEvent>) {
+    const {action, documentId} = e.detail;
+    console.log('[VIEW] Download action selected:', action, documentId);
+
+    try {
+      switch (action) {
+        case DownloadAction.certificate:
+          const cert = this.envelope.documents.find(d => d.type === 'certificate');
+          if (!cert) {
+            VerdocsToast('Certificate not yet available.', {style: 'info'});
+            break;
+          }
+
+          const certificateUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
+          window.open(certificateUrl, '_blank');
+          break;
+        case DownloadAction.combined:
+          // The certificate & combined doc use the same envelopeDocument.id in their filename.
+          const combinedDocumentId = documentId || this.envelope.documents.find(doc => doc.type === 'certificate')?.id;
+          const combinedDocumentUrl = await getCombinedEnvelopeDocumentDownloadLink(this.endpoint, combinedDocumentId);
+          window.open(combinedDocumentUrl, '_blank');
+          break;
+        case DownloadAction.document:
+          const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
+          if (!targetDocId) break;
+
+          const documentUrl = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
+          window.open(documentUrl, '_blank');
+          break;
+        case DownloadAction.zip:
+          const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
+          const url = window.URL.createObjectURL(blob.data);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${this.envelope.name}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+          break;
+        default:
+          break;
+      }
+    } catch (err) {
+      console.error('Download error', err);
+      VerdocsToast('Unable to complete download request.', {style: 'error'});
+    }
+  }
+
   render() {
     if (this.loading) {
       return (
@@ -421,41 +472,7 @@ export class VerdocsView {
               this.showDownloadDialog = false;
               this.stopPolling();
             }}
-            onDownload={async e => {
-              const {action, documentId} = e.detail as any;
-              console.log('[VIEW] Download action selected:', action, documentId);
-
-              try {
-                if (action === 'document') {
-                  const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
-                  if (targetDocId) {
-                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
-                    window.open(url, '_blank');
-                  }
-                } else if (action === 'certificate') {
-                  const cert = this.envelope.documents.find(d => d.type === 'certificate');
-                  if (cert) {
-                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
-                    window.open(url, '_blank');
-                  } else {
-                    VerdocsToast('Certificate not yet available.', {style: 'info'});
-                  }
-                } else if (action === 'zip') {
-                  const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
-                  const url = window.URL.createObjectURL(blob.data);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `${this.envelope.name}.zip`;
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
-                  window.URL.revokeObjectURL(url);
-                }
-              } catch (err) {
-                console.error('Download error', err);
-                VerdocsToast('Unable to complete download request.', {style: 'error'});
-              }
-            }}
+            onDownload={this.handleDownloadDocuments}
           />
         )}
 
