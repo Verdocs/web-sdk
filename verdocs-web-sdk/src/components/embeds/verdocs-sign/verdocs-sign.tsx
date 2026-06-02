@@ -200,8 +200,8 @@ export class VerdocsSign {
     this.stopPolling();
     this.observer?.disconnect();
     window.removeEventListener('resize', () => this.updateZoomFromWindow());
-    // Remove any org-level style overrides we injected into the document head.
     document.getElementById(this.getOrgStyleOverridesId())?.remove();
+    document.getElementById(this.getBrandStyleOverridesId())?.remove();
   }
 
   updateZoomFromWindow() {
@@ -251,6 +251,10 @@ export class VerdocsSign {
     return `verdocs-org-style-overrides-${this.envelopeId}`;
   }
 
+  private getBrandStyleOverridesId() {
+    return `verdocs-brand-style-overrides-${this.envelopeId}`;
+  }
+
   // Injects a <style> tag into the document head containing any CSS overrides defined on the
   // envelope's organization. This allows the organization to apply custom styling to the signing
   // UI without rebuilding the SDK.
@@ -272,8 +276,25 @@ export class VerdocsSign {
     }
   }
 
+  applyBrandStyleOverrides(brand?: Record<string, any> | null) {
+    const styleId = this.getBrandStyleOverridesId();
+    const existing = document.getElementById(styleId);
+    const overrides = brand?.style_overrides;
+
+    if (typeof overrides === 'string' && overrides.length > 0) {
+      const styleEl = (existing as HTMLStyleElement) || document.createElement('style');
+      styleEl.id = styleId;
+      styleEl.textContent = overrides;
+      if (!existing) {
+        document.head.appendChild(styleEl);
+      }
+    } else if (existing) {
+      existing.remove();
+    }
+  }
+
   processAuthResponse(response: ISignerTokenResponse) {
-    const {envelope, recipient} = response;
+    const {envelope, recipient, brand} = response;
 
     envelope.documents?.sort((a, b) => (a.order !== b.order ? a.order - b.order : a.created_at.localeCompare(b.created_at)));
 
@@ -282,6 +303,7 @@ export class VerdocsSign {
     this.envelope = envelope;
     this.disclosures = this.envelope?.organization?.disclaimer || DEFAULT_DISCLOSURES;
     this.applyOrgStyleOverrides();
+    this.applyBrandStyleOverrides(brand);
     this.authStep = auth_step;
     this.delegated = !!recipient.delegated_to;
     this.agreed = recipient.agreed;
