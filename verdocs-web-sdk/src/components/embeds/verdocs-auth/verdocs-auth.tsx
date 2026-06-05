@@ -167,6 +167,7 @@ export class VerdocsAuth {
     this.submitting = true;
     this.tempAuthEndpoint.clearSession();
     const formattedPhone = convertToE164(this.phone);
+    const localeData = Intl.DateTimeFormat().resolvedOptions();
 
     createProfile(this.tempAuthEndpoint, {
       email: this.email,
@@ -175,6 +176,11 @@ export class VerdocsAuth {
       last_name: this.last_name,
       org_name: this.org_name,
       phone: formattedPhone,
+      // @ts-expect-error - v6.9.11
+      localeData: {
+        timezone: localeData.timeZone,
+        locale: localeData.locale,
+      },
     })
       .then(r => {
         console.log('[AUTH] Profile creation result', r);

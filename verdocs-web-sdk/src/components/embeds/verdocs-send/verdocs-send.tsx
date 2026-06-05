@@ -266,6 +266,7 @@ export class VerdocsSend {
     e.stopPropagation();
 
     this.sending = true;
+    const localeData = Intl.DateTimeFormat().resolvedOptions();
 
     const details: ICreateEnvelopeFromTemplateRequest = {
       template_id: this.templateId,
@@ -274,6 +275,11 @@ export class VerdocsSend {
       initial_reminder: 0,
       followup_reminders: 0,
       recipients: Object.values(this.rolesCompleted) as ICreateEnvelopeRecipientFromTemplate[],
+      // @ts-expect-error - v6.9.11
+      localeData: {
+        locale: localeData.locale,
+        timezone: localeData.timeZone,
+      },
     };
 
     const beforeSendResult = this.beforeSend.emit({...details, name: details.name!, template: this.template});

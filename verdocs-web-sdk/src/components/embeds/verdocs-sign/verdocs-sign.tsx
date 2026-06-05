@@ -488,9 +488,12 @@ export class VerdocsSign {
     if (field?.readonly) {
       return;
     }
+    const localeData = Intl.DateTimeFormat().resolvedOptions();
+    const data = {localeData: {locale: localeData.locale, timezone: localeData.timeZone}};
 
     console.log('[SIGN] saveFieldChange', fieldName, {value, prepared});
-    updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldName, value, prepared)
+    // @ts-expect-error - v6.9.11
+    updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldName, value, prepared, data)
       .then(updateResult => this.updateRecipientFieldValue(fieldName, updateResult))
       .catch(e => {
         if (e.response?.status === 401 && e.response?.data?.error === 'jwt expired') {
@@ -511,6 +514,8 @@ export class VerdocsSign {
       return;
     }
 
+    const localeData = Intl.DateTimeFormat().resolvedOptions();
+    const data = {localeData: {locale: localeData.locale, timezone: localeData.timeZone}};
     const {value, checked} = e.target;
 
     switch (field.type as any) {
@@ -543,21 +548,24 @@ export class VerdocsSign {
 
         if (e.detail === null) {
           console.log('[SIGN] Clearing initial');
-          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, null, false);
+          // @ts-expect-error - v6.9.11
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, null, false, data);
           return this.updateRecipientFieldValue(field.name, updateResult);
         }
 
         // If we already have an initials block, apply it
         if (this.initialId) {
           console.log('[SIGN] Reusing initial', this.initialId);
-          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, this.initialId, false);
+          // @ts-expect-error - v6.9.11
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, this.initialId, false, data);
           return this.updateRecipientFieldValue(field.name, updateResult);
         }
 
         // If it's a UUID, it's an existing initial ID we can just reuse
         if (typeof e.detail === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.detail)) {
           console.log('[SIGN] Reusing initial', e.detail);
-          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, e.detail, false);
+          // @ts-expect-error - v6.9.11
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, e.detail, false, data);
           this.initialId = e.detail;
           return this.updateRecipientFieldValue(field.name, updateResult);
         }
@@ -566,7 +574,8 @@ export class VerdocsSign {
         const initialsBlob = await (await fetch(e.detail)).blob();
         return createInitials(this.endpoint, 'initial', initialsBlob) //
           .then(async newInitials => {
-            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newInitials.id, false);
+            // @ts-expect-error - v6.9.11
+            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newInitials.id, false, data);
             this.updateRecipientFieldValue(field.name, updateResult);
             this.initialId = newInitials.id;
             this.showSpinner = false;
@@ -588,21 +597,24 @@ export class VerdocsSign {
 
         if (e.detail === null) {
           console.log('[SIGN] Clearing signature');
-          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, null, false);
+          // @ts-expect-error - v6.9.11
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, null, false, data);
           return this.updateRecipientFieldValue(field.name, updateResult);
         }
 
         // If we already have a signature block, apply it
         if (this.signatureId) {
           console.log('[SIGN] Reusing signature', this.signatureId);
-          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, this.signatureId, false);
+          // @ts-expect-error - v6.9.11
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, this.signatureId, false, data);
           return this.updateRecipientFieldValue(field.name, updateResult);
         }
 
         // If it's a UUID, it's an existing signature ID we can just reuse
         if (typeof e.detail === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(e.detail)) {
           console.log('[SIGN] Reusing signature', e.detail);
-          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, e.detail, false);
+          // @ts-expect-error - v6.9.11
+          const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, e.detail, false, data);
           this.signatureId = e.detail;
           return this.updateRecipientFieldValue(field.name, updateResult);
         }
@@ -613,7 +625,8 @@ export class VerdocsSign {
         return createSignature(this.endpoint, 'signature', signatureBlob) //
           .then(async newSignature => {
             console.log('Signature update result', newSignature);
-            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newSignature.id, false);
+            // @ts-expect-error - v6.9.11
+            const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, field.name, newSignature.id, false, data);
             this.updateRecipientFieldValue(field.name, updateResult);
             this.signatureId = newSignature.id;
             this.showSpinner = false;
@@ -1605,7 +1618,8 @@ export class VerdocsSign {
                 if (fieldObj) {
                   const id = fieldObj.type === 'signature' ? this.signatureId : fieldObj.type === 'initial' ? this.initialId : null;
                   if (id) {
-                    const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldObj.name, id, false);
+                    // @ts-expect-error - v6.9.11
+                    const updateResult = await updateEnvelopeField(this.endpoint, this.envelopeId, this.roleId, fieldObj.name, id, false, data);
                     this.updateRecipientFieldValue(fieldObj.name, updateResult);
                   }
                 }
