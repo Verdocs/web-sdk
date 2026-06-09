@@ -176,7 +176,6 @@ export class VerdocsAuth {
       last_name: this.last_name,
       org_name: this.org_name,
       phone: formattedPhone,
-      // @ts-expect-error - v6.9.11
       localeData: {
         timezone: localeData.timeZone,
         locale: localeData.locale,

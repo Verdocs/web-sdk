@@ -329,7 +329,6 @@ export class VerdocsSign {
     console.log('[SIGN] Accepting disclosures', this.disclosures);
     const localeData = Intl.DateTimeFormat().resolvedOptions();
     const data = {localeData: {locale: localeData.locale, timezone: localeData.timeZone}};
-    // @ts-expect-error - v6.9.11
     envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, this.disclosures, data)
       .then(() => {
         this.nextButtonLabel = 'Next';
@@ -666,7 +665,6 @@ export class VerdocsSign {
         this.submitting = true;
         const localeData = Intl.DateTimeFormat().resolvedOptions();
         const data = {localeData: {locale: localeData.locale, timezone: localeData.timeZone}};
-        // @ts-expect-error - v6.9.11
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId, data);
         console.log('[SIGN] Submitted successfully', result);
         // TODO: The "proper" way is generating an error from Stencil
