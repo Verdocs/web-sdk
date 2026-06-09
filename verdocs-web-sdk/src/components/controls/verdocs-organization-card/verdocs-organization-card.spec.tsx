@@ -16,6 +16,9 @@ describe('verdocs-organization-card', () => {
     thumbnail_url: '',
     full_logo_url: '',
     created_at: '2021-01-01T00:00:00Z',
+    locale: 'en-US',
+    timezone: 'America/New_York',
+    deletion_protected: true,
   };
 
   it('renders with minimal organization data', async () => {
@@ -54,6 +57,9 @@ describe('verdocs-organization-card', () => {
       thumbnail_url: '',
       full_logo_url: '',
       created_at: '2022-02-02T00:00:00Z',
+      timezone: null,
+      locale: null,
+      deletion_protected: true,
     };
     const page = await newSpecPage({
       components: [VerdocsOrganizationCard],
