@@ -350,8 +350,8 @@ export class VerdocsSign {
     this.submitting = true;
     console.log('[SIGN] Accepting disclosures', this.disclosures);
     const localeData = Intl.DateTimeFormat().resolvedOptions();
-    const data = {localeData: {locale: localeData.locale, timezone: localeData.timeZone}};
-    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, this.disclosures, data)
+    // @ts-expect-error - v6.9.13
+    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, this.disclosures, {locale: localeData.locale, timezone: localeData.timeZone})
       .then(() => {
         this.nextButtonLabel = 'Next';
         this.recipient.agreed = true;
@@ -686,8 +686,8 @@ export class VerdocsSign {
 
         this.submitting = true;
         const localeData = Intl.DateTimeFormat().resolvedOptions();
-        const data = {localeData: {locale: localeData.locale, timezone: localeData.timeZone}};
-        const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId, data);
+        // @ts-expect-error - v6.9.13
+        const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId, {locale: localeData.locale, timezone: localeData.timeZone});
         console.log('[SIGN] Submitted successfully', result);
         // TODO: The "proper" way is generating an error from Stencil
         //  NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which

@@ -176,10 +176,9 @@ export class VerdocsAuth {
       last_name: this.last_name,
       org_name: this.org_name,
       phone: formattedPhone,
-      localeData: {
-        timezone: localeData.timeZone,
-        locale: localeData.locale,
-      },
+      // @ts-expect-error - v6.9.13
+      timezone: localeData.timeZone,
+      locale: localeData.locale,
     })
       .then(r => {
         console.log('[AUTH] Profile creation result', r);
