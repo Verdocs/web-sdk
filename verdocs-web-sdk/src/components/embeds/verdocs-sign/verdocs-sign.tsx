@@ -350,8 +350,8 @@ export class VerdocsSign {
     this.submitting = true;
     console.log('[SIGN] Accepting disclosures', this.disclosures);
     const localeData = Intl.DateTimeFormat().resolvedOptions();
-    const data = {localeData: {locale: localeData.locale, timezone: localeData.timeZone}};
-    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, this.disclosures, data)
+    // @ts-expect-error - v6.9.13
+    envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, this.disclosures, {locale: localeData.locale, timezone: localeData.timeZone})
       .then(() => {
         this.nextButtonLabel = 'Next';
         this.recipient.agreed = true;
@@ -686,8 +686,8 @@ export class VerdocsSign {
 
         this.submitting = true;
         const localeData = Intl.DateTimeFormat().resolvedOptions();
-        const data = {localeData: {locale: localeData.locale, timezone: localeData.timeZone}};
-        const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId, data);
+        // @ts-expect-error - v6.9.13
+        const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId, {locale: localeData.locale, timezone: localeData.timeZone});
         console.log('[SIGN] Submitted successfully', result);
         // TODO: The "proper" way is generating an error from Stencil
         //  NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which
@@ -1669,7 +1669,43 @@ export class VerdocsSign {
               this.showDownloadDialog = false;
               this.stopPolling();
             }}
-            onDownload={this.handleOnDownload}
+            onDownload={async e => {
+              const {action, documentId} = e.detail as any;
+              console.log('[SIGN] Download action selected:', action, documentId);
+
+              try {
+                if (action === 'document') {
+                  // Download main document(s)
+                  const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
+                  if (targetDocId) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
+                    window.open(url, '_blank');
+                  }
+                } else if (action === 'certificate') {
+                  const cert = this.envelope.documents.find(d => d.type === 'certificate');
+                  if (cert) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
+                    window.open(url, '_blank');
+                  } else {
+                    VerdocsToast('Certificate not yet available.', {style: 'info'});
+                  }
+                } else if (action === 'zip') {
+                  // The helper in verdocs-view used getEnvelopesZip with an array
+                  const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
+                  const url = window.URL.createObjectURL(blob.data);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${this.envelope.name}.zip`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  window.URL.revokeObjectURL(url);
+                }
+              } catch (err) {
+                console.error('Download error', err);
+                VerdocsToast('Unable to complete download request.', {style: 'error'});
+              }
+            }}
           />
         )}
 

@@ -51,7 +51,7 @@ export class VerdocsDownloadDialog {
     const isCertReady = this.signed && hasCert;
     const isCertificateDisabled = action === DownloadAction.certificate && !isCertReady;
     const isZipDisabled = action === DownloadAction.zip && (this.polling || !isCertReady);
-    const isCombinedDisabled = action === DownloadAction.combined && !isCertReady;
+    const isCombinedDisabled = action === DownloadAction.combined && (this.polling || !isCertReady || !documentId);
 
     if (isCertificateDisabled || isZipDisabled || isCombinedDisabled) return;
     this.download.emit({action, documentId});
@@ -59,10 +59,11 @@ export class VerdocsDownloadDialog {
 
   render() {
     const attachments = this.documents.filter(d => d.type === 'attachment').sort((a, b) => (a.order !== b.order ? a.order - b.order : a.created_at.localeCompare(b.created_at)));
-    const hasCertificateDoc = this.documents.some(d => d.type === 'certificate') || this.hasCertificate;
+    const certificateDocument = this.documents.find(d => d.type === 'certificate');
+    const hasCertificateDoc = !!certificateDocument || this.hasCertificate;
     const certReady = this.signed && hasCertificateDoc;
-    const isCombinedReady = this.signed && hasCertificateDoc;
     const allDone = !this.polling && certReady;
+    // const isCombinedReady = allDone && !!certificateDocument?.id;
     const attachmentBusy = !this.signed;
 
     return (
@@ -117,9 +118,9 @@ export class VerdocsDownloadDialog {
             )}
           </div>
 
-          <div
+          {/* <div
             class={{'download-option': true, 'disabled': !isCombinedReady}}
-            onClick={() => this.handleOptionClick(DownloadAction.combined)}
+            onClick={() => this.handleOptionClick(DownloadAction.combined, certificateDocument?.id)}
             title={!isCombinedReady ? 'Waiting for all documents to be ready' : ''}
           >
             <div class="icon-container" innerHTML={ZipIcon}></div>
@@ -137,7 +138,7 @@ export class VerdocsDownloadDialog {
                 <div class="spinner-inline" innerHTML={RefreshIcon}></div>
               </div>
             )}
-          </div>
+          </div> */}
 
           <div
             class={{'download-option': true, 'disabled': !allDone}}

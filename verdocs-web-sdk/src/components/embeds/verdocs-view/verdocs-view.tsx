@@ -473,7 +473,41 @@ export class VerdocsView {
               this.showDownloadDialog = false;
               this.stopPolling();
             }}
-            onDownload={this.handleDownloadDocuments}
+            onDownload={async e => {
+              const {action, documentId} = e.detail as any;
+              console.log('[VIEW] Download action selected:', action, documentId);
+
+              try {
+                if (action === 'document') {
+                  const targetDocId = documentId || this.envelope.documents.find(d => d.type === 'attachment')?.id;
+                  if (targetDocId) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, targetDocId);
+                    window.open(url, '_blank');
+                  }
+                } else if (action === 'certificate') {
+                  const cert = this.envelope.documents.find(d => d.type === 'certificate');
+                  if (cert) {
+                    const url = await getEnvelopeDocumentDownloadLink(this.endpoint, cert.id);
+                    window.open(url, '_blank');
+                  } else {
+                    VerdocsToast('Certificate not yet available.', {style: 'info'});
+                  }
+                } else if (action === 'zip') {
+                  const blob = await getEnvelopesZip(this.endpoint, [this.envelopeId]);
+                  const url = window.URL.createObjectURL(blob.data);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${this.envelope.name}.zip`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  window.URL.revokeObjectURL(url);
+                }
+              } catch (err) {
+                console.error('Download error', err);
+                VerdocsToast('Unable to complete download request.', {style: 'error'});
+              }
+            }}
           />
         )}
 
