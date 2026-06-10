@@ -63,7 +63,7 @@ export class VerdocsDownloadDialog {
     const hasCertificateDoc = !!certificateDocument || this.hasCertificate;
     const certReady = this.signed && hasCertificateDoc;
     const allDone = !this.polling && certReady;
-    const isCombinedReady = allDone && !!certificateDocument?.id;
+    // const isCombinedReady = allDone && !!certificateDocument?.id;
     const attachmentBusy = !this.signed;
 
     return (
@@ -118,7 +118,7 @@ export class VerdocsDownloadDialog {
             )}
           </div>
 
-          <div
+          {/* <div
             class={{'download-option': true, 'disabled': !isCombinedReady}}
             onClick={() => this.handleOptionClick(DownloadAction.combined, certificateDocument?.id)}
             title={!isCombinedReady ? 'Waiting for all documents to be ready' : ''}
@@ -138,7 +138,7 @@ export class VerdocsDownloadDialog {
                 <div class="spinner-inline" innerHTML={RefreshIcon}></div>
               </div>
             )}
-          </div>
+          </div> */}
 
           <div
             class={{'download-option': true, 'disabled': !allDone}}
