@@ -23,7 +23,7 @@
     "copy-assets": "cp src/globals.css dist/ && cp src/overrides.css dist/ && cp src/globals.css ../verdocs-web-sdk-react/src/ && cp src/overrides.css ../verdocs-web-sdk-react/src/ && cp src/globals.css ../verdocs-web-sdk-angular/src/ && cp src/overrides.css ../verdocs-web-sdk-angular/src/ && cp src/globals.css ../verdocs-web-sdk-vue/lib/ && cp src/overrides.css ../verdocs-web-sdk-vue/lib/",
     "serve": "stencil build --dev --watch --serve",
     "start": "stencil build --dev --watch --docs",
-    "test": "stencil test --spec",
+    "test": "stencil test --spec --",
     "test-coverage": "stencil test --spec --coverage",
     "test-visualdiff": "stencil test -- src/components/controls/ --e2e --screenshot",
     "e2e-test": "stencil test --e2e",
