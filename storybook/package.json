@@ -14,8 +14,8 @@
     "@verdocs/js-sdk": "^6.9.12"
   },
   "devDependencies": {
-    "@verdocs/web-sdk": "6.9.11",
-    "@verdocs/web-sdk-react": "6.8.11",
+    "@verdocs/web-sdk": "6.9.13",
+    "@verdocs/web-sdk-react": "6.9.13",
     "@chromatic-com/storybook": "^5.0.1",
     "@storybook/addon-docs": "10.4.4",
     "@storybook/addon-links": "10.4.4",
