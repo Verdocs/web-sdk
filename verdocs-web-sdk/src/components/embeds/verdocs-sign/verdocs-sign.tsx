@@ -171,17 +171,77 @@ export class VerdocsSign {
     }
 
     try {
-      console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
-
-      // NOTE: We don't listen to the store here because we are often an independent
-      // session and might have a different "view" of the envelope.
-      const response = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
-      this.processAuthResponse(response);
+      await this.initSigningSession();
     } catch (e) {
       console.log('[SIGN] Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       this.showLoadError = true;
     }
+  }
+
+  async initSigningSession() {
+    console.log(`[SIGN] Processing invite code for ${this.envelopeId} / ${this.roleId}`);
+
+    // NOTE: We don't listen to the store here because we are often an independent
+    // session and might have a different "view" of the envelope.
+    const response = await startSigningSession(this.endpoint, this.envelopeId, this.roleId, this.inviteCode);
+    this.processAuthResponse(response);
+  }
+
+  async retrySigningSession() {
+    this.showLoadError = false;
+    this.loading = true;
+
+    try {
+      await this.initSigningSession();
+    } catch (e) {
+      console.log('[SIGN] Error with signing session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      this.showLoadError = true;
+      this.loading = false;
+    }
+  }
+
+  prepareForViewTransition() {
+    this.stopPolling();
+    this.observer?.disconnect();
+    this.observer = null;
+    document.getElementById('air-datepicker-global-container')?.remove();
+    document.getElementById('verdocs-sign-header')?.remove();
+  }
+
+  handleDoneDialogDismiss = async () => {
+    this.showDone = false;
+
+    if (!this.isDone) {
+      this.prepareForViewTransition();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      this.isDone = true;
+    }
+  };
+
+  async handleSubmitSuccess() {
+    this.submitting = false;
+    this.submitted = true;
+    this.nextSubmits = false;
+    this.signingProgressMode = 'completed';
+
+    try {
+      const envelope = await getEnvelope(this.endpoint, this.envelopeId);
+      this.envelope = envelope;
+      Store.updateEnvelope(this.envelopeId, envelope);
+
+      const updatedRecipient = envelope.recipients?.find(r => r.role_name === this.recipient?.role_name);
+      if (updatedRecipient) {
+        this.recipient = updatedRecipient;
+      }
+
+      this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope, event: 'submitted'});
+    } catch (e) {
+      console.warn('[SIGN] Error refreshing envelope after submit', e);
+    }
+
+    this.showDone = true;
   }
 
   componentDidRender() {
@@ -680,6 +740,10 @@ export class VerdocsSign {
 
   async handleNext() {
     if (this.nextSubmits) {
+      if (this.submitted) {
+        return;
+      }
+
       try {
         // Patches the date picker to be forcibly removed if still showing during submission
         document.getElementById('air-datepicker-global-container')?.remove();
@@ -689,10 +753,7 @@ export class VerdocsSign {
         // @ts-expect-error - v6.9.13
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId, {locale: localeData.locale, timezone: localeData.timeZone});
         console.log('[SIGN] Submitted successfully', result);
-        // TODO: The "proper" way is generating an error from Stencil
-        //  NotFoundError: Failed to execute 'insertBefore' on 'Node': The node before which
-        //  the new node is to be inserted is not a child of this node.
-        window.location.reload();
+        await this.handleSubmitSuccess();
       } catch (e) {
         console.log('[SIGN] Error submitting', e);
         this.submitting = false;
@@ -745,6 +806,10 @@ export class VerdocsSign {
 
   // See if everything that "needs to be" filled in is, and all "fillable fields" are valid
   checkRecipientFields() {
+    if (this.submitted || this.isDone) {
+      return;
+    }
+
     const invalidFields = this.getRecipientFields().filter(field => !isFieldValid(field, this.getRecipientFields()));
     if (invalidFields.length < 1) {
       this.nextButtonLabel = 'Finish';
@@ -1142,7 +1207,7 @@ export class VerdocsSign {
             message={`Sorry, your invite code is invalid or has expired. Please check your email for an updated invitation, or contact the sender.`}
             buttonLabel="OK"
             onNext={() => {
-              window.location.reload();
+              this.retrySigningSession();
             }}
           />
         </Host>
@@ -1195,8 +1260,7 @@ export class VerdocsSign {
               onNext={(e: any) => {
                 e.preventDefault();
                 e.stopPropagation();
-                this.showDone = false;
-                this.isDone = true;
+                this.handleDoneDialogDismiss();
               }}
             />
           )}
@@ -1264,7 +1328,9 @@ export class VerdocsSign {
               envelopeRecipientDecline(this.endpoint, this.envelopeId, this.roleId)
                 .then(r => {
                   console.log('[SIGN] Decline result', r);
-                  window.location.reload();
+                  this.declining = false;
+                  this.fatalErrorHeader = 'Declined';
+                  this.fatalErrorMessage = 'You have declined to sign this request. The sender has been notified.';
                 })
                 .catch(e => {
                   console.warn('[SIGN] Error declining signing session', e);
@@ -1445,7 +1511,7 @@ export class VerdocsSign {
               <div class="title">{this.envelope.name}</div>
               <div style={{flex: '1'}} />
 
-              {!this.finishLater &&
+              {!this.finishLater && !this.submitted &&
                 (() => {
                   const remaining = this.getRequiredTotalCount() - this.getRequiredFilledCount();
                   const optionalLeft = this.getOptionalUnfilledCount();
@@ -1470,11 +1536,11 @@ export class VerdocsSign {
                   );
                 })()}
 
-              {!this.finishLater && (
+              {!this.finishLater && !this.submitted && (
                 <verdocs-button
                   size="xsmall"
                   label={this.nextButtonLabel === 'Next' ? 'Next Required' : this.nextButtonLabel}
-                  disabled={!this.agreed || this.submitting}
+                  disabled={!this.agreed || this.submitting || this.submitted}
                   onClick={() => this.handleNext()}
                 />
               )}
@@ -1490,7 +1556,7 @@ export class VerdocsSign {
                 onClick={() => this.handleZoomIn()}
               />
 
-              <verdocs-dropdown options={!this.isDone && !this.finishLater ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
+              <verdocs-dropdown options={!this.isDone && !this.finishLater && !this.submitted ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
             </div>
           </div>
         )}
@@ -1508,7 +1574,9 @@ export class VerdocsSign {
               <span class="count">of {totalPages}</span>
             </div>
             <div class="right-controls">
-              <verdocs-button class="mobile-next-button" label={this.nextButtonLabel} size="xsmall" disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />
+              {!this.submitted && (
+                <verdocs-button class="mobile-next-button" label={this.nextButtonLabel} size="xsmall" disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />
+              )}
               <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
               <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
               <div class="icon-button download" innerHTML={ToolbarDownloadIcon} onClick={() => this.handleOptionSelected({detail: {id: 'download'}})} />
@@ -1593,8 +1661,7 @@ export class VerdocsSign {
             heading="You're Done!"
             message={`You can access the ${this.documentsSingularPlural} at any time by clicking on the link from the invitation email.<br /><br />After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.`}
             onNext={() => {
-              this.showDone = false;
-              this.isDone = true;
+              this.handleDoneDialogDismiss();
             }}
           />
         )}
@@ -1673,7 +1740,7 @@ export class VerdocsSign {
           />
         )}
 
-        {!this.loading && !this.isDone && (
+        {!this.loading && !this.isDone && !this.submitted && (
           <verdocs-sign-footer
             endpoint={this.endpoint}
             envelopeId={this.envelopeId}
