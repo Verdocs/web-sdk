@@ -410,7 +410,6 @@ export class VerdocsSign {
     this.submitting = true;
     console.log('[SIGN] Accepting disclosures', this.disclosures);
     const localeData = Intl.DateTimeFormat().resolvedOptions();
-    // @ts-expect-error - v6.9.13
     envelopeRecipientAgree(this.endpoint, this.envelopeId, this.roleId, this.disclosures, {locale: localeData.locale, timezone: localeData.timeZone})
       .then(() => {
         this.nextButtonLabel = 'Next';
@@ -750,7 +749,6 @@ export class VerdocsSign {
 
         this.submitting = true;
         const localeData = Intl.DateTimeFormat().resolvedOptions();
-        // @ts-expect-error - v6.9.13
         const result = await envelopeRecipientSubmit(this.endpoint, this.envelopeId, this.roleId, {locale: localeData.locale, timezone: localeData.timeZone});
         console.log('[SIGN] Submitted successfully', result);
         await this.handleSubmitSuccess();

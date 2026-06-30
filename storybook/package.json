@@ -1,6 +1,6 @@
 {
   "name": "werdocs-web-sdk-storybook",
-  "version": "6.9.11",
+  "version": "6.10.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@verdocs/js-sdk": "^6.9.12"
+    "@verdocs/js-sdk": "^6.10.0"
   },
   "devDependencies": {
     "@verdocs/web-sdk": "6.9.13",
