@@ -1,6 +1,5 @@
 import {Component, h, Event, EventEmitter, Fragment, Prop, State} from '@stencil/core';
 import {formatFullName, getActiveEntitlements, IEntitlement, IProfile, IRecipient, isValidEmail, TEntitlement, TRecipientAuthMethod, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {getFeatureFlags, IFeatureFlags} from '../../../utils/Unleash';
 import {convertToE164} from '../../../utils/utils';
 
 const addrBookIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-user"><path d="M15 13a3 3 0 1 0-6 0"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><circle cx="12" cy="8" r="2"/></svg>`;
@@ -99,7 +98,6 @@ export class VerdocsContactPicker {
   @State() emailFieldId = `verdocs-contact-picker-email-${Math.random().toString(36).substring(2, 11)}`;
   @State() phoneFieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
 
-  @State() featureFlags: IFeatureFlags = null;
   @State() activeEntitlements: Partial<Record<TEntitlement, IEntitlement>> = {};
 
   componentWillLoad() {
@@ -130,15 +128,6 @@ export class VerdocsContactPicker {
         console.log('[CONTACT PICKER] Loaded entitlements', r);
       })
       .catch(e => console.log('[CONTACT PICKER] Error loading entitlements, some features may be disabled.', e));
-
-    getFeatureFlags()
-      .then(flags => {
-        this.featureFlags = flags;
-        console.log('[CONTACT PICKER] Loaded feature flags', flags);
-      })
-      .catch(e => {
-        console.log('[CONTACT PICKER] Unable to fetch feature flags, some features may be disabled.', e);
-      });
   }
 
   handleFirstNameChange(e: any) {
@@ -198,27 +187,22 @@ export class VerdocsContactPicker {
       (this.auth_methods.includes('email') && !!this.email) ||
       (this.auth_methods.includes('sms') && !!this.phone);
     const canSubmit = hasBasics && hasAuthRequirements;
-    const globalSMS = this.featureFlags?.toggles?.find(t => t.name === 'sms')?.enabled === true;
+    const hasSMSAuth = !!this.activeEntitlements.sms_auth
 
     const verificationOptions = [];
 
-    if (this.featureFlags?.toggles?.find(t => t.name === 'passcode-verification')?.enabled === true) {
-      verificationOptions.push({label: 'Passcode', value: 'passcode'});
-    }
+    verificationOptions.push({label: 'Passcode', value: 'passcode'});
+    verificationOptions.push({label: 'Email', value: 'email'});
 
-    if (this.featureFlags?.toggles?.find(t => t.name === 'email-verification')?.enabled === true) {
-      verificationOptions.push({label: 'Email', value: 'email'});
-    }
-
-    if (globalSMS && this.featureFlags?.toggles?.find(t => t.name === 'sms-verification')?.enabled === true && !!this.activeEntitlements.sms_auth) {
+    if (hasSMSAuth) {
       verificationOptions.push({label: 'SMS (One-Time Code)', value: 'sms'});
     }
 
-    if (this.featureFlags?.toggles?.find(t => t.name === 'kba-verification')?.enabled === true && !!this.activeEntitlements.kba_auth) {
+    if (!!this.activeEntitlements.kba_auth) {
       verificationOptions.push({label: 'Knowledge-Based (KBA)', value: 'kba'});
     }
 
-    if (this.featureFlags?.toggles?.find(t => t.name === 'id-verification')?.enabled === true && !!this.activeEntitlements.id_auth) {
+    if (!!this.activeEntitlements.id_auth) {
       verificationOptions.push({label: 'ID Check', value: 'id'});
     }
 
@@ -310,7 +294,7 @@ export class VerdocsContactPicker {
           />
         </div>
 
-        {globalSMS && (
+        {hasSMSAuth && (
           <div class="row">
             <label htmlFor={this.phoneFieldId}>Phone:</label>
             <input
