@@ -71,6 +71,3 @@ jest.mock('sortablejs',() => ({ __esModule: true, default: jest.fn().mockImpleme
 global.ResizeObserver = class { observe(){}; unobserve(){}; disconnect(){}; };
 global.FontFace       = class { constructor(_f,_s){}; load() { return Promise.resolve(this); } };
 Object.defineProperty(document, 'fonts', { value: { add: jest.fn() }, writable: true });
-
-// 5) Prevent real HTTP in your Unleash helper:
-jest.mock('axios', () => ({ get: jest.fn().mockResolvedValue({ data: {} }) }));
