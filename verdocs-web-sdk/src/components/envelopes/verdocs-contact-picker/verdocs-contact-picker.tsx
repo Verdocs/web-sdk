@@ -99,8 +99,9 @@ export class VerdocsContactPicker {
   @State() phoneFieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
 
   @State() activeEntitlements: Partial<Record<TEntitlement, IEntitlement>> = {};
+  @State() authMethodsLoading: boolean = true
 
-  componentWillLoad() {
+  async componentWillLoad() {
     this.endpoint.loadSession();
 
     if (this.templateRole) {
@@ -122,12 +123,9 @@ export class VerdocsContactPicker {
       this.passcode = this.templateRole.passcode || '';
     }
 
-    getActiveEntitlements(this.endpoint)
-      .then(r => {
-        this.activeEntitlements = r;
-        console.log('[CONTACT PICKER] Loaded entitlements', r);
-      })
-      .catch(e => console.log('[CONTACT PICKER] Error loading entitlements, some features may be disabled.', e));
+    this.activeEntitlements = await getActiveEntitlements(this.endpoint)
+    this.authMethodsLoading = false
+    console.log('[CONTACT PICKER] Loaded entitlements', this.activeEntitlements)
   }
 
   handleFirstNameChange(e: any) {
@@ -262,7 +260,7 @@ export class VerdocsContactPicker {
             >
               <div class="dropdown">
                 {this.contactSuggestions
-                  .filter(suggestion => !this.first_name || suggestion.first_name.toLowerCase().includes(this.first_name.toLowerCase()))
+                  .filter(suggestion => !this.first_name || suggestion.first_name?.toLowerCase().includes(this.first_name.toLowerCase()))
                   .map(suggestion => (
                     <div key={suggestion.id ?? suggestion.email} class="suggestion" onClick={e => this.handleSelectSuggestion(e, suggestion)}>
                       {suggestion.picture ? <img alt="Avatar" class="avatar" src={suggestion.picture} /> : <div class="avatar" innerHTML={addrBookIcon} />}
@@ -318,7 +316,10 @@ export class VerdocsContactPicker {
           {verificationOptions.length > 0 && (
             <div class="row pin-code">
               <label>Verification Methods:</label>
-              <div>
+              {this.authMethodsLoading ? (
+                <verdocs-spinner size={10} mode="dark" style={{margin: 'auto'}} />
+              ) : (
+                <div>
                 {verificationOptions.map((option, i) => (
                   <div class="option">
                     <verdocs-checkbox
@@ -338,6 +339,7 @@ export class VerdocsContactPicker {
                   </div>
                 ))}
               </div>
+              )}  
             </div>
           )}
 
