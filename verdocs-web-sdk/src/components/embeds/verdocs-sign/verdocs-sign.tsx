@@ -1366,6 +1366,18 @@ export class VerdocsSign {
       return <verdocs-passcode-dialog endpoint={this.endpoint} onNext={e => this.processAuthResponse(e.detail.response)} />;
     }
 
+    if(this.authStep === 'sms'){
+      return (
+        <verdocs-otp-dialog
+          endpoint={this.endpoint}
+          method="sms"
+          onNext={async e => {
+            this.processAuthResponse(e.detail.response);
+          }}
+        />
+      )
+    }
+    
     if (this.authStep === 'email') {
       return (
         <verdocs-otp-dialog
