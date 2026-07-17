@@ -1366,7 +1366,7 @@ export class VerdocsSign {
       return <verdocs-passcode-dialog endpoint={this.endpoint} onNext={e => this.processAuthResponse(e.detail.response)} />;
     }
 
-    if (this.authStep === 'sms') {
+    if (this.authStep === 'sms'){
       return (
         <verdocs-otp-dialog
           endpoint={this.endpoint}
@@ -1375,9 +1375,9 @@ export class VerdocsSign {
             this.processAuthResponse(e.detail.response);
           }}
         />
-      );
+      )
     }
-
+    
     if (this.authStep === 'email') {
       return (
         <verdocs-otp-dialog
@@ -1521,8 +1521,7 @@ export class VerdocsSign {
               <div class="title">{this.envelope.name}</div>
               <div style={{flex: '1'}} />
 
-              {!this.finishLater &&
-                !this.submitted &&
+              {!this.finishLater && !this.submitted &&
                 (() => {
                   const remaining = this.getRequiredTotalCount() - this.getRequiredFilledCount();
                   const optionalLeft = this.getOptionalUnfilledCount();
@@ -1567,10 +1566,7 @@ export class VerdocsSign {
                 onClick={() => this.handleZoomIn()}
               />
 
-              <verdocs-dropdown
-                options={!this.isDone && !this.finishLater && !this.submitted ? inProgressMenuOptions : doneMenuOptions}
-                onOptionSelected={e => this.handleOptionSelected(e)}
-              />
+              <verdocs-dropdown options={!this.isDone && !this.finishLater && !this.submitted ? inProgressMenuOptions : doneMenuOptions} onOptionSelected={e => this.handleOptionSelected(e)} />
             </div>
           </div>
         )}
@@ -1589,13 +1585,7 @@ export class VerdocsSign {
             </div>
             <div class="right-controls">
               {!this.submitted && (
-                <verdocs-button
-                  class="mobile-next-button"
-                  label={this.nextButtonLabel}
-                  size="xsmall"
-                  disabled={!this.agreed || this.submitting}
-                  onClick={() => this.handleNext()}
-                />
+                <verdocs-button class="mobile-next-button" label={this.nextButtonLabel} size="xsmall" disabled={!this.agreed || this.submitting} onClick={() => this.handleNext()} />
               )}
               <div class={{'icon-button': true, 'minus': true, 'disabled': this.zoomLevel === 'normal'}} innerHTML={ToolbarMinusIcon} onClick={() => this.handleZoomOut()} />
               <div class={{'icon-button': true, 'plus': true, 'disabled': this.zoomLevel === 'zoom2'}} innerHTML={ToolbarPlusIcon} onClick={() => this.handleZoomIn()} />
