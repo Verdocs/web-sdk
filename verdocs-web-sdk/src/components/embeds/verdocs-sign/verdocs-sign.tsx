@@ -207,7 +207,6 @@ export class VerdocsSign {
     this.observer?.disconnect();
     this.observer = null;
     document.getElementById('air-datepicker-global-container')?.remove();
-    document.getElementById('verdocs-sign-header')?.remove();
   }
 
   handleDoneDialogDismiss = async () => {
@@ -1260,6 +1259,7 @@ export class VerdocsSign {
                 e.stopPropagation();
                 this.handleDoneDialogDismiss();
               }}
+              onExit={() => this.handleDoneDialogDismiss()}
             />
           )}
 
@@ -1661,6 +1661,7 @@ export class VerdocsSign {
             onNext={() => {
               this.handleDoneDialogDismiss();
             }}
+            onExit={() => this.handleDoneDialogDismiss()}
           />
         )}
 
