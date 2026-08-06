@@ -123,9 +123,15 @@ export class VerdocsContactPicker {
       this.passcode = this.templateRole.passcode || '';
     }
 
-    this.activeEntitlements = await getActiveEntitlements(this.endpoint)
-    this.authMethodsLoading = false
-    console.log('[CONTACT PICKER] Loaded entitlements', this.activeEntitlements)
+    // Entitlements only gate optional methods like KBA. We need error handling here in case the getActiveEntitlements
+    // call fails or we stay loading forever.
+    this.activeEntitlements = await getActiveEntitlements(this.endpoint).catch(e => {
+      console.warn('[CONTACT PICKER] Unable to load entitlements, continuing with base auth methods only', e);
+      return {} as Partial<Record<TEntitlement, IEntitlement>>;
+    });
+
+    this.authMethodsLoading = false;
+    console.log('[CONTACT PICKER] Loaded entitlements', this.activeEntitlements);
   }
 
   handleFirstNameChange(e: any) {
@@ -339,7 +345,7 @@ export class VerdocsContactPicker {
                   </div>
                 ))}
               </div>
-              )}  
+              )}
             </div>
           )}
 
