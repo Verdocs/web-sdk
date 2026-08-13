@@ -26,7 +26,15 @@ verdocs-toolbar-icon {
     font-weight: bold;
     padding: 5px 10px;
     font-size: 13px;
-    position: relative;
+    // MUST be absolute. Popper positions the tooltip with inline transforms and assumes it is out
+    // of the normal flow. With position:relative the tooltip instead occupies space inside the
+    // flex container when shown, which widens the toolbar and shifts the icon out from under the
+    // pointer. That fires mouseleave -> hide -> layout collapses -> mouseenter -> show, an endless
+    // flicker where the icon can never be clicked. It only bites where the toolbar has no slack to
+    // absorb the width change (e.g. the Teams tab), which is why it looked fine in the web app.
+    position: absolute;
+    // The tooltip is decoration; never let it capture the hover it was triggered by.
+    pointer-events: none;
     border-radius: 4px;
     z-index: 20000;
     white-space: nowrap;
