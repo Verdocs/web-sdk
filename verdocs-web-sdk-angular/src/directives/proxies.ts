@@ -127,14 +127,14 @@ representation of the signature adopted.
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsAuth,
-  inputs: ['displayMode', 'endpoint', 'logo', 'visible']
+  inputs: ['displayMode', 'endpoint', 'logo', 'showSocialLogins', 'visible']
 })
 @Component({
   selector: 'verdocs-auth',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['displayMode', 'endpoint', 'logo', 'visible'],
+  inputs: ['displayMode', 'endpoint', 'logo', 'showSocialLogins', 'visible'],
   outputs: ['authenticated', 'sdkError'],
 })
 export class VerdocsAuth {

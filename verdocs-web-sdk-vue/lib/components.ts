@@ -24,6 +24,7 @@ export const VerdocsAuth: StencilVueComponent<JSX.VerdocsAuth> = /*@__PURE__*/ d
   'visible',
   'logo',
   'displayMode',
+  'showSocialLogins',
   'authenticated',
   'sdkError'
 ], [

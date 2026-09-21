@@ -1,6 +1,8 @@
-import {Component, Prop, State, h, Event, EventEmitter} from '@stencil/core';
-import {verifyEmail, IAuthenticateResponse, getMyUser, IProfile, convertToE164} from '@verdocs/js-sdk';
+import {Component, Prop, State, h, Event, EventEmitter, Element} from '@stencil/core';
 import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword} from '@verdocs/js-sdk';
+import {isMFARequired, getSocialProviders, getSocialLoginUrl, createCodeVerifier, createCodeChallenge} from '@verdocs/js-sdk';
+import {verifyEmail, IAuthenticateResponse, getMyUser, IProfile, convertToE164, ISocialProviders, TSocialLoginProvider} from '@verdocs/js-sdk';
+import {GoogleIcon, MicrosoftIcon} from '../../../utils/Icons';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 
@@ -9,6 +11,60 @@ export interface IAuthStatus {
   session: TSession;
   profile: IProfile | null;
 }
+
+const MFA_CODE_ERROR = 'Invalid code. Please try again.';
+const SOCIAL_START_ERROR = 'Unable to start sign-in sequence. Please try again.';
+const SOCIAL_LOGIN_KEY = 'vdocs-social-login';
+
+interface ISocialLoginAttempt {
+  verifier: string;
+  state: string;
+  provider: TSocialLoginProvider;
+}
+
+const SOCIAL_ERROR_MESSAGES: Record<string, string> = {
+  email_unverified: 'That account does not have a verified email address.',
+  corporate_email_required: 'Please use your corporate email address to create an account.',
+  account_locked: 'That account is locked. Please contact support@verdocs.com.',
+  provider_error: 'That provider could not sign you in. Please try again.',
+  access_denied: 'Sign-in was canceled.',
+};
+
+const socialErrorMessage = (code: string) => SOCIAL_ERROR_MESSAGES[code] || 'Unable to sign in. Please try again.';
+
+const readSocialLoginAttempt = (): ISocialLoginAttempt | null => {
+  try {
+    const stored = window.sessionStorage.getItem(SOCIAL_LOGIN_KEY);
+    return stored ? (JSON.parse(stored) as ISocialLoginAttempt) : null;
+  } catch {
+    return null;
+  }
+};
+
+const clearSocialLoginAttempt = () => {
+  try {
+    window.sessionStorage.removeItem(SOCIAL_LOGIN_KEY);
+  } catch {
+    // Third-party embeds may block sessionStorage. It's OK.
+  }
+};
+
+// Prevent replays on a reload
+const cleanSocialLoginParams = (names: string[]) => {
+  const url = new URL(window.location.href);
+  names.forEach(name => url.searchParams.delete(name));
+  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+};
+
+const currentReturnUri = () => `${window.location.origin}${window.location.pathname}`;
+
+const formatRecoveryCode = (value: string) => {
+  const cleaned = value
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+    .slice(0, 8);
+  return cleaned.length > 4 ? `${cleaned.slice(0, 4)}-${cleaned.slice(4)}` : cleaned;
+};
 
 /**
  * Display an authentication dialog that allows the user to login or sign up. If the user is
@@ -19,7 +75,7 @@ export interface IAuthStatus {
  * To simplify UI development, a visibility flag can force this component to never display. This
  * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
  *
- * This embed is responsive / mobile-friendly, but the calling application should provide at
+ * This embed is responsive and mobile-friendly, but the calling application should provide at
  * least a 300px wide container to allow sufficient space for the required forms.
  *
  * ```ts
@@ -35,6 +91,8 @@ export interface IAuthStatus {
   shadow: false,
 })
 export class VerdocsAuth {
+  @Element() el: HTMLElement;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -57,7 +115,14 @@ export class VerdocsAuth {
   /**
    * The display mode to start in.
    */
-  @Prop({mutable: true}) displayMode: 'login' | 'forgot' | 'reset' | 'signup' | 'verify' = 'login';
+  @Prop({mutable: true}) displayMode: 'login' | 'forgot' | 'reset' | 'signup' | 'verify' | 'mfa' = 'login';
+
+  /**
+   * Social auth is disabled by default because these are redirect flows that require allowable redirect_uri
+   * destinations be pre-registered. These will only work on Verdocs sites/apps, so third-party developers
+   * should not turn this on unless instructed to by Verdocs Support.
+   */
+  @Prop() showSocialLogins: boolean = false;
 
   /**
    * Event fired when session authentication process has completed. Check the event
@@ -85,8 +150,15 @@ export class VerdocsAuth {
   @State() resendDisabled = false;
   @State() session: TSession = null;
   @State() profile: IProfile | null = null;
+  @State() providers: ISocialProviders = {google: false, microsoft: false};
+  @State() mfaToken: string = '';
+  @State() mfaCode: string = '';
+  @State() recoveryCode: string = '';
+  @State() useRecoveryCode: boolean = false;
+  @State() mfaError: string = '';
 
   resendDisabledTimer = null;
+  mfaFocusPending = false;
 
   // We can't instantly log in on the default endpoint because other listeners might see
   // its events and incorrectly trigger before we're done. So we manage our own temp
@@ -114,6 +186,38 @@ export class VerdocsAuth {
         this.authenticated?.emit({authenticated: false, session, profile});
       }
     });
+
+    if (this.showSocialLogins) {
+      getSocialProviders(this.endpoint)
+        .then(providers => {
+          this.providers = providers;
+        })
+        .catch(() => undefined);
+    }
+
+    this.handleSocialLoginReturn();
+  }
+
+  componentDidRender() {
+    if (this.displayMode !== 'mfa') {
+      return;
+    }
+
+    const input = this.el.querySelector('.mfa-input input') as HTMLInputElement | null;
+    if (!input) {
+      return;
+    }
+
+    if (!this.useRecoveryCode) {
+      input.setAttribute('inputmode', 'numeric');
+    } else {
+      input.removeAttribute('inputmode');
+    }
+
+    if (this.mfaFocusPending) {
+      this.mfaFocusPending = false;
+      input.focus();
+    }
   }
 
   disconnectedCallback() {
@@ -218,8 +322,25 @@ export class VerdocsAuth {
 
   completeLogin(result: IAuthenticateResponse) {
     this.clearForms();
+    this.displayMode = 'login';
     this.tempAuthEndpoint.clearSession();
     this.endpoint.setToken(result.access_token);
+  }
+
+  async finishLogin(authResult: IAuthenticateResponse) {
+    console.log('[AUTH] Authenticated, checking email verification');
+    this.tempAuthEndpoint.setToken(authResult.access_token);
+
+    const user = await getMyUser(this.tempAuthEndpoint);
+    this.submitting = false;
+
+    if (!user.email_verified) {
+      console.log('[AUTH] Logged in, pending email address verification');
+      this.displayMode = 'verify';
+    } else {
+      console.log('[AUTH] Email address is verified, completing login');
+      this.completeLogin(authResult);
+    }
   }
 
   async loginAndCheckVerification() {
@@ -231,30 +352,198 @@ export class VerdocsAuth {
     this.tempAuthEndpoint.clearSession();
 
     try {
-      this.submitting = false;
       const authResult = await authenticate(this.tempAuthEndpoint, {username: this.email.trim(), password: this.password, grant_type: 'password'});
-      console.log('[AUTH] Authenticated, checking email verification');
-      this.tempAuthEndpoint.setToken(authResult.access_token);
-
-      const user = await getMyUser(this.tempAuthEndpoint);
-
-      if (!user.email_verified) {
-        console.log('[AUTH] Logged in, pending email address verification');
-        this.displayMode = 'verify';
-      } else {
-        console.log('[AUTH] Email address is verified, completing login');
-        this.completeLogin(authResult);
-      }
+      await this.finishLogin(authResult);
     } catch (e) {
+      if (isMFARequired(e)) {
+        this.startMFA(e.response.data.mfa_token);
+        return;
+      }
+
       this.submitting = false;
       console.log('[AUTH] Auth failure', e.response?.data || e);
       VerdocsToast('Login failed. Please check your credentials and try again.', {style: 'error'});
     }
   }
 
+  startMFA(token: string) {
+    this.mfaToken = token;
+    this.mfaCode = '';
+    this.recoveryCode = '';
+    this.useRecoveryCode = false;
+    this.mfaError = '';
+    this.submitting = false;
+    this.mfaFocusPending = true;
+    this.displayMode = 'mfa';
+  }
+
+  returnToLogin() {
+    this.mfaToken = '';
+    this.mfaCode = '';
+    this.recoveryCode = '';
+    this.useRecoveryCode = false;
+    this.mfaError = '';
+    this.password = '';
+    this.submitting = false;
+    this.displayMode = 'login';
+  }
+
+  handleMFAFailure(e: any) {
+    this.submitting = false;
+    this.mfaCode = '';
+    this.recoveryCode = '';
+
+    // Failed attempts require a fresh token
+    if (isMFARequired(e)) {
+      this.mfaToken = e.response.data.mfa_token;
+      this.mfaError = MFA_CODE_ERROR;
+      return;
+    }
+
+    if (e?.response?.status === 401) {
+      this.returnToLogin();
+      VerdocsToast('Your sign-in timed out. Enter your password again.', {style: 'error'});
+      return;
+    }
+
+    this.mfaError = MFA_CODE_ERROR;
+  }
+
+  async submitMFA(code: string, isRecoveryCode: boolean) {
+    if (this.submitting || !code) {
+      return;
+    }
+
+    this.submitting = true;
+    this.mfaError = '';
+    this.tempAuthEndpoint.clearSession();
+
+    try {
+      const authResult = await authenticate(
+        this.tempAuthEndpoint,
+        isRecoveryCode
+          ? {grant_type: 'urn:verdocs:params:oauth:grant-type:mfa-recovery-code', mfa_token: this.mfaToken, recovery_code: code}
+          : {grant_type: 'urn:verdocs:params:oauth:grant-type:mfa-otp', mfa_token: this.mfaToken, otp: code},
+      );
+      await this.finishLogin(authResult);
+    } catch (e) {
+      this.handleMFAFailure(e);
+    }
+  }
+
+  handleVerifyMFA() {
+    this.submitMFA(this.useRecoveryCode ? this.recoveryCode : this.mfaCode, this.useRecoveryCode).catch(() => undefined);
+  }
+
+  handleMFACodeInput(target: HTMLInputElement) {
+    const digits = (target.value || '').replace(/\D/g, '').slice(0, 6);
+    if (target.value !== digits) {
+      target.value = digits;
+    }
+    this.mfaCode = digits;
+
+    // Auto-submit once 6 digits are entered
+    if (digits.length === 6) {
+      this.submitMFA(digits, false).catch(() => undefined);
+    }
+  }
+
+  handleRecoveryCodeInput(target: HTMLInputElement) {
+    const formatted = formatRecoveryCode(target.value || '');
+    if (target.value !== formatted) {
+      target.value = formatted;
+    }
+    this.recoveryCode = formatted;
+  }
+
+  toggleRecoveryCode() {
+    this.useRecoveryCode = !this.useRecoveryCode;
+    this.mfaCode = '';
+    this.recoveryCode = '';
+    this.mfaError = '';
+    this.mfaFocusPending = true;
+  }
+
+  handleSocialLogin(provider: TSocialLoginProvider) {
+    try {
+      const verifier = createCodeVerifier();
+      const state = createCodeVerifier();
+
+      createCodeChallenge(verifier)
+        .then(codeChallenge => {
+          const attempt: ISocialLoginAttempt = {verifier, state, provider};
+          window.sessionStorage.setItem(SOCIAL_LOGIN_KEY, JSON.stringify(attempt));
+          window.location.assign(getSocialLoginUrl(this.endpoint, provider, {returnUri: currentReturnUri(), codeChallenge, state}));
+        })
+        .catch(() => VerdocsToast(SOCIAL_START_ERROR, {style: 'error'}));
+    } catch {
+      VerdocsToast(SOCIAL_START_ERROR, {style: 'error'});
+    }
+  }
+
+  handleSocialLoginReturn() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const loginCode = params.get('login_code');
+    const state = params.get('state');
+    const error = params.get('error');
+
+    if (!loginCode && !error) {
+      return;
+    }
+
+    const attempt = readSocialLoginAttempt();
+
+    // `error` doesn't give us the whole picture
+    if (!loginCode && !attempt) {
+      return;
+    }
+
+    clearSocialLoginAttempt();
+    cleanSocialLoginParams(loginCode ? ['login_code', 'state'] : ['error']);
+
+    if (error) {
+      VerdocsToast(socialErrorMessage(error), {style: 'error'});
+      return;
+    }
+
+    if (!attempt || attempt.state !== state) {
+      VerdocsToast('Sign-in could not be verified. Try again.', {style: 'error'});
+      return;
+    }
+
+    this.exchangeLoginCode(loginCode, attempt.verifier);
+  }
+
+  exchangeLoginCode(loginCode: string, codeVerifier: string) {
+    this.submitting = true;
+    this.tempAuthEndpoint.clearSession();
+
+    authenticate(this.tempAuthEndpoint, {grant_type: 'urn:verdocs:params:oauth:grant-type:login-code', login_code: loginCode, code_verifier: codeVerifier})
+      .then(authResult => this.finishLogin(authResult))
+      .catch(e => {
+        if (isMFARequired(e)) {
+          this.startMFA(e.response.data.mfa_token);
+          return;
+        }
+
+        this.submitting = false;
+        console.log('[AUTH] Social login failure', e.response?.data || e);
+        VerdocsToast('Sign-in failed. Please try again.', {style: 'error'});
+      });
+  }
+
   clearForms() {
     this.submitting = false;
     this.resendDisabled = false;
+    this.mfaToken = '';
+    this.mfaCode = '';
+    this.recoveryCode = '';
+    this.useRecoveryCode = false;
+    this.mfaError = '';
     this.email = '';
     this.phone = '';
     this.password = '';
@@ -380,6 +669,43 @@ export class VerdocsAuth {
     }
   }
 
+  renderProviderButtons() {
+    if (!this.showSocialLogins || (!this.providers.google && !this.providers.microsoft)) {
+      return null;
+    }
+
+    return (
+      <div class="providers">
+        {this.providers.google && (
+          <verdocs-button
+            label="Continue with Google"
+            variant="outline"
+            class="provider-google"
+            startIcon={GoogleIcon}
+            disabled={this.submitting}
+            onClick={() => this.handleSocialLogin('google')}
+          />
+        )}
+        {this.providers.microsoft && (
+          <verdocs-button
+            label="Continue with Microsoft"
+            variant="outline"
+            class="provider-microsoft"
+            startIcon={MicrosoftIcon}
+            disabled={this.submitting}
+            onClick={() => this.handleSocialLogin('microsoft')}
+          />
+        )}
+
+        <div class="divider">
+          <div class="divider-line" />
+          or
+          <div class="divider-line" />
+        </div>
+      </div>
+    );
+  }
+
   render() {
     if (!this.visible) {
       return <div style={{display: 'none'}}>Authenticated</div>;
@@ -393,6 +719,76 @@ export class VerdocsAuth {
           onClick={() => this.handleLogout()}
           style={{display: 'flex', justifyContent: 'center', margin: '30px auto 0'}}
         />
+      );
+    }
+
+    if (this.displayMode === 'mfa') {
+      const enteredCode = this.useRecoveryCode ? this.recoveryCode : this.mfaCode;
+      const codeComplete = this.useRecoveryCode ? this.recoveryCode.replace('-', '').length === 8 : this.mfaCode.length === 6;
+
+      return (
+        <div class="form">
+          <a href="https://verdocs.com/en/">
+            <img src={this.logo} alt="Verdocs Logo" class="logo" />
+          </a>
+
+          <h3>Two-factor authentication</h3>
+
+          <p>
+            {this.useRecoveryCode
+              ? 'Enter one of the backup codes you saved when you turned on multi-factor authentication.'
+              : 'Enter the six-digit code from your authenticator app.'}
+          </p>
+
+          <form
+            onSubmit={(e: Event) => {
+              e.preventDefault();
+              this.handleVerifyMFA();
+            }}
+          >
+            {this.useRecoveryCode ? (
+              <verdocs-text-input
+                class="mfa-input"
+                label="Backup code"
+                placeholder="xxxx-xxxx"
+                autocomplete="one-time-code"
+                value={this.recoveryCode}
+                onInput={(e: any) => this.handleRecoveryCodeInput(e.target)}
+                disabled={this.submitting}
+              />
+            ) : (
+              <verdocs-text-input
+                class="mfa-input"
+                label="Authentication code"
+                autocomplete="one-time-code"
+                value={this.mfaCode}
+                onInput={(e: any) => this.handleMFACodeInput(e.target)}
+                disabled={this.submitting}
+              />
+            )}
+
+            {this.mfaError && (
+              <div role="alert" class="mfa-error">
+                {this.mfaError}
+              </div>
+            )}
+
+            <div class="buttons">
+              <verdocs-button label="Cancel" variant="outline" disabled={this.submitting} onClick={() => this.returnToLogin()} />
+              <verdocs-button label="Verify" disabled={this.submitting || !codeComplete || !enteredCode} onClick={() => this.handleVerifyMFA()} />
+            </div>
+
+            <div class="buttons">
+              <verdocs-button
+                variant="text"
+                size="small"
+                label={this.useRecoveryCode ? 'Use your authenticator app instead' : 'Use a backup code instead'}
+                disabled={this.submitting}
+                onClick={() => this.toggleRecoveryCode()}
+              />
+            </div>
+          </form>
+        </div>
       );
     }
 
@@ -410,6 +806,8 @@ export class VerdocsAuth {
             Already have an account?
             <verdocs-button label="Log In" variant="text" onClick={() => (this.displayMode = 'login')} disabled={this.submitting} />
           </div>
+
+          {this.renderProviderButtons()}
 
           <form onSubmit={() => this.handleSignup()}>
             <div style={{display: 'flex', flexDirection: 'row', columnGap: '20px'}}>
@@ -624,10 +1022,8 @@ export class VerdocsAuth {
         </a>
 
         <h3>Log in to your account</h3>
-        <div class="already-have">
-          Don't have an account?
-          <verdocs-button label="Sign Up" variant="text" onClick={() => (this.displayMode = 'signup')} disabled={this.submitting} />
-        </div>
+
+        {this.renderProviderButtons()}
 
         <form onSubmit={() => this.loginAndCheckVerification()}>
           <verdocs-text-input label="Email" autocomplete="username" value={this.email} onInput={(e: any) => (this.email = e.target.value)} disabled={this.submitting} />
@@ -645,13 +1041,21 @@ export class VerdocsAuth {
             variant="text"
             onClick={() => (this.displayMode = 'forgot')}
             disabled={this.submitting}
-            style={{display: 'flex', justifyContent: 'center', margin: '10px auto 20px'}}
+            style={{display: 'flex', justifyContent: 'center', margin: '0 auto 20px'}}
           />
 
           <verdocs-button
             label="Login"
             disabled={this.submitting}
             onClick={() => this.loginAndCheckVerification()}
+            style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}}
+          />
+
+          <verdocs-button
+            label="Sign Up"
+            variant="outline"
+            disabled={this.submitting}
+            onClick={() => (this.displayMode = 'signup')}
             style={{display: 'flex', justifyContent: 'center', margin: '10px auto 0'}}
           />
         </form>

@@ -31,7 +31,7 @@ verdocs-auth {
     font-weight: 400;
     font-size: 18px;
     line-height: 1.75;
-    margin: 0;
+    margin: 0 0 20px 0;
   }
 
   em {
@@ -109,5 +109,58 @@ verdocs-auth {
     a {
       color: $verdocs-grey-0;
     }
+  }
+
+  .providers {
+    width: 100%;
+
+    verdocs-button {
+      display: block;
+      margin-bottom: 10px;
+
+      button.outline {
+        position: relative;
+        border-color: $verdocs-grey-2;
+
+        &:disabled {
+          border-color: $verdocs-grey-2;
+        }
+      }
+
+      .icon.start {
+        position: absolute;
+        left: 16px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+
+  .divider {
+    gap: 8px;
+    color: #777;
+    display: flex;
+    font-size: 12px;
+    margin: 28px 0;
+    align-items: center;
+    flex-direction: row;
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: $verdocs-grey-2;
+    }
+  }
+
+  .mfa-error {
+    color: $verdocs-red-1;
+    font-size: 14px;
+    margin: 0 0 8px;
   }
 }

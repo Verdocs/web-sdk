@@ -65,7 +65,7 @@ export namespace Components {
      * view for the application.
      * To simplify UI development, a visibility flag can force this component to never display. This
      * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
-     * This embed is responsive / mobile-friendly, but the calling application should provide at
+     * This embed is responsive and mobile-friendly, but the calling application should provide at
      * least a 300px wide container to allow sufficient space for the required forms.
      * ```ts
      * <verdocs-auth
@@ -79,7 +79,7 @@ export namespace Components {
           * The display mode to start in.
           * @default 'login'
          */
-        "displayMode": 'login' | 'forgot' | 'reset' | 'signup' | 'verify';
+        "displayMode": 'login' | 'forgot' | 'reset' | 'signup' | 'verify' | 'mfa';
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
@@ -90,6 +90,11 @@ export namespace Components {
           * @default 'https://app.verdocs.com/assets/blue-logo.svg'
          */
         "logo": string;
+        /**
+          * Social auth is disabled by default because these are redirect flows that require allowable redirect_uri destinations be pre-registered. These will only work on Verdocs sites/apps, so third-party developers should not turn this on unless instructed to by Verdocs Support.
+          * @default false
+         */
+        "showSocialLogins": boolean;
         /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
           * @default true
@@ -2887,7 +2892,7 @@ declare global {
      * view for the application.
      * To simplify UI development, a visibility flag can force this component to never display. This
      * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
-     * This embed is responsive / mobile-friendly, but the calling application should provide at
+     * This embed is responsive and mobile-friendly, but the calling application should provide at
      * least a 300px wide container to allow sufficient space for the required forms.
      * ```ts
      * <verdocs-auth
@@ -4795,7 +4800,7 @@ declare namespace LocalJSX {
      * view for the application.
      * To simplify UI development, a visibility flag can force this component to never display. This
      * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
-     * This embed is responsive / mobile-friendly, but the calling application should provide at
+     * This embed is responsive and mobile-friendly, but the calling application should provide at
      * least a 300px wide container to allow sufficient space for the required forms.
      * ```ts
      * <verdocs-auth
@@ -4809,7 +4814,7 @@ declare namespace LocalJSX {
           * The display mode to start in.
           * @default 'login'
          */
-        "displayMode"?: 'login' | 'forgot' | 'reset' | 'signup' | 'verify';
+        "displayMode"?: 'login' | 'forgot' | 'reset' | 'signup' | 'verify' | 'mfa';
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
@@ -4828,6 +4833,11 @@ declare namespace LocalJSX {
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsAuthCustomEvent<SDKError>) => void;
+        /**
+          * Social auth is disabled by default because these are redirect flows that require allowable redirect_uri destinations be pre-registered. These will only work on Verdocs sites/apps, so third-party developers should not turn this on unless instructed to by Verdocs Support.
+          * @default false
+         */
+        "showSocialLogins"?: boolean;
         /**
           * Normally, if the user has a valid session, this embed will be invisible, otherwise it will display login / signup forms. If this is set to false, this embed will be invisible in both cases. Apps may use this to verify if a user has a valid session without needing a separate call to Verdocs JS SDK.
           * @default true
@@ -7964,7 +7974,8 @@ declare namespace LocalJSX {
     interface VerdocsAuthAttributes {
         "visible": boolean;
         "logo": string;
-        "displayMode": 'login' | 'forgot' | 'reset' | 'signup' | 'verify';
+        "displayMode": 'login' | 'forgot' | 'reset' | 'signup' | 'verify' | 'mfa';
+        "showSocialLogins": boolean;
     }
     interface VerdocsBuildAttributes {
         "templateId": string | null;
@@ -8515,7 +8526,7 @@ declare module "@stencil/core" {
              * view for the application.
              * To simplify UI development, a visibility flag can force this component to never display. This
              * allows you to subscribe to notifications from client apps without calling the lower-level JS SDK.
-             * This embed is responsive / mobile-friendly, but the calling application should provide at
+             * This embed is responsive and mobile-friendly, but the calling application should provide at
              * least a 300px wide container to allow sufficient space for the required forms.
              * ```ts
              * <verdocs-auth
