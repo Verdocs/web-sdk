@@ -16,6 +16,7 @@ import { ISelectedFile } from "./components/fields/verdocs-field-attachment/verd
 import { IMultiSelectOption } from "./components/controls/verdocs-multiselect/verdocs-multiselect";
 import { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 import { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
+import { ISendEventDetail, ISentEventDetail } from "./components/embeds/verdocs-send/verdocs-send";
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IColumn } from "./components/controls/verdocs-table/verdocs-table";
 import { ITab } from "./components/controls/verdocs-tabs/verdocs-tabs";
@@ -34,6 +35,7 @@ export { ISelectedFile } from "./components/fields/verdocs-field-attachment/verd
 export { IMultiSelectOption } from "./components/controls/verdocs-multiselect/verdocs-multiselect";
 export { IFilterOption } from "./components/controls/verdocs-quick-filter/verdocs-quick-filter";
 export { ISearchEvent, TContentType } from "./components/elements/verdocs-search-box/verdocs-search-box";
+export { ISendEventDetail, ISentEventDetail } from "./components/embeds/verdocs-send/verdocs-send";
 export { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 export { IColumn } from "./components/controls/verdocs-table/verdocs-table";
 export { ITab } from "./components/controls/verdocs-tabs/verdocs-tabs";
@@ -284,6 +286,11 @@ export namespace Components {
           * @default VerdocsEndpoint.getDefault()
          */
         "endpoint": VerdocsEndpoint;
+        /**
+          * Whether to show a Cancel button beside Done.
+          * @default true
+         */
+        "showCancel": boolean;
         /**
           * The role that this contact will be assigned to.
           * @default null
@@ -1902,6 +1909,11 @@ export namespace Components {
      * ```
      */
     interface VerdocsSend {
+        /**
+          * Preselect a brand by key, overriding the organization default.
+          * @default ''
+         */
+        "brandKey": string;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default DefaultEndpoint
@@ -4042,8 +4054,8 @@ declare global {
         new (): HTMLVerdocsSelectInputElement;
     };
     interface HTMLVerdocsSendElementEventMap {
-        "beforeSend": {recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: ITemplate};
-        "send": {recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope};
+        "beforeSend": ISendEventDetail;
+        "send": ISentEventDetail;
         "exit": any;
         "sdkError": SDKError;
         "searchContacts": IContactSearchEvent1;
@@ -5064,6 +5076,11 @@ declare namespace LocalJSX {
           * Event fired when the user enters text in the search field. The calling application may use this to update the `contactSuggestions` property.
          */
         "onSearchContacts"?: (event: VerdocsContactPickerCustomEvent<IContactSearchEvent>) => void;
+        /**
+          * Whether to show a Cancel button beside Done.
+          * @default true
+         */
+        "showCancel"?: boolean;
         /**
           * The role that this contact will be assigned to.
           * @default null
@@ -6988,6 +7005,11 @@ declare namespace LocalJSX {
      */
     interface VerdocsSend {
         /**
+          * Preselect a brand by key, overriding the organization default.
+          * @default ''
+         */
+        "brandKey"?: string;
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default DefaultEndpoint
          */
@@ -7000,7 +7022,7 @@ declare namespace LocalJSX {
         /**
           * The user is sending an envelope the form and clicked send.
          */
-        "onBeforeSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: ITemplate}>) => void;
+        "onBeforeSend"?: (event: VerdocsSendCustomEvent<ISendEventDetail>) => void;
         /**
           * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
          */
@@ -7016,7 +7038,7 @@ declare namespace LocalJSX {
         /**
           * The user completed the form and clicked send.
          */
-        "onSend"?: (event: VerdocsSendCustomEvent<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>) => void;
+        "onSend"?: (event: VerdocsSendCustomEvent<ISentEventDetail>) => void;
         /**
           * Whether to show the cancel button. It may be useful to disable this in environments where the embed is shown in a non-wizard flow with its own navigation for the user to exit.
           * @default true
@@ -8005,6 +8027,9 @@ declare namespace LocalJSX {
     interface VerdocsComponentErrorAttributes {
         "message": string;
     }
+    interface VerdocsContactPickerAttributes {
+        "showCancel": boolean;
+    }
     interface VerdocsDateInputAttributes {
         "value": string;
         "label": string;
@@ -8304,6 +8329,7 @@ declare namespace LocalJSX {
         "templateId": string | null;
         "environment": string;
         "showCancel": boolean;
+        "brandKey": string;
     }
     interface VerdocsSignAttributes {
         "envelopeId": string | null;
@@ -8432,7 +8458,7 @@ declare namespace LocalJSX {
         "verdocs-button-panel": Omit<VerdocsButtonPanel, keyof VerdocsButtonPanelAttributes> & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes]?: VerdocsButtonPanel[K] } & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes as `attr:${K}`]?: VerdocsButtonPanelAttributes[K] } & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes as `prop:${K}`]?: VerdocsButtonPanel[K] };
         "verdocs-checkbox": Omit<VerdocsCheckbox, keyof VerdocsCheckboxAttributes> & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes]?: VerdocsCheckbox[K] } & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes as `attr:${K}`]?: VerdocsCheckboxAttributes[K] } & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes as `prop:${K}`]?: VerdocsCheckbox[K] };
         "verdocs-component-error": Omit<VerdocsComponentError, keyof VerdocsComponentErrorAttributes> & { [K in keyof VerdocsComponentError & keyof VerdocsComponentErrorAttributes]?: VerdocsComponentError[K] } & { [K in keyof VerdocsComponentError & keyof VerdocsComponentErrorAttributes as `attr:${K}`]?: VerdocsComponentErrorAttributes[K] } & { [K in keyof VerdocsComponentError & keyof VerdocsComponentErrorAttributes as `prop:${K}`]?: VerdocsComponentError[K] };
-        "verdocs-contact-picker": VerdocsContactPicker;
+        "verdocs-contact-picker": Omit<VerdocsContactPicker, keyof VerdocsContactPickerAttributes> & { [K in keyof VerdocsContactPicker & keyof VerdocsContactPickerAttributes]?: VerdocsContactPicker[K] } & { [K in keyof VerdocsContactPicker & keyof VerdocsContactPickerAttributes as `attr:${K}`]?: VerdocsContactPickerAttributes[K] } & { [K in keyof VerdocsContactPicker & keyof VerdocsContactPickerAttributes as `prop:${K}`]?: VerdocsContactPicker[K] };
         "verdocs-date-input": Omit<VerdocsDateInput, keyof VerdocsDateInputAttributes> & { [K in keyof VerdocsDateInput & keyof VerdocsDateInputAttributes]?: VerdocsDateInput[K] } & { [K in keyof VerdocsDateInput & keyof VerdocsDateInputAttributes as `attr:${K}`]?: VerdocsDateInputAttributes[K] } & { [K in keyof VerdocsDateInput & keyof VerdocsDateInputAttributes as `prop:${K}`]?: VerdocsDateInput[K] };
         "verdocs-delegate-dialog": VerdocsDelegateDialog;
         "verdocs-dialog": Omit<VerdocsDialog, keyof VerdocsDialogAttributes> & { [K in keyof VerdocsDialog & keyof VerdocsDialogAttributes]?: VerdocsDialog[K] } & { [K in keyof VerdocsDialog & keyof VerdocsDialogAttributes as `attr:${K}`]?: VerdocsDialogAttributes[K] } & { [K in keyof VerdocsDialog & keyof VerdocsDialogAttributes as `prop:${K}`]?: VerdocsDialog[K] };

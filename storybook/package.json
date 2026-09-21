@@ -1,6 +1,6 @@
 {
   "name": "werdocs-web-sdk-storybook",
-  "version": "6.10.6",
+  "version": "6.13.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,11 +11,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@verdocs/js-sdk": "^6.12.0"    
+    "@verdocs/js-sdk": "^6.12.1"
   },
   "devDependencies": {
-    "@verdocs/web-sdk": "6.10.6",
-    "@verdocs/web-sdk-react": "6.10.7",
+    "@verdocs/web-sdk": "6.13.0",
+    "@verdocs/web-sdk-react": "6.13.0",
     "@chromatic-com/storybook": "^5.0.1",
     "@storybook/addon-docs": "10.4.4",
     "@storybook/addon-links": "10.4.4",
@@ -23,12 +23,18 @@
     "@storybook/react": "10.4.4",
     "@storybook/react-vite": "10.4.4",
     "@storybook/web-components-vite": "10.4.4",
-    "es-toolkit": "^1.47.0",
-    "lit": "3.3.2",
-    "prettier": "^3.8.1",
+    "es-toolkit": "^1.52.0",
+    "lit": "3.3.3",
+    "prettier": "^3.9.8",
     "prop-types": "^15.8.1",
     "remark-gfm": "^4.0.1",
     "storybook": "10.4.4",
     "vite": "^7.3.3"
+  },
+  "allowScripts": {
+    "core-js@2.6.12": true,
+    "core-js-pure@3.49.0": true,
+    "esbuild@0.27.7": true,
+    "fsevents@2.3.3": true
   }
 }

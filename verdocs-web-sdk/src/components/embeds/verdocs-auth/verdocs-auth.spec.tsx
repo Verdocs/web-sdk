@@ -125,7 +125,7 @@ describe('verdocs-auth', () => {
     expect(sdk.createCodeChallenge).toHaveBeenCalledWith('TESTVERIFIER');
     expect(JSON.parse(window.sessionStorage.getItem(SOCIAL_LOGIN_KEY))).toEqual({verifier: 'TESTVERIFIER', state: 'TESTVERIFIER', provider: 'microsoft'});
     expect(sdk.getSocialLoginUrl).toHaveBeenCalledWith(expect.anything(), 'microsoft', {
-      returnUri: 'https://app.example.com/login',
+      returnUri: 'https://app.example.com/login?tab=1#forgot-nothing',
       codeChallenge: 'TESTCHALLENGE',
       state: 'TESTVERIFIER',
     });
@@ -254,6 +254,25 @@ describe('verdocs-auth', () => {
     expect(buttonByLabel(page, 'Login')).not.toBeNull();
   });
 
+  it('shows the lock reason when too many codes lock the account', async () => {
+    authenticate
+      .mockRejectedValueOnce(MFA_REQUIRED('MFATOKEN'))
+      .mockRejectedValueOnce({response: {status: 401, data: {error: 'Account locked. Please contact support@verdocs.com for assistance.'}}});
+    const page = await renderAuth();
+    await signIn(page);
+
+    await typeInto(page, mfaInput(page), '123456');
+
+    expect((page.rootInstance as VerdocsAuth).displayMode).toEqual('login');
+    expect(VerdocsToast).toHaveBeenCalledWith('Account locked. Please contact support@verdocs.com for assistance.', {style: 'error'});
+  });
+
+  it('strips state from the URL after a provider error', async () => {
+    await renderAuth('https://app.example.com/login?error=email_unverified&state=STATE', ATTEMPT);
+
+    expect(replaceState).toHaveBeenCalledWith(window.history.state, '', '/login');
+  });
+
   it('cancels the mfa step back to the login form', async () => {
     authenticate.mockRejectedValueOnce(MFA_REQUIRED('MFATOKEN'));
     const page = await renderAuth();
@@ -275,7 +294,7 @@ describe('verdocs-auth', () => {
       login_code: 'LOGINCODE',
       code_verifier: 'VERIFIER',
     });
-    expect(replaceState).toHaveBeenCalledWith({}, '', '/login');
+    expect(replaceState).toHaveBeenCalledWith(window.history.state, '', '/login');
     expect(window.sessionStorage.getItem(SOCIAL_LOGIN_KEY)).toBeNull();
     expect(instance.displayMode).toEqual('login');
     expect(VerdocsToast).not.toHaveBeenCalled();
@@ -284,7 +303,7 @@ describe('verdocs-auth', () => {
   it('keeps unrelated query parameters when cleaning the URL', async () => {
     await renderAuth('https://app.example.com/login?tab=2&login_code=LOGINCODE&state=STATE#forgot', ATTEMPT);
 
-    expect(replaceState).toHaveBeenCalledWith({}, '', '/login?tab=2#forgot');
+    expect(replaceState).toHaveBeenCalledWith(window.history.state, '', '/login?tab=2#forgot');
   });
 
   it('enters the mfa step when a returned login_code answers mfa_required', async () => {
@@ -301,7 +320,7 @@ describe('verdocs-auth', () => {
 
     expect(authenticate).not.toHaveBeenCalled();
     expect(VerdocsToast).toHaveBeenCalledWith('Sign-in could not be verified. Try again.', {style: 'error'});
-    expect(replaceState).toHaveBeenCalledWith({}, '', '/login');
+    expect(replaceState).toHaveBeenCalledWith(window.history.state, '', '/login');
     expect(window.sessionStorage.getItem(SOCIAL_LOGIN_KEY)).toBeNull();
     expect((page.rootInstance as VerdocsAuth).displayMode).toEqual('login');
   });
@@ -318,7 +337,7 @@ describe('verdocs-auth', () => {
 
     expect(authenticate).not.toHaveBeenCalled();
     expect(VerdocsToast).toHaveBeenCalledWith('That account does not have a verified email address.', {style: 'error'});
-    expect(replaceState).toHaveBeenCalledWith({}, '', '/login');
+    expect(replaceState).toHaveBeenCalledWith(window.history.state, '', '/login');
     expect(page.root.querySelector('h3').textContent).toEqual('Log in to your account');
   });
 

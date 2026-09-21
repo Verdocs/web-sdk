@@ -329,14 +329,14 @@ export declare interface VerdocsComponentError extends Components.VerdocsCompone
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsContactPicker,
-  inputs: ['contactSuggestions', 'endpoint', 'templateRole']
+  inputs: ['contactSuggestions', 'endpoint', 'showCancel', 'templateRole']
 })
 @Component({
   selector: 'verdocs-contact-picker',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['contactSuggestions', 'endpoint', 'templateRole'],
+  inputs: ['contactSuggestions', 'endpoint', 'showCancel', 'templateRole'],
   outputs: ['searchContacts', 'exit', 'next'],
 })
 export class VerdocsContactPicker {
@@ -2037,7 +2037,7 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsSend,
-  inputs: ['endpoint', 'environment', 'showCancel', 'templateId'],
+  inputs: ['brandKey', 'endpoint', 'environment', 'showCancel', 'templateId'],
   methods: ['reset']
 })
 @Component({
@@ -2045,13 +2045,13 @@ export declare interface VerdocsSelectInput extends Components.VerdocsSelectInpu
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'environment', 'showCancel', 'templateId'],
+  inputs: ['brandKey', 'endpoint', 'environment', 'showCancel', 'templateId'],
   outputs: ['beforeSend', 'send', 'exit', 'sdkError', 'searchContacts'],
 })
 export class VerdocsSend {
   protected el: HTMLVerdocsSendElement;
-  @Output() beforeSend = new EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: IVerdocsSendITemplate}>>();
-  @Output() send = new EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>();
+  @Output() beforeSend = new EventEmitter<CustomEvent<IVerdocsSendISendEventDetail>>();
+  @Output() send = new EventEmitter<CustomEvent<IVerdocsSendISentEventDetail>>();
   @Output() exit = new EventEmitter<CustomEvent<any>>();
   @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsSendSDKError>>();
   @Output() searchContacts = new EventEmitter<CustomEvent<IVerdocsSendIContactSearchEvent>>();
@@ -2062,9 +2062,8 @@ export class VerdocsSend {
 }
 
 
-import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsSendICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk/components';
-import type { ITemplate as IVerdocsSendITemplate } from '@verdocs/web-sdk/components';
-import type { IEnvelope as IVerdocsSendIEnvelope } from '@verdocs/web-sdk/components';
+import type { ISendEventDetail as IVerdocsSendISendEventDetail } from '@verdocs/web-sdk/components';
+import type { ISentEventDetail as IVerdocsSendISentEventDetail } from '@verdocs/web-sdk/components';
 import type { SDKError as IVerdocsSendSDKError } from '@verdocs/web-sdk/components';
 import type { IContactSearchEvent as IVerdocsSendIContactSearchEvent } from '@verdocs/web-sdk/components';
 
@@ -2072,11 +2071,11 @@ export declare interface VerdocsSend extends Components.VerdocsSend {
   /**
    * The user is sending an envelope the form and clicked send.
    */
-  beforeSend: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: IVerdocsSendITemplate}>>;
+  beforeSend: EventEmitter<CustomEvent<IVerdocsSendISendEventDetail>>;
   /**
    * The user completed the form and clicked send.
    */
-  send: EventEmitter<CustomEvent<{recipients: IVerdocsSendICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IVerdocsSendIEnvelope}>>;
+  send: EventEmitter<CustomEvent<IVerdocsSendISentEventDetail>>;
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
    */

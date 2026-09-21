@@ -1,24 +1,63 @@
-import {Component, Prop, State, h, Event, EventEmitter, Host, Method, Watch} from '@stencil/core';
-import {createEnvelope, formatFullName, getTemplate, getOrganizationContacts, getRGBA, isValidEmail, VerdocsEndpoint} from '@verdocs/js-sdk';
+import type {IBrand, IOrganization, TRecipientAuthMethod} from '@verdocs/js-sdk';
+import {Component, Element, Prop, State, h, Event, EventEmitter, Host, Method, Watch} from '@stencil/core';
 import type {ICreateEnvelopeFromTemplateRequest, ICreateEnvelopeRecipientFromTemplate, IEnvelope, IRecipient, ITemplate} from '@verdocs/js-sdk';
+import {createEnvelope, formatFullName, getBrands, getOrganization, getTemplate, getOrganizationContacts, getRGBA, isValidEmail, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
+import {DefaultEndpoint, getWebAppUrl} from '../../../utils/Environment';
 import {getRoleIndex, getRoleNames} from '../../../utils/Templates';
-import {DefaultEndpoint} from '../../../utils/Environment';
+import {updateScrollFade} from '../../../utils/ScrollFade';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
-const editIcon =
-  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>';
+const chevronRightIcon =
+  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
 
-const startIcon =
-  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12zm10 6c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6z"></path></svg>';
+const chevronLeftIcon =
+  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>';
 
-const stepIcon =
-  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>';
+const warningIcon =
+  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg>';
 
-const doneIcon =
-  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" tabindex="-1"><path d="m18 7-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41 6 19l1.41-1.41L1.83 12 .41 13.41z"></path></svg>';
+const externalLinkIcon =
+  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14 21 3M21 14v7H3V3h7"/></svg>';
+
+const VERDOCS_LOGO_URL = 'https://app.verdocs.com/assets/blue-logo.svg';
+
+// Swipe mechanics for mobile users in detail views
+const SWIPE_START_FRACTION = 0.25;
+const SWIPE_MIN_DISTANCE = 60;
+const SWIPE_MAX_DURATION = 500;
+
+// Expiration controls. The API is less strict, but Web users prefer a simpler setup so we just range-limit it 1..120 here.
+const MIN_EXPIRY_DAYS = 1;
+const MAX_EXPIRY_DAYS = 120;
+const DEFAULT_EXPIRY_DAYS = 120;
+
+const AUTH_METHOD_LABELS: Record<TRecipientAuthMethod, string> = {
+  email: 'Email',
+  passcode: 'Passcode',
+  sms: 'SMS',
+  kba: 'KBA',
+  id: 'ID check',
+};
+
+type TSendView = 'main' | 'recipient' | 'brand' | 'expires' | 'notifications';
+
+export interface ISendEventDetail extends ICreateEnvelopeFromTemplateRequest {
+  name: string;
+  template_id: string;
+  recipients: ICreateEnvelopeRecipientFromTemplate[];
+  template: ITemplate;
+}
+
+export interface ISentEventDetail extends ICreateEnvelopeFromTemplateRequest {
+  name: string;
+  template_id: string;
+  recipients: ICreateEnvelopeRecipientFromTemplate[];
+  envelope_id: string;
+  envelope: IEnvelope;
+}
 
 /**
  * Display a form to send a template to one or more recipients in an envelope for signing.
@@ -45,6 +84,8 @@ const doneIcon =
 export class VerdocsSend {
   private templateListenerId = null;
 
+  @Element() el: HTMLElement;
+
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
    */
@@ -70,14 +111,19 @@ export class VerdocsSend {
   @Prop() showCancel = true;
 
   /**
+   * Preselect a brand by key, overriding the organization default.
+   */
+  @Prop({mutable: true}) brandKey = '';
+
+  /**
    * The user is sending an envelope the form and clicked send.
    */
-  @Event({composed: true}) beforeSend: EventEmitter<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; template: ITemplate}>;
+  @Event({composed: true}) beforeSend: EventEmitter<ISendEventDetail>;
 
   /**
    * The user completed the form and clicked send.
    */
-  @Event({composed: true}) send: EventEmitter<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string; envelope_id: string; envelope: IEnvelope}>;
+  @Event({composed: true}) send: EventEmitter<ISentEventDetail>;
 
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
@@ -96,10 +142,19 @@ export class VerdocsSend {
    */
   @Event({composed: true}) searchContacts: EventEmitter<IContactSearchEvent>;
 
+  private swipeStart: {x: number; y: number; time: number} | null = null;
+  private swallowNextClick = false;
+  private loadedOrganizationId = '';
+
   @State() containerId = `verdocs-send-${Math.random().toString(36).substring(2, 11)}`;
-  @State() showPickerForId = '';
-  @State() sessionContacts = [];
+  @State() view: TSendView = 'main';
+  @State() editingRoleId = '';
+  @State() sessionContacts: {id: string; first_name: string; last_name: string; email: string; phone: string}[] = [];
   @State() sending = false;
+  @State() brands: IBrand[] = [];
+  @State() organization: IOrganization | null = null;
+  @State() expiresInDays = '';
+  @State() noContact = false;
   @State() rolesCompleted: Record<string, Partial<IRecipient>> = {};
 
   @State() loading = true;
@@ -107,6 +162,27 @@ export class VerdocsSend {
 
   disconnectedCallback() {
     this.unlistenToTemplate();
+  }
+
+  componentDidLoad() {
+    this.el.addEventListener(
+      'click',
+      e => {
+        if (this.swallowNextClick) {
+          this.swallowNextClick = false;
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      },
+      true,
+    );
+  }
+
+  // Make off-canvas controls leave the tab order
+  componentDidRender() {
+    updateScrollFade(this.el.querySelector('.detail-body'));
+    this.el.querySelector('.main-pane')?.toggleAttribute('inert', this.view !== 'main');
+    this.el.querySelector('.detail-pane')?.toggleAttribute('inert', this.view === 'main');
   }
 
   async listenToTemplate() {
@@ -122,9 +198,60 @@ export class VerdocsSend {
         this.template = template;
         this.loading = false;
         this.rolesCompleted = {};
+        this.view = 'main';
+        this.editingRoleId = '';
         this.recomputeRolesCompleted();
+        this.loadBrands();
       },
     );
+  }
+
+  loadBrands() {
+    const organizationId = this.template?.organization_id;
+    if (!organizationId || organizationId === this.loadedOrganizationId) {
+      return;
+    }
+
+    const changedOrganization = !!this.loadedOrganizationId;
+    this.loadedOrganizationId = organizationId;
+    this.brands = [];
+    this.organization = null;
+    if (changedOrganization) {
+      this.brandKey = '';
+    }
+
+    const stillCurrent = () => this.template?.organization_id === organizationId;
+
+    getBrands(this.endpoint, organizationId)
+      .then(brands => {
+        if (stillCurrent()) {
+          this.brands = brands || [];
+        }
+      })
+      .catch(e => console.log('[SEND] Unable to load brands', e));
+
+    getOrganization(this.endpoint, organizationId)
+      .then(organization => {
+        if (stillCurrent()) {
+          this.organization = organization;
+        }
+      })
+      .catch(e => console.log('[SEND] Unable to load organization', e));
+  }
+
+  handleExpiryInput(e: any) {
+    const digits = (e.target.value || '').replace(/[^0-9]/g, '');
+    this.expiresInDays = digits ? String(Math.min(Math.max(Number(digits), MIN_EXPIRY_DAYS), MAX_EXPIRY_DAYS)) : '';
+    e.target.value = this.expiresInDays;
+  }
+
+  effectiveExpiryDays(): number {
+    const days = Number(this.expiresInDays);
+    return days >= MIN_EXPIRY_DAYS ? days : DEFAULT_EXPIRY_DAYS;
+  }
+
+  expiresAt(): Date {
+    return new Date(Date.now() + this.effectiveExpiryDays() * 24 * 60 * 60 * 1000);
   }
 
   unlistenToTemplate() {
@@ -134,8 +261,14 @@ export class VerdocsSend {
     }
   }
 
-  @Method() async reset() {
+  @Method()
+  async reset() {
     this.rolesCompleted = {};
+    this.view = 'main';
+    this.editingRoleId = '';
+    this.brandKey = '';
+    this.expiresInDays = '';
+    this.noContact = false;
   }
 
   @Watch('templateId')
@@ -234,25 +367,69 @@ export class VerdocsSend {
     return rolesAtLevel as Partial<IRecipient>[];
   }
 
-  getLevelIcon(level: 'start' | 'end' | 'sequence') {
-    if (level === 'start') {
-      return <div class="level-icon" innerHTML={startIcon} />;
-    } else if (level === 'end') {
-      return <div class="level-icon" innerHTML={doneIcon} />;
-    } else {
-      return <div class="level-icon" innerHTML={stepIcon} />;
+  getRoleById(id: string): Partial<IRecipient> | null {
+    for (const level of this.getSequenceNumbers()) {
+      const match = this.getRolesAtLevel(level).find(role => role.id === id);
+      if (match) {
+        return match;
+      }
     }
+
+    return null;
+  }
+
+  // We only show options the sender switched on.
+  getRecipientOptionLabels(recipient: Partial<IRecipient> | undefined): string[] {
+    if (!recipient) {
+      return [];
+    }
+
+    const labels = (recipient.auth_methods || []).filter(method => method !== 'email').map(method => AUTH_METHOD_LABELS[method] || method);
+    if (recipient.delegator) {
+      labels.push('May delegate');
+    }
+
+    if (recipient.name_locked) {
+      labels.push('Name locked');
+    }
+
+    return labels;
+  }
+
+  getDefaultBrand(): IBrand | null {
+    const defaultId = this.organization?.default_brand_id;
+    return (defaultId && this.brands.find(brand => brand.id === defaultId)) || null;
+  }
+
+  getDefaultBrandLabel() {
+    const name = this.getDefaultBrand()?.name;
+    return `Default (${name || 'Verdocs'})`;
+  }
+
+  getSelectedBrandLabel() {
+    if (!this.brandKey) {
+      return this.getDefaultBrandLabel();
+    }
+
+    const brand = this.brands.find(b => b.key === this.brandKey);
+    return brand?.name || brand?.key || this.brandKey;
+  }
+
+  showView(view: TSendView) {
+    this.view = view;
   }
 
   handleSelectContact(e: any, role: Partial<IRecipient>) {
     e.preventDefault();
-    this.rolesCompleted[role.id] = {...role, ...e.detail};
-    this.showPickerForId = '';
+    this.rolesCompleted = {...this.rolesCompleted, [role.id]: {...role, ...e.detail}};
+    this.editingRoleId = '';
+    this.view = 'main';
   }
 
   handleClickRole(e: any, role: Partial<IRecipient>) {
     e.stopPropagation();
-    this.showPickerForId = role.id;
+    this.editingRoleId = role.id;
+    this.view = 'recipient';
   }
 
   handleSend(e: any) {
@@ -277,7 +454,13 @@ export class VerdocsSend {
       recipients: Object.values(this.rolesCompleted) as ICreateEnvelopeRecipientFromTemplate[],
       timezone: localeData.timeZone,
       locale: localeData.locale,
+      expires_at: this.expiresAt().toISOString(),
     };
+
+    details.no_contact = this.noContact;
+    if (this.brandKey) {
+      details.brand_key = this.brandKey;
+    }
 
     const beforeSendResult = this.beforeSend.emit({...details, name: details.name!, template: this.template});
     if (beforeSendResult.defaultPrevented) {
@@ -307,6 +490,219 @@ export class VerdocsSend {
     this.exit?.emit();
   }
 
+  handleSwipeStart(e: PointerEvent) {
+    this.swallowNextClick = false;
+    const pane = e.currentTarget as HTMLElement;
+    const rect = pane.getBoundingClientRect();
+    const onTextEntry = !!(e.target as HTMLElement)?.closest?.('input, textarea, select, [contenteditable]');
+    if (this.view === 'main' || onTextEntry || e.clientX - rect.left > rect.width * SWIPE_START_FRACTION) {
+      this.swipeStart = null;
+      return;
+    }
+
+    this.swipeStart = {x: e.clientX, y: e.clientY, time: Date.now()};
+  }
+
+  handleSwipeEnd(e: PointerEvent) {
+    const start = this.swipeStart;
+    this.swipeStart = null;
+    if (!start) {
+      return;
+    }
+
+    const dx = e.clientX - start.x;
+    const dy = Math.abs(e.clientY - start.y);
+    if (dx >= SWIPE_MIN_DISTANCE && dx > dy && Date.now() - start.time <= SWIPE_MAX_DURATION) {
+      this.swallowNextClick = true;
+      this.showView('main');
+    }
+  }
+
+  renderDetailHeader(title: any) {
+    return (
+      <div class="detail-header">
+        <button type="button" class="back" onClick={() => this.showView('main')}>
+          <span class="icon" innerHTML={chevronLeftIcon} />
+          Back
+        </button>
+        <div class="detail-title">{title}</div>
+        <div class="detail-header-spacer" />
+      </div>
+    );
+  }
+
+  renderDetailBody(content: any) {
+    return (
+      <div class="detail-body-wrap">
+        <div class="detail-body" onScroll={(e: any) => updateScrollFade(e.target)}>
+          {content}
+        </div>
+        <div class="scroll-fade" />
+      </div>
+    );
+  }
+
+  renderDoneButton() {
+    return (
+      <div class="detail-footer">
+        <verdocs-button label="Done" size="small" onClick={() => this.showView('main')} />
+      </div>
+    );
+  }
+
+  renderRecipientView() {
+    const role = this.getRoleById(this.editingRoleId);
+    if (!role) {
+      return <div class="detail recipient-detail">{this.renderDetailHeader('Recipient')}</div>;
+    }
+
+    const roleIndex = getRoleIndex(this.template, role.role_name);
+    return (
+      <div class="detail recipient-detail">
+        {this.renderDetailHeader([<span class="role-dot" style={{backgroundColor: getRGBA(roleIndex)}} />, role.role_name])}
+        <verdocs-contact-picker
+          key={role.id}
+          showCancel={false}
+          onExit={() => this.showView('main')}
+          onNext={e => this.handleSelectContact(e, role)}
+          contactSuggestions={this.sessionContacts}
+          templateRole={(this.rolesCompleted[role.id] ?? role) as IRecipient}
+          onSearchContacts={e => this.searchContacts?.emit(e.detail)}
+        />
+      </div>
+    );
+  }
+
+  renderBrandSwatch(brand: IBrand | null, fallbackInitial: string) {
+    const image = brand?.favicon_url || brand?.thumbnail_url || (brand ? null : VERDOCS_LOGO_URL);
+    if (image) {
+      return (
+        <span class="swatch logo">
+          <img src={image} alt="" />
+        </span>
+      );
+    }
+
+    return (
+      <span class="swatch" style={{backgroundColor: brand?.primary_color || '#4c56cb'}}>
+        {fallbackInitial.substring(0, 2).toUpperCase()}
+      </span>
+    );
+  }
+
+  renderBrandOption(key: string, label: string, sub: string, swatch: any) {
+    return (
+      <button type="button" class={{option: true, selected: this.brandKey === key}} onClick={() => (this.brandKey = key)}>
+        <span class="radio" />
+        {swatch}
+        <span class="option-label">
+          {label}
+          <small>{sub}</small>
+        </span>
+      </button>
+    );
+  }
+
+  renderBrandView() {
+    const defaultBrand = this.getDefaultBrand();
+    const others = this.brands.filter(brand => brand.id !== defaultBrand?.id).sort((a, b) => (a.name || a.key).localeCompare(b.name || b.key));
+    const hasBrands = this.brands.length > 0;
+
+    return (
+      <div class="detail">
+        {this.renderDetailHeader('Brand')}
+        {this.renderDetailBody([
+          <div class="option-list">
+            {this.renderBrandOption('', this.getDefaultBrandLabel(), 'Organization default', this.renderBrandSwatch(defaultBrand, defaultBrand?.name || 'V'))}
+            {others.length > 0 && <div class="option-divider" />}
+            {others.map(brand => this.renderBrandOption(brand.key, brand.name || brand.key, brand.key, this.renderBrandSwatch(brand, brand.name || brand.key)))}
+          </div>,
+          !hasBrands && (
+            <p class="hint">
+              Configure the look and feel of the signing experience by{' '}
+              <a href={`${getWebAppUrl(this.endpoint)}/settings/branding`} target="_blank" rel="noopener">
+                Creating a Brand
+                <span class="icon" innerHTML={externalLinkIcon} />
+              </a>
+              .
+            </p>
+          ),
+        ])}
+        {this.renderDoneButton()}
+      </div>
+    );
+  }
+
+  renderExpiresView() {
+    const expiresAt = this.expiresAt();
+    const when = `${expiresAt.toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'})} at ${expiresAt.toLocaleTimeString(undefined, {hour: 'numeric', minute: '2-digit'})}`;
+
+    return (
+      <div class="detail">
+        {this.renderDetailHeader('Expiration')}
+        {this.renderDetailBody([
+          <div class="expires-field">
+            <input
+              type="text"
+              inputMode="numeric"
+              aria-label="Expires in (days)"
+              placeholder={String(DEFAULT_EXPIRY_DAYS)}
+              value={this.expiresInDays}
+              disabled={this.sending}
+              onInput={(e: any) => this.handleExpiryInput(e)}
+            />
+            <span class="suffix">days</span>
+          </div>,
+          <p class="hint">
+            This envelope will expire on {when}. Expirations may be set from {MIN_EXPIRY_DAYS}-{MAX_EXPIRY_DAYS} days. If left blank, this will default to {DEFAULT_EXPIRY_DAYS}.
+          </p>,
+        ])}
+        {this.renderDoneButton()}
+      </div>
+    );
+  }
+
+  renderNotificationsView() {
+    return (
+      <div class="detail">
+        {this.renderDetailHeader('Notifications')}
+        {this.renderDetailBody([
+          <verdocs-checkbox size="small" label="Disable notifications" checked={this.noContact} onInput={(e: any) => (this.noContact = !!e.target.checked)} />,
+          this.noContact && (
+            <div class="warning">
+              <span class="icon" innerHTML={warningIcon} />
+              <div>
+                Disabling notifications turns off invitations and reminders to recipients as well as status updates to you. You may obtain invite links in the recipient summary or
+                via an API call. We strongly recommend enabling{' '}
+                <a href={`${getWebAppUrl(this.endpoint)}/settings/webhooks`} target="_blank" rel="noopener">
+                  Webhooks
+                  <span class="icon" innerHTML={externalLinkIcon} />
+                </a>{' '}
+                to help automate this process.
+              </div>
+            </div>
+          ),
+        ])}
+        {this.renderDoneButton()}
+      </div>
+    );
+  }
+
+  renderDetail() {
+    switch (this.view) {
+      case 'recipient':
+        return this.renderRecipientView();
+      case 'brand':
+        return this.renderBrandView();
+      case 'expires':
+        return this.renderExpiresView();
+      case 'notifications':
+        return this.renderNotificationsView();
+      default:
+        return null;
+    }
+  }
+
   render() {
     if (this.loading) {
       return (
@@ -329,82 +725,90 @@ export class VerdocsSend {
     const allRolesAssigned = rolesAssigned.length >= getRoleNames(this.template).length;
     const assignedEmails = rolesAssigned.map(r => r.email.toLowerCase());
     const hasDuplicateEmails = new Set(assignedEmails).size < assignedEmails.length;
+    const expiresAt = this.expiresAt();
+    const expiresShort = expiresAt.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
 
     return (
-      <Host class={{sendable: this.template?.is_sendable}}>
-        <div class="recipients">
-          <div class="left-line" />
-          <div class={`level level-start`}>
-            {this.getLevelIcon('start')}
-            <div class="complete">Send Envelope</div>
-          </div>
+      <Host class={{'sendable': this.template?.is_sendable, 'detail-open': this.view !== 'main'}}>
+        <div class="track">
+          <div class="pane main-pane" aria-hidden={this.view !== 'main' ? 'true' : 'false'}>
+            <div class="section-title">Recipients</div>
+            <div class="recipients">
+              {levels.map(level => [
+                levels.length > 1 && <div class="step">Step {level}</div>,
+                this.getRolesAtLevel(level).map(role => {
+                  const roleIndex = getRoleIndex(this.template, role.role_name);
+                  const completed = this.rolesCompleted[role.id];
+                  const assigned = completed && rolesAssigned.findIndex(r => r.role_name === role.role_name) > -1;
+                  const optionLabels = this.getRecipientOptionLabels(completed);
 
-          {levels.map(level => (
-            <div class={`level level-${level}`}>
-              {this.getLevelIcon('sequence')}
-
-              {this.getRolesAtLevel(level).map(role => {
-                const unknown = !role.email || !role.first_name || !role.last_name;
-                const roleName = this.rolesCompleted[role.id]?.first_name ? formatFullName(this.rolesCompleted[role.id]) : unknown ? role.role_name : formatFullName(role);
-                const elId = `verdocs-send-recipient-${role.role_name}`;
-                const roleIndex = getRoleIndex(this.template, role.role_name);
-                const rgba = getRGBA(roleIndex);
-                const completed = rolesAssigned.findIndex(r => r.role_name === role.role_name) > -1;
-
-                const style = {
-                  backgroundColor: rgba,
-                  border: completed ? '2px solid #55bc81' : '2px solid #dddddd',
-                };
-
-                return unknown ? (
-                  <div class="recipient" data-ri={roleIndex} data-rn={role.role_name} style={style} onClick={e => this.handleClickRole(e, role)} id={elId}>
-                    {roleName}
-                    <div class="icon" innerHTML={editIcon} />
-                    {this.showPickerForId === role.id && (
-                      <verdocs-portal anchor={elId} onClickAway={() => (this.showPickerForId = '')}>
-                        <verdocs-contact-picker
-                          onExit={() => (this.showPickerForId = '')}
-                          onNext={e => this.handleSelectContact(e, role)}
-                          contactSuggestions={this.sessionContacts}
-                          templateRole={this.rolesCompleted[role.id] ?? role}
-                          onSearchContacts={e => this.searchContacts?.emit(e.detail)}
-                        />
-                      </verdocs-portal>
-                    )}
-                  </div>
-                ) : (
-                  <div class="recipient" data-ri={roleIndex} data-rn={role.role_name} style={style} onClick={e => this.handleClickRole(e, role)} id={elId}>
-                    {/*<div class="recipient" data-ri={roleIndex} data-rn={role.role_name} style={{borderColor: rgba}} onClick={e => this.handleClickRole(e, role)} id={elId}>*/}
-                    {roleName}
-                    <div class="icon" innerHTML={editIcon} />
-                    {this.showPickerForId === role.id && (
-                      <verdocs-portal anchor={elId} onClickAway={() => (this.showPickerForId = '')}>
-                        <verdocs-contact-picker
-                          onExit={() => (this.showPickerForId = '')}
-                          onNext={e => this.handleSelectContact(e, role)}
-                          contactSuggestions={this.sessionContacts}
-                          templateRole={(this.rolesCompleted[role.id] ?? role) as IRecipient}
-                          onSearchContacts={e => this.searchContacts?.emit(e.detail)}
-                        />
-                      </verdocs-portal>
-                    )}
-                  </div>
-                );
-              })}
+                  return (
+                    <button type="button" class="recipient" data-ri={roleIndex} data-rn={role.role_name} onClick={e => this.handleClickRole(e, role)}>
+                      <span class="role-dot" style={{backgroundColor: getRGBA(roleIndex)}} />
+                      <span class="who">
+                        <span class="role-name">{role.role_name}</span>
+                        {assigned ? (
+                          <span class="who-detail">
+                            {formatFullName(completed)} · {completed.email}
+                          </span>
+                        ) : (
+                          <span class="who-detail configure">Configure recipient</span>
+                        )}
+                        {optionLabels.length > 0 && (
+                          <span class="options">
+                            {optionLabels.map(label => (
+                              <span class="pill">{label}</span>
+                            ))}
+                          </span>
+                        )}
+                      </span>
+                      <span class="chevron" innerHTML={chevronRightIcon} />
+                    </button>
+                  );
+                }),
+              ])}
             </div>
-          ))}
 
-          <div class={`level level-done`}>
-            {this.getLevelIcon('end')}
-            <div class="complete">Signing Complete</div>
+            <div class="section-title delivery-title">Delivery</div>
+            <div class="delivery">
+              <button type="button" class="kv" onClick={() => this.showView('brand')} disabled={this.sending}>
+                <span class="key">Brand</span>
+                <span class="value">{this.getSelectedBrandLabel()}</span>
+                <span class="chevron" innerHTML={chevronRightIcon} />
+              </button>
+              <button type="button" class="kv" onClick={() => this.showView('expires')} disabled={this.sending}>
+                <span class="key">Expires</span>
+                <span class="value">
+                  {this.effectiveExpiryDays()} days <small>· {expiresShort}</small>
+                </span>
+                <span class="chevron" innerHTML={chevronRightIcon} />
+              </button>
+              <button type="button" class="kv" onClick={() => this.showView('notifications')} disabled={this.sending}>
+                <span class="key">Notifications</span>
+                <span class={{value: true, off: this.noContact}}>{this.noContact ? 'Off' : 'On'}</span>
+                <span class="chevron" innerHTML={chevronRightIcon} />
+              </button>
+            </div>
+
+            <div class="main-spacer" />
+
+            <div class="buttons">
+              {hasDuplicateEmails && <div class="error-message">Recipients cannot share the same email.</div>}
+              {this.sending && <verdocs-spinner />}
+              {this.showCancel && <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} disabled={this.sending} />}
+              <verdocs-button label="Send" size="small" disabled={!allRolesAssigned || this.sending || hasDuplicateEmails} onClick={e => this.handleSend(e)} />
+            </div>
           </div>
-        </div>
 
-        <div class="buttons">
-          {hasDuplicateEmails && <div class="error-message">Recipients cannot share the same email.</div>}
-          {this.showCancel && <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} disabled={this.sending} />}
-          <verdocs-button label="Send" size="small" disabled={!allRolesAssigned || this.sending || hasDuplicateEmails} onClick={e => this.handleSend(e)} />
-          {this.sending && <verdocs-spinner />}
+          <div
+            class="pane detail-pane"
+            aria-hidden={this.view === 'main' ? 'true' : 'false'}
+            onPointerDown={e => this.handleSwipeStart(e)}
+            onPointerUp={e => this.handleSwipeEnd(e)}
+            onPointerCancel={() => (this.swipeStart = null)}
+          >
+            {this.renderDetail()}
+          </div>
         </div>
       </Host>
     );

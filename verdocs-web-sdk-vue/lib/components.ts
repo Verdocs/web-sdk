@@ -91,6 +91,7 @@ export const VerdocsContactPicker: StencilVueComponent<JSX.VerdocsContactPicker>
   'endpoint',
   'templateRole',
   'contactSuggestions',
+  'showCancel',
   'searchContacts',
   'exit',
   'next'
@@ -759,6 +760,7 @@ export const VerdocsSend: StencilVueComponent<JSX.VerdocsSend> = /*@__PURE__*/ d
   'templateId',
   'environment',
   'showCancel',
+  'brandKey',
   'beforeSend',
   'send',
   'exit',

@@ -1,161 +1,251 @@
 @import '../../../theme.scss';
 
 verdocs-contact-picker {
+  --picker-ink: var(--verdocs-body-color, #111827);
+  --picker-ink-2: #374151;
+  --picker-muted: #6b7280;
+  --picker-faint: #9ca3af;
+  --picker-control-border: #d1d5db;
+  --picker-accent: var(--verdocs-link-color, #{$secondary-color});
+  --picker-accent-tint: #f4f5fc;
+  --picker-accent-tint-2: #e6e7f8;
+
   display: block;
-  border: 1px solid #ebebeb;
-  background-color: $verdocs-grey-4;
+  font-size: 14px;
+  color: var(--picker-ink);
   font-family: $verdocs-primary-font;
-  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);
+
+  * {
+    box-sizing: border-box;
+  }
 
   form {
-    gap: 12px;
-    width: 300px;
-    padding: 12px;
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    background-color: $verdocs-grey-3;
+  }
 
-    .row {
-      gap: 8px;
-      display: flex;
-      position: relative;
-      flex-direction: row;
-      align-items: flex-start;
+  // Fields scroll above a pinned Done button when the host constrains the picker's height; with
+  // no constraint the body simply grows and the fade never shows.
+  .form-body-wrap {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
 
-      .option {
-        gap: 4px;
-        display: flex;
-        padding: 5px 8px;
-        align-items: center;
-        flex-direction: row;
-        text-wrap: nowrap;
-      }
+  .form-body {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .scroll-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 36px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease-out;
+    background: linear-gradient(rgba(255, 255, 255, 0), #ffffff);
+  }
+
+  .scrollable:not(.at-end) > .scroll-fade {
+    opacity: 1;
+  }
+
+  .row.names {
+    display: flex;
+    column-gap: 8px;
+    position: relative;
+
+    .field {
+      flex: 1;
+      min-width: 0;
     }
+  }
 
-    .names-row {
-      gap: 8px;
-      display: flex;
-      flex-direction: row;
-
-      > input {
-        font-size: 14px;
-        width: 88px;
-      }
-    }
-
-    .pin-code {
-      gap: 8px;
-      display: flex;
-      align-items: flex-start;
-      flex-direction: row;
-
-      > input {
-        flex: 0 0 197px;
-        font-size: 14px;
-        //margin-left: 88px;
-      }
-    }
-
-    .address {
-      gap: 8px;
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-
-      > input {
-        flex: 1;
-        font-size: 14px;
-        //margin-left: 88px;
-      }
-    }
-
-    .zip-code {
-      gap: 8px;
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-
-      > input {
-        flex: 1;
-        font-size: 14px;
-        //margin-left: 88px;
-      }
-    }
+  .field {
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+    margin: 0 0 10px 0;
 
     label {
-      display: flex;
-      flex: 0 0 80px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
-      color: $verdocs-bg-4;
+      color: var(--picker-ink-2);
+
+      .optional {
+        color: var(--picker-muted);
+        font-weight: 400;
+      }
+    }
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--picker-ink);
+    background: #ffffff;
+    border: 1px solid var(--picker-control-border);
+    border-radius: 6px;
+    outline: none;
+
+    &:focus {
+      border-color: var(--picker-accent);
+      box-shadow: 0 0 0 2px var(--picker-accent-tint-2);
     }
 
-    .row.message textarea {
-      width: 100%;
-      padding: 5px 7px;
-      border-radius: 4px;
-      font-family: $verdocs-primary-font;
+    &::placeholder {
+      color: var(--picker-faint);
+      opacity: 1;
     }
+  }
+
+  input {
+    height: 34px;
+    padding: 0 10px;
+  }
+
+  textarea {
+    height: 56px;
+    padding: 8px 10px;
+    resize: vertical;
+  }
+
+  .group {
+    margin: 2px 0 12px 0;
+
+    .group-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--picker-ink-2);
+      margin: 0 0 6px 0;
+    }
+  }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pill {
+    all: unset;
+    height: 26px;
+    padding: 0 9px;
+    display: inline-flex;
+    align-items: center;
+    column-gap: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    white-space: nowrap;
+    border-radius: 999px;
+    color: var(--picker-ink-2);
+    border: 1px solid var(--picker-control-border);
+
+    &:focus-visible {
+      outline: 2px solid var(--picker-accent);
+      outline-offset: 2px;
+    }
+
+    &.selected {
+      color: var(--picker-accent);
+      border-color: var(--picker-accent);
+      background: var(--picker-accent-tint);
+    }
+
+    &.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pill-icon,
+    .pill-icon svg {
+      width: 12px;
+      height: 12px;
+      display: block;
+    }
+  }
+
+  .passcode {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    margin-top: 8px;
 
     input {
-      flex: 1;
-      padding: 6px;
-      font-size: 14px;
-      border-radius: 3px;
-      //background: #00000005;
-      border: 1px solid $border-color-extralight;
+      flex: 0 0 120px;
+      width: 120px;
+      height: 30px;
+    }
 
-      &:focus {
-        outline: none;
-      }
+    .passcode-hint {
+      flex: 1;
+      min-width: 0;
+      font-size: 11px;
+      line-height: 1.35;
+      color: var(--picker-muted);
+      align-self: center;
     }
   }
 
   .buttons {
+    margin-top: 10px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    flex: none;
     display: flex;
-    column-gap: 6px;
-    margin-top: 16px;
-    flex-direction: row;
+    column-gap: 10px;
 
-    .flex-fill {
+    verdocs-button:last-child {
       flex: 1;
+    }
+
+    verdocs-button:last-child button {
+      width: 100%;
     }
   }
 
-  ::placeholder {
-    color: $verdocs-bg-2;
-  }
-
-  // @see https://community.logmein.com/t5/LastPass-Support-Discussions/placeholder-text-overrides-data-lpignore-quot-true-quot/td-p/295135
-  // LastPass is ignoring the data-lpignore attribute in some cases
-  [data-lastpass-icon-root] {
-    display: none !important;
-  }
-}
-
-#verdocs-contact-picker-suggestions {
-  .dropdown {
+  .suggestions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
     max-height: 225px;
-    overflow-y: scroll;
+    overflow-y: auto;
     background: #ffffff;
-    font-family: $verdocs-primary-font;
-    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.14);
 
     .suggestion {
       display: flex;
       padding: 6px 12px;
       align-items: center;
       flex-direction: row;
+      cursor: pointer;
 
       svg {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
       }
 
       .avatar {
-        width: 32px;
-        height: 32px;
-        flex: 0 0 32px;
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
         margin-right: 8px;
         border-radius: 100%;
       }
@@ -163,25 +253,32 @@ verdocs-contact-picker {
       .details {
         display: flex;
         flex-direction: column;
+        min-width: 0;
       }
 
       .name {
-        font-size: 16px;
+        font-size: 13px;
         font-weight: 500;
-        margin-bottom: 3px;
-        color: $verdocs-grey-0;
+        color: var(--picker-ink);
       }
 
       .destination {
-        font-size: 14px;
-        margin-bottom: 3px;
-        color: $verdocs-grey-1;
+        font-size: 12px;
+        color: var(--picker-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       &:hover {
-        background: #eee;
-        cursor: pointer;
+        background: var(--picker-accent-tint);
       }
     }
+  }
+
+  // @see https://community.logmein.com/t5/LastPass-Support-Discussions/placeholder-text-overrides-data-lpignore-quot-true-quot/td-p/295135
+  // LastPass is ignoring the data-lpignore attribute in some cases
+  [data-lastpass-icon-root] {
+    display: none !important;
   }
 }

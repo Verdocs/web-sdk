@@ -11,3 +11,5 @@ export const API_URL = IS_BETA ? 'https://stage-api.verdocs.com' : 'https://api.
 // condition that silently overwrites a host-app preference and is hard to track down. (Definitely breaks
 // the Teams app, among other things.)
 export const DefaultEndpoint = VerdocsEndpoint.getDefault();
+
+export const getWebAppUrl = (endpoint: VerdocsEndpoint = DefaultEndpoint) => (endpoint.getEnvironment() === 'beta' ? 'https://beta.verdocs.com' : 'https://app.verdocs.com');

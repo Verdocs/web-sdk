@@ -1,4 +1,4 @@
-import {Component, Prop, State, h, Event, EventEmitter, Element} from '@stencil/core';
+import {Component, Prop, State, h, Event, EventEmitter, Element, Watch} from '@stencil/core';
 import {TSession, VerdocsEndpoint, createProfile, authenticate, resendVerification, resetPassword} from '@verdocs/js-sdk';
 import {isMFARequired, getSocialProviders, getSocialLoginUrl, createCodeVerifier, createCodeChallenge} from '@verdocs/js-sdk';
 import {verifyEmail, IAuthenticateResponse, getMyUser, IProfile, convertToE164, ISocialProviders, TSocialLoginProvider} from '@verdocs/js-sdk';
@@ -49,14 +49,20 @@ const clearSocialLoginAttempt = () => {
   }
 };
 
-// Prevent replays on a reload
-const cleanSocialLoginParams = (names: string[]) => {
+const SOCIAL_RETURN_PARAMS = ['login_code', 'state', 'error'];
+
+// Prevent replays on a reload.
+const cleanSocialLoginParams = () => {
   const url = new URL(window.location.href);
-  names.forEach(name => url.searchParams.delete(name));
-  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  SOCIAL_RETURN_PARAMS.forEach(name => url.searchParams.delete(name));
+  window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
 };
 
-const currentReturnUri = () => `${window.location.origin}${window.location.pathname}`;
+const currentReturnUri = () => {
+  const url = new URL(window.location.href);
+  SOCIAL_RETURN_PARAMS.forEach(name => url.searchParams.delete(name));
+  return url.toString();
+};
 
 const formatRecoveryCode = (value: string) => {
   const cleaned = value
@@ -187,15 +193,25 @@ export class VerdocsAuth {
       }
     });
 
-    if (this.showSocialLogins) {
-      getSocialProviders(this.endpoint)
-        .then(providers => {
-          this.providers = providers;
-        })
-        .catch(() => undefined);
+    this.loadProviders();
+    this.handleSocialLoginReturn();
+  }
+
+  @Watch('showSocialLogins')
+  onShowSocialLoginsChanged() {
+    this.loadProviders();
+  }
+
+  loadProviders() {
+    if (!this.showSocialLogins) {
+      return;
     }
 
-    this.handleSocialLoginReturn();
+    getSocialProviders(this.endpoint)
+      .then(providers => {
+        this.providers = providers;
+      })
+      .catch(e => console.log('[AUTH] Unable to load providers', e));
   }
 
   componentDidRender() {
@@ -400,9 +416,12 @@ export class VerdocsAuth {
       return;
     }
 
+    // A 401 could be an expired challenge or a failed-login-acount-lock
     if (e?.response?.status === 401) {
+      const serverMessage = typeof e.response?.data?.error === 'string' ? e.response.data.error : '';
+      const locked = /locked/i.test(serverMessage);
       this.returnToLogin();
-      VerdocsToast('Your sign-in timed out. Enter your password again.', {style: 'error'});
+      VerdocsToast(locked ? serverMessage : 'Your sign-in timed out. Please re-enter your password.', {style: 'error'});
       return;
     }
 
@@ -503,7 +522,7 @@ export class VerdocsAuth {
     }
 
     clearSocialLoginAttempt();
-    cleanSocialLoginParams(loginCode ? ['login_code', 'state'] : ['error']);
+    cleanSocialLoginParams();
 
     if (error) {
       VerdocsToast(socialErrorMessage(error), {style: 'error'});
@@ -1037,11 +1056,12 @@ export class VerdocsAuth {
           />
 
           <verdocs-button
-            label="Forgot Your Password?"
+            label="Forgot your password?"
             variant="text"
+            size="small"
             onClick={() => (this.displayMode = 'forgot')}
             disabled={this.submitting}
-            style={{display: 'flex', justifyContent: 'center', margin: '0 auto 20px'}}
+            style={{display: 'flex', justifyContent: 'flex-end', margin: '-6px 0 20px'}}
           />
 
           <verdocs-button
