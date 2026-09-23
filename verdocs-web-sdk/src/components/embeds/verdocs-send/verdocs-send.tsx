@@ -19,6 +19,9 @@ const chevronLeftIcon =
 const warningIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg>';
 
+const infoIcon =
+  '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
+
 const externalLinkIcon =
   '<svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M10 14 21 3M21 14v7H3V3h7"/></svg>';
 
@@ -42,7 +45,7 @@ const AUTH_METHOD_LABELS: Record<TRecipientAuthMethod, string> = {
   id: 'ID check',
 };
 
-type TSendView = 'main' | 'recipient' | 'brand' | 'expires' | 'notifications';
+type TSendView = 'main' | 'recipient' | 'brand' | 'expires' | 'notifications' | 'sender';
 
 export interface ISendEventDetail extends ICreateEnvelopeFromTemplateRequest {
   name: string;
@@ -155,6 +158,9 @@ export class VerdocsSend {
   @State() organization: IOrganization | null = null;
   @State() expiresInDays = '';
   @State() noContact = false;
+  @State() senderDefaults = {name: '', email: ''};
+  @State() senderName = '';
+  @State() senderEmail = '';
   @State() rolesCompleted: Record<string, Partial<IRecipient>> = {};
 
   @State() loading = true;
@@ -269,6 +275,32 @@ export class VerdocsSend {
     this.brandKey = '';
     this.expiresInDays = '';
     this.noContact = false;
+    this.senderName = '';
+    this.senderEmail = '';
+  }
+
+  // The sender_name defaults to the custom sender identity if configued/active, the brand
+  // next, and then the org name.
+  brandSenderName() {
+    const brand = this.brandKey ? this.brands.find(b => b.key === this.brandKey) : this.getDefaultBrand();
+    return brand?.email_display_name || brand?.email_sender_name || this.organization?.name || '';
+  }
+
+  effectiveSenderName() {
+    return this.senderName || this.brandSenderName();
+  }
+
+  effectiveSenderEmail() {
+    return this.senderEmail || this.senderDefaults.email;
+  }
+
+  senderOverrides() {
+    const name = this.senderName.trim();
+    const email = this.senderEmail.trim();
+    return {
+      sender_name: name && name !== this.brandSenderName() ? name : undefined,
+      sender_email: email && email !== this.senderDefaults.email ? email : undefined,
+    };
   }
 
   @Watch('templateId')
@@ -293,6 +325,7 @@ export class VerdocsSend {
         };
 
         if (profile) {
+          this.senderDefaults = {name: formatFullName(profile), email: profile.email || ''};
           this.sessionContacts = [me];
 
           getOrganizationContacts(this.endpoint)
@@ -458,6 +491,13 @@ export class VerdocsSend {
     };
 
     details.no_contact = this.noContact;
+    const {sender_name, sender_email} = this.senderOverrides();
+    if (sender_name) {
+      details.sender_name = sender_name;
+    }
+    if (sender_email) {
+      details.sender_email = sender_email;
+    }
     if (this.brandKey) {
       details.brand_key = this.brandKey;
     }
@@ -662,6 +702,46 @@ export class VerdocsSend {
     );
   }
 
+  renderSenderView() {
+    const validEmail = !this.senderEmail.trim() || isValidEmail(this.senderEmail.trim());
+    return (
+      <div class="detail">
+        {this.renderDetailHeader('Sender')}
+        {this.renderDetailBody([
+          <div class="sender-field">
+            <label htmlFor={`${this.containerId}-sender-name`}>Name</label>
+            <input
+              id={`${this.containerId}-sender-name`}
+              type="text"
+              value={this.effectiveSenderName()}
+              disabled={this.sending}
+              onInput={(e: any) => (this.senderName = e.target.value)}
+            />
+          </div>,
+          <div class="sender-field">
+            <label htmlFor={`${this.containerId}-sender-email`}>Email</label>
+            <input
+              id={`${this.containerId}-sender-email`}
+              type="email"
+              value={this.effectiveSenderEmail()}
+              disabled={this.sending}
+              onInput={(e: any) => (this.senderEmail = e.target.value)}
+            />
+            {!validEmail && <div class="field-error">Enter a valid email address.</div>}
+          </div>,
+          <div class="notice">
+            <span class="icon" innerHTML={infoIcon} />
+            <div>
+              The name is what recipients see as the sender, for example "Sentry &lt;notifications@verdocs.com&gt;", and starts as your brand's name. The email is where status
+              updates about this envelope are sent and what the certificate shows as the sender. Delivery from your own address needs a custom sender set up under Settings.
+            </div>
+          </div>,
+        ])}
+        {this.renderDoneButton()}
+      </div>
+    );
+  }
+
   renderNotificationsView() {
     return (
       <div class="detail">
@@ -698,6 +778,8 @@ export class VerdocsSend {
         return this.renderExpiresView();
       case 'notifications':
         return this.renderNotificationsView();
+      case 'sender':
+        return this.renderSenderView();
       default:
         return null;
     }
@@ -780,6 +862,14 @@ export class VerdocsSend {
                 <span class="key">Expires</span>
                 <span class="value">
                   {this.effectiveExpiryDays()} days <small>· {expiresShort}</small>
+                </span>
+                <span class="chevron" innerHTML={chevronRightIcon} />
+              </button>
+              <button type="button" class="kv" onClick={() => this.showView('sender')} disabled={this.sending}>
+                <span class="key">Sender</span>
+                <span class="value">
+                  {this.effectiveSenderName() || this.effectiveSenderEmail()}
+                  {this.effectiveSenderName() && this.effectiveSenderEmail() ? <small> · {this.effectiveSenderEmail()}</small> : null}
                 </span>
                 <span class="chevron" innerHTML={chevronRightIcon} />
               </button>

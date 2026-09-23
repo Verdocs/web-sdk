@@ -36,6 +36,11 @@ export class VerdocsSignFooter {
   @Prop() isDone = false;
 
   /**
+   * The envelope's brand, if any.
+   */
+  @Prop() brand: Record<string, any> | null = null;
+
+  /**
    * Event fired if the user asks the sender a question. The parent component is responsible for handling this.
    */
   @Event({composed: true}) askQuestion: EventEmitter<{question: string}>;
@@ -180,20 +185,25 @@ export class VerdocsSignFooter {
   // }
 
   render() {
-    const hasPoweredBy = !!this.envelope?.organization?.powered_by_label;
-    const hasLinks = !!this.envelope?.organization?.terms_use_url || !!this.envelope?.organization?.privacy_policy_url;
+    const org = this.envelope?.organization;
+    const poweredByLabel = this.brand?.powered_by_label || org?.powered_by_label;
+    const poweredByUrl = this.brand?.powered_by_label ? this.brand?.powered_by_url : org?.powered_by_url;
+    const termsUrl = this.brand?.terms_use_url || org?.terms_use_url;
+    const privacyUrl = this.brand?.privacy_policy_url || org?.privacy_policy_url;
+    const hasPoweredBy = !!poweredByLabel;
+    const hasLinks = !!termsUrl || !!privacyUrl;
     const hasButtons = !this.isDone;
 
     return (
       <Host class={{'has-buttons': hasButtons, 'no-buttons': !hasButtons, 'has-powered-by': hasPoweredBy, 'has-links': hasLinks, 'just-buttons': !hasPoweredBy && !hasLinks}}>
-        {this.envelope?.organization?.powered_by_label && (
+        {poweredByLabel && (
           <div class="powered-by">
-            {this.envelope?.organization?.powered_by_url ? (
-              <a href={this.envelope?.organization?.powered_by_url} target="_blank" rel="noopener noreferrer">
-                <span>{this.envelope?.organization?.powered_by_label}</span>
+            {poweredByUrl ? (
+              <a href={poweredByUrl} target="_blank" rel="noopener noreferrer">
+                <span>{poweredByLabel}</span>
               </a>
             ) : (
-              <span>{this.envelope?.organization?.powered_by_label}</span>
+              <span>{poweredByLabel}</span>
             )}
           </div>
         )}
@@ -216,13 +226,13 @@ export class VerdocsSignFooter {
         )}
 
         <div class="links">
-          {this.envelope?.organization?.terms_use_url && (
-            <a href={this.envelope?.organization?.terms_use_url} target="_blank" rel="noopener noreferrer">
+          {termsUrl && (
+            <a href={termsUrl} target="_blank" rel="noopener noreferrer">
               <span>Terms of Use</span>
             </a>
           )}
-          {this.envelope?.organization?.privacy_policy_url && (
-            <a href={this.envelope?.organization?.privacy_policy_url} target="_blank" rel="noopener noreferrer">
+          {privacyUrl && (
+            <a href={privacyUrl} target="_blank" rel="noopener noreferrer">
               <span>Privacy Policy</span>
             </a>
           )}

@@ -116,6 +116,7 @@ export class VerdocsSign {
   @State() fatalErrorMessage = '';
   @State() focusedField = '';
   @State() disclosures = DEFAULT_DISCLOSURES;
+  @State() brand: Record<string, any> | null = null;
   @State() fieldUpdateCounter = 0;
   @State() submitting = false;
   @State() submitted = false;
@@ -335,10 +336,35 @@ export class VerdocsSign {
     }
   }
 
+  // A brand saved from the detail form has colors but no CSS block of its own. Those colors still
+  // have to reach the signing UI, so a minimal block is built from them, using the same variables
+  // the Builder would have emitted.
+  synthesizeBrandCss(brand: Record<string, any>) {
+    const primary = typeof brand.primary_color === 'string' ? brand.primary_color.trim() : '';
+    if (!/^#[0-9a-f]{6}$/i.test(primary)) {
+      return '';
+    }
+
+    const shade = (hex: string, amount: number) => {
+      const channel = (i: number) => Math.round(Math.max(0, Math.min(255, parseInt(hex.slice(i, i + 2), 16) * (1 + amount))));
+      return `#${[1, 3, 5].map(i => channel(i).toString(16).padStart(2, '0')).join('')}`;
+    };
+    const secondary = typeof brand.secondary_color === 'string' && /^#[0-9a-f]{6}$/i.test(brand.secondary_color.trim()) ? brand.secondary_color.trim() : primary;
+
+    return [
+      ':root, .verdocs-custom-theme {',
+      `  --verdocs-primary-color: ${primary};`,
+      `  --verdocs-primary-color-hover: ${shade(primary, -0.14)};`,
+      `  --verdocs-link-color: ${secondary};`,
+      `  --verdocs-checkbox-color: ${primary};`,
+      '}',
+    ].join('\n');
+  }
+
   applyBrandStyleOverrides(brand?: Record<string, any> | null) {
     const styleId = this.getBrandStyleOverridesId();
     const existing = document.getElementById(styleId);
-    const overrides = brand?.style_overrides;
+    const overrides = brand ? (typeof brand.style_overrides === 'string' && brand.style_overrides.trim() ? brand.style_overrides : this.synthesizeBrandCss(brand)) : '';
 
     if (typeof overrides === 'string' && overrides.length > 0) {
       const styleEl = (existing as HTMLStyleElement) || document.createElement('style');
@@ -360,9 +386,19 @@ export class VerdocsSign {
     const {auth_step} = recipient;
     this.recipient = recipient;
     this.envelope = envelope;
-    this.disclosures = this.envelope?.organization?.disclaimer || DEFAULT_DISCLOSURES;
-    this.applyOrgStyleOverrides();
-    this.applyBrandStyleOverrides(brand);
+    this.brand = brand || null;
+    this.disclosures = brand?.disclaimer || this.envelope?.organization?.disclaimer || DEFAULT_DISCLOSURES;
+
+    // A resolved brand (the envelope's own, or the organization's default) replaces the
+    // organization's legacy CSS block outright. Applying both let the older block's direct
+    // header and button rules beat the brand's variables, so the brand never showed.
+    if (brand) {
+      document.getElementById(this.getOrgStyleOverridesId())?.remove();
+      this.applyBrandStyleOverrides(brand);
+    } else {
+      this.applyOrgStyleOverrides();
+      this.applyBrandStyleOverrides(null);
+    }
     this.authStep = auth_step;
     this.delegated = !!recipient.delegated_to;
     this.agreed = recipient.agreed;
@@ -1521,7 +1557,8 @@ export class VerdocsSign {
               <div class="title">{this.envelope.name}</div>
               <div style={{flex: '1'}} />
 
-              {!this.finishLater && !this.submitted &&
+              {!this.finishLater &&
+                !this.submitted &&
                 (() => {
                   const remaining = this.getRequiredTotalCount() - this.getRequiredFilledCount();
                   const optionalLeft = this.getOptionalUnfilledCount();
@@ -1764,6 +1801,7 @@ export class VerdocsSign {
           <verdocs-sign-footer
             endpoint={this.endpoint}
             envelopeId={this.envelopeId}
+            brand={this.brand}
             isDone={this.isDone}
             onAskQuestion={(e: any) => {
               askQuestion(this.endpoint, this.envelopeId, this.roleId, {question: e.detail.question})

@@ -1998,6 +1998,11 @@ export namespace Components {
      */
     interface VerdocsSignFooter {
         /**
+          * The brand resolved for the envelope, if any. Its footer label and legal links take precedence over the organization's defaults.
+          * @default null
+         */
+        "brand": Record<string, any> | null;
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
          */
@@ -7123,6 +7128,11 @@ declare namespace LocalJSX {
      * with a few convenience functions for the envelope recipient to use.
      */
     interface VerdocsSignFooter {
+        /**
+          * The brand resolved for the envelope, if any. Its footer label and legal links take precedence over the organization's defaults.
+          * @default null
+         */
+        "brand"?: Record<string, any> | null;
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
