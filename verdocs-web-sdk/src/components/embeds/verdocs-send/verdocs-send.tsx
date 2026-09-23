@@ -279,15 +279,11 @@ export class VerdocsSend {
     this.senderEmail = '';
   }
 
-  // The sender_name defaults to the custom sender identity if configued/active, the brand
-  // next, and then the org name.
-  brandSenderName() {
-    const brand = this.brandKey ? this.brands.find(b => b.key === this.brandKey) : this.getDefaultBrand();
-    return brand?.email_display_name || brand?.email_sender_name || this.organization?.name || '';
-  }
-
+  // sender_name and sender_email are the contact for recipient questions and the completion
+  // notice. They default to the signed-in user and are only sent when edited away from that.
+  // The From line of the invitation email is the brand's (then the org's) and is not set here.
   effectiveSenderName() {
-    return this.senderName || this.brandSenderName();
+    return this.senderName || this.senderDefaults.name;
   }
 
   effectiveSenderEmail() {
@@ -298,7 +294,7 @@ export class VerdocsSend {
     const name = this.senderName.trim();
     const email = this.senderEmail.trim();
     return {
-      sender_name: name && name !== this.brandSenderName() ? name : undefined,
+      sender_name: name && name !== this.senderDefaults.name ? name : undefined,
       sender_email: email && email !== this.senderDefaults.email ? email : undefined,
     };
   }
@@ -731,10 +727,15 @@ export class VerdocsSend {
           </div>,
           <div class="notice">
             <span class="icon" innerHTML={infoIcon} />
-            <div>
-              The name is what recipients see as the sender, for example "Sentry &lt;notifications@verdocs.com&gt;", and starts as your brand's name. The email is where status
-              updates about this envelope are sent and what the certificate shows as the sender. Delivery from your own address needs a custom sender set up under Settings.
-            </div>
+              <div>
+                Specify where envelope-completed email notifications and "Ask a Question" submissions are delivered.
+                To customize the "From" address for email notifications, please configure those in{' '}
+                <a href={`${getWebAppUrl(this.endpoint)}/settings/brands`} target="_blank" rel="noopener">
+                  Brands
+                  <span class="icon" innerHTML={externalLinkIcon} />
+                </a>{' '}
+                .
+              </div>
           </div>,
         ])}
         {this.renderDoneButton()}
@@ -867,9 +868,9 @@ export class VerdocsSend {
               </button>
               <button type="button" class="kv" onClick={() => this.showView('sender')} disabled={this.sending}>
                 <span class="key">Sender</span>
-                <span class="value">
-                  {this.effectiveSenderName() || this.effectiveSenderEmail()}
-                  {this.effectiveSenderName() && this.effectiveSenderEmail() ? <small> · {this.effectiveSenderEmail()}</small> : null}
+                <span class="value stacked">
+                  <span class="line">{this.effectiveSenderName() || this.effectiveSenderEmail()}</span>
+                  {this.effectiveSenderName() && this.effectiveSenderEmail() ? <small class="line">{this.effectiveSenderEmail()}</small> : null}
                 </span>
                 <span class="chevron" innerHTML={chevronRightIcon} />
               </button>

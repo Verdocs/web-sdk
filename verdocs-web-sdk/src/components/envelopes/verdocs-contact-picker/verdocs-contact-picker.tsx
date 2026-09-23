@@ -245,6 +245,11 @@ export class VerdocsContactPicker {
   render() {
     const hasBasics = this.first_name && this.last_name && isValidEmail(this.email);
 
+    // First name is the first focused field so it's our quicksearch matching target.
+    const visibleSuggestions = (this.contactSuggestions || []).filter(
+      suggestion => !this.first_name || suggestion.first_name?.toLowerCase().includes(this.first_name.toLowerCase()),
+    );
+
     const hasAuthRequirements = this.auth_methods.every(method => {
       switch (method) {
         case 'passcode':
@@ -424,11 +429,9 @@ export class VerdocsContactPicker {
             </div>
           </div>
           <div class="scroll-fade" />
-          {this.showSuggestions && (
+          {this.showSuggestions && visibleSuggestions.length > 0 && (
             <div class="suggestions" role="listbox" ref={el => (this.suggestionsEl = el)}>
-              {this.contactSuggestions
-                .filter(suggestion => !this.first_name || suggestion.first_name?.toLowerCase().includes(this.first_name.toLowerCase()))
-                .map(suggestion => (
+              {visibleSuggestions.map(suggestion => (
                   <div key={suggestion.id ?? suggestion.email} class="suggestion" onClick={e => this.handleSelectSuggestion(e, suggestion)}>
                     {suggestion.picture ? <img alt="Avatar" class="avatar" src={suggestion.picture} /> : <div class="avatar" innerHTML={addrBookIcon} />}
                     <div class="details">

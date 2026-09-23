@@ -22,6 +22,7 @@ verdocs-send {
   position: relative;
   overflow: hidden;
   width: 100%;
+  min-width: 0;
   max-width: var(--verdocs-send-max-width, var(--send-max-width));
   box-sizing: border-box;
   background: #ffffff;
@@ -147,6 +148,9 @@ verdocs-send {
     all: unset;
     display: flex;
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
     cursor: pointer;
     align-items: center;
     column-gap: 10px;
@@ -267,9 +271,36 @@ verdocs-send {
         color: var(--send-muted);
       }
 
+      // Name on one line, email on the next: each line truncates on its own.
+      &.stacked {
+        display: flex;
+        flex-direction: column;
+        row-gap: 1px;
+        white-space: normal;
+
+        .line {
+          display: block;
+          min-width: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        small.line {
+          font-size: 12px;
+        }
+      }
+
       &.off {
         color: var(--send-warning-icon);
       }
+    }
+
+    &:has(.value.stacked) {
+      height: auto;
+      min-height: 40px;
+      padding-top: 6px;
+      padding-bottom: 6px;
     }
   }
 
