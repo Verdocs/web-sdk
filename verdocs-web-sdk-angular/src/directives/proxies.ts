@@ -40,6 +40,7 @@ import { defineCustomElement as defineVerdocsFieldTimestamp } from '@verdocs/web
 import { defineCustomElement as defineVerdocsFileChooser } from '@verdocs/web-sdk/components/verdocs-file-chooser.js';
 import { defineCustomElement as defineVerdocsFlag } from '@verdocs/web-sdk/components/verdocs-flag.js';
 import { defineCustomElement as defineVerdocsHelpIcon } from '@verdocs/web-sdk/components/verdocs-help-icon.js';
+import { defineCustomElement as defineVerdocsIdScanDialog } from '@verdocs/web-sdk/components/verdocs-id-scan-dialog.js';
 import { defineCustomElement as defineVerdocsInitialDialog } from '@verdocs/web-sdk/components/verdocs-initial-dialog.js';
 import { defineCustomElement as defineVerdocsKbaDialog } from '@verdocs/web-sdk/components/verdocs-kba-dialog.js';
 import { defineCustomElement as defineVerdocsLoader } from '@verdocs/web-sdk/components/verdocs-loader.js';
@@ -1417,6 +1418,42 @@ export declare interface VerdocsHelpIcon extends Components.VerdocsHelpIcon {}
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineVerdocsIdScanDialog,
+  inputs: ['endpoint', 'recipient', 'requireSelfie']
+})
+@Component({
+  selector: 'verdocs-id-scan-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'recipient', 'requireSelfie'],
+  outputs: ['next', 'exit', 'verificationFailed'],
+})
+export class VerdocsIdScanDialog {
+  protected el: HTMLVerdocsIdScanDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<{response: IVerdocsIdScanDialogISignerTokenResponse}>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  @Output() verificationFailed = new EventEmitter<CustomEvent<{message: string}>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { ISignerTokenResponse as IVerdocsIdScanDialogISignerTokenResponse } from '@verdocs/web-sdk/components';
+
+export declare interface VerdocsIdScanDialog extends Components.VerdocsIdScanDialog {
+
+  next: EventEmitter<CustomEvent<{response: IVerdocsIdScanDialogISignerTokenResponse}>>;
+
+  exit: EventEmitter<CustomEvent<any>>;
+
+  verificationFailed: EventEmitter<CustomEvent<{message: string}>>;
+}
+
+
+@ProxyCmp({
   defineCustomElementFn: defineVerdocsInitialDialog,
   inputs: ['initials']
 })
@@ -2140,14 +2177,14 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsSignFooter,
-  inputs: ['endpoint', 'envelopeId', 'isDone']
+  inputs: ['brand', 'endpoint', 'envelopeId', 'isDone']
 })
 @Component({
   selector: 'verdocs-sign-footer',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'envelopeId', 'isDone'],
+  inputs: ['brand', 'endpoint', 'envelopeId', 'isDone'],
   outputs: ['askQuestion', 'decline', 'finishLater', 'sdkError'],
 })
 export class VerdocsSignFooter {

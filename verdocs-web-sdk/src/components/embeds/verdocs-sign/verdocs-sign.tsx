@@ -1520,6 +1520,20 @@ export class VerdocsSign {
       );
     }
 
+    if (this.authStep === 'id') {
+      return (
+        <verdocs-id-scan-dialog
+          endpoint={this.endpoint}
+          onNext={e => this.processAuthResponse(e.detail.response)}
+          onVerificationFailed={() => {
+            this.fatalErrorHeader = 'Recipient Verification Failed';
+            this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
+            this.isDone = true;
+          }}
+        />
+      );
+    }
+
     const inProgressMenuOptions = [
       {id: 'later', label: 'Finish Later'}, //
       // {id: 'claim', label: 'Claim the Document', disabled: true},
