@@ -447,7 +447,7 @@ export class VerdocsTemplateFieldProperties {
             <button class="delete-button" disabled={this.dirty} onClick={e => this.handleDelete(e)} innerHTML={TrashIcon} />
             <div style={{flex: '1'}} />
             <verdocs-button size="small" variant="outline" label="Cancel" disabled={!this.dirty} onClick={e => this.handleCancel(e)} />
-            <verdocs-button size="small" label="Save" disabled={saveDisabled || (this.readonly && !this.defaultValue)} onClick={e => !saveDisabled && this.handleSave(e)} />
+            <verdocs-button size="small" label="Save" disabled={saveDisabled || !this.defaultValue} onClick={e => !saveDisabled && this.handleSave(e)} />
           </div>
         </form>
       </Host>
