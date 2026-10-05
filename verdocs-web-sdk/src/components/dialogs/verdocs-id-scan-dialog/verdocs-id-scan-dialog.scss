@@ -1,0 +1,90 @@
+@import '../../../theme.scss';
+
+verdocs-id-scan-dialog {
+  font-family: $primary-font;
+  box-sizing: border-box;
+
+  div {
+    box-sizing: border-box;
+  }
+
+  // NOTE: background-overlay and .dialog are handled by verdocs-dialog
+
+  .heading {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .title {
+      font-size: 20px;
+      font-weight: 500;
+    }
+  }
+
+  .help-box {
+    padding: 0;
+    color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .help-details {
+    gap: 5px;
+    display: flex;
+    margin-left: 0;
+    font-size: 14px;
+    flex-direction: column;
+  }
+
+  .help-text {
+    font-weight: 400;
+  }
+
+  .photos {
+    gap: 10px;
+    display: flex;
+    margin-top: 10px;
+    flex-direction: column;
+  }
+
+  .photo {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .photo-label {
+    gap: 6px;
+    display: flex;
+    font-size: 14px;
+    font-weight: 700;
+    align-items: center;
+    color: $label-color-light;
+  }
+
+  .photo-check {
+    display: flex;
+  }
+
+  .error {
+    margin-top: 20px;
+    color: $verdocs-red-1;
+  }
+
+  .buttons {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    verdocs-button {
+      margin-left: 16px;
+    }
+  }
+}
