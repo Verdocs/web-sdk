@@ -561,6 +561,20 @@ export const VerdocsHelpIcon: StencilVueComponent<JSX.VerdocsHelpIcon> = /*@__PU
 ]);
 
 
+export const VerdocsIdScanDialog: StencilVueComponent<JSX.VerdocsIdScanDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsIdScanDialog>('verdocs-id-scan-dialog', undefined, [
+  'endpoint',
+  'requireSelfie',
+  'recipient',
+  'next',
+  'exit',
+  'verificationFailed'
+], [
+  'next',
+  'exit',
+  'verificationFailed'
+]);
+
+
 export const VerdocsInitialDialog: StencilVueComponent<JSX.VerdocsInitialDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsInitialDialog>('verdocs-initial-dialog', undefined, [
   'initials',
   'next',
@@ -796,6 +810,7 @@ export const VerdocsSignFooter: StencilVueComponent<JSX.VerdocsSignFooter> = /*@
   'endpoint',
   'envelopeId',
   'isDone',
+  'brand',
   'askQuestion',
   'decline',
   'finishLater',
