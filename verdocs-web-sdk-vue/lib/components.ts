@@ -796,6 +796,7 @@ export const VerdocsSignFooter: StencilVueComponent<JSX.VerdocsSignFooter> = /*@
   'endpoint',
   'envelopeId',
   'isDone',
+  'brand',
   'askQuestion',
   'decline',
   'finishLater',

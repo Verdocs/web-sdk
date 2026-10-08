@@ -485,9 +485,27 @@ export class VerdocsEnvelopeSidebar {
     return (
       <Host class={this.panelOpen ? 'open' : ''}>
         <div class="side-buttons">
-          <button class={this.activeTab === 1 ? 'active' : ''} onClick={() => this.setTab(1)} innerHTML={InformationCircle} />
-          <button class={this.activeTab === 2 ? 'active' : ''} onClick={() => this.setTab(2)} innerHTML={Users} />
-          <button class={this.activeTab === 3 ? 'active' : ''} onClick={() => this.setTab(3)} innerHTML={ClipboardDocuments} />
+          <button
+            class={this.activeTab === 1 ? 'active' : ''}
+            aria-label="Details"
+            aria-pressed={this.panelOpen && this.activeTab === 1 ? 'true' : 'false'}
+            onClick={() => this.setTab(1)}
+            innerHTML={InformationCircle}
+          />
+          <button
+            class={this.activeTab === 2 ? 'active' : ''}
+            aria-label="Recipients"
+            aria-pressed={this.panelOpen && this.activeTab === 2 ? 'true' : 'false'}
+            onClick={() => this.setTab(2)}
+            innerHTML={Users}
+          />
+          <button
+            class={this.activeTab === 3 ? 'active' : ''}
+            aria-label="History"
+            aria-pressed={this.panelOpen && this.activeTab === 3 ? 'true' : 'false'}
+            onClick={() => this.setTab(3)}
+            innerHTML={ClipboardDocuments}
+          />
         </div>
 
         {this.activeTab === 1 && (

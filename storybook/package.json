@@ -11,11 +11,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@verdocs/js-sdk": "^6.12.1"
+    "@verdocs/js-sdk": "^6.13.0"
   },
   "devDependencies": {
-    "@verdocs/web-sdk": "6.13.0",
-    "@verdocs/web-sdk-react": "6.13.0",
+    "@verdocs/web-sdk": "6.13.3",
+    "@verdocs/web-sdk-react": "6.13.3",
     "@chromatic-com/storybook": "^5.0.1",
     "@storybook/addon-docs": "10.4.4",
     "@storybook/addon-links": "10.4.4",
@@ -25,7 +25,7 @@
     "@storybook/web-components-vite": "10.4.4",
     "es-toolkit": "^1.52.0",
     "lit": "3.3.3",
-    "prettier": "^3.9.8",
+    "prettier": "^3.9.9",
     "prop-types": "^15.8.1",
     "remark-gfm": "^4.0.1",
     "storybook": "10.4.4",

@@ -44,6 +44,15 @@ verdocs-field-checkbox {
     display: none;
   }
 
+  // The box is drawn for 14pt and scaled to the field's real size, which is also what the PDF gets.
+  label > input[type='checkbox'] + * {
+    display: block;
+    width: 14px;
+    height: 14px;
+    transform: scale(var(--verdocs-toggle-scale, 1));
+    transform-origin: top left;
+  }
+
   label > input[type='checkbox'] + *::before {
     margin: 0;
     content: '';
@@ -82,6 +91,23 @@ verdocs-field-checkbox {
     margin-left: -20px;
     margin-top: -17px;
     transform: scale(0.7);
+  }
+
+  .resize-grip {
+    right: -3px;
+    width: 6px;
+    height: 6px;
+    opacity: 0;
+    z-index: 10;
+    bottom: -3px;
+    position: absolute;
+    border-radius: 1px;
+    background: #ffffff;
+    border: 1px solid #4a4a99;
+  }
+
+  &:hover .resize-grip {
+    opacity: 1;
   }
 
   .settings-icon {

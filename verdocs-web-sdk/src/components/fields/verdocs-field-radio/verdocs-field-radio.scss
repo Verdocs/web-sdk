@@ -3,6 +3,7 @@
 // See https://www.sliderrevolution.com/resources/styling-radio-buttons/
 verdocs-field-radio {
   font-family: $verdocs-primary-font;
+  box-sizing: border-box;
   width: 14px;
   height: 14px;
   display: block;
@@ -37,7 +38,7 @@ verdocs-field-radio {
   }
 
   div.group {
-    top: 14px;
+    top: 100%;
     left: -1px;
     height: 14px;
     color: white;
@@ -70,22 +71,37 @@ verdocs-field-radio {
     position: absolute;
     opacity: 0;
 
+    // The label stays 14pt so small radios keep a usable click target; only the drawn circle scales.
     + label {
+      top: 0;
+      left: 0;
+      width: 14px;
+      height: 14px;
+      display: block;
+      position: absolute;
+
+      // Scaled from the label's corner, 1px up and left of the circle.
       &:before {
+        transform-origin: -1px -1px;
+        transform: scale(var(--verdocs-toggle-scale, 1));
         content: '';
         //background: $verdocs-grey-3;
         border-radius: 100%;
         border: 1px solid rgba(0, 0, 0, 0.6);
         display: inline-block;
+        // Set here so the circle stays centered on host pages without a global border-box rule.
+        box-sizing: border-box;
         width: 12px;
         height: 12px;
         position: absolute;
-        // This looks off in Storybook but correct in apps.
         left: 1px;
         top: 1px;
         cursor: pointer;
         text-align: center;
-        transition: all 250ms ease;
+        transition:
+          background-color 250ms ease,
+          border-color 250ms ease,
+          box-shadow 250ms ease;
       }
     }
 
@@ -128,6 +144,23 @@ verdocs-field-radio {
 
   &.required {
     border: 1px solid var(--verdocs-required-field-border);
+  }
+
+  .resize-grip {
+    right: -3px;
+    width: 6px;
+    height: 6px;
+    opacity: 0;
+    z-index: 10;
+    bottom: -3px;
+    position: absolute;
+    border-radius: 1px;
+    background: #ffffff;
+    border: 1px solid #4a4a99;
+  }
+
+  &:hover .resize-grip {
+    opacity: 1;
   }
 
   &.hide {

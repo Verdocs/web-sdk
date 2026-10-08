@@ -1,9 +1,15 @@
 import {Component, h, Element, Event, EventEmitter, Prop, State, Host} from '@stencil/core';
 import {deleteField, getTemplate, type ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+// Checkboxes and radios store their starting state as the strings 'true' and 'false', which is what
+// stamping and the signing UI compare against.
+const TOGGLE_TYPES = ['checkbox', 'radio'];
+const TEXT_TYPES = ['textbox', 'textarea'];
 
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#a50021"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>`;
 
@@ -78,6 +84,7 @@ export class VerdocsTemplateFieldProperties {
   @State() options = [];
   @State() placeholder = '';
   @State() defaultValue = '';
+  @State() nameError = '';
   @State() showingHelp = false;
 
   @State() loading = true;
@@ -154,6 +161,7 @@ export class VerdocsTemplateFieldProperties {
     this.options = field.options || [];
     this.placeholder = field.placeholder || '';
     this.defaultValue = field.default || '';
+    this.nameError = '';
     this.dirty = false;
     this.loading = false;
     this.cleanupOptions();
@@ -169,35 +177,69 @@ export class VerdocsTemplateFieldProperties {
 
   handleSave(e: any) {
     e.stopPropagation();
+
+    if (!this.name.trim()) {
+      this.nameError = 'Enter a field name.';
+      return;
+    }
+
+    if (this.name !== this.fieldName && (this.template?.fields || []).some(field => field.name === this.name)) {
+      this.nameError = `A field named "${this.name}" already exists in this template.`;
+      return;
+    }
+
+    // A read-only field can't be filled in by its signer, so it can't also be required: that
+    // combination leaves the signer unable to finish whenever nothing prefills the field.
     const newProperties = {
       name: this.name,
       role_name: this.roleName,
-      required: this.required,
+      required: this.required && !this.readonly,
       readonly: this.readonly,
       label: this.label,
       group: this.group,
       placeholder: this.placeholder,
-      default: this.defaultValue,
       options: this.options,
     } as Partial<ITemplateField>;
 
+    // Types without a default control must not send one, or saving would wipe a default set through the API.
+    if (TEXT_TYPES.includes(this.type)) {
+      newProperties.default = this.defaultValue;
+    } else if (TOGGLE_TYPES.includes(this.type)) {
+      newProperties.default = this.defaultValue === 'true' ? 'true' : 'false';
+    }
+
     this.cleanupOptions();
     updateField(this.endpoint, this.templateId, this.fieldName, newProperties)
-      .then(updatedField => {
+      .then(async updatedField => {
         console.log('[FIELD PROPERTIES] Updated', updatedField);
         const newTemplate = JSON.parse(JSON.stringify(this.template));
         const fieldIndex = newTemplate.fields.findIndex(field => field.name === this.fieldName);
         if (fieldIndex > -1) {
           newTemplate.fields[fieldIndex] = updatedField;
         }
+
+        // Only one radio in a group can start out selected, so selecting this one clears the rest.
+        if (updatedField.type === 'radio' && updatedField.default === 'true' && updatedField.group) {
+          const siblings = newTemplate.fields.filter(
+            field =>
+              field.type === 'radio' && field.group === updatedField.group && field.role_name === updatedField.role_name && field.name !== updatedField.name && field.default === 'true',
+          );
+          for (const sibling of siblings) {
+            const cleared = await updateField(this.endpoint, this.templateId, sibling.name, {default: 'false'});
+            newTemplate.fields[newTemplate.fields.findIndex(field => field.name === sibling.name)] = cleared;
+          }
+        }
+
         Store.updateTemplate(this.templateId, newTemplate);
         this.settingsChanged?.emit({fieldName: this.fieldName, field: updatedField});
         this.close?.emit();
 
         document.getElementById('verdocs-template-field-properties')?.remove();
       })
-      .catch(() => {
-        console.log('[FIELD PROPERTIES] Update failed', e);
+      .catch(err => {
+        console.log('[FIELD PROPERTIES] Update failed', err);
+        VerdocsToast(err.response?.data?.error || 'Unable to save the field. Please try again.', {style: 'error'});
+        this.sdkError?.emit(new SDKError(err.message, err.response?.status, err.response?.data));
       });
   }
 
@@ -213,6 +255,8 @@ export class VerdocsTemplateFieldProperties {
       })
       .catch(e => {
         console.log('[FIELD PROPERTIES] Deletion error', e);
+        VerdocsToast(e.response?.data?.error || 'Unable to delete the field. Please try again.', {style: 'error'});
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
       });
   }
 
@@ -279,10 +323,12 @@ export class VerdocsTemplateFieldProperties {
               placeholder="Field Name..."
               onInput={(e: any) => {
                 this.name = e.target.value;
+                this.nameError = '';
                 this.dirty = true;
               }}
             />
           </div>
+          {this.nameError && <div class="field-error">{this.nameError}</div>}
 
           <div class="row">
             <verdocs-text-input
@@ -310,14 +356,14 @@ export class VerdocsTemplateFieldProperties {
             />
           </div>
 
-          {['textbox', 'textarea'].includes(this.type) && (
+          {TEXT_TYPES.includes(this.type) && (
             <div class="row" style={{marginTop: '10px', marginBottom: '10px'}}>
               <verdocs-text-input
                 id="verdocs-field-value"
                 label="Default Value"
                 value={this.defaultValue}
                 autocomplete="off"
-                placeholder={this.readonly && !this.defaultValue ? 'Default value required' : 'Pre-filled value...'}
+                placeholder="Pre-filled value..."
                 onInput={(e: any) => {
                   this.defaultValue = e.target.value;
                   this.dirty = true;
@@ -362,6 +408,24 @@ export class VerdocsTemplateFieldProperties {
             </div>
           )}
 
+          {TOGGLE_TYPES.includes(this.type) && (
+            <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
+              <label htmlFor="verdocs-is-default-checked" class="input-label">
+                {this.type === 'radio' ? 'Pre-selected' : 'Pre-checked'}
+              </label>
+              <verdocs-checkbox
+                id="verdocs-is-default-checked"
+                name="is-default-checked"
+                checked={this.defaultValue === 'true'}
+                value="on"
+                onInput={(e: any) => {
+                  this.defaultValue = e.target.checked ? 'true' : 'false';
+                  this.dirty = true;
+                }}
+              />
+            </div>
+          )}
+
           <div class="row" style={{marginTop: '15px', marginBottom: '15px'}}>
             <label htmlFor="verdocs-is-required" class="input-label">
               Required
@@ -369,7 +433,8 @@ export class VerdocsTemplateFieldProperties {
             <verdocs-checkbox
               id="verdocs-is-required"
               name="is-required"
-              checked={this.required}
+              checked={this.required && !this.readonly}
+              disabled={this.readonly}
               value="on"
               onInput={(e: any) => {
                 this.required = e.target.checked;
@@ -389,6 +454,9 @@ export class VerdocsTemplateFieldProperties {
               value="on"
               onInput={(e: any) => {
                 this.readonly = e.target.checked;
+                if (this.readonly) {
+                  this.required = false;
+                }
                 this.dirty = true;
               }}
             />
@@ -446,8 +514,9 @@ export class VerdocsTemplateFieldProperties {
           <div class="buttons">
             <button class="delete-button" disabled={this.dirty} onClick={e => this.handleDelete(e)} innerHTML={TrashIcon} />
             <div style={{flex: '1'}} />
-            <verdocs-button size="small" variant="outline" label="Cancel" disabled={!this.dirty} onClick={e => this.handleCancel(e)} />
-            <verdocs-button size="small" label="Save" disabled={saveDisabled || (this.readonly && !this.defaultValue)} onClick={e => !saveDisabled && this.handleSave(e)} />
+            <verdocs-button size="small" variant="outline" label="Cancel" onClick={e => this.handleCancel(e)} />
+            {/* verdocs-button only disables its inner <button>, so the click guard has to match the disabled state. */}
+            <verdocs-button size="small" label="Save" disabled={saveDisabled} onClick={e => !saveDisabled && this.handleSave(e)} />
           </div>
         </form>
       </Host>

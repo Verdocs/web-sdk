@@ -1998,7 +1998,7 @@ export namespace Components {
      */
     interface VerdocsSignFooter {
         /**
-          * The brand resolved for the envelope, if any. Its footer label and legal links take precedence over the organization's defaults.
+          * The envelope's brand, if any.
           * @default null
          */
         "brand": Record<string, any> | null;
@@ -7129,7 +7129,7 @@ declare namespace LocalJSX {
      */
     interface VerdocsSignFooter {
         /**
-          * The brand resolved for the envelope, if any. Its footer label and legal links take precedence over the organization's defaults.
+          * The envelope's brand, if any.
           * @default null
          */
         "brand"?: Record<string, any> | null;

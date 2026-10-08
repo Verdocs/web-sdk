@@ -1,6 +1,8 @@
 import interact from 'interactjs';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Element, Listen, Watch} from '@stencil/core';
+import {makeToggleFieldResizable} from '../../../utils/ToggleFields';
+import {getToggleScale} from '../../../utils/utils';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -139,6 +141,18 @@ export class VerdocsFieldRadio {
     interact(this.el).unset();
   }
 
+  componentDidRender() {
+    if (this.editable) {
+      makeToggleFieldResizable(this.el, {
+        sourceid: this.sourceid,
+        fieldname: this.fieldname,
+        xscale: this.xscale,
+        yscale: this.yscale,
+        onSaved: field => this.settingsChanged?.emit({fieldName: this.fieldname, field}),
+      });
+    }
+  }
+
   render() {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
@@ -156,9 +170,13 @@ export class VerdocsFieldRadio {
     }
 
     return (
-      <Host class={{'verdocs-field': true,required: this.required || required, disabled, done, focused, [signerClass]: true}}>
+      <Host
+        class={{'verdocs-field': true,required: this.required || required, disabled, done, focused, [signerClass]: true}}
+        style={{'--verdocs-toggle-scale': String(getToggleScale(field))}}
+      >
         {label && <div class="label">{label}</div>}
         {editable && group && <div class="group">{group}</div>}
+        {editable && <div class="resize-grip" />}
 
         <input id={fieldname} type="radio" name={group || fieldname} value={name} checked={!!selected} disabled={readonly || disabled} required={required} />
         <label htmlFor={fieldname} />

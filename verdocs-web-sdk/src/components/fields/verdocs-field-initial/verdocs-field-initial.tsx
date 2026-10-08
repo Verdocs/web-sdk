@@ -266,7 +266,7 @@ export class VerdocsFieldInitial {
     const originalBottom = parseFloat(e.target.dataset.originalBottom);
     const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
     const oldField = template.fields.find(f => f.name === fieldname);
-    const y = newBottom !== originalBottom ? newBottom / this.yscale : oldField?.y;
+    const y = newBottom !== originalBottom ? Math.round(newBottom / this.yscale) : oldField?.y;
 
     updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, y})
       .then(async updatedField => {

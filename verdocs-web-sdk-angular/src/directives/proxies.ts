@@ -2140,14 +2140,14 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsSignFooter,
-  inputs: ['endpoint', 'envelopeId', 'isDone']
+  inputs: ['brand', 'endpoint', 'envelopeId', 'isDone']
 })
 @Component({
   selector: 'verdocs-sign-footer',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'envelopeId', 'isDone'],
+  inputs: ['brand', 'endpoint', 'envelopeId', 'isDone'],
   outputs: ['askQuestion', 'decline', 'finishLater', 'sdkError'],
 })
 export class VerdocsSignFooter {

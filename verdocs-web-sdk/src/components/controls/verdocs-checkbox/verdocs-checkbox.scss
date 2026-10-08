@@ -5,8 +5,18 @@ verdocs-checkbox {
   line-height: 18px;
   font-family: $verdocs-primary-font;
 
+  // We hide these visually instead of using display:none to avoid droping from the tab order and accessibility tree
   label>input[type='checkbox'] {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
 
   label>input[type='checkbox']+*::before {
@@ -27,10 +37,18 @@ verdocs-checkbox {
 
   label>input[type='checkbox']:checked+*::before {
     content: '✓';
+    // Empty alt text keeps the check mark out of the label screen readers announce. Browsers without alt text support
+    // drop this line and keep the one above.
+    content: '✓' / '';
     color: white;
     text-align: center;
     background: var(--verdocs-checkbox-color, $verdocs-green);
     border-color: var(--verdocs-checkbox-color, $verdocs-green);
+  }
+
+  label>input[type='checkbox']:focus-visible+*::before {
+    outline: 2px solid var(--verdocs-link-color, $verdocs-purple-shade);
+    outline-offset: 2px;
   }
 
   &.dark {
@@ -41,6 +59,10 @@ verdocs-checkbox {
     label>input[type='checkbox']:checked+*::before {
       background: var(--verdocs-checkbox-color, $verdocs-green);
       border-color: var(--verdocs-checkbox-color, $verdocs-green);
+    }
+
+    label>input[type='checkbox']:focus-visible+*::before {
+      outline-color: $verdocs-grey-4;
     }
   }
 

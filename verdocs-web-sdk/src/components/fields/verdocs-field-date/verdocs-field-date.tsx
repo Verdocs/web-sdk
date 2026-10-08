@@ -1,9 +1,8 @@
 import {format} from 'date-fns';
-// import {getRGBA} from '@verdocs/js-sdk';
 import interact from 'interactjs';
-import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
+import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {type ITemplate, type ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
@@ -213,7 +212,7 @@ export class VerdocsFieldDate {
     const originalBottom = parseFloat(e.target.dataset.originalBottom);
     const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
     const oldField = template.fields.find(f => f.name === fieldname);
-    const y = newBottom !== originalBottom ? newBottom / this.yscale : oldField?.y;
+    const y = newBottom !== originalBottom ? Math.round(newBottom / this.yscale) : oldField?.y;
 
     updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, y})
       .then(async updatedField => {

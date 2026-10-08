@@ -124,6 +124,8 @@ export class VerdocsSign {
   @State() showDone = false;
   @State() adoptingSignature = false;
   @State() showLoadError = false;
+  @State() inviteExpired = false;
+  @State() freshLinkState: 'idle' | 'sending' | 'sent' = 'idle';
   @State() finishLater = false;
   @State() showFinishLater = false;
   @State() agreed = false;
@@ -176,7 +178,28 @@ export class VerdocsSign {
     } catch (e) {
       console.log('[SIGN] Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      this.showLoadError = true;
+      if (e.response?.status === 410 && e.response?.data?.error === 'invite_expired') {
+        this.inviteExpired = true;
+      } else {
+        this.showLoadError = true;
+      }
+    }
+  }
+
+  async requestFreshLink() {
+    if (this.freshLinkState !== 'idle') {
+      return;
+    }
+
+    this.freshLinkState = 'sending';
+    try {
+      await this.endpoint.api.post(`/v2/sign/unauth/${this.envelopeId}/${encodeURIComponent(this.roleId)}/${this.inviteCode}/fresh-link`);
+      this.freshLinkState = 'sent';
+    } catch (e) {
+      console.log('[SIGN] Unable to request a fresh link', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      this.freshLinkState = 'idle';
+      VerdocsToast(e.response?.data?.error || 'Unable to send a new link. Please try again.', {style: 'error'});
     }
   }
 
@@ -418,18 +441,19 @@ export class VerdocsSign {
 
     this.authMethodStates = recipient.auth_method_states || ({} as Record<TRecipientAuthMethod, string>);
     this.kbaQuestions = recipient.kba_questions;
-    if (Object.values(this.authMethodStates).includes('failed')) {
+    if (recipient.status === 'failed' || Object.values(this.authMethodStates).includes('failed')) {
       this.fatalErrorHeader = 'Recipient Verification Failed';
       this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
       this.isDone = true;
     }
 
-    // TODO: Envelope "complete" | "declined" | "canceled"
-    // TODO: Recipient "canceled"
-
+    // Compared as a string: 'expired' is newer than the TEnvelopeStatus in the installed js-sdk.
     if (this.envelope.status === 'canceled') {
       this.fatalErrorHeader = 'Unable to Start Signing Session';
       this.fatalErrorMessage = 'This envelope has been canceled. The sender has been notified.';
+    } else if ((this.envelope.status as string) === 'expired') {
+      this.fatalErrorHeader = 'Unable to Start Signing Session';
+      this.fatalErrorMessage = 'This envelope has expired. Please contact the sender.';
     } else if (recipient.status === 'declined') {
       this.fatalErrorHeader = 'Declined';
       this.fatalErrorMessage = 'You have declined to sign this request. The sender has been notified.';
@@ -1232,6 +1256,22 @@ export class VerdocsSign {
   }
 
   render() {
+    if (this.inviteExpired) {
+      const sent = this.freshLinkState === 'sent';
+      return (
+        <Host>
+          <verdocs-ok-dialog
+            heading="Sorry, this link has expired"
+            message={
+              sent ? 'Thank you. Check your email for a new link.' : 'For security reasons, we need to re-verify your email address. Please click the button below to proceed.'
+            }
+            buttonLabel={sent ? 'OK' : 'Verify'}
+            onNext={() => this.requestFreshLink()}
+          />
+        </Host>
+      );
+    }
+
     if (this.showLoadError) {
       return (
         <Host>

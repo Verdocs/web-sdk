@@ -1,5 +1,5 @@
 import interact from 'interactjs';
-import {Component, h, Event, EventEmitter, Fragment, Prop, Host, State, Listen, Watch} from '@stencil/core';
+import {Component, h, Element, Event, EventEmitter, Fragment, Prop, Host, State, Listen, Watch} from '@stencil/core';
 import {createField, getTemplate, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -36,6 +36,18 @@ const iconAttachment =
 
 const separator = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.707 14.707"><g><rect x="6.275" y="0" fill="#ffffff7f" width="1" height="15"/></g></svg>';
 
+// We include multiline because a text field's height controls it, so undoing a resize has to restore both.
+type TFieldGeometry = Pick<ITemplateField, 'x' | 'y' | 'width' | 'height' | 'page' | 'multiline'>;
+
+const GEOMETRY_KEYS: (keyof TFieldGeometry)[] = ['x', 'y', 'width', 'height', 'page', 'multiline'];
+
+// We save a burst of arrow-key nudges once the keys go quiet instead of on every press.
+const NUDGE_SAVE_DELAY_MS = 400;
+
+const MAX_UNDO = 50;
+
+const isTypingTarget = (el: Element | null) => !!el && (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || (el as HTMLElement).isContentEditable);
+
 const menuOptions = [
   {id: 'signature', tooltip: 'Signature', icon: iconSignature, class: 'signature'},
   {id: 'initial', tooltip: 'Initials', icon: iconInitial, class: 'initial'},
@@ -63,6 +75,8 @@ const menuOptions = [
 })
 export class VerdocsTemplateFields {
   private templateListenerId = null;
+
+  @Element() el: HTMLElement;
 
   /**
    * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
@@ -105,26 +119,105 @@ export class VerdocsTemplateFields {
 
   pageHeights: Record<number, number> = {};
 
+  // Selection lives on the DOM (a class on the field element) so picking a field doesn't re-render every page.
+  selectedFieldName: string | null = null;
+
+  // Undo entries are recorded only once their save lands, so the stack never holds a change the server didn't take.
+  undoStack: {name: string; before: TFieldGeometry}[] = [];
+  pendingNudge: {name: string; before: TFieldGeometry; x: number; y: number} | null = null;
+  nudgeTimer: ReturnType<typeof setTimeout> | null = null;
+  dragBefore: {name: string; before: TFieldGeometry} | null = null;
+
+  // Geometry we've sent but the server hasn't confirmed yet, so a new nudge or undo starts from where the field is drawn.
+  optimistic = new Map<string, Partial<TFieldGeometry>>();
+  inFlight = new Set<Promise<unknown>>();
+
+  // Field components save their own resizes and announce them with settingsChanged; undo waits for that.
+  pendingResizes = new Map<string, {before: TFieldGeometry; settle: () => void; done: Promise<void>}>();
+
+  // Stable references so makeDraggable can re-bind them on every render without stacking duplicates.
+  handleFieldTap = (e: any) => this.selectField(e.currentTarget?.getAttribute?.('fieldname') || null);
+  handleFieldResizeStart = (e: any) => {
+    const name = e.target?.getAttribute?.('fieldname') || null;
+    this.flushNudge();
+    this.selectField(name);
+    this.startResize(name);
+  };
+
   @Watch('templateId')
   onTemplateIdChanged() {
     this.listenToTemplate();
   }
 
-  // Stop field-placement mode if ESC is pressed
+  // Escape clears placement and selection, arrows nudge the selected field (Shift for 10pt), and Cmd/Ctrl+Z undoes a move or resize.
   @Listen('keydown', {target: 'document'})
   handleKeyDown(ev: KeyboardEvent) {
     if (ev.key === 'Escape') {
       this.placing = null;
+      this.selectField(null);
+      return;
     }
+
+    // composedPath reaches inputs inside a host page's shadow DOM, where activeElement would only show the host.
+    const target = (ev.composedPath?.()[0] || ev.target) as Element;
+    if (ev.defaultPrevented || isTypingTarget(target)) {
+      return;
+    }
+
+    // Keys pressed in a dialog, menu, or anything else outside the builder belong to that control.
+    if (target !== document.body && target !== document.documentElement && !this.el.contains(target)) {
+      return;
+    }
+
+    if ((ev.metaKey || ev.ctrlKey) && !ev.shiftKey && !ev.altKey && ev.key.toLowerCase() === 'z') {
+      if (this.pendingNudge || this.undoStack.length > 0 || this.inFlight.size > 0 || this.pendingResizes.size > 0) {
+        ev.preventDefault();
+        this.undo();
+      }
+      return;
+    }
+
+    const step = ev.shiftKey ? 10 : 1;
+    const delta = {ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, step], ArrowDown: [0, -step]}[ev.key];
+    if (!delta || !this.selectedFieldName || ev.metaKey || ev.ctrlKey || ev.altKey) {
+      return;
+    }
+
+    // Once the selected field has scrolled out of view, arrows go back to scrolling the page.
+    const field = this.findField(this.selectedFieldName);
+    const rect = field ? document.getElementById(getFieldId(field))?.getBoundingClientRect() : null;
+    if (!rect || rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+      this.selectField(null);
+      return;
+    }
+
+    ev.preventDefault();
+    this.nudge(delta[0], delta[1]);
   }
 
   @Listen('settingsChanged')
-  handleFieldSettingsChanged() {
+  handleFieldSettingsChanged(e: CustomEvent<{fieldName: string; field: ITemplateField}>) {
+    const {fieldName, field} = e.detail || ({} as any);
+    if (field && fieldName && field.name !== fieldName) {
+      this.renameFieldState(fieldName, field.name);
+    }
+
+    const resize = field ? this.pendingResizes.get(field.name) : null;
+    if (resize) {
+      this.recordUndo(field.name, resize.before, field);
+      resize.settle();
+    }
+
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'updated-field'});
   }
 
   @Listen('deleted')
-  handleFieldDeleted() {
+  handleFieldDeleted(e: CustomEvent<{fieldName: string}>) {
+    const name = e.detail?.fieldName;
+    if (name) {
+      this.forgetField(name);
+    }
+
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'deleted-field'});
   }
 
@@ -166,6 +259,8 @@ export class VerdocsTemplateFields {
       toolbarEl.remove();
       toolbarTarget.append(toolbarEl);
     }
+
+    this.applySelection();
   }
 
   componentWillUpdate() {
@@ -179,6 +274,8 @@ export class VerdocsTemplateFields {
 
   disconnectedCallback() {
     this.unlistenToTemplate();
+    this.flushNudge();
+    this.selectField(null);
   }
 
   async listenToTemplate() {
@@ -235,12 +332,215 @@ export class VerdocsTemplateFields {
   }
 
   makeDraggable(el: HTMLElement) {
-    interact(el).draggable({
-      listeners: {
-        move: this.handleMoveField.bind(this),
-        end: this.handleMoveEnd.bind(this),
-      },
+    interact(el)
+      .draggable({
+        listeners: {
+          start: this.handleMoveStart.bind(this),
+          move: this.handleMoveField.bind(this),
+          end: this.handleMoveEnd.bind(this),
+        },
+      })
+      .off('tap', this.handleFieldTap)
+      .on('tap', this.handleFieldTap)
+      .off('resizestart', this.handleFieldResizeStart)
+      .on('resizestart', this.handleFieldResizeStart);
+  }
+
+  findField(name: string | null) {
+    return name ? (this.template?.fields || []).find(field => field.name === name) : undefined;
+  }
+
+  // Where the field is drawn right now: its saved geometry plus anything still on its way to the server.
+  currentGeometry(field: ITemplateField): TFieldGeometry {
+    const {x, y, width, height, page, multiline} = {...field, ...this.optimistic.get(field.name)};
+    return {x, y, width, height, page, multiline};
+  }
+
+  selectField(name: string | null) {
+    if (this.pendingNudge && this.pendingNudge.name !== name) {
+      this.flushNudge();
+    }
+
+    this.selectedFieldName = name;
+    this.applySelection();
+  }
+
+  applySelection() {
+    document.querySelectorAll('.verdocs-field-selected').forEach(el => el.classList.remove('verdocs-field-selected'));
+    const field = this.findField(this.selectedFieldName);
+    if (field) {
+      document.getElementById(getFieldId(field))?.classList.add('verdocs-field-selected');
+    }
+  }
+
+  recordUndo(name: string, before: TFieldGeometry, after: Partial<TFieldGeometry>) {
+    if (GEOMETRY_KEYS.some(key => after[key] !== undefined && after[key] !== before[key])) {
+      this.undoStack.push({name, before});
+      this.undoStack.splice(0, Math.max(0, this.undoStack.length - MAX_UNDO));
+    }
+  }
+
+  startResize(name: string | null) {
+    const field = this.findField(name);
+    if (!field) {
+      return;
+    }
+
+    this.pendingResizes.get(field.name)?.settle();
+    let settle: () => void;
+    const done = new Promise<void>(resolve => (settle = resolve));
+    const entry = {before: this.currentGeometry(field), settle: () => settle(), done};
+    this.pendingResizes.set(field.name, entry);
+
+    // A failed resize never announces itself, so stop waiting on it after a while.
+    const timer = setTimeout(() => entry.settle(), 5000);
+    done.then(() => {
+      clearTimeout(timer);
+      if (this.pendingResizes.get(field.name) === entry) {
+        this.pendingResizes.delete(field.name);
+      }
     });
+  }
+
+  renameFieldState(oldName: string, newName: string) {
+    this.undoStack.forEach(entry => entry.name === oldName && (entry.name = newName));
+    if (this.selectedFieldName === oldName) {
+      this.selectedFieldName = newName;
+    }
+  }
+
+  forgetField(name: string) {
+    this.undoStack = this.undoStack.filter(entry => entry.name !== name);
+    this.optimistic.delete(name);
+    this.pendingResizes.get(name)?.settle();
+    if (this.pendingNudge?.name === name) {
+      clearTimeout(this.nudgeTimer);
+      this.nudgeTimer = null;
+      this.pendingNudge = null;
+    }
+    if (this.selectedFieldName === name) {
+      this.selectField(null);
+    }
+  }
+
+  drawField(field: ITemplateField, geometry: Partial<TFieldGeometry> = {}) {
+    const pageInfo = this.cachedPageInfo[field.document_id]?.[geometry.page ?? field.page];
+    const el = document.getElementById(getFieldId(field));
+    if (el && pageInfo) {
+      setControlStyles(el, {...field, ...geometry}, pageInfo.xScale, pageInfo.yScale);
+    }
+  }
+
+  nudge(dx: number, dy: number) {
+    const field = this.findField(this.selectedFieldName);
+    if (!field || !document.getElementById(getFieldId(field)) || !this.cachedPageInfo[field.document_id]?.[field.page]) {
+      return;
+    }
+
+    if (this.pendingNudge?.name !== field.name) {
+      this.flushNudge();
+      const before = this.currentGeometry(field);
+      this.pendingNudge = {name: field.name, before, x: before.x, y: before.y};
+    }
+
+    // Keep the whole field on the page, measured in PDF points.
+    const pageSize = (this.template?.documents || []).find(doc => doc.id === field.document_id)?.page_sizes?.[field.page];
+    const maxX = (pageSize?.width || 612) - (field.width || defaultWidth(field.type));
+    const maxY = (pageSize?.height || 792) - (field.height || defaultHeight(field.type));
+    this.pendingNudge.x = Math.min(Math.max(this.pendingNudge.x + dx, 0), maxX);
+    this.pendingNudge.y = Math.min(Math.max(this.pendingNudge.y + dy, 0), maxY);
+    this.drawField(field, {x: this.pendingNudge.x, y: this.pendingNudge.y});
+
+    if (this.nudgeTimer) {
+      clearTimeout(this.nudgeTimer);
+    }
+    this.nudgeTimer = setTimeout(() => this.flushNudge(), NUDGE_SAVE_DELAY_MS);
+  }
+
+  async flushNudge() {
+    if (this.nudgeTimer) {
+      clearTimeout(this.nudgeTimer);
+      this.nudgeTimer = null;
+    }
+
+    const pending = this.pendingNudge;
+    this.pendingNudge = null;
+    if (pending) {
+      await this.saveGeometry(pending.name, {x: pending.x, y: pending.y}, pending.before);
+    }
+  }
+
+  async undo() {
+    await this.flushNudge();
+    await Promise.all([...this.inFlight, ...[...this.pendingResizes.values()].map(resize => resize.done)]);
+
+    while (this.undoStack.length > 0) {
+      const {name, before} = this.undoStack.pop();
+      const field = this.findField(name);
+      if (field && GEOMETRY_KEYS.some(key => field[key] !== before[key])) {
+        this.selectField(name);
+        await this.saveGeometry(name, before);
+        return;
+      }
+    }
+  }
+
+  // Saves a move, nudge, or undo, drawing the field at its new spot right away. Pass `before` to make it undoable.
+  saveGeometry(name: string, geometry: Partial<TFieldGeometry>, before?: TFieldGeometry) {
+    const field = this.findField(name);
+    if (!field) {
+      return Promise.resolve();
+    }
+
+    const sent = {...geometry};
+    this.optimistic.set(name, sent);
+    this.drawField(field, geometry);
+
+    const save = (async () => {
+      try {
+        const updatedField = await updateField(this.endpoint, this.templateId, name, geometry);
+        const newTemplate = JSON.parse(JSON.stringify(this.template));
+        const fieldIndex = newTemplate.fields.findIndex(field => field.name === name);
+        if (fieldIndex > -1) {
+          newTemplate.fields[fieldIndex] = updatedField;
+        }
+
+        Store.updateTemplate(this.templateId, newTemplate);
+        this.drawField(updatedField);
+        if (before) {
+          this.recordUndo(name, before, updatedField);
+        }
+
+        this.templateUpdated?.emit({endpoint: this.endpoint, template: newTemplate, event: 'updated-field'});
+      } catch (e) {
+        console.log('[FIELDS] Error saving field position', e);
+        VerdocsToast(e.response?.data?.error || 'Unable to move the field. Please try again.', {style: 'error'});
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+
+        // Put it back where the server still has it.
+        const saved = this.findField(name);
+        if (saved) {
+          this.drawField(saved);
+        }
+      } finally {
+        if (this.optimistic.get(name) === sent) {
+          this.optimistic.delete(name);
+        }
+      }
+    })();
+
+    this.inFlight.add(save);
+    save.finally(() => this.inFlight.delete(save));
+    return save;
+  }
+
+  handleMoveStart(event: any) {
+    const name = event.target.getAttribute('fieldname');
+    this.flushNudge();
+    this.selectField(name);
+
+    const field = this.findField(name);
+    this.dragBefore = field ? {name, before: this.currentGeometry(field)} : null;
   }
 
   async handleMoveField(event: any) {
@@ -293,32 +593,13 @@ export class VerdocsTemplateFields {
     }
 
     const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, documentId, pageNumber, naturalWidth - width, naturalHeight - height);
-    try {
-      const params = {x, y, page: newPageNumber};
-      const updatedField = await updateField(this.endpoint, this.templateId, name, params);
-      console.log('[FIELDS] Updated', updatedField);
+    event.target.removeAttribute('posX');
+    event.target.removeAttribute('posY');
+    removeCssTransform(event.target);
 
-      const newTemplate = JSON.parse(JSON.stringify(this.template));
-      const fieldIndex = newTemplate.fields.findIndex(field => field.name === name);
-      if (fieldIndex > -1) {
-        newTemplate.fields[fieldIndex] = updatedField;
-      }
-
-      Store.updateTemplate(this.templateId, newTemplate);
-      event.target.removeAttribute('posX');
-      event.target.removeAttribute('posY');
-      removeCssTransform(event.target);
-      const {xScale = 1, yScale = 1} = this.cachedPageInfo[documentId][pageNumber];
-      setControlStyles(event.target, updatedField, xScale, yScale);
-      this.templateUpdated?.emit({endpoint: this.endpoint, template: newTemplate, event: 'updated-field'});
-    } catch (e) {
-      VerdocsToast('Error updating field, please try again later', {style: 'error'});
-      console.log('[FIELDS] Error updating field', e);
-      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      event.target.removeAttribute('posX');
-      event.target.removeAttribute('posY');
-      removeCssTransform(event.target);
-    }
+    const before = this.dragBefore?.name === name ? this.dragBefore.before : undefined;
+    this.dragBefore = null;
+    await this.saveGeometry(name, {x, y, page: newPageNumber}, before);
   }
 
   generateFieldName(type: string, pageNumber: number) {
@@ -335,12 +616,18 @@ export class VerdocsTemplateFields {
   // Scale the X,Y clicks to the virtual page dimensions. Also ensure the field doesn't go off the page.
   viewCoordinatesToPageCoordinates(viewX: number, viewY: number, documentId: string, pageNumber: number, xMax: number, yMax: number) {
     const {xScale = 1, yScale = 1, renderedHeight = 792} = this.cachedPageInfo[documentId][pageNumber];
-    const x = Math.floor(Math.min(viewX / xScale, xMax));
-    const y = Math.floor(Math.min(Math.max(renderedHeight - viewY, 0) / yScale, yMax));
+    // Round rather than floor: PDF y counts up from the bottom, so flooring would pull every drop down and to the left.
+    const x = Math.round(Math.min(viewX / xScale, xMax));
+    const y = Math.round(Math.min(Math.max(renderedHeight - viewY, 0) / yScale, yMax));
     return {x, y};
   }
 
   async handleClickPage(e: any, documentId: string, pageNumber: number) {
+    // Clicks on a field select it through interact's tap, so only a click on the bare page clears the selection.
+    if (!this.placing && !e.target?.closest?.('.verdocs-field')) {
+      this.selectField(null);
+    }
+
     if (this.placing) {
       // console.log('Placing field', {documentId, pageNumber});
       const clickedX = e.offsetX;
