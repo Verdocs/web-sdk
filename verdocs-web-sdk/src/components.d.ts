@@ -1450,6 +1450,17 @@ export namespace Components {
          */
         "text": string;
     }
+    interface VerdocsIdScanDialog {
+        /**
+          * @default new VerdocsEndpoint({sessionType: 'signing'})
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * For identity confirmation, the current recipient details.
+          * @default null
+         */
+        "recipient": IRecipient | null;
+    }
     /**
      * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
      * based on their full name, or by hand-drawing their initials with a mouse or tablet.
@@ -2731,6 +2742,10 @@ export interface VerdocsFlagCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsFlagElement;
 }
+export interface VerdocsIdScanDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsIdScanDialogElement;
+}
 export interface VerdocsInitialDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsInitialDialogElement;
@@ -3634,6 +3649,25 @@ declare global {
     var HTMLVerdocsHelpIconElement: {
         prototype: HTMLVerdocsHelpIconElement;
         new (): HTMLVerdocsHelpIconElement;
+    };
+    interface HTMLVerdocsIdScanDialogElementEventMap {
+        "next": {response: ISignerTokenResponse};
+        "exit": any;
+        "verificationFailed": {message: string};
+    }
+    interface HTMLVerdocsIdScanDialogElement extends Components.VerdocsIdScanDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsIdScanDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsIdScanDialogElement, ev: VerdocsIdScanDialogCustomEvent<HTMLVerdocsIdScanDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsIdScanDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsIdScanDialogElement, ev: VerdocsIdScanDialogCustomEvent<HTMLVerdocsIdScanDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsIdScanDialogElement: {
+        prototype: HTMLVerdocsIdScanDialogElement;
+        new (): HTMLVerdocsIdScanDialogElement;
     };
     interface HTMLVerdocsInitialDialogElementEventMap {
         "next": string;
@@ -4732,6 +4766,7 @@ declare global {
         "verdocs-file-chooser": HTMLVerdocsFileChooserElement;
         "verdocs-flag": HTMLVerdocsFlagElement;
         "verdocs-help-icon": HTMLVerdocsHelpIconElement;
+        "verdocs-id-scan-dialog": HTMLVerdocsIdScanDialogElement;
         "verdocs-initial-dialog": HTMLVerdocsInitialDialogElement;
         "verdocs-kba-dialog": HTMLVerdocsKbaDialogElement;
         "verdocs-loader": HTMLVerdocsLoaderElement;
@@ -6463,6 +6498,20 @@ declare namespace LocalJSX {
           * @default ''
          */
         "text"?: string;
+    }
+    interface VerdocsIdScanDialog {
+        /**
+          * @default new VerdocsEndpoint({sessionType: 'signing'})
+         */
+        "endpoint"?: VerdocsEndpoint;
+        "onExit"?: (event: VerdocsIdScanDialogCustomEvent<any>) => void;
+        "onNext"?: (event: VerdocsIdScanDialogCustomEvent<{response: ISignerTokenResponse}>) => void;
+        "onVerificationFailed"?: (event: VerdocsIdScanDialogCustomEvent<{message: string}>) => void;
+        /**
+          * For identity confirmation, the current recipient details.
+          * @default null
+         */
+        "recipient"?: IRecipient | null;
     }
     /**
      * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
@@ -8495,6 +8544,7 @@ declare namespace LocalJSX {
         "verdocs-file-chooser": VerdocsFileChooser;
         "verdocs-flag": Omit<VerdocsFlag, keyof VerdocsFlagAttributes> & { [K in keyof VerdocsFlag & keyof VerdocsFlagAttributes]?: VerdocsFlag[K] } & { [K in keyof VerdocsFlag & keyof VerdocsFlagAttributes as `attr:${K}`]?: VerdocsFlagAttributes[K] } & { [K in keyof VerdocsFlag & keyof VerdocsFlagAttributes as `prop:${K}`]?: VerdocsFlag[K] };
         "verdocs-help-icon": Omit<VerdocsHelpIcon, keyof VerdocsHelpIconAttributes> & { [K in keyof VerdocsHelpIcon & keyof VerdocsHelpIconAttributes]?: VerdocsHelpIcon[K] } & { [K in keyof VerdocsHelpIcon & keyof VerdocsHelpIconAttributes as `attr:${K}`]?: VerdocsHelpIconAttributes[K] } & { [K in keyof VerdocsHelpIcon & keyof VerdocsHelpIconAttributes as `prop:${K}`]?: VerdocsHelpIcon[K] };
+        "verdocs-id-scan-dialog": VerdocsIdScanDialog;
         "verdocs-initial-dialog": Omit<VerdocsInitialDialog, keyof VerdocsInitialDialogAttributes> & { [K in keyof VerdocsInitialDialog & keyof VerdocsInitialDialogAttributes]?: VerdocsInitialDialog[K] } & { [K in keyof VerdocsInitialDialog & keyof VerdocsInitialDialogAttributes as `attr:${K}`]?: VerdocsInitialDialogAttributes[K] } & { [K in keyof VerdocsInitialDialog & keyof VerdocsInitialDialogAttributes as `prop:${K}`]?: VerdocsInitialDialog[K] };
         "verdocs-kba-dialog": Omit<VerdocsKbaDialog, keyof VerdocsKbaDialogAttributes> & { [K in keyof VerdocsKbaDialog & keyof VerdocsKbaDialogAttributes]?: VerdocsKbaDialog[K] } & { [K in keyof VerdocsKbaDialog & keyof VerdocsKbaDialogAttributes as `attr:${K}`]?: VerdocsKbaDialogAttributes[K] } & { [K in keyof VerdocsKbaDialog & keyof VerdocsKbaDialogAttributes as `prop:${K}`]?: VerdocsKbaDialog[K] };
         "verdocs-loader": VerdocsLoader;
@@ -8781,6 +8831,7 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-help-icon": LocalJSX.IntrinsicElements["verdocs-help-icon"] & JSXBase.HTMLAttributes<HTMLVerdocsHelpIconElement>;
+            "verdocs-id-scan-dialog": LocalJSX.IntrinsicElements["verdocs-id-scan-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsIdScanDialogElement>;
             /**
              * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
              * based on their full name, or by hand-drawing their initials with a mouse or tablet.

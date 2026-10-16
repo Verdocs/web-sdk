@@ -96,6 +96,10 @@ export const DocumentPageIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="
 
 export const CheckCircleIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`;
 
+export const IdCardIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#E8ECFC"/><g stroke="#4A68DD" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="9.5" width="15" height="13" rx="1.5"/><path d="M8.5 12.5h15M17 15.5h3.5M17 17.5h2"/></g><g fill="#4A68DD"><circle cx="13" cy="15.25" r="1.25"/><path d="M10.75 19.25c0-1.2 1-2 2.25-2s2.25.8 2.25 2z"/></g></svg>`;
+
+export const SelfieIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#E8ECFC"/><g stroke="#4A68DD" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="12.25" r="3.25"/><path d="M10 22.75v-1c0-2.6 2.7-4.5 6-4.5s6 1.9 6 4.5v1z"/></g></svg>`;
+
 export const GoogleIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18" height="18" aria-hidden="true" focusable="false">
 <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
 <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
