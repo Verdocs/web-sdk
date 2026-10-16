@@ -1419,14 +1419,14 @@ export declare interface VerdocsHelpIcon extends Components.VerdocsHelpIcon {}
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsIdScanDialog,
-  inputs: ['endpoint', 'recipient', 'requireSelfie']
+  inputs: ['endpoint', 'recipient']
 })
 @Component({
   selector: 'verdocs-id-scan-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'recipient', 'requireSelfie'],
+  inputs: ['endpoint', 'recipient'],
   outputs: ['next', 'exit', 'verificationFailed'],
 })
 export class VerdocsIdScanDialog {

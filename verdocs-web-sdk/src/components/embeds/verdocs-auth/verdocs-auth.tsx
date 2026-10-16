@@ -170,7 +170,7 @@ export class VerdocsAuth {
   // its events and incorrectly trigger before we're done. So we manage our own temp
   // endpoint and pass the final tokens to the default once we're ready.
   tempAuthEndpoint = new VerdocsEndpoint({
-    baseURL: VerdocsEndpoint.getDefault().getBaseURL(),
+    baseURL: VerdocsEndpoint.getDefault().setBaseURL('http://localhost:3000'),
     persist: false,
   });
 

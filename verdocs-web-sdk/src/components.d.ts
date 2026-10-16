@@ -1460,10 +1460,6 @@ export namespace Components {
           * @default null
          */
         "recipient": IRecipient | null;
-        /**
-          * @default false
-         */
-        "requireSelfie": boolean;
     }
     /**
      * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
@@ -6516,10 +6512,6 @@ declare namespace LocalJSX {
           * @default null
          */
         "recipient"?: IRecipient | null;
-        /**
-          * @default false
-         */
-        "requireSelfie"?: boolean;
     }
     /**
      * Display a dialog that allows the user to specify an initials image, either by using a signature-font-generated image
@@ -8320,9 +8312,6 @@ declare namespace LocalJSX {
         "text": string;
         "icon": string;
     }
-    interface VerdocsIdScanDialogAttributes {
-        "requireSelfie": boolean;
-    }
     interface VerdocsInitialDialogAttributes {
         "initials": string;
     }
@@ -8555,7 +8544,7 @@ declare namespace LocalJSX {
         "verdocs-file-chooser": VerdocsFileChooser;
         "verdocs-flag": Omit<VerdocsFlag, keyof VerdocsFlagAttributes> & { [K in keyof VerdocsFlag & keyof VerdocsFlagAttributes]?: VerdocsFlag[K] } & { [K in keyof VerdocsFlag & keyof VerdocsFlagAttributes as `attr:${K}`]?: VerdocsFlagAttributes[K] } & { [K in keyof VerdocsFlag & keyof VerdocsFlagAttributes as `prop:${K}`]?: VerdocsFlag[K] };
         "verdocs-help-icon": Omit<VerdocsHelpIcon, keyof VerdocsHelpIconAttributes> & { [K in keyof VerdocsHelpIcon & keyof VerdocsHelpIconAttributes]?: VerdocsHelpIcon[K] } & { [K in keyof VerdocsHelpIcon & keyof VerdocsHelpIconAttributes as `attr:${K}`]?: VerdocsHelpIconAttributes[K] } & { [K in keyof VerdocsHelpIcon & keyof VerdocsHelpIconAttributes as `prop:${K}`]?: VerdocsHelpIcon[K] };
-        "verdocs-id-scan-dialog": Omit<VerdocsIdScanDialog, keyof VerdocsIdScanDialogAttributes> & { [K in keyof VerdocsIdScanDialog & keyof VerdocsIdScanDialogAttributes]?: VerdocsIdScanDialog[K] } & { [K in keyof VerdocsIdScanDialog & keyof VerdocsIdScanDialogAttributes as `attr:${K}`]?: VerdocsIdScanDialogAttributes[K] } & { [K in keyof VerdocsIdScanDialog & keyof VerdocsIdScanDialogAttributes as `prop:${K}`]?: VerdocsIdScanDialog[K] };
+        "verdocs-id-scan-dialog": VerdocsIdScanDialog;
         "verdocs-initial-dialog": Omit<VerdocsInitialDialog, keyof VerdocsInitialDialogAttributes> & { [K in keyof VerdocsInitialDialog & keyof VerdocsInitialDialogAttributes]?: VerdocsInitialDialog[K] } & { [K in keyof VerdocsInitialDialog & keyof VerdocsInitialDialogAttributes as `attr:${K}`]?: VerdocsInitialDialogAttributes[K] } & { [K in keyof VerdocsInitialDialog & keyof VerdocsInitialDialogAttributes as `prop:${K}`]?: VerdocsInitialDialog[K] };
         "verdocs-kba-dialog": Omit<VerdocsKbaDialog, keyof VerdocsKbaDialogAttributes> & { [K in keyof VerdocsKbaDialog & keyof VerdocsKbaDialogAttributes]?: VerdocsKbaDialog[K] } & { [K in keyof VerdocsKbaDialog & keyof VerdocsKbaDialogAttributes as `attr:${K}`]?: VerdocsKbaDialogAttributes[K] } & { [K in keyof VerdocsKbaDialog & keyof VerdocsKbaDialogAttributes as `prop:${K}`]?: VerdocsKbaDialog[K] };
         "verdocs-loader": VerdocsLoader;
