@@ -1,0 +1,72 @@
+@import '../../../theme.scss';
+
+verdocs-builder {
+  display: flex;
+  flex-direction: column;
+  font-family: $verdocs-primary-font;
+
+  .content {
+    flex: 1;
+    gap: 20px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    //box-shadow: 0 0 7px -3px #000000cc;
+  }
+
+  verdocs-template-attachments,
+  verdocs-template-roles {
+    display: block;
+    width: 500px;
+    max-width: 95%;
+    box-sizing: border-box;
+    margin: 20px;
+  }
+
+  verdocs-builder-fields {
+    border-top: 1px solid #777777;
+  }
+
+  verdocs-template-attachments {
+    padding: 20px;
+    background: #ffffff;
+  }
+
+  verdocs-builder-fields {
+    width: 100%;
+  }
+
+  verdocs-preview {
+    flex: 1;
+  }
+
+  .preview-container {
+    flex-direction: row;
+    display: flex;
+    width: 100%;
+    background-color: #eeeeee;
+    max-height: 100%;
+
+    @media all and (max-width: 450px) {
+      flex-direction: column;
+    }
+  }
+
+  .preview-send-wrapper {
+    display: flex;
+    flex: 0 0 300px;
+    background-color: #ffffff;
+    box-shadow: 1px 1px 6px -2px #0000007f;
+
+    @media all and (max-width: 450px) {
+      flex: 0;
+    }
+  }
+
+  .preview-preview-wrapper {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    overflow-y: scroll;
+  }
+}

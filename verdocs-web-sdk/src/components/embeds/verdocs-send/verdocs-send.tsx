@@ -727,15 +727,15 @@ export class VerdocsSend {
           </div>,
           <div class="notice">
             <span class="icon" innerHTML={infoIcon} />
-              <div>
-                Specify where envelope-completed email notifications and "Ask a Question" submissions are delivered.
-                To customize the "From" address for email notifications, please configure those in{' '}
-                <a href={`${getWebAppUrl(this.endpoint)}/settings/brands`} target="_blank" rel="noopener">
-                  Brands
-                  <span class="icon" innerHTML={externalLinkIcon} />
-                </a>{' '}
-                .
-              </div>
+            <div>
+              Specify where envelope-completed email notifications and "Ask a Question" submissions are delivered. To customize the "From" address for email notifications, please
+              configure those in{' '}
+              <a href={`${getWebAppUrl(this.endpoint)}/settings/branding`} target="_blank" rel="noopener">
+                Brands
+                <span class="icon" innerHTML={externalLinkIcon} />
+              </a>
+              .
+            </div>
           </div>,
         ])}
         {this.renderDoneButton()}

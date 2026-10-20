@@ -9,6 +9,8 @@ import type { Components } from '@verdocs/web-sdk/components';
 import { defineCustomElement as defineVerdocsAdoptSignatureDialog } from '@verdocs/web-sdk/components/verdocs-adopt-signature-dialog.js';
 import { defineCustomElement as defineVerdocsAuth } from '@verdocs/web-sdk/components/verdocs-auth.js';
 import { defineCustomElement as defineVerdocsBuild } from '@verdocs/web-sdk/components/verdocs-build.js';
+import { defineCustomElement as defineVerdocsBuilder } from '@verdocs/web-sdk/components/verdocs-builder.js';
+import { defineCustomElement as defineVerdocsBuilderFields } from '@verdocs/web-sdk/components/verdocs-builder-fields.js';
 import { defineCustomElement as defineVerdocsButton } from '@verdocs/web-sdk/components/verdocs-button.js';
 import { defineCustomElement as defineVerdocsButtonPanel } from '@verdocs/web-sdk/components/verdocs-button-panel.js';
 import { defineCustomElement as defineVerdocsCheckbox } from '@verdocs/web-sdk/components/verdocs-checkbox.js';
@@ -231,6 +233,114 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when roles are updated in the roles step.
    */
   rolesUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuildVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsBuildIRole[]}>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsBuilder,
+  inputs: ['endpoint', 'step', 'templateId']
+})
+@Component({
+  selector: 'verdocs-builder',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'step', 'templateId'],
+  outputs: ['cancel', 'sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated', 'rolesUpdated'],
+})
+export class VerdocsBuilder {
+  protected el: HTMLVerdocsBuilderElement;
+  @Output() cancel = new EventEmitter<CustomEvent<any>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsBuilderSDKError>>();
+  @Output() stepChanged = new EventEmitter<CustomEvent<IVerdocsBuilderTVerdocsBuildStep>>();
+  @Output() send = new EventEmitter<CustomEvent<{recipients: IVerdocsBuilderICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string}>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuilderVerdocsEndpoint; template: IVerdocsBuilderITemplate; event: string}>>();
+  @Output() templateCreated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuilderVerdocsEndpoint; template: IVerdocsBuilderITemplate; event: string}>>();
+  @Output() rolesUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuilderVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsBuilderIRole[]}>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { SDKError as IVerdocsBuilderSDKError } from '@verdocs/web-sdk/components';
+import type { TVerdocsBuildStep as IVerdocsBuilderTVerdocsBuildStep } from '@verdocs/web-sdk/components';
+import type { ICreateEnvelopeRecipientFromTemplate as IVerdocsBuilderICreateEnvelopeRecipientFromTemplate } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsBuilderVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { ITemplate as IVerdocsBuilderITemplate } from '@verdocs/web-sdk/components';
+import type { IRole as IVerdocsBuilderIRole } from '@verdocs/web-sdk/components';
+
+export declare interface VerdocsBuilder extends Components.VerdocsBuilder {
+  /**
+   * Event fired if the user clicks Cancel.
+   */
+  cancel: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsBuilderSDKError>>;
+  /**
+   * Event fired when the user selects a different step.
+   */
+  stepChanged: EventEmitter<CustomEvent<IVerdocsBuilderTVerdocsBuildStep>>;
+  /**
+   * The user completed the Send form and clicked send.
+   */
+  send: EventEmitter<CustomEvent<{recipients: IVerdocsBuilderICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string}>>;
+  /**
+   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuilderVerdocsEndpoint; template: IVerdocsBuilderITemplate; event: string}>>;
+  /**
+   * Event fired when the template is created by the upload step.
+   */
+  templateCreated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuilderVerdocsEndpoint; template: IVerdocsBuilderITemplate; event: string}>>;
+  /**
+   * Event fired when roles are updated in the roles step.
+   */
+  rolesUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuilderVerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IVerdocsBuilderIRole[]}>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsBuilderFields,
+  inputs: ['endpoint', 'templateId']
+})
+@Component({
+  selector: 'verdocs-builder-fields',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['endpoint', 'templateId'],
+  outputs: ['sdkError', 'templateUpdated'],
+})
+export class VerdocsBuilderFields {
+  protected el: HTMLVerdocsBuilderFieldsElement;
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsBuilderFieldsSDKError>>();
+  @Output() templateUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsBuilderFieldsVerdocsEndpoint; template: IVerdocsBuilderFieldsITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'}>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { SDKError as IVerdocsBuilderFieldsSDKError } from '@verdocs/web-sdk/components';
+import type { VerdocsEndpoint as IVerdocsBuilderFieldsVerdocsEndpoint } from '@verdocs/web-sdk/components';
+import type { ITemplate as IVerdocsBuilderFieldsITemplate } from '@verdocs/web-sdk/components';
+
+export declare interface VerdocsBuilderFields extends Components.VerdocsBuilderFields {
+  /**
+   * Event fired if an error occurs. The event details will contain information about the error. Most errors will
+terminate the process, and the calling application should correct the condition and re-render the component.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsBuilderFieldsSDKError>>;
+  /**
+   * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+   */
+  templateUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsBuilderFieldsVerdocsEndpoint; template: IVerdocsBuilderFieldsITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'}>>;
 }
 
 

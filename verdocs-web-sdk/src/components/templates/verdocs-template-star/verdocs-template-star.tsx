@@ -50,7 +50,7 @@ export class VerdocsTemplateStar {
   toggle(e: any) {
     e.stopPropagation();
     this.updating = true;
-    toggleTemplateStar(VerdocsEndpoint.getDefault(), this.template.id)
+    toggleTemplateStar(this.endpoint, this.template.id)
       .then(r => {
         this.updating = false;
         this.template.star_counter = r.star_counter;

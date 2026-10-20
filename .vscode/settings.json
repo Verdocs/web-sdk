@@ -1,0 +1,6 @@
+{
+  // The repo root has no node_modules, so the user-level "node_modules/typescript/lib" path falls back to
+  // VSCode's bundled TypeScript 6, which flags moduleResolution "node" as deprecated. We point at the core
+  // package's own TypeScript instead, the one Stencil builds with.
+  "js/ts.tsdk.path": "verdocs-web-sdk/node_modules/typescript/lib"
+}

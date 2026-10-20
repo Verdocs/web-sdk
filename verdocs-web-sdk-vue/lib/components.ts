@@ -55,6 +55,39 @@ export const VerdocsBuild: StencilVueComponent<JSX.VerdocsBuild> = /*@__PURE__*/
 ]);
 
 
+export const VerdocsBuilder: StencilVueComponent<JSX.VerdocsBuilder> = /*@__PURE__*/ defineContainer<JSX.VerdocsBuilder>('verdocs-builder', undefined, [
+  'endpoint',
+  'templateId',
+  'step',
+  'cancel',
+  'sdkError',
+  'stepChanged',
+  'send',
+  'templateUpdated',
+  'templateCreated',
+  'rolesUpdated'
+], [
+  'cancel',
+  'sdkError',
+  'stepChanged',
+  'send',
+  'templateUpdated',
+  'templateCreated',
+  'rolesUpdated'
+]);
+
+
+export const VerdocsBuilderFields: StencilVueComponent<JSX.VerdocsBuilderFields> = /*@__PURE__*/ defineContainer<JSX.VerdocsBuilderFields>('verdocs-builder-fields', undefined, [
+  'endpoint',
+  'templateId',
+  'sdkError',
+  'templateUpdated'
+], [
+  'sdkError',
+  'templateUpdated'
+]);
+
+
 export const VerdocsButton: StencilVueComponent<JSX.VerdocsButton> = /*@__PURE__*/ defineContainer<JSX.VerdocsButton>('verdocs-button', undefined, [
   'label',
   'startIcon',

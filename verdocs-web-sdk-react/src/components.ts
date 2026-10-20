@@ -11,11 +11,13 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type DownloadAction, type IAuthStatus, type IColumn, type IContactSearchEvent, type IContactSelectEvent, type ICreateEnvelopeRecipientFromTemplate, type IDocumentPageInfo, type IEnvelope, type IFilterOption, type IMenuOption, type IRecipient, type IRole, type ISearchEvent, type ISelectedFile, type ISendEventDetail, type ISentEventDetail, type ISignerTokenResponse, type ITab, type ITemplate, type ITemplateField, type SDKError, type TContentType, type TEnvelopeStatus, type TVerdocsBuildStep, type VerdocsAdoptSignatureDialogCustomEvent, type VerdocsAuthCustomEvent, type VerdocsBuildCustomEvent, type VerdocsContactPickerCustomEvent, type VerdocsDelegateDialogCustomEvent, type VerdocsDialogCustomEvent, type VerdocsDisclosureDialogCustomEvent, type VerdocsDownloadDialogCustomEvent, type VerdocsDropdownCustomEvent, type VerdocsEndpoint, type VerdocsEnvelopeDocumentPageCustomEvent, type VerdocsEnvelopeRecipientLinkCustomEvent, type VerdocsEnvelopeRecipientSummaryCustomEvent, type VerdocsEnvelopeSidebarCustomEvent, type VerdocsEnvelopeUpdateRecipientCustomEvent, type VerdocsEnvelopesListCustomEvent, type VerdocsFieldAttachmentCustomEvent, type VerdocsFieldCheckboxCustomEvent, type VerdocsFieldDateCustomEvent, type VerdocsFieldDropdownCustomEvent, type VerdocsFieldInitialCustomEvent, type VerdocsFieldPaymentCustomEvent, type VerdocsFieldRadioCustomEvent, type VerdocsFieldSignatureCustomEvent, type VerdocsFieldTextareaCustomEvent, type VerdocsFieldTextboxCustomEvent, type VerdocsFieldTimestampCustomEvent, type VerdocsFileChooserCustomEvent, type VerdocsFlagCustomEvent, type VerdocsInitialDialogCustomEvent, type VerdocsKbaDialogCustomEvent, type VerdocsMenuPanelCustomEvent, type VerdocsMultiselectCustomEvent, type VerdocsOkDialogCustomEvent, type VerdocsOtpDialogCustomEvent, type VerdocsPaginationCustomEvent, type VerdocsPasscodeDialogCustomEvent, type VerdocsPortalCustomEvent, type VerdocsPreviewCustomEvent, type VerdocsQuestionDialogCustomEvent, type VerdocsQuickFilterCustomEvent, type VerdocsQuickFunctionsCustomEvent, type VerdocsSearchBoxCustomEvent, type VerdocsSendCustomEvent, type VerdocsSignCustomEvent, type VerdocsSignFooterCustomEvent, type VerdocsSignatureDialogCustomEvent, type VerdocsSigningProgressCustomEvent, type VerdocsSwitchCustomEvent, type VerdocsTableCustomEvent, type VerdocsTabsCustomEvent, type VerdocsTemplateAttachmentsCustomEvent, type VerdocsTemplateBuildTabsCustomEvent, type VerdocsTemplateCreateCustomEvent, type VerdocsTemplateDocumentPageCustomEvent, type VerdocsTemplateFieldPropertiesCustomEvent, type VerdocsTemplateFieldsCustomEvent, type VerdocsTemplateRolePropertiesCustomEvent, type VerdocsTemplateRolesCustomEvent, type VerdocsTemplateSettingsCustomEvent, type VerdocsTemplateStarCustomEvent, type VerdocsTemplatesListCustomEvent, type VerdocsToggleButtonCustomEvent, type VerdocsUploadDialogCustomEvent, type VerdocsViewCustomEvent } from "@verdocs/web-sdk";
+import { type DownloadAction, type IAuthStatus, type IColumn, type IContactSearchEvent, type IContactSelectEvent, type ICreateEnvelopeRecipientFromTemplate, type IDocumentPageInfo, type IEnvelope, type IFilterOption, type IMenuOption, type IRecipient, type IRole, type ISearchEvent, type ISelectedFile, type ISendEventDetail, type ISentEventDetail, type ISignerTokenResponse, type ITab, type ITemplate, type ITemplateField, type SDKError, type TContentType, type TEnvelopeStatus, type TVerdocsBuildStep, type VerdocsAdoptSignatureDialogCustomEvent, type VerdocsAuthCustomEvent, type VerdocsBuildCustomEvent, type VerdocsBuilderCustomEvent, type VerdocsBuilderFieldsCustomEvent, type VerdocsContactPickerCustomEvent, type VerdocsDelegateDialogCustomEvent, type VerdocsDialogCustomEvent, type VerdocsDisclosureDialogCustomEvent, type VerdocsDownloadDialogCustomEvent, type VerdocsDropdownCustomEvent, type VerdocsEndpoint, type VerdocsEnvelopeDocumentPageCustomEvent, type VerdocsEnvelopeRecipientLinkCustomEvent, type VerdocsEnvelopeRecipientSummaryCustomEvent, type VerdocsEnvelopeSidebarCustomEvent, type VerdocsEnvelopeUpdateRecipientCustomEvent, type VerdocsEnvelopesListCustomEvent, type VerdocsFieldAttachmentCustomEvent, type VerdocsFieldCheckboxCustomEvent, type VerdocsFieldDateCustomEvent, type VerdocsFieldDropdownCustomEvent, type VerdocsFieldInitialCustomEvent, type VerdocsFieldPaymentCustomEvent, type VerdocsFieldRadioCustomEvent, type VerdocsFieldSignatureCustomEvent, type VerdocsFieldTextareaCustomEvent, type VerdocsFieldTextboxCustomEvent, type VerdocsFieldTimestampCustomEvent, type VerdocsFileChooserCustomEvent, type VerdocsFlagCustomEvent, type VerdocsInitialDialogCustomEvent, type VerdocsKbaDialogCustomEvent, type VerdocsMenuPanelCustomEvent, type VerdocsMultiselectCustomEvent, type VerdocsOkDialogCustomEvent, type VerdocsOtpDialogCustomEvent, type VerdocsPaginationCustomEvent, type VerdocsPasscodeDialogCustomEvent, type VerdocsPortalCustomEvent, type VerdocsPreviewCustomEvent, type VerdocsQuestionDialogCustomEvent, type VerdocsQuickFilterCustomEvent, type VerdocsQuickFunctionsCustomEvent, type VerdocsSearchBoxCustomEvent, type VerdocsSendCustomEvent, type VerdocsSignCustomEvent, type VerdocsSignFooterCustomEvent, type VerdocsSignatureDialogCustomEvent, type VerdocsSigningProgressCustomEvent, type VerdocsSwitchCustomEvent, type VerdocsTableCustomEvent, type VerdocsTabsCustomEvent, type VerdocsTemplateAttachmentsCustomEvent, type VerdocsTemplateBuildTabsCustomEvent, type VerdocsTemplateCreateCustomEvent, type VerdocsTemplateDocumentPageCustomEvent, type VerdocsTemplateFieldPropertiesCustomEvent, type VerdocsTemplateFieldsCustomEvent, type VerdocsTemplateRolePropertiesCustomEvent, type VerdocsTemplateRolesCustomEvent, type VerdocsTemplateSettingsCustomEvent, type VerdocsTemplateStarCustomEvent, type VerdocsTemplatesListCustomEvent, type VerdocsToggleButtonCustomEvent, type VerdocsUploadDialogCustomEvent, type VerdocsViewCustomEvent } from "@verdocs/web-sdk";
 import type { Components } from "@verdocs/web-sdk/dist/components";
 import { VerdocsAdoptSignatureDialog as VerdocsAdoptSignatureDialogElement, defineCustomElement as defineVerdocsAdoptSignatureDialog } from "@verdocs/web-sdk/dist/components/verdocs-adopt-signature-dialog.js";
 import { VerdocsAuth as VerdocsAuthElement, defineCustomElement as defineVerdocsAuth } from "@verdocs/web-sdk/dist/components/verdocs-auth.js";
 import { VerdocsBuild as VerdocsBuildElement, defineCustomElement as defineVerdocsBuild } from "@verdocs/web-sdk/dist/components/verdocs-build.js";
+import { VerdocsBuilderFields as VerdocsBuilderFieldsElement, defineCustomElement as defineVerdocsBuilderFields } from "@verdocs/web-sdk/dist/components/verdocs-builder-fields.js";
+import { VerdocsBuilder as VerdocsBuilderElement, defineCustomElement as defineVerdocsBuilder } from "@verdocs/web-sdk/dist/components/verdocs-builder.js";
 import { VerdocsButtonPanel as VerdocsButtonPanelElement, defineCustomElement as defineVerdocsButtonPanel } from "@verdocs/web-sdk/dist/components/verdocs-button-panel.js";
 import { VerdocsButton as VerdocsButtonElement, defineCustomElement as defineVerdocsButton } from "@verdocs/web-sdk/dist/components/verdocs-button.js";
 import { VerdocsCheckbox as VerdocsCheckboxElement, defineCustomElement as defineVerdocsCheckbox } from "@verdocs/web-sdk/dist/components/verdocs-checkbox.js";
@@ -156,6 +158,50 @@ export const VerdocsBuild: StencilReactComponent<VerdocsBuildElement, VerdocsBui
         onRolesUpdated: 'rolesUpdated'
     } as VerdocsBuildEvents,
     defineCustomElement: defineVerdocsBuild
+});
+
+export type VerdocsBuilderEvents = {
+    onCancel: EventName<VerdocsBuilderCustomEvent<any>>,
+    onSdkError: EventName<VerdocsBuilderCustomEvent<SDKError>>,
+    onStepChanged: EventName<VerdocsBuilderCustomEvent<TVerdocsBuildStep>>,
+    onSend: EventName<VerdocsBuilderCustomEvent<{ recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string }>>,
+    onTemplateUpdated: EventName<VerdocsBuilderCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate; event: string }>>,
+    onTemplateCreated: EventName<VerdocsBuilderCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate; event: string }>>,
+    onRolesUpdated: EventName<VerdocsBuilderCustomEvent<{ endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[] }>>
+};
+
+export const VerdocsBuilder: StencilReactComponent<VerdocsBuilderElement, VerdocsBuilderEvents, Components.VerdocsBuilder> = /*@__PURE__*/ createComponent<VerdocsBuilderElement, VerdocsBuilderEvents, Components.VerdocsBuilder>({
+    tagName: 'verdocs-builder',
+    elementClass: VerdocsBuilderElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onCancel: 'cancel',
+        onSdkError: 'sdkError',
+        onStepChanged: 'stepChanged',
+        onSend: 'send',
+        onTemplateUpdated: 'templateUpdated',
+        onTemplateCreated: 'templateCreated',
+        onRolesUpdated: 'rolesUpdated'
+    } as VerdocsBuilderEvents,
+    defineCustomElement: defineVerdocsBuilder
+});
+
+export type VerdocsBuilderFieldsEvents = {
+    onSdkError: EventName<VerdocsBuilderFieldsCustomEvent<SDKError>>,
+    onTemplateUpdated: EventName<VerdocsBuilderFieldsCustomEvent<{ endpoint: VerdocsEndpoint; template: ITemplate; event: 'added-field' | 'updated-field' | 'deleted-field' }>>
+};
+
+export const VerdocsBuilderFields: StencilReactComponent<VerdocsBuilderFieldsElement, VerdocsBuilderFieldsEvents, Components.VerdocsBuilderFields> = /*@__PURE__*/ createComponent<VerdocsBuilderFieldsElement, VerdocsBuilderFieldsEvents, Components.VerdocsBuilderFields>({
+    tagName: 'verdocs-builder-fields',
+    elementClass: VerdocsBuilderFieldsElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onSdkError: 'sdkError',
+        onTemplateUpdated: 'templateUpdated'
+    } as VerdocsBuilderFieldsEvents,
+    defineCustomElement: defineVerdocsBuilderFields
 });
 
 export type VerdocsButtonEvents = NonNullable<unknown>;

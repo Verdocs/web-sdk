@@ -9,6 +9,7 @@ import { ICreateEnvelopeRecipientFromTemplate, IEnvelope, IEnvelopeField, IOrgan
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
+import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/embeds/verdocs-build/verdocs-build";
 import { IContactSearchEvent, IContactSelectEvent, TPickerContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { DownloadAction, IDocumentPageInfo, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
@@ -20,7 +21,7 @@ import { ISendEventDetail, ISentEventDetail } from "./components/embeds/verdocs-
 import { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 import { IColumn } from "./components/controls/verdocs-table/verdocs-table";
 import { ITab } from "./components/controls/verdocs-tabs/verdocs-tabs";
-import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/verdocs-template-build-tabs/verdocs-template-build-tabs";
+import { TVerdocsBuildStep as TVerdocsBuildStep2 } from "./components/templates/verdocs-template-build-tabs/verdocs-template-build-tabs";
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
@@ -28,6 +29,7 @@ export { ICreateEnvelopeRecipientFromTemplate, IEnvelope, IEnvelopeField, IOrgan
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
+export { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/embeds/verdocs-build/verdocs-build";
 export { IContactSearchEvent, IContactSelectEvent, TPickerContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 export { DownloadAction, IDocumentPageInfo, IPageLayer } from "./utils/Types";
 export { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
@@ -39,7 +41,7 @@ export { ISendEventDetail, ISentEventDetail } from "./components/embeds/verdocs-
 export { IContactSearchEvent as IContactSearchEvent1 } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
 export { IColumn } from "./components/controls/verdocs-table/verdocs-table";
 export { ITab } from "./components/controls/verdocs-tabs/verdocs-tabs";
-export { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/templates/verdocs-template-build-tabs/verdocs-template-build-tabs";
+export { TVerdocsBuildStep as TVerdocsBuildStep2 } from "./components/templates/verdocs-template-build-tabs/verdocs-template-build-tabs";
 export { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 export { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 export { Placement } from "@popperjs/core/lib/enums";
@@ -127,6 +129,52 @@ export namespace Components {
         "step": TVerdocsBuildStep;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+          * @default null
+         */
+        "templateId": string | null;
+    }
+    /**
+     * Display the Verdocs Builder, a template building experience with drag-and-drop field placement, snap guides, and a
+     * settings panel. It takes the same properties and fires the same events as `verdocs-build`, so either can stand in for the
+     * other.
+     * ```ts
+     * <verdocs-builder
+     *   templateId={TEMPLATE_ID} step="preview"
+     *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
+     *   />
+     * ```
+     */
+    interface VerdocsBuilder {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The step in the creation process to display.
+          * @default 'preview'
+         */
+        "step": TVerdocsBuildStep1;
+        /**
+          * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+          * @default null
+         */
+        "templateId": string | null;
+    }
+    /**
+     * The fields step of `verdocs-builder`: drag fields from the palette onto the page, line them up with snap guides, adjust the
+     * common settings from a quick bar over the selected field, and open the rest in a settings panel. Like `verdocs-template-fields`,
+     * it needs a large display area, so it's intended for desktop use.
+     */
+    interface VerdocsBuilderFields {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
+         */
+        "endpoint": VerdocsEndpoint;
+        /**
+          * The ID of the template to edit.
           * @default null
          */
         "templateId": string | null;
@@ -2183,7 +2231,7 @@ export namespace Components {
           * The step in the creation process to display.
           * @default 'preview'
          */
-        "step": TVerdocsBuildStep1;
+        "step": TVerdocsBuildStep2;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
           * @default null
@@ -2631,6 +2679,14 @@ export interface VerdocsBuildCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsBuildElement;
 }
+export interface VerdocsBuilderCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsBuilderElement;
+}
+export interface VerdocsBuilderFieldsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsBuilderFieldsElement;
+}
 export interface VerdocsContactPickerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsContactPickerElement;
@@ -2965,6 +3021,64 @@ declare global {
     var HTMLVerdocsBuildElement: {
         prototype: HTMLVerdocsBuildElement;
         new (): HTMLVerdocsBuildElement;
+    };
+    interface HTMLVerdocsBuilderElementEventMap {
+        "cancel": any;
+        "sdkError": SDKError;
+        "stepChanged": TVerdocsBuildStep1;
+        "send": {recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string};
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+        "templateCreated": {endpoint: VerdocsEndpoint; template: ITemplate; event: string};
+        "rolesUpdated": {endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]};
+    }
+    /**
+     * Display the Verdocs Builder, a template building experience with drag-and-drop field placement, snap guides, and a
+     * settings panel. It takes the same properties and fires the same events as `verdocs-build`, so either can stand in for the
+     * other.
+     * ```ts
+     * <verdocs-builder
+     *   templateId={TEMPLATE_ID} step="preview"
+     *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
+     *   />
+     * ```
+     */
+    interface HTMLVerdocsBuilderElement extends Components.VerdocsBuilder, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsBuilderElementEventMap>(type: K, listener: (this: HTMLVerdocsBuilderElement, ev: VerdocsBuilderCustomEvent<HTMLVerdocsBuilderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsBuilderElementEventMap>(type: K, listener: (this: HTMLVerdocsBuilderElement, ev: VerdocsBuilderCustomEvent<HTMLVerdocsBuilderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsBuilderElement: {
+        prototype: HTMLVerdocsBuilderElement;
+        new (): HTMLVerdocsBuilderElement;
+    };
+    interface HTMLVerdocsBuilderFieldsElementEventMap {
+        "sdkError": SDKError;
+        "templateUpdated": {endpoint: VerdocsEndpoint; template: ITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'};
+    }
+    /**
+     * The fields step of `verdocs-builder`: drag fields from the palette onto the page, line them up with snap guides, adjust the
+     * common settings from a quick bar over the selected field, and open the rest in a settings panel. Like `verdocs-template-fields`,
+     * it needs a large display area, so it's intended for desktop use.
+     */
+    interface HTMLVerdocsBuilderFieldsElement extends Components.VerdocsBuilderFields, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsBuilderFieldsElementEventMap>(type: K, listener: (this: HTMLVerdocsBuilderFieldsElement, ev: VerdocsBuilderFieldsCustomEvent<HTMLVerdocsBuilderFieldsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsBuilderFieldsElementEventMap>(type: K, listener: (this: HTMLVerdocsBuilderFieldsElement, ev: VerdocsBuilderFieldsCustomEvent<HTMLVerdocsBuilderFieldsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsBuilderFieldsElement: {
+        prototype: HTMLVerdocsBuilderFieldsElement;
+        new (): HTMLVerdocsBuilderFieldsElement;
     };
     /**
      * A simple button, with consistent styling to other controls in the design system.
@@ -4327,7 +4441,7 @@ declare global {
     };
     interface HTMLVerdocsTemplateBuildTabsElementEventMap {
         "sdkError": SDKError;
-        "stepChanged": TVerdocsBuildStep1;
+        "stepChanged": TVerdocsBuildStep2;
     }
     /**
      * Display a set of tabs for the template builder.
@@ -4701,6 +4815,8 @@ declare global {
         "verdocs-adopt-signature-dialog": HTMLVerdocsAdoptSignatureDialogElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
+        "verdocs-builder": HTMLVerdocsBuilderElement;
+        "verdocs-builder-fields": HTMLVerdocsBuilderFieldsElement;
         "verdocs-button": HTMLVerdocsButtonElement;
         "verdocs-button-panel": HTMLVerdocsButtonPanelElement;
         "verdocs-checkbox": HTMLVerdocsCheckboxElement;
@@ -4913,6 +5029,88 @@ declare namespace LocalJSX {
         "step"?: TVerdocsBuildStep;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+          * @default null
+         */
+        "templateId"?: string | null;
+    }
+    /**
+     * Display the Verdocs Builder, a template building experience with drag-and-drop field placement, snap guides, and a
+     * settings panel. It takes the same properties and fires the same events as `verdocs-build`, so either can stand in for the
+     * other.
+     * ```ts
+     * <verdocs-builder
+     *   templateId={TEMPLATE_ID} step="preview"
+     *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
+     *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
+     *   />
+     * ```
+     */
+    interface VerdocsBuilder {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired if the user clicks Cancel.
+         */
+        "onCancel"?: (event: VerdocsBuilderCustomEvent<any>) => void;
+        /**
+          * Event fired when roles are updated in the roles step.
+         */
+        "onRolesUpdated"?: (event: VerdocsBuilderCustomEvent<{endpoint: VerdocsEndpoint; templateId: string; event: 'added' | 'deleted' | 'updated'; roles: IRole[]}>) => void;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsBuilderCustomEvent<SDKError>) => void;
+        /**
+          * The user completed the Send form and clicked send.
+         */
+        "onSend"?: (event: VerdocsBuilderCustomEvent<{recipients: ICreateEnvelopeRecipientFromTemplate[]; name: string; template_id: string}>) => void;
+        /**
+          * Event fired when the user selects a different step.
+         */
+        "onStepChanged"?: (event: VerdocsBuilderCustomEvent<TVerdocsBuildStep1>) => void;
+        /**
+          * Event fired when the template is created by the upload step.
+         */
+        "onTemplateCreated"?: (event: VerdocsBuilderCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
+        /**
+          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onTemplateUpdated"?: (event: VerdocsBuilderCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: string}>) => void;
+        /**
+          * The step in the creation process to display.
+          * @default 'preview'
+         */
+        "step"?: TVerdocsBuildStep1;
+        /**
+          * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
+          * @default null
+         */
+        "templateId"?: string | null;
+    }
+    /**
+     * The fields step of `verdocs-builder`: drag fields from the palette onto the page, line them up with snap guides, adjust the
+     * common settings from a quick bar over the selected field, and open the rest in a settings panel. Like `verdocs-template-fields`,
+     * it needs a large display area, so it's intended for desktop use.
+     */
+    interface VerdocsBuilderFields {
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default VerdocsEndpoint.getDefault()
+         */
+        "endpoint"?: VerdocsEndpoint;
+        /**
+          * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
+         */
+        "onSdkError"?: (event: VerdocsBuilderFieldsCustomEvent<SDKError>) => void;
+        /**
+          * Event fired when the template is updated in any way. May be used for tasks such as cache invalidation or reporting to other systems.
+         */
+        "onTemplateUpdated"?: (event: VerdocsBuilderFieldsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'}>) => void;
+        /**
+          * The ID of the template to edit.
           * @default null
          */
         "templateId"?: string | null;
@@ -7386,12 +7584,12 @@ declare namespace LocalJSX {
         /**
           * Event fired when the user selects a different step.
          */
-        "onStepChanged"?: (event: VerdocsTemplateBuildTabsCustomEvent<TVerdocsBuildStep1>) => void;
+        "onStepChanged"?: (event: VerdocsTemplateBuildTabsCustomEvent<TVerdocsBuildStep2>) => void;
         /**
           * The step in the creation process to display.
           * @default 'preview'
          */
-        "step"?: TVerdocsBuildStep1;
+        "step"?: TVerdocsBuildStep2;
         /**
           * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here. If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process. If it is not specified, `step` will be ignored and the create step will be shown.
           * @default null
@@ -8013,6 +8211,13 @@ declare namespace LocalJSX {
         "templateId": string | null;
         "step": TVerdocsBuildStep;
     }
+    interface VerdocsBuilderAttributes {
+        "templateId": string | null;
+        "step": TVerdocsBuildStep;
+    }
+    interface VerdocsBuilderFieldsAttributes {
+        "templateId": string | null;
+    }
     interface VerdocsButtonAttributes {
         "label": string;
         "startIcon": string | null;
@@ -8464,6 +8669,8 @@ declare namespace LocalJSX {
         "verdocs-adopt-signature-dialog": Omit<VerdocsAdoptSignatureDialog, keyof VerdocsAdoptSignatureDialogAttributes> & { [K in keyof VerdocsAdoptSignatureDialog & keyof VerdocsAdoptSignatureDialogAttributes]?: VerdocsAdoptSignatureDialog[K] } & { [K in keyof VerdocsAdoptSignatureDialog & keyof VerdocsAdoptSignatureDialogAttributes as `attr:${K}`]?: VerdocsAdoptSignatureDialogAttributes[K] } & { [K in keyof VerdocsAdoptSignatureDialog & keyof VerdocsAdoptSignatureDialogAttributes as `prop:${K}`]?: VerdocsAdoptSignatureDialog[K] };
         "verdocs-auth": Omit<VerdocsAuth, keyof VerdocsAuthAttributes> & { [K in keyof VerdocsAuth & keyof VerdocsAuthAttributes]?: VerdocsAuth[K] } & { [K in keyof VerdocsAuth & keyof VerdocsAuthAttributes as `attr:${K}`]?: VerdocsAuthAttributes[K] } & { [K in keyof VerdocsAuth & keyof VerdocsAuthAttributes as `prop:${K}`]?: VerdocsAuth[K] };
         "verdocs-build": Omit<VerdocsBuild, keyof VerdocsBuildAttributes> & { [K in keyof VerdocsBuild & keyof VerdocsBuildAttributes]?: VerdocsBuild[K] } & { [K in keyof VerdocsBuild & keyof VerdocsBuildAttributes as `attr:${K}`]?: VerdocsBuildAttributes[K] } & { [K in keyof VerdocsBuild & keyof VerdocsBuildAttributes as `prop:${K}`]?: VerdocsBuild[K] };
+        "verdocs-builder": Omit<VerdocsBuilder, keyof VerdocsBuilderAttributes> & { [K in keyof VerdocsBuilder & keyof VerdocsBuilderAttributes]?: VerdocsBuilder[K] } & { [K in keyof VerdocsBuilder & keyof VerdocsBuilderAttributes as `attr:${K}`]?: VerdocsBuilderAttributes[K] } & { [K in keyof VerdocsBuilder & keyof VerdocsBuilderAttributes as `prop:${K}`]?: VerdocsBuilder[K] };
+        "verdocs-builder-fields": Omit<VerdocsBuilderFields, keyof VerdocsBuilderFieldsAttributes> & { [K in keyof VerdocsBuilderFields & keyof VerdocsBuilderFieldsAttributes]?: VerdocsBuilderFields[K] } & { [K in keyof VerdocsBuilderFields & keyof VerdocsBuilderFieldsAttributes as `attr:${K}`]?: VerdocsBuilderFieldsAttributes[K] } & { [K in keyof VerdocsBuilderFields & keyof VerdocsBuilderFieldsAttributes as `prop:${K}`]?: VerdocsBuilderFields[K] };
         "verdocs-button": Omit<VerdocsButton, keyof VerdocsButtonAttributes> & { [K in keyof VerdocsButton & keyof VerdocsButtonAttributes]?: VerdocsButton[K] } & { [K in keyof VerdocsButton & keyof VerdocsButtonAttributes as `attr:${K}`]?: VerdocsButtonAttributes[K] } & { [K in keyof VerdocsButton & keyof VerdocsButtonAttributes as `prop:${K}`]?: VerdocsButton[K] } & OneOf<"label", VerdocsButton["label"], VerdocsButtonAttributes["label"]>;
         "verdocs-button-panel": Omit<VerdocsButtonPanel, keyof VerdocsButtonPanelAttributes> & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes]?: VerdocsButtonPanel[K] } & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes as `attr:${K}`]?: VerdocsButtonPanelAttributes[K] } & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes as `prop:${K}`]?: VerdocsButtonPanel[K] };
         "verdocs-checkbox": Omit<VerdocsCheckbox, keyof VerdocsCheckboxAttributes> & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes]?: VerdocsCheckbox[K] } & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes as `attr:${K}`]?: VerdocsCheckboxAttributes[K] } & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes as `prop:${K}`]?: VerdocsCheckbox[K] };
@@ -8584,6 +8791,25 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-build": LocalJSX.IntrinsicElements["verdocs-build"] & JSXBase.HTMLAttributes<HTMLVerdocsBuildElement>;
+            /**
+             * Display the Verdocs Builder, a template building experience with drag-and-drop field placement, snap guides, and a
+             * settings panel. It takes the same properties and fires the same events as `verdocs-build`, so either can stand in for the
+             * other.
+             * ```ts
+             * <verdocs-builder
+             *   templateId={TEMPLATE_ID} step="preview"
+             *   onSend={({detail}) => { console.log('Sent envelope from template', detail) }}
+             *   onSdkError={({ detail }) => { console.log('SDK error', detail) }}
+             *   />
+             * ```
+             */
+            "verdocs-builder": LocalJSX.IntrinsicElements["verdocs-builder"] & JSXBase.HTMLAttributes<HTMLVerdocsBuilderElement>;
+            /**
+             * The fields step of `verdocs-builder`: drag fields from the palette onto the page, line them up with snap guides, adjust the
+             * common settings from a quick bar over the selected field, and open the rest in a settings panel. Like `verdocs-template-fields`,
+             * it needs a large display area, so it's intended for desktop use.
+             */
+            "verdocs-builder-fields": LocalJSX.IntrinsicElements["verdocs-builder-fields"] & JSXBase.HTMLAttributes<HTMLVerdocsBuilderFieldsElement>;
             /**
              * A simple button, with consistent styling to other controls in the design system.
              * ```ts
