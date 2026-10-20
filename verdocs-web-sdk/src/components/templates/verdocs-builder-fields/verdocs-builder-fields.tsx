@@ -170,6 +170,7 @@ export class VerdocsBuilderFields {
 
   paletteDrag: {
     type: TFieldType;
+    roleName: string;
     ghost: HTMLElement;
     width: number;
     height: number;
@@ -305,11 +306,10 @@ export class VerdocsBuilderFields {
     this.positionQuickBar();
   }
 
-  componentWillUpdate() {
-    // If a role was added when there were none, or the palette's role was deleted, pick the first one.
-    const roles = this.sortedRoles();
-    if (!this.selectedRoleName || !roles.find(role => role && role.name === this.selectedRoleName)) {
-      this.selectedRoleName = roles[0]?.name || '';
+  // Stencil doesn't rerun componentWillLoad when an element is reattached, so we listen again here.
+  connectedCallback() {
+    if (this.template && !this.templateListenerId) {
+      this.listenToTemplate();
     }
   }
 
@@ -322,11 +322,12 @@ export class VerdocsBuilderFields {
 
   async listenToTemplate() {
     this.unlistenToTemplate();
-    Store.subscribe(
+    // We reload in case the host app changed the template outside the Store.
+    this.templateListenerId = Store.subscribe(
       'templates',
       this.templateId,
       () => getTemplate(this.endpoint, this.templateId),
-      false,
+      true,
       (template: ITemplate) => {
         this.template = template;
         this.loading = false;
@@ -346,6 +347,12 @@ export class VerdocsBuilderFields {
 
   sortedRoles() {
     return [...(this.template?.roles || [])].sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
+  }
+
+  // We use the first role until the user picks one.
+  paletteRoleName() {
+    const roles = this.sortedRoles();
+    return roles.find(role => role.name === this.selectedRoleName)?.name || roles[0]?.name || '';
   }
 
   // Fields take their signer color from the role's position in the template, so the palette and quick bar do too.
@@ -768,7 +775,8 @@ export class VerdocsBuilderFields {
   }
 
   startPaletteDrag(e: PointerEvent, type: TFieldType) {
-    if (!this.selectedRoleName) {
+    const roleName = this.paletteRoleName();
+    if (!roleName) {
       this.showMustSelectRole = true;
       return;
     }
@@ -783,12 +791,12 @@ export class VerdocsBuilderFields {
 
     const ghost = document.createElement('div');
     ghost.className = `verdocs-builder-ghost ghost-${type} off`;
-    ghost.style.cssText = `width:${width}px;height:${height}px;--verdocs-builder-ghost-color:${this.roleColor(this.selectedRoleName)}`;
+    ghost.style.cssText = `width:${width}px;height:${height}px;--verdocs-builder-ghost-color:${this.roleColor(roleName)}`;
     ghost.innerHTML = '<span class="tip"></span>';
     document.body.appendChild(ghost);
     document.body.classList.add('verdocs-builder-dragging');
 
-    this.paletteDrag = {type, ghost, width, height, over: null};
+    this.paletteDrag = {type, roleName, ghost, width, height, over: null};
     window.addEventListener('pointermove', this.handlePaletteMove);
     window.addEventListener('pointerup', this.handlePaletteDrop);
     this.handlePaletteMove(e);
@@ -823,7 +831,7 @@ export class VerdocsBuilderFields {
         viewBottom: layerRect.bottom - (top + drag.height),
       };
       drag.ghost.classList.remove('off');
-      tip.textContent = `${FIELD_TYPES.find(fieldType => fieldType.type === drag.type)?.label} for ${this.selectedRoleName}`;
+      tip.textContent = `${FIELD_TYPES.find(fieldType => fieldType.type === drag.type)?.label} for ${drag.roleName}`;
     } else {
       drag.over = null;
       drag.ghost.classList.add('off');
@@ -849,7 +857,7 @@ export class VerdocsBuilderFields {
 
     this.addField({
       name: this.generateFieldName(drag.type, drag.over.pageNumber),
-      role_name: this.selectedRoleName,
+      role_name: drag.roleName,
       template_id: this.templateId,
       document_id: drag.over.documentId,
       type: drag.type,
@@ -987,17 +995,18 @@ export class VerdocsBuilderFields {
 
     const selectedField = this.findField(this.selectedFieldName);
     const roleOptions = this.sortedRoles().map(role => ({value: role.name, label: role.full_name ? `${role.name}: ${role.full_name}` : role.name}));
+    const paletteRoleName = this.paletteRoleName();
 
     return (
       <Host>
         <div class="palette">
-          <div class="palette-title">Signer</div>
-          <verdocs-select-input value={this.selectedRoleName} options={roleOptions} onInput={(e: any) => (this.selectedRoleName = e.target.value)} />
+          <div class="palette-title">Recipient</div>
+          <verdocs-select-input value={paletteRoleName} options={roleOptions} onInput={(e: any) => (this.selectedRoleName = e.target.value)} />
 
           <div class="palette-title">Fields</div>
           {FIELD_TYPES.map(fieldType => (
             <div class="palette-field" onPointerDown={(e: PointerEvent) => this.startPaletteDrag(e, fieldType.type)}>
-              <span class="palette-icon" style={{background: this.roleColor(this.selectedRoleName)}} innerHTML={fieldType.icon} />
+              <span class="palette-icon" style={{background: this.roleColor(paletteRoleName)}} innerHTML={fieldType.icon} />
               {fieldType.label}
               <span class="grip" />
             </div>
@@ -1070,7 +1079,7 @@ export class VerdocsBuilderFields {
         {this.showMustSelectRole && (
           <verdocs-ok-dialog
             heading="Unable to add field"
-            message={(this.template?.roles || []).length > 0 ? 'Please select a role before adding fields.' : 'Please add at least one role before adding fields.'}
+            message="Please add at least one role before adding fields."
             onNext={() => (this.showMustSelectRole = false)}
           />
         )}

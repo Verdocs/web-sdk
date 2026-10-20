@@ -272,6 +272,13 @@ export class VerdocsTemplateFields {
     }
   }
 
+  // Stencil doesn't rerun componentWillLoad when an element is reattached, so we listen again here.
+  connectedCallback() {
+    if (this.template && !this.templateListenerId) {
+      this.listenToTemplate();
+    }
+  }
+
   disconnectedCallback() {
     this.unlistenToTemplate();
     this.flushNudge();
@@ -280,11 +287,12 @@ export class VerdocsTemplateFields {
 
   async listenToTemplate() {
     this.unlistenToTemplate();
-    Store.subscribe(
+    // We reload in case the host app changed the template outside the Store.
+    this.templateListenerId = Store.subscribe(
       'templates',
       this.templateId,
       () => getTemplate(this.endpoint, this.templateId),
-      false,
+      true,
       (template: ITemplate) => {
         console.log('Template updated');
         this.template = template;
