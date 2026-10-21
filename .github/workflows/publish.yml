@@ -1,6 +1,7 @@
 name: Publish
 
-# Publishes the committed versions of @verdocs/web-sdk and @verdocs/web-sdk-react with npm trusted publishing (OIDC).
+# Publishes the committed versions of @verdocs/web-sdk and @verdocs/web-sdk-react with npm trusted publishing (OIDC),
+# then deploys Storybook to GitHub Pages, so the docs never show a build that didn't publish.
 on:
   push:
     branches: [main]
@@ -8,6 +9,8 @@ on:
       - verdocs-web-sdk/package.json
       - verdocs-web-sdk-react/package.json
       - scripts/publish.mjs
+      - storybook/**
+      - README.md
       - .github/workflows/publish.yml
   workflow_dispatch:
 
@@ -35,3 +38,40 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
       - run: node scripts/publish.mjs
+
+  # Storybook, which developer-docs embeds on its Components page.
+  docs:
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      NODE_ENV: production
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Build Storybook
+        run: |
+          cd verdocs-web-sdk
+          rm -rf node_modules package-lock.json
+          NODE_ENV=development npm i
+          npm run build
+          cd ../storybook
+          rm -rf node_modules package-lock.json
+          NODE_ENV=development npm i
+          npm run build-storybook
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: storybook/storybook-static
+      - id: deployment
+        uses: actions/deploy-pages@v5
