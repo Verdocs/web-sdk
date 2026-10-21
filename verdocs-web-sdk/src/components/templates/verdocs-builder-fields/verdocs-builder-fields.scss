@@ -20,7 +20,13 @@ verdocs-builder-fields {
 
   @include recipient-fields;
 
+  // Fields carry an inline z-index of 100, so each page keeps them to itself and the quick bar and its menus stay on top.
+  verdocs-template-document-page {
+    isolation: isolate;
+  }
+
   .verdocs-field.vb-field.verdocs-field-selected {
+    z-index: 101 !important;
     border-style: solid !important;
     border-width: screen(1.5) !important;
     box-shadow: 0 0 0 screen(3) rgba(101, 77, 203, 0.28) !important;
@@ -164,7 +170,7 @@ verdocs-builder-fields {
   }
 
   .verdocs-builder-guide {
-    z-index: 30;
+    z-index: 102;
     position: absolute;
     pointer-events: none;
     background: $builder-guide;
@@ -358,14 +364,6 @@ verdocs-builder-fields {
       width: 350px;
       border-left: 1px solid $builder-line;
     }
-
-    // The settings form is built as a popover; inside the panel it fills the column instead.
-    verdocs-template-field-properties {
-      padding: 0;
-      border: none;
-      box-shadow: none;
-      border-radius: 0;
-    }
   }
 
   .inspector-inner {
@@ -376,14 +374,246 @@ verdocs-builder-fields {
     padding: 16px 18px 40px;
   }
 
-  .inspector-header {
+  .insp-head {
+    gap: 10px;
     display: flex;
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
     align-items: center;
+
+    .inspector-close {
+      margin-left: auto;
+    }
+  }
+
+  .insp-badge {
+    gap: 6px;
+    flex: none;
+    padding: 4px 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+    border-radius: 6px;
+    align-items: center;
+    display: inline-flex;
+    background: #f1eefc;
+    color: $verdocs-purple;
+  }
+
+  .insp-badge-icon {
+    display: flex;
+
+    svg {
+      width: 13px;
+      height: 13px;
+    }
+  }
+
+  .insp-title {
+    min-width: 0;
+    font-size: 14px;
+    overflow: hidden;
+    font-weight: 700;
+    white-space: nowrap;
     color: $builder-ink;
+    text-overflow: ellipsis;
+  }
+
+  .insp-section {
+    display: flex;
+    margin-top: 12px;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 12px 0 2px;
+    letter-spacing: 0.08em;
+    color: $builder-muted;
+    text-transform: uppercase;
+    border-top: 1px solid $builder-line;
+  }
+
+  .insp-two {
+    gap: 0 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .insp-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 9px;
+    color: $verdocs-dark-blue;
+
+    .insp-input {
+      margin-top: 4px;
+    }
+  }
+
+  .insp-input {
+    width: 100%;
+    outline: none;
+    display: block;
+    font-size: 12.5px;
+    font-weight: 400;
+    min-height: 31px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    background: #ffffff;
+    font-family: inherit;
+    box-sizing: border-box;
+    color: $verdocs-dark-blue;
+    border: 1px solid #d6d8e3;
+
+    &:focus {
+      border-color: $verdocs-purple;
+      box-shadow: 0 0 0 3px rgba(101, 77, 203, 0.14);
+    }
+
+    &.mono {
+      font-size: 11.5px;
+      font-family: ui-monospace, Menlo, monospace;
+    }
+  }
+
+  select.insp-input {
+    cursor: pointer;
+    appearance: none;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    background-position: calc(100% - 15px) 13px, calc(100% - 10px) 13px;
+    background-image: linear-gradient(45deg, transparent 50%, $builder-muted 50%), linear-gradient(135deg, $builder-muted 50%, transparent 50%);
+  }
+
+  .insp-error {
+    font-size: 11px;
+    margin-top: 5px;
+    color: #b4233a;
+  }
+
+  .insp-hint {
+    font-size: 11px;
+    margin-top: 5px;
+    color: $builder-muted;
+  }
+
+  .insp-row {
+    gap: 10px;
+    display: flex;
+    margin-top: 11px;
+    font-size: 12.5px;
+    font-weight: 600;
+    align-items: center;
+    color: $verdocs-dark-blue;
     justify-content: space-between;
+  }
+
+  .insp-toggle {
+    width: 30px;
+    padding: 0;
+    height: 17px;
+    border: 0;
+    flex: none;
+    cursor: pointer;
+    position: relative;
+    border-radius: 9px;
+    background: #cfd2de;
+
+    i {
+      top: 2px;
+      left: 2px;
+      width: 13px;
+      height: 13px;
+      position: absolute;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: left 0.12s;
+    }
+
+    &.on {
+      background: $verdocs-green;
+
+      i {
+        left: 15px;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid $verdocs-purple;
+      outline-offset: 2px;
+    }
+  }
+
+  .insp-option {
+    gap: 6px;
+    display: flex;
+    margin-top: 6px;
+    align-items: center;
+
+    .insp-input:first-child {
+      flex: 1.4;
+    }
+
+    .insp-input.mono {
+      flex: 1;
+    }
+  }
+
+  .insp-remove {
+    width: 26px;
+    height: 26px;
+    border: 0;
+    padding: 4px;
+    flex: none;
+    display: grid;
+    cursor: pointer;
+    border-radius: 6px;
+    place-items: center;
+    background: transparent;
+    color: $builder-muted;
+
+    &:hover {
+      color: #b4233a;
+      background: #fbeaed;
+    }
+
+    svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+    }
+  }
+
+  .insp-add {
+    border: 0;
+    padding: 8px 0 2px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    background: none;
+    color: $verdocs-purple;
+  }
+
+  .insp-delete {
+    gap: 6px;
+    cursor: pointer;
+    margin-top: 22px;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 7px;
+    align-items: center;
+    background: none;
+    color: #b4233a;
+    display: inline-flex;
+    border: 1px solid #f0c9d0;
+
+    span {
+      display: flex;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+    }
   }
 
   .inspector-close {

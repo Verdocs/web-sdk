@@ -138,4 +138,90 @@ describe('verdocs-builder-fields', () => {
     expect([builder.roleNumber('R1'), builder.roleNumber('R8'), builder.roleNumber('R9')]).toEqual([1, 8, 1]);
     expect(builder.roleColor('R3')).toEqual('var(--verdocs-recipient-3)');
   });
+
+  describe('Inspector', () => {
+    const radio = (name: string, extra = {}) => ({name, role_name: 'Preparer', type: 'radio', group: 'filing', default: 'false', page: 1, ...extra});
+    const inspectorTemplate = {
+      ...template,
+      fields: [
+        {name: 'name', role_name: 'Preparer', type: 'textbox', label: 'Client name', page: 1, required: true, readonly: false},
+        radio('single', {default: 'true'}),
+        radio('joint'),
+        radio('other-role', {role_name: 'Taxpayer', default: 'true'}),
+        {name: 'state', role_name: 'Preparer', type: 'dropdown', page: 1, options: [{id: 'oh', label: 'Ohio'}]},
+      ],
+    };
+
+    const renderBuilder = async () => {
+      jest.spyOn(Store, 'subscribe').mockImplementation((_table, _row, _getter, _force, callback: any) => {
+        callback(inspectorTemplate);
+        return 'listener';
+      });
+      const page = await newSpecPage({components: [VerdocsBuilderFields], html: '<verdocs-builder-fields template-id="T1"></verdocs-builder-fields>'});
+      const builder = page.rootInstance as VerdocsBuilderFields;
+      const saveField = jest.spyOn(builder, 'saveField').mockResolvedValue(undefined);
+      return {page, builder, saveField};
+    };
+
+    it('shows the field type and name at the top', async () => {
+      const {page, builder} = await renderBuilder();
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      await page.waitForChanges();
+
+      expect(page.root.querySelector('.insp-badge').textContent).toEqual('Text box');
+      expect(page.root.querySelector('.insp-title').textContent).toEqual('Client name');
+    });
+
+    it('checks a new API name before saving it', async () => {
+      const {builder, saveField} = await renderBuilder();
+      const field = builder.findField('name');
+
+      await builder.saveFieldName(field, 'joint');
+      expect(builder.nameError).toContain('already exists');
+      await builder.saveFieldName(field, '   ');
+      expect(builder.nameError).toEqual('Enter a field name.');
+      await builder.saveFieldName(field, 'name');
+      expect(builder.nameError).toEqual('');
+      expect(saveField).not.toHaveBeenCalled();
+
+      builder.selectedFieldName = 'name';
+      await builder.saveFieldName(field, 'client-name');
+      expect(saveField).toHaveBeenCalledWith('name', {name: 'client-name'});
+      // saveField is mocked, so the rename never lands and the selection goes back.
+      expect(builder.selectedFieldName).toEqual('name');
+    });
+
+    it('clears the other pre-selected radio in the same group and recipient', async () => {
+      const {builder, saveField} = await renderBuilder();
+
+      await builder.saveStartsChecked(builder.findField('joint'), true);
+      expect(saveField.mock.calls).toEqual([
+        ['joint', {default: 'true'}],
+        ['single', {default: 'false'}],
+      ]);
+    });
+
+    it('saves options without blank rows, filling a missing ID from the label', async () => {
+      const {builder, saveField} = await renderBuilder();
+
+      builder.saveOptions(builder.findField('state'), [
+        {id: 'oh', label: 'Ohio'},
+        {id: '', label: 'New York'},
+        {id: '', label: ''},
+      ]);
+      expect(saveField).toHaveBeenCalledWith('state', {options: [{id: 'oh', label: 'Ohio'}, {id: 'new-york', label: 'New York'}]});
+    });
+
+    it('turns Read-only off when Required goes on, and the reverse', async () => {
+      const {builder, saveField} = await renderBuilder();
+
+      builder.toggleRequired({name: 'a', required: false, readonly: true} as any);
+      builder.toggleReadonly({name: 'b', required: true, readonly: false} as any);
+      expect(saveField.mock.calls).toEqual([
+        ['a', {required: true, readonly: false}],
+        ['b', {readonly: true, required: false}],
+      ]);
+    });
+  });
 });

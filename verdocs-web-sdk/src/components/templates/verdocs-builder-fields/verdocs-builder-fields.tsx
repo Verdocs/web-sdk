@@ -1,8 +1,8 @@
 import interact from 'interactjs';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
-import {createField, getTemplate, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
-import {CloseIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon} from '../../../utils/Icons';
+import {CloseIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, TrashIcon} from '../../../utils/Icons';
 import {drawRecipientField, FIELD_TYPES, recipientNumber} from '../../../utils/RecipientFields';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -109,7 +109,8 @@ export class VerdocsBuilderFields {
   @State() renaming = false;
 
   // Bumped to remount the settings form, which resets any edits that weren't saved.
-  @State() inspectorRevision = 0;
+  @State() nameError = '';
+  @State() optionsDraft: {name: string; options: IDropdownOption[]} | null = null;
 
   // Undo entries are recorded only once their save lands, so the stack never holds a change the server didn't take.
   undoStack: {name: string; before: TFieldGeometry}[] = [];
@@ -155,6 +156,12 @@ export class VerdocsBuilderFields {
   // move or resize, and Cmd/Ctrl+D duplicates.
   @Listen('keydown', {target: 'document'})
   handleKeyDown(ev: KeyboardEvent) {
+    // composedPath reaches inputs inside a host page's shadow DOM, where activeElement would only show the host.
+    const target = (ev.composedPath?.()[0] || ev.target) as Element;
+    if (ev.key === 'Escape' && isTypingTarget(target) && target.closest?.('.inspector')) {
+      return;
+    }
+
     if (ev.key === 'Escape') {
       if (this.signerMenuOpen || this.renaming) {
         this.signerMenuOpen = false;
@@ -167,8 +174,6 @@ export class VerdocsBuilderFields {
       return;
     }
 
-    // composedPath reaches inputs inside a host page's shadow DOM, where activeElement would only show the host.
-    const target = (ev.composedPath?.()[0] || ev.target) as Element;
     if (ev.defaultPrevented || isTypingTarget(target)) {
       return;
     }
@@ -393,6 +398,8 @@ export class VerdocsBuilderFields {
     if (name !== this.selectedFieldName) {
       this.signerMenuOpen = false;
       this.renaming = false;
+      this.nameError = '';
+      this.optionsDraft = null;
     }
 
     this.selectedFieldName = name;
@@ -650,6 +657,88 @@ export class VerdocsBuilderFields {
     }
   }
 
+  // A read-only field can't be required, so turning either on turns the other off.
+  toggleRequired(field: ITemplateField) {
+    return this.saveField(field.name, {required: !field.required, readonly: field.required ? field.readonly : false});
+  }
+
+  toggleReadonly(field: ITemplateField) {
+    return this.saveField(field.name, {readonly: !field.readonly, required: field.readonly ? field.required : false});
+  }
+
+  // Field names are unique, and selection and undo history follow a field by its name.
+  async saveFieldName(field: ITemplateField, value: string) {
+    const name = value.trim();
+    this.nameError = '';
+    if (name === field.name) {
+      return;
+    }
+
+    if (!name) {
+      this.nameError = 'Enter a field name.';
+      return;
+    }
+
+    if ((this.template?.fields || []).some(other => other.name === name)) {
+      this.nameError = `A field named "${name}" already exists in this template.`;
+      return;
+    }
+
+    // We move the selection first, because a template update drops a selection whose field has disappeared.
+    this.renameFieldState(field.name, name);
+    await this.saveField(field.name, {name});
+    if (!this.findField(name)) {
+      this.renameFieldState(name, field.name);
+    }
+  }
+
+  async saveStartsChecked(field: ITemplateField, checked: boolean) {
+    await this.saveField(field.name, {default: checked ? 'true' : 'false'});
+
+    // Only one radio in a group can start out selected, so selecting this one clears the rest.
+    if (field.type === 'radio' && checked && field.group) {
+      const siblings = (this.template?.fields || []).filter(
+        other => other.type === 'radio' && other.group === field.group && other.role_name === field.role_name && other.name !== field.name && other.default === 'true',
+      );
+      for (const sibling of siblings) {
+        await this.saveField(sibling.name, {default: 'false'});
+      }
+    }
+  }
+
+  draftOptions(field: ITemplateField) {
+    return this.optionsDraft?.name === field.name ? this.optionsDraft.options : field.options || [];
+  }
+
+  // Blank rows are dropped, and an option without an ID takes one from its label.
+  saveOptions(field: ITemplateField, draft: IDropdownOption[]) {
+    const rows = draft.map(option => {
+      const label = (option.label || '').trim();
+      return {id: (option.id || '').trim() || label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), label};
+    });
+    const options = rows.filter(option => option.id || option.label);
+
+    this.optionsDraft = {name: field.name, options: rows};
+    if (options.length > 0 && JSON.stringify(options) !== JSON.stringify(field.options || [])) {
+      this.saveField(field.name, {options});
+    }
+  }
+
+  async deleteSelectedField(field: ITemplateField) {
+    try {
+      await deleteField(this.endpoint, this.templateId, field.name);
+      const newTemplate = JSON.parse(JSON.stringify(this.template));
+      newTemplate.fields = newTemplate.fields.filter(other => other.name !== field.name);
+      Store.updateTemplate(this.templateId, newTemplate);
+      this.selectField(null);
+      this.handleInspectorDelete(field.name);
+    } catch (e) {
+      console.log('[BUILDER] Error deleting field', e);
+      VerdocsToast(e.response?.data?.error || 'Unable to delete the field. Please try again.', {style: 'error'});
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+  }
+
   handleMoveStart(event: any) {
     const name = event.target.getAttribute('fieldname');
     this.flushNudge();
@@ -873,6 +962,175 @@ export class VerdocsBuilderFields {
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'deleted-field'});
   }
 
+  renderInspector(field: ITemplateField) {
+    const fieldType = FIELD_TYPES.find(fieldType => fieldType.type === field.type) || FIELD_TYPES.find(fieldType => fieldType.type === 'textbox');
+    const options = this.draftOptions(field);
+
+    // Text inputs save when they lose focus. Enter saves, and Escape puts the saved value back.
+    const keys = (saved: string) => (e: KeyboardEvent) => {
+      const input = e.target as HTMLInputElement;
+      if (e.key === 'Escape') {
+        input.value = saved;
+        this.nameError = '';
+      }
+
+      if (e.key === 'Enter' || e.key === 'Escape') {
+        input.blur();
+      }
+    };
+
+    const toggle = (label: string, on: boolean, onClick: () => void) => (
+      <div class="insp-row">
+        <span>{label}</span>
+        <button type="button" role="switch" aria-label={label} aria-checked={String(on)} class={{'insp-toggle': true, 'on': on}} onClick={onClick}>
+          <i />
+        </button>
+      </div>
+    );
+
+    const editOption = (index: number, changes: Partial<IDropdownOption>) =>
+      (this.optionsDraft = {name: field.name, options: options.map((option, i) => (i === index ? {...option, ...changes} : option))});
+
+    return (
+      <div class="insp-body" key={field.name}>
+        <div class="insp-head">
+          <span class="insp-badge">
+            <span class="insp-badge-icon" innerHTML={fieldType.icon} />
+            {fieldType.label}
+          </span>
+          <span class="insp-title">{field.label || field.name}</span>
+          <button class="inspector-close" title="Close" aria-label="Close" innerHTML={CloseIcon} onClick={() => (this.inspectorOpen = false)} />
+        </div>
+
+        <div class="insp-section">Field</div>
+        <div class="insp-two">
+          <label class="insp-label">
+            Label
+            <input name="label" class="insp-input" value={field.label || ''} placeholder="Optional" onChange={(e: any) => this.saveRename(field, e.target.value)} onKeyDown={keys(field.label || '')} />
+          </label>
+          <label class="insp-label">
+            API name
+            <input name="name" class="insp-input mono" value={field.name} onChange={(e: any) => this.saveFieldName(field, e.target.value)} onKeyDown={keys(field.name)} />
+          </label>
+        </div>
+        {this.nameError && <div class="insp-error">{this.nameError}</div>}
+
+        <label class="insp-label">
+          Recipient
+          <select name="role_name" class="insp-input" onChange={(e: any) => this.saveField(field.name, {role_name: e.target.value})}>
+            {this.sortedRoles().map(role => (
+              <option value={role.name} selected={role.name === field.role_name}>
+                {role.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        {toggle('Required', !!field.required, () => this.toggleRequired(field))}
+        {toggle('Read-only', !!field.readonly, () => this.toggleReadonly(field))}
+
+        {['textbox', 'textarea'].includes(field.type) && (
+          <Fragment>
+            <div class="insp-section">Text</div>
+            <div class="insp-two">
+              <label class="insp-label">
+                Placeholder
+                <input
+                  name="placeholder"
+                  class="insp-input"
+                  value={field.placeholder || ''}
+                  placeholder="Optional"
+                  onChange={(e: any) => this.saveField(field.name, {placeholder: e.target.value})}
+                  onKeyDown={keys(field.placeholder || '')}
+                />
+              </label>
+              <label class="insp-label">
+                Default value
+                <input
+                  name="default"
+                  class="insp-input"
+                  value={field.default || ''}
+                  placeholder="Optional"
+                  onChange={(e: any) => this.saveField(field.name, {default: e.target.value})}
+                  onKeyDown={keys(field.default || '')}
+                />
+              </label>
+            </div>
+          </Fragment>
+        )}
+
+        {field.type === 'checkbox' && (
+          <Fragment>
+            <div class="insp-section">Checkbox</div>
+            {toggle('Pre-checked', field.default === 'true', () => this.saveStartsChecked(field, field.default !== 'true'))}
+          </Fragment>
+        )}
+
+        {field.type === 'radio' && (
+          <Fragment>
+            <div class="insp-section">Radio button</div>
+            <label class="insp-label">
+              Group
+              <input
+                name="group"
+                class="insp-input mono"
+                value={field.group || ''}
+                placeholder="group-name"
+                onChange={(e: any) => this.saveField(field.name, {group: (e.target.value || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '')})}
+                onKeyDown={keys(field.group || '')}
+              />
+            </label>
+            <div class="insp-hint">Only one option in a group can be chosen.</div>
+            {toggle('Pre-selected', field.default === 'true', () => this.saveStartsChecked(field, field.default !== 'true'))}
+          </Fragment>
+        )}
+
+        {field.type === 'dropdown' && (
+          <Fragment>
+            <div class="insp-section">Options</div>
+            {options.map((option, index) => (
+              <div class="insp-option">
+                <input
+                  class="insp-input"
+                  value={option.label || ''}
+                  placeholder="Label"
+                  onInput={(e: any) => editOption(index, {label: e.target.value})}
+                  onChange={() => this.saveOptions(field, this.draftOptions(field))}
+                  onKeyDown={(e: KeyboardEvent) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+                />
+                <input
+                  class="insp-input mono"
+                  value={option.id || ''}
+                  placeholder="ID"
+                  onInput={(e: any) => editOption(index, {id: e.target.value})}
+                  onChange={() => this.saveOptions(field, this.draftOptions(field))}
+                  onKeyDown={(e: KeyboardEvent) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+                />
+                {options.length > 1 && (
+                  <button
+                    type="button"
+                    class="insp-remove"
+                    title="Remove option"
+                    aria-label="Remove option"
+                    innerHTML={TrashIcon}
+                    onClick={() => this.saveOptions(field, options.filter((_, i) => i !== index))}
+                  />
+                )}
+              </div>
+            ))}
+            <button type="button" class="insp-add" onClick={() => (this.optionsDraft = {name: field.name, options: [...options, {id: '', label: ''}]})}>
+              + Add option
+            </button>
+          </Fragment>
+        )}
+
+        <button type="button" class="insp-delete" onClick={() => this.deleteSelectedField(field)}>
+          <span innerHTML={TrashIcon} />
+          Delete field
+        </button>
+      </div>
+    );
+  }
+
   renderQuickBar(field: ITemplateField) {
     return (
       <div class="quick-bar" ref={el => (this.quickBarEl = el)} onPointerDown={e => e.stopPropagation()}>
@@ -885,7 +1143,7 @@ export class VerdocsBuilderFields {
         <button
           class="quick-button"
           aria-pressed={String(!!field.required)}
-          onClick={() => this.saveField(field.name, {required: !field.required, readonly: field.required ? field.readonly : false})}
+          onClick={() => this.toggleRequired(field)}
         >
           <span class={{check: true, on: !!field.required}} />
           Required
@@ -893,7 +1151,7 @@ export class VerdocsBuilderFields {
         <button
           class="quick-button"
           aria-pressed={String(!!field.readonly)}
-          onClick={() => this.saveField(field.name, {readonly: !field.readonly, required: field.readonly ? field.required : false})}
+          onClick={() => this.toggleReadonly(field)}
         >
           <span class={{check: true, on: !!field.readonly}} />
           Read-only
@@ -1029,22 +1287,16 @@ export class VerdocsBuilderFields {
 
         <div class={{inspector: true, open: this.inspectorOpen}}>
           <div class="inspector-inner">
-            <div class="inspector-header">
-              <span>Field settings</span>
-              <button class="inspector-close" title="Close" aria-label="Close" innerHTML={CloseIcon} onClick={() => (this.inspectorOpen = false)} />
-            </div>
-
             {selectedField ? (
-              <verdocs-template-field-properties
-                key={`${selectedField.name}-${this.inspectorRevision}`}
-                endpoint={this.endpoint}
-                templateId={this.templateId}
-                fieldName={selectedField.name}
-                onClose={() => this.inspectorRevision++}
-                onDelete={() => this.handleInspectorDelete(selectedField.name)}
-              />
+              this.renderInspector(selectedField)
             ) : (
-              <div class="inspector-empty">Select a field to see its settings.</div>
+              <Fragment>
+                <div class="insp-head">
+                  <span class="insp-title">Field settings</span>
+                  <button class="inspector-close" title="Close" aria-label="Close" innerHTML={CloseIcon} onClick={() => (this.inspectorOpen = false)} />
+                </div>
+                <div class="inspector-empty">Select a field on the page to see its settings.</div>
+              </Fragment>
             )}
           </div>
         </div>

@@ -1,6 +1,6 @@
 {
   "name": "@verdocs/web-sdk",
-  "version": "6.17.0",
+  "version": "6.17.2",
   "private": false,
   "description": "Verdocs Web SDK",
   "license": "MIT",
@@ -67,5 +67,10 @@
     "core-js-pure@3.49.0": true,
     "fsevents@2.3.3": true,
     "puppeteer@24.43.1": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Verdocs/web-sdk.git",
+    "directory": "verdocs-web-sdk"
   }
 }
