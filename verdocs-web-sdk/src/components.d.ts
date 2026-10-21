@@ -147,6 +147,11 @@ export namespace Components {
      */
     interface VerdocsBuilder {
         /**
+          * Draws the Fields and Preview steps for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of color to show selection. `auto` follows the browser's contrast setting.
+          * @default 'auto'
+         */
+        "contrast": 'auto' | 'normal' | 'high';
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
          */
@@ -168,6 +173,11 @@ export namespace Components {
      * it needs a large display area, so it's intended for desktop use.
      */
     interface VerdocsBuilderFields {
+        /**
+          * Draws fields for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of color to show selection. `auto` follows the browser's contrast setting.
+          * @default 'auto'
+         */
+        "contrast": 'auto' | 'normal' | 'high';
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
@@ -1756,6 +1766,11 @@ export namespace Components {
      * ```
      */
     interface VerdocsPreview {
+        /**
+          * Draws recipient-colored fields for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of color to show selection. `auto` follows the browser's contrast setting.
+          * @default 'auto'
+         */
+        "contrast": 'auto' | 'normal' | 'high';
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
@@ -5052,6 +5067,11 @@ declare namespace LocalJSX {
      */
     interface VerdocsBuilder {
         /**
+          * Draws the Fields and Preview steps for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of color to show selection. `auto` follows the browser's contrast setting.
+          * @default 'auto'
+         */
+        "contrast"?: 'auto' | 'normal' | 'high';
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
          */
@@ -5101,6 +5121,11 @@ declare namespace LocalJSX {
      * it needs a large display area, so it's intended for desktop use.
      */
     interface VerdocsBuilderFields {
+        /**
+          * Draws fields for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of color to show selection. `auto` follows the browser's contrast setting.
+          * @default 'auto'
+         */
+        "contrast"?: 'auto' | 'normal' | 'high';
         /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
@@ -6977,6 +7002,11 @@ declare namespace LocalJSX {
      */
     interface VerdocsPreview {
         /**
+          * Draws recipient-colored fields for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of color to show selection. `auto` follows the browser's contrast setting.
+          * @default 'auto'
+         */
+        "contrast"?: 'auto' | 'normal' | 'high';
+        /**
           * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
           * @default VerdocsEndpoint.getDefault()
          */
@@ -8222,10 +8252,12 @@ declare namespace LocalJSX {
         "step": TVerdocsBuildStep;
     }
     interface VerdocsBuilderAttributes {
+        "contrast": 'auto' | 'normal' | 'high';
         "templateId": string | null;
         "step": TVerdocsBuildStep;
     }
     interface VerdocsBuilderFieldsAttributes {
+        "contrast": 'auto' | 'normal' | 'high';
         "templateId": string | null;
     }
     interface VerdocsButtonAttributes {
@@ -8520,6 +8552,7 @@ declare namespace LocalJSX {
     interface VerdocsPreviewAttributes {
         "templateId": string | null;
         "fieldStyle": 'recipient' | 'theme';
+        "contrast": 'auto' | 'normal' | 'high';
     }
     interface VerdocsProgressBarAttributes {
         "label": string;

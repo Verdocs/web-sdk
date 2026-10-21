@@ -2,6 +2,7 @@ import {getTemplate} from '@verdocs/js-sdk';
 import {newSpecPage} from '@stencil/core/testing';
 import {VerdocsBuilderFields} from './verdocs-builder-fields';
 import {Store} from '../../../utils/Datastore';
+import {drawRecipientField} from '../../../utils/RecipientFields';
 
 const template = {
   id: 'T1',
@@ -223,5 +224,35 @@ describe('verdocs-builder-fields', () => {
         ['b', {readonly: true, required: false}],
       ]);
     });
+  });
+
+  it('switches contrast with its prop', async () => {
+    const page = await newSpecPage({components: [VerdocsBuilderFields], html: '<verdocs-builder-fields contrast="high"></verdocs-builder-fields>'});
+    const contrastClasses = () => page.root.className.split(' ').filter(name => name.startsWith('contrast-'));
+    expect(contrastClasses()).toEqual(['contrast-high']);
+
+    page.root.contrast = 'normal';
+    await page.waitForChanges();
+    expect(contrastClasses()).toEqual(['contrast-normal']);
+
+    page.root.contrast = 'auto';
+    await page.waitForChanges();
+    expect(contrastClasses()).toEqual([]);
+  });
+
+  it('shows the recipient number once per radio group', async () => {
+    const page = await newSpecPage({components: [VerdocsBuilderFields], html: '<verdocs-builder-fields></verdocs-builder-fields>'});
+    const fields = [
+      {name: 'r1', type: 'radio', group: 'filing', role_name: 'Spouse'},
+      {name: 'r2', type: 'radio', group: 'filing', role_name: 'Spouse'},
+      {name: 'note', type: 'textbox', role_name: 'Spouse'},
+    ] as any[];
+    const draw = (field: any) => {
+      const el = page.doc.createElement('div');
+      drawRecipientField(el, field, {roles: [{name: 'Taxpayer'}, {name: 'Spouse'}], fields} as any);
+      return el.querySelector('.vb-marker')?.textContent ?? null;
+    };
+
+    expect(fields.map(draw)).toEqual(['2', null, '2']);
   });
 });

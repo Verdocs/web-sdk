@@ -1,4 +1,4 @@
-import {ITemplateField, TFieldType} from '@verdocs/js-sdk';
+import {ITemplate, ITemplateField, TFieldType} from '@verdocs/js-sdk';
 import {LockIcon} from './Icons';
 
 export const FIELD_TYPES: {type: TFieldType; label: string; icon: string}[] = [
@@ -49,16 +49,18 @@ export const recipientNumber = (roles: {name: string}[] | null | undefined, role
   (Math.max((roles || []).findIndex(role => role.name === roleName), 0) % 8) + 1;
 
 /**
- * Draws a field in its recipient's color with its icon, label, and badges, in place of the signing theme. The field
- * component's own content stays underneath, invisible, so its resize edges and pointer handling keep working. Leave out
- * the scale to keep the one already set.
+ * Draws a field in its recipient's color with its icon, label, badges, and recipient number (shown in high contrast), in
+ * place of the signing theme. The field component's own content stays underneath, invisible, so its resize edges and
+ * pointer handling keep working. Leave out the scale to keep the one already set.
  */
-export const drawRecipientField = (el: HTMLElement, field: ITemplateField, roles: {name: string}[] | null | undefined, scale?: number) => {
-  const n = recipientNumber(roles, field.role_name);
+export const drawRecipientField = (el: HTMLElement, field: ITemplateField, template: Pick<ITemplate, 'roles' | 'fields'> | null | undefined, scale?: number) => {
+  const n = recipientNumber(template?.roles, field.role_name);
   const toggle = field.type === 'checkbox' || field.type === 'radio';
   const fieldType = FIELD_TYPES.find(fieldType => fieldType.type === field.type) || FIELD_TYPES.find(fieldType => fieldType.type === 'textbox');
   const label = toggle ? '' : field.label || field.placeholder || fieldType.label;
-  const key = [n, field.type, label, field.required, field.readonly].join('|');
+  // A radio group shows its recipient number once, on its first option.
+  const marker = field.type !== 'radio' || !field.group || (template?.fields || []).find(other => other.type === 'radio' && other.group === field.group)?.name === field.name;
+  const key = [n, field.type, label, field.required, field.readonly, marker].join('|');
 
   el.classList.add('vb-field');
   el.style.setProperty('--vb-color', `var(--verdocs-recipient-${n})`);
@@ -90,6 +92,13 @@ export const drawRecipientField = (el: HTMLElement, field: ITemplateField, roles
     text.className = 'vb-label';
     text.textContent = label;
     face.append(icon, text);
+  }
+
+  if (marker) {
+    const number = document.createElement('span');
+    number.className = 'vb-marker';
+    number.textContent = String(n);
+    face.append(number);
   }
 
   if (field.required) {

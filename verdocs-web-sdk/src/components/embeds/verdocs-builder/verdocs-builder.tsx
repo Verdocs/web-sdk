@@ -33,6 +33,12 @@ export class VerdocsBuilder {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
+   * Draws the Fields and Preview steps for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of
+   * color to show selection. `auto` follows the browser's contrast setting.
+   */
+  @Prop() contrast: 'auto' | 'normal' | 'high' = 'auto';
+
+  /**
    * The ID of the template to create the document from. Unlike most other components, this is an optional parameter here.
    * If the template ID is known, `step` may also be specified to force displaying a specific step in the creation process.
    * If it is not specified, `step` will be ignored and the create step will be shown.
@@ -246,7 +252,7 @@ export class VerdocsBuilder {
             />
           )}
 
-          {this.step === 'fields' && <verdocs-builder-fields templateId={this.templateId} endpoint={this.endpoint} onTemplateUpdated={e => this.handleTemplateUpdated(e)} />}
+          {this.step === 'fields' && <verdocs-builder-fields templateId={this.templateId} endpoint={this.endpoint} contrast={this.contrast} onTemplateUpdated={e => this.handleTemplateUpdated(e)} />}
 
           {this.step === 'preview' && (
             <div class="preview-container">
@@ -254,7 +260,7 @@ export class VerdocsBuilder {
                 <verdocs-send templateId={this.templateId} endpoint={this.endpoint} onSend={e => this.send?.emit(e.detail)} style={{width: '100%'}} />
               </div>
               <div class="preview-preview-wrapper">
-                <verdocs-preview templateId={this.templateId} endpoint={this.endpoint} style={{display: 'flex', flex: '1', maxWidth: '1000px'}} />
+                <verdocs-preview templateId={this.templateId} endpoint={this.endpoint} contrast={this.contrast} style={{display: 'flex', flex: '1', maxWidth: '1000px'}} />
               </div>
             </div>
           )}

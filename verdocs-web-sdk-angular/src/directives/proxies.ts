@@ -238,14 +238,14 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsBuilder,
-  inputs: ['endpoint', 'step', 'templateId']
+  inputs: ['contrast', 'endpoint', 'step', 'templateId']
 })
 @Component({
   selector: 'verdocs-builder',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'step', 'templateId'],
+  inputs: ['contrast', 'endpoint', 'step', 'templateId'],
   outputs: ['cancel', 'sdkError', 'stepChanged', 'send', 'templateUpdated', 'templateCreated', 'rolesUpdated'],
 })
 export class VerdocsBuilder {
@@ -306,14 +306,14 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsBuilderFields,
-  inputs: ['endpoint', 'templateId']
+  inputs: ['contrast', 'endpoint', 'templateId']
 })
 @Component({
   selector: 'verdocs-builder-fields',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'templateId'],
+  inputs: ['contrast', 'endpoint', 'templateId'],
   outputs: ['sdkError', 'templateUpdated'],
 })
 export class VerdocsBuilderFields {
@@ -1876,14 +1876,14 @@ export declare interface VerdocsPortal extends Components.VerdocsPortal {
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsPreview,
-  inputs: ['endpoint', 'fieldStyle', 'templateId']
+  inputs: ['contrast', 'endpoint', 'fieldStyle', 'templateId']
 })
 @Component({
   selector: 'verdocs-preview',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'fieldStyle', 'templateId'],
+  inputs: ['contrast', 'endpoint', 'fieldStyle', 'templateId'],
   outputs: ['sdkError'],
 })
 export class VerdocsPreview {

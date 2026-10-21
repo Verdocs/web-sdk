@@ -61,4 +61,14 @@ describe('verdocs-preview', () => {
     expect(other.classList.contains('vb-field')).toBe(false);
     expect(other.querySelector('.vb-face')).toBeNull();
   });
+
+  it('switches contrast with its prop', async () => {
+    const page = await renderPreview('contrast="high"');
+    expect(page.root.classList.contains('contrast-high')).toBe(true);
+
+    page.root.contrast = 'normal';
+    await page.waitForChanges();
+    expect(page.root.classList.contains('contrast-high')).toBe(false);
+    expect(page.root.classList.contains('contrast-normal')).toBe(true);
+  });
 });

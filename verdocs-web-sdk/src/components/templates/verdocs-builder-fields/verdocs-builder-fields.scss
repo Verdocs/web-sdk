@@ -6,6 +6,37 @@ $builder-line: #e3e5ee;
 $builder-muted: #7b7f97;
 $builder-guide: #e0338f;
 
+// High contrast shows selection with an ink outline instead of the purple ring, and adds recipient numbers to the quick bar.
+@mixin builder-high-contrast {
+  .verdocs-field.vb-field.verdocs-field-selected {
+    box-shadow: none !important;
+    border-style: solid !important;
+    border-width: screen(2) !important;
+    outline: screen(2) solid $builder-ink;
+    outline-offset: screen(2);
+  }
+
+  .vb-handle {
+    border: screen(2) solid $builder-ink;
+  }
+
+  .verdocs-builder-guide.vertical {
+    width: 2px;
+  }
+
+  .verdocs-builder-guide.horizontal {
+    height: 2px;
+  }
+
+  .signer-num {
+    display: inline-grid;
+  }
+
+  .palette-icon {
+    border-color: var(--vb-text);
+  }
+}
+
 verdocs-builder-fields {
   display: flex;
   min-height: 600px;
@@ -34,6 +65,36 @@ verdocs-builder-fields {
 
   .verdocs-field-selected > .vb-face .vb-handle {
     display: block;
+  }
+
+  .signer-num {
+    display: none;
+    flex: none;
+    height: 14px;
+    min-width: 14px;
+    padding: 0 3px;
+    font-size: 9px;
+    font-weight: 800;
+    border-radius: 3px;
+    place-items: center;
+    box-sizing: border-box;
+    color: $builder-ink;
+    background: #ffffff;
+  }
+
+  .quick-menu .signer-num {
+    color: #ffffff;
+    background: $builder-ink;
+  }
+
+  &.contrast-high {
+    @include builder-high-contrast;
+  }
+
+  @media (prefers-contrast: more), (forced-colors: active) {
+    &:not(.contrast-normal) {
+      @include builder-high-contrast;
+    }
   }
 
   &.moving .quick-bar {

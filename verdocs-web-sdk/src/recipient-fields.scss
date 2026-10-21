@@ -26,7 +26,29 @@
   --verdocs-recipient-8-text: #56657e;
 }
 
-// Fields drawn by drawRecipientField() in utils/RecipientFields.ts. Include this inside a component's own rule.
+// High contrast adds the recipient number, draws borders and labels in the darker shade, and enlarges the asterisk.
+@mixin recipient-fields-high-contrast {
+  .verdocs-field.vb-field {
+    border: screen(1.5) dashed var(--vb-text) !important;
+    background: color-mix(in srgb, var(--vb-color) 10%, transparent) !important;
+  }
+
+  .vb-face {
+    font-weight: 700;
+  }
+
+  .vb-marker {
+    display: grid;
+  }
+
+  .vb-req {
+    top: screen(-10);
+    font-size: screen(17);
+  }
+}
+
+// Fields drawn by drawRecipientField() in utils/RecipientFields.ts. Include this inside a component's own rule; the
+// component turns on high contrast with a `contrast-high` class, or follows the browser unless it has `contrast-normal`.
 @mixin recipient-fields {
   // These fields are drawn in their recipient's color, not the signing theme. The field component's own content stays in
   // place (invisible) so its resize edges and pointer handling work as before.
@@ -127,5 +149,33 @@
     border-radius: screen(2);
     background: #ffffff;
     border: screen(1.5) solid $verdocs-purple;
+  }
+
+  .vb-marker {
+    display: none;
+    top: screen(-9);
+    left: screen(-8);
+    color: #ffffff;
+    height: screen(15);
+    position: absolute;
+    font-weight: 800;
+    place-items: center;
+    min-width: screen(15);
+    padding: 0 screen(3);
+    font-size: screen(9.5);
+    box-sizing: border-box;
+    background: var(--vb-text);
+    border-radius: screen(4);
+    border: screen(1.5) solid #ffffff;
+  }
+
+  &.contrast-high {
+    @include recipient-fields-high-contrast;
+  }
+
+  @media (prefers-contrast: more), (forced-colors: active) {
+    &:not(.contrast-normal) {
+      @include recipient-fields-high-contrast;
+    }
   }
 }

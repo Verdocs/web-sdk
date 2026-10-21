@@ -84,6 +84,12 @@ export class VerdocsBuilderFields {
   @Prop() endpoint: VerdocsEndpoint = VerdocsEndpoint.getDefault();
 
   /**
+   * Draws fields for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of
+   * color to show selection. `auto` follows the browser's contrast setting.
+   */
+  @Prop() contrast: 'auto' | 'normal' | 'high' = 'auto';
+
+  /**
    * The ID of the template to edit.
    */
   @Prop({reflect: true, mutable: true}) templateId: string | null = null;
@@ -234,7 +240,16 @@ export class VerdocsBuilderFields {
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'updated-field'});
   }
 
+  @Watch('contrast')
+  applyContrast() {
+    this.el.classList.remove('contrast-high', 'contrast-normal');
+    if (this.contrast === 'high' || this.contrast === 'normal') {
+      this.el.classList.add(`contrast-${this.contrast}`);
+    }
+  }
+
   async componentWillLoad() {
+    this.applyContrast();
     try {
       this.endpoint.loadSession();
 
@@ -337,7 +352,7 @@ export class VerdocsBuilderFields {
   }
 
   decorateField(el: HTMLElement, field: ITemplateField) {
-    drawRecipientField(el, field, this.template?.roles, this.cachedPageInfo[field.document_id]?.[field.page]?.xScale);
+    drawRecipientField(el, field, this.template, this.cachedPageInfo[field.document_id]?.[field.page]?.xScale);
   }
 
   handlePageRendered(e: any) {
@@ -1136,6 +1151,7 @@ export class VerdocsBuilderFields {
       <div class="quick-bar" ref={el => (this.quickBarEl = el)} onPointerDown={e => e.stopPropagation()}>
         <button class="quick-button signer" onClick={() => (this.signerMenuOpen = !this.signerMenuOpen)}>
           <span class="signer-dot" style={{background: this.roleColor(field.role_name)}} />
+          <span class="signer-num">{this.roleNumber(field.role_name)}</span>
           {field.role_name}
           <span class="caret" />
         </button>
@@ -1177,6 +1193,7 @@ export class VerdocsBuilderFields {
                 }}
               >
                 <span class="signer-dot" style={{background: this.roleColor(role.name)}} />
+                <span class="signer-num">{this.roleNumber(role.name)}</span>
                 {role.name}
               </button>
             ))}

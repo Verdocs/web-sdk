@@ -47,6 +47,12 @@ export class VerdocsPreview {
   @Prop() fieldStyle: 'recipient' | 'theme' = 'recipient';
 
   /**
+   * Draws recipient-colored fields for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of
+   * color to show selection. `auto` follows the browser's contrast setting.
+   */
+  @Prop() contrast: 'auto' | 'normal' | 'high' = 'auto';
+
+  /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
@@ -93,7 +99,16 @@ export class VerdocsPreview {
     this.listenToTemplate();
   }
 
+  @Watch('contrast')
+  applyContrast() {
+    this.hostEl.classList.remove('contrast-high', 'contrast-normal');
+    if (this.contrast === 'high' || this.contrast === 'normal') {
+      this.hostEl.classList.add(`contrast-${this.contrast}`);
+    }
+  }
+
   async componentWillLoad() {
+    this.applyContrast();
     try {
       this.endpoint.loadSession();
       if (!this.endpoint.session) {
@@ -124,7 +139,7 @@ export class VerdocsPreview {
 
       const field = (this.template?.fields || []).find(field => field.name === el.getAttribute('fieldname'));
       if (this.fieldStyle === 'recipient' && field) {
-        drawRecipientField(el, field, this.template?.roles);
+        drawRecipientField(el, field, this.template);
       }
     });
   }
@@ -148,7 +163,7 @@ export class VerdocsPreview {
       const el = renderDocumentField('template', field, pageInfo, {disabled: true, editable: false, draggable: false});
       // A same-named field in another component can come back here, so we only draw our own.
       if (this.fieldStyle === 'recipient' && el && this.hostEl.contains(el)) {
-        drawRecipientField(el, field, this.template?.roles, pageInfo.xScale);
+        drawRecipientField(el, field, this.template, pageInfo.xScale);
       }
     });
   }
