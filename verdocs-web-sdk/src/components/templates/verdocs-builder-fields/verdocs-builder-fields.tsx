@@ -2,8 +2,8 @@ import interact from 'interactjs';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
-import {CloseIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, TrashIcon} from '../../../utils/Icons';
-import {drawRecipientField, FIELD_TYPES, recipientNumber} from '../../../utils/RecipientFields';
+import {AlignLeftIcon, CloseIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, SpaceEvenlyIcon, TrashIcon} from '../../../utils/Icons';
+import {drawRecipientField, FIELD_TYPES, radioGroup, recipientNumber} from '../../../utils/RecipientFields';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -25,6 +25,13 @@ const SNAP_PX = 5;
 const isTypingTarget = (el: Element | null) => !!el && (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || (el as HTMLElement).isContentEditable);
 
 const defaultRequired = (type: TFieldType) => !['radio', 'attachment', 'checkbox'].includes(type);
+
+// Signing only checks these two of js-sdk's validators so far.
+const TEXT_FORMATS = [
+  {value: '', label: 'Any text'},
+  {value: 'email', label: 'Email address'},
+  {value: 'phone', label: 'Phone number'},
+];
 
 // Lines a rect up with the left or right edge, and the top or vertical center, of the nearest other field.
 const snapRect = (rect: {left: number; top: number; width: number; height: number}, others: DOMRect[]) => {
@@ -116,6 +123,7 @@ export class VerdocsBuilderFields {
 
   // Bumped to remount the settings form, which resets any edits that weren't saved.
   @State() nameError = '';
+  @State() groupError = '';
   @State() optionsDraft: {name: string; options: IDropdownOption[]} | null = null;
 
   // Undo entries are recorded only once their save lands, so the stack never holds a change the server didn't take.
@@ -377,6 +385,7 @@ export class VerdocsBuilderFields {
         }
       });
 
+    this.applySelection();
     this.positionQuickBar();
   }
 
@@ -399,6 +408,10 @@ export class VerdocsBuilderFields {
     return name ? (this.template?.fields || []).find(field => field.name === name) : undefined;
   }
 
+  groupMembers(field: ITemplateField) {
+    return radioGroup(this.template?.fields, field);
+  }
+
   // Where the field is drawn right now: its saved geometry plus anything still on its way to the server.
   currentGeometry(field: ITemplateField): TFieldGeometry {
     const {x, y, width, height, page, multiline} = {...field, ...this.optimistic.get(field.name)};
@@ -414,6 +427,7 @@ export class VerdocsBuilderFields {
       this.signerMenuOpen = false;
       this.renaming = false;
       this.nameError = '';
+      this.groupError = '';
       this.optionsDraft = null;
     }
 
@@ -422,10 +436,50 @@ export class VerdocsBuilderFields {
   }
 
   applySelection() {
-    this.el.querySelectorAll('.verdocs-field-selected').forEach(el => el.classList.remove('verdocs-field-selected'));
+    this.el.querySelectorAll('.verdocs-field-selected, .vb-group-member').forEach(el => el.classList.remove('verdocs-field-selected', 'vb-group-member'));
+    this.el.querySelectorAll('.vb-order, .vb-add-option').forEach(el => el.remove());
     const field = this.findField(this.selectedFieldName);
-    if (field) {
-      document.getElementById(getFieldId(field))?.classList.add('verdocs-field-selected');
+    if (!field) {
+      return;
+    }
+
+    document.getElementById(getFieldId(field))?.classList.add('verdocs-field-selected');
+    if (field.type !== 'radio') {
+      return;
+    }
+
+    // A selected radio shows its whole group, numbered in order, with a button under the last option to add the next one.
+    const members = this.groupMembers(field);
+    let lastEl: HTMLElement | null = null;
+    for (const [index, member] of members.entries()) {
+      const el = document.getElementById(getFieldId(member));
+      if (el && this.el.contains(el)) {
+        if (member.name !== field.name) {
+          el.classList.add('vb-group-member');
+        }
+        el.querySelector('.vb-face')?.insertAdjacentHTML('beforeend', `<span class="vb-order">${index + 1}</span>`);
+        lastEl = index === members.length - 1 ? el : null;
+      }
+    }
+
+    const layer = lastEl?.parentElement;
+    if (lastEl && layer) {
+      const lastRect = lastEl.getBoundingClientRect();
+      const layerRect = layer.getBoundingClientRect();
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'vb-add-option';
+      add.title = `Add option ${members.length + 1}`;
+      add.setAttribute('aria-label', add.title);
+      add.textContent = '+';
+      add.style.left = `${lastRect.left - layerRect.left + lastRect.width / 2}px`;
+      add.style.top = `${lastRect.bottom - layerRect.top + 6}px`;
+      add.addEventListener('pointerdown', e => e.stopPropagation());
+      add.addEventListener('click', e => {
+        e.stopPropagation();
+        this.addOption(this.findField(field.name) || field);
+      });
+      layer.appendChild(add);
     }
   }
 
@@ -517,6 +571,7 @@ export class VerdocsBuilderFields {
     if (el && pageInfo) {
       setControlStyles(el, {...field, ...geometry}, pageInfo.xScale, pageInfo.yScale);
     }
+    this.applySelection();
     this.positionQuickBar();
   }
 
@@ -641,28 +696,68 @@ export class VerdocsBuilderFields {
 
   // A copy directly below the original, lined up with it. A radio's copy is the next option in its group.
   duplicateField(field: ITemplateField) {
-    const height = field.height || defaultHeight(field.type);
-    const copy: ITemplateField = {...field, name: this.generateFieldName(field.type, field.page), y: Math.max(0, field.y - height - 10)};
     if (field.type === 'radio') {
-      const optionNumber = (this.template?.fields || []).filter(other => other.type === 'radio' && other.group === field.group).length + 1;
-      copy.options = [{id: `option-${optionNumber}`, label: `Option ${optionNumber}`}];
+      return this.addOption(field);
     }
 
-    return this.addField(copy);
+    const height = field.height || defaultHeight(field.type);
+    return this.addField({...field, name: this.generateFieldName(field.type, field.page), y: Math.max(0, field.y - height - 10)});
   }
 
-  resetField(field: ITemplateField) {
-    return this.saveField(
-      field.name,
-      {
-        width: defaultWidth(field.type),
-        height: defaultHeight(field.type),
-        multiline: false,
-        required: defaultRequired(field.type),
-        readonly: false,
-      },
-      this.currentGeometry(field),
-    );
+  // Radio group keys are generated, and a radio placed before groups existed gets one when it gains a second option.
+  generateGroupName() {
+    const used = new Set((this.template?.fields || []).map(field => field.group));
+    let i = 1;
+    while (used.has(`choice${i}`)) {
+      i++;
+    }
+
+    return `choice${i}`;
+  }
+
+  async addOption(field: ITemplateField) {
+    const members = this.groupMembers(field);
+    const last = members[members.length - 1];
+    let group = field.group;
+    if (!group) {
+      group = this.generateGroupName();
+      await this.saveField(field.name, {group});
+    }
+
+    const n = members.length + 1;
+    const height = last.height || defaultHeight('radio');
+    return this.addField({
+      ...last,
+      group,
+      name: this.generateFieldName('radio', last.page),
+      label: null,
+      default: 'false',
+      y: Math.max(0, last.y - height - 6),
+      options: [{id: `option-${n}`, label: `Option ${n}`}],
+    });
+  }
+
+  // Settings that belong to a radio group go to every option in it.
+  async saveGroup(field: ITemplateField, changes: Partial<ITemplateField>) {
+    for (const member of this.groupMembers(field)) {
+      await this.saveField(member.name, changes);
+    }
+  }
+
+  async resetField(field: ITemplateField) {
+    for (const member of this.groupMembers(field)) {
+      await this.saveField(
+        member.name,
+        {
+          width: defaultWidth(member.type),
+          height: defaultHeight(member.type),
+          multiline: false,
+          required: defaultRequired(member.type),
+          readonly: false,
+        },
+        this.currentGeometry(member),
+      );
+    }
   }
 
   saveRename(field: ITemplateField, label: string) {
@@ -674,11 +769,11 @@ export class VerdocsBuilderFields {
 
   // A read-only field can't be required, so turning either on turns the other off.
   toggleRequired(field: ITemplateField) {
-    return this.saveField(field.name, {required: !field.required, readonly: field.required ? field.readonly : false});
+    return this.saveGroup(field, {required: !field.required, readonly: field.required ? field.readonly : false});
   }
 
   toggleReadonly(field: ITemplateField) {
-    return this.saveField(field.name, {readonly: !field.readonly, required: field.readonly ? field.required : false});
+    return this.saveGroup(field, {readonly: !field.readonly, required: field.readonly ? field.required : false});
   }
 
   // Field names are unique, and selection and undo history follow a field by its name.
@@ -707,16 +802,53 @@ export class VerdocsBuilderFields {
     }
   }
 
-  async saveStartsChecked(field: ITemplateField, checked: boolean) {
-    await this.saveField(field.name, {default: checked ? 'true' : 'false'});
+  // A loose radio can join an existing group by its name, but renaming a whole group onto another one would merge them.
+  async saveGroupName(field: ITemplateField, value: string) {
+    const group = value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    const members = this.groupMembers(field);
+    this.groupError = '';
+    if (group === (field.group || '')) {
+      return;
+    }
 
-    // Only one radio in a group can start out selected, so selecting this one clears the rest.
-    if (field.type === 'radio' && checked && field.group) {
-      const siblings = (this.template?.fields || []).filter(
-        other => other.type === 'radio' && other.group === field.group && other.role_name === field.role_name && other.name !== field.name && other.default === 'true',
-      );
-      for (const sibling of siblings) {
-        await this.saveField(sibling.name, {default: 'false'});
+    if (!group) {
+      this.groupError = 'Enter a group name.';
+      return;
+    }
+
+    if (members.length > 1 && (this.template?.fields || []).some(other => other.group === group && !members.includes(other))) {
+      this.groupError = `Another group is already named "${group}".`;
+      return;
+    }
+
+    await this.saveGroup(field, {group});
+  }
+
+  // Only one option in a group can start out selected.
+  async savePreselected(field: ITemplateField, name: string) {
+    const members = this.groupMembers(field);
+    const chosen = members.find(member => member.name === name);
+    if (chosen && chosen.default !== 'true') {
+      await this.saveField(chosen.name, {default: 'true'});
+    }
+
+    for (const member of members) {
+      if (member !== chosen && member.default === 'true') {
+        await this.saveField(member.name, {default: 'false'});
+      }
+    }
+  }
+
+  // Lines the options up on their left edges, or spaces them evenly between the first and the last.
+  async arrangeGroup(field: ITemplateField, arrangement: 'align' | 'space') {
+    const members = this.groupMembers(field);
+    const x = Math.min(...members.map(member => member.x));
+    const top = members[0].y;
+    const step = (members[members.length - 1].y - top) / Math.max(members.length - 1, 1);
+    for (const [index, member] of members.entries()) {
+      const position = arrangement === 'align' ? {x, y: member.y} : {x: member.x, y: Math.round(top + step * index)};
+      if (position.x !== member.x || position.y !== member.y) {
+        await this.saveField(member.name, position, this.currentGeometry(member));
       }
     }
   }
@@ -739,18 +871,34 @@ export class VerdocsBuilderFields {
     }
   }
 
-  async deleteSelectedField(field: ITemplateField) {
-    try {
-      await deleteField(this.endpoint, this.templateId, field.name);
+  async deleteFields(fields: ITemplateField[]) {
+    for (const field of fields) {
+      try {
+        await deleteField(this.endpoint, this.templateId, field.name);
+      } catch (e) {
+        console.log('[BUILDER] Error deleting field', e);
+        VerdocsToast(e.response?.data?.error || 'Unable to delete the field. Please try again.', {style: 'error'});
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+        return;
+      }
+
+      const selected = this.selectedFieldName === field.name;
       const newTemplate = JSON.parse(JSON.stringify(this.template));
       newTemplate.fields = newTemplate.fields.filter(other => other.name !== field.name);
       Store.updateTemplate(this.templateId, newTemplate);
-      this.selectField(null);
+      if (selected) {
+        this.selectField(null);
+      }
       this.handleInspectorDelete(field.name);
-    } catch (e) {
-      console.log('[BUILDER] Error deleting field', e);
-      VerdocsToast(e.response?.data?.error || 'Unable to delete the field. Please try again.', {style: 'error'});
-      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    }
+  }
+
+  // Removing the selected option moves the selection to another one, so the group stays open.
+  async removeOption(field: ITemplateField, option: ITemplateField) {
+    const next = option.name === this.selectedFieldName ? this.groupMembers(field).find(member => member.name !== option.name) : null;
+    await this.deleteFields([option]);
+    if (next && this.findField(next.name)) {
+      this.selectField(next.name);
     }
   }
 
@@ -944,7 +1092,7 @@ export class VerdocsBuilderFields {
       label: null,
       default: null,
       placeholder: null,
-      group: null,
+      group: drag.type === 'radio' ? this.generateGroupName() : null,
       settings: {},
       x: Math.round(Math.min(Math.max(drag.over.viewX / xScale, 0), naturalWidth - width)),
       y: Math.round(Math.min(Math.max(drag.over.viewBottom / yScale, 0), naturalHeight - height)),
@@ -980,6 +1128,9 @@ export class VerdocsBuilderFields {
   renderInspector(field: ITemplateField) {
     const fieldType = FIELD_TYPES.find(fieldType => fieldType.type === field.type) || FIELD_TYPES.find(fieldType => fieldType.type === 'textbox');
     const options = this.draftOptions(field);
+    const radio = field.type === 'radio';
+    const members = this.groupMembers(field);
+    const formats = !field.validator || TEXT_FORMATS.some(format => format.value === field.validator) ? TEXT_FORMATS : [...TEXT_FORMATS, {value: field.validator, label: field.validator}];
 
     // Text inputs save when they lose focus. Enter saves, and Escape puts the saved value back.
     const keys = (saved: string) => (e: KeyboardEvent) => {
@@ -987,6 +1138,7 @@ export class VerdocsBuilderFields {
       if (e.key === 'Escape') {
         input.value = saved;
         this.nameError = '';
+        this.groupError = '';
       }
 
       if (e.key === 'Enter' || e.key === 'Escape') {
@@ -1003,49 +1155,162 @@ export class VerdocsBuilderFields {
       </div>
     );
 
+    const recipient = (
+      <label class="insp-label">
+        Recipient
+        <select name="role_name" class="insp-input" onChange={(e: any) => this.saveGroup(field, {role_name: e.target.value})}>
+          {this.sortedRoles().map(role => (
+            <option value={role.name} selected={role.name === field.role_name}>
+              {role.name}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+
     const editOption = (index: number, changes: Partial<IDropdownOption>) =>
       (this.optionsDraft = {name: field.name, options: options.map((option, i) => (i === index ? {...option, ...changes} : option))});
 
     return (
-      <div class="insp-body" key={field.name}>
+      <div class="insp-body" key={radio && field.group ? `group-${field.role_name}-${field.group}` : field.name}>
         <div class="insp-head">
           <span class="insp-badge">
             <span class="insp-badge-icon" innerHTML={fieldType.icon} />
-            {fieldType.label}
+            {radio ? `Radio group · ${members.length}` : fieldType.label}
           </span>
-          <span class="insp-title">{field.label || field.name}</span>
+          <span class="insp-title">{(radio && field.group) || field.label || field.name}</span>
           <button class="inspector-close" title="Close" aria-label="Close" innerHTML={CloseIcon} onClick={() => (this.inspectorOpen = false)} />
         </div>
 
-        <div class="insp-section">Field</div>
-        <div class="insp-two">
-          <label class="insp-label">
-            Label
-            <input name="label" class="insp-input" value={field.label || ''} placeholder="Optional" onChange={(e: any) => this.saveRename(field, e.target.value)} onKeyDown={keys(field.label || '')} />
-          </label>
-          <label class="insp-label">
-            API name
-            <input name="name" class="insp-input mono" value={field.name} onChange={(e: any) => this.saveFieldName(field, e.target.value)} onKeyDown={keys(field.name)} />
-          </label>
-        </div>
-        {this.nameError && <div class="insp-error">{this.nameError}</div>}
+        {radio ? (
+          <Fragment>
+            <div class="insp-section">Group</div>
+            <label class="insp-label">
+              Group name
+              <input
+                name="group"
+                class="insp-input mono"
+                value={field.group || ''}
+                placeholder="choice1"
+                onChange={(e: any) => this.saveGroupName(field, e.target.value)}
+                onKeyDown={keys(field.group || '')}
+              />
+            </label>
+            {this.groupError && <div class="insp-error">{this.groupError}</div>}
+            {recipient}
+            {toggle('Required', !!field.required, () => this.toggleRequired(field))}
+            <div class="insp-hint">The recipient has to choose one option.</div>
+            {toggle('Read-only', !!field.readonly, () => this.toggleReadonly(field))}
 
-        <label class="insp-label">
-          Recipient
-          <select name="role_name" class="insp-input" onChange={(e: any) => this.saveField(field.name, {role_name: e.target.value})}>
-            {this.sortedRoles().map(role => (
-              <option value={role.name} selected={role.name === field.role_name}>
-                {role.name}
-              </option>
+            <div class="insp-section">
+              Options <span class="insp-count">{members.length}</span>
+            </div>
+            {members.map((member, index) => (
+              <div class="insp-option" key={member.name}>
+                <button
+                  type="button"
+                  class={{'insp-option-num': true, 'current': member.name === field.name}}
+                  title={`Select option ${index + 1}`}
+                  aria-label={`Select option ${index + 1}`}
+                  aria-pressed={String(member.name === field.name)}
+                  onClick={() => this.selectField(member.name)}
+                >
+                  {index + 1}
+                </button>
+                <input
+                  class="insp-input"
+                  value={member.label || ''}
+                  placeholder={`Option ${index + 1}`}
+                  aria-label={`Option ${index + 1} label`}
+                  onChange={(e: any) => this.saveRename(member, e.target.value)}
+                  onKeyDown={keys(member.label || '')}
+                />
+                <input
+                  class="insp-input mono"
+                  value={member.name}
+                  aria-label={`Option ${index + 1} API name`}
+                  onChange={(e: any) => this.saveFieldName(member, e.target.value)}
+                  onKeyDown={keys(member.name)}
+                />
+                {members.length > 1 && (
+                  <button
+                    type="button"
+                    class="insp-remove"
+                    title="Remove option"
+                    aria-label={`Remove option ${index + 1}`}
+                    innerHTML={TrashIcon}
+                    onClick={() => this.removeOption(field, member)}
+                  />
+                )}
+              </div>
             ))}
-          </select>
-        </label>
-        {toggle('Required', !!field.required, () => this.toggleRequired(field))}
-        {toggle('Read-only', !!field.readonly, () => this.toggleReadonly(field))}
+            {this.nameError && <div class="insp-error">{this.nameError}</div>}
+            <button type="button" class="insp-add" onClick={() => this.addOption(field)}>
+              + Add option
+            </button>
+            <label class="insp-label">
+              Pre-selected
+              <select name="preselected" class="insp-input" onChange={(e: any) => this.savePreselected(field, e.target.value)}>
+                <option value="" selected={!members.some(member => member.default === 'true')}>
+                  None
+                </option>
+                {members.map((member, index) => (
+                  <option value={member.name} selected={member.default === 'true'}>
+                    {member.label || `Option ${index + 1}`}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {members.length > 1 && members.every(member => member.page === field.page) && (
+              <div class="insp-row">
+                <span>Arrange on the page</span>
+                <span class="insp-arrange">
+                  <button type="button" title="Align left edges" aria-label="Align left edges" innerHTML={AlignLeftIcon} onClick={() => this.arrangeGroup(field, 'align')} />
+                  <button
+                    type="button"
+                    title="Space evenly"
+                    aria-label="Space evenly"
+                    innerHTML={SpaceEvenlyIcon}
+                    disabled={members.length < 3}
+                    onClick={() => this.arrangeGroup(field, 'space')}
+                  />
+                </span>
+              </div>
+            )}
+          </Fragment>
+        ) : (
+          <Fragment>
+            <div class="insp-section">Field</div>
+            <div class="insp-two">
+              <label class="insp-label">
+                Label
+                <input name="label" class="insp-input" value={field.label || ''} placeholder="Optional" onChange={(e: any) => this.saveRename(field, e.target.value)} onKeyDown={keys(field.label || '')} />
+              </label>
+              <label class="insp-label">
+                API name
+                <input name="name" class="insp-input mono" value={field.name} onChange={(e: any) => this.saveFieldName(field, e.target.value)} onKeyDown={keys(field.name)} />
+              </label>
+            </div>
+            {this.nameError && <div class="insp-error">{this.nameError}</div>}
+            {recipient}
+            {toggle('Required', !!field.required, () => this.toggleRequired(field))}
+            {toggle('Read-only', !!field.readonly, () => this.toggleReadonly(field))}
+          </Fragment>
+        )}
 
         {['textbox', 'textarea'].includes(field.type) && (
           <Fragment>
             <div class="insp-section">Text</div>
+            <label class="insp-label">
+              Format
+              <select name="validator" class="insp-input" onChange={(e: any) => this.saveField(field.name, {validator: e.target.value || null})}>
+                {formats.map(format => (
+                  <option value={format.value} selected={format.value === (field.validator || '')}>
+                    {format.label}
+                  </option>
+                ))}
+              </select>
+            </label>
             <div class="insp-two">
               <label class="insp-label">
                 Placeholder
@@ -1076,26 +1341,7 @@ export class VerdocsBuilderFields {
         {field.type === 'checkbox' && (
           <Fragment>
             <div class="insp-section">Checkbox</div>
-            {toggle('Pre-checked', field.default === 'true', () => this.saveStartsChecked(field, field.default !== 'true'))}
-          </Fragment>
-        )}
-
-        {field.type === 'radio' && (
-          <Fragment>
-            <div class="insp-section">Radio button</div>
-            <label class="insp-label">
-              Group
-              <input
-                name="group"
-                class="insp-input mono"
-                value={field.group || ''}
-                placeholder="group-name"
-                onChange={(e: any) => this.saveField(field.name, {group: (e.target.value || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '')})}
-                onKeyDown={keys(field.group || '')}
-              />
-            </label>
-            <div class="insp-hint">Only one option in a group can be chosen.</div>
-            {toggle('Pre-selected', field.default === 'true', () => this.saveStartsChecked(field, field.default !== 'true'))}
+            {toggle('Pre-checked', field.default === 'true', () => this.saveField(field.name, {default: field.default === 'true' ? 'false' : 'true'}))}
           </Fragment>
         )}
 
@@ -1138,9 +1384,9 @@ export class VerdocsBuilderFields {
           </Fragment>
         )}
 
-        <button type="button" class="insp-delete" onClick={() => this.deleteSelectedField(field)}>
+        <button type="button" class="insp-delete" onClick={() => this.deleteFields(members)}>
           <span innerHTML={TrashIcon} />
-          Delete field
+          {members.length > 1 ? 'Delete group' : 'Delete field'}
         </button>
       </div>
     );
@@ -1188,7 +1434,7 @@ export class VerdocsBuilderFields {
                 onClick={() => {
                   this.signerMenuOpen = false;
                   if (role.name !== field.role_name) {
-                    this.saveField(field.name, {role_name: role.name});
+                    this.saveGroup(field, {role_name: role.name});
                   }
                 }}
               >

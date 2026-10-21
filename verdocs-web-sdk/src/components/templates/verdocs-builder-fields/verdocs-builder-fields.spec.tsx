@@ -3,6 +3,7 @@ import {newSpecPage} from '@stencil/core/testing';
 import {VerdocsBuilderFields} from './verdocs-builder-fields';
 import {Store} from '../../../utils/Datastore';
 import {drawRecipientField} from '../../../utils/RecipientFields';
+import {getFieldId} from '../../../utils/utils';
 
 const template = {
   id: 'T1',
@@ -196,11 +197,30 @@ describe('verdocs-builder-fields', () => {
     it('clears the other pre-selected radio in the same group and recipient', async () => {
       const {builder, saveField} = await renderBuilder();
 
-      await builder.saveStartsChecked(builder.findField('joint'), true);
+      await builder.savePreselected(builder.findField('joint'), 'joint');
       expect(saveField.mock.calls).toEqual([
         ['joint', {default: 'true'}],
         ['single', {default: 'false'}],
       ]);
+    });
+
+    it('offers the text formats signing checks, keeping one set elsewhere', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      await page.waitForChanges();
+
+      const select = page.root.querySelector('select[name="validator"]') as any;
+      const formatValues = () =>
+        [...page.root.querySelectorAll('select[name="validator"] option')].map((option: any) => option.getAttribute('value') ?? option.value);
+      expect(formatValues()).toEqual(['', 'email', 'phone']);
+      select.value = 'email';
+      select.dispatchEvent(new (page.win as any).Event('change'));
+      expect(saveField).toHaveBeenCalledWith('name', {validator: 'email'});
+
+      builder.template = {...builder.template, fields: [{...builder.findField('name'), validator: 'number'}]} as any;
+      await page.waitForChanges();
+      expect(formatValues()).toEqual(['', 'email', 'phone', 'number']);
     });
 
     it('saves options without blank rows, filling a missing ID from the label', async () => {
@@ -223,6 +243,114 @@ describe('verdocs-builder-fields', () => {
         ['a', {required: true, readonly: false}],
         ['b', {readonly: true, required: false}],
       ]);
+    });
+  });
+
+  describe('Radio groups', () => {
+    const option = (name: string, extra = {}) => ({name, role_name: 'Preparer', type: 'radio', group: 'filing', default: 'false', page: 1, x: 50, height: 14, ...extra});
+    const groupTemplate = {
+      ...template,
+      fields: [
+        option('joint', {y: 620}),
+        option('single', {y: 700, default: 'true'}),
+        option('separate', {y: 500, x: 60}),
+        option('spouse-single', {role_name: 'Taxpayer', y: 650}),
+        option('other', {group: 'other', y: 300}),
+        option('loose', {group: null, y: 100}),
+      ],
+    };
+
+    const renderGroups = async () => {
+      jest.spyOn(Store, 'subscribe').mockImplementation((_table, _row, _getter, _force, callback: any) => {
+        callback(groupTemplate);
+        return 'listener';
+      });
+      const page = await newSpecPage({components: [VerdocsBuilderFields], html: '<verdocs-builder-fields template-id="T1"></verdocs-builder-fields>'});
+      const builder = page.rootInstance as VerdocsBuilderFields;
+      const saveField = jest.spyOn(builder, 'saveField').mockResolvedValue(undefined);
+      const addField = jest.spyOn(builder, 'addField').mockResolvedValue(undefined);
+      return {page, builder, saveField, addField};
+    };
+
+    const names = (fields: any[]) => fields.map(field => field.name);
+
+    it('groups radios by group and recipient, top to bottom', async () => {
+      const {builder} = await renderGroups();
+      expect(names(builder.groupMembers(builder.findField('joint')))).toEqual(['single', 'joint', 'separate']);
+      expect(names(builder.groupMembers(builder.findField('loose')))).toEqual(['loose']);
+    });
+
+    it('applies group settings to every option', async () => {
+      const {builder, saveField} = await renderGroups();
+      await builder.toggleRequired(builder.findField('joint'));
+      expect(saveField.mock.calls).toEqual([
+        ['single', {required: true, readonly: false}],
+        ['joint', {required: true, readonly: false}],
+        ['separate', {required: true, readonly: false}],
+      ]);
+    });
+
+    it('adds the next option under the last one, giving a loose radio a group first', async () => {
+      const {builder, saveField, addField} = await renderGroups();
+
+      await builder.addOption(builder.findField('joint'));
+      expect(addField.mock.calls[0][0]).toMatchObject({group: 'filing', role_name: 'Preparer', page: 1, x: 60, y: 480, default: 'false', label: null});
+
+      await builder.addOption(builder.findField('loose'));
+      expect(saveField).toHaveBeenCalledWith('loose', {group: 'choice1'});
+      expect(addField.mock.calls[1][0]).toMatchObject({group: 'choice1', y: 80});
+    });
+
+    it('renames a group, letting a loose radio join one but not merging two', async () => {
+      const {builder, saveField} = await renderGroups();
+
+      await builder.saveGroupName(builder.findField('joint'), 'other');
+      expect(builder.groupError).toBeTruthy();
+      expect(saveField).not.toHaveBeenCalled();
+
+      await builder.saveGroupName(builder.findField('joint'), 'Filing Status');
+      expect(saveField.mock.calls.map(call => call[1])).toEqual([{group: 'filingstatus'}, {group: 'filingstatus'}, {group: 'filingstatus'}]);
+
+      saveField.mockClear();
+      await builder.saveGroupName(builder.findField('loose'), 'other');
+      expect(saveField.mock.calls).toEqual([['loose', {group: 'other'}]]);
+    });
+
+    it('lines options up on their left edges and spaces them evenly', async () => {
+      const {builder, saveField} = await renderGroups();
+
+      await builder.arrangeGroup(builder.findField('joint'), 'align');
+      expect(saveField.mock.calls.map(call => call.slice(0, 2))).toEqual([['separate', {x: 50, y: 500}]]);
+
+      saveField.mockClear();
+      await builder.arrangeGroup(builder.findField('joint'), 'space');
+      expect(saveField.mock.calls.map(call => call.slice(0, 2))).toEqual([['joint', {x: 50, y: 600}]]);
+    });
+
+    it('draws the selected group with its order and a button to add an option', async () => {
+      const {page, builder, addField} = await renderGroups();
+      const layer = page.doc.createElement('div');
+      page.root.appendChild(layer);
+      for (const field of groupTemplate.fields) {
+        const el = page.doc.createElement('div');
+        el.id = getFieldId(field as any);
+        el.setAttribute('fieldname', field.name);
+        el.appendChild(page.doc.createElement('span')).className = 'vb-face';
+        layer.appendChild(el);
+      }
+      const fieldEl = (name: string) => page.doc.getElementById(`verdocs-doc-fld-${name}`);
+
+      builder.selectField('joint');
+      expect(fieldEl('joint').classList.contains('verdocs-field-selected')).toBe(true);
+      expect(['single', 'separate', 'spouse-single'].map(name => fieldEl(name).classList.contains('vb-group-member'))).toEqual([true, true, false]);
+      expect(['single', 'joint', 'separate'].map(name => fieldEl(name).querySelector('.vb-order')?.textContent)).toEqual(['1', '2', '3']);
+
+      (layer.querySelector('.vb-add-option') as HTMLElement).click();
+      expect(addField).toHaveBeenCalledTimes(1);
+
+      builder.selectField('loose');
+      expect(page.root.querySelectorAll('.vb-group-member').length).toEqual(0);
+      expect(page.root.querySelectorAll('.vb-order').length).toEqual(1);
     });
   });
 

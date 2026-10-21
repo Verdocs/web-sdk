@@ -20,6 +20,22 @@ $builder-guide: #e0338f;
     border: screen(2) solid $builder-ink;
   }
 
+  .verdocs-field.vb-field.vb-group-member {
+    box-shadow: none !important;
+    outline: screen(1.5) dashed $builder-ink;
+    outline-offset: screen(2);
+  }
+
+  .vb-order,
+  .insp-option-num {
+    background: $builder-ink;
+  }
+
+  .vb-add-option {
+    color: $builder-ink;
+    border-color: $builder-ink;
+  }
+
   .verdocs-builder-guide.vertical {
     width: 2px;
   }
@@ -67,6 +83,57 @@ verdocs-builder-fields {
     display: block;
   }
 
+  // The rest of the selected radio's group, numbered in order, with a button under the last option to add the next.
+  .verdocs-field.vb-field.vb-group-member {
+    border-style: solid !important;
+    border-width: screen(1.5) !important;
+    box-shadow: 0 0 0 screen(3) rgba(101, 77, 203, 0.16) !important;
+  }
+
+  .vb-order {
+    left: screen(-9);
+    bottom: screen(-9);
+    color: #ffffff;
+    display: grid;
+    width: screen(15);
+    height: screen(15);
+    position: absolute;
+    font-weight: 700;
+    border-radius: 50%;
+    place-items: center;
+    font-size: screen(9);
+    background: $verdocs-purple;
+  }
+
+  .vb-add-option {
+    z-index: 102;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    display: grid;
+    position: absolute;
+    border-radius: 50%;
+    place-items: center;
+    background: #ffffff;
+    font-family: inherit;
+    color: $verdocs-purple;
+    transform: translateX(-50%);
+    border: 1.5px dashed $verdocs-purple;
+
+    &:hover {
+      background: #f1eefc;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $verdocs-purple;
+      outline-offset: 2px;
+    }
+  }
+
   .signer-num {
     display: none;
     flex: none;
@@ -97,7 +164,8 @@ verdocs-builder-fields {
     }
   }
 
-  &.moving .quick-bar {
+  &.moving .quick-bar,
+  &.moving .vb-add-option {
     visibility: hidden;
   }
 
@@ -608,12 +676,77 @@ verdocs-builder-fields {
     margin-top: 6px;
     align-items: center;
 
-    .insp-input:first-child {
-      flex: 1.4;
+    .insp-input {
+      flex: 1;
+      min-width: 0;
     }
 
-    .insp-input.mono {
-      flex: 1;
+    .insp-input:not(.mono) {
+      flex: 1.4;
+    }
+  }
+
+  .insp-count {
+    margin-left: 6px;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+
+  .insp-option-num {
+    width: 18px;
+    height: 18px;
+    border: 0;
+    padding: 0;
+    flex: none;
+    display: grid;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    color: #ffffff;
+    border-radius: 50%;
+    place-items: center;
+    background: $verdocs-purple;
+
+    &.current {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px $verdocs-purple;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $verdocs-purple;
+      outline-offset: 2px;
+    }
+  }
+
+  .insp-arrange {
+    gap: 4px;
+    display: flex;
+
+    button {
+      width: 28px;
+      height: 26px;
+      padding: 0;
+      display: grid;
+      cursor: pointer;
+      border-radius: 6px;
+      place-items: center;
+      background: #ffffff;
+      color: $builder-muted;
+      border: 1px solid $builder-line;
+
+      &:hover:not(:disabled) {
+        color: $verdocs-purple;
+        border-color: #cfc6f3;
+      }
+
+      &:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 

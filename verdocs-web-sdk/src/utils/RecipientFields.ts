@@ -44,6 +44,14 @@ export const FIELD_TYPES: {type: TFieldType; label: string; icon: string}[] = [
   },
 ];
 
+// A radio's group is every radio with the same group and recipient, in reading order. A radio without a group stands alone.
+export const radioGroup = (fields: ITemplateField[] | null | undefined, field: ITemplateField) =>
+  field.type !== 'radio' || !field.group
+    ? [field]
+    : (fields || [])
+        .filter(other => other.type === 'radio' && other.group === field.group && other.role_name === field.role_name)
+        .sort((a, b) => (a.page || 0) - (b.page || 0) || (b.y || 0) - (a.y || 0) || (a.x || 0) - (b.x || 0));
+
 // Recipients take their color from the role's position in the template, repeating after eight.
 export const recipientNumber = (roles: {name: string}[] | null | undefined, roleName: string) =>
   (Math.max((roles || []).findIndex(role => role.name === roleName), 0) % 8) + 1;
@@ -59,7 +67,7 @@ export const drawRecipientField = (el: HTMLElement, field: ITemplateField, templ
   const fieldType = FIELD_TYPES.find(fieldType => fieldType.type === field.type) || FIELD_TYPES.find(fieldType => fieldType.type === 'textbox');
   const label = toggle ? '' : field.label || field.placeholder || fieldType.label;
   // A radio group shows its recipient number once, on its first option.
-  const marker = field.type !== 'radio' || !field.group || (template?.fields || []).find(other => other.type === 'radio' && other.group === field.group)?.name === field.name;
+  const marker = radioGroup(template?.fields, field)[0]?.name === field.name;
   const key = [n, field.type, label, field.required, field.readonly, marker].join('|');
 
   el.classList.add('vb-field');
