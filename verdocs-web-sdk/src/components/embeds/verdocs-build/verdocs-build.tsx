@@ -128,7 +128,8 @@ export class VerdocsBuild {
 
   async loadTemplate(templateId: string) {
     if (templateId) {
-      Store.subscribe(
+      this.unlistenToTemplate();
+      this.templateListenerId = Store.subscribe(
         'templates',
         this.templateId,
         () => getTemplate(this.endpoint, this.templateId),
@@ -138,6 +139,13 @@ export class VerdocsBuild {
           this.loading = false;
         },
       );
+    }
+  }
+
+  // Stencil doesn't rerun componentWillLoad when an element is reattached, so we listen again here.
+  connectedCallback() {
+    if (this.template && !this.templateListenerId) {
+      this.loadTemplate(this.templateId).catch((e: any) => console.log('[BUILD] Unable to load template', e));
     }
   }
 

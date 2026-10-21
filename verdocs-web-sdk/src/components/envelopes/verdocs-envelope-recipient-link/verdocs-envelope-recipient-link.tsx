@@ -71,6 +71,13 @@ export class VerdocsEnvelopeRecipientLink {
     }
   }
 
+  // Stencil doesn't rerun componentWillLoad when an element is reattached, so we listen again here.
+  connectedCallback() {
+    if (this.envelope && !this.envelopeListenerId) {
+      this.listenToEnvelope();
+    }
+  }
+
   disconnectedCallback() {
     this.unlistenToEnvelope();
   }
@@ -78,7 +85,7 @@ export class VerdocsEnvelopeRecipientLink {
   async listenToEnvelope() {
     console.log('[RECIPIENT_LINK] Loading envelope', this.envelopeId);
     this.unlistenToEnvelope();
-    Store.subscribe(
+    this.envelopeListenerId = Store.subscribe(
       'envelopes',
       this.envelopeId,
       () => getEnvelope(this.endpoint, this.envelopeId),

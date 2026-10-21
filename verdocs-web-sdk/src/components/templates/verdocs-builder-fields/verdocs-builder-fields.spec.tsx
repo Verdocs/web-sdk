@@ -93,4 +93,49 @@ describe('verdocs-builder-fields', () => {
     await page.waitForChanges();
     expect(subscribe).toHaveBeenCalledTimes(2);
   });
+
+  it('draws each field in its recipient color with its label and badges', async () => {
+    jest.spyOn(Store, 'subscribe').mockImplementation((_table, _row, _getter, _force, callback: any) => {
+      callback(template);
+      return 'listener';
+    });
+    const page = await newSpecPage({components: [VerdocsBuilderFields], html: '<verdocs-builder-fields template-id="T1"></verdocs-builder-fields>'});
+    const builder = page.rootInstance as VerdocsBuilderFields;
+    const el = page.doc.createElement('verdocs-field-textbox');
+    const base = {name: 'f1', role_name: 'Preparer', type: 'textbox', required: true, readonly: true, label: '<img src=x>', placeholder: 'Hint'} as any;
+
+    builder.decorateField(el, base);
+    const face = el.querySelector('.vb-face');
+    expect(el.classList.contains('vb-field')).toBe(true);
+    expect(el.style.getPropertyValue('--vb-color')).toEqual('var(--verdocs-builder-recipient-2)');
+    expect(face.querySelector('.vb-label').textContent).toEqual('<img src=x>');
+    expect(face.querySelector('img')).toBeNull();
+    expect(face.querySelector('.vb-req')).not.toBeNull();
+    expect(face.querySelector('.vb-badges i')).not.toBeNull();
+
+    builder.decorateField(el, {...base, label: null, required: false, readonly: false});
+    expect(el.querySelectorAll('.vb-face').length).toEqual(1);
+    expect(el.querySelector('.vb-label').textContent).toEqual('Hint');
+    expect(el.querySelector('.vb-req')).toBeNull();
+    expect(el.querySelector('.vb-badges')).toBeNull();
+
+    builder.decorateField(el, {...base, label: null, placeholder: null, type: 'date'});
+    expect(el.querySelector('.vb-label').textContent).toEqual('Date');
+
+    const box = page.doc.createElement('verdocs-field-checkbox');
+    builder.decorateField(box, {...base, type: 'checkbox'});
+    expect(box.querySelector('.vb-label')).toBeNull();
+  });
+
+  it('repeats recipient colors after eight', async () => {
+    const roles = Array.from({length: 9}, (_, i) => ({name: `R${i + 1}`, sequence: i + 1, type: 'signer'}));
+    jest.spyOn(Store, 'subscribe').mockImplementation((_table, _row, _getter, _force, callback: any) => {
+      callback({...template, roles});
+      return 'listener';
+    });
+    const page = await newSpecPage({components: [VerdocsBuilderFields], html: '<verdocs-builder-fields template-id="T1"></verdocs-builder-fields>'});
+    const builder = page.rootInstance as VerdocsBuilderFields;
+    expect([builder.roleNumber('R1'), builder.roleNumber('R8'), builder.roleNumber('R9')]).toEqual([1, 8, 1]);
+    expect(builder.roleColor('R3')).toEqual('var(--verdocs-builder-recipient-3)');
+  });
 });

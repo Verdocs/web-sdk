@@ -90,13 +90,20 @@ export class VerdocsTemplateFieldProperties {
   @State() loading = true;
   @State() template: ITemplate | null = null;
 
+  // Stencil doesn't rerun componentWillLoad when an element is reattached, so we listen again here.
+  connectedCallback() {
+    if (this.template && !this.templateListenerId) {
+      this.listenToTemplate();
+    }
+  }
+
   disconnectedCallback() {
     this.unlistenToTemplate();
   }
 
   async listenToTemplate() {
     this.unlistenToTemplate();
-    Store.subscribe(
+    this.templateListenerId = Store.subscribe(
       'templates',
       this.templateId,
       () => getTemplate(this.endpoint, this.templateId),

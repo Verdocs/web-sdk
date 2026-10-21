@@ -2,7 +2,7 @@ import interact from 'interactjs';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
 import {createField, getTemplate, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
-import {CloseIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon} from '../../../utils/Icons';
+import {CloseIcon, DocumentPageIcon, DuplicateIcon, LockIcon, PencilIcon, ResetIcon, SettingsIcon} from '../../../utils/Icons';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -300,7 +300,13 @@ export class VerdocsBuilderFields {
     interact.dynamicDrop(true);
 
     // Returning from the Preview tab can leave fields without their interact bindings, and pageRendered doesn't always refire.
-    this.el.querySelectorAll('.verdocs-field').forEach(el => this.makeDraggable(el as HTMLElement));
+    this.el.querySelectorAll('.verdocs-field').forEach((el: HTMLElement) => {
+      this.makeDraggable(el);
+      const field = this.findField(el.getAttribute('fieldname'));
+      if (field) {
+        this.decorateField(el, field);
+      }
+    });
 
     this.applySelection();
     this.positionQuickBar();
@@ -355,13 +361,70 @@ export class VerdocsBuilderFields {
     return roles.find(role => role.name === this.selectedRoleName)?.name || roles[0]?.name || '';
   }
 
-  // Fields take their signer color from the role's position in the template, so the palette and quick bar do too.
+  // Recipients take their color from the role's position in the template, repeating after eight.
+  roleNumber(roleName: string) {
+    return (Math.max((this.template?.roles || []).findIndex(role => role.name === roleName), 0) % 8) + 1;
+  }
+
   roleColor(roleName: string) {
-    const index = Math.max(
-      (this.template?.roles || []).findIndex(role => role.name === roleName),
-      0,
-    );
-    return `var(--signer-${(index % 10) + 1}-color)`;
+    return `var(--verdocs-builder-recipient-${this.roleNumber(roleName)})`;
+  }
+
+  // We draw Builder fields ourselves, in the recipient's color with an icon, label, and badges, instead of the signing theme.
+  decorateField(el: HTMLElement, field: ITemplateField) {
+    const n = this.roleNumber(field.role_name);
+    const toggle = field.type === 'checkbox' || field.type === 'radio';
+    const fieldType = FIELD_TYPES.find(fieldType => fieldType.type === field.type) || FIELD_TYPES.find(fieldType => fieldType.type === 'textbox');
+    const label = toggle ? '' : field.label || field.placeholder || fieldType.label;
+    const key = [n, field.type, label, field.required, field.readonly].join('|');
+
+    el.classList.add('vb-field');
+    el.style.setProperty('--vb-color', `var(--verdocs-builder-recipient-${n})`);
+    el.style.setProperty('--vb-text', `var(--verdocs-builder-recipient-${n}-text)`);
+    el.style.setProperty('--vb-scale', String(this.cachedPageInfo[field.document_id]?.[field.page]?.xScale || 1));
+
+    let face = el.querySelector<HTMLElement>('.vb-face');
+    if (face?.dataset.key === key) {
+      return;
+    }
+
+    if (!face) {
+      face = document.createElement('span');
+      face.className = 'vb-face';
+      el.appendChild(face);
+    }
+
+    face.dataset.key = key;
+    face.classList.toggle('has-badges', !!field.readonly);
+    face.textContent = '';
+
+    if (!toggle) {
+      const icon = document.createElement('span');
+      icon.className = 'vb-icon';
+      icon.innerHTML = fieldType.icon;
+      const text = document.createElement('span');
+      text.className = 'vb-label';
+      text.textContent = label;
+      face.append(icon, text);
+    }
+
+    if (field.required) {
+      const req = document.createElement('span');
+      req.className = 'vb-req';
+      req.textContent = '*';
+      face.append(req);
+    }
+
+    if (field.readonly) {
+      const badges = document.createElement('span');
+      badges.className = 'vb-badges';
+      badges.innerHTML = `<i title="Read-only">${LockIcon}</i>`;
+      face.append(badges);
+    }
+
+    const handle = document.createElement('span');
+    handle.className = 'vb-handle';
+    face.append(handle);
   }
 
   handlePageRendered(e: any) {
@@ -373,7 +436,8 @@ export class VerdocsBuilderFields {
       .filter(field => field && field.page === pageInfo.pageNumber)
       .forEach(field => {
         const el = document.getElementById(getFieldId(field));
-        if (el) {
+        // Field IDs repeat across components, and a page can finish rendering after we've unmounted, so we only touch our own.
+        if (el && this.el.contains(el)) {
           el.setAttribute('templateid', this.templateId);
           el.setAttribute('fieldname', field.name);
           el.setAttribute('documentid', String(field.document_id));
@@ -381,6 +445,7 @@ export class VerdocsBuilderFields {
           el.setAttribute('xScale', String(pageInfo.xScale));
           el.setAttribute('yScale', String(pageInfo.yScale));
           this.makeDraggable(el);
+          this.decorateField(el, field);
         }
       });
 

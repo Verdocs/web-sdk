@@ -5,6 +5,32 @@ $builder-line: #e3e5ee;
 $builder-muted: #7b7f97;
 $builder-guide: #e0338f;
 
+// Fields are scaled with the page, so we divide face sizes by that scale to keep them at screen size.
+@function screen($px) {
+  @return calc(#{$px}px / var(--vb-scale, 1));
+}
+
+// Recipient colors for the Builder, repeating after eight. Each text shade passes 4.5:1 on its field's tint. These sit on
+// :root so the drag preview, which lives on document.body, can use them too.
+:root {
+  --verdocs-builder-recipient-1: #2b995b;
+  --verdocs-builder-recipient-1-text: #227948;
+  --verdocs-builder-recipient-2: #654dcb;
+  --verdocs-builder-recipient-2-text: #654dcb;
+  --verdocs-builder-recipient-3: #2f7fc1;
+  --verdocs-builder-recipient-3-text: #286ca4;
+  --verdocs-builder-recipient-4: #0f8577;
+  --verdocs-builder-recipient-4-text: #0d7367;
+  --verdocs-builder-recipient-5: #a2369a;
+  --verdocs-builder-recipient-5-text: #a2369a;
+  --verdocs-builder-recipient-6: #8a5a2b;
+  --verdocs-builder-recipient-6-text: #8a5a2b;
+  --verdocs-builder-recipient-7: #6b7a1b;
+  --verdocs-builder-recipient-7-text: #606d18;
+  --verdocs-builder-recipient-8: #56657e;
+  --verdocs-builder-recipient-8-text: #56657e;
+}
+
 verdocs-builder-fields {
   display: flex;
   min-height: 600px;
@@ -17,9 +43,115 @@ verdocs-builder-fields {
     display: none !important;
   }
 
-  .verdocs-field-selected {
-    outline: 2px solid rgba(101, 77, 203, 0.75);
-    outline-offset: 1px;
+  // Builder fields are drawn in their recipient's color, not the signing theme. The field component's own content stays in
+  // place (invisible) so its resize edges and pointer handling work as before.
+  .verdocs-field.vb-field {
+    overflow: visible !important;
+    border-radius: 3px !important;
+    box-shadow: none !important;
+    border: screen(1) dashed var(--vb-color) !important;
+    background: color-mix(in srgb, var(--vb-color) 14%, transparent) !important;
+
+    > :not([class^='edge-']):not(.vb-face) {
+      opacity: 0 !important;
+    }
+
+    &.verdocs-field-selected {
+      border-style: solid !important;
+      border-width: screen(1.5) !important;
+      box-shadow: 0 0 0 screen(3) rgba(101, 77, 203, 0.28) !important;
+    }
+  }
+
+  verdocs-field-radio.vb-field {
+    border-radius: 50% !important;
+  }
+
+  .vb-face {
+    inset: 0;
+    display: flex;
+    gap: screen(4);
+    padding: 0 screen(5);
+    position: absolute;
+    align-items: center;
+    pointer-events: none;
+    white-space: nowrap;
+    color: var(--vb-text);
+    font: 600 screen(10.5) / 1 $verdocs-primary-font;
+  }
+
+  .vb-icon {
+    flex: none;
+    display: flex;
+
+    svg {
+      width: screen(12);
+      height: screen(12);
+    }
+  }
+
+  .vb-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .vb-req {
+    line-height: 1;
+    top: screen(-8);
+    right: screen(-5);
+    font-size: screen(14);
+    font-weight: 800;
+    color: #c0263d;
+    position: absolute;
+  }
+
+  .vb-face.has-badges .vb-req {
+    top: 50%;
+    right: auto;
+    left: calc(100% + screen(12));
+    transform: translateY(-50%);
+  }
+
+  .vb-badges {
+    display: flex;
+    top: screen(-9);
+    gap: screen(2);
+    right: screen(-9);
+    position: absolute;
+
+    i {
+      width: screen(15);
+      height: screen(15);
+      color: #ffffff;
+      display: grid;
+      border-radius: 50%;
+      place-items: center;
+      background: $builder-ink;
+      box-sizing: content-box;
+      border: screen(1.5) solid #ffffff;
+    }
+
+    svg {
+      width: screen(9);
+      height: screen(9);
+    }
+  }
+
+  .vb-handle {
+    right: screen(-5);
+    width: screen(9);
+    height: screen(9);
+    bottom: screen(-5);
+    display: none;
+    position: absolute;
+    border-radius: screen(2);
+    background: #ffffff;
+    border: screen(1.5) solid $verdocs-purple;
+  }
+
+  .verdocs-field-selected > .vb-face .vb-handle {
+    display: block;
   }
 
   &.moving .quick-bar {
@@ -411,8 +543,8 @@ verdocs-builder-fields {
   border-radius: 3px;
   pointer-events: none;
   box-sizing: border-box;
-  border: 1.5px dashed $verdocs-purple;
-  background: var(--verdocs-builder-ghost-color, #e3c3e9);
+  border: 1.5px dashed var(--verdocs-builder-ghost-color, $verdocs-purple);
+  background: color-mix(in srgb, var(--verdocs-builder-ghost-color, $verdocs-purple) 14%, #ffffff);
   box-shadow: 0 6px 18px rgba(30, 32, 49, 0.18);
   transition: opacity 0.1s;
 
