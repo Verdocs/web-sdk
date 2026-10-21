@@ -1,6 +1,7 @@
 import interact from 'interactjs';
 import {getTemplate, integerSequence, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Element, Event, EventEmitter, Host, Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
+import {drawRecipientField} from '../../../utils/RecipientFields';
 import {renderDocumentField} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
@@ -38,6 +39,12 @@ export class VerdocsPreview {
    * The ID of the template to create the document from.
    */
   @Prop() templateId: string | null = null;
+
+  /**
+   * How fields are drawn. `recipient` colors each field by its recipient and shows its label, as the Builder does.
+   * `theme` draws them with the signing theme's field styles instead.
+   */
+  @Prop() fieldStyle: 'recipient' | 'theme' = 'recipient';
 
   /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
@@ -112,8 +119,13 @@ export class VerdocsPreview {
     // re-renders. Unbind any drag/resize handlers on fields inside our own subtree after each
     // render so they stay non-interactive in preview mode. Scope to hostEl so we don't clobber
     // handlers on fields belonging to a sibling component during brief tab-switch overlaps.
-    this.hostEl?.querySelectorAll('.verdocs-field').forEach(el => {
-      interact(el as HTMLElement).unset();
+    this.hostEl?.querySelectorAll('.verdocs-field').forEach((el: HTMLElement) => {
+      interact(el).unset();
+
+      const field = (this.template?.fields || []).find(field => field.name === el.getAttribute('fieldname'));
+      if (this.fieldStyle === 'recipient' && field) {
+        drawRecipientField(el, field, this.template?.roles);
+      }
     });
   }
 
@@ -132,7 +144,13 @@ export class VerdocsPreview {
     });
 
     // console.log('[PREVIEW] Page rendered', pageInfo, fields);
-    fields.forEach(field => renderDocumentField('template', field, pageInfo, {disabled: true, editable: false, draggable: false}));
+    fields.forEach(field => {
+      const el = renderDocumentField('template', field, pageInfo, {disabled: true, editable: false, draggable: false});
+      // A same-named field in another component can come back here, so we only draw our own.
+      if (this.fieldStyle === 'recipient' && el && this.hostEl.contains(el)) {
+        drawRecipientField(el, field, this.template?.roles, pageInfo.xScale);
+      }
+    });
   }
 
   render() {

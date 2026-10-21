@@ -1,4 +1,5 @@
 @import '../../../theme.scss';
+@import '../../../recipient-fields.scss';
 
 verdocs-preview {
   font-family: $verdocs-primary-font;
@@ -15,4 +16,6 @@ verdocs-preview {
   canvas {
     box-sizing: border-box;
   }
+
+  @include recipient-fields;
 }

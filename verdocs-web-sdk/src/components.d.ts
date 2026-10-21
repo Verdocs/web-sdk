@@ -1762,6 +1762,11 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
+          * How fields are drawn. `recipient` colors each field by its recipient and shows its label, as the Builder does. `theme` draws them with the signing theme's field styles instead.
+          * @default 'recipient'
+         */
+        "fieldStyle": 'recipient' | 'theme';
+        /**
           * The ID of the template to create the document from.
           * @default null
          */
@@ -6977,6 +6982,11 @@ declare namespace LocalJSX {
          */
         "endpoint"?: VerdocsEndpoint;
         /**
+          * How fields are drawn. `recipient` colors each field by its recipient and shows its label, as the Builder does. `theme` draws them with the signing theme's field styles instead.
+          * @default 'recipient'
+         */
+        "fieldStyle"?: 'recipient' | 'theme';
+        /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */
         "onSdkError"?: (event: VerdocsPreviewCustomEvent<SDKError>) => void;
@@ -8509,6 +8519,7 @@ declare namespace LocalJSX {
     }
     interface VerdocsPreviewAttributes {
         "templateId": string | null;
+        "fieldStyle": 'recipient' | 'theme';
     }
     interface VerdocsProgressBarAttributes {
         "label": string;

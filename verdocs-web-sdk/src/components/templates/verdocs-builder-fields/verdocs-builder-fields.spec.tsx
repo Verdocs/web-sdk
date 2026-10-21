@@ -107,7 +107,7 @@ describe('verdocs-builder-fields', () => {
     builder.decorateField(el, base);
     const face = el.querySelector('.vb-face');
     expect(el.classList.contains('vb-field')).toBe(true);
-    expect(el.style.getPropertyValue('--vb-color')).toEqual('var(--verdocs-builder-recipient-2)');
+    expect(el.style.getPropertyValue('--vb-color')).toEqual('var(--verdocs-recipient-2)');
     expect(face.querySelector('.vb-label').textContent).toEqual('<img src=x>');
     expect(face.querySelector('img')).toBeNull();
     expect(face.querySelector('.vb-req')).not.toBeNull();
@@ -136,6 +136,6 @@ describe('verdocs-builder-fields', () => {
     const page = await newSpecPage({components: [VerdocsBuilderFields], html: '<verdocs-builder-fields template-id="T1"></verdocs-builder-fields>'});
     const builder = page.rootInstance as VerdocsBuilderFields;
     expect([builder.roleNumber('R1'), builder.roleNumber('R8'), builder.roleNumber('R9')]).toEqual([1, 8, 1]);
-    expect(builder.roleColor('R3')).toEqual('var(--verdocs-builder-recipient-3)');
+    expect(builder.roleColor('R3')).toEqual('var(--verdocs-recipient-3)');
   });
 });

@@ -709,6 +709,7 @@ export const VerdocsPortal: StencilVueComponent<JSX.VerdocsPortal> = /*@__PURE__
 export const VerdocsPreview: StencilVueComponent<JSX.VerdocsPreview> = /*@__PURE__*/ defineContainer<JSX.VerdocsPreview>('verdocs-preview', undefined, [
   'endpoint',
   'templateId',
+  'fieldStyle',
   'sdkError'
 ], [
   'sdkError'

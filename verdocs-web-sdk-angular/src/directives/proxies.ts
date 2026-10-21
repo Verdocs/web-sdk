@@ -1876,14 +1876,14 @@ export declare interface VerdocsPortal extends Components.VerdocsPortal {
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsPreview,
-  inputs: ['endpoint', 'templateId']
+  inputs: ['endpoint', 'fieldStyle', 'templateId']
 })
 @Component({
   selector: 'verdocs-preview',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'templateId'],
+  inputs: ['endpoint', 'fieldStyle', 'templateId'],
   outputs: ['sdkError'],
 })
 export class VerdocsPreview {
