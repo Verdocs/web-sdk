@@ -156,7 +156,7 @@ export class VerdocsKbaDialog {
       mask: Date,
       min: new Date(1920, 0, 1),
       max: new Date(Date.now() - 86400 * 18 * 365 * 1000), // 18 years old
-      lazy: false,
+      lazy: true,
       pattern: 'm/d/Y',
       // See https://github.com/uNmAnNeR/imaskjs/issues/739
       format: function (date) {
@@ -404,7 +404,7 @@ export class VerdocsKbaDialog {
                 class="date-input"
                 value={this.updatedRecipient?.dob || ''}
                 id={this.dobContainerId}
-                placeholder="DOB..."
+                placeholder="MM/DD/YYYY"
                 onInput={(e: any) => {
                   e.stopPropagation(); // Mostly for Storybook
                 }}
