@@ -234,6 +234,25 @@ describe('verdocs-builder-fields', () => {
       expect(saveField).toHaveBeenCalledWith('state', {options: [{id: 'oh', label: 'Ohio'}, {id: 'new-york', label: 'New York'}]});
     });
 
+    it('puts corner handles on a selected field that resizes', async () => {
+      const {page, builder} = await renderBuilder();
+      for (const name of ['name', 'state']) {
+        const el = page.doc.createElement('div');
+        el.id = `verdocs-doc-fld-${name}`;
+        if (name === 'name') {
+          el.appendChild(page.doc.createElement('div')).className = 'edge-right';
+        }
+        page.root.appendChild(el);
+      }
+
+      builder.selectField('name');
+      const corners = [...page.root.querySelectorAll('#verdocs-doc-fld-name > .vb-corner')].map((corner: any) => corner.className);
+      expect(corners).toEqual(['edge-top edge-left vb-corner', 'edge-top edge-right vb-corner', 'edge-bottom edge-left vb-corner', 'edge-bottom edge-right vb-corner']);
+
+      builder.selectField('state');
+      expect(page.root.querySelectorAll('.vb-corner').length).toEqual(0);
+    });
+
     it('turns Read-only off when Required goes on, and the reverse', async () => {
       const {builder, saveField} = await renderBuilder();
 

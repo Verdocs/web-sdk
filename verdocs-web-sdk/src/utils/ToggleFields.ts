@@ -5,19 +5,20 @@ import {VerdocsToast} from './Toast';
 import {Store} from './Datastore';
 
 /**
- * Let a builder user resize a checkbox or radio from a single corner grip, keeping its proportions.
- * Edge handles like the text fields use would cover most of a 14pt box and turn drags into resizes.
+ * Let a builder user resize a checkbox or radio from its corners, keeping its proportions. Edge strips would cover most
+ * of a 14pt box, so only the grip and any corner handles the builder adds resize it.
  */
 export const makeToggleFieldResizable = (
   el: HTMLElement,
   options: {sourceid: string; fieldname: string; xscale: number; yscale: number; onSaved: (field: ITemplateField) => void},
 ) => {
   interact(el).resizable({
-    edges: {right: '.resize-grip', bottom: '.resize-grip'},
+    edges: {top: '.edge-top', left: '.edge-left', right: '.resize-grip, .edge-right', bottom: '.resize-grip, .edge-bottom'},
     modifiers: [interact.modifiers.aspectRatio({ratio: 'preserve'}), interact.modifiers.restrictSize({min: {width: 8, height: 8}})],
     listeners: {
       start(e: any) {
         e.target.dataset.originalBottom = e.target.style.bottom;
+        e.target.dataset.originalLeft = e.target.style.left;
       },
 
       move(e: any) {
@@ -41,13 +42,16 @@ export const makeToggleFieldResizable = (
         const height = Math.round(parseFloat(e.target.style.height));
         const newBottom = parseFloat(e.target.style.bottom);
         const originalBottom = parseFloat(e.target.dataset.originalBottom);
+        const newLeft = parseFloat(e.target.style.left);
+        const originalLeft = parseFloat(e.target.dataset.originalLeft);
 
         try {
           const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), sourceid);
           const oldField = template?.fields?.find(field => field.name === fieldname);
           const y = newBottom !== originalBottom ? Math.round(newBottom / options.yscale) : oldField?.y;
+          const x = newLeft !== originalLeft ? Math.round(newLeft / options.xscale) : oldField?.x;
 
-          const updatedField = await updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, y});
+          const updatedField = await updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, x, y});
           // Re-read after the save so another field's change that landed meanwhile isn't overwritten.
           const latest = await Store.getTemplate(VerdocsEndpoint.getDefault(), sourceid);
           const newTemplate = JSON.parse(JSON.stringify(latest)) as ITemplate;

@@ -437,13 +437,19 @@ export class VerdocsBuilderFields {
 
   applySelection() {
     this.el.querySelectorAll('.verdocs-field-selected, .vb-group-member').forEach(el => el.classList.remove('verdocs-field-selected', 'vb-group-member'));
-    this.el.querySelectorAll('.vb-order, .vb-add-option').forEach(el => el.remove());
+    this.el.querySelectorAll('.vb-order, .vb-add-option, .vb-corner').forEach(el => el.remove());
     const field = this.findField(this.selectedFieldName);
     if (!field) {
       return;
     }
 
-    document.getElementById(getFieldId(field))?.classList.add('verdocs-field-selected');
+    const fieldEl = document.getElementById(getFieldId(field));
+    fieldEl?.classList.add('verdocs-field-selected');
+    if (fieldEl?.querySelector('.edge-right, .resize-grip')) {
+      for (const corner of ['edge-top edge-left', 'edge-top edge-right', 'edge-bottom edge-left', 'edge-bottom edge-right']) {
+        fieldEl.insertAdjacentHTML('beforeend', `<span class="${corner} vb-corner"></span>`);
+      }
+    }
     if (field.type !== 'radio') {
       return;
     }
@@ -1422,6 +1428,7 @@ export class VerdocsBuilderFields {
         <button class="quick-button icon" title="Rename" aria-label="Rename" innerHTML={PencilIcon} onClick={() => (this.renaming = !this.renaming)} />
         <button class="quick-button icon" title="Duplicate" aria-label="Duplicate" innerHTML={DuplicateIcon} onClick={() => this.duplicateField(field)} />
         <button class="quick-button icon" title="Reset size and settings" aria-label="Reset size and settings" innerHTML={ResetIcon} onClick={() => this.resetField(field)} />
+        <button class="quick-button icon delete" title="Delete" aria-label="Delete" innerHTML={TrashIcon} onClick={() => this.removeOption(field, field)} />
         <span class="separator" />
         <button class="quick-button icon" title="All settings" aria-label="All settings" innerHTML={SettingsIcon} onClick={() => (this.inspectorOpen = true)} />
 

@@ -139,18 +139,6 @@
     }
   }
 
-  .vb-handle {
-    right: screen(-5);
-    width: screen(9);
-    height: screen(9);
-    bottom: screen(-5);
-    display: none;
-    position: absolute;
-    border-radius: screen(2);
-    background: #ffffff;
-    border: screen(1.5) solid $verdocs-purple;
-  }
-
   .vb-marker {
     display: none;
     top: screen(-9);

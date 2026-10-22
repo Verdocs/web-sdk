@@ -232,6 +232,7 @@ export class VerdocsFieldInitial {
     e.preventDefault();
     e.stopPropagation();
     e.target.dataset.originalBottom = e.target.style.bottom;
+    e.target.dataset.originalLeft = e.target.style.left;
   }
 
   handleResize(e: any) {
@@ -264,11 +265,14 @@ export class VerdocsFieldInitial {
 
     const newBottom = parseFloat(e.target.style.bottom);
     const originalBottom = parseFloat(e.target.dataset.originalBottom);
+    const newLeft = parseFloat(e.target.style.left);
+    const originalLeft = parseFloat(e.target.dataset.originalLeft);
     const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
     const oldField = template.fields.find(f => f.name === fieldname);
     const y = newBottom !== originalBottom ? Math.round(newBottom / this.yscale) : oldField?.y;
+    const x = newLeft !== originalLeft ? Math.round(newLeft / this.xscale) : oldField?.x;
 
-    updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, y})
+    updateField(VerdocsEndpoint.getDefault(), sourceid, fieldname, {width, height, x, y})
       .then(async updatedField => {
         const template = await Store.getTemplate(VerdocsEndpoint.getDefault(), this.sourceid);
         const newTemplate = JSON.parse(JSON.stringify(template)) as ITemplate;

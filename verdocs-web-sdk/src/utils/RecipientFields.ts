@@ -122,8 +122,4 @@ export const drawRecipientField = (el: HTMLElement, field: ITemplateField, templ
     badges.innerHTML = `<i title="Read-only">${LockIcon}</i>`;
     face.append(badges);
   }
-
-  const handle = document.createElement('span');
-  handle.className = 'vb-handle';
-  face.append(handle);
 };

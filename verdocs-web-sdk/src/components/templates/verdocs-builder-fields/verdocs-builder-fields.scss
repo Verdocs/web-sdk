@@ -16,7 +16,7 @@ $builder-guide: #e0338f;
     outline-offset: screen(2);
   }
 
-  .vb-handle {
+  .verdocs-field.vb-field > .vb-corner {
     border: screen(2) solid $builder-ink;
   }
 
@@ -79,8 +79,43 @@ verdocs-builder-fields {
     box-shadow: 0 0 0 screen(3) rgba(101, 77, 203, 0.28) !important;
   }
 
-  .verdocs-field-selected > .vb-face .vb-handle {
-    display: block;
+  // Each corner handle carries the two edge classes the field's own resize listens for.
+  .verdocs-field.vb-field > .vb-corner {
+    inset: auto;
+    z-index: 11;
+    width: screen(9);
+    height: screen(9);
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: screen(2);
+    background: #ffffff;
+    border: screen(1.5) solid $verdocs-purple;
+
+    &.edge-top {
+      top: screen(-5);
+    }
+
+    &.edge-bottom {
+      bottom: screen(-5);
+    }
+
+    &.edge-left {
+      left: screen(-5);
+    }
+
+    &.edge-right {
+      right: screen(-5);
+    }
+
+    &.edge-top.edge-left,
+    &.edge-bottom.edge-right {
+      cursor: nwse-resize;
+    }
+
+    &.edge-top.edge-right,
+    &.edge-bottom.edge-left {
+      cursor: nesw-resize;
+    }
   }
 
   // The rest of the selected radio's group, numbered in order, with a button under the last option to add the next.
@@ -361,6 +396,10 @@ verdocs-builder-fields {
     &.icon svg {
       width: 15px;
       height: 15px;
+    }
+
+    &.delete svg {
+      stroke: currentColor;
     }
 
     .check {
