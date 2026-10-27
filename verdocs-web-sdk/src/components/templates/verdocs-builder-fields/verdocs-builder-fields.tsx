@@ -1,8 +1,9 @@
 import interact from 'interactjs';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
+import {getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, saveDataCatalogEntries, TDataCatalogEntryType} from '@verdocs/js-sdk';
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
-import {AlignLeftIcon, CloseIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, SpaceEvenlyIcon, TrashIcon} from '../../../utils/Icons';
+import {AlignLeftIcon, CloseIcon, DataIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, SpaceEvenlyIcon, TrashIcon} from '../../../utils/Icons';
 import {drawRecipientField, FIELD_TYPES, radioGroup, recipientNumber} from '../../../utils/RecipientFields';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -25,6 +26,16 @@ const SNAP_PX = 5;
 const isTypingTarget = (el: Element | null) => !!el && (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || (el as HTMLElement).isContentEditable);
 
 const defaultRequired = (type: TFieldType) => !['radio', 'attachment', 'checkbox'].includes(type);
+
+// Field types that can take a data key, and the kinds of catalog key each one fits.
+const KEY_FITS: Partial<Record<TFieldType, TDataCatalogEntryType[]>> = {textbox: ['text'], date: ['date'], checkbox: ['boolean'], radio: ['choice'], dropdown: ['choice']};
+
+const DATA_KEY_PATTERN = /^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)*$/;
+
+const humanizeKey = (key: string) => {
+  const words = (key.split('.').pop() || key).replace(/[_-]+/g, ' ').trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+};
 
 // Signing only checks these two of js-sdk's validators so far.
 const TEXT_FORMATS = [
@@ -125,6 +136,10 @@ export class VerdocsBuilderFields {
   @State() nameError = '';
   @State() groupError = '';
   @State() optionsDraft: {name: string; options: IDropdownOption[]} | null = null;
+  @State() catalog: IDataCatalog | null = null;
+  @State() fillMenuOpen = false;
+  @State() fillSearch = '';
+  catalogLoadedFor: string | null = null;
 
   // Undo entries are recorded only once their save lands, so the stack never holds a change the server didn't take.
   undoStack: {name: string; before: TFieldGeometry}[] = [];
@@ -323,11 +338,27 @@ export class VerdocsBuilderFields {
       (template: ITemplate) => {
         this.template = template;
         this.loading = false;
+        if (this.catalogLoadedFor !== (template.data_catalog_id || '')) {
+          this.loadCatalog(template);
+        }
         if (this.selectedFieldName && !this.findField(this.selectedFieldName)) {
           this.selectedFieldName = null;
         }
       },
     );
+  }
+
+  async loadCatalog(template: ITemplate) {
+    this.catalogLoadedFor = template.data_catalog_id || '';
+    try {
+      const catalogs = await getDataCatalogs(this.endpoint, template.organization_id);
+      const chosen = catalogs.find(catalog => catalog.id === template.data_catalog_id) || catalogs.find(catalog => catalog.is_default);
+      this.catalog = chosen ? await getDataCatalog(this.endpoint, template.organization_id, chosen.id) : null;
+    } catch (e) {
+      // Personal accounts can't have catalogs, so their fields just take typed keys.
+      console.log('[BUILDER] Unable to load the data catalog', e.response?.status);
+      this.catalog = null;
+    }
   }
 
   unlistenToTemplate() {
@@ -425,6 +456,8 @@ export class VerdocsBuilderFields {
 
     if (name !== this.selectedFieldName) {
       this.signerMenuOpen = false;
+      this.fillMenuOpen = false;
+      this.fillSearch = '';
       this.renaming = false;
       this.nameError = '';
       this.groupError = '';
@@ -435,7 +468,19 @@ export class VerdocsBuilderFields {
     this.applySelection();
   }
 
+  applyDataMarks() {
+    const known = new Set((this.catalog?.entries || []).map(entry => entry.key));
+    (this.template?.fields || []).forEach(field => {
+      const el = document.getElementById(getFieldId(field));
+      if (el && this.el.contains(el)) {
+        el.classList.toggle('vb-bound', !!field.data_key);
+        el.classList.toggle('vb-unknown-key', !!field.data_key && !!this.catalog && !known.has(field.data_key));
+      }
+    });
+  }
+
   applySelection() {
+    this.applyDataMarks();
     this.el.querySelectorAll('.verdocs-field-selected, .vb-group-member').forEach(el => el.classList.remove('verdocs-field-selected', 'vb-group-member'));
     this.el.querySelectorAll('.vb-order, .vb-add-option, .vb-corner').forEach(el => el.remove());
     const field = this.findField(this.selectedFieldName);
@@ -748,6 +793,28 @@ export class VerdocsBuilderFields {
     for (const member of this.groupMembers(field)) {
       await this.saveField(member.name, changes);
     }
+  }
+
+  async fillWith(field: ITemplateField, key: string | null, changes: Partial<ITemplateField> = {}) {
+    this.fillMenuOpen = false;
+    this.fillSearch = '';
+    const members = this.groupMembers(field);
+    // A key another field already fills starts read-only here, so a signer fixes a typo in one place.
+    const repeated = !!key && (this.template?.fields || []).some(other => other.data_key === key && !members.some(member => member.name === other.name));
+    await this.saveGroup(field, {data_key: key, ...(repeated ? {readonly: true} : {}), ...changes});
+  }
+
+  async addToCatalog(field: ITemplateField, key: string) {
+    const catalog = this.catalog;
+    try {
+      await saveDataCatalogEntries(this.endpoint, catalog.organization_id, catalog.id, [{key, label: humanizeKey(key), type: KEY_FITS[field.type]?.[0] || 'text'}]);
+      this.catalog = await getDataCatalog(this.endpoint, catalog.organization_id, catalog.id);
+    } catch (e) {
+      VerdocsToast(e.response?.data?.message || `Unable to add ${key} to ${catalog.name}.`, {style: 'error'});
+      return;
+    }
+
+    await this.fillWith(field, key);
   }
 
   async resetField(field: ITemplateField) {
@@ -1131,6 +1198,113 @@ export class VerdocsBuilderFields {
     this.templateUpdated?.emit({endpoint: this.endpoint, template: this.template, event: 'deleted-field'});
   }
 
+  renderFillWith(field: ITemplateField) {
+    const fits = KEY_FITS[field.type] || [];
+    const entries = this.catalog?.entries || [];
+    const entry = entries.find(candidate => candidate.key === field.data_key);
+    const fixed = field.type === 'textbox' && !field.data_key && !!field.readonly;
+    const search = this.fillSearch.trim();
+    const query = search.toLowerCase();
+    const matches = entries.filter(candidate => !query || `${candidate.key} ${candidate.label}`.toLowerCase().includes(query));
+    const groups = matches.reduce<Record<string, IDataCatalogEntry[]>>((all, candidate) => {
+      const prefix = candidate.key.includes('.') ? candidate.key.split('.')[0] : '';
+      (all[prefix] ||= []).push(candidate);
+      return all;
+    }, {});
+    const typedKey = DATA_KEY_PATTERN.test(search) && !entries.some(candidate => candidate.key === search) ? search : '';
+    const members = this.groupMembers(field);
+    const shared = !!field.data_key && (this.template?.fields || []).some(other => other.data_key === field.data_key && !members.some(member => member.name === other.name));
+
+    return (
+      <Fragment>
+        <div class="insp-section">Data</div>
+        <div class="insp-label">Fill with</div>
+        <div class="fill">
+          <button type="button" class={{'fill-button': true, 'open': this.fillMenuOpen}} onClick={() => (this.fillMenuOpen = !this.fillMenuOpen)}>
+            {field.data_key ? (
+              <Fragment>
+                <span class="fill-mark" innerHTML={DataIcon} />
+                <span class="fill-value">{entry?.label || field.data_key}</span>
+                <span class="fill-key">{field.data_key}</span>
+              </Fragment>
+            ) : (
+              <span class="fill-value plain">{fixed ? 'Fixed text' : 'Signer enters this'}</span>
+            )}
+            <span class="fill-caret" />
+          </button>
+
+          {this.fillMenuOpen && (
+            <Fragment>
+              <div class="fill-backdrop" onClick={() => (this.fillMenuOpen = false)} />
+              <div class="fill-menu" onKeyDown={(e: KeyboardEvent) => e.key === 'Escape' && (this.fillMenuOpen = false)}>
+                <input
+                  class="insp-input fill-search"
+                  value={this.fillSearch}
+                  placeholder={this.catalog ? `Search ${this.catalog.name}` : 'Type a data key'}
+                  onInput={(e: any) => (this.fillSearch = e.target.value)}
+                  ref={el => el && setTimeout(() => el.focus())}
+                />
+                <div class="fill-options">
+                  {!query && (
+                    <button type="button" class={{'fill-option': true, 'on': !field.data_key && !fixed}} onClick={() => this.fillWith(field, null, {readonly: false})}>
+                      Signer enters this
+                    </button>
+                  )}
+                  {!query && field.type === 'textbox' && (
+                    <button type="button" class={{'fill-option': true, 'on': fixed}} onClick={() => this.fillWith(field, null, {readonly: true})}>
+                      Fixed text
+                    </button>
+                  )}
+                  {Object.entries(groups).map(([prefix, groupEntries]) => (
+                    <Fragment>
+                      {prefix && <div class="fill-group">{prefix}</div>}
+                      {groupEntries.map(candidate => (
+                        <button
+                          type="button"
+                          class={{'fill-option': true, 'on': candidate.key === field.data_key}}
+                          disabled={!fits.includes(candidate.type)}
+                          onClick={() => this.fillWith(field, candidate.key)}
+                        >
+                          <span class="fill-label">{candidate.label}</span>
+                          <span class="fill-key">{candidate.key}</span>
+                        </button>
+                      ))}
+                    </Fragment>
+                  ))}
+                  {typedKey && (
+                    <button type="button" class="fill-option" onClick={() => this.fillWith(field, typedKey)}>
+                      Use <span class="fill-key">{typedKey}</span>
+                    </button>
+                  )}
+                  {typedKey && this.catalog && (
+                    <button type="button" class="fill-option fill-add" onClick={() => this.addToCatalog(field, typedKey)}>
+                      + Add <span class="fill-key">{typedKey}</span> to {this.catalog.name}
+                    </button>
+                  )}
+                  {query && !typedKey && !matches.length && <div class="fill-note">No keys match.</div>}
+                  {!query && !this.catalog && <div class="fill-note">Type a key to fill this field from your data.</div>}
+                  {!query && entries.some(candidate => !fits.includes(candidate.type)) && <div class="fill-note">Greyed-out keys don't fit this kind of field.</div>}
+                </div>
+              </div>
+            </Fragment>
+          )}
+        </div>
+
+        {field.data_key && this.catalog && !entry && (
+          <div class="insp-warn">
+            Not in {this.catalog.name}.{' '}
+            <button type="button" onClick={() => this.addToCatalog(field, field.data_key)}>
+              Add it
+            </button>
+          </div>
+        )}
+        {entry && !fits.includes(entry.type) && <div class="insp-warn">{entry.label} holds a different kind of value than this field.</div>}
+        {shared && field.readonly && <div class="insp-hint">Another field uses this key too, so this copy is read-only.</div>}
+        {fixed && !field.default && <div class="insp-hint">Type the text under Default value.</div>}
+      </Fragment>
+    );
+  }
+
   renderInspector(field: ITemplateField) {
     const fieldType = FIELD_TYPES.find(fieldType => fieldType.type === field.type) || FIELD_TYPES.find(fieldType => fieldType.type === 'textbox');
     const options = this.draftOptions(field);
@@ -1187,6 +1361,8 @@ export class VerdocsBuilderFields {
           <span class="insp-title">{(radio && field.group) || field.label || field.name}</span>
           <button class="inspector-close" title="Close" aria-label="Close" innerHTML={CloseIcon} onClick={() => (this.inspectorOpen = false)} />
         </div>
+
+        {KEY_FITS[field.type] && this.renderFillWith(field)}
 
         {radio ? (
           <Fragment>
