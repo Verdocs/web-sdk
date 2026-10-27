@@ -704,6 +704,124 @@ verdocs-builder-fields {
     }
   }
 
+  .insp-checks {
+    gap: 0 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .insp-sections {
+    margin-top: 16px;
+  }
+
+  .insp-colh {
+    gap: 7px;
+    display: flex;
+    cursor: pointer;
+    margin: 0 -18px;
+    padding: 8px 18px;
+    user-select: none;
+    align-items: center;
+    background: #f3f4f8;
+    border-top: 1px solid #e6e8ef;
+    border-bottom: 1px solid #e6e8ef;
+
+    &:hover {
+      background: #eceef4;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px rgba(101, 77, 203, 0.4);
+    }
+  }
+
+  .insp-col + .insp-col .insp-colh {
+    border-top: 0;
+  }
+
+  .insp-col.open + .insp-col .insp-colh {
+    border-top: 1px solid #e6e8ef;
+  }
+
+  .insp-caret {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    margin-right: 3px;
+    transform: rotate(-45deg);
+    transition: transform 0.12s;
+    border: solid $builder-muted;
+    border-width: 0 1.5px 1.5px 0;
+  }
+
+  .insp-col.open .insp-caret {
+    margin-bottom: 3px;
+    transform: rotate(45deg);
+  }
+
+  .insp-coln {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #4b5060;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .insp-sum {
+    gap: 6px;
+    min-width: 0;
+    display: flex;
+    max-width: 68%;
+    margin-left: auto;
+    font-size: 11.5px;
+    align-items: center;
+    color: #a3a6b8;
+
+    &.changed {
+      font-weight: 500;
+      color: $verdocs-dark-blue;
+    }
+  }
+
+  .insp-sum {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .insp-dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $verdocs-purple;
+  }
+
+  .insp-adv {
+    gap: 6px;
+    border: 0;
+    padding: 0;
+    display: flex;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: auto;
+    background: none;
+    align-items: center;
+    font-family: inherit;
+    color: $builder-muted;
+
+    .insp-toggle {
+      display: block;
+      transform: scale(0.85);
+    }
+  }
+
+  .insp-colb {
+    padding-bottom: 14px;
+  }
+
   .fill {
     margin-top: 4px;
     position: relative;

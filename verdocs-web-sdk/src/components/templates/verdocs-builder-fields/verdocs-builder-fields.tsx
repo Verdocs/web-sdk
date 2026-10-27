@@ -5,6 +5,7 @@ import {createField, deleteField, getTemplate, IDropdownOption, integerSequence,
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {AlignLeftIcon, CloseIcon, DataIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, SpaceEvenlyIcon, TrashIcon} from '../../../utils/Icons';
 import {drawRecipientField, FIELD_TYPES, radioGroup, recipientNumber} from '../../../utils/RecipientFields';
+import {TEXT_FORMATS} from '../../../utils/FieldFormats';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
@@ -30,6 +31,18 @@ const defaultRequired = (type: TFieldType) => !['radio', 'attachment', 'checkbox
 // Field types that can take a data key, and the kinds of catalog key each one fits.
 const KEY_FITS: Partial<Record<TFieldType, TDataCatalogEntryType[]>> = {textbox: ['text'], date: ['date'], checkbox: ['boolean'], radio: ['choice'], dropdown: ['choice']};
 
+// Which Inspector sections start open, and where we remember each person's choices.
+const SECTIONS_OPEN_BY_DEFAULT = ['group', 'options', 'format', 'text', 'checkbox'];
+const SECTIONS_STORAGE_KEY = 'verdocs-builder-inspector-sections';
+
+const readOpenSections = (): Record<string, boolean> => {
+  try {
+    return JSON.parse(localStorage.getItem(SECTIONS_STORAGE_KEY) || '{}');
+  } catch {
+    return {};
+  }
+};
+
 const DATA_KEY_PATTERN = /^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)*$/;
 
 const humanizeKey = (key: string) => {
@@ -37,12 +50,6 @@ const humanizeKey = (key: string) => {
   return words.charAt(0).toUpperCase() + words.slice(1);
 };
 
-// Signing only checks these two of js-sdk's validators so far.
-const TEXT_FORMATS = [
-  {value: '', label: 'Any text'},
-  {value: 'email', label: 'Email address'},
-  {value: 'phone', label: 'Phone number'},
-];
 
 // Lines a rect up with the left or right edge, and the top or vertical center, of the nearest other field.
 const snapRect = (rect: {left: number; top: number; width: number; height: number}, others: DOMRect[]) => {
@@ -139,6 +146,8 @@ export class VerdocsBuilderFields {
   @State() catalog: IDataCatalog | null = null;
   @State() fillMenuOpen = false;
   @State() fillSearch = '';
+  @State() openSections: Record<string, boolean> = readOpenSections();
+  @State() advancedSections: Record<string, boolean> = {};
   catalogLoadedFor: string | null = null;
 
   // Undo entries are recorded only once their save lands, so the stack never holds a change the server didn't take.
@@ -1217,7 +1226,6 @@ export class VerdocsBuilderFields {
 
     return (
       <Fragment>
-        <div class="insp-section">Data</div>
         <div class="insp-label">Fill with</div>
         <div class="fill">
           <button type="button" class={{'fill-button': true, 'open': this.fillMenuOpen}} onClick={() => (this.fillMenuOpen = !this.fillMenuOpen)}>
@@ -1305,6 +1313,56 @@ export class VerdocsBuilderFields {
     );
   }
 
+  // A collapsible Inspector section. Closed, its header shows a summary; open, sections with rarer settings get an Advanced switch.
+  renderSection(id: string, title: string, summary: string, changed: boolean, body: (advanced: boolean) => any, hasAdvanced = false) {
+    const open = this.openSections[id] ?? SECTIONS_OPEN_BY_DEFAULT.includes(id);
+    const advanced = !!this.advancedSections[id];
+    const toggleOpen = () => {
+      this.openSections = {...this.openSections, [id]: !open};
+      localStorage.setItem(SECTIONS_STORAGE_KEY, JSON.stringify(this.openSections));
+    };
+
+    return (
+      <div class={{'insp-col': true, open}}>
+        <div
+          class="insp-colh"
+          role="button"
+          tabIndex={0}
+          aria-expanded={String(open)}
+          onClick={toggleOpen}
+          onKeyDown={(e: KeyboardEvent) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleOpen())}
+        >
+          <span class="insp-caret" />
+          <span class="insp-coln">{title}</span>
+          {open && hasAdvanced && (
+            <button
+              type="button"
+              role="switch"
+              aria-checked={String(advanced)}
+              class="insp-adv"
+              onClick={(e: MouseEvent) => {
+                e.stopPropagation();
+                this.advancedSections = {...this.advancedSections, [id]: !advanced};
+              }}
+            >
+              Advanced
+              <span class={{'insp-toggle': true, 'on': advanced}}>
+                <i />
+              </span>
+            </button>
+          )}
+          {!open && (
+            <span class={{'insp-sum': true, 'changed': changed}}>
+              {summary}
+              {changed && <span class="insp-dot" />}
+            </span>
+          )}
+        </div>
+        {open && <div class="insp-colb">{body(advanced)}</div>}
+      </div>
+    );
+  }
+
   renderInspector(field: ITemplateField) {
     const fieldType = FIELD_TYPES.find(fieldType => fieldType.type === field.type) || FIELD_TYPES.find(fieldType => fieldType.type === 'textbox');
     const options = this.draftOptions(field);
@@ -1351,6 +1409,10 @@ export class VerdocsBuilderFields {
     const editOption = (index: number, changes: Partial<IDropdownOption>) =>
       (this.optionsDraft = {name: field.name, options: options.map((option, i) => (i === index ? {...option, ...changes} : option))});
 
+    const textField = ['textbox', 'textarea'].includes(field.type);
+    const formatLabel = formats.find(format => format.value === (field.validator || ''))?.label || 'Any text';
+    const optionCount = radio ? members.length : options.length;
+
     return (
       <div class="insp-body" key={radio && field.group ? `group-${field.role_name}-${field.group}` : field.name}>
         <div class="insp-head">
@@ -1363,208 +1425,237 @@ export class VerdocsBuilderFields {
         </div>
 
         {KEY_FITS[field.type] && this.renderFillWith(field)}
+        {!radio && (
+          <label class="insp-label">
+            Label
+            <input name="label" class="insp-input" value={field.label || ''} placeholder="Optional" onChange={(e: any) => this.saveRename(field, e.target.value)} onKeyDown={keys(field.label || '')} />
+          </label>
+        )}
+        {recipient}
+        <div class="insp-checks">
+          {toggle('Required', !!field.required, () => this.toggleRequired(field))}
+          {toggle('Read-only', !!field.readonly, () => this.toggleReadonly(field))}
+        </div>
+        {radio && field.required && <div class="insp-hint">The recipient has to choose one option.</div>}
 
-        {radio ? (
-          <Fragment>
-            <div class="insp-section">Group</div>
-            <label class="insp-label">
-              Group name
-              <input
-                name="group"
-                class="insp-input mono"
-                value={field.group || ''}
-                placeholder="choice1"
-                onChange={(e: any) => this.saveGroupName(field, e.target.value)}
-                onKeyDown={keys(field.group || '')}
-              />
-            </label>
-            {this.groupError && <div class="insp-error">{this.groupError}</div>}
-            {recipient}
-            {toggle('Required', !!field.required, () => this.toggleRequired(field))}
-            <div class="insp-hint">The recipient has to choose one option.</div>
-            {toggle('Read-only', !!field.readonly, () => this.toggleReadonly(field))}
-
-            <div class="insp-section">
-              Options <span class="insp-count">{members.length}</span>
-            </div>
-            {members.map((member, index) => (
-              <div class="insp-option" key={member.name}>
-                <button
-                  type="button"
-                  class={{'insp-option-num': true, 'current': member.name === field.name}}
-                  title={`Select option ${index + 1}`}
-                  aria-label={`Select option ${index + 1}`}
-                  aria-pressed={String(member.name === field.name)}
-                  onClick={() => this.selectField(member.name)}
-                >
-                  {index + 1}
-                </button>
-                <input
-                  class="insp-input"
-                  value={member.label || ''}
-                  placeholder={`Option ${index + 1}`}
-                  aria-label={`Option ${index + 1} label`}
-                  onChange={(e: any) => this.saveRename(member, e.target.value)}
-                  onKeyDown={keys(member.label || '')}
-                />
-                <input
-                  class="insp-input mono"
-                  value={member.name}
-                  aria-label={`Option ${index + 1} API name`}
-                  onChange={(e: any) => this.saveFieldName(member, e.target.value)}
-                  onKeyDown={keys(member.name)}
-                />
-                {members.length > 1 && (
-                  <button
-                    type="button"
-                    class="insp-remove"
-                    title="Remove option"
-                    aria-label={`Remove option ${index + 1}`}
-                    innerHTML={TrashIcon}
-                    onClick={() => this.removeOption(field, member)}
+        <div class="insp-sections">
+          {radio &&
+            this.renderSection('group', 'Group', field.group || 'No group name', false, () => (
+              <Fragment>
+                <label class="insp-label">
+                  Group name
+                  <input
+                    name="group"
+                    class="insp-input mono"
+                    value={field.group || ''}
+                    placeholder="choice1"
+                    onChange={(e: any) => this.saveGroupName(field, e.target.value)}
+                    onKeyDown={keys(field.group || '')}
                   />
-                )}
-              </div>
+                </label>
+                {this.groupError && <div class="insp-error">{this.groupError}</div>}
+              </Fragment>
             ))}
-            {this.nameError && <div class="insp-error">{this.nameError}</div>}
-            <button type="button" class="insp-add" onClick={() => this.addOption(field)}>
-              + Add option
-            </button>
-            <label class="insp-label">
-              Pre-selected
-              <select name="preselected" class="insp-input" onChange={(e: any) => this.savePreselected(field, e.target.value)}>
-                <option value="" selected={!members.some(member => member.default === 'true')}>
-                  None
-                </option>
-                {members.map((member, index) => (
-                  <option value={member.name} selected={member.default === 'true'}>
-                    {member.label || `Option ${index + 1}`}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {members.length > 1 && members.every(member => member.page === field.page) && (
-              <div class="insp-row">
-                <span>Arrange on the page</span>
-                <span class="insp-arrange">
-                  <button type="button" title="Align left edges" aria-label="Align left edges" innerHTML={AlignLeftIcon} onClick={() => this.arrangeGroup(field, 'align')} />
-                  <button
-                    type="button"
-                    title="Space evenly"
-                    aria-label="Space evenly"
-                    innerHTML={SpaceEvenlyIcon}
-                    disabled={members.length < 3}
-                    onClick={() => this.arrangeGroup(field, 'space')}
-                  />
-                </span>
-              </div>
+
+          {radio &&
+            this.renderSection(
+              'options',
+              'Options',
+              `${optionCount} ${optionCount === 1 ? 'option' : 'options'}`,
+              false,
+              advanced => (
+                <Fragment>
+                  {members.map((member, index) => (
+                    <div class="insp-option" key={member.name}>
+                      <button
+                        type="button"
+                        class={{'insp-option-num': true, 'current': member.name === field.name}}
+                        title={`Select option ${index + 1}`}
+                        aria-label={`Select option ${index + 1}`}
+                        aria-pressed={String(member.name === field.name)}
+                        onClick={() => this.selectField(member.name)}
+                      >
+                        {index + 1}
+                      </button>
+                      <input
+                        class="insp-input"
+                        value={member.label || ''}
+                        placeholder={`Option ${index + 1}`}
+                        aria-label={`Option ${index + 1} label`}
+                        onChange={(e: any) => this.saveRename(member, e.target.value)}
+                        onKeyDown={keys(member.label || '')}
+                      />
+                      {advanced && (
+                        <input
+                          class="insp-input mono"
+                          value={member.name}
+                          aria-label={`Option ${index + 1} API name`}
+                          onChange={(e: any) => this.saveFieldName(member, e.target.value)}
+                          onKeyDown={keys(member.name)}
+                        />
+                      )}
+                      {members.length > 1 && (
+                        <button
+                          type="button"
+                          class="insp-remove"
+                          title="Remove option"
+                          aria-label={`Remove option ${index + 1}`}
+                          innerHTML={TrashIcon}
+                          onClick={() => this.removeOption(field, member)}
+                        />
+                      )}
+                    </div>
+                  ))}
+                  {this.nameError && <div class="insp-error">{this.nameError}</div>}
+                  <button type="button" class="insp-add" onClick={() => this.addOption(field)}>
+                    + Add option
+                  </button>
+                  <label class="insp-label">
+                    Pre-selected
+                    <select name="preselected" class="insp-input" onChange={(e: any) => this.savePreselected(field, e.target.value)}>
+                      <option value="" selected={!members.some(member => member.default === 'true')}>
+                        None
+                      </option>
+                      {members.map((member, index) => (
+                        <option value={member.name} selected={member.default === 'true'}>
+                          {member.label || `Option ${index + 1}`}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {members.length > 1 && members.every(member => member.page === field.page) && (
+                    <div class="insp-row">
+                      <span>Arrange on the page</span>
+                      <span class="insp-arrange">
+                        <button type="button" title="Align left edges" aria-label="Align left edges" innerHTML={AlignLeftIcon} onClick={() => this.arrangeGroup(field, 'align')} />
+                        <button
+                          type="button"
+                          title="Space evenly"
+                          aria-label="Space evenly"
+                          innerHTML={SpaceEvenlyIcon}
+                          disabled={members.length < 3}
+                          onClick={() => this.arrangeGroup(field, 'space')}
+                        />
+                      </span>
+                    </div>
+                  )}
+                </Fragment>
+              ),
+              true,
             )}
-          </Fragment>
-        ) : (
-          <Fragment>
-            <div class="insp-section">Field</div>
-            <div class="insp-two">
-              <label class="insp-label">
-                Label
-                <input name="label" class="insp-input" value={field.label || ''} placeholder="Optional" onChange={(e: any) => this.saveRename(field, e.target.value)} onKeyDown={keys(field.label || '')} />
-              </label>
-              <label class="insp-label">
-                API name
-                <input name="name" class="insp-input mono" value={field.name} onChange={(e: any) => this.saveFieldName(field, e.target.value)} onKeyDown={keys(field.name)} />
-              </label>
-            </div>
-            {this.nameError && <div class="insp-error">{this.nameError}</div>}
-            {recipient}
-            {toggle('Required', !!field.required, () => this.toggleRequired(field))}
-            {toggle('Read-only', !!field.readonly, () => this.toggleReadonly(field))}
-          </Fragment>
-        )}
 
-        {['textbox', 'textarea'].includes(field.type) && (
-          <Fragment>
-            <div class="insp-section">Text</div>
-            <label class="insp-label">
-              Format
-              <select name="validator" class="insp-input" onChange={(e: any) => this.saveField(field.name, {validator: e.target.value || null})}>
-                {formats.map(format => (
-                  <option value={format.value} selected={format.value === (field.validator || '')}>
-                    {format.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div class="insp-two">
+          {textField &&
+            this.renderSection('format', 'Format', formatLabel, !!field.validator, () => (
               <label class="insp-label">
-                Placeholder
-                <input
-                  name="placeholder"
-                  class="insp-input"
-                  value={field.placeholder || ''}
-                  placeholder="Optional"
-                  onChange={(e: any) => this.saveField(field.name, {placeholder: e.target.value})}
-                  onKeyDown={keys(field.placeholder || '')}
-                />
+                Format
+                <select name="validator" class="insp-input" onChange={(e: any) => this.saveField(field.name, {validator: e.target.value || null})}>
+                  {formats.map(format => (
+                    <option value={format.value} selected={format.value === (field.validator || '')}>
+                      {format.label}
+                    </option>
+                  ))}
+                </select>
               </label>
-              <label class="insp-label">
-                Default value
-                <input
-                  name="default"
-                  class="insp-input"
-                  value={field.default || ''}
-                  placeholder="Optional"
-                  onChange={(e: any) => this.saveField(field.name, {default: e.target.value})}
-                  onKeyDown={keys(field.default || '')}
-                />
-              </label>
-            </div>
-          </Fragment>
-        )}
-
-        {field.type === 'checkbox' && (
-          <Fragment>
-            <div class="insp-section">Checkbox</div>
-            {toggle('Pre-checked', field.default === 'true', () => this.saveField(field.name, {default: field.default === 'true' ? 'false' : 'true'}))}
-          </Fragment>
-        )}
-
-        {field.type === 'dropdown' && (
-          <Fragment>
-            <div class="insp-section">Options</div>
-            {options.map((option, index) => (
-              <div class="insp-option">
-                <input
-                  class="insp-input"
-                  value={option.label || ''}
-                  placeholder="Label"
-                  onInput={(e: any) => editOption(index, {label: e.target.value})}
-                  onChange={() => this.saveOptions(field, this.draftOptions(field))}
-                  onKeyDown={(e: KeyboardEvent) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
-                />
-                <input
-                  class="insp-input mono"
-                  value={option.id || ''}
-                  placeholder="ID"
-                  onInput={(e: any) => editOption(index, {id: e.target.value})}
-                  onChange={() => this.saveOptions(field, this.draftOptions(field))}
-                  onKeyDown={(e: KeyboardEvent) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
-                />
-                {options.length > 1 && (
-                  <button
-                    type="button"
-                    class="insp-remove"
-                    title="Remove option"
-                    aria-label="Remove option"
-                    innerHTML={TrashIcon}
-                    onClick={() => this.saveOptions(field, options.filter((_, i) => i !== index))}
-                  />
-                )}
-              </div>
             ))}
-            <button type="button" class="insp-add" onClick={() => (this.optionsDraft = {name: field.name, options: [...options, {id: '', label: ''}]})}>
-              + Add option
-            </button>
-          </Fragment>
-        )}
+
+          {textField &&
+            this.renderSection(
+              'text',
+              'Text',
+              [field.placeholder && `Placeholder "${field.placeholder}"`, field.default && `Starts as "${field.default}"`].filter(Boolean).join(' · ') || 'No placeholder',
+              !!(field.placeholder || field.default),
+              () => (
+                <div class="insp-two">
+                  <label class="insp-label">
+                    Placeholder
+                    <input
+                      name="placeholder"
+                      class="insp-input"
+                      value={field.placeholder || ''}
+                      placeholder="Optional"
+                      onChange={(e: any) => this.saveField(field.name, {placeholder: e.target.value})}
+                      onKeyDown={keys(field.placeholder || '')}
+                    />
+                  </label>
+                  <label class="insp-label">
+                    Default value
+                    <input
+                      name="default"
+                      class="insp-input"
+                      value={field.default || ''}
+                      placeholder="Optional"
+                      onChange={(e: any) => this.saveField(field.name, {default: e.target.value})}
+                      onKeyDown={keys(field.default || '')}
+                    />
+                  </label>
+                </div>
+              ),
+            )}
+
+          {field.type === 'checkbox' &&
+            this.renderSection('checkbox', 'Checkbox', field.default === 'true' ? 'Starts checked' : 'Starts unchecked', field.default === 'true', () =>
+              toggle('Pre-checked', field.default === 'true', () => this.saveField(field.name, {default: field.default === 'true' ? 'false' : 'true'})),
+            )}
+
+          {field.type === 'dropdown' &&
+            this.renderSection(
+              'options',
+              'Options',
+              `${optionCount} ${optionCount === 1 ? 'option' : 'options'}`,
+              false,
+              advanced => (
+                <Fragment>
+                  {options.map((option, index) => (
+                    <div class="insp-option">
+                      <input
+                        class="insp-input"
+                        value={option.label || ''}
+                        placeholder="Label"
+                        onInput={(e: any) => editOption(index, {label: e.target.value})}
+                        onChange={() => this.saveOptions(field, this.draftOptions(field))}
+                        onKeyDown={(e: KeyboardEvent) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+                      />
+                      {advanced && (
+                        <input
+                          class="insp-input mono"
+                          value={option.id || ''}
+                          placeholder="ID"
+                          onInput={(e: any) => editOption(index, {id: e.target.value})}
+                          onChange={() => this.saveOptions(field, this.draftOptions(field))}
+                          onKeyDown={(e: KeyboardEvent) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+                        />
+                      )}
+                      {options.length > 1 && (
+                        <button
+                          type="button"
+                          class="insp-remove"
+                          title="Remove option"
+                          aria-label="Remove option"
+                          innerHTML={TrashIcon}
+                          onClick={() => this.saveOptions(field, options.filter((_, i) => i !== index))}
+                        />
+                      )}
+                    </div>
+                  ))}
+                  <button type="button" class="insp-add" onClick={() => (this.optionsDraft = {name: field.name, options: [...options, {id: '', label: ''}]})}>
+                    + Add option
+                  </button>
+                </Fragment>
+              ),
+              true,
+            )}
+
+          {!radio &&
+            this.renderSection('developer', 'Developer', field.name, false, () => (
+              <Fragment>
+                <label class="insp-label">
+                  API name
+                  <input name="name" class="insp-input mono" value={field.name} onChange={(e: any) => this.saveFieldName(field, e.target.value)} onKeyDown={keys(field.name)} />
+                </label>
+                {this.nameError && <div class="insp-error">{this.nameError}</div>}
+              </Fragment>
+            ))}
+        </div>
 
         <button type="button" class="insp-delete" onClick={() => this.deleteFields(members)}>
           <span innerHTML={TrashIcon} />

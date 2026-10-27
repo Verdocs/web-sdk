@@ -213,14 +213,15 @@ describe('verdocs-builder-fields', () => {
       const select = page.root.querySelector('select[name="validator"]') as any;
       const formatValues = () =>
         [...page.root.querySelectorAll('select[name="validator"] option')].map((option: any) => option.getAttribute('value') ?? option.value);
-      expect(formatValues()).toEqual(['', 'email', 'phone']);
+      const known = ['', 'email', 'phone', 'url', 'postal_code', 'number', 'date', 'ssn'];
+      expect(formatValues()).toEqual(known);
       select.value = 'email';
       select.dispatchEvent(new (page.win as any).Event('change'));
       expect(saveField).toHaveBeenCalledWith('name', {validator: 'email'});
 
-      builder.template = {...builder.template, fields: [{...builder.findField('name'), validator: 'number'}]} as any;
+      builder.template = {...builder.template, fields: [{...builder.findField('name'), validator: 'custom_thing'}]} as any;
       await page.waitForChanges();
-      expect(formatValues()).toEqual(['', 'email', 'phone', 'number']);
+      expect(formatValues()).toEqual([...known, 'custom_thing']);
     });
 
     it('saves options without blank rows, filling a missing ID from the label', async () => {

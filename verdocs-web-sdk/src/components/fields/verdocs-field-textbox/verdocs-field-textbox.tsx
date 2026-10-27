@@ -1,7 +1,8 @@
 import interact from 'interactjs';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
-import {IEnvelopeField, ITemplate, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State, Listen, Watch} from '@stencil/core';
+import {getValidators, IEnvelopeField, isValidInput, ITemplate, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {FORMAT_MESSAGES} from '../../../utils/FieldFormats';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -96,6 +97,7 @@ export class VerdocsFieldTextbox {
 
   @State() showingProperties?: boolean = false;
   @State() focused = false;
+  @State() invalid = false;
 
   @Listen('blur', {capture: true})
   handleBlur() {
@@ -224,6 +226,18 @@ export class VerdocsFieldTextbox {
       .catch(e => console.log('Field update failed', e));
   }
 
+  // Signers see a format problem when they leave the field, and it clears as soon as the value is fixed.
+  checkFormat(force: boolean) {
+    const {field} = Store.getField(this.source, this.sourceid, this.fieldname, this.field);
+    const validator = field?.validator;
+    if (this.editable || this.source !== 'envelope' || !validator || !getValidators().includes(validator) || (!force && !this.invalid)) {
+      return;
+    }
+
+    const value = (this.inputEl?.value || '').trim();
+    this.invalid = !!value && !isValidInput(value, validator);
+  }
+
   render() {
     const {source, sourceid, fieldname, editable = false, done = false, disabled = false, focused, xscale = 1, yscale = 1} = this;
     const {index, field} = Store.getField(source, sourceid, fieldname, this.field);
@@ -244,7 +258,7 @@ export class VerdocsFieldTextbox {
     }
 
     return (
-      <Host class={{'verdocs-field': true,required, disabled, done, focused, small, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true,required, disabled, done, focused, small, invalid: this.invalid, [signerClass]: true}}>
         {editable && <div class="edge-top" />}
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}
@@ -260,7 +274,11 @@ export class VerdocsFieldTextbox {
             disabled={readonly || disabled}
             ref={el => (this.inputEl = el)}
             onFocus={() => (this.focused = true)}
-            onBlur={() => (this.focused = false)}
+            onInput={() => this.checkFormat(false)}
+            onBlur={() => {
+              this.focused = false;
+              this.checkFormat(true);
+            }}
           >
             {value}
           </textarea>
@@ -275,9 +293,15 @@ export class VerdocsFieldTextbox {
             disabled={readonly || disabled}
             ref={el => (this.inputEl = el)}
             onFocus={() => (this.focused = true)}
-            onBlur={() => (this.focused = false)}
+            onInput={() => this.checkFormat(false)}
+            onBlur={() => {
+              this.focused = false;
+              this.checkFormat(true);
+            }}
           />
         )}
+
+        {this.invalid && field?.validator && <div class="format-error">{FORMAT_MESSAGES[field.validator]}</div>}
 
         {editable && (
           <Fragment>
