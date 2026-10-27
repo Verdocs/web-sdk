@@ -213,7 +213,7 @@ describe('verdocs-builder-fields', () => {
       const select = page.root.querySelector('select[name="validator"]') as any;
       const formatValues = () =>
         [...page.root.querySelectorAll('select[name="validator"] option')].map((option: any) => option.getAttribute('value') ?? option.value);
-      const known = ['', 'email', 'phone', 'url', 'postal_code', 'number', 'date', 'ssn'];
+      const known = ['', 'email', 'phone', 'url', 'postal_code', 'number', 'date', 'ssn', 'pattern'];
       expect(formatValues()).toEqual(known);
       select.value = 'email';
       select.dispatchEvent(new (page.win as any).Event('change'));
@@ -222,6 +222,54 @@ describe('verdocs-builder-fields', () => {
       builder.template = {...builder.template, fields: [{...builder.findField('name'), validator: 'custom_thing'}]} as any;
       await page.waitForChanges();
       expect(formatValues()).toEqual([...known, 'custom_thing']);
+    });
+
+    it('saves a pattern only once it compiles, and clears it when another format is picked', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      await page.waitForChanges();
+
+      const change = (selector: string, value: string) => {
+        const el = page.root.querySelector(selector) as any;
+        el.value = value;
+        el.dispatchEvent(new (page.win as any).Event('change'));
+      };
+
+      change('select[name="validator"]', 'pattern');
+      await page.waitForChanges();
+      change('input[name="validation_pattern"]', '(unclosed');
+      await page.waitForChanges();
+      expect(saveField).not.toHaveBeenCalled();
+      expect(page.root.querySelector('.insp-error')).toBeTruthy();
+
+      change('input[name="validation_pattern"]', 'HO-\\d{4}');
+      expect(saveField).toHaveBeenCalledWith('name', {validation_pattern: 'HO-\\d{4}'});
+
+      builder.template = {...builder.template, fields: [{...builder.findField('name'), validation_pattern: 'HO-\\d{4}'}]} as any;
+      await page.waitForChanges();
+      change('select[name="validator"]', 'email');
+      expect(saveField).toHaveBeenLastCalledWith('name', {validator: 'email', validation_pattern: null, validation_message: null});
+    });
+
+    it('saves a character limit and letter case', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      await page.waitForChanges();
+
+      const limit = page.root.querySelector('input[name="max_length"]') as any;
+      limit.value = '12';
+      limit.dispatchEvent(new (page.win as any).Event('change'));
+      expect(saveField).toHaveBeenCalledWith('name', {max_length: 12});
+      limit.value = '';
+      limit.dispatchEvent(new (page.win as any).Event('change'));
+      expect(saveField).toHaveBeenLastCalledWith('name', {max_length: null});
+
+      const textCase = page.root.querySelector('select[name="text_case"]') as any;
+      textCase.value = 'upper';
+      textCase.dispatchEvent(new (page.win as any).Event('change'));
+      expect(saveField).toHaveBeenLastCalledWith('name', {text_case: 'upper'});
     });
 
     it('saves options without blank rows, filling a missing ID from the label', async () => {

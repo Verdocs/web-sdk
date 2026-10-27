@@ -43,6 +43,12 @@ const readOpenSections = (): Record<string, boolean> => {
   }
 };
 
+const TEXT_CASES = [
+  ['', 'As typed'],
+  ['upper', 'UPPERCASE'],
+  ['lower', 'lowercase'],
+];
+
 const DATA_KEY_PATTERN = /^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)*$/;
 
 const humanizeKey = (key: string) => {
@@ -142,6 +148,8 @@ export class VerdocsBuilderFields {
   // Bumped to remount the settings form, which resets any edits that weren't saved.
   @State() nameError = '';
   @State() groupError = '';
+  @State() formatError = '';
+  @State() patternField = '';
   @State() optionsDraft: {name: string; options: IDropdownOption[]} | null = null;
   @State() catalog: IDataCatalog | null = null;
   @State() fillMenuOpen = false;
@@ -470,6 +478,8 @@ export class VerdocsBuilderFields {
       this.renaming = false;
       this.nameError = '';
       this.groupError = '';
+      this.formatError = '';
+      this.patternField = '';
       this.optionsDraft = null;
     }
 
@@ -1368,7 +1378,10 @@ export class VerdocsBuilderFields {
     const options = this.draftOptions(field);
     const radio = field.type === 'radio';
     const members = this.groupMembers(field);
-    const formats = !field.validator || TEXT_FORMATS.some(format => format.value === field.validator) ? TEXT_FORMATS : [...TEXT_FORMATS, {value: field.validator, label: field.validator}];
+    // A validator the builder doesn't offer stays listed so it isn't lost
+    const unknownFormat = field.validator && !TEXT_FORMATS.some(format => format.value === field.validator) ? [{value: field.validator, label: field.validator}] : [];
+    const formats = [...TEXT_FORMATS, {value: 'pattern', label: 'Pattern'}, ...unknownFormat];
+    const formatValue = !field.validator && (field.validation_pattern || this.patternField === field.name) ? 'pattern' : field.validator || '';
 
     // Text inputs save when they lose focus. Enter saves, and Escape puts the saved value back.
     const keys = (saved: string) => (e: KeyboardEvent) => {
@@ -1410,7 +1423,7 @@ export class VerdocsBuilderFields {
       (this.optionsDraft = {name: field.name, options: options.map((option, i) => (i === index ? {...option, ...changes} : option))});
 
     const textField = ['textbox', 'textarea'].includes(field.type);
-    const formatLabel = formats.find(format => format.value === (field.validator || ''))?.label || 'Any text';
+    const formatLabel = formats.find(format => format.value === formatValue)?.label || 'Any text';
     const optionCount = radio ? members.length : options.length;
 
     return (
@@ -1545,50 +1558,178 @@ export class VerdocsBuilderFields {
             )}
 
           {textField &&
-            this.renderSection('format', 'Format', formatLabel, !!field.validator, () => (
-              <label class="insp-label">
-                Format
-                <select name="validator" class="insp-input" onChange={(e: any) => this.saveField(field.name, {validator: e.target.value || null})}>
-                  {formats.map(format => (
-                    <option value={format.value} selected={format.value === (field.validator || '')}>
-                      {format.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ))}
+            this.renderSection(
+              'format',
+              'Format',
+              [formatLabel, field.input_mask && 'Masked'].filter(Boolean).join(' · '),
+              !!(field.validator || field.validation_pattern || field.input_mask),
+              advanced => (
+                <Fragment>
+                  <label class="insp-label">
+                    Format
+                    <select
+                      name="validator"
+                      class="insp-input"
+                      onChange={(e: any) => {
+                        const value = e.target.value;
+                        this.formatError = '';
+                        this.patternField = value === 'pattern' ? field.name : '';
+                        if (value !== 'pattern') {
+                          const clearPattern = field.validation_pattern || field.validation_message ? {validation_pattern: null, validation_message: null} : {};
+                          this.saveField(field.name, {validator: value || null, ...clearPattern});
+                        } else if (field.validator) {
+                          this.saveField(field.name, {validator: null});
+                        }
+                      }}
+                    >
+                      {formats.map(format => (
+                        <option value={format.value} selected={format.value === formatValue}>
+                          {format.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {formatValue === 'pattern' && (
+                    <Fragment>
+                      <label class="insp-label">
+                        Pattern
+                        <input
+                          name="validation_pattern"
+                          class="insp-input mono"
+                          value={field.validation_pattern || ''}
+                          placeholder="HO-\d{4}-\d{6}"
+                          onChange={(e: any) => {
+                            const pattern = e.target.value.trim();
+                            // Minifiers drop a bare `new RegExp()` whose result goes unused, so we run it
+                            try {
+                              new RegExp(pattern).test('');
+                            } catch {
+                              this.formatError = "This pattern isn't a valid regular expression.";
+                              return;
+                            }
+
+                            this.formatError = '';
+                            this.saveField(field.name, {validation_pattern: pattern || null});
+                          }}
+                          onKeyDown={keys(field.validation_pattern || '')}
+                        />
+                      </label>
+                      <label class="insp-label">
+                        Message when it doesn't match
+                        <input
+                          name="validation_message"
+                          class="insp-input"
+                          value={field.validation_message || ''}
+                          placeholder="Optional"
+                          onChange={(e: any) => this.saveField(field.name, {validation_message: e.target.value.trim() || null})}
+                          onKeyDown={keys(field.validation_message || '')}
+                        />
+                      </label>
+                    </Fragment>
+                  )}
+
+                  {(advanced || field.input_mask) && (
+                    <label class="insp-label">
+                      Input mask
+                      <input
+                        name="input_mask"
+                        class="insp-input mono"
+                        value={field.input_mask || ''}
+                        placeholder="(___) ___-____"
+                        onChange={(e: any) => {
+                          const mask = e.target.value;
+                          if (mask && !mask.includes('_')) {
+                            this.formatError = 'Use _ for each character the signer types.';
+                            return;
+                          }
+
+                          this.formatError = '';
+                          this.saveField(field.name, {input_mask: mask || null});
+                        }}
+                        onKeyDown={keys(field.input_mask || '')}
+                      />
+                    </label>
+                  )}
+
+                  {this.formatError && <div class="insp-error">{this.formatError}</div>}
+                </Fragment>
+              ),
+              true,
+            )}
 
           {textField &&
             this.renderSection(
               'text',
               'Text',
-              [field.placeholder && `Placeholder "${field.placeholder}"`, field.default && `Starts as "${field.default}"`].filter(Boolean).join(' · ') || 'No placeholder',
-              !!(field.placeholder || field.default),
+              [
+                field.max_length && `Up to ${field.max_length} characters`,
+                field.text_case && TEXT_CASES.find(([value]) => value === field.text_case)?.[1],
+                field.placeholder && `Placeholder "${field.placeholder}"`,
+                field.default && `Starts as "${field.default}"`,
+              ]
+                .filter(Boolean)
+                .join(' · ') || 'No placeholder',
+              !!(field.max_length || field.text_case || field.placeholder || field.default),
               () => (
-                <div class="insp-two">
-                  <label class="insp-label">
-                    Placeholder
-                    <input
-                      name="placeholder"
-                      class="insp-input"
-                      value={field.placeholder || ''}
-                      placeholder="Optional"
-                      onChange={(e: any) => this.saveField(field.name, {placeholder: e.target.value})}
-                      onKeyDown={keys(field.placeholder || '')}
-                    />
-                  </label>
-                  <label class="insp-label">
-                    Default value
-                    <input
-                      name="default"
-                      class="insp-input"
-                      value={field.default || ''}
-                      placeholder="Optional"
-                      onChange={(e: any) => this.saveField(field.name, {default: e.target.value})}
-                      onKeyDown={keys(field.default || '')}
-                    />
-                  </label>
-                </div>
+                <Fragment>
+                  <div class="insp-two">
+                    <label class="insp-label">
+                      Max characters
+                      <input
+                        name="max_length"
+                        type="number"
+                        min="1"
+                        class="insp-input"
+                        value={field.max_length ?? ''}
+                        placeholder={`Fits the box (${Math.floor((field.width || 150) / 5)})`}
+                        onChange={(e: any) => {
+                          const max = parseInt(e.target.value, 10);
+                          this.saveField(field.name, {max_length: max > 0 ? max : null});
+                        }}
+                        onKeyDown={keys(String(field.max_length ?? ''))}
+                      />
+                    </label>
+                    <label class="insp-label">
+                      Letter case
+                      <select
+                        name="text_case"
+                        class="insp-input"
+                        onChange={(e: any) => this.saveField(field.name, {text_case: (e.target.value || null) as ITemplateField['text_case']})}
+                      >
+                        {TEXT_CASES.map(([value, label]) => (
+                          <option value={value} selected={(field.text_case || '') === value}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+                  <div class="insp-two">
+                    <label class="insp-label">
+                      Placeholder
+                      <input
+                        name="placeholder"
+                        class="insp-input"
+                        value={field.placeholder || ''}
+                        placeholder="Optional"
+                        onChange={(e: any) => this.saveField(field.name, {placeholder: e.target.value})}
+                        onKeyDown={keys(field.placeholder || '')}
+                      />
+                    </label>
+                    <label class="insp-label">
+                      Default value
+                      <input
+                        name="default"
+                        class="insp-input"
+                        value={field.default || ''}
+                        placeholder="Optional"
+                        onChange={(e: any) => this.saveField(field.name, {default: e.target.value})}
+                        onKeyDown={keys(field.default || '')}
+                      />
+                    </label>
+                  </div>
+                </Fragment>
               ),
             )}
 
