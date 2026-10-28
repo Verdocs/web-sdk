@@ -1,6 +1,7 @@
 import interact from 'interactjs';
+import type {TDataCatalogEntryType} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
-import {getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, saveDataCatalogEntries, TDataCatalogEntryType} from '@verdocs/js-sdk';
+import {formatFieldNumber, getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, ITextFieldConfig, saveDataCatalogEntries} from '@verdocs/js-sdk';
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {AlignLeftIcon, CloseIcon, DataIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, SpaceEvenlyIcon, TrashIcon} from '../../../utils/Icons';
@@ -48,6 +49,24 @@ const TEXT_CASES = [
   ['upper', 'UPPERCASE'],
   ['lower', 'lowercase'],
 ];
+
+const NUMBER_STYLES = [
+  ['', 'As typed'],
+  ['number', 'Number'],
+  ['currency', 'Currency'],
+  ['percent', 'Percent'],
+];
+
+const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'NZD', 'JPY', 'CHF', 'MXN', 'BRL', 'INR', 'CNY', 'SEK', 'NOK', 'DKK', 'ZAR', 'SGD', 'HKD'];
+
+// A config without its empty settings, or null when only its type is left
+const tidyConfig = (config: Record<string, any>) => {
+  const kept: Record<string, any> = {};
+  Object.keys(config)
+    .filter(key => config[key] !== undefined && config[key] !== null && config[key] !== '')
+    .forEach(key => (kept[key] = config[key]));
+  return Object.keys(kept).length > 1 ? (kept as ITextFieldConfig) : null;
+};
 
 const DATA_KEY_PATTERN = /^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)*$/;
 
@@ -1381,7 +1400,9 @@ export class VerdocsBuilderFields {
     // A validator the builder doesn't offer stays listed so it isn't lost
     const unknownFormat = field.validator && !TEXT_FORMATS.some(format => format.value === field.validator) ? [{value: field.validator, label: field.validator}] : [];
     const formats = [...TEXT_FORMATS, {value: 'pattern', label: 'Pattern'}, ...unknownFormat];
-    const formatValue = !field.validator && (field.validation_pattern || this.patternField === field.name) ? 'pattern' : field.validator || '';
+    const config = (field.config?.type === 'textbox' || field.config?.type === 'textarea' ? field.config : {type: field.type}) as ITextFieldConfig;
+    const saveConfig = (changes: Partial<ITextFieldConfig>) => this.saveField(field.name, {config: tidyConfig({...config, ...changes})});
+    const formatValue = !field.validator && (config.validation?.pattern || this.patternField === field.name) ? 'pattern' : field.validator || '';
 
     // Text inputs save when they lose focus. Enter saves, and Escape puts the saved value back.
     const keys = (saved: string) => (e: KeyboardEvent) => {
@@ -1561,8 +1582,14 @@ export class VerdocsBuilderFields {
             this.renderSection(
               'format',
               'Format',
-              [formatLabel, field.input_mask && 'Masked'].filter(Boolean).join(' · '),
-              !!(field.validator || field.validation_pattern || field.input_mask),
+              [
+                formatLabel,
+                config.number?.style === 'currency' ? config.number.currency || 'USD' : NUMBER_STYLES.find(([style]) => style && style === config.number?.style)?.[1],
+                config.input_mask && 'Masked',
+              ]
+                .filter(Boolean)
+                .join(' · '),
+              !!(field.validator || config.validation || config.input_mask || config.number),
               advanced => (
                 <Fragment>
                   <label class="insp-label">
@@ -1574,11 +1601,17 @@ export class VerdocsBuilderFields {
                         const value = e.target.value;
                         this.formatError = '';
                         this.patternField = value === 'pattern' ? field.name : '';
+                        // Leaving Pattern or Number drops their settings
+                        const next = tidyConfig({
+                          ...config,
+                          validation: value === 'pattern' ? config.validation : undefined,
+                          number: value === 'number' ? config.number : undefined,
+                        });
+                        const configChange = JSON.stringify(next) !== JSON.stringify(tidyConfig(config)) ? {config: next} : {};
                         if (value !== 'pattern') {
-                          const clearPattern = field.validation_pattern || field.validation_message ? {validation_pattern: null, validation_message: null} : {};
-                          this.saveField(field.name, {validator: value || null, ...clearPattern});
-                        } else if (field.validator) {
-                          this.saveField(field.name, {validator: null});
+                          this.saveField(field.name, {validator: value || null, ...configChange});
+                        } else if (field.validator || configChange.config !== undefined) {
+                          this.saveField(field.name, {validator: null, ...configChange});
                         }
                       }}
                     >
@@ -1597,7 +1630,7 @@ export class VerdocsBuilderFields {
                         <input
                           name="validation_pattern"
                           class="insp-input mono"
-                          value={field.validation_pattern || ''}
+                          value={config.validation?.pattern || ''}
                           placeholder="HO-\d{4}-\d{6}"
                           onChange={(e: any) => {
                             const pattern = e.target.value.trim();
@@ -1610,9 +1643,9 @@ export class VerdocsBuilderFields {
                             }
 
                             this.formatError = '';
-                            this.saveField(field.name, {validation_pattern: pattern || null});
+                            saveConfig({validation: pattern ? {...config.validation, pattern} : undefined});
                           }}
-                          onKeyDown={keys(field.validation_pattern || '')}
+                          onKeyDown={keys(config.validation?.pattern || '')}
                         />
                       </label>
                       <label class="insp-label">
@@ -1620,22 +1653,128 @@ export class VerdocsBuilderFields {
                         <input
                           name="validation_message"
                           class="insp-input"
-                          value={field.validation_message || ''}
+                          value={config.validation?.message || ''}
                           placeholder="Optional"
-                          onChange={(e: any) => this.saveField(field.name, {validation_message: e.target.value.trim() || null})}
-                          onKeyDown={keys(field.validation_message || '')}
+                          onChange={(e: any) => config.validation && saveConfig({validation: {pattern: config.validation.pattern, message: e.target.value.trim() || undefined}})}
+                          onKeyDown={keys(config.validation?.message || '')}
                         />
                       </label>
                     </Fragment>
                   )}
 
-                  {(advanced || field.input_mask) && (
+                  {formatValue === 'number' && (
+                    <Fragment>
+                      <div class="insp-two">
+                        <label class="insp-label">
+                          Show as
+                          <select
+                            name="number_style"
+                            class="insp-input"
+                            onChange={(e: any) => {
+                              const style = e.target.value || null;
+                              saveConfig({number: style ? {...config.number, style, ...(style === 'currency' && !config.number?.currency ? {currency: 'USD'} : {})} : undefined});
+                            }}
+                          >
+                            {NUMBER_STYLES.map(([value, label]) => (
+                              <option value={value} selected={(config.number?.style || '') === value}>
+                                {label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        {config.number && (
+                          <label class="insp-label">
+                            Decimals
+                            <select
+                              name="number_decimals"
+                              class="insp-input"
+                              onChange={(e: any) => saveConfig({number: {...config.number, decimals: e.target.value === '' ? undefined : Number(e.target.value)}})}
+                            >
+                              {['', '0', '1', '2', '3', '4', '5', '6'].map(value => (
+                                <option value={value} selected={String(config.number?.decimals ?? '') === value}>
+                                  {value || 'Auto'}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                        )}
+                      </div>
+
+                      {config.number?.style === 'currency' && (
+                        <label class="insp-label">
+                          Currency
+                          <select name="currency" class="insp-input" onChange={(e: any) => saveConfig({number: {...config.number, currency: e.target.value}})}>
+                            {[...new Set([...CURRENCIES, config.number.currency || 'USD'])].map(code => (
+                              <option value={code} selected={(config.number.currency || 'USD') === code}>
+                                {code}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+
+                      {config.number && <div class="insp-hint">Signers see {formatFieldNumber(config.number, '12450')}</div>}
+
+                      {config.number && advanced && (
+                        <Fragment>
+                          <label class="insp-label">
+                            Locale
+                            <input
+                              name="locale"
+                              class="insp-input mono"
+                              value={config.number.locale || ''}
+                              placeholder="en-US"
+                              onChange={(e: any) => {
+                                const locale = e.target.value.trim();
+                                let known = !locale;
+                                try {
+                                  known = known || Intl.NumberFormat.supportedLocalesOf([locale]).length > 0;
+                                } catch {
+                                  known = false;
+                                }
+
+                                if (!known) {
+                                  this.formatError = 'Use a locale like en-US or de-DE.';
+                                  return;
+                                }
+
+                                this.formatError = '';
+                                saveConfig({number: {...config.number, locale: locale || undefined}});
+                              }}
+                              onKeyDown={keys(config.number.locale || '')}
+                            />
+                          </label>
+                          <div class="insp-two">
+                            {(['min', 'max'] as const).map(key => (
+                              <label class="insp-label">
+                                {key === 'min' ? 'Minimum' : 'Maximum'}
+                                <input
+                                  name={`number_${key}`}
+                                  type="number"
+                                  class="insp-input"
+                                  value={config.number[key] ?? ''}
+                                  placeholder="None"
+                                  onChange={(e: any) => {
+                                    const limit = parseFloat(e.target.value);
+                                    saveConfig({number: {...config.number, [key]: Number.isNaN(limit) ? undefined : limit}});
+                                  }}
+                                  onKeyDown={keys(String(config.number[key] ?? ''))}
+                                />
+                              </label>
+                            ))}
+                          </div>
+                        </Fragment>
+                      )}
+                    </Fragment>
+                  )}
+
+                  {(advanced || config.input_mask) && (
                     <label class="insp-label">
                       Input mask
                       <input
                         name="input_mask"
                         class="insp-input mono"
-                        value={field.input_mask || ''}
+                        value={config.input_mask || ''}
                         placeholder="(___) ___-____"
                         onChange={(e: any) => {
                           const mask = e.target.value;
@@ -1645,9 +1784,9 @@ export class VerdocsBuilderFields {
                           }
 
                           this.formatError = '';
-                          this.saveField(field.name, {input_mask: mask || null});
+                          saveConfig({input_mask: mask || undefined});
                         }}
-                        onKeyDown={keys(field.input_mask || '')}
+                        onKeyDown={keys(config.input_mask || '')}
                       />
                     </label>
                   )}
@@ -1663,14 +1802,14 @@ export class VerdocsBuilderFields {
               'text',
               'Text',
               [
-                field.max_length && `Up to ${field.max_length} characters`,
-                field.text_case && TEXT_CASES.find(([value]) => value === field.text_case)?.[1],
+                config.max_length && `Up to ${config.max_length} characters`,
+                config.text_case && TEXT_CASES.find(([value]) => value === config.text_case)?.[1],
                 field.placeholder && `Placeholder "${field.placeholder}"`,
                 field.default && `Starts as "${field.default}"`,
               ]
                 .filter(Boolean)
                 .join(' · ') || 'No placeholder',
-              !!(field.max_length || field.text_case || field.placeholder || field.default),
+              !!(config.max_length || config.text_case || field.placeholder || field.default),
               () => (
                 <Fragment>
                   <div class="insp-two">
@@ -1681,24 +1820,20 @@ export class VerdocsBuilderFields {
                         type="number"
                         min="1"
                         class="insp-input"
-                        value={field.max_length ?? ''}
+                        value={config.max_length ?? ''}
                         placeholder={`Fits the box (${Math.floor((field.width || 150) / 5)})`}
                         onChange={(e: any) => {
                           const max = parseInt(e.target.value, 10);
-                          this.saveField(field.name, {max_length: max > 0 ? max : null});
+                          saveConfig({max_length: max > 0 ? max : undefined});
                         }}
-                        onKeyDown={keys(String(field.max_length ?? ''))}
+                        onKeyDown={keys(String(config.max_length ?? ''))}
                       />
                     </label>
                     <label class="insp-label">
                       Letter case
-                      <select
-                        name="text_case"
-                        class="insp-input"
-                        onChange={(e: any) => this.saveField(field.name, {text_case: (e.target.value || null) as ITemplateField['text_case']})}
-                      >
+                      <select name="text_case" class="insp-input" onChange={(e: any) => saveConfig({text_case: e.target.value || undefined})}>
                         {TEXT_CASES.map(([value, label]) => (
-                          <option value={value} selected={(field.text_case || '') === value}>
+                          <option value={value} selected={(config.text_case || '') === value}>
                             {label}
                           </option>
                         ))}

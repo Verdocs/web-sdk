@@ -3,7 +3,7 @@ import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, 
 import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest, getEnvelope} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
-import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid, getCombinedEnvelopeDocumentDownloadLink} from '@verdocs/js-sdk';
+import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid, getCombinedEnvelopeDocumentDownloadLink, parseFieldNumber} from '@verdocs/js-sdk';
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
 import {IDocumentPageInfo, IDownloadEvent, DownloadAction} from '../../../utils/Types';
@@ -658,8 +658,12 @@ export class VerdocsSign {
     switch (field.type as any) {
       // TODO: Remove legacy type when no longer needed
       case 'textarea':
-      case 'textbox':
-        return this.saveFieldChange(field.name, value, false);
+      case 'textbox': {
+        // Number fields store the plain number, whatever the signer's locale made it look like
+        const format = field.config?.type === 'textbox' || field.config?.type === 'textarea' ? field.config.number : undefined;
+        const number = format ? parseFieldNumber(format, value) : null;
+        return this.saveFieldChange(field.name, number === null ? value : String(number), false);
+      }
 
       case 'checkbox': {
         return this.saveFieldChange(field.name, String(e.target.checked), false);

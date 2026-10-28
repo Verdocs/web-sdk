@@ -244,12 +244,37 @@ describe('verdocs-builder-fields', () => {
       expect(page.root.querySelector('.insp-error')).toBeTruthy();
 
       change('input[name="validation_pattern"]', 'HO-\\d{4}');
-      expect(saveField).toHaveBeenCalledWith('name', {validation_pattern: 'HO-\\d{4}'});
+      expect(saveField).toHaveBeenCalledWith('name', {config: {type: 'textbox', validation: {pattern: 'HO-\\d{4}'}}});
 
-      builder.template = {...builder.template, fields: [{...builder.findField('name'), validation_pattern: 'HO-\\d{4}'}]} as any;
+      builder.template = {...builder.template, fields: [{...builder.findField('name'), config: {type: 'textbox', validation: {pattern: 'HO-\\d{4}'}}}]} as any;
       await page.waitForChanges();
       change('select[name="validator"]', 'email');
-      expect(saveField).toHaveBeenLastCalledWith('name', {validator: 'email', validation_pattern: null, validation_message: null});
+      expect(saveField).toHaveBeenLastCalledWith('name', {validator: 'email', config: null});
+    });
+
+    it('saves a number style, and clears it when another format is picked', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.template = {...builder.template, fields: [{...builder.findField('name'), validator: 'number'}]} as any;
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      await page.waitForChanges();
+
+      const change = (selector: string, value: string) => {
+        const el = page.root.querySelector(selector) as any;
+        el.value = value;
+        el.dispatchEvent(new (page.win as any).Event('change'));
+      };
+
+      change('select[name="number_style"]', 'currency');
+      expect(saveField).toHaveBeenLastCalledWith('name', {config: {type: 'textbox', number: {style: 'currency', currency: 'USD'}}});
+
+      builder.template = {
+        ...builder.template,
+        fields: [{...builder.findField('name'), validator: 'number', config: {type: 'textbox', number: {style: 'currency', currency: 'USD'}}}],
+      } as any;
+      await page.waitForChanges();
+      change('select[name="validator"]', 'email');
+      expect(saveField).toHaveBeenLastCalledWith('name', {validator: 'email', config: null});
     });
 
     it('saves a character limit and letter case', async () => {
@@ -261,15 +286,15 @@ describe('verdocs-builder-fields', () => {
       const limit = page.root.querySelector('input[name="max_length"]') as any;
       limit.value = '12';
       limit.dispatchEvent(new (page.win as any).Event('change'));
-      expect(saveField).toHaveBeenCalledWith('name', {max_length: 12});
+      expect(saveField).toHaveBeenCalledWith('name', {config: {type: 'textbox', max_length: 12}});
       limit.value = '';
       limit.dispatchEvent(new (page.win as any).Event('change'));
-      expect(saveField).toHaveBeenLastCalledWith('name', {max_length: null});
+      expect(saveField).toHaveBeenLastCalledWith('name', {config: null});
 
       const textCase = page.root.querySelector('select[name="text_case"]') as any;
       textCase.value = 'upper';
       textCase.dispatchEvent(new (page.win as any).Event('change'));
-      expect(saveField).toHaveBeenLastCalledWith('name', {text_case: 'upper'});
+      expect(saveField).toHaveBeenLastCalledWith('name', {config: {type: 'textbox', text_case: 'upper'}});
     });
 
     it('saves options without blank rows, filling a missing ID from the label', async () => {
