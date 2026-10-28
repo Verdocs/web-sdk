@@ -229,7 +229,7 @@ export namespace Components {
           * The display variant of the button.
           * @default 'standard'
          */
-        "variant": 'standard' | 'text' | 'outline';
+        "variant": 'standard' | 'secondary' | 'text' | 'outline';
     }
     /**
      * Display an icon button that triggers a drop-down panel that can display
@@ -5190,7 +5190,7 @@ declare namespace LocalJSX {
           * The display variant of the button.
           * @default 'standard'
          */
-        "variant"?: 'standard' | 'text' | 'outline';
+        "variant"?: 'standard' | 'secondary' | 'text' | 'outline';
     }
     /**
      * Display an icon button that triggers a drop-down panel that can display
@@ -8279,7 +8279,7 @@ declare namespace LocalJSX {
         "endIcon": string | null;
         "size": 'xsmall' | 'small' | 'normal' | 'medium' | 'large';
         "type": 'button' | 'submit' | 'reset';
-        "variant": 'standard' | 'text' | 'outline';
+        "variant": 'standard' | 'secondary' | 'text' | 'outline';
         "disabled": boolean;
     }
     interface VerdocsButtonPanelAttributes {

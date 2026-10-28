@@ -1,4 +1,6 @@
 @import '../../../theme.scss';
+// For the recipient colors the builder uses
+@import '../../../recipient-fields.scss';
 
 verdocs-send {
   --send-ink: var(--verdocs-body-color, #111827);
@@ -126,21 +128,63 @@ verdocs-send {
     flex-direction: column;
   }
 
-  .section-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--send-ink-2);
-    margin: 0 0 6px 0;
+  // Section headings are full-width bands, like the builder's Inspector
+  .band {
+    margin: 14px -16px 0;
+    padding: 9px 16px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--send-muted);
+    text-transform: uppercase;
+    background: var(--send-band, #f6f7fa);
+    border-top: 1px solid var(--send-rule);
+    border-bottom: 1px solid var(--send-rule);
+
+    &:first-child {
+      border-top: 0;
+      margin-top: -16px;
+    }
   }
 
-  .delivery-title {
-    margin-top: 16px;
+  .progress {
+    display: block;
+    padding: 12px 0 2px;
+
+    .count {
+      font-size: 12px;
+      color: var(--send-muted);
+
+      b {
+        font-weight: 700;
+        color: var(--send-ink);
+      }
+    }
+
+    .bar {
+      height: 5px;
+      display: block;
+      overflow: hidden;
+      margin-top: 7px;
+      border-radius: 3px;
+      background: #eceef4;
+
+      span {
+        height: 100%;
+        display: block;
+        transition: width 200ms ease-out;
+        background: var(--verdocs-recipient-1, #2b995b);
+      }
+    }
   }
 
   .step {
-    font-size: 11px;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 12px 0 2px;
+    letter-spacing: 0.08em;
     color: var(--send-muted);
-    padding: 10px 0 4px 0;
+    text-transform: uppercase;
   }
 
   .recipient,
@@ -154,9 +198,13 @@ verdocs-send {
     cursor: pointer;
     align-items: center;
     column-gap: 10px;
-    border-top: 1px solid var(--send-rule);
     color: var(--send-ink);
     font-family: inherit;
+    border-bottom: 1px solid var(--send-rule);
+
+    &:last-child {
+      border-bottom: 0;
+    }
 
     &:focus-visible {
       outline: 2px solid var(--send-accent);
@@ -178,11 +226,20 @@ verdocs-send {
     }
   }
 
+  // Each recipient has a short rule in the color the builder gives them, inset so neighbors stay apart
   .recipient {
-    padding: 8px 6px 8px 0;
+    position: relative;
+    padding: 9px 6px 9px 12px;
 
-    &:last-child {
-      border-bottom: 1px solid var(--send-rule);
+    &::before {
+      top: 2px;
+      left: 0;
+      bottom: 2px;
+      width: 3px;
+      content: '';
+      position: absolute;
+      border-radius: 2px;
+      background: var(--send-recipient);
     }
 
     .who {
@@ -190,13 +247,15 @@ verdocs-send {
       // Stop a long name/email from making the panel grow
       width: 0;
       min-width: 0;
+      row-gap: 2px;
       display: flex;
       flex-direction: column;
     }
 
     .role-name {
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 650;
+      color: var(--send-recipient-text);
     }
 
     .who-detail {
@@ -206,9 +265,21 @@ verdocs-send {
       overflow: hidden;
       text-overflow: ellipsis;
 
-      &.configure {
-        color: var(--send-accent);
+      &.needs {
+        gap: 6px;
+        display: flex;
         font-weight: 500;
+        align-items: center;
+        color: var(--send-warning-text, #95591a);
+
+        &::before {
+          width: 7px;
+          height: 7px;
+          flex: none;
+          content: '';
+          border-radius: 50%;
+          background: #e2a33b;
+        }
       }
     }
 
@@ -237,17 +308,14 @@ verdocs-send {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.1);
   }
 
+  // Delivery settings put each label above its value, like the Inspector's inputs
   .kv {
-    height: 40px;
-    padding: 0 6px 0 0;
-    font-size: 13px;
-
-    &:last-child {
-      border-bottom: 1px solid var(--send-rule);
-    }
+    row-gap: 3px;
+    display: grid;
+    padding: 10px 6px 10px 0;
+    grid-template-columns: 1fr 16px;
 
     &:disabled {
       cursor: default;
@@ -255,55 +323,30 @@ verdocs-send {
     }
 
     .key {
-      flex: 0 0 84px;
+      grid-column: 1;
+      font-size: 11px;
+      font-weight: 600;
       color: var(--send-muted);
     }
 
     .value {
-      flex: 1;
-      width: 0;
+      grid-column: 1;
       min-width: 0;
+      font-size: 13px;
       font-weight: 500;
-      white-space: nowrap;
       overflow: hidden;
+      white-space: nowrap;
       text-overflow: ellipsis;
-
-      small {
-        font-size: inherit;
-        font-weight: 400;
-        color: var(--send-muted);
-      }
-
-      // Name on one line, email on the next: each line truncates on its own.
-      &.stacked {
-        display: flex;
-        flex-direction: column;
-        row-gap: 1px;
-        white-space: normal;
-
-        .line {
-          display: block;
-          min-width: 0;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        small.line {
-          font-size: 12px;
-        }
-      }
 
       &.off {
         color: var(--send-warning-icon);
       }
     }
 
-    &:has(.value.stacked) {
-      height: auto;
-      min-height: 40px;
-      padding-top: 6px;
-      padding-bottom: 6px;
+    .chevron {
+      grid-column: 2;
+      align-self: center;
+      grid-row: 1 / span 2;
     }
   }
 
@@ -326,6 +369,18 @@ verdocs-send {
       color: $verdocs-red-1;
       font-size: 13px;
       margin-bottom: 10px;
+    }
+  }
+
+  // Cancel and Send take web-app's newer button shape
+  .buttons verdocs-button button {
+    height: 32px;
+    padding: 0 10px;
+    border-radius: var(--verdocs-button-radius, 6px);
+
+    &:disabled {
+      color: var(--verdocs-button-disabled-color, #9b9ea8);
+      background: var(--verdocs-button-disabled-bg, #e6e7eb);
     }
   }
 
