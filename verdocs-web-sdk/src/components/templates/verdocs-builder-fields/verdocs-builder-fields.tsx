@@ -45,6 +45,22 @@ const readOpenSections = (): Record<string, boolean> => {
   }
 };
 
+// "page" fits a whole page in view, "width" fills the column, and a number is a percent of the page's own size.
+type TZoom = 'page' | 'width' | number;
+const ZOOM_STORAGE_KEY = 'verdocs-builder-zoom';
+const ZOOM_STEPS = [25, 50, 75, 100, 125, 150, 200];
+// The pages column has 15px of padding on each side
+const PAGES_PADDING = 30;
+
+const readZoom = (): TZoom => {
+  try {
+    const saved = localStorage.getItem(ZOOM_STORAGE_KEY);
+    return saved === 'width' ? 'width' : Number(saved) > 0 ? Number(saved) : 'page';
+  } catch {
+    return 'page';
+  }
+};
+
 const TEXT_CASES = [
   ['', 'As typed'],
   ['upper', 'UPPERCASE'],
@@ -220,6 +236,9 @@ export class VerdocsBuilderFields {
   @State() fillMenuOpen = false;
   @State() fillSearch = '';
   @State() openSections: Record<string, boolean> = readOpenSections();
+  @State() zoom: TZoom = readZoom();
+  @State() zoomPercent = 100;
+  @State() zoomMenuOpen = false;
   @State() advancedSections: Record<string, boolean> = {};
   catalogLoadedFor: string | null = null;
 
@@ -274,7 +293,9 @@ export class VerdocsBuilderFields {
     }
 
     if (ev.key === 'Escape') {
-      if (this.signerMenuOpen || this.renaming) {
+      if (this.zoomMenuOpen) {
+        this.zoomMenuOpen = false;
+      } else if (this.signerMenuOpen || this.renaming) {
         this.signerMenuOpen = false;
         this.renaming = false;
       } else if (this.paletteDrag) {
@@ -291,6 +312,17 @@ export class VerdocsBuilderFields {
 
     // Keys pressed in a dialog, menu, or anything else outside the builder belong to that control.
     if (target !== document.body && target !== document.documentElement && !this.el.contains(target)) {
+      return;
+    }
+
+    // Cmd/Ctrl with plus, minus, or 0 zooms the pages instead of the browser
+    if ((ev.metaKey || ev.ctrlKey) && !ev.altKey && ['=', '+', '-', '0'].includes(ev.key)) {
+      ev.preventDefault();
+      if (ev.key === '0') {
+        this.setZoom('page');
+      } else {
+        this.stepZoom(ev.key === '-' ? -1 : 1);
+      }
       return;
     }
 
@@ -480,6 +512,7 @@ export class VerdocsBuilderFields {
     const pageInfo = e.detail as IDocumentPageInfo;
     this.cachedPageInfo[pageInfo.documentId] ??= {};
     this.cachedPageInfo[pageInfo.documentId][pageInfo.pageNumber] = pageInfo;
+    this.zoomPercent = Math.round(pageInfo.xScale * 100);
 
     (this.template?.fields || [])
       .filter(field => field && field.page === pageInfo.pageNumber)
@@ -617,6 +650,35 @@ export class VerdocsBuilderFields {
         this.addOption(this.findField(field.name) || field);
       });
       layer.appendChild(add);
+    }
+  }
+
+  setZoom(zoom: TZoom) {
+    this.zoom = zoom;
+    this.zoomMenuOpen = false;
+    try {
+      localStorage.setItem(ZOOM_STORAGE_KEY, String(zoom));
+    } catch {
+      // Private windows can refuse storage, and zoom still works for this visit.
+    }
+  }
+
+  // Pages never grow past their column, so that's the widest zoom, as a percent of the first page's own width.
+  widestZoom() {
+    const pageWidth = this.template?.documents?.[0]?.page_sizes?.[1]?.width || 612;
+    return Math.floor((((this.pagesEl?.clientWidth || 0) - PAGES_PADDING) / pageWidth) * 100);
+  }
+
+  stepZoom(direction: 1 | -1) {
+    const widest = this.widestZoom();
+    if (direction > 0) {
+      const next = ZOOM_STEPS.find(step => step > this.zoomPercent + 1);
+      this.setZoom(!next || next >= widest ? 'width' : next);
+    } else {
+      const next = [...ZOOM_STEPS].reverse().find(step => step < this.zoomPercent - 1);
+      if (next) {
+        this.setZoom(next);
+      }
     }
   }
 
@@ -2263,6 +2325,44 @@ export class VerdocsBuilderFields {
     );
   }
 
+  renderZoomBar() {
+    const widest = this.widestZoom();
+    const choices: [TZoom, string][] = [['page', 'Whole page'], ['width', 'Page width'], ...ZOOM_STEPS.filter(step => step < widest).map(step => [step, `${step}%`] as [TZoom, string])];
+
+    return (
+      <div class="zoom-dock">
+        {this.zoomMenuOpen && <div class="zoom-backdrop" onClick={() => (this.zoomMenuOpen = false)} />}
+        <div class="zoom-bar">
+          <button type="button" class="zoom-step" title="Zoom out" aria-label="Zoom out" disabled={this.zoomPercent <= ZOOM_STEPS[0]} onClick={() => this.stepZoom(-1)}>
+            −
+          </button>
+          <button type="button" class="zoom-current" aria-haspopup="menu" aria-expanded={String(this.zoomMenuOpen)} onClick={() => (this.zoomMenuOpen = !this.zoomMenuOpen)}>
+            {this.zoom === 'page' ? 'Whole page' : this.zoom === 'width' ? 'Page width' : `${this.zoomPercent}%`}
+          </button>
+          <button
+            type="button"
+            class="zoom-step"
+            title="Zoom in"
+            aria-label="Zoom in"
+            disabled={this.zoom === 'width' || this.zoomPercent >= widest}
+            onClick={() => this.stepZoom(1)}
+          >
+            +
+          </button>
+          {this.zoomMenuOpen && (
+            <div class="zoom-menu" role="menu">
+              {choices.map(([value, label]) => (
+                <button type="button" role="menuitemradio" aria-checked={String(value === this.zoom)} data-zoom={String(value)} onClick={() => this.setZoom(value)}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   renderQuickBar(field: ITemplateField) {
     return (
       <div class="quick-bar" ref={el => (this.quickBarEl = el)} onPointerDown={e => e.stopPropagation()}>
@@ -2402,6 +2502,13 @@ export class VerdocsBuilderFields {
                     pageNumber={page}
                     virtualWidth={pageSize?.width || 612}
                     virtualHeight={pageSize?.height || 792}
+                    style={
+                      this.zoom === 'page'
+                        ? {width: `min(100%, calc((100cqh - ${PAGES_PADDING}px) * ${(pageSize?.width || 612) / (pageSize?.height || 792)}))`}
+                        : typeof this.zoom === 'number'
+                          ? {width: `min(100%, ${((pageSize?.width || 612) * this.zoom) / 100}px)`}
+                          : {}
+                    }
                     disabled={true}
                     editable={true}
                     done={false}
@@ -2418,6 +2525,7 @@ export class VerdocsBuilderFields {
           })}
 
           {selectedField && this.renderQuickBar(selectedField)}
+          {this.renderZoomBar()}
         </div>
 
         <div class={{inspector: true, open: this.inspectorOpen}}>

@@ -1014,6 +1014,97 @@ verdocs-builder-fields {
     position: fixed;
   }
 
+  // Sticks to the bottom of the view while the pages scroll, and takes no room of its own
+  .zoom-dock {
+    height: 0;
+    bottom: 16px;
+    z-index: 45;
+    display: flex;
+    position: sticky;
+    align-self: stretch;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .zoom-backdrop {
+    inset: 0;
+    position: fixed;
+  }
+
+  .zoom-bar {
+    gap: 2px;
+    padding: 4px;
+    display: flex;
+    position: relative;
+    border-radius: 10px;
+    align-items: center;
+    background: #ffffff;
+    transform: translateY(-100%);
+    border: 1px solid $builder-line;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+
+    button {
+      border: 0;
+      height: 28px;
+      cursor: pointer;
+      background: none;
+      font-size: 12.5px;
+      font-weight: 600;
+      border-radius: 7px;
+      font-family: inherit;
+      color: $verdocs-dark-blue;
+
+      &:hover:not(:disabled) {
+        background: #f1f2f6;
+      }
+
+      &:disabled {
+        cursor: default;
+        color: #c3c6d4;
+      }
+
+      &:focus-visible {
+        outline-offset: 1px;
+        outline: 2px solid $verdocs-purple;
+      }
+    }
+
+    .zoom-step {
+      width: 28px;
+      font-size: 16px;
+    }
+
+    .zoom-current {
+      min-width: 92px;
+      padding: 0 10px;
+    }
+  }
+
+  .zoom-menu {
+    right: 0;
+    padding: 4px;
+    min-width: 150px;
+    position: absolute;
+    border-radius: 9px;
+    background: #ffffff;
+    bottom: calc(100% + 6px);
+    border: 1px solid $builder-line;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+
+    button {
+      width: 100%;
+      display: block;
+      padding: 0 10px;
+      text-align: left;
+      font-weight: 500;
+
+      &[aria-checked='true'] {
+        font-weight: 700;
+        color: $verdocs-purple;
+      }
+    }
+  }
+
   .fill-menu {
     z-index: 2;
     margin-top: 6px;

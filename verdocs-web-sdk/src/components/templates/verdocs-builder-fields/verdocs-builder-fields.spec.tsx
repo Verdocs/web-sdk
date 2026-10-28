@@ -538,6 +538,27 @@ describe('verdocs-builder-fields', () => {
     });
   });
 
+  it('opens on the whole page and draws pages at the zoom a person picks', async () => {
+    jest.spyOn(Store, 'subscribe').mockImplementation((_table, _row, _getter, _force, callback: any) => {
+      callback({...template, documents: [{id: 'D1', pages: 1, page_sizes: {1: {width: 612, height: 792}}}]});
+      return 'listener';
+    });
+    const page = await newSpecPage({components: [VerdocsBuilderFields], html: '<verdocs-builder-fields template-id="T1"></verdocs-builder-fields>'});
+    const builder = page.rootInstance as VerdocsBuilderFields;
+    const width = () => (page.root.querySelector('verdocs-template-document-page') as any).style.width;
+
+    expect(width()).toContain('100cqh');
+    builder.setZoom(75);
+    await page.waitForChanges();
+    expect(width()).toEqual('min(100%, 459px)');
+    expect(page.win.localStorage.getItem('verdocs-builder-zoom')).toEqual('75');
+
+    builder.setZoom('width');
+    await page.waitForChanges();
+    expect(width()).toEqual('');
+    page.win.localStorage.removeItem('verdocs-builder-zoom');
+  });
+
   it('switches contrast with its prop', async () => {
     const page = await newSpecPage({components: [VerdocsBuilderFields], html: '<verdocs-builder-fields contrast="high"></verdocs-builder-fields>'});
     const contrastClasses = () => page.root.className.split(' ').filter(name => name.startsWith('contrast-'));
