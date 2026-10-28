@@ -359,6 +359,36 @@ describe('verdocs-sign', () => {
     });
   });
 
+  describe('handlePageRendered', () => {
+    it('tries a field once more before reporting that it never drew', async () => {
+      const {instance} = await loadInstance();
+      instance.roleId = 'Recipient 1';
+      const reported = jest.fn();
+      instance.fieldNotVisible = {emit: reported} as any;
+      const pageInfo = {
+        containerId: 'no-such-page',
+        documentId: 'doc-1',
+        pageNumber: 1,
+        naturalWidth: 612,
+        naturalHeight: 792,
+        renderedWidth: 612,
+        renderedHeight: 792,
+        xScale: 1,
+        yScale: 1,
+      };
+
+      instance.handlePageRendered({detail: pageInfo});
+      expect(reported).not.toHaveBeenCalled();
+
+      await new Promise(resolve => setTimeout(resolve, 350));
+      expect(reported).toHaveBeenCalledTimes(1);
+      expect(reported).toHaveBeenCalledWith(
+        expect.objectContaining({problem: 'not drawn', role_name: 'Recipient 1', field: expect.objectContaining({name: 'signature-1', page: 1})}),
+      );
+      expect(reported.mock.calls[0][0].field).not.toHaveProperty('value');
+    });
+  });
+
   describe('handleNext', () => {
     it('does not submit again when the recipient is already submitted', async () => {
       const {instance} = await loadInstance();

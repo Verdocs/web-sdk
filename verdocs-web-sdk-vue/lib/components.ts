@@ -821,11 +821,13 @@ export const VerdocsSign: StencilVueComponent<JSX.VerdocsSign> = /*@__PURE__*/ d
   'toolbarStyle',
   'sdkError',
   'envelopeLoaded',
-  'envelopeUpdated'
+  'envelopeUpdated',
+  'fieldNotVisible'
 ], [
   'sdkError',
   'envelopeLoaded',
-  'envelopeUpdated'
+  'envelopeUpdated',
+  'fieldNotVisible'
 ]);
 
 

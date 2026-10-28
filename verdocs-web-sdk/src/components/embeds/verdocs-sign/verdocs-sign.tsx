@@ -6,7 +6,7 @@ import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipie
 import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid, getCombinedEnvelopeDocumentDownloadLink, parseFieldNumber} from '@verdocs/js-sdk';
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
-import {IDocumentPageInfo, IDownloadEvent, DownloadAction} from '../../../utils/Types';
+import {IDocumentPageInfo, IDownloadEvent, DownloadAction, IFieldNotVisible} from '../../../utils/Types';
 import {DocumentPageIcon, CheckCircleIcon} from '../../../utils/Icons';
 import {VerdocsDownloadDialogCustomEvent} from '../../../components';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -108,6 +108,11 @@ export class VerdocsSign {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
+  /**
+   * Event fired when one of the signer's fields doesn't appear on its page, with where it should have been. Never includes values.
+   */
+  @Event({composed: true}) fieldNotVisible: EventEmitter<IFieldNotVisible>;
+
   @State() recipient: IRecipient | null = null;
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
@@ -152,6 +157,7 @@ export class VerdocsSign {
   @State() polling = true;
 
   private renderedPages: Record<string, IDocumentPageInfo> = {};
+  private missingFieldsTimer: any = null;
   private observer: IntersectionObserver;
   private pollingInterval: any = null;
 
@@ -280,6 +286,7 @@ export class VerdocsSign {
   }
 
   disconnectedCallback() {
+    clearTimeout(this.missingFieldsTimer);
     this.stopPolling();
     this.observer?.disconnect();
     window.removeEventListener('resize', () => this.updateZoomFromWindow());
@@ -463,6 +470,35 @@ export class VerdocsSign {
 
     this.checkRecipientFields();
     this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
+    this.watchForMissingFields();
+  }
+
+  // A signer's field has gone missing a few times in the wild without a repro, so we report what we know about it
+  reportFieldNotVisible(field: IEnvelopeField, problem: IFieldNotVisible['problem'], pageInfo?: IDocumentPageInfo) {
+    const detail: IFieldNotVisible = {
+      problem,
+      envelope_id: this.envelopeId,
+      organization_id: this.envelope?.organization_id || '',
+      role_name: this.roleId,
+      field: {name: field.name, type: field.type, page: field.page, x: field.x, y: field.y, width: field.width, height: field.height},
+      page: pageInfo ? {width: pageInfo.naturalWidth, height: pageInfo.naturalHeight, rendered_width: pageInfo.renderedWidth, rendered_height: pageInfo.renderedHeight} : null,
+    };
+    console.warn('[SIGN] Field not visible', JSON.stringify(detail));
+    this.fieldNotVisible?.emit(detail);
+  }
+
+  // Catches a page that never reported itself rendered, which leaves its fields undrawn with nothing else to notice
+  watchForMissingFields() {
+    clearTimeout(this.missingFieldsTimer);
+    this.missingFieldsTimer = setTimeout(() => {
+      const pages = Array.from(this.el.querySelectorAll('verdocs-envelope-document-page')) as any[];
+      this.getSortedDisplayableFields().forEach(field => {
+        const shown = pages.some(page => page.documentId === field.document_id && page.pageNumber === field.page);
+        if (shown && !document.getElementById(getFieldId(field))) {
+          this.reportFieldNotVisible(field, 'never drawn', this.renderedPages[`${field.document_id}:${field.page}`]);
+        }
+      });
+    }, 5000);
   }
 
   handleClickAgree() {
@@ -1140,9 +1176,10 @@ export class VerdocsSign {
     }
   }
 
-  handlePageRendered(e: any) {
+  handlePageRendered(e: any, retried = false) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    this.renderedPages[`${pageInfo.documentId}:${pageInfo.pageNumber}`] = pageInfo;
+    const pageKey = `${pageInfo.documentId}:${pageInfo.pageNumber}`;
+    this.renderedPages[pageKey] = pageInfo;
 
     // console.log('Page rendered', pageInfo);
 
@@ -1151,20 +1188,17 @@ export class VerdocsSign {
     const recipientFields = this.getSortedDisplayableFields();
     // console.log('[SIGN] Rendering fields for page', pageInfo.pageNumber, recipientFields);
     // First render the fields for the signer
-    // Diagnostics for fields a signer reported never appeared: what we know about any field that didn't draw, never its value.
-    const describe = (field: IEnvelopeField, problem: string) => {
-      const {name, type, x, y, width, height} = field;
-      const page = {number: pageInfo.pageNumber, width: pageInfo.naturalWidth, height: pageInfo.naturalHeight, rendered: [pageInfo.renderedWidth, pageInfo.renderedHeight]};
-      console.warn('[SIGN] Field not visible', JSON.stringify({problem, envelope_id: this.envelopeId, role_name: this.roleId, field: {name, type, x, y, width, height}, page}));
-    };
-
     const drawn: IEnvelopeField[] = [];
+    let missed = false;
     recipientFields
       .filter(field => field && field.document_id === pageInfo.documentId && field.page === pageInfo.pageNumber)
       .forEach((field, tabIndex) => {
         const el = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
         if (!el) {
-          describe(field, 'not drawn');
+          missed = true;
+          if (retried) {
+            this.reportFieldNotVisible(field, 'not drawn', pageInfo);
+          }
           return;
         }
 
@@ -1197,17 +1231,22 @@ export class VerdocsSign {
           });
       });
 
+    // A page's controls layer can arrive after its first notice, so we give it one more try
+    if (missed && !retried) {
+      setTimeout(() => this.handlePageRendered({detail: this.renderedPages[pageKey] || pageInfo}, true), 300);
+    }
+
     // Checked after layout, so a field that drew but landed off the page or with no size shows up too
     requestAnimationFrame(() => {
       const controls = document.getElementById(`${pageInfo.containerId}-controls`)?.getBoundingClientRect();
       drawn.forEach(field => {
         const box = document.getElementById(getFieldId(field))?.getBoundingClientRect();
         if (!box || !controls) {
-          describe(field, box ? 'no page' : 'missing after render');
+          this.reportFieldNotVisible(field, box ? 'no page' : 'missing after render', pageInfo);
         } else if (!box.width || !box.height) {
-          describe(field, 'no size');
+          this.reportFieldNotVisible(field, 'no size', pageInfo);
         } else if (box.right < controls.left || box.left > controls.right || box.bottom < controls.top || box.top > controls.bottom) {
-          describe(field, 'off the page');
+          this.reportFieldNotVisible(field, 'off the page', pageInfo);
         }
       });
     });

@@ -11,7 +11,7 @@ import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
 import { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/embeds/verdocs-build/verdocs-build";
 import { IContactSearchEvent, IContactSelectEvent, TPickerContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
-import { DownloadAction, IDocumentPageInfo, IPageLayer } from "./utils/Types";
+import { DownloadAction, IDocumentPageInfo, IFieldNotVisible, IPageLayer } from "./utils/Types";
 import { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 import { ISelectedFile } from "./components/fields/verdocs-field-attachment/verdocs-field-attachment";
 import { IMultiSelectOption } from "./components/controls/verdocs-multiselect/verdocs-multiselect";
@@ -31,7 +31,7 @@ export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
 export { TVerdocsBuildStep as TVerdocsBuildStep1 } from "./components/embeds/verdocs-build/verdocs-build";
 export { IContactSearchEvent, IContactSelectEvent, TPickerContact } from "./components/envelopes/verdocs-contact-picker/verdocs-contact-picker";
-export { DownloadAction, IDocumentPageInfo, IPageLayer } from "./utils/Types";
+export { DownloadAction, IDocumentPageInfo, IFieldNotVisible, IPageLayer } from "./utils/Types";
 export { IMenuOption } from "./components/controls/verdocs-dropdown/verdocs-dropdown";
 export { ISelectedFile } from "./components/fields/verdocs-field-attachment/verdocs-field-attachment";
 export { IMultiSelectOption } from "./components/controls/verdocs-multiselect/verdocs-multiselect";
@@ -4237,6 +4237,7 @@ declare global {
         "sdkError": SDKError;
         "envelopeLoaded": {endpoint: VerdocsEndpoint; envelope: IEnvelope};
         "envelopeUpdated": {endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string};
+        "fieldNotVisible": IFieldNotVisible;
     }
     /**
      * Display an envelope signing experience. This will display the envelope's attached
@@ -7350,6 +7351,10 @@ declare namespace LocalJSX {
           * Event fired when the envelope is updated in any way.
          */
         "onEnvelopeUpdated"?: (event: VerdocsSignCustomEvent<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>) => void;
+        /**
+          * Event fired when one of the signer's fields doesn't appear on its page, with where it should have been. Never includes values.
+         */
+        "onFieldNotVisible"?: (event: VerdocsSignCustomEvent<IFieldNotVisible>) => void;
         /**
           * Event fired if an error occurs. The event details will contain information about the error. Most errors will terminate the process, and the calling application should correct the condition and re-render the component.
          */

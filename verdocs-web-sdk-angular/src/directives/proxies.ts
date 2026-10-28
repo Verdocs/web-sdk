@@ -2213,13 +2213,14 @@ the `contactSuggestions` property.
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId', 'toolbarStyle'],
-  outputs: ['sdkError', 'envelopeLoaded', 'envelopeUpdated'],
+  outputs: ['sdkError', 'envelopeLoaded', 'envelopeUpdated', 'fieldNotVisible'],
 })
 export class VerdocsSign {
   protected el: HTMLVerdocsSignElement;
   @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsSignSDKError>>();
   @Output() envelopeLoaded = new EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope}>>();
   @Output() envelopeUpdated = new EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope; event: string}>>();
+  @Output() fieldNotVisible = new EventEmitter<CustomEvent<IVerdocsSignIFieldNotVisible>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -2230,6 +2231,7 @@ export class VerdocsSign {
 import type { SDKError as IVerdocsSignSDKError } from '@verdocs/web-sdk/components';
 import type { VerdocsEndpoint as IVerdocsSignVerdocsEndpoint } from '@verdocs/web-sdk/components';
 import type { IEnvelope as IVerdocsSignIEnvelope } from '@verdocs/web-sdk/components';
+import type { IFieldNotVisible as IVerdocsSignIFieldNotVisible } from '@verdocs/web-sdk/components';
 
 export declare interface VerdocsSign extends Components.VerdocsSign {
   /**
@@ -2245,6 +2247,10 @@ terminate the process, and the calling application should correct the condition 
    * Event fired when the envelope is updated in any way.
    */
   envelopeUpdated: EventEmitter<CustomEvent<{endpoint: IVerdocsSignVerdocsEndpoint; envelope: IVerdocsSignIEnvelope; event: string}>>;
+  /**
+   * Event fired when one of the signer's fields doesn't appear on its page, with where it should have been. Never includes values.
+   */
+  fieldNotVisible: EventEmitter<CustomEvent<IVerdocsSignIFieldNotVisible>>;
 }
 
 
