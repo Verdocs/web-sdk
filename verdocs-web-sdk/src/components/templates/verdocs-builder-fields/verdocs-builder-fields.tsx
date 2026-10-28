@@ -1689,12 +1689,15 @@ export class VerdocsBuilderFields {
 
     return (
       <div class="insp-body" key={radio && field.group ? `group-${field.role_name}-${field.group}` : field.name}>
-        <div class="insp-head">
-          <span class="insp-badge">
-            <span class="insp-badge-icon" innerHTML={fieldType.icon} />
-            {radio ? `Radio group · ${members.length}` : fieldType.label}
-          </span>
-          <span class="insp-title">{(radio && field.group) || field.label || field.name}</span>
+        <div class="insp-head" style={{'--vb-color': this.roleColor(field.role_name), '--vb-text': this.roleTextColor(field.role_name)}}>
+          <span class="insp-tile" innerHTML={fieldType.icon} />
+          <div class="insp-head-text">
+            {/* Group names and API names are keys, so they show in mono like their inputs below */}
+            <span class={{'insp-title': true, 'mono': radio ? !!field.group : !field.label}}>{(radio && field.group) || field.label || field.name}</span>
+            <span class="insp-sub">
+              {radio ? `Radio group · ${members.length}` : fieldType.label} · <b>{field.role_name}</b>
+            </span>
+          </div>
           <button class="inspector-close" title="Close" aria-label="Close" innerHTML={CloseIcon} onClick={() => (this.inspectorOpen = false)} />
         </div>
 

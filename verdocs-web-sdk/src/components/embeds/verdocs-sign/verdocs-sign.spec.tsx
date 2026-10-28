@@ -68,7 +68,7 @@ jest.mock('@verdocs/js-sdk', () => {
 });
 
 import {newSpecPage} from '@stencil/core/testing';
-import {envelopeRecipientSubmit, getEnvelope, ISignerTokenResponse, startSigningSession} from '@verdocs/js-sdk';
+import {envelopeRecipientDecline, envelopeRecipientSubmit, getEnvelope, ISignerTokenResponse, startSigningSession} from '@verdocs/js-sdk';
 import {VerdocsSign} from './verdocs-sign';
 
 const mockRecipient = {
@@ -317,6 +317,22 @@ describe('verdocs-sign', () => {
 
       expect(instance.submitted).toBe(expected.submitted);
       expect(instance.showDone).toBe(expected.showDone);
+    });
+  });
+
+  describe('declining', () => {
+    it('emits envelopeUpdated once the decline goes through', async () => {
+      (envelopeRecipientDecline as jest.Mock).mockResolvedValue({});
+      const {page, instance} = await loadSigningView();
+      const envelopeUpdatedSpy = jest.spyOn(instance.envelopeUpdated, 'emit');
+
+      instance.declining = true;
+      await page.waitForChanges();
+      page.root.querySelector('verdocs-ok-dialog').dispatchEvent(new CustomEvent('next'));
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(envelopeRecipientDecline).toHaveBeenCalledTimes(1);
+      expect(envelopeUpdatedSpy.mock.calls[0][0].event).toBe('declined');
     });
   });
 

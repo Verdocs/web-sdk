@@ -170,14 +170,22 @@ describe('verdocs-builder-fields', () => {
       return {page, builder, saveField};
     };
 
-    it('shows the field type and name at the top', async () => {
+    it('heads with a tile in the recipient color, the name, and the type and recipient', async () => {
       const {page, builder} = await renderBuilder();
       builder.selectedFieldName = 'name';
       builder.inspectorOpen = true;
       await page.waitForChanges();
 
-      expect(page.root.querySelector('.insp-badge').textContent).toEqual('Text box');
-      expect(page.root.querySelector('.insp-title').textContent).toEqual('Client name');
+      const head = page.root.querySelector('.insp-head') as HTMLElement;
+      expect(head.style.getPropertyValue('--vb-color')).toEqual(builder.roleColor('Preparer'));
+      expect(head.querySelector('.insp-tile svg')).toBeTruthy();
+      expect(head.querySelector('.insp-title').textContent).toEqual('Client name');
+      expect(head.querySelector('.insp-title').classList.contains('mono')).toBe(false);
+      expect(head.querySelector('.insp-sub').textContent).toEqual('Text box · Preparer');
+
+      builder.selectedFieldName = 'state';
+      await page.waitForChanges();
+      expect(page.root.querySelector('.insp-title').classList.contains('mono')).toBe(true);
     });
 
     it('checks a new API name before saving it', async () => {

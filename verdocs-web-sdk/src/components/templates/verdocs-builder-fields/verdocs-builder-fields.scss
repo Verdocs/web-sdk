@@ -48,7 +48,8 @@ $builder-guide: #e0338f;
     display: inline-grid;
   }
 
-  .palette-icon {
+  .palette-icon,
+  .insp-tile {
     border-color: var(--vb-text);
   }
 }
@@ -574,36 +575,60 @@ verdocs-builder-fields {
     }
   }
 
-  .insp-badge {
-    gap: 6px;
+  // Drawn like the field on the page, in its recipient's color
+  .insp-tile {
+    width: 34px;
+    height: 34px;
     flex: none;
-    padding: 4px 8px;
-    font-size: 11.5px;
-    font-weight: 700;
-    border-radius: 6px;
-    align-items: center;
-    display: inline-flex;
-    background: #f1eefc;
-    color: $verdocs-purple;
-  }
-
-  .insp-badge-icon {
-    display: flex;
+    display: grid;
+    border-radius: 8px;
+    place-items: center;
+    color: var(--vb-text);
+    box-sizing: border-box;
+    border: 1.5px dashed var(--vb-color);
+    background: color-mix(in srgb, var(--vb-color) 14%, #ffffff);
 
     svg {
-      width: 13px;
-      height: 13px;
+      width: 16px;
+      height: 16px;
     }
+  }
+
+  .insp-head-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   .insp-title {
     min-width: 0;
     font-size: 14px;
     overflow: hidden;
-    font-weight: 700;
+    font-weight: 600;
     white-space: nowrap;
-    color: $builder-ink;
     text-overflow: ellipsis;
+    color: $verdocs-dark-blue;
+
+    &.mono {
+      font-size: 12.5px;
+      font-weight: 500;
+      font-family: ui-monospace, Menlo, monospace;
+    }
+  }
+
+  .insp-sub {
+    font-size: 11.5px;
+    margin-top: 2px;
+    overflow: hidden;
+    white-space: nowrap;
+    color: $builder-muted;
+    text-overflow: ellipsis;
+
+    b {
+      font-weight: 600;
+      color: var(--vb-text);
+    }
   }
 
   .insp-section {

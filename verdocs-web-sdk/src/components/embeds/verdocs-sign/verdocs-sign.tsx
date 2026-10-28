@@ -1474,6 +1474,7 @@ export class VerdocsSign {
                   this.declining = false;
                   this.fatalErrorHeader = 'Declined';
                   this.fatalErrorMessage = 'You have declined to sign this request. The sender has been notified.';
+                  this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
                 })
                 .catch(e => {
                   console.warn('[SIGN] Error declining signing session', e);
