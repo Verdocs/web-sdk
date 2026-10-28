@@ -61,6 +61,31 @@ const readZoom = (): TZoom => {
   }
 };
 
+// The what's-new tour. Steps that need a selected field are skipped when the template has none.
+const TOUR_SEEN_KEY = 'verdocs-builder-tour-seen';
+type TTourLayout = {spot: {left: number; top: number; width: number; height: number} | null; left: number; top: number; arrow: string; arrowAt: number};
+const TOUR_STEPS: {title: string; body: string; target: string; needsField?: boolean; inspector?: boolean}[] = [
+  {title: 'Drag a field onto the page', body: 'Pick a recipient, then drag any field from this list onto the document.', target: '.palette'},
+  {
+    title: 'Everything for the selected field',
+    body: 'Required, read-only, recipient, rename, duplicate, and reset are one click away. All settings opens the Inspector.',
+    target: '.quick-bar',
+    needsField: true,
+  },
+  {
+    title: 'Fine-tune in the Inspector',
+    body: 'Formats, fit, stamping, and position live in sections you can open and close.',
+    target: '.inspector',
+    needsField: true,
+    inspector: true,
+  },
+  {title: 'Nudge with the arrow keys', body: 'Arrow keys move the selected field one point. Hold Shift to move ten.', target: 'field', needsField: true},
+  {title: 'Undo a move', body: 'Cmd+Z, or Ctrl+Z, puts back the last move or resize.', target: 'field', needsField: true},
+  {title: 'Reset a field', body: 'Reset puts a field back to its default size and settings.', target: '.quick-bar .reset', needsField: true},
+  {title: 'Zoom to fit', body: 'Show the whole page, fill the width, or pick a size. Your choice is remembered.', target: '.zoom-bar'},
+  {title: 'See this again', body: 'The help button replays this tour anytime.', target: '.tour-help'},
+];
+
 const TEXT_CASES = [
   ['', 'As typed'],
   ['upper', 'UPPERCASE'],
@@ -195,6 +220,10 @@ export class VerdocsBuilderFields {
   private templateListenerId = null;
 
   private pagesEl: HTMLElement | null = null;
+  private tourEl: HTMLElement | null = null;
+  private tourCardEl: HTMLElement | null = null;
+  private tourOffered = false;
+  private inspectorBeforeTour = false;
 
   private quickBarEl: HTMLElement | null = null;
 
@@ -210,6 +239,12 @@ export class VerdocsBuilderFields {
    * color to show selection. `auto` follows the browser's contrast setting.
    */
   @Prop() contrast: 'auto' | 'normal' | 'high' = 'auto';
+
+  /**
+   * Shows a short tour of the builder the first time each person opens it, and a help button that replays it. Off unless the
+   * host turns it on.
+   */
+  @Prop() showTour: boolean = false;
 
   /**
    * The ID of the template to edit.
@@ -252,6 +287,9 @@ export class VerdocsBuilderFields {
   @State() zoom: TZoom = readZoom();
   @State() zoomPercent = 100;
   @State() zoomMenuOpen = false;
+  @State() tourSteps: typeof TOUR_STEPS | null = null;
+  @State() tourIndex = 0;
+  @State() tourLayout: TTourLayout | null = null;
   @State() advancedSections: Record<string, boolean> = {};
   catalogLoadedFor: string | null = null;
 
@@ -302,6 +340,11 @@ export class VerdocsBuilderFields {
     // composedPath reaches inputs inside a host page's shadow DOM, where activeElement would only show the host.
     const target = (ev.composedPath?.()[0] || ev.target) as Element;
     if (ev.key === 'Escape' && isTypingTarget(target) && target.closest?.('.inspector')) {
+      return;
+    }
+
+    if (ev.key === 'Escape' && this.tourSteps) {
+      this.endTour();
       return;
     }
 
@@ -452,6 +495,7 @@ export class VerdocsBuilderFields {
     this.flushNudge();
     this.endPaletteDrag();
     window.removeEventListener('resize', this.handleWindowResize);
+    this.stopTourListeners();
   }
 
   async listenToTemplate() {
@@ -526,6 +570,7 @@ export class VerdocsBuilderFields {
     this.cachedPageInfo[pageInfo.documentId] ??= {};
     this.cachedPageInfo[pageInfo.documentId][pageInfo.pageNumber] = pageInfo;
     this.zoomPercent = Math.round(pageInfo.xScale * 100);
+    this.offerTour();
 
     (this.template?.fields || [])
       .filter(field => field && field.page === pageInfo.pageNumber)
@@ -664,6 +709,175 @@ export class VerdocsBuilderFields {
       });
       layer.appendChild(add);
     }
+  }
+
+  offerTour() {
+    if (!this.showTour || this.tourOffered) {
+      return;
+    }
+
+    this.tourOffered = true;
+    try {
+      if (localStorage.getItem(TOUR_SEEN_KEY)) {
+        return;
+      }
+    } catch {
+      return;
+    }
+
+    setTimeout(() => this.startTour(), 600);
+  }
+
+  startTour() {
+    const hasFields = (this.template?.fields || []).length > 0;
+    this.inspectorBeforeTour = this.inspectorOpen;
+    this.zoomMenuOpen = false;
+    this.tourSteps = TOUR_STEPS.filter(step => hasFields || !step.needsField);
+    window.addEventListener('resize', this.placeTour);
+    document.addEventListener('scroll', this.placeTour, true);
+    this.showTourStep(0);
+  }
+
+  showTourStep(index: number) {
+    const step = this.tourSteps?.[index];
+    if (!step) {
+      this.endTour();
+      return;
+    }
+
+    this.tourIndex = index;
+    this.tourLayout = null;
+    if (step.needsField && !this.findField(this.selectedFieldName)) {
+      const first = [...(this.template?.fields || [])].sort((a, b) => (a.page || 0) - (b.page || 0) || (b.y || 0) - (a.y || 0))[0];
+      if (first) {
+        this.selectField(first.name);
+      }
+    }
+
+    this.inspectorOpen = step.inspector || this.inspectorBeforeTour;
+    // Placed after this render, and again once the Inspector finishes sliding open
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        this.tourTarget()?.scrollIntoView({block: 'nearest', inline: 'nearest'});
+        this.placeTour();
+      }),
+    );
+    setTimeout(this.placeTour, 260);
+  }
+
+  endTour() {
+    this.stopTourListeners();
+    this.tourSteps = null;
+    this.tourLayout = null;
+    this.inspectorOpen = this.inspectorBeforeTour;
+    try {
+      localStorage.setItem(TOUR_SEEN_KEY, '1');
+    } catch {
+      // Private windows can refuse storage, so the tour may show again next time.
+    }
+  }
+
+  stopTourListeners() {
+    window.removeEventListener('resize', this.placeTour);
+    document.removeEventListener('scroll', this.placeTour, true);
+  }
+
+  tourTarget(): HTMLElement | null {
+    const step = this.tourSteps?.[this.tourIndex];
+    if (step?.target !== 'field') {
+      return step ? this.el.querySelector<HTMLElement>(step.target) : null;
+    }
+
+    const field = this.findField(this.selectedFieldName);
+    const el = field ? document.getElementById(getFieldId(field)) : null;
+    return el && this.el.contains(el) ? el : null;
+  }
+
+  // Spotlights the step's target and puts the card beside tall targets, otherwise below (or above, near the bottom).
+  placeTour = () => {
+    if (!this.tourSteps || !this.tourEl) {
+      return;
+    }
+
+    const frame = this.tourEl.getBoundingClientRect();
+    const cardWidth = 300;
+    const cardHeight = this.tourCardEl?.offsetHeight || 190;
+    const gap = 14;
+    const rect = this.tourTarget()?.getBoundingClientRect();
+    let layout: TTourLayout;
+    if (!rect) {
+      layout = {spot: null, left: (frame.width - cardWidth) / 2, top: (frame.height - cardHeight) / 2, arrow: 'none', arrowAt: 0};
+    } else {
+      const spot = {left: rect.left - frame.left - 6, top: rect.top - frame.top - 6, width: rect.width + 12, height: rect.height + 12};
+      const inside = (left: number) => clamp(left, 12, frame.width - cardWidth - 12);
+      if (spot.height > frame.height * 0.5) {
+        const right = spot.left + spot.width + gap + cardWidth <= frame.width - 12;
+        const top = clamp(spot.top + 40, 12, frame.height - cardHeight - 12);
+        layout = {spot, left: right ? spot.left + spot.width + gap : spot.left - gap - cardWidth, top, arrow: right ? 'left' : 'right', arrowAt: 26};
+      } else {
+        const below = spot.top + spot.height + gap + cardHeight <= frame.height - 12;
+        const left = inside(spot.left);
+        layout = {
+          spot,
+          left,
+          top: below ? spot.top + spot.height + gap : spot.top - gap - cardHeight,
+          arrow: below ? 'up' : 'down',
+          arrowAt: clamp(spot.left + Math.min(spot.width, 80) / 2 - left, 16, cardWidth - 30),
+        };
+      }
+    }
+
+    if (JSON.stringify(layout) !== JSON.stringify(this.tourLayout)) {
+      this.tourLayout = layout;
+    }
+  };
+
+  renderTour() {
+    const step = this.tourSteps[this.tourIndex];
+    const last = this.tourIndex === this.tourSteps.length - 1;
+    const layout = this.tourLayout;
+    const px = (value: number) => `${Math.round(value)}px`;
+
+    return (
+      <div class="tour" ref={el => (this.tourEl = el)} role="dialog" aria-modal="true" aria-label="Builder tour">
+        {layout?.spot ? (
+          <div class="tour-spot" style={{left: px(layout.spot.left), top: px(layout.spot.top), width: px(layout.spot.width), height: px(layout.spot.height)}} />
+        ) : (
+          <div class="tour-shade" />
+        )}
+        <div
+          class={{'tour-card': true, [`arrow-${layout?.arrow}`]: !!layout}}
+          ref={el => (this.tourCardEl = el)}
+          style={layout ? {'left': px(layout.left), 'top': px(layout.top), '--arrow-at': px(layout.arrowAt)} : {visibility: 'hidden'}}
+        >
+          <div class="tour-rail">
+            {this.tourSteps.map((_, index) => (
+              <i class={{done: index < this.tourIndex, on: index === this.tourIndex}} />
+            ))}
+          </div>
+          <div class="tour-title">
+            <span class="tour-num">{this.tourIndex + 1}</span>
+            {step.title}
+          </div>
+          <div class="tour-body">{step.body}</div>
+          <div class="tour-actions">
+            {!last && (
+              <button type="button" class="tour-skip" onClick={() => this.endTour()}>
+                Skip tour
+              </button>
+            )}
+            {this.tourIndex > 0 && (
+              <button type="button" class="tour-back" onClick={() => this.showTourStep(this.tourIndex - 1)}>
+                Back
+              </button>
+            )}
+            <button type="button" class="tour-next" onClick={() => this.showTourStep(this.tourIndex + 1)}>
+              {last ? 'Done' : 'Next'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   setZoom(zoom: TZoom) {
@@ -2510,7 +2724,7 @@ export class VerdocsBuilderFields {
         <span class="separator" />
         <button class="quick-button icon" title="Rename" aria-label="Rename" innerHTML={PencilIcon} onClick={() => (this.renaming = !this.renaming)} />
         <button class="quick-button icon" title="Duplicate" aria-label="Duplicate" innerHTML={DuplicateIcon} onClick={() => this.duplicateField(field)} />
-        <button class="quick-button icon" title="Reset size and settings" aria-label="Reset size and settings" innerHTML={ResetIcon} onClick={() => this.resetField(field)} />
+        <button class="quick-button icon reset" title="Reset size and settings" aria-label="Reset size and settings" innerHTML={ResetIcon} onClick={() => this.resetField(field)} />
         <button class="quick-button icon delete" title="Delete" aria-label="Delete" innerHTML={TrashIcon} onClick={() => this.removeOption(field, field)} />
         <span class="separator" />
         <button class="quick-button icon" title="All settings" aria-label="All settings" innerHTML={SettingsIcon} onClick={() => (this.inspectorOpen = true)} />
@@ -2596,6 +2810,11 @@ export class VerdocsBuilderFields {
             </div>
           ))}
           <div class="palette-hint">Drag a field onto the page.</div>
+          {this.showTour && (
+            <button type="button" class="tour-help" title="Show the builder tour" aria-label="Show the builder tour" onClick={() => this.startTour()}>
+              ?
+            </button>
+          )}
         </div>
 
         <div class="pages" ref={el => (this.pagesEl = el)}>
@@ -2661,6 +2880,8 @@ export class VerdocsBuilderFields {
             )}
           </div>
         </div>
+
+        {this.tourSteps && this.renderTour()}
 
         {this.showMustSelectRole && (
           <verdocs-ok-dialog

@@ -184,6 +184,11 @@ export namespace Components {
          */
         "endpoint": VerdocsEndpoint;
         /**
+          * Shows a short tour of the builder the first time each person opens it, and a help button that replays it. Off unless the host turns it on.
+          * @default false
+         */
+        "showTour": boolean;
+        /**
           * The ID of the template to edit.
           * @default null
          */
@@ -5145,6 +5150,11 @@ declare namespace LocalJSX {
          */
         "onTemplateUpdated"?: (event: VerdocsBuilderFieldsCustomEvent<{endpoint: VerdocsEndpoint; template: ITemplate; event: 'added-field' | 'updated-field' | 'deleted-field'}>) => void;
         /**
+          * Shows a short tour of the builder the first time each person opens it, and a help button that replays it. Off unless the host turns it on.
+          * @default false
+         */
+        "showTour"?: boolean;
+        /**
           * The ID of the template to edit.
           * @default null
          */
@@ -8271,6 +8281,7 @@ declare namespace LocalJSX {
     }
     interface VerdocsBuilderFieldsAttributes {
         "contrast": 'auto' | 'normal' | 'high';
+        "showTour": boolean;
         "templateId": string | null;
     }
     interface VerdocsButtonAttributes {

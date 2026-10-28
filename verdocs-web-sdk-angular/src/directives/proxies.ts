@@ -306,14 +306,14 @@ terminate the process, and the calling application should correct the condition 
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsBuilderFields,
-  inputs: ['contrast', 'endpoint', 'templateId']
+  inputs: ['contrast', 'endpoint', 'showTour', 'templateId']
 })
 @Component({
   selector: 'verdocs-builder-fields',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['contrast', 'endpoint', 'templateId'],
+  inputs: ['contrast', 'endpoint', 'showTour', 'templateId'],
   outputs: ['sdkError', 'templateUpdated'],
 })
 export class VerdocsBuilderFields {

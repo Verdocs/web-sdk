@@ -81,6 +81,7 @@ export const VerdocsBuilder: StencilVueComponent<JSX.VerdocsBuilder> = /*@__PURE
 export const VerdocsBuilderFields: StencilVueComponent<JSX.VerdocsBuilderFields> = /*@__PURE__*/ defineContainer<JSX.VerdocsBuilderFields>('verdocs-builder-fields', undefined, [
   'endpoint',
   'contrast',
+  'showTour',
   'templateId',
   'sdkError',
   'templateUpdated'
