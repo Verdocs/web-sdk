@@ -3,6 +3,7 @@ import type {TDataCatalogEntryType} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
 import {formatFieldNumber, getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, ITextFieldConfig, saveDataCatalogEntries} from '@verdocs/js-sdk';
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import type {ICheckboxFieldConfig, IDropdownFieldConfig, IFieldTextFit, IRadioFieldConfig, ISignatureFieldConfig, ITimestampFieldConfig, TFieldConfig} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {AlignLeftIcon, CloseIcon, DataIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, SpaceEvenlyIcon, TrashIcon} from '../../../utils/Icons';
 import {drawRecipientField, FIELD_TYPES, radioGroup, recipientNumber} from '../../../utils/RecipientFields';
@@ -33,7 +34,7 @@ const defaultRequired = (type: TFieldType) => !['radio', 'attachment', 'checkbox
 const KEY_FITS: Partial<Record<TFieldType, TDataCatalogEntryType[]>> = {textbox: ['text'], date: ['date'], checkbox: ['boolean'], radio: ['choice'], dropdown: ['choice']};
 
 // Which Inspector sections start open, and where we remember each person's choices.
-const SECTIONS_OPEN_BY_DEFAULT = ['group', 'options', 'format', 'text', 'checkbox'];
+const SECTIONS_OPEN_BY_DEFAULT = ['group', 'options', 'format', 'text', 'checkbox', 'stamp', 'timestamp'];
 const SECTIONS_STORAGE_KEY = 'verdocs-builder-inspector-sections';
 
 const readOpenSections = (): Record<string, boolean> => {
@@ -59,14 +60,49 @@ const NUMBER_STYLES = [
 
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'NZD', 'JPY', 'CHF', 'MXN', 'BRL', 'INR', 'CNY', 'SEK', 'NOK', 'DKK', 'ZAR', 'SGD', 'HKD'];
 
-// A config without its empty settings, or null when only its type is left
-const tidyConfig = (config: Record<string, any>) => {
+const tidy = (settings: Record<string, any>) => {
   const kept: Record<string, any> = {};
-  Object.keys(config)
-    .filter(key => config[key] !== undefined && config[key] !== null && config[key] !== '')
-    .forEach(key => (kept[key] = config[key]));
-  return Object.keys(kept).length > 1 ? (kept as ITextFieldConfig) : null;
+  Object.keys(settings)
+    .filter(key => settings[key] !== undefined && settings[key] !== null && settings[key] !== '')
+    .forEach(key => (kept[key] = settings[key]));
+  return kept;
 };
+
+// A config without its empty settings, or null when only its type is left
+const tidyConfig = <T extends TFieldConfig>(config: T) => {
+  const kept = tidy(config);
+  return Object.keys(kept).length > 1 ? (kept as T) : null;
+};
+
+// Nested settings without their empty values, or undefined when nothing is left
+const tidyGroup = <T extends object>(settings: T) => {
+  const kept = tidy(settings);
+  return Object.keys(kept).length ? (kept as T) : undefined;
+};
+
+// Stamping starts text at 11 pt
+const FIT_DEFAULT = 11;
+const FIT_RANGE = {min: 6, max: 24};
+
+// Settings that match the defaults drop out, so an untouched Fit stays empty
+const tidyFit = (fit: IFieldTextFit) =>
+  tidyGroup({
+    ...fit,
+    max_font_size: fit.max_font_size === FIT_DEFAULT ? undefined : fit.max_font_size,
+    min_font_size: fit.min_font_size === (fit.max_font_size ?? FIT_DEFAULT) ? undefined : fit.min_font_size,
+    overflow: fit.overflow === 'overflow' ? undefined : fit.overflow,
+  });
+
+const OVERFLOWS: [IFieldTextFit['overflow'], string][] = [
+  ['truncate', 'Cut off'],
+  ['ellipsize', 'Ellipsis …'],
+  ['overflow', 'Run over'],
+];
+
+const SHOW_HIDE: ['show' | 'hide', string][] = [
+  ['show', 'Show'],
+  ['hide', 'Hide'],
+];
 
 const DATA_KEY_PATTERN = /^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)*$/;
 
@@ -170,6 +206,7 @@ export class VerdocsBuilderFields {
   @State() formatError = '';
   @State() patternField = '';
   @State() optionsDraft: {name: string; options: IDropdownOption[]} | null = null;
+  @State() fitDraft: {name: string; min: number; max: number} | null = null;
   @State() catalog: IDataCatalog | null = null;
   @State() fillMenuOpen = false;
   @State() fillSearch = '';
@@ -1352,7 +1389,7 @@ export class VerdocsBuilderFields {
     };
 
     return (
-      <div class={{'insp-col': true, open}}>
+      <div class={{'insp-col': true, open}} data-section={id}>
         <div
           class="insp-colh"
           role="button"
@@ -1403,6 +1440,34 @@ export class VerdocsBuilderFields {
     const config = (field.config?.type === 'textbox' || field.config?.type === 'textarea' ? field.config : {type: field.type}) as ITextFieldConfig;
     const saveConfig = (changes: Partial<ITextFieldConfig>) => this.saveField(field.name, {config: tidyConfig({...config, ...changes})});
     const formatValue = !field.validator && (config.validation?.pattern || this.patternField === field.name) ? 'pattern' : field.validator || '';
+    // A radio group's members all share one config
+    const settings = <T extends TFieldConfig>() => (field.config?.type === field.type ? field.config : {type: field.type}) as T;
+    const saveSettings = <T extends TFieldConfig>(changes: Partial<T>) => this.saveGroup(field, {config: tidyConfig({...settings<T>(), ...changes})});
+
+    const fit =
+      this.fitDraft?.name === field.name ? this.fitDraft : {max: config.fit?.max_font_size ?? FIT_DEFAULT, min: config.fit?.min_font_size ?? config.fit?.max_font_size ?? FIT_DEFAULT};
+    const fitRatio = (size: number) => String(Math.min(1, Math.max(0, (size - FIT_RANGE.min) / (FIT_RANGE.max - FIT_RANGE.min))));
+    // Dragging one handle past the other pushes it along
+    const dragFit = (min: number, max: number) => (this.fitDraft = {name: field.name, min, max});
+    const saveFitSizes = () => {
+      const draft = this.fitDraft;
+      if (draft?.name === field.name) {
+        saveConfig({fit: tidyFit({...config.fit, max_font_size: draft.max, min_font_size: draft.min})}).then(() => (this.fitDraft = null));
+      }
+    };
+    const fitSummary = [
+      fit.min < fit.max ? `${fit.max} to ${fit.min} pt` : `${fit.max} pt`,
+      config.fit?.overflow === 'truncate' ? 'Cut off' : config.fit?.overflow === 'ellipsize' ? 'Ellipsis' : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+
+    const stamp = settings<ISignatureFieldConfig>().stamp || {};
+    const signer = field.type === 'initial' ? 'initials' : 'signature';
+    const stampSummary =
+      stamp.hash !== false && stamp.date !== false ? 'Hash and date' : stamp.hash !== false ? 'Hash only' : stamp.date !== false ? 'Date only' : `${signer.charAt(0).toUpperCase()}${signer.slice(1)} only`;
+    const includeTime = settings<ITimestampFieldConfig>().include_time !== false;
+    const checkbox = settings<ICheckboxFieldConfig>();
 
     // Text inputs save when they lose focus. Enter saves, and Escape puts the saved value back.
     const keys = (saved: string) => (e: KeyboardEvent) => {
@@ -1424,6 +1489,19 @@ export class VerdocsBuilderFields {
         <button type="button" role="switch" aria-label={label} aria-checked={String(on)} class={{'insp-toggle': true, 'on': on}} onClick={onClick}>
           <i />
         </button>
+      </div>
+    );
+
+    const segmented = <T extends string>(label: string, name: string, value: T, choices: [T, string][], pick: (choice: T) => void) => (
+      <div class="insp-label">
+        {label}
+        <div class="insp-seg" role="radiogroup" aria-label={label} data-name={name}>
+          {choices.map(([choice, text]) => (
+            <button type="button" role="radio" aria-checked={String(choice === value)} class={{on: choice === value}} onClick={() => choice !== value && pick(choice)}>
+              {text}
+            </button>
+          ))}
+        </div>
       </div>
     );
 
@@ -1557,6 +1635,9 @@ export class VerdocsBuilderFields {
                       ))}
                     </select>
                   </label>
+                  {segmented('Unselected on the signed PDF', 'stamp_unselected', settings<IRadioFieldConfig>().stamp_unselected ? 'show' : 'hide', SHOW_HIDE, choice =>
+                    saveSettings<IRadioFieldConfig>({stamp_unselected: choice === 'show' || undefined}),
+                  )}
                   {members.length > 1 && members.every(member => member.page === field.page) && (
                     <div class="insp-row">
                       <span>Arrange on the page</span>
@@ -1868,9 +1949,93 @@ export class VerdocsBuilderFields {
               ),
             )}
 
+          {textField &&
+            this.renderSection('fit', 'Fit', fitSummary, !!config.fit, () => (
+              <Fragment>
+                <div class="insp-label">
+                  Font size
+                  <div class="insp-range" style={{'--from': fitRatio(fit.min), '--to': fitRatio(fit.max)}}>
+                    <input
+                      type="range"
+                      name="min_font_size"
+                      aria-label="Smallest font size"
+                      min={FIT_RANGE.min}
+                      max={FIT_RANGE.max}
+                      step={0.5}
+                      value={fit.min}
+                      onInput={(e: any) => dragFit(Number(e.target.value), Math.max(Number(e.target.value), fit.max))}
+                      onChange={saveFitSizes}
+                    />
+                    <input
+                      type="range"
+                      name="max_font_size"
+                      aria-label="Starting font size"
+                      min={FIT_RANGE.min}
+                      max={FIT_RANGE.max}
+                      step={0.5}
+                      value={fit.max}
+                      onInput={(e: any) => dragFit(Math.min(Number(e.target.value), fit.min), Number(e.target.value))}
+                      onChange={saveFitSizes}
+                    />
+                  </div>
+                  <div class="insp-range-labels">
+                    <span>{fit.min < fit.max ? `Shrinks down to ${fit.min} pt` : "Doesn't shrink"}</span>
+                    <span>Starts at {fit.max} pt</span>
+                  </div>
+                </div>
+                {segmented("If it still doesn't fit", 'overflow', config.fit?.overflow || 'overflow', OVERFLOWS, overflow => saveConfig({fit: tidyFit({...config.fit, overflow})}))}
+              </Fragment>
+            ))}
+
+          {(field.type === 'signature' || field.type === 'initial') &&
+            this.renderSection('stamp', 'Stamp', stampSummary, stamp.hash === false || stamp.date === false, () => (
+              <Fragment>
+                {toggle('Hash', stamp.hash !== false, () => saveSettings<ISignatureFieldConfig>({stamp: tidyGroup({...stamp, hash: stamp.hash === false ? undefined : false})}))}
+                {toggle('Date and time', stamp.date !== false, () => saveSettings<ISignatureFieldConfig>({stamp: tidyGroup({...stamp, date: stamp.date === false ? undefined : false})}))}
+                <div class="insp-hint">Printed beside the {signer} on the signed PDF.</div>
+              </Fragment>
+            ))}
+
+          {field.type === 'timestamp' &&
+            this.renderSection('timestamp', 'Timestamp', includeTime ? 'Date and time' : 'Date only', !includeTime, () =>
+              segmented(
+                'Shows',
+                'include_time',
+                includeTime ? 'time' : 'date',
+                [
+                  ['time', 'Date and time'],
+                  ['date', 'Date only'],
+                ],
+                choice => saveSettings<ITimestampFieldConfig>({include_time: choice === 'date' ? false : undefined}),
+              ),
+            )}
+
           {field.type === 'checkbox' &&
-            this.renderSection('checkbox', 'Checkbox', field.default === 'true' ? 'Starts checked' : 'Starts unchecked', field.default === 'true', () =>
-              toggle('Pre-checked', field.default === 'true', () => this.saveField(field.name, {default: field.default === 'true' ? 'false' : 'true'})),
+            this.renderSection(
+              'checkbox',
+              'Checkbox',
+              [field.default === 'true' ? 'Starts checked' : 'Starts unchecked', checkbox.image === 'x' && 'X mark', checkbox.stamp_unchecked === false && 'Unchecked hidden']
+                .filter(Boolean)
+                .join(' · '),
+              field.default === 'true' || checkbox.image === 'x' || checkbox.stamp_unchecked === false,
+              () => (
+                <Fragment>
+                  {toggle('Pre-checked', field.default === 'true', () => this.saveField(field.name, {default: field.default === 'true' ? 'false' : 'true'}))}
+                  {segmented(
+                    'Mark',
+                    'image',
+                    checkbox.image === 'x' ? 'x' : 'check',
+                    [
+                      ['check', '✓ Check'],
+                      ['x', '✕ X'],
+                    ],
+                    image => saveSettings<ICheckboxFieldConfig>({image: image === 'x' ? 'x' : undefined}),
+                  )}
+                  {segmented('Unchecked on the signed PDF', 'stamp_unchecked', checkbox.stamp_unchecked === false ? 'hide' : 'show', SHOW_HIDE, choice =>
+                    saveSettings<ICheckboxFieldConfig>({stamp_unchecked: choice === 'hide' ? false : undefined}),
+                  )}
+                </Fragment>
+              ),
             )}
 
           {field.type === 'dropdown' &&
@@ -1916,6 +2081,16 @@ export class VerdocsBuilderFields {
                   <button type="button" class="insp-add" onClick={() => (this.optionsDraft = {name: field.name, options: [...options, {id: '', label: ''}]})}>
                     + Add option
                   </button>
+                  {segmented(
+                    'The signed PDF shows',
+                    'stamp',
+                    settings<IDropdownFieldConfig>().stamp === 'label' ? 'label' : 'id',
+                    [
+                      ['label', 'Label'],
+                      ['id', 'ID'],
+                    ],
+                    choice => saveSettings<IDropdownFieldConfig>({stamp: choice === 'label' ? 'label' : undefined}),
+                  )}
                 </Fragment>
               ),
               true,

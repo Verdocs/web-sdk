@@ -151,13 +151,14 @@ export class VerdocsFieldCheckbox {
     const signerClass = `signer-${(index % 10) + 1}`;
 
     const checked = value === 'true';
+    const cross = field?.config?.type === 'checkbox' && field.config.image === 'x';
 
     if (done) {
-      return <Host class={{'verdocs-field': true,done}}>{checked ? '✓' : '☐'}</Host>;
+      return <Host class={{'verdocs-field': true, done}}>{checked ? (cross ? '✕' : '✓') : '☐'}</Host>;
     }
 
     return (
-      <Host class={{'verdocs-field': true,required, disabled, done, focused, [signerClass]: true}} style={{'--verdocs-toggle-scale': String(getToggleScale(field))}}>
+      <Host class={{'verdocs-field': true, required, disabled, done, focused, cross, [signerClass]: true}} style={{'--verdocs-toggle-scale': String(getToggleScale(field))}}>
         {label && <div class="label">{label}</div>}
         {editable && <div class="resize-grip" />}
 
