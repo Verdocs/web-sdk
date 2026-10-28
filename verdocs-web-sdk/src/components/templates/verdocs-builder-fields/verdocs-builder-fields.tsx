@@ -115,6 +115,19 @@ const OVERFLOWS: [IFieldTextFit['overflow'], string][] = [
   ['overflow', 'Run over'],
 ];
 
+// The smallest a field can be typed in, matching what dragging its corner allows
+const MIN_SIZES: Record<string, [number, number]> = {
+  textbox: [30, 10],
+  textarea: [30, 10],
+  date: [50, 12],
+  signature: [71, 36],
+  initial: [71, 36],
+  checkbox: [8, 8],
+  radio: [8, 8],
+};
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), Math.max(min, max));
+
 // Signing's upload limit
 const MAX_ATTACHMENT_MB = 25;
 const FILE_TYPE = /^(\.[a-z0-9]+|[a-z]+\/[a-z0-9.+*-]+)$/i;
@@ -1542,6 +1555,43 @@ export class VerdocsBuilderFields {
     const includeTime = settings<ITimestampFieldConfig>().include_time !== false;
     const checkbox = settings<ICheckboxFieldConfig>();
 
+    const geometry = this.currentGeometry(field);
+    const pageSize = (this.template?.documents || []).find(doc => doc.id === field.document_id)?.page_sizes?.[field.page];
+    const pageWidth = pageSize?.width || 612;
+    const pageHeight = pageSize?.height || 792;
+    const toggleField = field.type === 'checkbox' || field.type === 'radio';
+    const [minWidth, minHeight] = MIN_SIZES[field.type] || [8, 8];
+    // Typed values stay on the page and no smaller than dragging allows. A radio group's options share one size.
+    const saveGeometry = (key: 'x' | 'y' | 'width' | 'height' | 'size', e: any) => {
+      const typed = Math.round(Number(e.target.value));
+      if (e.target.value.trim() === '' || !Number.isFinite(typed)) {
+        e.target.value = String(key === 'size' ? geometry.width : geometry[key]);
+        return;
+      }
+
+      const {x, y, width, height} = geometry;
+      if (key === 'size') {
+        const size = clamp(typed, minWidth, Math.min(pageWidth - x, pageHeight - y));
+        e.target.value = String(size);
+        members.forEach(member => this.saveField(member.name, {width: size, height: size}, this.currentGeometry(member)));
+        return;
+      }
+
+      const value =
+        key === 'x'
+          ? clamp(typed, 0, pageWidth - width)
+          : key === 'y'
+            ? clamp(typed, 0, pageHeight - height)
+            : key === 'width'
+              ? clamp(typed, minWidth, pageWidth - x)
+              : clamp(typed, minHeight, pageHeight - y);
+      e.target.value = String(value);
+      if (value !== geometry[key]) {
+        // A text field's height decides whether it takes more than one line, as when it's resized
+        this.saveField(field.name, {[key]: value, ...(key === 'height' && textField ? {multiline: value > 15} : {})}, geometry);
+      }
+    };
+
     const date = settings<IDateFieldConfig>();
     const allowed = this.dateBetween === field.name || date.min || date.max ? 'between' : date.allowed || 'any';
     const dateSummary = [
@@ -2304,6 +2354,71 @@ export class VerdocsBuilderFields {
               ),
               true,
             )}
+
+          {this.renderSection(
+            'position',
+            'Position',
+            toggleField ? `${geometry.width} pt at ${geometry.x}, ${geometry.y}` : `${geometry.width} × ${geometry.height} at ${geometry.x}, ${geometry.y}`,
+            false,
+            () => (
+              <Fragment>
+                <div class="insp-two">
+                  <label class="insp-label">
+                    X
+                    <input name="x" type="number" class="insp-input" value={geometry.x} onChange={(e: any) => saveGeometry('x', e)} onKeyDown={keys(String(geometry.x))} />
+                  </label>
+                  <label class="insp-label">
+                    Y
+                    <input name="y" type="number" class="insp-input" value={geometry.y} onChange={(e: any) => saveGeometry('y', e)} onKeyDown={keys(String(geometry.y))} />
+                  </label>
+                </div>
+                {toggleField ? (
+                  <div class="insp-two">
+                    <label class="insp-label">
+                      Size
+                      <input
+                        name="size"
+                        type="number"
+                        min={minWidth}
+                        class="insp-input"
+                        value={geometry.width}
+                        onChange={(e: any) => saveGeometry('size', e)}
+                        onKeyDown={keys(String(geometry.width))}
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <div class="insp-two">
+                    <label class="insp-label">
+                      Width
+                      <input
+                        name="width"
+                        type="number"
+                        min={minWidth}
+                        class="insp-input"
+                        value={geometry.width}
+                        onChange={(e: any) => saveGeometry('width', e)}
+                        onKeyDown={keys(String(geometry.width))}
+                      />
+                    </label>
+                    <label class="insp-label">
+                      Height
+                      <input
+                        name="height"
+                        type="number"
+                        min={minHeight}
+                        class="insp-input"
+                        value={geometry.height}
+                        onChange={(e: any) => saveGeometry('height', e)}
+                        onKeyDown={keys(String(geometry.height))}
+                      />
+                    </label>
+                  </div>
+                )}
+                <div class="insp-hint">In points, from the page's bottom-left corner.</div>
+              </Fragment>
+            ),
+          )}
 
           {!radio &&
             this.renderSection('developer', 'Developer', field.name, false, () => (

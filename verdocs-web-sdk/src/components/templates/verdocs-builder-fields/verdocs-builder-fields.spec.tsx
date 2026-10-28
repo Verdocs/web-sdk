@@ -376,6 +376,29 @@ describe('verdocs-builder-fields', () => {
       expect(saveField).toHaveBeenLastCalledWith('proof', {config: {type: 'attachment', max_size_mb: 25}});
     });
 
+    it('keeps typed positions on the page and sizes no smaller than dragging allows', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.template = {...builder.template, fields: [{...builder.findField('name'), x: 100, y: 600, width: 150, height: 15}]} as any;
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      builder.openSections = {position: true};
+      await page.waitForChanges();
+
+      const change = (name: string, value: string) => {
+        const el = page.root.querySelector(`input[name="${name}"]`) as any;
+        el.value = value;
+        el.dispatchEvent(new (page.win as any).Event('change'));
+        return el.value;
+      };
+
+      expect(change('width', '5')).toEqual('30');
+      expect(saveField).toHaveBeenLastCalledWith('name', {width: 30}, expect.objectContaining({x: 100, y: 600}));
+      expect(change('y', '9999')).toEqual('777');
+      expect(saveField).toHaveBeenLastCalledWith('name', {y: 777}, expect.anything());
+      expect(change('height', '24')).toEqual('24');
+      expect(saveField).toHaveBeenLastCalledWith('name', {height: 24, multiline: true}, expect.anything());
+    });
+
     it('saves options without blank rows, filling a missing ID from the label', async () => {
       const {builder, saveField} = await renderBuilder();
 

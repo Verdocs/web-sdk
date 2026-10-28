@@ -71,8 +71,8 @@
   .vb-face {
     inset: 0;
     display: flex;
-    gap: screen(4);
-    padding: 0 screen(5);
+    gap: screen(5);
+    padding: 0 screen(8);
     position: absolute;
     align-items: center;
     pointer-events: none;
@@ -91,10 +91,12 @@
     }
   }
 
+  // Trimmed to the capitals so centering the line centers the letters, not the font's extra room above them
   .vb-label {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-box: trim-both cap alphabetic;
   }
 
   .vb-req {
