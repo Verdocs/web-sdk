@@ -7,6 +7,7 @@ import { ProxyCmp } from './angular-component-lib/utils';
 import type { Components } from '@verdocs/web-sdk/components';
 
 import { defineCustomElement as defineVerdocsAdoptSignatureDialog } from '@verdocs/web-sdk/components/verdocs-adopt-signature-dialog.js';
+import { defineCustomElement as defineVerdocsApproverDialog } from '@verdocs/web-sdk/components/verdocs-approver-dialog.js';
 import { defineCustomElement as defineVerdocsAuth } from '@verdocs/web-sdk/components/verdocs-auth.js';
 import { defineCustomElement as defineVerdocsBuild } from '@verdocs/web-sdk/components/verdocs-build.js';
 import { defineCustomElement as defineVerdocsBuilder } from '@verdocs/web-sdk/components/verdocs-builder.js';
@@ -122,6 +123,41 @@ representation of the signature adopted.
   next: EventEmitter<CustomEvent<{signature: string; initials: string}>>;
   /**
    * Event fired when the step is cancelled. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+   */
+  exit: EventEmitter<CustomEvent<any>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsApproverDialog
+})
+@Component({
+  selector: 'verdocs-approver-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: [],
+  outputs: ['next', 'exit'],
+})
+export class VerdocsApproverDialog {
+  protected el: HTMLVerdocsApproverDialogElement;
+  @Output() next = new EventEmitter<CustomEvent<any>>();
+  @Output() exit = new EventEmitter<CustomEvent<any>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface VerdocsApproverDialog extends Components.VerdocsApproverDialog {
+  /**
+   * Event fired when the user clicks the Okay button.
+   */
+  next: EventEmitter<CustomEvent<any>>;
+  /**
+   * Event fired when the dialog is closed via the close button or background overlay. This is called exit to avoid
+conflicts with the JS-reserved "cancel" event name.
    */
   exit: EventEmitter<CustomEvent<any>>;
 }
@@ -2205,14 +2241,14 @@ the `contactSuggestions` property.
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsSign,
-  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId', 'toolbarStyle']
+  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId', 'showApproverDialog', 'toolbarStyle']
 })
 @Component({
   selector: 'verdocs-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId', 'toolbarStyle'],
+  inputs: ['endpoint', 'envelopeId', 'headerTargetId', 'inviteCode', 'roleId', 'showApproverDialog', 'toolbarStyle'],
   outputs: ['sdkError', 'envelopeLoaded', 'envelopeUpdated'],
 })
 export class VerdocsSign {

@@ -93,6 +93,12 @@ export class VerdocsSign {
   @Prop() toolbarStyle: 'controls' | 'menu' = 'menu';
 
   /**
+   * If set, recipients of type "approver" will be shown a dialog explaining that they are being asked to review and
+   * approve the document.
+   */
+  @Prop() showApproverDialog: boolean = false;
+
+  /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
@@ -144,6 +150,7 @@ export class VerdocsSign {
   @State() delegated = false;
   @State() kbaChoices = [];
   @State() showDownloadDialog = false;
+  @State() approverDialogDismissed = false;
 
   @State() loading = true;
   @State() envelope: IEnvelope | null = null;
@@ -869,7 +876,7 @@ export class VerdocsSign {
 
     const invalidFields = this.getRecipientFields().filter(field => !isFieldValid(field, this.getRecipientFields()));
     if (invalidFields.length < 1) {
-      this.nextButtonLabel = 'Finish';
+      this.nextButtonLabel = this.recipient.type === 'approver' ? 'Approve' : 'Finish';
       if (!this.nextSubmits) {
         this.nextSubmits = true;
       }
@@ -1587,6 +1594,7 @@ export class VerdocsSign {
 
     const totalPages = this.envelope.documents.reduce((acc, doc) => acc + doc.pages, 0);
     const pageOptions = integerSequence(1, totalPages).map(p => ({label: p.toString(), value: p.toString()}));
+    const approverHasNoFields = this.getRecipientFields().length === 0 && this.recipient.type === 'approver'
     let globalPageCounter = 0;
 
     return (
@@ -1612,7 +1620,11 @@ export class VerdocsSign {
                   return (
                     <span class="remaining-count">
                       <span class="check-icon" innerHTML={CheckCircleIcon} />
-                      All required fields complete
+                      {approverHasNoFields ? (
+                        <span>Awaiting document approval</span>
+                      ) : (
+                        <span>All required fields complete</span>
+                      )}
                       {optionalLeft > 0 && (
                         <div class="review-optional">
                           <span class="separator">| </span>
@@ -1740,6 +1752,10 @@ export class VerdocsSign {
             );
           })}
         </div>
+
+        {this.showApproverDialog && this.recipient.type === 'approver' && !this.approverDialogDismissed && (
+          <verdocs-approver-dialog onNext={() => (this.approverDialogDismissed = true)} onExit={() => (this.approverDialogDismissed = true)} />
+        )}
 
         {this.showFinishLater && (
           <verdocs-ok-dialog
