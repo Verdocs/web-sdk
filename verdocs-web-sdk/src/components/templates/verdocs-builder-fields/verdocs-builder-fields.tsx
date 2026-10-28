@@ -1,7 +1,9 @@
 import interact from 'interactjs';
+import type {TDataCatalogEntryType} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
-import {getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, saveDataCatalogEntries, TDataCatalogEntryType} from '@verdocs/js-sdk';
+import {formatFieldNumber, getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, ITextFieldConfig, saveDataCatalogEntries} from '@verdocs/js-sdk';
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import type {ICheckboxFieldConfig, IDropdownFieldConfig, IFieldTextFit, IRadioFieldConfig, ISignatureFieldConfig, ITimestampFieldConfig, TFieldConfig} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {AlignLeftIcon, CloseIcon, DataIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, SpaceEvenlyIcon, TrashIcon} from '../../../utils/Icons';
 import {drawRecipientField, FIELD_TYPES, radioGroup, recipientNumber} from '../../../utils/RecipientFields';
@@ -32,7 +34,7 @@ const defaultRequired = (type: TFieldType) => !['radio', 'attachment', 'checkbox
 const KEY_FITS: Partial<Record<TFieldType, TDataCatalogEntryType[]>> = {textbox: ['text'], date: ['date'], checkbox: ['boolean'], radio: ['choice'], dropdown: ['choice']};
 
 // Which Inspector sections start open, and where we remember each person's choices.
-const SECTIONS_OPEN_BY_DEFAULT = ['group', 'options', 'format', 'text', 'checkbox'];
+const SECTIONS_OPEN_BY_DEFAULT = ['group', 'options', 'format', 'text', 'checkbox', 'stamp', 'timestamp'];
 const SECTIONS_STORAGE_KEY = 'verdocs-builder-inspector-sections';
 
 const readOpenSections = (): Record<string, boolean> => {
@@ -42,6 +44,65 @@ const readOpenSections = (): Record<string, boolean> => {
     return {};
   }
 };
+
+const TEXT_CASES = [
+  ['', 'As typed'],
+  ['upper', 'UPPERCASE'],
+  ['lower', 'lowercase'],
+];
+
+const NUMBER_STYLES = [
+  ['', 'As typed'],
+  ['number', 'Number'],
+  ['currency', 'Currency'],
+  ['percent', 'Percent'],
+];
+
+const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'NZD', 'JPY', 'CHF', 'MXN', 'BRL', 'INR', 'CNY', 'SEK', 'NOK', 'DKK', 'ZAR', 'SGD', 'HKD'];
+
+const tidy = (settings: Record<string, any>) => {
+  const kept: Record<string, any> = {};
+  Object.keys(settings)
+    .filter(key => settings[key] !== undefined && settings[key] !== null && settings[key] !== '')
+    .forEach(key => (kept[key] = settings[key]));
+  return kept;
+};
+
+// A config without its empty settings, or null when only its type is left
+const tidyConfig = <T extends TFieldConfig>(config: T) => {
+  const kept = tidy(config);
+  return Object.keys(kept).length > 1 ? (kept as T) : null;
+};
+
+// Nested settings without their empty values, or undefined when nothing is left
+const tidyGroup = <T extends object>(settings: T) => {
+  const kept = tidy(settings);
+  return Object.keys(kept).length ? (kept as T) : undefined;
+};
+
+// Stamping starts text at 11 pt
+const FIT_DEFAULT = 11;
+const FIT_RANGE = {min: 6, max: 24};
+
+// Settings that match the defaults drop out, so an untouched Fit stays empty
+const tidyFit = (fit: IFieldTextFit) =>
+  tidyGroup({
+    ...fit,
+    max_font_size: fit.max_font_size === FIT_DEFAULT ? undefined : fit.max_font_size,
+    min_font_size: fit.min_font_size === (fit.max_font_size ?? FIT_DEFAULT) ? undefined : fit.min_font_size,
+    overflow: fit.overflow === 'overflow' ? undefined : fit.overflow,
+  });
+
+const OVERFLOWS: [IFieldTextFit['overflow'], string][] = [
+  ['truncate', 'Cut off'],
+  ['ellipsize', 'Ellipsis …'],
+  ['overflow', 'Run over'],
+];
+
+const SHOW_HIDE: ['show' | 'hide', string][] = [
+  ['show', 'Show'],
+  ['hide', 'Hide'],
+];
 
 const DATA_KEY_PATTERN = /^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+)*$/;
 
@@ -142,7 +203,10 @@ export class VerdocsBuilderFields {
   // Bumped to remount the settings form, which resets any edits that weren't saved.
   @State() nameError = '';
   @State() groupError = '';
+  @State() formatError = '';
+  @State() patternField = '';
   @State() optionsDraft: {name: string; options: IDropdownOption[]} | null = null;
+  @State() fitDraft: {name: string; min: number; max: number} | null = null;
   @State() catalog: IDataCatalog | null = null;
   @State() fillMenuOpen = false;
   @State() fillSearch = '';
@@ -470,6 +534,8 @@ export class VerdocsBuilderFields {
       this.renaming = false;
       this.nameError = '';
       this.groupError = '';
+      this.formatError = '';
+      this.patternField = '';
       this.optionsDraft = null;
     }
 
@@ -1323,7 +1389,7 @@ export class VerdocsBuilderFields {
     };
 
     return (
-      <div class={{'insp-col': true, open}}>
+      <div class={{'insp-col': true, open}} data-section={id}>
         <div
           class="insp-colh"
           role="button"
@@ -1368,7 +1434,40 @@ export class VerdocsBuilderFields {
     const options = this.draftOptions(field);
     const radio = field.type === 'radio';
     const members = this.groupMembers(field);
-    const formats = !field.validator || TEXT_FORMATS.some(format => format.value === field.validator) ? TEXT_FORMATS : [...TEXT_FORMATS, {value: field.validator, label: field.validator}];
+    // A validator the builder doesn't offer stays listed so it isn't lost
+    const unknownFormat = field.validator && !TEXT_FORMATS.some(format => format.value === field.validator) ? [{value: field.validator, label: field.validator}] : [];
+    const formats = [...TEXT_FORMATS, {value: 'pattern', label: 'Pattern'}, ...unknownFormat];
+    const config = (field.config?.type === 'textbox' || field.config?.type === 'textarea' ? field.config : {type: field.type}) as ITextFieldConfig;
+    const saveConfig = (changes: Partial<ITextFieldConfig>) => this.saveField(field.name, {config: tidyConfig({...config, ...changes})});
+    const formatValue = !field.validator && (config.validation?.pattern || this.patternField === field.name) ? 'pattern' : field.validator || '';
+    // A radio group's members all share one config
+    const settings = <T extends TFieldConfig>() => (field.config?.type === field.type ? field.config : {type: field.type}) as T;
+    const saveSettings = <T extends TFieldConfig>(changes: Partial<T>) => this.saveGroup(field, {config: tidyConfig({...settings<T>(), ...changes})});
+
+    const fit =
+      this.fitDraft?.name === field.name ? this.fitDraft : {max: config.fit?.max_font_size ?? FIT_DEFAULT, min: config.fit?.min_font_size ?? config.fit?.max_font_size ?? FIT_DEFAULT};
+    const fitRatio = (size: number) => String(Math.min(1, Math.max(0, (size - FIT_RANGE.min) / (FIT_RANGE.max - FIT_RANGE.min))));
+    // Dragging one handle past the other pushes it along
+    const dragFit = (min: number, max: number) => (this.fitDraft = {name: field.name, min, max});
+    const saveFitSizes = () => {
+      const draft = this.fitDraft;
+      if (draft?.name === field.name) {
+        saveConfig({fit: tidyFit({...config.fit, max_font_size: draft.max, min_font_size: draft.min})}).then(() => (this.fitDraft = null));
+      }
+    };
+    const fitSummary = [
+      fit.min < fit.max ? `${fit.max} to ${fit.min} pt` : `${fit.max} pt`,
+      config.fit?.overflow === 'truncate' ? 'Cut off' : config.fit?.overflow === 'ellipsize' ? 'Ellipsis' : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+
+    const stamp = settings<ISignatureFieldConfig>().stamp || {};
+    const signer = field.type === 'initial' ? 'initials' : 'signature';
+    const stampSummary =
+      stamp.hash !== false && stamp.date !== false ? 'Hash and date' : stamp.hash !== false ? 'Hash only' : stamp.date !== false ? 'Date only' : `${signer.charAt(0).toUpperCase()}${signer.slice(1)} only`;
+    const includeTime = settings<ITimestampFieldConfig>().include_time !== false;
+    const checkbox = settings<ICheckboxFieldConfig>();
 
     // Text inputs save when they lose focus. Enter saves, and Escape puts the saved value back.
     const keys = (saved: string) => (e: KeyboardEvent) => {
@@ -1393,6 +1492,19 @@ export class VerdocsBuilderFields {
       </div>
     );
 
+    const segmented = <T extends string>(label: string, name: string, value: T, choices: [T, string][], pick: (choice: T) => void) => (
+      <div class="insp-label">
+        {label}
+        <div class="insp-seg" role="radiogroup" aria-label={label} data-name={name}>
+          {choices.map(([choice, text]) => (
+            <button type="button" role="radio" aria-checked={String(choice === value)} class={{on: choice === value}} onClick={() => choice !== value && pick(choice)}>
+              {text}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+
     const recipient = (
       <label class="insp-label">
         Recipient
@@ -1410,7 +1522,7 @@ export class VerdocsBuilderFields {
       (this.optionsDraft = {name: field.name, options: options.map((option, i) => (i === index ? {...option, ...changes} : option))});
 
     const textField = ['textbox', 'textarea'].includes(field.type);
-    const formatLabel = formats.find(format => format.value === (field.validator || ''))?.label || 'Any text';
+    const formatLabel = formats.find(format => format.value === formatValue)?.label || 'Any text';
     const optionCount = radio ? members.length : options.length;
 
     return (
@@ -1523,6 +1635,9 @@ export class VerdocsBuilderFields {
                       ))}
                     </select>
                   </label>
+                  {segmented('Unselected on the signed PDF', 'stamp_unselected', settings<IRadioFieldConfig>().stamp_unselected ? 'show' : 'hide', SHOW_HIDE, choice =>
+                    saveSettings<IRadioFieldConfig>({stamp_unselected: choice === 'show' || undefined}),
+                  )}
                   {members.length > 1 && members.every(member => member.page === field.page) && (
                     <div class="insp-row">
                       <span>Arrange on the page</span>
@@ -1545,56 +1660,382 @@ export class VerdocsBuilderFields {
             )}
 
           {textField &&
-            this.renderSection('format', 'Format', formatLabel, !!field.validator, () => (
-              <label class="insp-label">
-                Format
-                <select name="validator" class="insp-input" onChange={(e: any) => this.saveField(field.name, {validator: e.target.value || null})}>
-                  {formats.map(format => (
-                    <option value={format.value} selected={format.value === (field.validator || '')}>
-                      {format.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ))}
+            this.renderSection(
+              'format',
+              'Format',
+              [
+                formatLabel,
+                config.number?.style === 'currency' ? config.number.currency || 'USD' : NUMBER_STYLES.find(([style]) => style && style === config.number?.style)?.[1],
+                config.input_mask && 'Masked',
+              ]
+                .filter(Boolean)
+                .join(' · '),
+              !!(field.validator || config.validation || config.input_mask || config.number),
+              advanced => (
+                <Fragment>
+                  <label class="insp-label">
+                    Format
+                    <select
+                      name="validator"
+                      class="insp-input"
+                      onChange={(e: any) => {
+                        const value = e.target.value;
+                        this.formatError = '';
+                        this.patternField = value === 'pattern' ? field.name : '';
+                        // Leaving Pattern or Number drops their settings
+                        const next = tidyConfig({
+                          ...config,
+                          validation: value === 'pattern' ? config.validation : undefined,
+                          number: value === 'number' ? config.number : undefined,
+                        });
+                        const configChange = JSON.stringify(next) !== JSON.stringify(tidyConfig(config)) ? {config: next} : {};
+                        if (value !== 'pattern') {
+                          this.saveField(field.name, {validator: value || null, ...configChange});
+                        } else if (field.validator || configChange.config !== undefined) {
+                          this.saveField(field.name, {validator: null, ...configChange});
+                        }
+                      }}
+                    >
+                      {formats.map(format => (
+                        <option value={format.value} selected={format.value === formatValue}>
+                          {format.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  {formatValue === 'pattern' && (
+                    <Fragment>
+                      <label class="insp-label">
+                        Pattern
+                        <input
+                          name="validation_pattern"
+                          class="insp-input mono"
+                          value={config.validation?.pattern || ''}
+                          placeholder="HO-\d{4}-\d{6}"
+                          onChange={(e: any) => {
+                            const pattern = e.target.value.trim();
+                            // Minifiers drop a bare `new RegExp()` whose result goes unused, so we run it
+                            try {
+                              new RegExp(pattern).test('');
+                            } catch {
+                              this.formatError = "This pattern isn't a valid regular expression.";
+                              return;
+                            }
+
+                            this.formatError = '';
+                            saveConfig({validation: pattern ? {...config.validation, pattern} : undefined});
+                          }}
+                          onKeyDown={keys(config.validation?.pattern || '')}
+                        />
+                      </label>
+                      <label class="insp-label">
+                        Message when it doesn't match
+                        <input
+                          name="validation_message"
+                          class="insp-input"
+                          value={config.validation?.message || ''}
+                          placeholder="Optional"
+                          onChange={(e: any) => config.validation && saveConfig({validation: {pattern: config.validation.pattern, message: e.target.value.trim() || undefined}})}
+                          onKeyDown={keys(config.validation?.message || '')}
+                        />
+                      </label>
+                    </Fragment>
+                  )}
+
+                  {formatValue === 'number' && (
+                    <Fragment>
+                      <div class="insp-two">
+                        <label class="insp-label">
+                          Show as
+                          <select
+                            name="number_style"
+                            class="insp-input"
+                            onChange={(e: any) => {
+                              const style = e.target.value || null;
+                              saveConfig({number: style ? {...config.number, style, ...(style === 'currency' && !config.number?.currency ? {currency: 'USD'} : {})} : undefined});
+                            }}
+                          >
+                            {NUMBER_STYLES.map(([value, label]) => (
+                              <option value={value} selected={(config.number?.style || '') === value}>
+                                {label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        {config.number && (
+                          <label class="insp-label">
+                            Decimals
+                            <select
+                              name="number_decimals"
+                              class="insp-input"
+                              onChange={(e: any) => saveConfig({number: {...config.number, decimals: e.target.value === '' ? undefined : Number(e.target.value)}})}
+                            >
+                              {['', '0', '1', '2', '3', '4', '5', '6'].map(value => (
+                                <option value={value} selected={String(config.number?.decimals ?? '') === value}>
+                                  {value || 'Auto'}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                        )}
+                      </div>
+
+                      {config.number?.style === 'currency' && (
+                        <label class="insp-label">
+                          Currency
+                          <select name="currency" class="insp-input" onChange={(e: any) => saveConfig({number: {...config.number, currency: e.target.value}})}>
+                            {[...new Set([...CURRENCIES, config.number.currency || 'USD'])].map(code => (
+                              <option value={code} selected={(config.number.currency || 'USD') === code}>
+                                {code}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+
+                      {config.number && <div class="insp-hint">Signers see {formatFieldNumber(config.number, '12450')}</div>}
+
+                      {config.number && advanced && (
+                        <Fragment>
+                          <label class="insp-label">
+                            Locale
+                            <input
+                              name="locale"
+                              class="insp-input mono"
+                              value={config.number.locale || ''}
+                              placeholder="en-US"
+                              onChange={(e: any) => {
+                                const locale = e.target.value.trim();
+                                let known = !locale;
+                                try {
+                                  known = known || Intl.NumberFormat.supportedLocalesOf([locale]).length > 0;
+                                } catch {
+                                  known = false;
+                                }
+
+                                if (!known) {
+                                  this.formatError = 'Use a locale like en-US or de-DE.';
+                                  return;
+                                }
+
+                                this.formatError = '';
+                                saveConfig({number: {...config.number, locale: locale || undefined}});
+                              }}
+                              onKeyDown={keys(config.number.locale || '')}
+                            />
+                          </label>
+                          <div class="insp-two">
+                            {(['min', 'max'] as const).map(key => (
+                              <label class="insp-label">
+                                {key === 'min' ? 'Minimum' : 'Maximum'}
+                                <input
+                                  name={`number_${key}`}
+                                  type="number"
+                                  class="insp-input"
+                                  value={config.number[key] ?? ''}
+                                  placeholder="None"
+                                  onChange={(e: any) => {
+                                    const limit = parseFloat(e.target.value);
+                                    saveConfig({number: {...config.number, [key]: Number.isNaN(limit) ? undefined : limit}});
+                                  }}
+                                  onKeyDown={keys(String(config.number[key] ?? ''))}
+                                />
+                              </label>
+                            ))}
+                          </div>
+                        </Fragment>
+                      )}
+                    </Fragment>
+                  )}
+
+                  {(advanced || config.input_mask) && (
+                    <label class="insp-label">
+                      Input mask
+                      <input
+                        name="input_mask"
+                        class="insp-input mono"
+                        value={config.input_mask || ''}
+                        placeholder="(___) ___-____"
+                        onChange={(e: any) => {
+                          const mask = e.target.value;
+                          if (mask && !mask.includes('_')) {
+                            this.formatError = 'Use _ for each character the signer types.';
+                            return;
+                          }
+
+                          this.formatError = '';
+                          saveConfig({input_mask: mask || undefined});
+                        }}
+                        onKeyDown={keys(config.input_mask || '')}
+                      />
+                    </label>
+                  )}
+
+                  {this.formatError && <div class="insp-error">{this.formatError}</div>}
+                </Fragment>
+              ),
+              true,
+            )}
 
           {textField &&
             this.renderSection(
               'text',
               'Text',
-              [field.placeholder && `Placeholder "${field.placeholder}"`, field.default && `Starts as "${field.default}"`].filter(Boolean).join(' · ') || 'No placeholder',
-              !!(field.placeholder || field.default),
+              [
+                config.max_length && `Up to ${config.max_length} characters`,
+                config.text_case && TEXT_CASES.find(([value]) => value === config.text_case)?.[1],
+                field.placeholder && `Placeholder "${field.placeholder}"`,
+                field.default && `Starts as "${field.default}"`,
+              ]
+                .filter(Boolean)
+                .join(' · ') || 'No placeholder',
+              !!(config.max_length || config.text_case || field.placeholder || field.default),
               () => (
-                <div class="insp-two">
-                  <label class="insp-label">
-                    Placeholder
+                <Fragment>
+                  <div class="insp-two">
+                    <label class="insp-label">
+                      Max characters
+                      <input
+                        name="max_length"
+                        type="number"
+                        min="1"
+                        class="insp-input"
+                        value={config.max_length ?? ''}
+                        placeholder={`Fits the box (${Math.floor((field.width || 150) / 5)})`}
+                        onChange={(e: any) => {
+                          const max = parseInt(e.target.value, 10);
+                          saveConfig({max_length: max > 0 ? max : undefined});
+                        }}
+                        onKeyDown={keys(String(config.max_length ?? ''))}
+                      />
+                    </label>
+                    <label class="insp-label">
+                      Letter case
+                      <select name="text_case" class="insp-input" onChange={(e: any) => saveConfig({text_case: e.target.value || undefined})}>
+                        {TEXT_CASES.map(([value, label]) => (
+                          <option value={value} selected={(config.text_case || '') === value}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+                  <div class="insp-two">
+                    <label class="insp-label">
+                      Placeholder
+                      <input
+                        name="placeholder"
+                        class="insp-input"
+                        value={field.placeholder || ''}
+                        placeholder="Optional"
+                        onChange={(e: any) => this.saveField(field.name, {placeholder: e.target.value})}
+                        onKeyDown={keys(field.placeholder || '')}
+                      />
+                    </label>
+                    <label class="insp-label">
+                      Default value
+                      <input
+                        name="default"
+                        class="insp-input"
+                        value={field.default || ''}
+                        placeholder="Optional"
+                        onChange={(e: any) => this.saveField(field.name, {default: e.target.value})}
+                        onKeyDown={keys(field.default || '')}
+                      />
+                    </label>
+                  </div>
+                </Fragment>
+              ),
+            )}
+
+          {textField &&
+            this.renderSection('fit', 'Fit', fitSummary, !!config.fit, () => (
+              <Fragment>
+                <div class="insp-label">
+                  Font size
+                  <div class="insp-range" style={{'--from': fitRatio(fit.min), '--to': fitRatio(fit.max)}}>
                     <input
-                      name="placeholder"
-                      class="insp-input"
-                      value={field.placeholder || ''}
-                      placeholder="Optional"
-                      onChange={(e: any) => this.saveField(field.name, {placeholder: e.target.value})}
-                      onKeyDown={keys(field.placeholder || '')}
+                      type="range"
+                      name="min_font_size"
+                      aria-label="Smallest font size"
+                      min={FIT_RANGE.min}
+                      max={FIT_RANGE.max}
+                      step={0.5}
+                      value={fit.min}
+                      onInput={(e: any) => dragFit(Number(e.target.value), Math.max(Number(e.target.value), fit.max))}
+                      onChange={saveFitSizes}
                     />
-                  </label>
-                  <label class="insp-label">
-                    Default value
                     <input
-                      name="default"
-                      class="insp-input"
-                      value={field.default || ''}
-                      placeholder="Optional"
-                      onChange={(e: any) => this.saveField(field.name, {default: e.target.value})}
-                      onKeyDown={keys(field.default || '')}
+                      type="range"
+                      name="max_font_size"
+                      aria-label="Starting font size"
+                      min={FIT_RANGE.min}
+                      max={FIT_RANGE.max}
+                      step={0.5}
+                      value={fit.max}
+                      onInput={(e: any) => dragFit(Math.min(Number(e.target.value), fit.min), Number(e.target.value))}
+                      onChange={saveFitSizes}
                     />
-                  </label>
+                  </div>
+                  <div class="insp-range-labels">
+                    <span>{fit.min < fit.max ? `Shrinks down to ${fit.min} pt` : "Doesn't shrink"}</span>
+                    <span>Starts at {fit.max} pt</span>
+                  </div>
                 </div>
+                {segmented("If it still doesn't fit", 'overflow', config.fit?.overflow || 'overflow', OVERFLOWS, overflow => saveConfig({fit: tidyFit({...config.fit, overflow})}))}
+              </Fragment>
+            ))}
+
+          {(field.type === 'signature' || field.type === 'initial') &&
+            this.renderSection('stamp', 'Stamp', stampSummary, stamp.hash === false || stamp.date === false, () => (
+              <Fragment>
+                {toggle('Hash', stamp.hash !== false, () => saveSettings<ISignatureFieldConfig>({stamp: tidyGroup({...stamp, hash: stamp.hash === false ? undefined : false})}))}
+                {toggle('Date and time', stamp.date !== false, () => saveSettings<ISignatureFieldConfig>({stamp: tidyGroup({...stamp, date: stamp.date === false ? undefined : false})}))}
+                <div class="insp-hint">Printed beside the {signer} on the signed PDF.</div>
+              </Fragment>
+            ))}
+
+          {field.type === 'timestamp' &&
+            this.renderSection('timestamp', 'Timestamp', includeTime ? 'Date and time' : 'Date only', !includeTime, () =>
+              segmented(
+                'Shows',
+                'include_time',
+                includeTime ? 'time' : 'date',
+                [
+                  ['time', 'Date and time'],
+                  ['date', 'Date only'],
+                ],
+                choice => saveSettings<ITimestampFieldConfig>({include_time: choice === 'date' ? false : undefined}),
               ),
             )}
 
           {field.type === 'checkbox' &&
-            this.renderSection('checkbox', 'Checkbox', field.default === 'true' ? 'Starts checked' : 'Starts unchecked', field.default === 'true', () =>
-              toggle('Pre-checked', field.default === 'true', () => this.saveField(field.name, {default: field.default === 'true' ? 'false' : 'true'})),
+            this.renderSection(
+              'checkbox',
+              'Checkbox',
+              [field.default === 'true' ? 'Starts checked' : 'Starts unchecked', checkbox.image === 'x' && 'X mark', checkbox.stamp_unchecked === false && 'Unchecked hidden']
+                .filter(Boolean)
+                .join(' · '),
+              field.default === 'true' || checkbox.image === 'x' || checkbox.stamp_unchecked === false,
+              () => (
+                <Fragment>
+                  {toggle('Pre-checked', field.default === 'true', () => this.saveField(field.name, {default: field.default === 'true' ? 'false' : 'true'}))}
+                  {segmented(
+                    'Mark',
+                    'image',
+                    checkbox.image === 'x' ? 'x' : 'check',
+                    [
+                      ['check', '✓ Check'],
+                      ['x', '✕ X'],
+                    ],
+                    image => saveSettings<ICheckboxFieldConfig>({image: image === 'x' ? 'x' : undefined}),
+                  )}
+                  {segmented('Unchecked on the signed PDF', 'stamp_unchecked', checkbox.stamp_unchecked === false ? 'hide' : 'show', SHOW_HIDE, choice =>
+                    saveSettings<ICheckboxFieldConfig>({stamp_unchecked: choice === 'hide' ? false : undefined}),
+                  )}
+                </Fragment>
+              ),
             )}
 
           {field.type === 'dropdown' &&
@@ -1640,6 +2081,16 @@ export class VerdocsBuilderFields {
                   <button type="button" class="insp-add" onClick={() => (this.optionsDraft = {name: field.name, options: [...options, {id: '', label: ''}]})}>
                     + Add option
                   </button>
+                  {segmented(
+                    'The signed PDF shows',
+                    'stamp',
+                    settings<IDropdownFieldConfig>().stamp === 'label' ? 'label' : 'id',
+                    [
+                      ['label', 'Label'],
+                      ['id', 'ID'],
+                    ],
+                    choice => saveSettings<IDropdownFieldConfig>({stamp: choice === 'label' ? 'label' : undefined}),
+                  )}
                 </Fragment>
               ),
               true,

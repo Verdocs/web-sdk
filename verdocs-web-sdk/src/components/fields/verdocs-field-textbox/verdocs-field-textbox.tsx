@@ -1,10 +1,17 @@
 import interact from 'interactjs';
+import IMask, {InputMask} from 'imask';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
+import {IEnvelopeField, ITemplate, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {formatFieldNumber, getFieldFormatProblem, parseFieldNumber, TFieldFormatProblem} from '@verdocs/js-sdk';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State, Listen, Watch} from '@stencil/core';
-import {getValidators, IEnvelopeField, isValidInput, ITemplate, ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {FORMAT_MESSAGES} from '../../../utils/FieldFormats';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
+
+const textConfig = (field: IEnvelopeField | ITemplateField | null | undefined) =>
+  field?.config?.type === 'textbox' || field?.config?.type === 'textarea' ? field.config : undefined;
+
+const applyCase = (value: string, textCase: string | null | undefined) => (textCase === 'upper' ? value.toUpperCase() : textCase === 'lower' ? value.toLowerCase() : value);
 
 /**
  * Display a simple 1-line text input field.
@@ -17,6 +24,7 @@ import {Store} from '../../../utils/Datastore';
 export class VerdocsFieldTextbox {
   @Element() el: HTMLElement;
   private inputEl: HTMLInputElement | HTMLTextAreaElement;
+  private mask?: InputMask<any>;
 
   /**
    * Fields may be attached to templates or envelopes, but only template fields may be edited.
@@ -97,7 +105,7 @@ export class VerdocsFieldTextbox {
 
   @State() showingProperties?: boolean = false;
   @State() focused = false;
-  @State() invalid = false;
+  @State() problem: TFieldFormatProblem | null = null;
 
   @Listen('blur', {capture: true})
   handleBlur() {
@@ -138,10 +146,25 @@ export class VerdocsFieldTextbox {
   disconnectedCallback() {
     // Clear any interact.js drag/resize bindings so they don't leak if the DOM element is reused elsewhere
     interact(this.el).unset();
+    this.mask?.destroy();
+    this.mask = undefined;
   }
 
   componentDidRender() {
     interact.dynamicDrop(true);
+
+    const {field} = Store.getField(this.source, this.sourceid, this.fieldname, this.field);
+    const config = textConfig(field);
+    const masked = !this.editable && this.source === 'envelope' && !!config?.input_mask && this.inputEl instanceof HTMLInputElement;
+    if (masked && !this.mask) {
+      // Our masks mark each typed character with "_". IMask reads "*" as any character and has its own meaning for a few others.
+      const pattern = [...config.input_mask].map(char => (char === '_' ? '*' : /[0a*[\]{}`\\]/.test(char) ? `\\${char}` : char)).join('');
+      this.mask = IMask(this.inputEl as HTMLInputElement, {mask: pattern, prepareChar: (char: string) => applyCase(char, config.text_case)});
+      this.mask.on('accept', () => this.checkFormat(false));
+    } else if (!masked && this.mask) {
+      this.mask.destroy();
+      this.mask = undefined;
+    }
 
     if (this.editable) {
       interact(this.el).resizable({
@@ -229,13 +252,27 @@ export class VerdocsFieldTextbox {
   // Signers see a format problem when they leave the field, and it clears as soon as the value is fixed.
   checkFormat(force: boolean) {
     const {field} = Store.getField(this.source, this.sourceid, this.fieldname, this.field);
-    const validator = field?.validator;
-    if (this.editable || this.source !== 'envelope' || !validator || !getValidators().includes(validator) || (!force && !this.invalid)) {
+    if (this.editable || this.source !== 'envelope' || !field || (!force && !this.problem)) {
       return;
     }
 
-    const value = (this.inputEl?.value || '').trim();
-    this.invalid = !!value && !isValidInput(value, validator);
+    this.problem = getFieldFormatProblem(field as IEnvelopeField, (this.inputEl?.value || '').trim());
+  }
+
+  handleInput() {
+    const {field} = Store.getField(this.source, this.sourceid, this.fieldname, this.field);
+    const input = this.inputEl;
+    const textCase = textConfig(field)?.text_case;
+    if (textCase && !this.mask && input && !this.editable) {
+      const cased = applyCase(input.value, textCase);
+      if (cased !== input.value) {
+        const caret = input.selectionStart;
+        input.value = cased;
+        input.setSelectionRange(caret, caret);
+      }
+    }
+
+    this.checkFormat(false);
   }
 
   render() {
@@ -250,15 +287,26 @@ export class VerdocsFieldTextbox {
       value = (field as any)?.value;
     }
 
+    const config = textConfig(field);
+    value = applyCase(formatFieldNumber(config?.number, value || ''), config?.text_case);
+
     // TODO: This is an outdated technique from the old system. We should compute it.
-    const maxlength = width / 5;
+    const maxlength = config?.input_mask || config?.number ? undefined : config?.max_length || width / 5;
+    const [min, max] = [config?.number?.min, config?.number?.max].map(limit => (limit == null ? null : formatFieldNumber(config.number, String(limit))));
+    const messages: Record<TFieldFormatProblem, string> = {
+      format: config?.number ? 'Enter a number.' : FORMAT_MESSAGES[field?.validator || ''],
+      range: min && max ? `Enter an amount from ${min} to ${max}.` : min ? `Enter ${min} or more.` : `Enter ${max} or less.`,
+      mask: `Enter it like ${config?.input_mask}.`,
+      pattern: config?.validation?.message || 'Enter a value in the expected format.',
+      length: `Use ${config?.max_length} characters or fewer.`,
+    };
 
     if (done) {
-      return <Host class={{'verdocs-field': true,done}}>{value}</Host>;
+      return <Host class={{'verdocs-field': true, done}}>{value}</Host>;
     }
 
     return (
-      <Host class={{'verdocs-field': true,required, disabled, done, focused, small, invalid: this.invalid, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true, required, disabled, done, focused, small, 'invalid': !!this.problem, [signerClass]: true}}>
         {editable && <div class="edge-top" />}
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}
@@ -274,7 +322,7 @@ export class VerdocsFieldTextbox {
             disabled={readonly || disabled}
             ref={el => (this.inputEl = el)}
             onFocus={() => (this.focused = true)}
-            onInput={() => this.checkFormat(false)}
+            onInput={() => this.handleInput()}
             onBlur={() => {
               this.focused = false;
               this.checkFormat(true);
@@ -289,19 +337,24 @@ export class VerdocsFieldTextbox {
             name={fieldname}
             required={required}
             maxlength={maxlength}
-            placeholder={placeholder}
+            placeholder={placeholder || config?.input_mask || (config?.number ? formatFieldNumber(config.number, '1234.56') : '')}
             disabled={readonly || disabled}
             ref={el => (this.inputEl = el)}
             onFocus={() => (this.focused = true)}
-            onInput={() => this.checkFormat(false)}
+            onInput={() => this.handleInput()}
             onBlur={() => {
               this.focused = false;
+              const number = config?.number && !this.editable ? parseFieldNumber(config.number, this.inputEl.value) : null;
+              if (number !== null) {
+                this.inputEl.value = formatFieldNumber(config.number, String(number));
+              }
+
               this.checkFormat(true);
             }}
           />
         )}
 
-        {this.invalid && field?.validator && <div class="format-error">{FORMAT_MESSAGES[field.validator]}</div>}
+        {this.problem && messages[this.problem] && <div class="format-error">{messages[this.problem]}</div>}
 
         {editable && (
           <Fragment>

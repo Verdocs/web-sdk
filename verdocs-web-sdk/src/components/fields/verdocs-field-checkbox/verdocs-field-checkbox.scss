@@ -78,6 +78,11 @@ verdocs-field-checkbox {
     border-color: $verdocs-green;
   }
 
+  &.cross label > input[type='checkbox']:checked + *::before {
+    content: '✕';
+    font-size: 10px;
+  }
+
   &.required {
     border: 1px solid var(--verdocs-required-field-border);
   }

@@ -3,7 +3,7 @@ import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, 
 import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest, getEnvelope} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
-import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid, getCombinedEnvelopeDocumentDownloadLink} from '@verdocs/js-sdk';
+import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid, getCombinedEnvelopeDocumentDownloadLink, parseFieldNumber} from '@verdocs/js-sdk';
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
 import {IDocumentPageInfo, IDownloadEvent, DownloadAction} from '../../../utils/Types';
@@ -665,8 +665,12 @@ export class VerdocsSign {
     switch (field.type as any) {
       // TODO: Remove legacy type when no longer needed
       case 'textarea':
-      case 'textbox':
-        return this.saveFieldChange(field.name, value, false);
+      case 'textbox': {
+        // Number fields store the plain number, whatever the signer's locale made it look like
+        const format = field.config?.type === 'textbox' || field.config?.type === 'textarea' ? field.config.number : undefined;
+        const number = format ? parseFieldNumber(format, value) : null;
+        return this.saveFieldChange(field.name, number === null ? value : String(number), false);
+      }
 
       case 'checkbox': {
         return this.saveFieldChange(field.name, String(e.target.checked), false);
@@ -1154,13 +1158,24 @@ export class VerdocsSign {
     const recipientFields = this.getSortedDisplayableFields();
     // console.log('[SIGN] Rendering fields for page', pageInfo.pageNumber, recipientFields);
     // First render the fields for the signer
+    // Diagnostics for fields a signer reported never appeared: what we know about any field that didn't draw, never its value.
+    const describe = (field: IEnvelopeField, problem: string) => {
+      const {name, type, x, y, width, height} = field;
+      const page = {number: pageInfo.pageNumber, width: pageInfo.naturalWidth, height: pageInfo.naturalHeight, rendered: [pageInfo.renderedWidth, pageInfo.renderedHeight]};
+      console.warn('[SIGN] Field not visible', JSON.stringify({problem, envelope_id: this.envelopeId, role_name: this.roleId, field: {name, type, x, y, width, height}, page}));
+    };
+
+    const drawn: IEnvelopeField[] = [];
     recipientFields
       .filter(field => field && field.document_id === pageInfo.documentId && field.page === pageInfo.pageNumber)
       .forEach((field, tabIndex) => {
         const el = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
         if (!el) {
+          describe(field, 'not drawn');
           return;
         }
+
+        drawn.push(field);
 
         if (Array.isArray(el)) {
           el.map(e => this.attachFieldAttributes(pageInfo, field, e));
@@ -1188,6 +1203,21 @@ export class VerdocsSign {
             }
           });
       });
+
+    // Checked after layout, so a field that drew but landed off the page or with no size shows up too
+    requestAnimationFrame(() => {
+      const controls = document.getElementById(`${pageInfo.containerId}-controls`)?.getBoundingClientRect();
+      drawn.forEach(field => {
+        const box = document.getElementById(getFieldId(field))?.getBoundingClientRect();
+        if (!box || !controls) {
+          describe(field, box ? 'no page' : 'missing after render');
+        } else if (!box.width || !box.height) {
+          describe(field, 'no size');
+        } else if (box.right < controls.left || box.left > controls.right || box.bottom < controls.top || box.top > controls.bottom) {
+          describe(field, 'off the page');
+        }
+      });
+    });
 
     this.checkRecipientFields();
     this.updateFlagsForPage(pageInfo);

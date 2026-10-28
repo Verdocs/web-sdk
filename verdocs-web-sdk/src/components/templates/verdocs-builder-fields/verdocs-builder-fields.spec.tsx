@@ -151,6 +151,9 @@ describe('verdocs-builder-fields', () => {
         radio('joint'),
         radio('other-role', {role_name: 'Taxpayer', default: 'true'}),
         {name: 'state', role_name: 'Preparer', type: 'dropdown', page: 1, options: [{id: 'oh', label: 'Ohio'}]},
+        {name: 'agree', role_name: 'Preparer', type: 'checkbox', page: 1},
+        {name: 'when', role_name: 'Preparer', type: 'timestamp', page: 1},
+        {name: 'sig', role_name: 'Preparer', type: 'signature', page: 1},
       ],
     };
 
@@ -213,7 +216,7 @@ describe('verdocs-builder-fields', () => {
       const select = page.root.querySelector('select[name="validator"]') as any;
       const formatValues = () =>
         [...page.root.querySelectorAll('select[name="validator"] option')].map((option: any) => option.getAttribute('value') ?? option.value);
-      const known = ['', 'email', 'phone', 'url', 'postal_code', 'number', 'date', 'ssn'];
+      const known = ['', 'email', 'phone', 'url', 'postal_code', 'number', 'date', 'ssn', 'pattern'];
       expect(formatValues()).toEqual(known);
       select.value = 'email';
       select.dispatchEvent(new (page.win as any).Event('change'));
@@ -222,6 +225,122 @@ describe('verdocs-builder-fields', () => {
       builder.template = {...builder.template, fields: [{...builder.findField('name'), validator: 'custom_thing'}]} as any;
       await page.waitForChanges();
       expect(formatValues()).toEqual([...known, 'custom_thing']);
+    });
+
+    it('saves a pattern only once it compiles, and clears it when another format is picked', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      await page.waitForChanges();
+
+      const change = (selector: string, value: string) => {
+        const el = page.root.querySelector(selector) as any;
+        el.value = value;
+        el.dispatchEvent(new (page.win as any).Event('change'));
+      };
+
+      change('select[name="validator"]', 'pattern');
+      await page.waitForChanges();
+      change('input[name="validation_pattern"]', '(unclosed');
+      await page.waitForChanges();
+      expect(saveField).not.toHaveBeenCalled();
+      expect(page.root.querySelector('.insp-error')).toBeTruthy();
+
+      change('input[name="validation_pattern"]', 'HO-\\d{4}');
+      expect(saveField).toHaveBeenCalledWith('name', {config: {type: 'textbox', validation: {pattern: 'HO-\\d{4}'}}});
+
+      builder.template = {...builder.template, fields: [{...builder.findField('name'), config: {type: 'textbox', validation: {pattern: 'HO-\\d{4}'}}}]} as any;
+      await page.waitForChanges();
+      change('select[name="validator"]', 'email');
+      expect(saveField).toHaveBeenLastCalledWith('name', {validator: 'email', config: null});
+    });
+
+    it('saves a number style, and clears it when another format is picked', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.template = {...builder.template, fields: [{...builder.findField('name'), validator: 'number'}]} as any;
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      await page.waitForChanges();
+
+      const change = (selector: string, value: string) => {
+        const el = page.root.querySelector(selector) as any;
+        el.value = value;
+        el.dispatchEvent(new (page.win as any).Event('change'));
+      };
+
+      change('select[name="number_style"]', 'currency');
+      expect(saveField).toHaveBeenLastCalledWith('name', {config: {type: 'textbox', number: {style: 'currency', currency: 'USD'}}});
+
+      builder.template = {
+        ...builder.template,
+        fields: [{...builder.findField('name'), validator: 'number', config: {type: 'textbox', number: {style: 'currency', currency: 'USD'}}}],
+      } as any;
+      await page.waitForChanges();
+      change('select[name="validator"]', 'email');
+      expect(saveField).toHaveBeenLastCalledWith('name', {validator: 'email', config: null});
+    });
+
+    it('saves a character limit and letter case', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      await page.waitForChanges();
+
+      const limit = page.root.querySelector('input[name="max_length"]') as any;
+      limit.value = '12';
+      limit.dispatchEvent(new (page.win as any).Event('change'));
+      expect(saveField).toHaveBeenCalledWith('name', {config: {type: 'textbox', max_length: 12}});
+      limit.value = '';
+      limit.dispatchEvent(new (page.win as any).Event('change'));
+      expect(saveField).toHaveBeenLastCalledWith('name', {config: null});
+
+      const textCase = page.root.querySelector('select[name="text_case"]') as any;
+      textCase.value = 'upper';
+      textCase.dispatchEvent(new (page.win as any).Event('change'));
+      expect(saveField).toHaveBeenLastCalledWith('name', {config: {type: 'textbox', text_case: 'upper'}});
+    });
+
+    it('keeps Fit empty until its settings differ from the defaults', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.selectedFieldName = 'name';
+      builder.inspectorOpen = true;
+      builder.openSections = {fit: true};
+      await page.waitForChanges();
+
+      const slide = (name: string, value: string) => {
+        const el = page.root.querySelector(`input[name="${name}"]`) as any;
+        el.value = value;
+        el.dispatchEvent(new (page.win as any).Event('input'));
+        el.dispatchEvent(new (page.win as any).Event('change'));
+      };
+
+      slide('min_font_size', '8');
+      expect(saveField).toHaveBeenLastCalledWith('name', {config: {type: 'textbox', fit: {min_font_size: 8}}});
+      await page.waitForChanges();
+      slide('min_font_size', '11');
+      expect(saveField).toHaveBeenLastCalledWith('name', {config: null});
+    });
+
+    it("saves each type's stamping choices into its own config", async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.inspectorOpen = true;
+      const choose = async (fieldName: string, setting: string, index: number) => {
+        builder.selectedFieldName = fieldName;
+        await page.waitForChanges();
+        (page.root.querySelectorAll(`.insp-seg[data-name="${setting}"] button`)[index] as any).click();
+      };
+
+      await choose('agree', 'image', 1);
+      expect(saveField).toHaveBeenLastCalledWith('agree', {config: {type: 'checkbox', image: 'x'}});
+      await choose('when', 'include_time', 1);
+      expect(saveField).toHaveBeenLastCalledWith('when', {config: {type: 'timestamp', include_time: false}});
+      await choose('state', 'stamp', 0);
+      expect(saveField).toHaveBeenLastCalledWith('state', {config: {type: 'dropdown', stamp: 'label'}});
+
+      builder.selectedFieldName = 'sig';
+      await page.waitForChanges();
+      (page.root.querySelector('.insp-colb [role="switch"]') as any).click();
+      expect(saveField).toHaveBeenLastCalledWith('sig', {config: {type: 'signature', stamp: {hash: false}}});
     });
 
     it('saves options without blank rows, filling a missing ID from the label', async () => {
@@ -308,6 +427,18 @@ describe('verdocs-builder-fields', () => {
         ['joint', {required: true, readonly: false}],
         ['separate', {required: true, readonly: false}],
       ]);
+    });
+
+    it('shows unselected options on the PDF for the whole group', async () => {
+      const {page, builder, saveField} = await renderGroups();
+      builder.selectedFieldName = 'joint';
+      builder.inspectorOpen = true;
+      await page.waitForChanges();
+
+      (page.root.querySelectorAll('.insp-seg[data-name="stamp_unselected"] button')[0] as any).click();
+      await page.waitForChanges();
+      expect(saveField.mock.calls.map(([name]) => name)).toEqual(['single', 'joint', 'separate']);
+      expect(saveField).toHaveBeenLastCalledWith('separate', {config: {type: 'radio', stamp_unselected: true}});
     });
 
     it('adds the next option under the last one, giving a loose radio a group first', async () => {

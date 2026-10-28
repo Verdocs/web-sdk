@@ -677,6 +677,121 @@ verdocs-builder-fields {
     color: #b4233a;
   }
 
+  .insp-seg {
+    gap: 2px;
+    padding: 3px;
+    display: flex;
+    margin-top: 5px;
+    border-radius: 8px;
+    background: #f1f2f6;
+
+    button {
+      flex: 1;
+      border: 0;
+      cursor: pointer;
+      padding: 5px 3px;
+      background: none;
+      font-size: 11.5px;
+      font-weight: 600;
+      border-radius: 6px;
+      white-space: nowrap;
+      font-family: inherit;
+      color: $builder-muted;
+
+      &.on {
+        background: #ffffff;
+        color: $verdocs-purple;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+
+      &:focus-visible {
+        outline-offset: 1px;
+        outline: 2px solid $verdocs-purple;
+      }
+    }
+  }
+
+  // Two range inputs share one track. Thumbs sit inside the input, so the fill is inset by half a thumb.
+  .insp-range {
+    height: 22px;
+    margin-top: 6px;
+    position: relative;
+
+    &::before,
+    &::after {
+      top: 10px;
+      height: 3px;
+      content: '';
+      position: absolute;
+      border-radius: 2px;
+    }
+
+    &::before {
+      left: 0;
+      right: 0;
+      background: #e3e5ee;
+    }
+
+    &::after {
+      background: $verdocs-purple;
+      left: calc(7.5px + (100% - 15px) * var(--from));
+      right: calc(7.5px + (100% - 15px) * (1 - var(--to)));
+    }
+
+    input[type='range'] {
+      top: 0;
+      left: 0;
+      margin: 0;
+      z-index: 1;
+      width: 100%;
+      height: 22px;
+      background: none;
+      appearance: none;
+      position: absolute;
+      pointer-events: none;
+
+      &::-webkit-slider-thumb {
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+        appearance: none;
+        border-radius: 50%;
+        background: #ffffff;
+        pointer-events: auto;
+        box-sizing: border-box;
+        border: 2px solid $verdocs-purple;
+      }
+
+      &::-moz-range-thumb {
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+        border-radius: 50%;
+        background: #ffffff;
+        pointer-events: auto;
+        box-sizing: border-box;
+        border: 2px solid $verdocs-purple;
+      }
+
+      &:focus-visible::-webkit-slider-thumb {
+        box-shadow: 0 0 0 3px rgba(101, 77, 203, 0.2);
+      }
+    }
+
+    // When the handles meet, the smallest size is on top, since shrinking is the usual first move
+    input[name='min_font_size'] {
+      z-index: 2;
+    }
+  }
+
+  .insp-range-labels {
+    display: flex;
+    font-size: 11px;
+    font-weight: 400;
+    color: $builder-muted;
+    justify-content: space-between;
+  }
+
   .insp-hint {
     font-size: 11px;
     margin-top: 5px;
