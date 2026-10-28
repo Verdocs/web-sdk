@@ -19,6 +19,15 @@ export const VerdocsAdoptSignatureDialog: StencilVueComponent<JSX.VerdocsAdoptSi
 ]);
 
 
+export const VerdocsApproverDialog: StencilVueComponent<JSX.VerdocsApproverDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsApproverDialog>('verdocs-approver-dialog', undefined, [
+  'next',
+  'exit'
+], [
+  'next',
+  'exit'
+]);
+
+
 export const VerdocsAuth: StencilVueComponent<JSX.VerdocsAuth> = /*@__PURE__*/ defineContainer<JSX.VerdocsAuth>('verdocs-auth', undefined, [
   'endpoint',
   'visible',
@@ -819,6 +828,7 @@ export const VerdocsSign: StencilVueComponent<JSX.VerdocsSign> = /*@__PURE__*/ d
   'inviteCode',
   'headerTargetId',
   'toolbarStyle',
+  'showApproverDialog',
   'sdkError',
   'envelopeLoaded',
   'envelopeUpdated'

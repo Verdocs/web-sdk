@@ -63,6 +63,12 @@ export namespace Components {
         "nameLocked": boolean;
     }
     /**
+     * Display a simple dialog letting an approver know they are being asked to review and approve the document. An "Okay"
+     * button and a close button are shown, both of which dismiss the dialog.
+     */
+    interface VerdocsApproverDialog {
+    }
+    /**
      * Display an authentication dialog that allows the user to login or sign up. If the user is
      * already authenticated with a valid session, this component will hide itself and fire the
      * success callback immediately. It is up to the host application to render the next appropriate
@@ -2055,6 +2061,11 @@ export namespace Components {
          */
         "roleId": string | null;
         /**
+          * If set, recipients of type "approver" will be shown a dialog explaining that they are being asked to review and approve the document.
+          * @default true
+         */
+        "showApproverDialog": boolean;
+        /**
           * The style of the toolbar to display.
           * @default 'menu'
          */
@@ -2691,6 +2702,10 @@ export interface VerdocsAdoptSignatureDialogCustomEvent<T> extends CustomEvent<T
     detail: T;
     target: HTMLVerdocsAdoptSignatureDialogElement;
 }
+export interface VerdocsApproverDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsApproverDialogElement;
+}
 export interface VerdocsAuthCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsAuthElement;
@@ -2973,6 +2988,28 @@ declare global {
     var HTMLVerdocsAdoptSignatureDialogElement: {
         prototype: HTMLVerdocsAdoptSignatureDialogElement;
         new (): HTMLVerdocsAdoptSignatureDialogElement;
+    };
+    interface HTMLVerdocsApproverDialogElementEventMap {
+        "next": any;
+        "exit": any;
+    }
+    /**
+     * Display a simple dialog letting an approver know they are being asked to review and approve the document. An "Okay"
+     * button and a close button are shown, both of which dismiss the dialog.
+     */
+    interface HTMLVerdocsApproverDialogElement extends Components.VerdocsApproverDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsApproverDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsApproverDialogElement, ev: VerdocsApproverDialogCustomEvent<HTMLVerdocsApproverDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsApproverDialogElementEventMap>(type: K, listener: (this: HTMLVerdocsApproverDialogElement, ev: VerdocsApproverDialogCustomEvent<HTMLVerdocsApproverDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsApproverDialogElement: {
+        prototype: HTMLVerdocsApproverDialogElement;
+        new (): HTMLVerdocsApproverDialogElement;
     };
     interface HTMLVerdocsAuthElementEventMap {
         "authenticated": IAuthStatus;
@@ -4833,6 +4870,7 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "verdocs-adopt-signature-dialog": HTMLVerdocsAdoptSignatureDialogElement;
+        "verdocs-approver-dialog": HTMLVerdocsApproverDialogElement;
         "verdocs-auth": HTMLVerdocsAuthElement;
         "verdocs-build": HTMLVerdocsBuildElement;
         "verdocs-builder": HTMLVerdocsBuilderElement;
@@ -4945,6 +4983,20 @@ declare namespace LocalJSX {
           * Fired when the user completes the dialog and clicks Adopt. The event detail will contain a base64-encoded string representation of the signature adopted.
          */
         "onNext"?: (event: VerdocsAdoptSignatureDialogCustomEvent<{signature: string; initials: string}>) => void;
+    }
+    /**
+     * Display a simple dialog letting an approver know they are being asked to review and approve the document. An "Okay"
+     * button and a close button are shown, both of which dismiss the dialog.
+     */
+    interface VerdocsApproverDialog {
+        /**
+          * Event fired when the dialog is closed via the close button or background overlay. This is called exit to avoid conflicts with the JS-reserved "cancel" event name.
+         */
+        "onExit"?: (event: VerdocsApproverDialogCustomEvent<any>) => void;
+        /**
+          * Event fired when the user clicks the Okay button.
+         */
+        "onNext"?: (event: VerdocsApproverDialogCustomEvent<any>) => void;
     }
     /**
      * Display an authentication dialog that allows the user to login or sign up. If the user is
@@ -7356,6 +7408,11 @@ declare namespace LocalJSX {
          */
         "roleId"?: string | null;
         /**
+          * If set, recipients of type "approver" will be shown a dialog explaining that they are being asked to review and approve the document.
+          * @default true
+         */
+        "showApproverDialog"?: boolean;
+        /**
           * The style of the toolbar to display.
           * @default 'menu'
          */
@@ -8596,6 +8653,7 @@ declare namespace LocalJSX {
         "inviteCode": string | null;
         "headerTargetId": string | null;
         "toolbarStyle": 'controls' | 'menu';
+        "showApproverDialog": boolean;
     }
     interface VerdocsSignFooterAttributes {
         "envelopeId": string;
@@ -8711,6 +8769,7 @@ declare namespace LocalJSX {
 
     interface IntrinsicElements {
         "verdocs-adopt-signature-dialog": Omit<VerdocsAdoptSignatureDialog, keyof VerdocsAdoptSignatureDialogAttributes> & { [K in keyof VerdocsAdoptSignatureDialog & keyof VerdocsAdoptSignatureDialogAttributes]?: VerdocsAdoptSignatureDialog[K] } & { [K in keyof VerdocsAdoptSignatureDialog & keyof VerdocsAdoptSignatureDialogAttributes as `attr:${K}`]?: VerdocsAdoptSignatureDialogAttributes[K] } & { [K in keyof VerdocsAdoptSignatureDialog & keyof VerdocsAdoptSignatureDialogAttributes as `prop:${K}`]?: VerdocsAdoptSignatureDialog[K] };
+        "verdocs-approver-dialog": VerdocsApproverDialog;
         "verdocs-auth": Omit<VerdocsAuth, keyof VerdocsAuthAttributes> & { [K in keyof VerdocsAuth & keyof VerdocsAuthAttributes]?: VerdocsAuth[K] } & { [K in keyof VerdocsAuth & keyof VerdocsAuthAttributes as `attr:${K}`]?: VerdocsAuthAttributes[K] } & { [K in keyof VerdocsAuth & keyof VerdocsAuthAttributes as `prop:${K}`]?: VerdocsAuth[K] };
         "verdocs-build": Omit<VerdocsBuild, keyof VerdocsBuildAttributes> & { [K in keyof VerdocsBuild & keyof VerdocsBuildAttributes]?: VerdocsBuild[K] } & { [K in keyof VerdocsBuild & keyof VerdocsBuildAttributes as `attr:${K}`]?: VerdocsBuildAttributes[K] } & { [K in keyof VerdocsBuild & keyof VerdocsBuildAttributes as `prop:${K}`]?: VerdocsBuild[K] };
         "verdocs-builder": Omit<VerdocsBuilder, keyof VerdocsBuilderAttributes> & { [K in keyof VerdocsBuilder & keyof VerdocsBuilderAttributes]?: VerdocsBuilder[K] } & { [K in keyof VerdocsBuilder & keyof VerdocsBuilderAttributes as `attr:${K}`]?: VerdocsBuilderAttributes[K] } & { [K in keyof VerdocsBuilder & keyof VerdocsBuilderAttributes as `prop:${K}`]?: VerdocsBuilder[K] };
@@ -8806,6 +8865,11 @@ declare module "@stencil/core" {
              * based on their full name, or by hand-drawing their signature with a mouse or tablet.
              */
             "verdocs-adopt-signature-dialog": LocalJSX.IntrinsicElements["verdocs-adopt-signature-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsAdoptSignatureDialogElement>;
+            /**
+             * Display a simple dialog letting an approver know they are being asked to review and approve the document. An "Okay"
+             * button and a close button are shown, both of which dismiss the dialog.
+             */
+            "verdocs-approver-dialog": LocalJSX.IntrinsicElements["verdocs-approver-dialog"] & JSXBase.HTMLAttributes<HTMLVerdocsApproverDialogElement>;
             /**
              * Display an authentication dialog that allows the user to login or sign up. If the user is
              * already authenticated with a valid session, this component will hide itself and fire the
