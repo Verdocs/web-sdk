@@ -178,6 +178,7 @@ export class VerdocsFieldAttachment {
     const signerClass = `signer-${(index % 10) + 1}`;
 
     const hasFile = value || !!this.selectedFile;
+    const limits = field?.config?.type === 'attachment' ? field.config : undefined;
 
     if (done) {
       return (
@@ -231,6 +232,8 @@ export class VerdocsFieldAttachment {
           <verdocs-portal>
             <verdocs-upload-dialog
               existingFile={settings}
+              accept={limits?.accept?.join(',')}
+              {...(limits?.max_size_mb ? {maxSize: limits.max_size_mb * 1024 * 1024} : {})}
               onNext={e => this.handleUploadNext(e)}
               onRemove={e => this.handleUploadRemove(e)}
               onExit={() => (this.dialogOpen = false)}

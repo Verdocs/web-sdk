@@ -3,11 +3,29 @@ import interact from 'interactjs';
 import AirDatepicker from 'air-datepicker';
 import localeEn from 'air-datepicker/locale/en';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
-import {type ITemplate, type ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {type IEnvelopeField, type ITemplate, type ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen, Watch} from '@stencil/core';
 import {SettingsIcon} from '../../../utils/Icons';
 import {FORMAT_DATE} from '../../../utils/Types';
 import {Store} from '../../../utils/Datastore';
+
+const startOfToday = () => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+};
+
+// The earliest and latest dates a field allows. Today counts as both past and future, as in js-sdk's isFieldValid.
+const dateLimits = (field: IEnvelopeField | ITemplateField | null | undefined) => {
+  const config = field?.config?.type === 'date' ? field.config : undefined;
+  const day = (iso?: string) => (iso ? new Date(`${iso}T00:00:00`) : undefined);
+  const later = (a?: Date, b?: Date) => (a && b ? (a > b ? a : b) : a || b);
+  const sooner = (a?: Date, b?: Date) => (a && b ? (a < b ? a : b) : a || b);
+  return {
+    min: later(config?.allowed === 'future' ? startOfToday() : undefined, day(config?.min)),
+    max: sooner(config?.allowed === 'past' ? startOfToday() : undefined, day(config?.max)),
+    startsToday: !!config?.starts_today,
+  };
+};
 
 /**
  * Displays a date field. When tapped or clicked, the input element will display a date picker component.
@@ -120,12 +138,15 @@ export class VerdocsFieldDate {
     const {source, sourceid, fieldname} = this;
     const {field} = Store.getField(source, sourceid, fieldname, this.field);
     const {readonly = false} = field || {};
+    const {min, max, startsToday} = dateLimits(field);
 
     if (!readonly) {
       this.picker = new AirDatepicker<HTMLElement>(`#${this.containerId}`, {
         locale: localeEn,
         isMobile: true,
         autoClose: true,
+        minDate: min,
+        maxDate: max,
         onShow: () => (this.focused = true),
         onHide: () => (this.focused = false),
         onSelect: ({date, formattedDate}) => {
@@ -133,6 +154,12 @@ export class VerdocsFieldDate {
           this.el.dispatchEvent(event);
         },
       });
+
+      // The signer's own empty field fills itself, and signing saves it as if they'd picked it
+      const today = startOfToday();
+      if (startsToday && !field?.value && this.source === 'envelope' && !this.disabled && !this.done && !(min && today < min) && !(max && today > max)) {
+        this.picker.selectDate(today);
+      }
     }
   }
 
@@ -260,13 +287,19 @@ export class VerdocsFieldDate {
     const small = height < 20 || width < 74;
 
     const formattedValue = value ? format(new Date(value), FORMAT_DATE) : '';
+    const {min, max} = dateLimits(field);
+    // Signing stores MM/dd/yyyy, and a prefilled date out of range is the only way to get here
+    const chosen = /^\d{2}\/\d{2}\/\d{4}$/.test(value) ? new Date(value) : null;
+    const outside = !!chosen && ((!!min && chosen < min) || (!!max && chosen > max));
+    const describe = (date: Date) => (+date === +startOfToday() ? 'today' : format(date, FORMAT_DATE));
+    const rangeMessage = min && max ? `Choose a date from ${describe(min)} to ${describe(max)}.` : min ? `Choose ${describe(min)} or later.` : max ? `Choose ${describe(max)} or earlier.` : '';
 
     if (this.done) {
       return <Host class={{'verdocs-field': true,done}}>{formattedValue}</Host>;
     }
 
     return (
-      <Host class={{'verdocs-field': true,required, disabled, done, focused, small, [signerClass]: true}}>
+      <Host class={{'verdocs-field': true, required, disabled, done, focused, small, 'invalid': outside, [signerClass]: true}}>
         {editable && <div class="edge-top" />}
         {editable && <div class="edge-right" />}
         {editable && <div class="edge-left" />}
@@ -286,6 +319,8 @@ export class VerdocsFieldDate {
           onFocus={() => (this.focused = true)}
           onBlur={() => (this.focused = false)}
         />
+
+        {outside && <div class="format-error">{rangeMessage}</div>}
 
         {editable && (
           <Fragment>

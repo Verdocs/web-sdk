@@ -1,5 +1,5 @@
 import interact from 'interactjs';
-import type {TDataCatalogEntryType} from '@verdocs/js-sdk';
+import type {IAttachmentFieldConfig, IDateFieldConfig, TDataCatalogEntryType} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
 import {formatFieldNumber, getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, ITextFieldConfig, saveDataCatalogEntries} from '@verdocs/js-sdk';
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
@@ -34,7 +34,7 @@ const defaultRequired = (type: TFieldType) => !['radio', 'attachment', 'checkbox
 const KEY_FITS: Partial<Record<TFieldType, TDataCatalogEntryType[]>> = {textbox: ['text'], date: ['date'], checkbox: ['boolean'], radio: ['choice'], dropdown: ['choice']};
 
 // Which Inspector sections start open, and where we remember each person's choices.
-const SECTIONS_OPEN_BY_DEFAULT = ['group', 'options', 'format', 'text', 'checkbox', 'stamp', 'timestamp'];
+const SECTIONS_OPEN_BY_DEFAULT = ['group', 'options', 'format', 'text', 'checkbox', 'stamp', 'timestamp', 'date', 'attachment'];
 const SECTIONS_STORAGE_KEY = 'verdocs-builder-inspector-sections';
 
 const readOpenSections = (): Record<string, boolean> => {
@@ -98,6 +98,13 @@ const OVERFLOWS: [IFieldTextFit['overflow'], string][] = [
   ['ellipsize', 'Ellipsis …'],
   ['overflow', 'Run over'],
 ];
+
+// Signing's upload limit
+const MAX_ATTACHMENT_MB = 25;
+const FILE_TYPE = /^(\.[a-z0-9]+|[a-z]+\/[a-z0-9.+*-]+)$/i;
+
+// 2026-12-31 as 12/31/2026
+const usDate = (iso: string) => iso.replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$2/$3/$1');
 
 const SHOW_HIDE: ['show' | 'hide', string][] = [
   ['show', 'Show'],
@@ -207,6 +214,8 @@ export class VerdocsBuilderFields {
   @State() patternField = '';
   @State() optionsDraft: {name: string; options: IDropdownOption[]} | null = null;
   @State() fitDraft: {name: string; min: number; max: number} | null = null;
+  @State() dateBetween = '';
+  @State() acceptError = '';
   @State() catalog: IDataCatalog | null = null;
   @State() fillMenuOpen = false;
   @State() fillSearch = '';
@@ -536,6 +545,8 @@ export class VerdocsBuilderFields {
       this.groupError = '';
       this.formatError = '';
       this.patternField = '';
+      this.dateBetween = '';
+      this.acceptError = '';
       this.optionsDraft = null;
     }
 
@@ -1469,6 +1480,45 @@ export class VerdocsBuilderFields {
     const includeTime = settings<ITimestampFieldConfig>().include_time !== false;
     const checkbox = settings<ICheckboxFieldConfig>();
 
+    const date = settings<IDateFieldConfig>();
+    const allowed = this.dateBetween === field.name || date.min || date.max ? 'between' : date.allowed || 'any';
+    const dateSummary = [
+      allowed === 'past'
+        ? 'Past dates'
+        : allowed === 'future'
+          ? 'Future dates'
+          : date.min && date.max
+            ? `${usDate(date.min)} to ${usDate(date.max)}`
+            : date.min
+              ? `From ${usDate(date.min)}`
+              : date.max
+                ? `Until ${usDate(date.max)}`
+                : 'Any date',
+      date.starts_today && 'Starts today',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+
+    const attachment = settings<IAttachmentFieldConfig>();
+    const attachmentSummary = [
+      attachment.accept?.length ? attachment.accept.join(', ') : 'Any file',
+      `Up to ${attachment.max_size_mb ?? 20} MB`,
+      attachment.stamp_card === false && 'Card hidden',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+    const saveAccept = (text: string) => {
+      const accept = text
+        .split(',')
+        .map(type => type.trim())
+        .filter(Boolean);
+      const bad = accept.find(type => !FILE_TYPE.test(type));
+      this.acceptError = bad ? `"${bad}" isn't a file type. Use an extension like .pdf or a type like image/*.` : accept.length > 20 ? 'Use 20 file types or fewer.' : '';
+      if (!this.acceptError) {
+        saveSettings<IAttachmentFieldConfig>({accept: accept.length ? accept : undefined});
+      }
+    };
+
     // Text inputs save when they lose focus. Enter saves, and Escape puts the saved value back.
     const keys = (saved: string) => (e: KeyboardEvent) => {
       const input = e.target as HTMLInputElement;
@@ -2009,6 +2059,103 @@ export class VerdocsBuilderFields {
                 choice => saveSettings<ITimestampFieldConfig>({include_time: choice === 'date' ? false : undefined}),
               ),
             )}
+
+          {field.type === 'date' &&
+            this.renderSection('date', 'Date', dateSummary, allowed !== 'any' || !!date.starts_today, () => (
+              <Fragment>
+                {segmented(
+                  'Allowed dates',
+                  'allowed',
+                  allowed,
+                  [
+                    ['any', 'Any'],
+                    ['past', 'Past'],
+                    ['future', 'Future'],
+                    ['between', 'Between'],
+                  ],
+                  choice => {
+                    this.dateBetween = choice === 'between' ? field.name : '';
+                    if (choice !== 'between') {
+                      saveSettings<IDateFieldConfig>({allowed: choice === 'any' ? undefined : choice, min: undefined, max: undefined});
+                    }
+                  },
+                )}
+                {allowed === 'between' && (
+                  <div class="insp-two">
+                    <label class="insp-label">
+                      From
+                      <input
+                        name="min"
+                        type="date"
+                        class="insp-input"
+                        value={date.min || ''}
+                        max={date.max}
+                        onChange={(e: any) => saveSettings<IDateFieldConfig>({allowed: undefined, min: e.target.value || undefined})}
+                      />
+                    </label>
+                    <label class="insp-label">
+                      To
+                      <input
+                        name="max"
+                        type="date"
+                        class="insp-input"
+                        value={date.max || ''}
+                        min={date.min}
+                        onChange={(e: any) => saveSettings<IDateFieldConfig>({allowed: undefined, max: e.target.value || undefined})}
+                      />
+                    </label>
+                  </div>
+                )}
+                {segmented(
+                  'Starts as',
+                  'starts_today',
+                  date.starts_today ? 'today' : 'empty',
+                  [
+                    ['empty', 'Empty'],
+                    ['today', 'Today'],
+                  ],
+                  choice => saveSettings<IDateFieldConfig>({starts_today: choice === 'today' || undefined}),
+                )}
+              </Fragment>
+            ))}
+
+          {field.type === 'attachment' &&
+            this.renderSection('attachment', 'Attachment', attachmentSummary, !!attachment.accept?.length || !!attachment.max_size_mb || attachment.stamp_card === false, () => (
+              <Fragment>
+                <label class="insp-label">
+                  File types
+                  <input
+                    name="accept"
+                    class="insp-input mono"
+                    value={(attachment.accept || []).join(', ')}
+                    placeholder=".pdf, image/*"
+                    onChange={(e: any) => saveAccept(e.target.value)}
+                    onKeyDown={keys((attachment.accept || []).join(', '))}
+                  />
+                </label>
+                {this.acceptError ? <div class="insp-error">{this.acceptError}</div> : <div class="insp-hint">Leave empty to accept PDF, Word, and image files.</div>}
+                <label class="insp-label">
+                  Largest file (MB)
+                  <input
+                    name="max_size_mb"
+                    type="number"
+                    min="1"
+                    max={MAX_ATTACHMENT_MB}
+                    class="insp-input"
+                    value={attachment.max_size_mb ?? ''}
+                    placeholder="20"
+                    onChange={(e: any) => {
+                      const size = parseFloat(e.target.value);
+                      saveSettings<IAttachmentFieldConfig>({max_size_mb: size > 0 ? Math.min(size, MAX_ATTACHMENT_MB) : undefined});
+                    }}
+                    onKeyDown={keys(String(attachment.max_size_mb ?? ''))}
+                  />
+                </label>
+                {segmented('Card on the signed PDF', 'stamp_card', attachment.stamp_card === false ? 'hide' : 'show', SHOW_HIDE, choice =>
+                  saveSettings<IAttachmentFieldConfig>({stamp_card: choice === 'hide' ? false : undefined}),
+                )}
+              </Fragment>
+            ))}
 
           {field.type === 'checkbox' &&
             this.renderSection(

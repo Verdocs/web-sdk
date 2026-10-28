@@ -1145,6 +1145,7 @@ export const VerdocsToolbarIcon: StencilVueComponent<JSX.VerdocsToolbarIcon> = /
 
 export const VerdocsUploadDialog: StencilVueComponent<JSX.VerdocsUploadDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsUploadDialog>('verdocs-upload-dialog', undefined, [
   'maxSize',
+  'accept',
   'existingFile',
   'exit',
   'next',

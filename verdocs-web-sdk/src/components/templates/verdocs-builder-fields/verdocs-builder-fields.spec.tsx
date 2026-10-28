@@ -154,6 +154,8 @@ describe('verdocs-builder-fields', () => {
         {name: 'agree', role_name: 'Preparer', type: 'checkbox', page: 1},
         {name: 'when', role_name: 'Preparer', type: 'timestamp', page: 1},
         {name: 'sig', role_name: 'Preparer', type: 'signature', page: 1},
+        {name: 'start', role_name: 'Preparer', type: 'date', page: 1},
+        {name: 'proof', role_name: 'Preparer', type: 'attachment', page: 1},
       ],
     };
 
@@ -341,6 +343,37 @@ describe('verdocs-builder-fields', () => {
       await page.waitForChanges();
       (page.root.querySelector('.insp-colb [role="switch"]') as any).click();
       expect(saveField).toHaveBeenLastCalledWith('sig', {config: {type: 'signature', stamp: {hash: false}}});
+    });
+
+    it('saves date limits and attachment rules', async () => {
+      const {page, builder, saveField} = await renderBuilder();
+      builder.inspectorOpen = true;
+      const pick = (setting: string, index: number) => (page.root.querySelectorAll(`.insp-seg[data-name="${setting}"] button`)[index] as any).click();
+      const change = (selector: string, value: string) => {
+        const el = page.root.querySelector(selector) as any;
+        el.value = value;
+        el.dispatchEvent(new (page.win as any).Event('change'));
+      };
+
+      builder.selectedFieldName = 'start';
+      await page.waitForChanges();
+      pick('allowed', 2);
+      expect(saveField).toHaveBeenLastCalledWith('start', {config: {type: 'date', allowed: 'future'}});
+      pick('allowed', 3);
+      await page.waitForChanges();
+      change('input[name="max"]', '2026-12-31');
+      expect(saveField).toHaveBeenLastCalledWith('start', {config: {type: 'date', max: '2026-12-31'}});
+
+      builder.selectedFieldName = 'proof';
+      await page.waitForChanges();
+      change('input[name="accept"]', '.pdf, nope');
+      await page.waitForChanges();
+      expect(page.root.querySelector('.insp-error')).toBeTruthy();
+      expect(saveField).not.toHaveBeenCalledWith('proof', expect.anything());
+      change('input[name="accept"]', '.pdf, image/*');
+      expect(saveField).toHaveBeenLastCalledWith('proof', {config: {type: 'attachment', accept: ['.pdf', 'image/*']}});
+      change('input[name="max_size_mb"]', '40');
+      expect(saveField).toHaveBeenLastCalledWith('proof', {config: {type: 'attachment', max_size_mb: 25}});
     });
 
     it('saves options without blank rows, filling a missing ID from the label', async () => {

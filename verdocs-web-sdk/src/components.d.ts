@@ -2653,6 +2653,10 @@ export namespace Components {
      * To represent an existing attachment, set the existingFile property.
      */
     interface VerdocsUploadDialog {
+        /**
+          * File types to allow, as in a file input's accept attribute.
+         */
+        "accept"?: string;
         "existingFile": any;
         /**
           * @default 20 * 1024 * 1024
@@ -8171,6 +8175,10 @@ declare namespace LocalJSX {
      * To represent an existing attachment, set the existingFile property.
      */
     interface VerdocsUploadDialog {
+        /**
+          * File types to allow, as in a file input's accept attribute.
+         */
+        "accept"?: string;
         "existingFile"?: any;
         /**
           * @default 20 * 1024 * 1024
@@ -8702,6 +8710,7 @@ declare namespace LocalJSX {
     }
     interface VerdocsUploadDialogAttributes {
         "maxSize": number;
+        "accept": string;
         "existingFile": string;
     }
     interface VerdocsViewAttributes {
