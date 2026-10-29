@@ -1,6 +1,6 @@
 import Sortable from 'sortablejs';
 import {Component, h, Element, Event, EventEmitter, Host, Prop, State} from '@stencil/core';
-import {createTemplateRole, formatFullName, getTemplate, IRole, ITemplate, updateTemplateRole, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {arrangeTemplateRoles, createTemplateRole, formatFullName, getTemplate, IRole, ITemplate, renumberRoles, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
 
@@ -192,29 +192,33 @@ export class VerdocsTemplateRoles {
     sortableRoles[toSeq] ||= [];
     sortableRoles[toSeq].splice(toIndex - 1, 0, role);
 
-    const renumberRequests = [];
+    const moves: {name: string; sequence: number; order: number}[] = [];
     Object.entries(sortableRoles).forEach(([targetSeq, roles]) => {
       roles.forEach((role, index) => {
-        if (!role) {
-          return;
-        }
-
-        const targetOrder = +index + 1;
-        if (role.sequence !== +targetSeq || role.order !== targetOrder) {
-          role.sequence = +targetSeq;
-          role.order = targetOrder;
-          renumberRequests.push(
-            updateTemplateRole(this.endpoint, this.templateId, role.name, {sequence: +targetSeq, order: targetOrder})
-              .then(r => console.log('[ROLES] Updated role', role.name, r))
-              .catch(e => console.log('[ROLES] Error updating role', e)),
-          );
+        if (role && (role.sequence !== +targetSeq || role.order !== index + 1)) {
+          moves.push({name: role.name, sequence: +targetSeq, order: index + 1});
         }
       });
     });
 
-    return Promise.all(renumberRequests)
-      .then(async () => console.log('[ROLES] Done renumbering'))
-      .catch(e => console.log('[ROLES] Error updating roles', e));
+    // Sortable already moved the element. We put it back so the render from the updated template places it.
+    evt.item.remove();
+    evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex] ?? null);
+    if (moves.length < 1) {
+      return;
+    }
+
+    // The api renumbers steps after every change, so we show its result before it replies and then keep its copy
+    const moved = (this.template?.roles || []).map(role => ({...role, ...moves.find(move => move.name === role.name)}));
+    const movedNames = moves.map(move => move.name);
+    Store.updateTemplate(this.templateId, {...this.template, roles: renumberRoles(moved, movedNames)});
+    return arrangeTemplateRoles(this.endpoint, this.templateId, moves)
+      .then(roles => Store.updateTemplate(this.templateId, {...this.template, roles}))
+      .catch(e => {
+        console.log('[ROLES] Error arranging roles', e);
+        this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+        return Store.getTemplate(this.endpoint, this.templateId, true);
+      });
   }
 
   handleCancel() {
@@ -261,45 +265,9 @@ export class VerdocsTemplateRoles {
     return (this.template?.roles || []).filter(role => role && role.sequence === sequence);
   }
 
-  // When the user drags a role around, we handle placement "between" items by assigning it a half-order number
-  // e.g. 1.5 to place it between items 1 and 2, 0.5 to place it at the beginning, or last+0.5 to place it at the end.
-  // Then we re-sort the list of roles and renumber them.
+  // The api renumbers the steps when a role is deleted, so we reload to pick up its numbers
   async renumberTemplateRoles() {
-    const sortableRoles: Record<string, IRole[]> = {};
-    const renumberRequests = [];
-    const sequenceNumbers = this.getSequenceNumbers();
-
-    (sequenceNumbers || []).forEach(targetSeq => {
-      (sortableRoles[targetSeq] || []).forEach((role, targetOrderMinusOne) => {
-        const targetOrder = +targetOrderMinusOne + 1;
-        if (role.sequence !== +targetSeq || role.order !== targetOrder) {
-          console.log('[ROLES] Updating role', role.name, 'from', role.sequence, role.order, 'to', targetSeq, targetOrder);
-          role.sequence = +targetSeq;
-          role.order = targetOrder;
-          renumberRequests.push(
-            updateTemplateRole(this.endpoint, this.templateId, role.name, {sequence: +targetSeq, order: targetOrder})
-              .then(r => console.log('[ROLES] Updated role', role.name, r))
-              .catch(e => console.log('[ROLES] Error updating role', e)),
-          );
-        }
-      });
-    });
-
-    console.log(`[ROLES] Awaiting ${renumberRequests.length} renumber requests`);
-    await Promise.all(renumberRequests).then(async () => {
-      // When renumbering, we don't try to update the store for every individual item
-      // changing. We just do it once at the end.
-      const newTemplate = JSON.parse(JSON.stringify(this.template));
-      newTemplate.roles = Object.keys(sortableRoles).reduce((acc, seq) => acc.concat(sortableRoles[seq]), []);
-      console.log(
-        '[ROLES] Done renumbering',
-        newTemplate.roles.map(r => ({name: r.name, sequence: r.sequence, order: r.order})),
-      );
-      Store.updateTemplate(this.templateId, newTemplate);
-      // TODO: Explore race condition in reordering roles
-      // this.template = await Store.getTemplate(this.endpoint, this.templateId, true);
-    });
-
+    await Store.getTemplate(this.endpoint, this.templateId, true);
     this.rolesUpdated?.emit({event: 'updated', endpoint: this.endpoint, templateId: this.templateId, roles: this.getSortedRoles()});
   }
 
