@@ -839,8 +839,9 @@ export class VerdocsSend {
               </span>
             </div>
             <div class="recipients">
-              {levels.map(level => [
-                levels.length > 1 && <div class="step">Step {level}</div>,
+              {levels.map((level, index) => [
+                // Step numbers can skip (moving a step's last role elsewhere leaves a gap), so we count positions instead
+                levels.length > 1 && <div class="step">Step {index + 1}</div>,
                 this.getRolesAtLevel(level).map(role => {
                   const n = recipientNumber(this.template?.roles, role.role_name);
                   const completed = this.rolesCompleted[role.id];
