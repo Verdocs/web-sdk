@@ -133,6 +133,7 @@ export class VerdocsSign {
   @State() freshLinkState: 'idle' | 'sending' | 'sent' = 'idle';
   @State() finishLater = false;
   @State() showFinishLater = false;
+  @State() showApproverIntro = false;
   @State() agreed = false;
   @State() signatureId: string | null = null;
   @State() initialId: string | null = null;
@@ -466,6 +467,7 @@ export class VerdocsSign {
       this.fatalErrorMessage = 'You have declined to sign this request. The sender has been notified.';
     } else if (this.agreed) {
       this.nextButtonLabel = 'Next';
+      this.showApproverIntro = !this.submitted && recipient.type === 'approver';
     }
 
     this.checkRecipientFields();
@@ -511,6 +513,10 @@ export class VerdocsSign {
         this.recipient.agreed = true;
         this.submitting = false;
         this.agreed = true; // The server returns a recipient object but it's not "deep" so we track this locally
+        if (this.recipient.type === 'approver') {
+          this.checkRecipientFields();
+          this.showApproverIntro = true;
+        }
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'agreed'});
       })
       .catch(e => {
@@ -909,7 +915,7 @@ export class VerdocsSign {
 
     const invalidFields = this.getRecipientFields().filter(field => !isFieldValid(field, this.getRecipientFields()));
     if (invalidFields.length < 1) {
-      this.nextButtonLabel = 'Finish';
+      this.nextButtonLabel = this.recipient?.type === 'approver' ? 'Approve' : 'Finish';
       if (!this.nextSubmits) {
         this.nextSubmits = true;
       }
@@ -1810,6 +1816,15 @@ export class VerdocsSign {
             );
           })}
         </div>
+
+        {this.showApproverIntro && (
+          <verdocs-ok-dialog
+            heading="Review and approve"
+            message="You have been asked to review and approve this document. Click OK to proceed."
+            onNext={() => (this.showApproverIntro = false)}
+            onExit={() => (this.showApproverIntro = false)}
+          />
+        )}
 
         {this.showFinishLater && (
           <verdocs-ok-dialog

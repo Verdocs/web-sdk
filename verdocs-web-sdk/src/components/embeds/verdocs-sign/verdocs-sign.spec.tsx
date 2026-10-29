@@ -68,11 +68,12 @@ jest.mock('@verdocs/js-sdk', () => {
 });
 
 import {newSpecPage} from '@stencil/core/testing';
-import {envelopeRecipientDecline, envelopeRecipientSubmit, getEnvelope, ISignerTokenResponse, startSigningSession} from '@verdocs/js-sdk';
+import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, getEnvelope, ISignerTokenResponse, startSigningSession} from '@verdocs/js-sdk';
 import {VerdocsSign} from './verdocs-sign';
 
 const mockRecipient = {
   role_name: 'Recipient 1',
+  type: 'signer',
   status: 'opened',
   agreed: false,
   auth_step: null,
@@ -372,6 +373,41 @@ describe('verdocs-sign', () => {
 
       expect(instance.nextSubmits).toBe(expected.nextSubmits);
       expect(instance.nextButtonLabel).toBe(expected.nextButtonLabel);
+    });
+  });
+
+  describe('approvers', () => {
+    it('labels the button Approve and explains the step after the disclosures', async () => {
+      (envelopeRecipientAgree as jest.Mock).mockResolvedValue({});
+      const {page, instance} = await loadInstance({type: 'approver', role_name: 'Reviewer'});
+
+      instance.handleClickAgree();
+      await new Promise(resolve => setTimeout(resolve, 0));
+      await page.waitForChanges();
+
+      expect(instance.nextButtonLabel).toBe('Approve');
+      expect(instance.nextSubmits).toBe(true);
+      expect(page.root.querySelectorAll('verdocs-ok-dialog').length).toBe(1);
+    });
+
+    it('explains the step again when an approver returns before submitting', async () => {
+      const {page, instance} = await loadInstance({type: 'approver', role_name: 'Reviewer', agreed: true});
+      await page.waitForChanges();
+
+      expect(instance.nextButtonLabel).toBe('Approve');
+      expect(page.root.querySelectorAll('verdocs-ok-dialog').length).toBe(1);
+    });
+
+    it('does not show the approver dialog to signers', async () => {
+      (envelopeRecipientAgree as jest.Mock).mockResolvedValue({});
+      const {page, instance} = await loadInstance();
+
+      instance.handleClickAgree();
+      await new Promise(resolve => setTimeout(resolve, 0));
+      await page.waitForChanges();
+
+      expect(instance.showApproverIntro).toBe(false);
+      expect(page.root.querySelectorAll('verdocs-ok-dialog').length).toBe(0);
     });
   });
 
