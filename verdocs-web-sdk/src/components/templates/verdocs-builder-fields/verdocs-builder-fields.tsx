@@ -5,6 +5,7 @@ import {formatFieldNumber, getDataCatalog, getDataCatalogs, IDataCatalog, IDataC
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import type {ICheckboxFieldConfig, IDropdownFieldConfig, IFieldTextFit, IRadioFieldConfig, ISignatureFieldConfig, ITimestampFieldConfig, TFieldConfig} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
+import {AlignBottomIcon, AlignCenterIcon, AlignMiddleIcon, AlignRightIcon, AlignTopIcon, MatchHeightIcon, MatchWidthIcon, SpaceAcrossIcon} from '../../../utils/Icons';
 import {AlignLeftIcon, CloseIcon, DataIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, SpaceEvenlyIcon, TrashIcon} from '../../../utils/Icons';
 import {drawRecipientField, FIELD_TYPES, radioGroup, recipientNumber} from '../../../utils/RecipientFields';
 import {TEXT_FORMATS} from '../../../utils/FieldFormats';
@@ -271,6 +272,10 @@ export class VerdocsBuilderFields {
   @State() selectedRoleName = '';
   @State() showMustSelectRole = false;
   @State() selectedFieldName: string | null = null;
+  // Two or more fields on one page, the first one picked first. Empty unless several are selected.
+  @State() multiSelection: string[] = [];
+  @State() alignMenuOpen = false;
+  @State() sizeMenuOpen = false;
   @State() inspectorOpen = false;
   @State() signerMenuOpen = false;
   @State() renaming = false;
@@ -298,7 +303,13 @@ export class VerdocsBuilderFields {
   catalogLoadedFor: string | null = null;
 
   // Undo entries are recorded only once their save lands, so the stack never holds a change the server didn't take.
-  undoStack: {name: string; before: TFieldGeometry}[] = [];
+  // Entries that share a batch came from one action on several fields, and undo reverses them together.
+  undoStack: {name: string; before: TFieldGeometry; batch?: number}[] = [];
+  undoBatch = 0;
+  pendingMultiNudge: {befores: Map<string, TFieldGeometry>; dx: number; dy: number} | null = null;
+  groupDrag: {name: string; befores: Map<string, TFieldGeometry>} | null = null;
+  marquee: {layer: Element; startX: number; startY: number; box: HTMLElement | null; additive: boolean} | null = null;
+  suppressPageClick = false;
   pendingNudge: {name: string; before: TFieldGeometry; x: number; y: number} | null = null;
   nudgeTimer: ReturnType<typeof setTimeout> | null = null;
   dragBefore: {name: string; before: TFieldGeometry} | null = null;
@@ -326,7 +337,14 @@ export class VerdocsBuilderFields {
   } | null = null;
 
   // Stable references so makeDraggable can re-bind them on every render without stacking duplicates.
-  handleFieldTap = (e: any) => this.selectField(e.currentTarget?.getAttribute?.('fieldname') || null);
+  handleFieldTap = (e: any) => {
+    const name = e.currentTarget?.getAttribute?.('fieldname') || null;
+    if (name && (e.shiftKey || e.metaKey || e.ctrlKey)) {
+      this.toggleInSelection(name);
+    } else {
+      this.selectField(name);
+    }
+  };
   handleFieldResizeStart = (e: any) => {
     const name = e.target?.getAttribute?.('fieldname') || null;
     this.flushNudge();
@@ -359,6 +377,9 @@ export class VerdocsBuilderFields {
     if (ev.key === 'Escape') {
       if (this.zoomMenuOpen) {
         this.zoomMenuOpen = false;
+      } else if (this.alignMenuOpen || this.sizeMenuOpen) {
+        this.alignMenuOpen = false;
+        this.sizeMenuOpen = false;
       } else if (this.signerMenuOpen || this.renaming) {
         this.signerMenuOpen = false;
         this.renaming = false;
@@ -399,9 +420,18 @@ export class VerdocsBuilderFields {
       return;
     }
 
+    if (command && ev.key.toLowerCase() === 'a') {
+      ev.preventDefault();
+      this.selectAllOnPage();
+      return;
+    }
+
     const selected = this.findField(this.selectedFieldName);
     if (command && ev.key.toLowerCase() === 'd') {
-      if (selected) {
+      if (this.multiSelection.length > 0) {
+        ev.preventDefault();
+        this.duplicateSelection();
+      } else if (selected) {
         ev.preventDefault();
         this.duplicateField(selected);
       }
@@ -410,6 +440,12 @@ export class VerdocsBuilderFields {
 
     const step = ev.shiftKey ? 10 : 1;
     const delta = {ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, step], ArrowDown: [0, -step]}[ev.key];
+    if (delta && this.multiSelection.length > 0 && !ev.metaKey && !ev.ctrlKey && !ev.altKey) {
+      ev.preventDefault();
+      this.nudgeSelection(delta[0], delta[1]);
+      return;
+    }
+
     if (!delta || !selected || ev.metaKey || ev.ctrlKey || ev.altKey) {
       return;
     }
@@ -523,6 +559,9 @@ export class VerdocsBuilderFields {
         if (this.selectedFieldName && !this.findField(this.selectedFieldName)) {
           this.selectedFieldName = null;
         }
+        if (this.multiSelection.some(name => !this.findField(name))) {
+          this.setSelection(this.multiSelection.filter(name => this.findField(name)));
+        }
       },
     );
   }
@@ -634,6 +673,10 @@ export class VerdocsBuilderFields {
     if (this.pendingNudge && this.pendingNudge.name !== name) {
       this.flushNudge();
     }
+    this.flushMultiNudge();
+    this.multiSelection = [];
+    this.alignMenuOpen = false;
+    this.sizeMenuOpen = false;
 
     if (name !== this.selectedFieldName) {
       this.signerMenuOpen = false;
@@ -653,6 +696,114 @@ export class VerdocsBuilderFields {
     this.applySelection();
   }
 
+  selectedFields() {
+    return this.multiSelection.map(name => this.findField(name)).filter(Boolean);
+  }
+
+  // One field is an ordinary selection, and none clears it
+  setSelection(names: string[]) {
+    if (names.length < 2) {
+      this.selectField(names[0] || null);
+      return;
+    }
+
+    this.selectField(null);
+    this.multiSelection = names;
+    this.applySelection();
+  }
+
+  // Arranging only makes sense on one page, so a field from another page starts a new selection
+  toggleInSelection(name: string) {
+    const field = this.findField(name);
+    const current = this.multiSelection.length > 0 ? this.multiSelection : this.selectedFieldName ? [this.selectedFieldName] : [];
+    const anchor = this.findField(current[0]);
+    if (!field || (anchor && (anchor.document_id !== field.document_id || this.currentGeometry(anchor).page !== this.currentGeometry(field).page))) {
+      this.selectField(name);
+      return;
+    }
+
+    this.setSelection(current.includes(name) ? current.filter(other => other !== name) : [...current, name]);
+  }
+
+  // The page of the current selection, or else the one in the middle of the view
+  selectAllOnPage() {
+    const anchor = this.findField(this.multiSelection[0] || this.selectedFieldName);
+    let documentId = anchor?.document_id;
+    let pageNumber = anchor ? this.currentGeometry(anchor).page : null;
+    if (!anchor) {
+      const middle = window.innerHeight / 2;
+      const page = [...this.el.querySelectorAll('verdocs-template-document-page')].find(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.top <= middle && rect.bottom >= middle;
+      });
+      documentId = page?.getAttribute('document-id');
+      pageNumber = +page?.getAttribute('page-number');
+    }
+
+    const names = (this.template?.fields || []).filter(field => field.document_id === documentId && this.currentGeometry(field).page === pageNumber).map(field => field.name);
+    this.setSelection(names);
+  }
+
+  // Dragging from an empty spot on a page draws a box, and the fields it touches become the selection
+  startMarquee(e: PointerEvent) {
+    const target = e.target as Element;
+    if (e.button !== 0 || this.paletteDrag || target?.closest?.('.verdocs-field, .vb-add-option')) {
+      return;
+    }
+
+    const layer = (e.currentTarget as Element).querySelector('.verdocs-template-document-page-layer[id$="-controls"]');
+    if (!layer) {
+      return;
+    }
+
+    this.marquee = {layer, startX: e.clientX, startY: e.clientY, box: null, additive: e.shiftKey || e.metaKey || e.ctrlKey};
+    window.addEventListener('pointermove', this.handleMarqueeMove);
+    window.addEventListener('pointerup', this.handleMarqueeEnd);
+  }
+
+  handleMarqueeMove = (e: PointerEvent) => {
+    const marquee = this.marquee;
+    if (!marquee || (!marquee.box && Math.hypot(e.clientX - marquee.startX, e.clientY - marquee.startY) < 5)) {
+      return;
+    }
+
+    if (!marquee.box) {
+      marquee.box = document.createElement('div');
+      marquee.box.className = 'vb-marquee';
+      marquee.layer.appendChild(marquee.box);
+    }
+
+    const layerRect = marquee.layer.getBoundingClientRect();
+    const left = Math.min(e.clientX, marquee.startX) - layerRect.left;
+    const top = Math.min(e.clientY, marquee.startY) - layerRect.top;
+    marquee.box.style.cssText = `left:${left}px;top:${top}px;width:${Math.abs(e.clientX - marquee.startX)}px;height:${Math.abs(e.clientY - marquee.startY)}px`;
+  };
+
+  handleMarqueeEnd = () => {
+    const marquee = this.marquee;
+    this.marquee = null;
+    window.removeEventListener('pointermove', this.handleMarqueeMove);
+    window.removeEventListener('pointerup', this.handleMarqueeEnd);
+    if (!marquee?.box) {
+      return;
+    }
+
+    const box = marquee.box.getBoundingClientRect();
+    marquee.box.remove();
+    // The click that ends a box would otherwise clear the selection it just made
+    this.suppressPageClick = true;
+    const touched = [...marquee.layer.querySelectorAll('.verdocs-field')]
+      .filter(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.left < box.right && rect.right > box.left && rect.top < box.bottom && rect.bottom > box.top;
+      })
+      .map(el => el.getAttribute('fieldname'))
+      .filter(Boolean);
+    const current = marquee.additive ? (this.multiSelection.length > 0 ? this.multiSelection : this.selectedFieldName ? [this.selectedFieldName] : []) : [];
+    const sameLayer = current.filter(name => marquee.layer.contains(document.getElementById(getFieldId(this.findField(name)))));
+    this.setSelection([...new Set([...sameLayer, ...touched])]);
+  };
+
   applyDataMarks() {
     const known = new Set((this.catalog?.entries || []).map(entry => entry.key));
     (this.template?.fields || []).forEach(field => {
@@ -668,6 +819,7 @@ export class VerdocsBuilderFields {
     this.applyDataMarks();
     this.el.querySelectorAll('.verdocs-field-selected, .vb-group-member').forEach(el => el.classList.remove('verdocs-field-selected', 'vb-group-member'));
     this.el.querySelectorAll('.vb-order, .vb-add-option, .vb-corner').forEach(el => el.remove());
+    this.selectedFields().forEach(field => document.getElementById(getFieldId(field))?.classList.add('verdocs-field-selected'));
     const field = this.findField(this.selectedFieldName);
     if (!field) {
       return;
@@ -919,13 +1071,18 @@ export class VerdocsBuilderFields {
 
   // Sits above the selected field, or below it when there's no room above.
   positionQuickBar() {
-    const field = this.findField(this.selectedFieldName);
-    const fieldEl = field ? document.getElementById(getFieldId(field)) : null;
-    if (!this.quickBarEl || !this.pagesEl || !fieldEl) {
+    const fields = this.multiSelection.length > 0 ? this.selectedFields() : [this.findField(this.selectedFieldName)].filter(Boolean);
+    const rects = fields.map(field => document.getElementById(getFieldId(field))?.getBoundingClientRect()).filter(Boolean);
+    if (!this.quickBarEl || !this.pagesEl || rects.length === 0) {
       return;
     }
 
-    const fieldRect = fieldEl.getBoundingClientRect();
+    // Several fields share one bar above all of them
+    const fieldRect = {
+      left: Math.min(...rects.map(rect => rect.left)),
+      top: Math.min(...rects.map(rect => rect.top)),
+      bottom: Math.max(...rects.map(rect => rect.bottom)),
+    };
     const pagesRect = this.pagesEl.getBoundingClientRect();
     const above = fieldRect.top - pagesRect.top - this.quickBarEl.offsetHeight - 8;
     const left = Math.max(4, Math.min(fieldRect.left - pagesRect.left, pagesRect.width - this.quickBarEl.offsetWidth - 4));
@@ -949,9 +1106,9 @@ export class VerdocsBuilderFields {
     this.el.querySelectorAll('.verdocs-builder-guide').forEach(guide => guide.remove());
   }
 
-  recordUndo(name: string, before: TFieldGeometry, after: Partial<TFieldGeometry>) {
+  recordUndo(name: string, before: TFieldGeometry, after: Partial<TFieldGeometry>, batch?: number) {
     if (GEOMETRY_KEYS.some(key => after[key] !== undefined && after[key] !== before[key])) {
-      this.undoStack.push({name, before});
+      this.undoStack.push({name, before, batch});
       this.undoStack.splice(0, Math.max(0, this.undoStack.length - MAX_UNDO));
     }
   }
@@ -980,6 +1137,7 @@ export class VerdocsBuilderFields {
 
   renameFieldState(oldName: string, newName: string) {
     this.undoStack.forEach(entry => entry.name === oldName && (entry.name = newName));
+    this.multiSelection = this.multiSelection.map(name => (name === oldName ? newName : name));
     if (this.selectedFieldName === oldName) {
       this.selectedFieldName = newName;
     }
@@ -987,6 +1145,9 @@ export class VerdocsBuilderFields {
 
   forgetField(name: string) {
     this.undoStack = this.undoStack.filter(entry => entry.name !== name);
+    if (this.multiSelection.includes(name)) {
+      this.setSelection(this.multiSelection.filter(other => other !== name));
+    }
     this.optimistic.delete(name);
     this.pendingResizes.get(name)?.settle();
     if (this.pendingNudge?.name === name) {
@@ -1048,12 +1209,173 @@ export class VerdocsBuilderFields {
     }
   }
 
+  nudgeSelection(dx: number, dy: number) {
+    const fields = this.selectedFields();
+    if (fields.length === 0) {
+      return;
+    }
+
+    if (!this.pendingMultiNudge) {
+      this.pendingMultiNudge = {befores: new Map(fields.map(field => [field.name, this.currentGeometry(field)])), dx: 0, dy: 0};
+    }
+
+    // The whole selection moves as one and stops where its outermost field meets the page edge
+    const nudge = this.pendingMultiNudge;
+    const limits = [...nudge.befores.entries()].map(([name, before]) => {
+      const field = this.findField(name);
+      const size = this.pageSizeOf(field);
+      return {minX: -before.x, maxX: size.width - before.width - before.x, minY: -before.y, maxY: size.height - before.height - before.y};
+    });
+    nudge.dx = clamp(nudge.dx + dx, Math.max(...limits.map(limit => limit.minX)), Math.min(...limits.map(limit => limit.maxX)));
+    nudge.dy = clamp(nudge.dy + dy, Math.max(...limits.map(limit => limit.minY)), Math.min(...limits.map(limit => limit.maxY)));
+    nudge.befores.forEach((before, name) => this.drawField(this.findField(name), {x: before.x + nudge.dx, y: before.y + nudge.dy}));
+
+    if (this.nudgeTimer) {
+      clearTimeout(this.nudgeTimer);
+    }
+    this.nudgeTimer = setTimeout(() => this.flushMultiNudge(), NUDGE_SAVE_DELAY_MS);
+  }
+
+  async flushMultiNudge() {
+    const nudge = this.pendingMultiNudge;
+    this.pendingMultiNudge = null;
+    if (!nudge || (!nudge.dx && !nudge.dy)) {
+      return;
+    }
+
+    if (this.nudgeTimer) {
+      clearTimeout(this.nudgeTimer);
+      this.nudgeTimer = null;
+    }
+    const batch = ++this.undoBatch;
+    await Promise.all([...nudge.befores.entries()].map(([name, before]) => this.saveField(name, {x: before.x + nudge.dx, y: before.y + nudge.dy}, before, batch)));
+  }
+
+  pageSizeOf(field: ITemplateField) {
+    const size = (this.template?.documents || []).find(doc => doc.id === field.document_id)?.page_sizes?.[this.currentGeometry(field).page];
+    return {width: size?.width || 612, height: size?.height || 792};
+  }
+
+  // Aligns use the selection's outer edges, spacing keeps the first and last fields in place, and sizes match the first
+  // field picked. Page y counts up from the bottom, so a field's top edge is y + height.
+  async arrangeSelection(arrangement: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom' | 'across' | 'down' | 'width' | 'height') {
+    this.alignMenuOpen = false;
+    this.sizeMenuOpen = false;
+    const fields = this.selectedFields();
+    if (fields.length < 2) {
+      return;
+    }
+
+    const boxes = fields.map(field => ({field, ...this.currentGeometry(field)}));
+    const left = Math.min(...boxes.map(box => box.x));
+    const right = Math.max(...boxes.map(box => box.x + box.width));
+    const bottom = Math.min(...boxes.map(box => box.y));
+    const top = Math.max(...boxes.map(box => box.y + box.height));
+    const targets = new Map<string, Partial<TFieldGeometry>>();
+
+    if (arrangement === 'across' || arrangement === 'down') {
+      const across = arrangement === 'across';
+      // Down runs from the top of the page, which is the highest y
+      const ordered = [...boxes].sort((a, b) => (across ? a.x - b.x : b.y + b.height - (a.y + a.height)));
+      const span = across ? right - left : top - bottom;
+      const gap = (span - ordered.reduce((sum, box) => sum + (across ? box.width : box.height), 0)) / (ordered.length - 1);
+      let edge = across ? left : top;
+      ordered.forEach(box => {
+        targets.set(box.field.name, across ? {x: Math.round(edge)} : {y: Math.round(edge - box.height)});
+        edge = across ? edge + box.width + gap : edge - box.height - gap;
+      });
+    } else {
+      const anchor = boxes[0];
+      boxes.forEach(box => {
+        const [minWidth, minHeight] = MIN_SIZES[box.field.type] || [8, 8];
+        const page = this.pageSizeOf(box.field);
+        const target: Partial<TFieldGeometry> = {
+          left: {x: left},
+          center: {x: Math.round((left + right) / 2 - box.width / 2)},
+          right: {x: right - box.width},
+          top: {y: top - box.height},
+          middle: {y: Math.round((top + bottom) / 2 - box.height / 2)},
+          bottom: {y: bottom},
+          width: {width: clamp(anchor.width, minWidth, page.width - box.x)},
+          height: {height: clamp(anchor.height, minHeight, page.height - box.y)},
+        }[arrangement];
+        targets.set(box.field.name, target);
+      });
+    }
+
+    const batch = ++this.undoBatch;
+    await Promise.all(
+      boxes
+        .filter(box => Object.entries(targets.get(box.field.name) || {}).some(([key, value]) => box[key] !== value))
+        .map(box => this.saveField(box.field.name, targets.get(box.field.name), this.currentGeometry(box.field), batch)),
+    );
+  }
+
+  // Copies keep the selection's layout, placed just below it, and become the new selection
+  async duplicateSelection() {
+    const fields = this.selectedFields();
+    const boxes = fields.map(field => this.currentGeometry(field));
+    const shift = Math.max(...boxes.map(box => box.y + box.height)) - Math.min(...boxes.map(box => box.y)) + 10;
+    const taken = new Set<string>();
+    const copies = await Promise.all(
+      fields.map(field => this.addField({...field, name: this.generateFieldName(field.type, field.page, taken), y: Math.max(0, this.currentGeometry(field).y - shift)}, false)),
+    );
+    this.setSelection(copies.filter(Boolean).map(copy => copy.name));
+  }
+
+  async deleteSelection() {
+    const fields = this.selectedFields();
+    this.selectField(null);
+    await this.deleteFields(fields);
+  }
+
+  // A change from the Inspector's shared view goes to every selected field
+  async saveSelection(changes: Partial<ITemplateField>) {
+    const batch = ++this.undoBatch;
+    await Promise.all(
+      this.selectedFields().map(field => {
+        const geometry = this.currentGeometry(field);
+        const [minWidth, minHeight] = MIN_SIZES[field.type] || [8, 8];
+        const page = this.pageSizeOf(field);
+        const sized = {...changes};
+        if (sized.width !== undefined) {
+          sized.width = clamp(sized.width, minWidth, page.width - geometry.x);
+        }
+        if (sized.height !== undefined) {
+          sized.height = clamp(sized.height, minHeight, page.height - geometry.y);
+        }
+        return this.saveField(field.name, sized, sized.width !== undefined || sized.height !== undefined ? geometry : undefined, batch);
+      }),
+    );
+  }
+
   async undo() {
     await this.flushNudge();
+    await this.flushMultiNudge();
     await Promise.all([...this.inFlight, ...[...this.pendingResizes.values()].map(resize => resize.done)]);
 
     while (this.undoStack.length > 0) {
-      const {name, before} = this.undoStack.pop();
+      const {name, before, batch} = this.undoStack.pop();
+      if (batch !== undefined) {
+        const entries = [{name, before}];
+        while (this.undoStack[this.undoStack.length - 1]?.batch === batch) {
+          entries.push(this.undoStack.pop());
+        }
+        const changed = entries.filter(entry => {
+          const field = this.findField(entry.name);
+          return field && GEOMETRY_KEYS.some(key => field[key] !== entry.before[key]);
+        });
+        if (changed.length > 0) {
+          // An arrangement can leave some fields where they were, so a selection that holds every restored field stays as it is
+          if (!changed.every(entry => this.multiSelection.includes(entry.name))) {
+            this.setSelection(changed.map(entry => entry.name));
+          }
+          await Promise.all(changed.map(entry => this.saveField(entry.name, entry.before)));
+          return;
+        }
+        continue;
+      }
+
       const field = this.findField(name);
       if (field && GEOMETRY_KEYS.some(key => field[key] !== before[key])) {
         this.selectField(name);
@@ -1064,7 +1386,7 @@ export class VerdocsBuilderFields {
   }
 
   // Saves any change to a field, drawing it at its new spot right away. Pass `before` to make a geometry change undoable.
-  saveField(name: string, changes: Partial<ITemplateField>, before?: TFieldGeometry) {
+  saveField(name: string, changes: Partial<ITemplateField>, before?: TFieldGeometry, batch?: number) {
     const field = this.findField(name);
     if (!field) {
       return Promise.resolve();
@@ -1086,7 +1408,7 @@ export class VerdocsBuilderFields {
         Store.updateTemplate(this.templateId, newTemplate);
         this.drawField(updatedField);
         if (before) {
-          this.recordUndo(name, before, updatedField);
+          this.recordUndo(name, before, updatedField, batch);
         }
 
         this.templateUpdated?.emit({endpoint: this.endpoint, template: newTemplate, event: 'updated-field'});
@@ -1112,7 +1434,7 @@ export class VerdocsBuilderFields {
     return save;
   }
 
-  async addField(field: ITemplateField) {
+  async addField(field: ITemplateField, select = true) {
     try {
       const newField = await createField(this.endpoint, this.templateId, field);
       const newTemplate = JSON.parse(JSON.stringify(this.template));
@@ -1120,7 +1442,10 @@ export class VerdocsBuilderFields {
 
       Store.updateTemplate(this.templateId, newTemplate);
       this.templateUpdated?.emit({endpoint: this.endpoint, template: newTemplate, event: 'added-field'});
-      this.selectField(newField.name);
+      if (select) {
+        this.selectField(newField.name);
+      }
+      return newField;
     } catch (e) {
       console.log('[BUILDER] Error adding field', e);
       VerdocsToast(e.response?.data?.error || 'Unable to add the field. Please try again.', {style: 'error'});
@@ -1361,7 +1686,14 @@ export class VerdocsBuilderFields {
   handleMoveStart(event: any) {
     const name = event.target.getAttribute('fieldname');
     this.flushNudge();
-    this.selectField(name);
+    this.flushMultiNudge();
+    // Dragging any selected field carries the rest of the selection along
+    if (this.multiSelection.includes(name)) {
+      this.groupDrag = {name, befores: new Map(this.selectedFields().map(field => [field.name, this.currentGeometry(field)]))};
+    } else {
+      this.groupDrag = null;
+      this.selectField(name);
+    }
     this.el.classList.add('moving');
 
     const field = this.findField(name);
@@ -1386,6 +1718,13 @@ export class VerdocsBuilderFields {
       updateCssTransform(el, 'translate', `${rawX + dx / xScale}px, ${rawY + dy / yScale}px`);
     }
     this.showGuides(layer, guideX, guideY);
+
+    this.groupDrag?.befores.forEach((_, name) => {
+      const other = name !== this.groupDrag.name && document.getElementById(getFieldId(this.findField(name)));
+      if (other) {
+        updateCssTransform(other, 'translate', `${rawX + dx / xScale}px, ${rawY + dy / yScale}px`);
+      }
+    });
   }
 
   async handleMoveEnd(event: any) {
@@ -1432,17 +1771,43 @@ export class VerdocsBuilderFields {
 
     const before = this.dragBefore?.name === name ? this.dragBefore.before : undefined;
     this.dragBefore = null;
+
+    const group = this.groupDrag;
+    this.groupDrag = null;
+    if (group) {
+      // A selection moves within its page, by however far the dragged field went, and stops at the page edges
+      const dragged = group.befores.get(name);
+      let moveX = x - dragged.x;
+      let moveY = (newPageNumber === pageNumber ? y : dragged.y) - dragged.y;
+      group.befores.forEach((start, other) => {
+        const size = this.pageSizeOf(this.findField(other) || field);
+        moveX = clamp(moveX, -start.x, size.width - start.width - start.x);
+        moveY = clamp(moveY, -start.y, size.height - start.height - start.y);
+      });
+      group.befores.forEach((_, other) => {
+        const el = document.getElementById(getFieldId(this.findField(other)));
+        el?.removeAttribute('posX');
+        el?.removeAttribute('posY');
+        el && removeCssTransform(el);
+      });
+      const batch = ++this.undoBatch;
+      await Promise.all([...group.befores.entries()].map(([other, start]) => this.saveField(other, {x: start.x + moveX, y: start.y + moveY}, start, batch)));
+      return;
+    }
+
     await this.saveField(name, {x, y, page: newPageNumber}, before);
   }
 
-  generateFieldName(type: string, pageNumber: number) {
+  // Pass `taken` when adding several fields at once, so names picked before any of them is saved can't collide
+  generateFieldName(type: string, pageNumber: number, taken = new Set<string>()) {
     let i = 1;
     let fieldName: string;
     do {
       fieldName = `${type}P${pageNumber}-${i}`;
       i++;
-    } while ((this.template?.fields || []).some(field => field && field.name === fieldName));
+    } while (taken.has(fieldName) || (this.template?.fields || []).some(field => field && field.name === fieldName));
 
+    taken.add(fieldName);
     return fieldName;
   }
 
@@ -1514,10 +1879,11 @@ export class VerdocsBuilderFields {
 
     const middle = window.innerHeight / 2;
     const pages = [...this.el.querySelectorAll('verdocs-template-document-page')];
-    const page = pages.find(el => {
-      const rect = el.getBoundingClientRect();
-      return rect.top <= middle && rect.bottom >= middle;
-    }) || pages.find(el => el.getBoundingClientRect().bottom > 0);
+    const page =
+      pages.find(el => {
+        const rect = el.getBoundingClientRect();
+        return rect.top <= middle && rect.bottom >= middle;
+      }) || pages.find(el => el.getBoundingClientRect().bottom > 0);
     const documentId = page?.getAttribute('document-id');
     const pageNumber = +page?.getAttribute('page-number');
     const pageInfo = documentId ? this.cachedPageInfo[documentId]?.[pageNumber] : null;
@@ -1658,8 +2024,13 @@ export class VerdocsBuilderFields {
   }
 
   handleClickPage(e: any) {
+    if (this.suppressPageClick) {
+      this.suppressPageClick = false;
+      return;
+    }
+
     // Clicks on a field select it through interact's tap, so only a click on the bare page clears the selection.
-    if (!e.target?.closest?.('.verdocs-field')) {
+    if (!e.target?.closest?.('.verdocs-field') && !e.shiftKey && !e.metaKey && !e.ctrlKey) {
       this.selectField(null);
     }
   }
@@ -2870,6 +3241,184 @@ export class VerdocsBuilderFields {
     );
   }
 
+  renderMultiQuickBar(fields: ITemplateField[]) {
+    const aligns: [Parameters<VerdocsBuilderFields['arrangeSelection']>[0], string, string][] = [
+      ['left', 'Align left edges', AlignLeftIcon],
+      ['center', 'Align centers', AlignCenterIcon],
+      ['right', 'Align right edges', AlignRightIcon],
+      ['top', 'Align top edges', AlignTopIcon],
+      ['middle', 'Align middles', AlignMiddleIcon],
+      ['bottom', 'Align bottom edges', AlignBottomIcon],
+    ];
+
+    return (
+      <div class="quick-bar multi" ref={el => (this.quickBarEl = el)} onPointerDown={e => e.stopPropagation()}>
+        <span class="quick-count">{fields.length} fields</span>
+        <span class="separator" />
+        <button
+          class={{'quick-button': true, 'open': this.alignMenuOpen}}
+          aria-expanded={String(this.alignMenuOpen)}
+          onClick={() => {
+            this.sizeMenuOpen = false;
+            this.alignMenuOpen = !this.alignMenuOpen;
+          }}
+        >
+          Align
+          <span class="caret" />
+        </button>
+        <button
+          class={{'quick-button': true, 'open': this.sizeMenuOpen}}
+          aria-expanded={String(this.sizeMenuOpen)}
+          onClick={() => {
+            this.alignMenuOpen = false;
+            this.sizeMenuOpen = !this.sizeMenuOpen;
+          }}
+        >
+          Size
+          <span class="caret" />
+        </button>
+        <span class="separator" />
+        <button class="quick-button icon" title="Duplicate" aria-label="Duplicate" innerHTML={DuplicateIcon} onClick={() => this.duplicateSelection()} />
+        <button class="quick-button icon delete" title="Delete" aria-label="Delete" innerHTML={TrashIcon} onClick={() => this.deleteSelection()} />
+        <span class="separator" />
+        <button class="quick-button icon" title="All settings" aria-label="All settings" innerHTML={SettingsIcon} onClick={() => (this.inspectorOpen = true)} />
+
+        {this.alignMenuOpen && (
+          <div class="quick-menu align-menu">
+            <div class="quick-menu-heading">Align</div>
+            <div class="align-grid">
+              {aligns.map(([arrangement, label, icon]) => (
+                <button type="button" title={label} aria-label={label} innerHTML={icon} onClick={() => this.arrangeSelection(arrangement)} />
+              ))}
+            </div>
+            <div class="quick-menu-heading">Space evenly</div>
+            {/* Spacing needs a field between the first and last */}
+            <button class="quick-menu-item" disabled={fields.length < 3} onClick={() => this.arrangeSelection('across')}>
+              <span class="quick-menu-icon" innerHTML={SpaceAcrossIcon} />
+              Across
+            </button>
+            <button class="quick-menu-item" disabled={fields.length < 3} onClick={() => this.arrangeSelection('down')}>
+              <span class="quick-menu-icon" innerHTML={SpaceEvenlyIcon} />
+              Down
+            </button>
+          </div>
+        )}
+
+        {this.sizeMenuOpen && (
+          <div class="quick-menu size-menu">
+            <div class="quick-menu-heading">Match the first field</div>
+            <button class="quick-menu-item" onClick={() => this.arrangeSelection('width')}>
+              <span class="quick-menu-icon" innerHTML={MatchWidthIcon} />
+              Width
+            </button>
+            <button class="quick-menu-item" onClick={() => this.arrangeSelection('height')}>
+              <span class="quick-menu-icon" innerHTML={MatchHeightIcon} />
+              Height
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  renderMultiInspector(fields: ITemplateField[]) {
+    const roles = [...new Set(fields.map(field => field.role_name))];
+    const types = [...new Set(fields.map(field => field.type))];
+    const typeLabel = types.length === 1 ? FIELD_TYPES.find(fieldType => fieldType.type === types[0])?.label || types[0] : 'Mixed types';
+    const geometries = fields.map(field => this.currentGeometry(field));
+    const shared = <T,>(values: T[]) => (values.every(value => value === values[0]) ? values[0] : undefined);
+    const width = shared(geometries.map(geometry => geometry.width));
+    const height = shared(geometries.map(geometry => geometry.height));
+
+    // Off, On, or Mixed when the fields disagree; Mixed shows the state but isn't something you can pick
+    const triState = (label: string, key: 'required' | 'readonly') => {
+      const value = shared(fields.map(field => !!field[key]));
+      return (
+        <div class="insp-label">
+          {label}
+          <div class="insp-seg" role="radiogroup" aria-label={label} data-name={key}>
+            <button type="button" role="radio" aria-checked={String(value === false)} class={{on: value === false}} onClick={() => value !== false && this.saveSelection({[key]: false})}>
+              Off
+            </button>
+            {value === undefined && (
+              <button type="button" role="radio" aria-checked="true" class="on mixed" disabled>
+                Mixed
+              </button>
+            )}
+            <button type="button" role="radio" aria-checked={String(value === true)} class={{on: value === true}} onClick={() => value !== true && this.saveSelection({[key]: true})}>
+              On
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    const sizeInput = (label: string, key: 'width' | 'height', value: number | undefined) => (
+      <label class="insp-label">
+        {label}
+        <input
+          name={key}
+          class="insp-input"
+          inputMode="numeric"
+          value={value === undefined ? '' : String(value)}
+          placeholder={value === undefined ? 'Mixed' : ''}
+          onChange={(e: any) => {
+            const typed = Math.round(Number(e.target.value));
+            if (e.target.value.trim() !== '' && Number.isFinite(typed) && typed > 0) {
+              this.saveSelection({[key]: typed});
+            } else {
+              e.target.value = value === undefined ? '' : String(value);
+            }
+          }}
+        />
+      </label>
+    );
+
+    return (
+      <div class="insp-body multi" key={`multi-${fields.length}`}>
+        <div class="insp-head">
+          <span class="insp-tiles">
+            {roles.slice(0, 3).map(role => (
+              <span style={{'--vb-color': this.roleColor(role)}} />
+            ))}
+          </span>
+          <div class="insp-head-text">
+            <span class="insp-title">{fields.length} fields</span>
+            <span class="insp-sub">
+              {typeLabel} · {roles.length === 1 ? <b>{roles[0]}</b> : `${roles.length} recipients`}
+            </span>
+          </div>
+          <button class="inspector-close" title="Close" aria-label="Close" innerHTML={CloseIcon} onClick={() => (this.inspectorOpen = false)} />
+        </div>
+
+        <label class="insp-label">
+          Recipient
+          <select name="role_name" class="insp-input" onChange={(e: any) => this.saveSelection({role_name: e.target.value})}>
+            {roles.length > 1 && (
+              <option value="" selected disabled>
+                Mixed
+              </option>
+            )}
+            {this.sortedRoles().map(role => (
+              <option value={role.name} selected={roles.length === 1 && role.name === roles[0]}>
+                {role.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        {triState('Required', 'required')}
+        {triState('Read-only', 'readonly')}
+        <div class="insp-two">
+          {sizeInput('Width', 'width', width)}
+          {sizeInput('Height', 'height', height)}
+        </div>
+        <button type="button" class="insp-delete" onClick={() => this.deleteSelection()}>
+          Delete {fields.length} fields
+        </button>
+      </div>
+    );
+  }
+
   render() {
     if (this.loading) {
       return (
@@ -2888,6 +3437,7 @@ export class VerdocsBuilderFields {
     }
 
     const selectedField = this.findField(this.selectedFieldName);
+    const multiFields = this.selectedFields();
     const roleOptions = this.sortedRoles().map(role => ({value: role.name, label: role.full_name ? `${role.name}: ${role.full_name}` : role.name}));
     const paletteRoleName = this.paletteRoleName();
 
@@ -2953,6 +3503,7 @@ export class VerdocsBuilderFields {
                     editable={true}
                     done={false}
                     onClick={(e: PointerEvent) => this.handleClickPage(e)}
+                    onPointerDown={(e: PointerEvent) => this.startMarquee(e)}
                     onPageRendered={e => this.handlePageRendered(e)}
                     layers={[
                       {name: 'page', type: 'canvas'},
@@ -2965,12 +3516,15 @@ export class VerdocsBuilderFields {
           })}
 
           {selectedField && this.renderQuickBar(selectedField)}
+          {multiFields.length > 1 && this.renderMultiQuickBar(multiFields)}
           {this.renderZoomBar()}
         </div>
 
         <div class={{inspector: true, open: this.inspectorOpen}}>
           <div class="inspector-inner">
-            {selectedField ? (
+            {multiFields.length > 1 ? (
+              this.renderMultiInspector(multiFields)
+            ) : selectedField ? (
               this.renderInspector(selectedField)
             ) : (
               <Fragment>
