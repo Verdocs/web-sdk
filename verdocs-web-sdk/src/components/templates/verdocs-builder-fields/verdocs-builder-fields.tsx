@@ -65,7 +65,11 @@ const readZoom = (): TZoom => {
 const TOUR_SEEN_KEY = 'verdocs-builder-tour-seen';
 type TTourLayout = {spot: {left: number; top: number; width: number; height: number} | null; left: number; top: number; arrow: string; arrowAt: number};
 const TOUR_STEPS: {title: string; body: string; target: string; needsField?: boolean; inspector?: boolean}[] = [
-  {title: 'Drag a field onto the page', body: 'Pick a recipient, then drag any field from this list onto the document.', target: '.palette'},
+  {
+    title: 'Drag a field onto the page',
+    body: 'Pick a recipient, then drag any field from this list onto the document, or click one and then click where it goes.',
+    target: '.palette',
+  },
   {
     title: 'Everything for the selected field',
     body: 'Required, read-only, recipient, rename, duplicate, and reset are one click away. All settings opens the Inspector.',
@@ -315,6 +319,10 @@ export class VerdocsBuilderFields {
     width: number;
     height: number;
     over: {documentId: string; pageNumber: number; viewX: number; viewBottom: number} | null;
+    startX: number;
+    startY: number;
+    moved: boolean;
+    placing: boolean;
   } | null = null;
 
   // Stable references so makeDraggable can re-bind them on every render without stacking duplicates.
@@ -1469,16 +1477,94 @@ export class VerdocsBuilderFields {
     document.body.appendChild(ghost);
     document.body.classList.add('verdocs-builder-dragging');
 
-    this.paletteDrag = {type, roleName, ghost, width, height, over: null};
+    this.paletteDrag = {type, roleName, ghost, width, height, over: null, startX: e.clientX, startY: e.clientY, moved: false, placing: false};
     window.addEventListener('pointermove', this.handlePaletteMove);
     window.addEventListener('pointerup', this.handlePaletteDrop);
     this.handlePaletteMove(e);
+  }
+
+  // For anyone who can't drag: the next press on a page places the field, and a press anywhere else puts it back.
+  handlePlacementPress = (e: PointerEvent) => {
+    const drag = this.paletteDrag;
+    if (!drag) {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+    // The click that follows would land on the page and clear the new field's selection
+    window.addEventListener('click', ev => ev.stopPropagation(), {capture: true, once: true});
+    this.handlePaletteMove(e);
+    drag.moved = true;
+    this.handlePaletteDrop();
+  };
+
+  // Enter or Space on a palette field adds it to the middle of the page in view, selected, so arrow keys can move it.
+  placeFromKeyboard(e: KeyboardEvent, type: TFieldType) {
+    if (e.key !== 'Enter' && e.key !== ' ') {
+      return;
+    }
+
+    e.preventDefault();
+    const roleName = this.paletteRoleName();
+    if (!roleName) {
+      this.showMustSelectRole = true;
+      return;
+    }
+
+    const middle = window.innerHeight / 2;
+    const pages = [...this.el.querySelectorAll('verdocs-template-document-page')];
+    const page = pages.find(el => {
+      const rect = el.getBoundingClientRect();
+      return rect.top <= middle && rect.bottom >= middle;
+    }) || pages.find(el => el.getBoundingClientRect().bottom > 0);
+    const documentId = page?.getAttribute('document-id');
+    const pageNumber = +page?.getAttribute('page-number');
+    const pageInfo = documentId ? this.cachedPageInfo[documentId]?.[pageNumber] : null;
+    if (!pageInfo) {
+      return;
+    }
+
+    const rect = page.getBoundingClientRect();
+    const width = defaultWidth(type);
+    const height = defaultHeight(type);
+    const {naturalWidth = 612, naturalHeight = 792, yScale = 1} = pageInfo;
+    const visibleMiddle = (Math.max(rect.top, 0) + Math.min(rect.bottom, window.innerHeight)) / 2 - rect.top;
+    const x = Math.round(naturalWidth / 2 - width / 2);
+    const y = Math.round((rect.height - visibleMiddle) / yScale - height / 2);
+
+    this.addField({
+      name: this.generateFieldName(type, pageNumber),
+      role_name: roleName,
+      template_id: this.templateId,
+      document_id: documentId,
+      type,
+      required: defaultRequired(type),
+      page: pageNumber,
+      validator: null,
+      label: null,
+      default: null,
+      placeholder: null,
+      group: type === 'radio' ? this.generateGroupName() : null,
+      settings: {},
+      x: Math.min(Math.max(x, 0), naturalWidth - width),
+      y: Math.min(Math.max(y, 0), naturalHeight - height),
+      width,
+      height,
+      multiline: false,
+      readonly: false,
+      options: type === 'radio' ? [{id: 'option-1', label: 'Option 1'}] : [],
+    });
   }
 
   handlePaletteMove = (e: PointerEvent) => {
     const drag = this.paletteDrag;
     if (!drag) {
       return;
+    }
+
+    if (!drag.moved && Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 4) {
+      drag.moved = true;
     }
 
     // The pointer holds the field a few pixels in from its left edge, centered vertically, so the drop lands where the eye expects.
@@ -1508,7 +1594,7 @@ export class VerdocsBuilderFields {
     } else {
       drag.over = null;
       drag.ghost.classList.add('off');
-      tip.textContent = 'Drop on a page';
+      tip.textContent = drag.placing ? 'Click a page to place it' : 'Drop on a page';
     }
 
     drag.ghost.style.left = `${left}px`;
@@ -1517,6 +1603,15 @@ export class VerdocsBuilderFields {
 
   handlePaletteDrop = () => {
     const drag = this.paletteDrag;
+    // A press and release without moving picks the field up instead of dropping it
+    if (drag && !drag.moved && !drag.placing) {
+      drag.placing = true;
+      drag.ghost.querySelector('.tip').textContent = 'Click a page to place it';
+      window.removeEventListener('pointerup', this.handlePaletteDrop);
+      window.addEventListener('pointerdown', this.handlePlacementPress, {capture: true});
+      return;
+    }
+
     this.endPaletteDrag();
 
     const pageInfo = drag?.over ? this.cachedPageInfo[drag.over.documentId]?.[drag.over.pageNumber] : null;
@@ -1555,6 +1650,7 @@ export class VerdocsBuilderFields {
   endPaletteDrag() {
     window.removeEventListener('pointermove', this.handlePaletteMove);
     window.removeEventListener('pointerup', this.handlePaletteDrop);
+    window.removeEventListener('pointerdown', this.handlePlacementPress, {capture: true});
     this.paletteDrag?.ghost.remove();
     this.paletteDrag = null;
     document.body.classList.remove('verdocs-builder-dragging');
@@ -2803,13 +2899,20 @@ export class VerdocsBuilderFields {
 
           <div class="palette-title">Fields</div>
           {FIELD_TYPES.map(fieldType => (
-            <div class="palette-field" onPointerDown={(e: PointerEvent) => this.startPaletteDrag(e, fieldType.type)}>
+            <div
+              class="palette-field"
+              role="button"
+              tabIndex={0}
+              aria-label={`Add a ${fieldType.label.toLowerCase()} field`}
+              onPointerDown={(e: PointerEvent) => this.startPaletteDrag(e, fieldType.type)}
+              onKeyDown={(e: KeyboardEvent) => this.placeFromKeyboard(e, fieldType.type)}
+            >
               <span class="palette-icon" style={{'--vb-color': this.roleColor(paletteRoleName), '--vb-text': this.roleTextColor(paletteRoleName)}} innerHTML={fieldType.icon} />
               {fieldType.label}
               <span class="grip" />
             </div>
           ))}
-          <div class="palette-hint">Drag a field onto the page.</div>
+          <div class="palette-hint">Drag a field onto the page, or click it and then click where it goes.</div>
           {this.showTour && (
             <button type="button" class="tour-help" title="Show the builder tour" aria-label="Show the builder tour" onClick={() => this.startTour()}>
               ?
