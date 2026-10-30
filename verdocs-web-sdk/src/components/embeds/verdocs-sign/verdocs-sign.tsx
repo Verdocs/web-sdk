@@ -159,6 +159,8 @@ export class VerdocsSign {
 
   private renderedPages: Record<string, IDocumentPageInfo> = {};
   private missingFieldsTimer: any = null;
+  private missingFieldSuspects = new Set<string>();
+  private missingFieldsReported = new Set<string>();
   private observer: IntersectionObserver;
   private pollingInterval: any = null;
 
@@ -287,7 +289,7 @@ export class VerdocsSign {
   }
 
   disconnectedCallback() {
-    clearTimeout(this.missingFieldsTimer);
+    clearInterval(this.missingFieldsTimer);
     this.stopPolling();
     this.observer?.disconnect();
     window.removeEventListener('resize', () => this.updateZoomFromWindow());
@@ -472,7 +474,8 @@ export class VerdocsSign {
 
     this.checkRecipientFields();
     this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
-    this.watchForMissingFields();
+    clearInterval(this.missingFieldsTimer);
+    this.missingFieldsTimer = setInterval(() => this.checkForMissingFields(), 5000);
   }
 
   // A signer's field has gone missing a few times in the wild without a repro, so we report what we know about it
@@ -489,18 +492,43 @@ export class VerdocsSign {
     this.fieldNotVisible?.emit(detail);
   }
 
-  // Catches a page that never reported itself rendered, which leaves its fields undrawn with nothing else to notice
-  watchForMissingFields() {
-    clearTimeout(this.missingFieldsTimer);
-    this.missingFieldsTimer = setTimeout(() => {
-      const pages = Array.from(this.el.querySelectorAll('verdocs-envelope-document-page')) as any[];
-      this.getSortedDisplayableFields().forEach(field => {
-        const shown = pages.some(page => page.documentId === field.document_id && page.pageNumber === field.page);
-        if (shown && !document.getElementById(getFieldId(field))) {
-          this.reportFieldNotVisible(field, 'never drawn', this.renderedPages[`${field.document_id}:${field.page}`]);
-        }
-      });
-    }, 5000);
+  // Catches a page that loaded but never reported itself rendered, which leaves its fields undrawn with nothing else to notice
+  checkForMissingFields() {
+    // Finished signers see the completed document, which has no fields to draw
+    if (this.submitted || this.isDone) {
+      clearInterval(this.missingFieldsTimer);
+      return;
+    }
+
+    const pages = Array.from(this.el.querySelectorAll('verdocs-envelope-document-page')) as any[];
+    const suspects = new Set<string>();
+    let waiting = 0;
+    this.getSortedDisplayableFields().forEach(field => {
+      const id = getFieldId(field);
+      if (document.getElementById(id) || this.missingFieldsReported.has(id)) {
+        return;
+      }
+
+      // Page images load lazily as the signer scrolls, so a page that hasn't loaded yet isn't a problem
+      waiting++;
+      const image = pages.find(page => page.documentId === field.document_id && page.pageNumber === field.page)?.querySelector('img');
+      if (!image?.complete || !image.naturalWidth) {
+        return;
+      }
+
+      // A page can finish loading just before a check, so a field has to stay missing through two in a row
+      if (this.missingFieldSuspects.has(id)) {
+        this.missingFieldsReported.add(id);
+        this.reportFieldNotVisible(field, 'never drawn', this.renderedPages[`${field.document_id}:${field.page}`]);
+      } else {
+        suspects.add(id);
+      }
+    });
+
+    this.missingFieldSuspects = suspects;
+    if (waiting === 0) {
+      clearInterval(this.missingFieldsTimer);
+    }
   }
 
   handleClickAgree() {

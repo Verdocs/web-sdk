@@ -162,8 +162,12 @@ const loadSigningView = async () => {
 };
 
 describe('verdocs-sign', () => {
+  // The missing-field check repeats every few seconds, which would keep the test run open; tests call it directly instead
+  let intervals: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    intervals = jest.spyOn(globalThis, 'setInterval').mockImplementation((() => 0) as any);
     (startSigningSession as jest.Mock).mockResolvedValue(mockSessionResponse);
     (getEnvelope as jest.Mock).mockResolvedValue(mockEnvelope);
     (envelopeRecipientSubmit as jest.Mock).mockResolvedValue({});
@@ -175,6 +179,10 @@ describe('verdocs-sign', () => {
 
       unobserve() {}
     } as any;
+  });
+
+  afterEach(() => {
+    intervals.mockRestore();
   });
 
   describe('componentDidLoad', () => {
@@ -408,6 +416,59 @@ describe('verdocs-sign', () => {
 
       expect(instance.showApproverIntro).toBe(false);
       expect(page.root.querySelectorAll('verdocs-ok-dialog').length).toBe(0);
+    });
+  });
+
+  describe('checkForMissingFields', () => {
+    // A page the way verdocs-envelope-document-page presents itself, with its image loaded or still loading
+    const addPage = (instance: VerdocsSign, loaded: boolean) => {
+      const page: any = document.createElement('verdocs-envelope-document-page');
+      page.documentId = 'doc-1';
+      page.pageNumber = 1;
+      const image = document.createElement('img');
+      Object.defineProperty(image, 'complete', {value: loaded});
+      Object.defineProperty(image, 'naturalWidth', {value: loaded ? 612 : 0});
+      page.appendChild(image);
+      instance.el.appendChild(page);
+    };
+
+    const watch = async (loaded: boolean, submitted = false) => {
+      const {instance} = await loadInstance();
+      const reported = jest.fn();
+      instance.fieldNotVisible = {emit: reported} as any;
+      instance.submitted = submitted;
+      addPage(instance, loaded);
+      return {instance, reported};
+    };
+
+    it('reports a field missing from a loaded page once it stays missing through two checks', async () => {
+      const {instance, reported} = await watch(true);
+
+      instance.checkForMissingFields();
+      expect(reported).not.toHaveBeenCalled();
+
+      instance.checkForMissingFields();
+      instance.checkForMissingFields();
+      expect(reported).toHaveBeenCalledTimes(1);
+      expect(reported).toHaveBeenCalledWith(expect.objectContaining({problem: 'never drawn', field: expect.objectContaining({name: 'signature-1'})}));
+    });
+
+    it('waits for a page whose image has not loaded yet', async () => {
+      const {instance, reported} = await watch(false);
+
+      instance.checkForMissingFields();
+      instance.checkForMissingFields();
+
+      expect(reported).not.toHaveBeenCalled();
+    });
+
+    it('stops once the signer has submitted', async () => {
+      const {instance, reported} = await watch(true, true);
+
+      instance.checkForMissingFields();
+      instance.checkForMissingFields();
+
+      expect(reported).not.toHaveBeenCalled();
     });
   });
 
