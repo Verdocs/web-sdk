@@ -1,4 +1,4 @@
-import IMask from 'imask';
+import IMask, {InputMask} from 'imask';
 import {IRecipient} from '@verdocs/js-sdk';
 import {Component, Prop, h, Event, EventEmitter, Fragment, State} from '@stencil/core';
 
@@ -145,14 +145,32 @@ export class VerdocsKbaDialog {
   @State() updatedRecipient: IRecipient = null;
   @State() dobContainerId = `verdocs-date-input-${Math.random().toString(36).substring(2, 11)}`;
 
+  private dobMask?: InputMask<any>;
+
   componentWillLoad() {
     this.updatedRecipient = {...(this.recipient || {})} as IRecipient;
   }
 
-  // NOTE: This gets called again on every input, maybe do it on willUpdate?
+  disconnectedCallback() {
+    this.dobMask?.destroy();
+    this.dobMask = undefined;
+  }
+
+  // Only the identity step has a date of birth input, and it needs one mask, not one per render
   componentDidRender() {
+    const dobInput = document.getElementById(this.dobContainerId);
+    if (!dobInput) {
+      this.dobMask?.destroy();
+      this.dobMask = undefined;
+      return;
+    }
+
+    if (this.dobMask) {
+      return;
+    }
+
     // TODO: Review min/max settings
-    IMask(document.getElementById(this.dobContainerId), {
+    this.dobMask = IMask(dobInput, {
       mask: Date,
       min: new Date(1920, 0, 1),
       max: new Date(Date.now() - 86400 * 18 * 365 * 1000), // 18 years old
