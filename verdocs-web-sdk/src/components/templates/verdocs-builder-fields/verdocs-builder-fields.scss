@@ -1,0 +1,1777 @@
+@import '../../../theme.scss';
+@import '../../../recipient-fields.scss';
+
+$builder-ink: $verdocs-bg-5;
+$builder-line: #e3e5ee;
+$builder-muted: #7b7f97;
+$builder-guide: #e0338f;
+
+// High contrast shows selection with an ink outline instead of the purple ring, and adds recipient numbers to the quick bar.
+@mixin builder-high-contrast {
+  .verdocs-field.vb-field.verdocs-field-selected {
+    box-shadow: none !important;
+    border-style: solid !important;
+    border-width: screen(2) !important;
+    outline: screen(2) solid $builder-ink;
+    outline-offset: screen(2);
+  }
+
+  .verdocs-field.vb-field > .vb-corner {
+    border: screen(2) solid $builder-ink;
+  }
+
+  .verdocs-field.vb-field.vb-group-member {
+    box-shadow: none !important;
+    outline: screen(1.5) dashed $builder-ink;
+    outline-offset: screen(2);
+  }
+
+  .vb-order,
+  .insp-option-num {
+    background: $builder-ink;
+  }
+
+  .vb-add-option {
+    color: $builder-ink;
+    border-color: $builder-ink;
+  }
+
+  .verdocs-builder-guide.vertical {
+    width: 2px;
+  }
+
+  .verdocs-builder-guide.horizontal {
+    height: 2px;
+  }
+
+  .signer-num {
+    display: inline-grid;
+  }
+
+  .palette-icon,
+  .insp-tile {
+    border-color: var(--vb-text);
+  }
+}
+
+verdocs-builder-fields {
+  display: flex;
+  min-height: 600px;
+  position: relative;
+  align-items: flex-start;
+  font-family: $verdocs-primary-font;
+
+  // The quick bar and settings panel replace each field's own settings button.
+  .verdocs-field .settings-icon {
+    display: none !important;
+  }
+
+  @include recipient-fields;
+
+  // Fields carry an inline z-index of 100, so each page keeps them to itself and the quick bar and its menus stay on top.
+  verdocs-template-document-page {
+    isolation: isolate;
+  }
+
+  // Fields filled from data carry a small mark, so the signer's color still shows. Amber means the key isn't in the catalog.
+  .verdocs-field.vb-field.vb-bound::after {
+    top: -6px;
+    left: -6px;
+    width: 13px;
+    height: 13px;
+    z-index: 2;
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 0 1.5px #ffffff;
+    background: $verdocs-purple
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.4' stroke='white' stroke-linecap='round'%3E%3Cellipse cx='12' cy='5' rx='8' ry='3'/%3E%3Cpath d='M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5'/%3E%3Cpath d='M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3'/%3E%3C/svg%3E")
+      center / 8px no-repeat;
+  }
+
+  .verdocs-field.vb-field.vb-unknown-key::after {
+    background-color: #d97706;
+  }
+
+  .verdocs-field.vb-field.verdocs-field-selected {
+    z-index: 101 !important;
+    border-style: solid !important;
+    border-width: screen(1.5) !important;
+    box-shadow: 0 0 0 screen(3) rgba(101, 77, 203, 0.28) !important;
+  }
+
+  // Each corner handle carries the two edge classes the field's own resize listens for.
+  .verdocs-field.vb-field > .vb-corner {
+    inset: auto;
+    z-index: 11;
+    width: screen(9);
+    height: screen(9);
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: screen(2);
+    background: #ffffff;
+    border: screen(1.5) solid $verdocs-purple;
+
+    &.edge-top {
+      top: screen(-5);
+    }
+
+    &.edge-bottom {
+      bottom: screen(-5);
+    }
+
+    &.edge-left {
+      left: screen(-5);
+    }
+
+    &.edge-right {
+      right: screen(-5);
+    }
+
+    &.edge-top.edge-left,
+    &.edge-bottom.edge-right {
+      cursor: nwse-resize;
+    }
+
+    &.edge-top.edge-right,
+    &.edge-bottom.edge-left {
+      cursor: nesw-resize;
+    }
+  }
+
+  // The rest of the selected radio's group, numbered in order, with a button under the last option to add the next.
+  .verdocs-field.vb-field.vb-group-member {
+    border-style: solid !important;
+    border-width: screen(1.5) !important;
+    box-shadow: 0 0 0 screen(3) rgba(101, 77, 203, 0.16) !important;
+  }
+
+  .vb-order {
+    left: screen(-9);
+    bottom: screen(-9);
+    color: #ffffff;
+    display: grid;
+    width: screen(15);
+    height: screen(15);
+    position: absolute;
+    font-weight: 700;
+    border-radius: 50%;
+    place-items: center;
+    font-size: screen(9);
+    background: $verdocs-purple;
+  }
+
+  .vb-add-option {
+    z-index: 102;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    display: grid;
+    position: absolute;
+    border-radius: 50%;
+    place-items: center;
+    background: #ffffff;
+    font-family: inherit;
+    color: $verdocs-purple;
+    transform: translateX(-50%);
+    border: 1.5px dashed $verdocs-purple;
+
+    &:hover {
+      background: #f1eefc;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $verdocs-purple;
+      outline-offset: 2px;
+    }
+  }
+
+  .signer-num {
+    display: none;
+    flex: none;
+    height: 14px;
+    min-width: 14px;
+    padding: 0 3px;
+    font-size: 9px;
+    font-weight: 800;
+    border-radius: 3px;
+    place-items: center;
+    box-sizing: border-box;
+    color: $builder-ink;
+    background: #ffffff;
+  }
+
+  .quick-menu .signer-num {
+    color: #ffffff;
+    background: $builder-ink;
+  }
+
+  &.contrast-high {
+    @include builder-high-contrast;
+  }
+
+  @media (prefers-contrast: more), (forced-colors: active) {
+    &:not(.contrast-normal) {
+      @include builder-high-contrast;
+    }
+  }
+
+  &.moving .quick-bar,
+  &.moving .vb-add-option {
+    visibility: hidden;
+  }
+
+  // Side panels fit the host app's scroll area when it's a size container, and the viewport otherwise.
+  .palette {
+    top: 0;
+    position: sticky;
+    flex: 0 0 220px;
+    max-height: 100cqh;
+    overflow-y: auto;
+    padding: 16px 14px;
+    align-self: stretch;
+    box-sizing: border-box;
+    background: #ffffff;
+    border-right: 1px solid $builder-line;
+
+    verdocs-select-input {
+      display: block;
+      margin-bottom: 16px;
+    }
+  }
+
+  .palette-title {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+    color: $builder-muted;
+    text-transform: uppercase;
+  }
+
+  .palette-field {
+    gap: 9px;
+    display: flex;
+    cursor: grab;
+    font-size: 12.5px;
+    font-weight: 600;
+    user-select: none;
+    touch-action: none;
+    margin-bottom: 7px;
+    padding: 8px 10px;
+    align-items: center;
+    border-radius: 8px;
+    color: $verdocs-dark-blue;
+    background: #ffffff;
+    border: 1px solid $builder-line;
+    transition:
+      border-color 0.12s,
+      box-shadow 0.12s;
+
+    &:hover {
+      border-color: #c9c3ee;
+      box-shadow: 0 1px 3px rgba(101, 77, 203, 0.12);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #654dcb;
+      outline-offset: 1px;
+    }
+
+    // Each tile is drawn like the field it places.
+    .palette-icon {
+      width: 22px;
+      height: 22px;
+      flex: none;
+      display: grid;
+      border-radius: 6px;
+      place-items: center;
+      color: var(--vb-text);
+      box-sizing: border-box;
+      border: 1px dashed var(--vb-color);
+      background: color-mix(in srgb, var(--vb-color) 14%, #ffffff);
+
+      svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    .grip {
+      width: 8px;
+      height: 14px;
+      margin-left: auto;
+      background-size: 4px 4px;
+      background-image: radial-gradient(#b3b6c8 1.1px, transparent 1.2px);
+    }
+  }
+
+  .palette-hint {
+    font-size: 11.5px;
+    margin-top: 10px;
+    line-height: 1.5;
+    color: $builder-muted;
+  }
+
+  .pages {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    padding: 15px;
+    row-gap: 15px;
+    min-height: 200px;
+    position: relative;
+    align-items: center;
+    box-sizing: border-box;
+    flex-direction: column;
+
+    div,
+    canvas {
+      box-sizing: border-box;
+    }
+
+    .document-separator {
+      gap: 10px;
+      width: 100%;
+      color: white;
+      display: flex;
+      font-size: 16px;
+      margin-top: 20px;
+      font-weight: 500;
+      padding: 12px 20px;
+      border-radius: 6px;
+      align-items: center;
+      box-sizing: border-box;
+      background-color: $verdocs-grey-1;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      svg {
+        flex-shrink: 0;
+      }
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+  }
+
+  .verdocs-builder-guide {
+    z-index: 102;
+    position: absolute;
+    pointer-events: none;
+    background: $builder-guide;
+
+    &.vertical {
+      top: 0;
+      bottom: 0;
+      width: 1px;
+    }
+
+    &.horizontal {
+      left: 0;
+      right: 0;
+      height: 1px;
+    }
+  }
+
+  .quick-bar {
+    gap: 2px;
+    z-index: 40;
+    padding: 4px;
+    display: flex;
+    color: #ffffff;
+    font-size: 12px;
+    cursor: default;
+    position: absolute;
+    border-radius: 10px;
+    align-items: center;
+    white-space: nowrap;
+    background: $builder-ink;
+    box-shadow: 0 10px 28px rgba(30, 32, 49, 0.28);
+
+    .separator {
+      width: 1px;
+      height: 20px;
+      margin: 0 3px;
+      background: #4f5270;
+    }
+  }
+
+  .quick-button {
+    gap: 6px;
+    border: 0;
+    color: #e6e7f0;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 6px 9px;
+    font-family: inherit;
+    display: inline-flex;
+    border-radius: 7px;
+    align-items: center;
+    background: transparent;
+
+    &:hover {
+      color: #ffffff;
+      background: #4a4d68;
+    }
+
+    &.icon svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    &.delete svg {
+      stroke: currentColor;
+    }
+
+    .check {
+      width: 14px;
+      height: 14px;
+      display: block;
+      border-radius: 3px;
+      box-sizing: border-box;
+      border: 1.5px solid #8b8fb0;
+
+      &.on {
+        background: $verdocs-green;
+        border-color: $verdocs-green;
+
+        &::after {
+          content: '';
+          width: 4px;
+          height: 7px;
+          display: block;
+          margin: 0 auto;
+          border: solid #ffffff;
+          border-width: 0 2px 2px 0;
+          transform: translateY(1px) rotate(45deg);
+        }
+      }
+    }
+
+    .caret {
+      width: 6px;
+      height: 6px;
+      border-right: 1.5px solid #9fa2c4;
+      border-bottom: 1.5px solid #9fa2c4;
+      transform: rotate(45deg) translateY(-2px);
+    }
+  }
+
+  .quick-count {
+    font-weight: 650;
+    padding: 0 6px 0 8px;
+    color: #ffffff;
+  }
+
+  .quick-button.open {
+    color: #ffffff;
+    background: #4a4d68;
+  }
+
+  .quick-bar.multi .quick-menu {
+    min-width: 0;
+  }
+
+  .align-menu {
+    left: 70px;
+  }
+
+  .size-menu {
+    left: 130px;
+  }
+
+  .align-grid {
+    gap: 2px;
+    display: grid;
+    padding: 2px 4px 4px;
+    grid-template-columns: repeat(3, 30px);
+
+    button {
+      border: 0;
+      height: 28px;
+      display: grid;
+      cursor: pointer;
+      border-radius: 6px;
+      place-items: center;
+      color: $builder-ink;
+      background: transparent;
+
+      &:hover {
+        color: $verdocs-purple;
+        background: #f1eefc;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  .quick-menu-icon {
+    display: flex;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .quick-menu-item:disabled {
+    cursor: default;
+    color: $builder-muted;
+    background: transparent;
+  }
+
+  .vb-marquee {
+    z-index: 30;
+    position: absolute;
+    border-radius: 3px;
+    pointer-events: none;
+    border: 1px solid $verdocs-purple;
+    background: rgba(101, 77, 203, 0.08);
+  }
+
+  .insp-tiles {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    position: relative;
+
+    span {
+      width: 22px;
+      height: 22px;
+      position: absolute;
+      border-radius: 6px;
+      box-sizing: border-box;
+      border: 1.5px dashed var(--vb-color);
+      background: color-mix(in srgb, var(--vb-color) 14%, #ffffff);
+
+      &:nth-child(1) {
+        left: 0;
+        top: 8px;
+      }
+
+      &:nth-child(2) {
+        left: 6px;
+        top: 4px;
+      }
+
+      &:nth-child(3) {
+        left: 12px;
+        top: 0;
+      }
+    }
+  }
+
+  .insp-seg button.mixed {
+    cursor: default;
+    font-style: italic;
+  }
+
+  .signer-dot {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+  }
+
+  .quick-menu,
+  .quick-rename {
+    left: 0;
+    z-index: 50;
+    position: absolute;
+    border-radius: 9px;
+    background: #ffffff;
+    color: $builder-ink;
+    top: calc(100% + 6px);
+    box-shadow:
+      0 12px 32px rgba(30, 32, 49, 0.22),
+      0 0 0 1px rgba(30, 32, 49, 0.06);
+  }
+
+  .quick-menu {
+    padding: 5px;
+    min-width: 170px;
+  }
+
+  .quick-menu-heading {
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 5px 10px 3px;
+    letter-spacing: 0.07em;
+    color: $builder-muted;
+    text-transform: uppercase;
+  }
+
+  .quick-menu-item {
+    gap: 8px;
+    border: 0;
+    width: 100%;
+    display: flex;
+    cursor: pointer;
+    font-size: 12.5px;
+    padding: 7px 10px;
+    text-align: left;
+    border-radius: 6px;
+    align-items: center;
+    font-family: inherit;
+    color: $builder-ink;
+    background: transparent;
+
+    &:hover {
+      background: #f1eefc;
+    }
+
+    &.current {
+      font-weight: 700;
+    }
+  }
+
+  .quick-rename {
+    padding: 6px;
+
+    input {
+      width: 220px;
+      outline: none;
+      font-size: 12.5px;
+      padding: 6px 10px;
+      border-radius: 7px;
+      font-family: inherit;
+      box-sizing: border-box;
+      border: 1px solid #d6d8e3;
+
+      &:focus {
+        border-color: $verdocs-purple;
+        box-shadow: 0 0 0 3px rgba(101, 77, 203, 0.14);
+      }
+    }
+  }
+
+  .inspector {
+    top: 0;
+    width: 0;
+    flex: none;
+    position: sticky;
+    overflow: hidden;
+    max-height: 100cqh;
+    align-self: stretch;
+    background: #ffffff;
+    transition: width 0.18s ease;
+
+    &.open {
+      width: 350px;
+      border-left: 1px solid $builder-line;
+    }
+  }
+
+  .inspector-inner {
+    width: 350px;
+    max-height: 100cqh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 16px 18px 40px;
+  }
+
+  .insp-head {
+    gap: 10px;
+    display: flex;
+    margin-bottom: 4px;
+    align-items: center;
+
+    .inspector-close {
+      margin-left: auto;
+    }
+  }
+
+  // Drawn like the field on the page, in its recipient's color
+  .insp-tile {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    display: grid;
+    border-radius: 8px;
+    place-items: center;
+    color: var(--vb-text);
+    box-sizing: border-box;
+    border: 1.5px dashed var(--vb-color);
+    background: color-mix(in srgb, var(--vb-color) 14%, #ffffff);
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .insp-head-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .insp-title {
+    min-width: 0;
+    font-size: 14px;
+    overflow: hidden;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: $verdocs-dark-blue;
+
+    &.mono {
+      font-size: 12.5px;
+      font-weight: 500;
+      font-family: ui-monospace, Menlo, monospace;
+    }
+  }
+
+  .insp-sub {
+    font-size: 11.5px;
+    margin-top: 2px;
+    overflow: hidden;
+    white-space: nowrap;
+    color: $builder-muted;
+    text-overflow: ellipsis;
+
+    b {
+      font-weight: 600;
+      color: var(--vb-text);
+    }
+  }
+
+  .insp-section {
+    display: flex;
+    margin-top: 12px;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 12px 0 2px;
+    letter-spacing: 0.08em;
+    color: $builder-muted;
+    text-transform: uppercase;
+    border-top: 1px solid $builder-line;
+  }
+
+  .insp-two {
+    gap: 0 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .insp-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 9px;
+    color: $verdocs-dark-blue;
+
+    .insp-input {
+      margin-top: 4px;
+    }
+  }
+
+  .insp-input {
+    width: 100%;
+    outline: none;
+    display: block;
+    font-size: 12.5px;
+    font-weight: 400;
+    min-height: 31px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    background: #ffffff;
+    font-family: inherit;
+    box-sizing: border-box;
+    color: $verdocs-dark-blue;
+    border: 1px solid #d6d8e3;
+
+    &:focus {
+      border-color: $verdocs-purple;
+      box-shadow: 0 0 0 3px rgba(101, 77, 203, 0.14);
+    }
+
+    &.mono {
+      font-size: 11.5px;
+      font-family: ui-monospace, Menlo, monospace;
+    }
+  }
+
+  select.insp-input {
+    cursor: pointer;
+    appearance: none;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    background-position: calc(100% - 15px) 13px, calc(100% - 10px) 13px;
+    background-image: linear-gradient(45deg, transparent 50%, $builder-muted 50%), linear-gradient(135deg, $builder-muted 50%, transparent 50%);
+  }
+
+  .insp-error {
+    font-size: 11px;
+    margin-top: 5px;
+    color: #b4233a;
+  }
+
+  .insp-seg {
+    gap: 2px;
+    padding: 3px;
+    display: flex;
+    margin-top: 5px;
+    border-radius: 8px;
+    background: #f1f2f6;
+
+    button {
+      flex: 1;
+      border: 0;
+      cursor: pointer;
+      padding: 5px 3px;
+      background: none;
+      font-size: 11.5px;
+      font-weight: 600;
+      border-radius: 6px;
+      white-space: nowrap;
+      font-family: inherit;
+      color: $builder-muted;
+
+      &.on {
+        background: #ffffff;
+        color: $verdocs-purple;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+
+      &:focus-visible {
+        outline-offset: 1px;
+        outline: 2px solid $verdocs-purple;
+      }
+    }
+  }
+
+  // Two range inputs share one track. Thumbs sit inside the input, so the fill is inset by half a thumb.
+  .insp-range {
+    height: 22px;
+    margin-top: 6px;
+    position: relative;
+
+    &::before,
+    &::after {
+      top: 10px;
+      height: 3px;
+      content: '';
+      position: absolute;
+      border-radius: 2px;
+    }
+
+    &::before {
+      left: 0;
+      right: 0;
+      background: #e3e5ee;
+    }
+
+    &::after {
+      background: $verdocs-purple;
+      left: calc(7.5px + (100% - 15px) * var(--from));
+      right: calc(7.5px + (100% - 15px) * (1 - var(--to)));
+    }
+
+    input[type='range'] {
+      top: 0;
+      left: 0;
+      margin: 0;
+      z-index: 1;
+      width: 100%;
+      height: 22px;
+      background: none;
+      appearance: none;
+      position: absolute;
+      pointer-events: none;
+
+      &::-webkit-slider-thumb {
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+        appearance: none;
+        border-radius: 50%;
+        background: #ffffff;
+        pointer-events: auto;
+        box-sizing: border-box;
+        border: 2px solid $verdocs-purple;
+      }
+
+      &::-moz-range-thumb {
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+        border-radius: 50%;
+        background: #ffffff;
+        pointer-events: auto;
+        box-sizing: border-box;
+        border: 2px solid $verdocs-purple;
+      }
+
+      &:focus-visible::-webkit-slider-thumb {
+        box-shadow: 0 0 0 3px rgba(101, 77, 203, 0.2);
+      }
+    }
+
+    // When the handles meet, the smallest size is on top, since shrinking is the usual first move
+    input[name='min_font_size'] {
+      z-index: 2;
+    }
+  }
+
+  .insp-range-labels {
+    display: flex;
+    font-size: 11px;
+    font-weight: 400;
+    color: $builder-muted;
+    justify-content: space-between;
+  }
+
+  .insp-hint {
+    font-size: 11px;
+    margin-top: 5px;
+    color: $builder-muted;
+  }
+
+  .insp-warn {
+    font-size: 11px;
+    margin-top: 6px;
+    color: #95591a;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: #fdf8ef;
+    border: 1px solid #f0d9b5;
+
+    button {
+      padding: 0;
+      border: 0;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      font-weight: 700;
+      background: none;
+      text-decoration: underline;
+    }
+  }
+
+  .insp-checks {
+    gap: 0 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .insp-sections {
+    margin-top: 16px;
+  }
+
+  .insp-colh {
+    gap: 7px;
+    display: flex;
+    cursor: pointer;
+    margin: 0 -18px;
+    padding: 8px 18px;
+    user-select: none;
+    align-items: center;
+    background: #f3f4f8;
+    border-top: 1px solid #e6e8ef;
+    border-bottom: 1px solid #e6e8ef;
+
+    &:hover {
+      background: #eceef4;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px rgba(101, 77, 203, 0.4);
+    }
+  }
+
+  .insp-col + .insp-col .insp-colh {
+    border-top: 0;
+  }
+
+  .insp-col.open + .insp-col .insp-colh {
+    border-top: 1px solid #e6e8ef;
+  }
+
+  .insp-caret {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    margin-right: 3px;
+    transform: rotate(-45deg);
+    transition: transform 0.12s;
+    border: solid $builder-muted;
+    border-width: 0 1.5px 1.5px 0;
+  }
+
+  .insp-col.open .insp-caret {
+    margin-bottom: 3px;
+    transform: rotate(45deg);
+  }
+
+  .insp-coln {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #4b5060;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .insp-sum {
+    gap: 6px;
+    min-width: 0;
+    display: flex;
+    max-width: 68%;
+    margin-left: auto;
+    font-size: 11.5px;
+    align-items: center;
+    color: #a3a6b8;
+
+    &.changed {
+      font-weight: 500;
+      color: $verdocs-dark-blue;
+    }
+  }
+
+  .insp-sum {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .insp-dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $verdocs-purple;
+  }
+
+  .insp-adv {
+    gap: 6px;
+    border: 0;
+    padding: 0;
+    display: flex;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: auto;
+    background: none;
+    align-items: center;
+    font-family: inherit;
+    color: $builder-muted;
+
+    .insp-toggle {
+      display: block;
+      transform: scale(0.85);
+    }
+  }
+
+  .insp-colb {
+    padding-bottom: 14px;
+  }
+
+  .fill {
+    margin-top: 4px;
+    position: relative;
+  }
+
+  .fill-button {
+    gap: 7px;
+    width: 100%;
+    display: flex;
+    cursor: pointer;
+    min-height: 31px;
+    padding: 5px 10px;
+    text-align: left;
+    border-radius: 7px;
+    align-items: center;
+    background: #ffffff;
+    font-family: inherit;
+    border: 1px solid #d6d8e3;
+    color: $verdocs-dark-blue;
+
+    &.open,
+    &:focus-visible {
+      outline: none;
+      border-color: $verdocs-purple;
+      box-shadow: 0 0 0 3px rgba(101, 77, 203, 0.14);
+    }
+  }
+
+  .fill-mark {
+    display: flex;
+    color: $verdocs-purple;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .fill-value {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &.plain {
+      font-weight: 400;
+    }
+  }
+
+  .fill-key {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 11px;
+    color: #4338ca;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: ui-monospace, Menlo, monospace;
+  }
+
+  .fill-caret {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    margin-left: auto;
+    transform: translateY(-2px) rotate(45deg);
+    border: solid $builder-muted;
+    border-width: 0 1.5px 1.5px 0;
+  }
+
+  .fill-backdrop {
+    inset: 0;
+    z-index: 1;
+    position: fixed;
+  }
+
+  .tour-help {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    display: grid;
+    cursor: pointer;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 50%;
+    place-items: center;
+    background: #ffffff;
+    font-family: inherit;
+    color: $builder-muted;
+    border: 1px solid $builder-line;
+
+    &:hover {
+      color: $verdocs-purple;
+      border-color: $verdocs-purple;
+    }
+  }
+
+  // The tour dims everything around one target and points a card at it. It covers the builder's own frame.
+  .tour {
+    inset: 0;
+    z-index: 70;
+    position: fixed;
+    overflow: hidden;
+  }
+
+  .tour-spot,
+  .tour-shade {
+    position: absolute;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  .tour-spot {
+    border-radius: 8px;
+    box-shadow:
+      0 0 0 3px #ffffff,
+      0 0 0 9999px rgba(20, 22, 36, 0.55);
+  }
+
+  .tour-shade {
+    inset: 0;
+    background: rgba(20, 22, 36, 0.55);
+  }
+
+  .tour-card {
+    width: 300px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    position: absolute;
+    border-radius: 12px;
+    background: #ffffff;
+    color: $verdocs-dark-blue;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+
+    &::before {
+      width: 14px;
+      height: 14px;
+      content: '';
+      position: absolute;
+      background: #ffffff;
+      transform: rotate(45deg);
+    }
+
+    &.arrow-up::before {
+      top: -7px;
+      left: var(--arrow-at);
+    }
+
+    &.arrow-down::before {
+      bottom: -7px;
+      left: var(--arrow-at);
+    }
+
+    &.arrow-left::before {
+      left: -7px;
+      top: var(--arrow-at);
+    }
+
+    &.arrow-right::before {
+      right: -7px;
+      top: var(--arrow-at);
+    }
+
+    &.arrow-none::before {
+      display: none;
+    }
+  }
+
+  .tour-rail {
+    gap: 3px;
+    display: flex;
+    margin-bottom: 10px;
+
+    i {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: #e3e5ee;
+
+      &.done {
+        background: #b9e2c9;
+      }
+
+      &.on {
+        background: var(--verdocs-recipient-1, #2b995b);
+      }
+    }
+  }
+
+  .tour-title {
+    gap: 7px;
+    display: flex;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    align-items: baseline;
+    color: $builder-ink;
+  }
+
+  .tour-num {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--verdocs-recipient-1-text, #227948);
+  }
+
+  .tour-actions {
+    gap: 6px;
+    display: flex;
+    margin-top: 12px;
+    align-items: center;
+    justify-content: flex-end;
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .tour-skip {
+      padding: 0;
+      font-size: 12px;
+      margin-right: auto;
+      background: none;
+      color: $builder-muted;
+    }
+
+    .tour-back,
+    .tour-next {
+      height: 28px;
+      padding: 0 12px;
+      font-size: 12.5px;
+      font-weight: 500;
+      border-radius: 6px;
+    }
+
+    .tour-back {
+      color: #654dcb;
+      background: #efedfb;
+    }
+
+    .tour-next {
+      color: #ffffff;
+      background: #2fa062;
+    }
+
+    button:focus-visible {
+      outline-offset: 2px;
+      outline: 2px solid $verdocs-purple;
+    }
+  }
+
+  // Sticks to the bottom of the view while the pages scroll, and takes no room of its own
+  .zoom-dock {
+    height: 0;
+    bottom: 16px;
+    z-index: 45;
+    display: flex;
+    position: sticky;
+    align-self: stretch;
+    align-items: flex-start;
+    justify-content: flex-end;
+  }
+
+  .zoom-backdrop {
+    inset: 0;
+    position: fixed;
+  }
+
+  .zoom-bar {
+    gap: 2px;
+    padding: 4px;
+    display: flex;
+    position: relative;
+    border-radius: 10px;
+    align-items: center;
+    background: #ffffff;
+    transform: translateY(-100%);
+    border: 1px solid $builder-line;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+
+    button {
+      border: 0;
+      height: 28px;
+      cursor: pointer;
+      background: none;
+      font-size: 12.5px;
+      font-weight: 600;
+      border-radius: 7px;
+      font-family: inherit;
+      color: $verdocs-dark-blue;
+
+      &:hover:not(:disabled) {
+        background: #f1f2f6;
+      }
+
+      &:disabled {
+        cursor: default;
+        color: #c3c6d4;
+      }
+
+      &:focus-visible {
+        outline-offset: 1px;
+        outline: 2px solid $verdocs-purple;
+      }
+    }
+
+    .zoom-step {
+      width: 28px;
+      font-size: 16px;
+    }
+
+    .zoom-current {
+      min-width: 92px;
+      padding: 0 10px;
+    }
+  }
+
+  .zoom-menu {
+    right: 0;
+    padding: 4px;
+    min-width: 150px;
+    position: absolute;
+    border-radius: 9px;
+    background: #ffffff;
+    bottom: calc(100% + 6px);
+    border: 1px solid $builder-line;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+
+    button {
+      width: 100%;
+      display: block;
+      padding: 0 10px;
+      text-align: left;
+      font-weight: 500;
+
+      &[aria-checked='true'] {
+        font-weight: 700;
+        color: $verdocs-purple;
+      }
+    }
+  }
+
+  .fill-menu {
+    z-index: 2;
+    margin-top: 6px;
+    position: relative;
+    border-radius: 9px;
+    background: #ffffff;
+    border: 1px solid $builder-line;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .fill-search {
+    margin: 8px;
+    width: calc(100% - 16px);
+  }
+
+  .fill-options {
+    overflow-y: auto;
+    max-height: 300px;
+    padding-bottom: 6px;
+  }
+
+  .fill-group {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 8px 12px 3px;
+    letter-spacing: 0.08em;
+    color: $builder-muted;
+    text-transform: uppercase;
+  }
+
+  .fill-option {
+    gap: 8px;
+    border: 0;
+    width: 100%;
+    display: flex;
+    cursor: pointer;
+    font-size: 12.5px;
+    text-align: left;
+    padding: 6px 12px;
+    background: none;
+    align-items: center;
+    font-family: inherit;
+    color: $verdocs-dark-blue;
+
+    .fill-label {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .fill-key {
+      flex: none;
+      max-width: 55%;
+      margin-left: auto;
+    }
+
+    &:hover:not(:disabled) {
+      background: #f8f7fe;
+    }
+
+    &.on {
+      font-weight: 600;
+      background: #f1eefc;
+    }
+
+    &:disabled {
+      cursor: default;
+      color: #b4b7c6;
+
+      .fill-key {
+        color: #b4b7c6;
+      }
+    }
+
+    &.fill-add {
+      font-weight: 600;
+      color: $verdocs-purple;
+      border-top: 1px solid $builder-line;
+
+      .fill-key {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .fill-note {
+    font-size: 11px;
+    padding: 6px 12px 2px;
+    color: $builder-muted;
+  }
+
+  .insp-row {
+    gap: 10px;
+    display: flex;
+    margin-top: 11px;
+    font-size: 12.5px;
+    font-weight: 600;
+    align-items: center;
+    color: $verdocs-dark-blue;
+    justify-content: space-between;
+  }
+
+  .insp-toggle {
+    width: 30px;
+    padding: 0;
+    height: 17px;
+    border: 0;
+    flex: none;
+    cursor: pointer;
+    position: relative;
+    border-radius: 9px;
+    background: #cfd2de;
+
+    i {
+      top: 2px;
+      left: 2px;
+      width: 13px;
+      height: 13px;
+      position: absolute;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: left 0.12s;
+    }
+
+    &.on {
+      background: $verdocs-green;
+
+      i {
+        left: 15px;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid $verdocs-purple;
+      outline-offset: 2px;
+    }
+  }
+
+  .insp-option {
+    gap: 6px;
+    display: flex;
+    margin-top: 6px;
+    align-items: center;
+
+    .insp-input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .insp-input:not(.mono) {
+      flex: 1.4;
+    }
+  }
+
+  .insp-count {
+    margin-left: 6px;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+
+  .insp-option-num {
+    width: 18px;
+    height: 18px;
+    border: 0;
+    padding: 0;
+    flex: none;
+    display: grid;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    color: #ffffff;
+    border-radius: 50%;
+    place-items: center;
+    background: $verdocs-purple;
+
+    &.current {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px $verdocs-purple;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $verdocs-purple;
+      outline-offset: 2px;
+    }
+  }
+
+  .insp-arrange {
+    gap: 4px;
+    display: flex;
+
+    button {
+      width: 28px;
+      height: 26px;
+      padding: 0;
+      display: grid;
+      cursor: pointer;
+      border-radius: 6px;
+      place-items: center;
+      background: #ffffff;
+      color: $builder-muted;
+      border: 1px solid $builder-line;
+
+      &:hover:not(:disabled) {
+        color: $verdocs-purple;
+        border-color: #cfc6f3;
+      }
+
+      &:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  .insp-remove {
+    width: 26px;
+    height: 26px;
+    border: 0;
+    padding: 4px;
+    flex: none;
+    display: grid;
+    cursor: pointer;
+    border-radius: 6px;
+    place-items: center;
+    background: transparent;
+    color: $builder-muted;
+
+    &:hover {
+      color: #b4233a;
+      background: #fbeaed;
+    }
+
+    svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+    }
+  }
+
+  .insp-add {
+    border: 0;
+    padding: 8px 0 2px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    background: none;
+    color: $verdocs-purple;
+  }
+
+  .insp-delete {
+    gap: 6px;
+    cursor: pointer;
+    margin-top: 22px;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 7px;
+    align-items: center;
+    background: none;
+    color: #b4233a;
+    display: inline-flex;
+    border: 1px solid #f0c9d0;
+
+    span {
+      display: flex;
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+    }
+  }
+
+  .inspector-close {
+    width: 26px;
+    height: 26px;
+    border: 0;
+    padding: 4px;
+    display: grid;
+    cursor: pointer;
+    border-radius: 6px;
+    place-items: center;
+    color: $builder-muted;
+    background: transparent;
+
+    &:hover {
+      background: #f2f3f8;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .inspector-empty {
+    margin-top: 30px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    text-align: center;
+    color: $builder-muted;
+  }
+}
+
+// The drag ghost lives on document.body so it can follow the pointer across the whole window.
+.verdocs-builder-ghost {
+  z-index: 10000;
+  position: fixed;
+  border-radius: 3px;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 1.5px dashed var(--verdocs-builder-ghost-color, $verdocs-purple);
+  background: color-mix(in srgb, var(--verdocs-builder-ghost-color, $verdocs-purple) 14%, #ffffff);
+  box-shadow: 0 6px 18px rgba(30, 32, 49, 0.18);
+  transition: opacity 0.1s;
+
+  &.ghost-radio {
+    border-radius: 50%;
+  }
+
+  &.off {
+    opacity: 0.45;
+    box-shadow: none;
+  }
+
+  .tip {
+    left: 0;
+    color: #ffffff;
+    font-size: 10.5px;
+    font-weight: 500;
+    padding: 3px 7px;
+    position: absolute;
+    border-radius: 5px;
+    white-space: nowrap;
+    top: calc(100% + 6px);
+    background: $verdocs-bg-5;
+    font-family: $verdocs-primary-font;
+  }
+}
+
+body.verdocs-builder-dragging,
+body.verdocs-builder-dragging * {
+  user-select: none;
+  cursor: grabbing !important;
+}

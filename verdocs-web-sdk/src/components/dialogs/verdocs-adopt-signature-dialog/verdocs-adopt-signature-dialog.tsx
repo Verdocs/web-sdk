@@ -588,11 +588,11 @@ export class VerdocsAdoptSignatureDialog {
 
           <div style={{display: 'flex', flexDirection: 'row', gap: '10px', marginBottom: '6px', alignItems: 'center', fontSize: '13px'}}>
             <verdocs-radio-button checked={this.mode === 'type'} value="type" name="mode" onClick={() => (this.mode = 'type')} />
-            <label>Typed with a keyboard</label>
+            <label htmlFor="verdocs-radio-button-mode-type">Typed with a keyboard</label>
           </div>
           <div style={{display: 'flex', flexDirection: 'row', gap: '10px', marginBottom: '6px', alignItems: 'center', fontSize: '13px'}}>
             <verdocs-radio-button checked={this.mode === 'draw'} value="draw" name="mode" onClick={() => (this.mode = 'draw')} />
-            <label>Drawn with touch, mouse, or stylus</label>
+            <label htmlFor="verdocs-radio-button-mode-draw">Drawn with touch, mouse, or stylus</label>
           </div>
 
           <div class="preview-header">

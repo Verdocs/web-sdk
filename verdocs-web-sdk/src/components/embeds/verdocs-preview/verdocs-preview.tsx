@@ -1,6 +1,7 @@
 import interact from 'interactjs';
 import {getTemplate, integerSequence, ITemplate, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Element, Event, EventEmitter, Host, Component, Prop, h, State, Fragment, Watch} from '@stencil/core';
+import {drawRecipientField} from '../../../utils/RecipientFields';
 import {renderDocumentField} from '../../../utils/utils';
 import {IDocumentPageInfo} from '../../../utils/Types';
 import {SDKError} from '../../../utils/errors';
@@ -40,6 +41,18 @@ export class VerdocsPreview {
   @Prop() templateId: string | null = null;
 
   /**
+   * How fields are drawn. `recipient` colors each field by its recipient and shows its label, as the Builder does.
+   * `theme` draws them with the signing theme's field styles instead.
+   */
+  @Prop() fieldStyle: 'recipient' | 'theme' = 'recipient';
+
+  /**
+   * Draws recipient-colored fields for people who need more contrast: recipient numbers, darker borders and labels, and outlines in place of
+   * color to show selection. `auto` follows the browser's contrast setting.
+   */
+  @Prop() contrast: 'auto' | 'normal' | 'high' = 'auto';
+
+  /**
    * Event fired if an error occurs. The event details will contain information about the error. Most errors will
    * terminate the process, and the calling application should correct the condition and re-render the component.
    */
@@ -48,13 +61,20 @@ export class VerdocsPreview {
   @State() loading = true;
   @State() template: ITemplate | null = null;
 
+  // Stencil doesn't rerun componentWillLoad when an element is reattached, so we listen again here.
+  connectedCallback() {
+    if (this.template && !this.templateListenerId) {
+      this.listenToTemplate();
+    }
+  }
+
   disconnectedCallback() {
     this.unlistenToTemplate();
   }
 
   async listenToTemplate() {
     this.unlistenToTemplate();
-    Store.subscribe(
+    this.templateListenerId = Store.subscribe(
       'templates',
       this.templateId,
       () => getTemplate(this.endpoint, this.templateId),
@@ -79,7 +99,16 @@ export class VerdocsPreview {
     this.listenToTemplate();
   }
 
+  @Watch('contrast')
+  applyContrast() {
+    this.hostEl.classList.remove('contrast-high', 'contrast-normal');
+    if (this.contrast === 'high' || this.contrast === 'normal') {
+      this.hostEl.classList.add(`contrast-${this.contrast}`);
+    }
+  }
+
   async componentWillLoad() {
+    this.applyContrast();
     try {
       this.endpoint.loadSession();
       if (!this.endpoint.session) {
@@ -105,8 +134,13 @@ export class VerdocsPreview {
     // re-renders. Unbind any drag/resize handlers on fields inside our own subtree after each
     // render so they stay non-interactive in preview mode. Scope to hostEl so we don't clobber
     // handlers on fields belonging to a sibling component during brief tab-switch overlaps.
-    this.hostEl?.querySelectorAll('.verdocs-field').forEach(el => {
-      interact(el as HTMLElement).unset();
+    this.hostEl?.querySelectorAll('.verdocs-field').forEach((el: HTMLElement) => {
+      interact(el).unset();
+
+      const field = (this.template?.fields || []).find(field => field.name === el.getAttribute('fieldname'));
+      if (this.fieldStyle === 'recipient' && field) {
+        drawRecipientField(el, field, this.template);
+      }
     });
   }
 
@@ -125,7 +159,13 @@ export class VerdocsPreview {
     });
 
     // console.log('[PREVIEW] Page rendered', pageInfo, fields);
-    fields.forEach(field => renderDocumentField('template', field, pageInfo, {disabled: true, editable: false, draggable: false}));
+    fields.forEach(field => {
+      const el = renderDocumentField('template', field, pageInfo, {disabled: true, editable: false, draggable: false});
+      // A same-named field in another component can come back here, so we only draw our own.
+      if (this.fieldStyle === 'recipient' && el && this.hostEl.contains(el)) {
+        drawRecipientField(el, field, this.template, pageInfo.xScale);
+      }
+    });
   }
 
   render() {

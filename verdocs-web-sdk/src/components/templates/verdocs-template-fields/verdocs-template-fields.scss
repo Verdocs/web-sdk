@@ -6,6 +6,11 @@ verdocs-template-fields {
   display: block;
   min-height: 600px;
 
+  .verdocs-field-selected {
+    outline: 2px solid rgba(101, 77, 203, 0.75);
+    outline-offset: 1px;
+  }
+
   .page-0 {
     padding: 65px 15px 0 15px;
     box-sizing: border-box;

@@ -2,6 +2,8 @@ import {Component, h, Event, EventEmitter, Fragment, Host, State, Prop} from '@s
 
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
 
+const DEFAULT_ACCEPT = '.pdf,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*';
+
 const PaperclipIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>`;
 
 /**
@@ -19,6 +21,11 @@ export class VerdocsUploadDialog {
 
   @Prop({mutable: true})
   maxSize: number = 20 * 1024 * 1024;
+
+  /**
+   * File types to allow, as in a file input's accept attribute.
+   */
+  @Prop() accept?: string;
 
   @Prop({mutable: true})
   existingFile: any;
@@ -86,9 +93,20 @@ export class VerdocsUploadDialog {
     this.selectedFiles = files;
     this.errorMessage = '';
 
+    const rules = (this.accept || '')
+      .split(',')
+      .map(rule => rule.trim().toLowerCase())
+      .filter(Boolean);
+    const allowed = (file: File) =>
+      rules.some(rule => (rule.startsWith('.') ? file.name.toLowerCase().endsWith(rule) : rule.endsWith('/*') ? file.type.startsWith(rule.slice(0, -1)) : file.type === rule));
+    if (rules.length && !this.selectedFiles.every(allowed)) {
+      this.errorMessage = `This field accepts ${rules.join(', ')}.`;
+      return;
+    }
+
     const totalSize = this.selectedFiles.reduce((acc, file) => acc + file.size, 0);
     if (totalSize > this.maxSize) {
-      this.errorMessage = 'Total file size must not exceed 20MB.';
+      this.errorMessage = `Total file size must not exceed ${Math.round((this.maxSize / 1024 / 1024) * 10) / 10}MB.`;
     }
   }
 
@@ -119,6 +137,7 @@ export class VerdocsUploadDialog {
 
   render() {
     const existingFile = this.existingFile?.name ? this.existingFile : null;
+    const supported = this.accept ? this.accept.replace(/\s*,\s*/g, ', ') : 'PDF, Word, JPG, PNG';
 
     return (
       <Host>
@@ -147,14 +166,14 @@ export class VerdocsUploadDialog {
                 onDrop={e => this.handleDrop(e)}
               >
                 <p>Drag and drop your files here</p>
-                <p class="subscript">Supported files: PDF, Word, JPG, PNG</p>
+                <p class="subscript">Supported files: {supported}</p>
 
                 <verdocs-button label={!!existingFile ? 'Replace files' : 'Select files'} onClick={() => this.handleSelectFile()} />
                 <input
                   type="file"
                   ref={el => (this.fileInput = el as HTMLInputElement)}
                   style={{display: 'none'}}
-                  accept=".pdf,application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
+                  accept={this.accept || DEFAULT_ACCEPT}
                   onChange={() => this.handleFileChange()}
                 />
               </div>

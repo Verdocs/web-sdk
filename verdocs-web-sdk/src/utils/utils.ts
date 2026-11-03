@@ -55,6 +55,15 @@ export const defaultHeight = (type: TFieldType) => {
   return 50;
 };
 
+// Checkboxes and radios are drawn for a 14pt box and scaled to the field's real size, the same size the
+// API stamps on the finished PDF. Non-square fields (common in AcroForm imports) fit the shorter side.
+export const TOGGLE_BASE_SIZE = 14;
+
+export const getToggleScale = (field: {width?: number | null; height?: number | null} | null | undefined) =>
+  Math.min(field?.width || TOGGLE_BASE_SIZE, field?.height || TOGGLE_BASE_SIZE) / TOGGLE_BASE_SIZE;
+
+const isToggleField = (field: ITemplateField | IEnvelopeField) => field.type === 'checkbox' || field.type === 'radio';
+
 export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvelopeField, xScale: number, yScale: number) => {
   let {x = 0, y = 0, width = defaultWidth(field.type), height = defaultHeight(field.type), settings} = field;
   const isCanvasField = field.type === 'signature' || field.type === 'initial';
@@ -67,6 +76,9 @@ export const setControlStyles = (el: HTMLElement, field: ITemplateField | IEnvel
   el.style.left = `${rescale(xScale, x)}px`;
   el.style.bottom = `${rescale(yScale, y)}px`;
   el.style.transform = `scale(${xScale}, ${yScale})`;
+  if (isToggleField(field)) {
+    el.style.setProperty('--verdocs-toggle-scale', String(getToggleScale({width, height})));
+  }
 };
 
 export const getControlStyles = (field: ITemplateField | IEnvelopeField, xScale: number, yScale: number) => {
@@ -80,6 +92,7 @@ export const getControlStyles = (field: ITemplateField | IEnvelopeField, xScale:
     left: `${rescale(xScale, x)}px`,
     bottom: `${rescale(yScale, y)}px`,
     transform: `scale(${xScale}, ${yScale})`,
+    ...(isToggleField(field) ? {'--verdocs-toggle-scale': String(getToggleScale({width, height}))} : {}),
   };
 };
 

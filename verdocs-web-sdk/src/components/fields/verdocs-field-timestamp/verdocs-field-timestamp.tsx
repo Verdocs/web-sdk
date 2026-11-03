@@ -2,7 +2,7 @@ import interact from 'interactjs';
 import {format} from 'date-fns/format';
 import {ITemplateField, IEnvelopeField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Fragment, State, Listen, Watch} from '@stencil/core';
-import {FORMAT_TIMESTAMP} from '../../../utils/Types';
+import {FORMAT_DATE, FORMAT_TIMESTAMP} from '../../../utils/Types';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -142,7 +142,8 @@ export class VerdocsFieldTimestamp {
     const {required = false, placeholder = '', value = '', label = ''} = field || {};
     const signerClass = `signer-${(index % 10) + 1}`;
 
-    const formatted = format(new Date(value || new Date().toISOString()), FORMAT_TIMESTAMP);
+    const dateOnly = field?.config?.type === 'timestamp' && field.config.include_time === false;
+    const formatted = format(new Date(value || new Date().toISOString()), dateOnly ? FORMAT_DATE : FORMAT_TIMESTAMP);
 
     if (done) {
       return <Host class={{'verdocs-field': true,done}}>{formatted}</Host>;

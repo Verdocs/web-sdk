@@ -55,6 +55,42 @@ export const VerdocsBuild: StencilVueComponent<JSX.VerdocsBuild> = /*@__PURE__*/
 ]);
 
 
+export const VerdocsBuilder: StencilVueComponent<JSX.VerdocsBuilder> = /*@__PURE__*/ defineContainer<JSX.VerdocsBuilder>('verdocs-builder', undefined, [
+  'endpoint',
+  'contrast',
+  'templateId',
+  'step',
+  'cancel',
+  'sdkError',
+  'stepChanged',
+  'send',
+  'templateUpdated',
+  'templateCreated',
+  'rolesUpdated'
+], [
+  'cancel',
+  'sdkError',
+  'stepChanged',
+  'send',
+  'templateUpdated',
+  'templateCreated',
+  'rolesUpdated'
+]);
+
+
+export const VerdocsBuilderFields: StencilVueComponent<JSX.VerdocsBuilderFields> = /*@__PURE__*/ defineContainer<JSX.VerdocsBuilderFields>('verdocs-builder-fields', undefined, [
+  'endpoint',
+  'contrast',
+  'showTour',
+  'templateId',
+  'sdkError',
+  'templateUpdated'
+], [
+  'sdkError',
+  'templateUpdated'
+]);
+
+
 export const VerdocsButton: StencilVueComponent<JSX.VerdocsButton> = /*@__PURE__*/ defineContainer<JSX.VerdocsButton>('verdocs-button', undefined, [
   'label',
   'startIcon',
@@ -689,6 +725,8 @@ export const VerdocsPortal: StencilVueComponent<JSX.VerdocsPortal> = /*@__PURE__
 export const VerdocsPreview: StencilVueComponent<JSX.VerdocsPreview> = /*@__PURE__*/ defineContainer<JSX.VerdocsPreview>('verdocs-preview', undefined, [
   'endpoint',
   'templateId',
+  'fieldStyle',
+  'contrast',
   'sdkError'
 ], [
   'sdkError'
@@ -797,11 +835,13 @@ export const VerdocsSign: StencilVueComponent<JSX.VerdocsSign> = /*@__PURE__*/ d
   'toolbarStyle',
   'sdkError',
   'envelopeLoaded',
-  'envelopeUpdated'
+  'envelopeUpdated',
+  'fieldNotVisible'
 ], [
   'sdkError',
   'envelopeLoaded',
-  'envelopeUpdated'
+  'envelopeUpdated',
+  'fieldNotVisible'
 ]);
 
 
@@ -1121,6 +1161,7 @@ export const VerdocsToolbarIcon: StencilVueComponent<JSX.VerdocsToolbarIcon> = /
 
 export const VerdocsUploadDialog: StencilVueComponent<JSX.VerdocsUploadDialog> = /*@__PURE__*/ defineContainer<JSX.VerdocsUploadDialog>('verdocs-upload-dialog', undefined, [
   'maxSize',
+  'accept',
   'existingFile',
   'exit',
   'next',

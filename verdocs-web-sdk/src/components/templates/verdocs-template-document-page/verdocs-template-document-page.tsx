@@ -129,6 +129,13 @@ export class VerdocsTemplateDocumentPage {
     this.notifyRenderedSize();
   }
 
+  // Stencil doesn't rerun componentWillLoad when an element is reattached, so we listen again here.
+  connectedCallback() {
+    if (this.template && !this.templateListenerId) {
+      this.listenToTemplate();
+    }
+  }
+
   disconnectedCallback() {
     this.resizeObserver?.disconnect();
     this.unlistenToTemplate();
@@ -136,7 +143,7 @@ export class VerdocsTemplateDocumentPage {
 
   async listenToTemplate() {
     this.unlistenToTemplate();
-    Store.subscribe(
+    this.templateListenerId = Store.subscribe(
       'templates',
       this.templateId,
       () => getTemplate(this.endpoint, this.templateId),

@@ -160,6 +160,29 @@ verdocs-button {
       }
     }
 
+    // Secondary variant is a soft fill, for the quieter button in a pair
+    &.secondary {
+      border: none;
+      outline: none;
+      border-radius: var(--verdocs-button-radius, 6px);
+      color: var(--verdocs-button-secondary-color, #654dcb);
+      background: var(--verdocs-button-secondary-fill, #efedfb);
+
+      &:hover:not([disabled]) {
+        background: var(--verdocs-button-secondary-fill-hover, #e4e0f8);
+      }
+
+      &:disabled {
+        color: var(--verdocs-button-disabled-color, #9b9ea8);
+        background: var(--verdocs-button-disabled-bg, #e6e7eb);
+      }
+
+      &:focus-visible {
+        outline-offset: 2px;
+        outline: 2px solid var(--verdocs-button-secondary-color, #654dcb);
+      }
+    }
+
     // Text variant is just a label
     &.text {
       color: $secondary-color;

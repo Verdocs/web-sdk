@@ -168,6 +168,8 @@ export class VerdocsEnvelopeDocumentPage {
                 this.aspectRatio = this.naturalWidth / this.naturalHeight;
                 this.virtualHeight = this.virtualWidth / this.aspectRatio;
                 this.renderedHeight = e.target.offsetWidth / this.aspectRatio;
+                // The first notice is skipped, and the resize observer won't send a second if the load didn't change our size
+                requestAnimationFrame(() => this.notifyRenderedSize());
               }}
             />
           ) : (

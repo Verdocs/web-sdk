@@ -40,7 +40,7 @@ export class VerdocsButton {
   /**
    * The display variant of the button.
    */
-  @Prop() variant: 'standard' | 'text' | 'outline' = 'standard';
+  @Prop() variant: 'standard' | 'secondary' | 'text' | 'outline' = 'standard';
 
   /**
    * Whether the button should be disabled.

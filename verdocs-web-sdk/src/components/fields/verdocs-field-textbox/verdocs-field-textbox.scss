@@ -20,6 +20,30 @@ verdocs-field-textbox {
     font-size: 8px;
   }
 
+  &.invalid {
+    border-color: #d64a5f;
+    background-color: #fff5f6;
+  }
+
+  .format-error {
+    left: 0;
+    top: 100%;
+    z-index: 5;
+    margin-top: 3px;
+    padding: 2px 6px;
+    font-size: 11px;
+    line-height: 15px;
+    color: #b4233a;
+    position: absolute;
+    white-space: nowrap;
+    border-radius: 4px;
+    background: #ffffff;
+    pointer-events: none;
+    border: 1px solid #f3c2ca;
+    letter-spacing: normal;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
   .edge-top,
   .edge-right,
   .edge-left,

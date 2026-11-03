@@ -1,11 +1,12 @@
 import type {IBrand, IOrganization, TRecipientAuthMethod} from '@verdocs/js-sdk';
 import {Component, Element, Prop, State, h, Event, EventEmitter, Host, Method, Watch} from '@stencil/core';
 import type {ICreateEnvelopeFromTemplateRequest, ICreateEnvelopeRecipientFromTemplate, IEnvelope, IRecipient, ITemplate} from '@verdocs/js-sdk';
-import {createEnvelope, formatFullName, getBrands, getOrganization, getTemplate, getOrganizationContacts, getRGBA, isValidEmail, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {createEnvelope, formatFullName, getBrands, getOrganization, getTemplate, getOrganizationContacts, isValidEmail, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {IContactSearchEvent} from '../../envelopes/verdocs-contact-picker/verdocs-contact-picker';
 import {DefaultEndpoint, getWebAppUrl} from '../../../utils/Environment';
-import {getRoleIndex, getRoleNames} from '../../../utils/Templates';
+import {recipientNumber} from '../../../utils/RecipientFields';
 import {updateScrollFade} from '../../../utils/ScrollFade';
+import {getRoleNames} from '../../../utils/Templates';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
@@ -166,6 +167,13 @@ export class VerdocsSend {
   @State() loading = true;
   @State() template: ITemplate | null = null;
 
+  // Stencil doesn't rerun componentWillLoad when an element is reattached, so we listen again here.
+  connectedCallback() {
+    if (this.template && !this.templateListenerId) {
+      this.listenToTemplate();
+    }
+  }
+
   disconnectedCallback() {
     this.unlistenToTemplate();
   }
@@ -194,7 +202,7 @@ export class VerdocsSend {
   async listenToTemplate() {
     console.log('[SEND] Loading template', this.templateId);
     this.unlistenToTemplate();
-    Store.subscribe(
+    this.templateListenerId = Store.subscribe(
       'templates',
       this.templateId,
       () => getTemplate(this.endpoint, this.templateId),
@@ -592,10 +600,10 @@ export class VerdocsSend {
       return <div class="detail recipient-detail">{this.renderDetailHeader('Recipient')}</div>;
     }
 
-    const roleIndex = getRoleIndex(this.template, role.role_name);
+    const n = recipientNumber(this.template?.roles, role.role_name);
     return (
       <div class="detail recipient-detail">
-        {this.renderDetailHeader([<span class="role-dot" style={{backgroundColor: getRGBA(roleIndex)}} />, role.role_name])}
+        {this.renderDetailHeader([<span class="role-dot" style={{backgroundColor: `var(--verdocs-recipient-${n})`}} />, role.role_name])}
         <verdocs-contact-picker
           key={role.id}
           showCancel={false}
@@ -727,15 +735,15 @@ export class VerdocsSend {
           </div>,
           <div class="notice">
             <span class="icon" innerHTML={infoIcon} />
-              <div>
-                Specify where envelope-completed email notifications and "Ask a Question" submissions are delivered.
-                To customize the "From" address for email notifications, please configure those in{' '}
-                <a href={`${getWebAppUrl(this.endpoint)}/settings/brands`} target="_blank" rel="noopener">
-                  Brands
-                  <span class="icon" innerHTML={externalLinkIcon} />
-                </a>{' '}
-                .
-              </div>
+            <div>
+              Specify where envelope-completed email notifications and "Ask a Question" submissions are delivered. To customize the "From" address for email notifications, please
+              configure those in{' '}
+              <a href={`${getWebAppUrl(this.endpoint)}/settings/branding`} target="_blank" rel="noopener">
+                Brands
+                <span class="icon" innerHTML={externalLinkIcon} />
+              </a>
+              .
+            </div>
           </div>,
         ])}
         {this.renderDoneButton()}
@@ -809,25 +817,45 @@ export class VerdocsSend {
     const assignedEmails = rolesAssigned.map(r => r.email.toLowerCase());
     const hasDuplicateEmails = new Set(assignedEmails).size < assignedEmails.length;
     const expiresAt = this.expiresAt();
-    const expiresShort = expiresAt.toLocaleDateString(undefined, {month: 'short', day: 'numeric'});
+    const expiresDate = expiresAt.toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'});
+    const expiryDays = this.effectiveExpiryDays();
+    const recipientCount = getRoleNames(this.template).length;
+    const readyCount = Math.min(rolesAssigned.length, recipientCount);
 
     return (
       <Host class={{'sendable': this.template?.is_sendable, 'detail-open': this.view !== 'main'}}>
         <div class="track">
           <div class="pane main-pane" aria-hidden={this.view !== 'main' ? 'true' : 'false'}>
-            <div class="section-title">Recipients</div>
+            <div class="band">Recipients</div>
+            <div class="progress" role="progressbar" aria-label="Recipients ready" aria-valuemin={0} aria-valuemax={recipientCount} aria-valuenow={readyCount}>
+              <span class="count">
+                <b>
+                  {readyCount} of {recipientCount}
+                </b>{' '}
+                ready
+              </span>
+              <span class="bar">
+                <span style={{width: `${recipientCount ? (readyCount / recipientCount) * 100 : 0}%`}} />
+              </span>
+            </div>
             <div class="recipients">
-              {levels.map(level => [
-                levels.length > 1 && <div class="step">Step {level}</div>,
+              {levels.map((level, index) => [
+                // Step numbers can skip (moving a step's last role elsewhere leaves a gap), so we count positions instead
+                levels.length > 1 && <div class="step">Step {index + 1}</div>,
                 this.getRolesAtLevel(level).map(role => {
-                  const roleIndex = getRoleIndex(this.template, role.role_name);
+                  const n = recipientNumber(this.template?.roles, role.role_name);
                   const completed = this.rolesCompleted[role.id];
                   const assigned = completed && rolesAssigned.findIndex(r => r.role_name === role.role_name) > -1;
                   const optionLabels = this.getRecipientOptionLabels(completed);
 
                   return (
-                    <button type="button" class="recipient" data-ri={roleIndex} data-rn={role.role_name} onClick={e => this.handleClickRole(e, role)}>
-                      <span class="role-dot" style={{backgroundColor: getRGBA(roleIndex)}} />
+                    <button
+                      type="button"
+                      class="recipient"
+                      data-rn={role.role_name}
+                      style={{'--send-recipient': `var(--verdocs-recipient-${n})`, '--send-recipient-text': `var(--verdocs-recipient-${n}-text)`}}
+                      onClick={e => this.handleClickRole(e, role)}
+                    >
                       <span class="who">
                         <span class="role-name">{role.role_name}</span>
                         {assigned ? (
@@ -835,7 +863,7 @@ export class VerdocsSend {
                             {formatFullName(completed)} · {completed.email}
                           </span>
                         ) : (
-                          <span class="who-detail configure">Configure recipient</span>
+                          <span class="who-detail needs">Needs a name and email</span>
                         )}
                         {optionLabels.length > 0 && (
                           <span class="options">
@@ -852,26 +880,23 @@ export class VerdocsSend {
               ])}
             </div>
 
-            <div class="section-title delivery-title">Delivery</div>
+            <div class="band">Delivery</div>
             <div class="delivery">
               <button type="button" class="kv" onClick={() => this.showView('brand')} disabled={this.sending}>
                 <span class="key">Brand</span>
-                <span class="value">{this.getSelectedBrandLabel()}</span>
+                <span class="value">{this.brandKey ? this.getSelectedBrandLabel() : this.getDefaultBrand()?.name || 'Verdocs'}</span>
                 <span class="chevron" innerHTML={chevronRightIcon} />
               </button>
               <button type="button" class="kv" onClick={() => this.showView('expires')} disabled={this.sending}>
                 <span class="key">Expires</span>
                 <span class="value">
-                  {this.effectiveExpiryDays()} days <small>· {expiresShort}</small>
+                  {expiresDate} · in {expiryDays} {expiryDays === 1 ? 'day' : 'days'}
                 </span>
                 <span class="chevron" innerHTML={chevronRightIcon} />
               </button>
               <button type="button" class="kv" onClick={() => this.showView('sender')} disabled={this.sending}>
                 <span class="key">Sender</span>
-                <span class="value stacked">
-                  <span class="line">{this.effectiveSenderName() || this.effectiveSenderEmail()}</span>
-                  {this.effectiveSenderName() && this.effectiveSenderEmail() ? <small class="line">{this.effectiveSenderEmail()}</small> : null}
-                </span>
+                <span class="value">{[this.effectiveSenderName(), this.effectiveSenderEmail()].filter(Boolean).join(' · ')}</span>
                 <span class="chevron" innerHTML={chevronRightIcon} />
               </button>
               <button type="button" class="kv" onClick={() => this.showView('notifications')} disabled={this.sending}>
@@ -886,7 +911,7 @@ export class VerdocsSend {
             <div class="buttons">
               {hasDuplicateEmails && <div class="error-message">Recipients cannot share the same email.</div>}
               {this.sending && <verdocs-spinner />}
-              {this.showCancel && <verdocs-button label="Cancel" size="small" variant="outline" onClick={e => this.handleCancel(e)} disabled={this.sending} />}
+              {this.showCancel && <verdocs-button label="Cancel" size="small" variant="secondary" onClick={e => this.handleCancel(e)} disabled={this.sending} />}
               <verdocs-button label="Send" size="small" disabled={!allRolesAssigned || this.sending || hasDuplicateEmails} onClick={e => this.handleSend(e)} />
             </div>
           </div>

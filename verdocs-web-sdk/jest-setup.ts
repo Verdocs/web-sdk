@@ -11,6 +11,7 @@ jest.mock('tinybase', () => ({
     addTableListener: jest.fn(() => 'tableListenerId'),
     removeRowListener:   jest.fn(),
     removeTableListener: jest.fn(),
+    delListener:         jest.fn(),
 
     getRow:           () => ({}),
     subscribe:        jest.fn(),

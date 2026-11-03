@@ -3,10 +3,10 @@ import {fullNameToInitials, startSigningSession, deleteEnvelopeFieldAttachment, 
 import {updateEnvelopeField, sortFields, IKBAQuestion, ISignerTokenResponse, delegateRecipient} from '@verdocs/js-sdk';
 import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipientRequest, getEnvelope} from '@verdocs/js-sdk';
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
-import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid, getCombinedEnvelopeDocumentDownloadLink} from '@verdocs/js-sdk';
+import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid, getCombinedEnvelopeDocumentDownloadLink, parseFieldNumber} from '@verdocs/js-sdk';
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
 import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
-import {IDocumentPageInfo, IDownloadEvent, DownloadAction} from '../../../utils/Types';
+import {IDocumentPageInfo, IDownloadEvent, DownloadAction, IFieldNotVisible} from '../../../utils/Types';
 import {DocumentPageIcon, CheckCircleIcon} from '../../../utils/Icons';
 import {VerdocsDownloadDialogCustomEvent} from '../../../components';
 import {VerdocsToast} from '../../../utils/Toast';
@@ -108,6 +108,11 @@ export class VerdocsSign {
    */
   @Event({composed: true}) envelopeUpdated: EventEmitter<{endpoint: VerdocsEndpoint; envelope: IEnvelope; event: string}>;
 
+  /**
+   * Event fired when one of the signer's fields doesn't appear on its page, with where it should have been. Never includes values.
+   */
+  @Event({composed: true}) fieldNotVisible: EventEmitter<IFieldNotVisible>;
+
   @State() recipient: IRecipient | null = null;
   @State() hasSignature = false;
   @State() nextButtonLabel = 'Start';
@@ -124,8 +129,11 @@ export class VerdocsSign {
   @State() showDone = false;
   @State() adoptingSignature = false;
   @State() showLoadError = false;
+  @State() inviteExpired = false;
+  @State() freshLinkState: 'idle' | 'sending' | 'sent' = 'idle';
   @State() finishLater = false;
   @State() showFinishLater = false;
+  @State() showApproverIntro = false;
   @State() agreed = false;
   @State() signatureId: string | null = null;
   @State() initialId: string | null = null;
@@ -150,6 +158,9 @@ export class VerdocsSign {
   @State() polling = true;
 
   private renderedPages: Record<string, IDocumentPageInfo> = {};
+  private missingFieldsTimer: any = null;
+  private missingFieldSuspects = new Set<string>();
+  private missingFieldsReported = new Set<string>();
   private observer: IntersectionObserver;
   private pollingInterval: any = null;
 
@@ -176,7 +187,28 @@ export class VerdocsSign {
     } catch (e) {
       console.log('[SIGN] Error with signing session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
-      this.showLoadError = true;
+      if (e.response?.status === 410 && e.response?.data?.error === 'invite_expired') {
+        this.inviteExpired = true;
+      } else {
+        this.showLoadError = true;
+      }
+    }
+  }
+
+  async requestFreshLink() {
+    if (this.freshLinkState !== 'idle') {
+      return;
+    }
+
+    this.freshLinkState = 'sending';
+    try {
+      await this.endpoint.api.post(`/v2/sign/unauth/${this.envelopeId}/${encodeURIComponent(this.roleId)}/${this.inviteCode}/fresh-link`);
+      this.freshLinkState = 'sent';
+    } catch (e) {
+      console.log('[SIGN] Unable to request a fresh link', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      this.freshLinkState = 'idle';
+      VerdocsToast(e.response?.data?.error || 'Unable to send a new link. Please try again.', {style: 'error'});
     }
   }
 
@@ -257,6 +289,7 @@ export class VerdocsSign {
   }
 
   disconnectedCallback() {
+    clearInterval(this.missingFieldsTimer);
     this.stopPolling();
     this.observer?.disconnect();
     window.removeEventListener('resize', () => this.updateZoomFromWindow());
@@ -418,27 +451,84 @@ export class VerdocsSign {
 
     this.authMethodStates = recipient.auth_method_states || ({} as Record<TRecipientAuthMethod, string>);
     this.kbaQuestions = recipient.kba_questions;
-    if (Object.values(this.authMethodStates).includes('failed')) {
+    if (recipient.status === 'failed' || Object.values(this.authMethodStates).includes('failed')) {
       this.fatalErrorHeader = 'Recipient Verification Failed';
       this.fatalErrorMessage = 'We were unable to verify your identity. The sender has been notified.';
       this.isDone = true;
     }
 
-    // TODO: Envelope "complete" | "declined" | "canceled"
-    // TODO: Recipient "canceled"
-
+    // Compared as a string: 'expired' is newer than the TEnvelopeStatus in the installed js-sdk.
     if (this.envelope.status === 'canceled') {
       this.fatalErrorHeader = 'Unable to Start Signing Session';
       this.fatalErrorMessage = 'This envelope has been canceled. The sender has been notified.';
+    } else if ((this.envelope.status as string) === 'expired') {
+      this.fatalErrorHeader = 'Unable to Start Signing Session';
+      this.fatalErrorMessage = 'This envelope has expired. Please contact the sender.';
     } else if (recipient.status === 'declined') {
       this.fatalErrorHeader = 'Declined';
       this.fatalErrorMessage = 'You have declined to sign this request. The sender has been notified.';
     } else if (this.agreed) {
       this.nextButtonLabel = 'Next';
+      this.showApproverIntro = !this.submitted && recipient.type === 'approver';
     }
 
     this.checkRecipientFields();
     this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
+    clearInterval(this.missingFieldsTimer);
+    this.missingFieldsTimer = setInterval(() => this.checkForMissingFields(), 5000);
+  }
+
+  // A signer's field has gone missing a few times in the wild without a repro, so we report what we know about it
+  reportFieldNotVisible(field: IEnvelopeField, problem: IFieldNotVisible['problem'], pageInfo?: IDocumentPageInfo) {
+    const detail: IFieldNotVisible = {
+      problem,
+      envelope_id: this.envelopeId,
+      organization_id: this.envelope?.organization_id || '',
+      role_name: this.roleId,
+      field: {name: field.name, type: field.type, page: field.page, x: field.x, y: field.y, width: field.width, height: field.height},
+      page: pageInfo ? {width: pageInfo.naturalWidth, height: pageInfo.naturalHeight, rendered_width: pageInfo.renderedWidth, rendered_height: pageInfo.renderedHeight} : null,
+    };
+    console.warn('[SIGN] Field not visible', JSON.stringify(detail));
+    this.fieldNotVisible?.emit(detail);
+  }
+
+  // Catches a page that loaded but never reported itself rendered, which leaves its fields undrawn with nothing else to notice
+  checkForMissingFields() {
+    // Finished signers see the completed document, which has no fields to draw
+    if (this.submitted || this.isDone) {
+      clearInterval(this.missingFieldsTimer);
+      return;
+    }
+
+    const pages = Array.from(this.el.querySelectorAll('verdocs-envelope-document-page')) as any[];
+    const suspects = new Set<string>();
+    let waiting = 0;
+    this.getSortedDisplayableFields().forEach(field => {
+      const id = getFieldId(field);
+      if (document.getElementById(id) || this.missingFieldsReported.has(id)) {
+        return;
+      }
+
+      // Page images load lazily as the signer scrolls, so a page that hasn't loaded yet isn't a problem
+      waiting++;
+      const image = pages.find(page => page.documentId === field.document_id && page.pageNumber === field.page)?.querySelector('img');
+      if (!image?.complete || !image.naturalWidth) {
+        return;
+      }
+
+      // A page can finish loading just before a check, so a field has to stay missing through two in a row
+      if (this.missingFieldSuspects.has(id)) {
+        this.missingFieldsReported.add(id);
+        this.reportFieldNotVisible(field, 'never drawn', this.renderedPages[`${field.document_id}:${field.page}`]);
+      } else {
+        suspects.add(id);
+      }
+    });
+
+    this.missingFieldSuspects = suspects;
+    if (waiting === 0) {
+      clearInterval(this.missingFieldsTimer);
+    }
   }
 
   handleClickAgree() {
@@ -451,6 +541,10 @@ export class VerdocsSign {
         this.recipient.agreed = true;
         this.submitting = false;
         this.agreed = true; // The server returns a recipient object but it's not "deep" so we track this locally
+        if (this.recipient.type === 'approver') {
+          this.checkRecipientFields();
+          this.showApproverIntro = true;
+        }
         this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'agreed'});
       })
       .catch(e => {
@@ -634,8 +728,12 @@ export class VerdocsSign {
     switch (field.type as any) {
       // TODO: Remove legacy type when no longer needed
       case 'textarea':
-      case 'textbox':
-        return this.saveFieldChange(field.name, value, false);
+      case 'textbox': {
+        // Number fields store the plain number, whatever the signer's locale made it look like
+        const format = field.config?.type === 'textbox' || field.config?.type === 'textarea' ? field.config.number : undefined;
+        const number = format ? parseFieldNumber(format, value) : null;
+        return this.saveFieldChange(field.name, number === null ? value : String(number), false);
+      }
 
       case 'checkbox': {
         return this.saveFieldChange(field.name, String(e.target.checked), false);
@@ -845,7 +943,7 @@ export class VerdocsSign {
 
     const invalidFields = this.getRecipientFields().filter(field => !isFieldValid(field, this.getRecipientFields()));
     if (invalidFields.length < 1) {
-      this.nextButtonLabel = 'Finish';
+      this.nextButtonLabel = this.recipient?.type === 'approver' ? 'Approve' : 'Finish';
       if (!this.nextSubmits) {
         this.nextSubmits = true;
       }
@@ -1112,9 +1210,10 @@ export class VerdocsSign {
     }
   }
 
-  handlePageRendered(e: any) {
+  handlePageRendered(e: any, retried = false) {
     const pageInfo = e.detail as IDocumentPageInfo;
-    this.renderedPages[`${pageInfo.documentId}:${pageInfo.pageNumber}`] = pageInfo;
+    const pageKey = `${pageInfo.documentId}:${pageInfo.pageNumber}`;
+    this.renderedPages[pageKey] = pageInfo;
 
     // console.log('Page rendered', pageInfo);
 
@@ -1123,13 +1222,21 @@ export class VerdocsSign {
     const recipientFields = this.getSortedDisplayableFields();
     // console.log('[SIGN] Rendering fields for page', pageInfo.pageNumber, recipientFields);
     // First render the fields for the signer
+    const drawn: IEnvelopeField[] = [];
+    let missed = false;
     recipientFields
       .filter(field => field && field.document_id === pageInfo.documentId && field.page === pageInfo.pageNumber)
       .forEach((field, tabIndex) => {
         const el = renderDocumentField('envelope', field, pageInfo, {disabled: false, editable: false, draggable: false, done: this.isDone}, tabIndex);
         if (!el) {
+          missed = true;
+          if (retried) {
+            this.reportFieldNotVisible(field, 'not drawn', pageInfo);
+          }
           return;
         }
+
+        drawn.push(field);
 
         if (Array.isArray(el)) {
           el.map(e => this.attachFieldAttributes(pageInfo, field, e));
@@ -1157,6 +1264,26 @@ export class VerdocsSign {
             }
           });
       });
+
+    // A page's controls layer can arrive after its first notice, so we give it one more try
+    if (missed && !retried) {
+      setTimeout(() => this.handlePageRendered({detail: this.renderedPages[pageKey] || pageInfo}, true), 300);
+    }
+
+    // Checked after layout, so a field that drew but landed off the page or with no size shows up too
+    requestAnimationFrame(() => {
+      const controls = document.getElementById(`${pageInfo.containerId}-controls`)?.getBoundingClientRect();
+      drawn.forEach(field => {
+        const box = document.getElementById(getFieldId(field))?.getBoundingClientRect();
+        if (!box || !controls) {
+          this.reportFieldNotVisible(field, box ? 'no page' : 'missing after render', pageInfo);
+        } else if (!box.width || !box.height) {
+          this.reportFieldNotVisible(field, 'no size', pageInfo);
+        } else if (box.right < controls.left || box.left > controls.right || box.bottom < controls.top || box.top > controls.bottom) {
+          this.reportFieldNotVisible(field, 'off the page', pageInfo);
+        }
+      });
+    });
 
     this.checkRecipientFields();
     this.updateFlagsForPage(pageInfo);
@@ -1232,6 +1359,22 @@ export class VerdocsSign {
   }
 
   render() {
+    if (this.inviteExpired) {
+      const sent = this.freshLinkState === 'sent';
+      return (
+        <Host>
+          <verdocs-ok-dialog
+            heading="Sorry, this link has expired"
+            message={
+              sent ? 'Thank you. Check your email for a new link.' : 'For security reasons, we need to re-verify your email address. Please click the button below to proceed.'
+            }
+            buttonLabel={sent ? 'OK' : 'Verify'}
+            onNext={() => this.requestFreshLink()}
+          />
+        </Host>
+      );
+    }
+
     if (this.showLoadError) {
       return (
         <Host>
@@ -1365,6 +1508,7 @@ export class VerdocsSign {
                   this.declining = false;
                   this.fatalErrorHeader = 'Declined';
                   this.fatalErrorMessage = 'You have declined to sign this request. The sender has been notified.';
+                  this.envelopeUpdated?.emit({endpoint: this.endpoint, envelope: this.envelope, event: 'declined'});
                 })
                 .catch(e => {
                   console.warn('[SIGN] Error declining signing session', e);
@@ -1714,6 +1858,15 @@ export class VerdocsSign {
             );
           })}
         </div>
+
+        {this.showApproverIntro && (
+          <verdocs-ok-dialog
+            heading="Review and approve"
+            message="You have been asked to review and approve this document. Click OK to proceed."
+            onNext={() => (this.showApproverIntro = false)}
+            onExit={() => (this.showApproverIntro = false)}
+          />
+        )}
 
         {this.showFinishLater && (
           <verdocs-ok-dialog

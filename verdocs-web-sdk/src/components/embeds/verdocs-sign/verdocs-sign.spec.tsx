@@ -68,11 +68,12 @@ jest.mock('@verdocs/js-sdk', () => {
 });
 
 import {newSpecPage} from '@stencil/core/testing';
-import {envelopeRecipientSubmit, getEnvelope, ISignerTokenResponse, startSigningSession} from '@verdocs/js-sdk';
+import {envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit, getEnvelope, ISignerTokenResponse, startSigningSession} from '@verdocs/js-sdk';
 import {VerdocsSign} from './verdocs-sign';
 
 const mockRecipient = {
   role_name: 'Recipient 1',
+  type: 'signer',
   status: 'opened',
   agreed: false,
   auth_step: null,
@@ -161,8 +162,12 @@ const loadSigningView = async () => {
 };
 
 describe('verdocs-sign', () => {
+  // The missing-field check repeats every few seconds, which would keep the test run open; tests call it directly instead
+  let intervals: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    intervals = jest.spyOn(globalThis, 'setInterval').mockImplementation((() => 0) as any);
     (startSigningSession as jest.Mock).mockResolvedValue(mockSessionResponse);
     (getEnvelope as jest.Mock).mockResolvedValue(mockEnvelope);
     (envelopeRecipientSubmit as jest.Mock).mockResolvedValue({});
@@ -174,6 +179,10 @@ describe('verdocs-sign', () => {
 
       unobserve() {}
     } as any;
+  });
+
+  afterEach(() => {
+    intervals.mockRestore();
   });
 
   describe('componentDidLoad', () => {
@@ -320,6 +329,22 @@ describe('verdocs-sign', () => {
     });
   });
 
+  describe('declining', () => {
+    it('emits envelopeUpdated once the decline goes through', async () => {
+      (envelopeRecipientDecline as jest.Mock).mockResolvedValue({});
+      const {page, instance} = await loadSigningView();
+      const envelopeUpdatedSpy = jest.spyOn(instance.envelopeUpdated, 'emit');
+
+      instance.declining = true;
+      await page.waitForChanges();
+      page.root.querySelector('verdocs-ok-dialog').dispatchEvent(new CustomEvent('next'));
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(envelopeRecipientDecline).toHaveBeenCalledTimes(1);
+      expect(envelopeUpdatedSpy.mock.calls[0][0].event).toBe('declined');
+    });
+  });
+
   describe('handleDoneDialogDismiss', () => {
     it('transitions into the done view after the dialog is dismissed', async () => {
       const {page, instance} = await loadSigningView();
@@ -356,6 +381,124 @@ describe('verdocs-sign', () => {
 
       expect(instance.nextSubmits).toBe(expected.nextSubmits);
       expect(instance.nextButtonLabel).toBe(expected.nextButtonLabel);
+    });
+  });
+
+  describe('approvers', () => {
+    it('labels the button Approve and explains the step after the disclosures', async () => {
+      (envelopeRecipientAgree as jest.Mock).mockResolvedValue({});
+      const {page, instance} = await loadInstance({type: 'approver', role_name: 'Reviewer'});
+
+      instance.handleClickAgree();
+      await new Promise(resolve => setTimeout(resolve, 0));
+      await page.waitForChanges();
+
+      expect(instance.nextButtonLabel).toBe('Approve');
+      expect(instance.nextSubmits).toBe(true);
+      expect(page.root.querySelectorAll('verdocs-ok-dialog').length).toBe(1);
+    });
+
+    it('explains the step again when an approver returns before submitting', async () => {
+      const {page, instance} = await loadInstance({type: 'approver', role_name: 'Reviewer', agreed: true});
+      await page.waitForChanges();
+
+      expect(instance.nextButtonLabel).toBe('Approve');
+      expect(page.root.querySelectorAll('verdocs-ok-dialog').length).toBe(1);
+    });
+
+    it('does not show the approver dialog to signers', async () => {
+      (envelopeRecipientAgree as jest.Mock).mockResolvedValue({});
+      const {page, instance} = await loadInstance();
+
+      instance.handleClickAgree();
+      await new Promise(resolve => setTimeout(resolve, 0));
+      await page.waitForChanges();
+
+      expect(instance.showApproverIntro).toBe(false);
+      expect(page.root.querySelectorAll('verdocs-ok-dialog').length).toBe(0);
+    });
+  });
+
+  describe('checkForMissingFields', () => {
+    // A page the way verdocs-envelope-document-page presents itself, with its image loaded or still loading
+    const addPage = (instance: VerdocsSign, loaded: boolean) => {
+      const page: any = document.createElement('verdocs-envelope-document-page');
+      page.documentId = 'doc-1';
+      page.pageNumber = 1;
+      const image = document.createElement('img');
+      Object.defineProperty(image, 'complete', {value: loaded});
+      Object.defineProperty(image, 'naturalWidth', {value: loaded ? 612 : 0});
+      page.appendChild(image);
+      instance.el.appendChild(page);
+    };
+
+    const watch = async (loaded: boolean, submitted = false) => {
+      const {instance} = await loadInstance();
+      const reported = jest.fn();
+      instance.fieldNotVisible = {emit: reported} as any;
+      instance.submitted = submitted;
+      addPage(instance, loaded);
+      return {instance, reported};
+    };
+
+    it('reports a field missing from a loaded page once it stays missing through two checks', async () => {
+      const {instance, reported} = await watch(true);
+
+      instance.checkForMissingFields();
+      expect(reported).not.toHaveBeenCalled();
+
+      instance.checkForMissingFields();
+      instance.checkForMissingFields();
+      expect(reported).toHaveBeenCalledTimes(1);
+      expect(reported).toHaveBeenCalledWith(expect.objectContaining({problem: 'never drawn', field: expect.objectContaining({name: 'signature-1'})}));
+    });
+
+    it('waits for a page whose image has not loaded yet', async () => {
+      const {instance, reported} = await watch(false);
+
+      instance.checkForMissingFields();
+      instance.checkForMissingFields();
+
+      expect(reported).not.toHaveBeenCalled();
+    });
+
+    it('stops once the signer has submitted', async () => {
+      const {instance, reported} = await watch(true, true);
+
+      instance.checkForMissingFields();
+      instance.checkForMissingFields();
+
+      expect(reported).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handlePageRendered', () => {
+    it('tries a field once more before reporting that it never drew', async () => {
+      const {instance} = await loadInstance();
+      instance.roleId = 'Recipient 1';
+      const reported = jest.fn();
+      instance.fieldNotVisible = {emit: reported} as any;
+      const pageInfo = {
+        containerId: 'no-such-page',
+        documentId: 'doc-1',
+        pageNumber: 1,
+        naturalWidth: 612,
+        naturalHeight: 792,
+        renderedWidth: 612,
+        renderedHeight: 792,
+        xScale: 1,
+        yScale: 1,
+      };
+
+      instance.handlePageRendered({detail: pageInfo});
+      expect(reported).not.toHaveBeenCalled();
+
+      await new Promise(resolve => setTimeout(resolve, 350));
+      expect(reported).toHaveBeenCalledTimes(1);
+      expect(reported).toHaveBeenCalledWith(
+        expect.objectContaining({problem: 'not drawn', role_name: 'Recipient 1', field: expect.objectContaining({name: 'signature-1', page: 1})}),
+      );
+      expect(reported.mock.calls[0][0].field).not.toHaveProperty('value');
     });
   });
 
