@@ -2,6 +2,7 @@ import {Component, Element, h, Event, EventEmitter, Listen, Prop, State} from '@
 import {formatFullName, getActiveEntitlements, IEntitlement, IProfile, IRecipient, isValidEmail, TEntitlement, TRecipientAuthMethod, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {updateScrollFade} from '../../../utils/ScrollFade';
 import {convertToE164} from '../../../utils/utils';
+import { ERecipientSignatureLevel } from '../../../utils/Qes';
 
 const addrBookIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-user"><path d="M15 13a3 3 0 1 0-6 0"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><circle cx="12" cy="8" r="2"/></svg>`;
 
@@ -25,6 +26,7 @@ export interface IContactSelectEvent {
   passcode: string;
   address: string;
   zip: string;
+  signature_level: string
 }
 
 export type TPickerContact = Partial<IProfile>;
@@ -105,6 +107,7 @@ export class VerdocsContactPicker {
   @State() showMessage: boolean = false;
   @State() delegator: boolean = false;
   @State() name_locked: boolean = false;
+  @State() signatureLevel: ERecipientSignatureLevel = 'simple'; // TODO: 'simple'|'qualified'
   @State() auth_methods: TRecipientAuthMethod[] = [];
   @State() passcode: string = '';
 
@@ -136,6 +139,7 @@ export class VerdocsContactPicker {
       this.showMessage = this.message !== '';
       this.auth_methods = this.templateRole.auth_methods || [];
       this.passcode = this.templateRole.passcode || '';
+      this.signatureLevel = this.canSelectQualified() ? (this.templateRole as any).signature_level || 'simple' : 'simple'
     }
 
     // Entitlements only gate optional methods like KBA. We need error handling here in case the getActiveEntitlements
@@ -197,6 +201,7 @@ export class VerdocsContactPicker {
       passcode: this.passcode,
       address: this.address,
       zip: this.zip,
+      signature_level: this.signatureLevel
     });
   }
 
@@ -224,6 +229,10 @@ export class VerdocsContactPicker {
     this.name_locked = option === 'name_locked';
   }
 
+  setSignatureLevel(level: ERecipientSignatureLevel){
+    this.signatureLevel = level
+  }
+
   renderPill(label: string, selected: boolean, onClick: () => void, opts: {locked?: boolean; title?: string} = {}) {
     return (
       <button
@@ -238,6 +247,10 @@ export class VerdocsContactPicker {
         {label}
       </button>
     );
+  }
+
+  canSelectQualified(){
+    return !!(this.activeEntitlements as any).qes
   }
 
   // The reason for the random names/IDs is to disable browser autocomplete. We set the autocomplete tags but many browsers ignore them
@@ -400,6 +413,16 @@ export class VerdocsContactPicker {
                   <span class="passcode-hint">PIN or passcode shared separately with the recipient ahead of time</span>
                 </div>
               )}
+            </div>
+
+            <div class="group">
+              <div class="group-label">Signature Level</div>
+                <div class="pills">
+                  {this.renderPill('Simple', this.signatureLevel === 'simple', () => this.setSignatureLevel('simple'))}
+                  {this.renderPill('Qualified', this.signatureLevel === 'qualified', () => this.setSignatureLevel('qualified'), {
+                    locked: !this.canSelectQualified()
+                  })}
+                </div>
             </div>
 
             <div class="group">

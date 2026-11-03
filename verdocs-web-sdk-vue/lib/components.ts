@@ -185,6 +185,7 @@ export const VerdocsDownloadDialog: StencilVueComponent<JSX.VerdocsDownloadDialo
   'polling',
   'documents',
   'hasCertificate',
+  'qualified',
   'download',
   'exit'
 ], [
