@@ -139,7 +139,8 @@ export class VerdocsContactPicker {
       this.showMessage = this.message !== '';
       this.auth_methods = this.templateRole.auth_methods || [];
       this.passcode = this.templateRole.passcode || '';
-      this.signatureLevel = this.canSelectQualified() ? (this.templateRole as any).signature_level || 'simple' : 'simple'
+      // Kept even without the qes entitlement, so the API rejects it loudly instead of us silently downgrading it
+      this.signatureLevel = (this.templateRole as any).signature_level || 'simple';
     }
 
     // Entitlements only gate optional methods like KBA. We need error handling here in case the getActiveEntitlements
