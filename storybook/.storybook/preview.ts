@@ -1,10 +1,26 @@
 import {Preview} from '@storybook/react-vite';
 import {setCustomElementsManifest} from '@storybook/web-components-vite';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
 import customElements from '../../verdocs-web-sdk/dist/custom-elements.json';
 import {defineCustomElements} from '../../verdocs-web-sdk/dist/esm/loader';
+import {API_URL} from '../stories/utils';
 
 import '../../verdocs-web-sdk/src/globals.css';
 import '../../verdocs-web-sdk/src/overrides.css';
+
+// Saved sessions are keyed by environment, not by API URL, so after switching APIs a session from the
+// previous one would be sent to the new one and rejected. Clear them whenever the API URL changes.
+if ((localStorage.getItem('sb-api-url') || '') !== (API_URL || '')) {
+  Object.keys(localStorage)
+    .filter(key => key.startsWith('verdocs-session-'))
+    .forEach(key => localStorage.removeItem(key));
+  localStorage.setItem('sb-api-url', API_URL || '');
+}
+
+// Must run before any component renders. verdocs-auth reads this when it builds its login endpoint.
+if (API_URL) {
+  VerdocsEndpoint.getDefault().setBaseURL(API_URL);
+}
 
 defineCustomElements();
 setCustomElementsManifest(customElements);
