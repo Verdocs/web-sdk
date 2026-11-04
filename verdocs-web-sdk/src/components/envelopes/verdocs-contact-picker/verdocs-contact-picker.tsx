@@ -1,5 +1,6 @@
 import {Component, Element, h, Event, EventEmitter, Listen, Prop, State} from '@stencil/core';
 import {formatFullName, getActiveEntitlements, IEntitlement, IProfile, IRecipient, isValidEmail, TEntitlement, TRecipientAuthMethod, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {format} from 'date-fns';
 import {updateScrollFade} from '../../../utils/ScrollFade';
 import {convertToE164} from '../../../utils/utils';
 
@@ -25,6 +26,8 @@ export interface IContactSelectEvent {
   passcode: string;
   address: string;
   zip: string;
+  dob: string;
+  ssn_last_4: string;
 }
 
 export type TPickerContact = Partial<IProfile>;
@@ -107,11 +110,15 @@ export class VerdocsContactPicker {
   @State() name_locked: boolean = false;
   @State() auth_methods: TRecipientAuthMethod[] = [];
   @State() passcode: string = '';
+  @State() dob: string;
+  @State() ssn_last_4: string;
 
   @State() firstNameFieldId = `verdocs-contact-picker-firstname-${Math.random().toString(36).substring(2, 11)}`;
   @State() lastNameFieldId = `verdocs-contact-picker-lastname-${Math.random().toString(36).substring(2, 11)}`;
   @State() emailFieldId = `verdocs-contact-picker-email-${Math.random().toString(36).substring(2, 11)}`;
   @State() phoneFieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
+  @State() dobFieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
+  @State() ssnLast4FieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
 
   @State() activeEntitlements: Partial<Record<TEntitlement, IEntitlement>> = {};
   @State() authMethodsLoading: boolean = true;
@@ -136,6 +143,9 @@ export class VerdocsContactPicker {
       this.showMessage = this.message !== '';
       this.auth_methods = this.templateRole.auth_methods || [];
       this.passcode = this.templateRole.passcode || '';
+      // We do not want these values to persist
+      this.dob = '';
+      this.ssn_last_4 = '';
     }
 
     // Entitlements only gate optional methods like KBA. We need error handling here in case the getActiveEntitlements
@@ -197,6 +207,8 @@ export class VerdocsContactPicker {
       passcode: this.passcode,
       address: this.address,
       zip: this.zip,
+      dob: this.dob,
+      ssn_last_4: this.ssn_last_4
     });
   }
 
@@ -260,6 +272,8 @@ export class VerdocsContactPicker {
           return !!this.email;
         case 'sms':
           return !!this.phone;
+        case 'id':
+          return !!this.dob && !!this.ssn_last_4
         default:
           return true;
       }
@@ -267,6 +281,7 @@ export class VerdocsContactPicker {
 
     const canSubmit = hasBasics && hasAuthRequirements;
     const hasSMSAuth = !!this.activeEntitlements.sms_auth;
+    const hasIdCheckAuth = !!this.activeEntitlements.id_auth; // TODO: Make sure this isn't just `id` in API
 
     // TODO: We show non-entitled options disabled so folks know what's possible. We could alternatively hide them.
     const verificationOptions: {label: string; value: TRecipientAuthMethod; locked?: boolean}[] = [
@@ -274,7 +289,7 @@ export class VerdocsContactPicker {
       {label: 'Passcode', value: 'passcode'},
       {label: 'SMS OTP', value: 'sms', locked: !hasSMSAuth},
       {label: 'KBA', value: 'kba', locked: !this.activeEntitlements.kba_auth},
-      {label: 'ID check', value: 'id', locked: !this.activeEntitlements.id_auth},
+      {label: 'ID check', value: 'id', locked: !hasIdCheckAuth},
     ];
 
     const signingOption: TSigningOption = this.delegator ? 'delegator' : this.name_locked ? 'name_locked' : 'none';
@@ -401,6 +416,45 @@ export class VerdocsContactPicker {
                 </div>
               )}
             </div>
+
+            {this.auth_methods.includes('id') && (
+              <div class="identification-data">
+                <div class="group">
+                  <div class="group-label">Identification Data</div>
+                  <div class="pills">
+                  <div class="field">
+                    <label htmlFor={this.dobFieldId}>DOB</label>
+                    <input
+                      id={this.dobFieldId}
+                      name={this.dobFieldId}
+                      type="text"
+                      data-lpignore="true"
+                      autoComplete="blocked"
+                      aria-autocomplete="none"
+                      value={this.dob}
+                      onFocus={() => (this.showSuggestions = false)}
+                      onInput={(e: any) => (this.dob = e.target.value)}
+                    />
+                  </div>
+                  <div class="field">
+                    <label htmlFor={this.ssnLast4FieldId}>SSN Last Four</label>
+                    <input
+                      id={this.ssnLast4FieldId}
+                      name={this.ssnLast4FieldId}
+                      type="text"
+                      data-lpignore="true"
+                      autoComplete="blocked"
+                      aria-autocomplete="none"
+                      value={this.ssn_last_4}
+                      onFocus={() => (this.showSuggestions = false)}
+                      onInput={(e: any) => (this.ssn_last_4 = e.target.value)}
+                    />
+                  </div>
+              
+                </div>
+                </div>
+              </div>
+            )}
 
             <div class="group">
               <div class="group-label">Signing options</div>
