@@ -143,6 +143,12 @@ const OVERFLOWS: [IFieldTextFit['overflow'], string][] = [
   ['overflow', 'Run over'],
 ];
 
+const ALIGNMENTS: [ITextFieldConfig['align'], string][] = [
+  ['left', 'Left'],
+  ['center', 'Center'],
+  ['right', 'Right'],
+];
+
 // The smallest a field can be typed in, matching what dragging its corner allows
 const MIN_SIZES: Record<string, [number, number]> = {
   textbox: [30, 10],
@@ -2261,6 +2267,7 @@ export class VerdocsBuilderFields {
     const fitSummary = [
       fit.min < fit.max ? `${fit.max} to ${fit.min} pt` : `${fit.max} pt`,
       config.fit?.overflow === 'truncate' ? 'Cut off' : config.fit?.overflow === 'ellipsize' ? 'Ellipsis' : '',
+      config.align === 'center' ? 'Centered' : config.align === 'right' ? 'Right' : '',
     ]
       .filter(Boolean)
       .join(' · ');
@@ -2832,8 +2839,9 @@ export class VerdocsBuilderFields {
             )}
 
           {textField &&
-            this.renderSection('fit', 'Fit', fitSummary, !!config.fit, () => (
+            this.renderSection('fit', 'Fit', fitSummary, !!config.fit || !!config.align, () => (
               <Fragment>
+                {segmented('Alignment', 'align', config.align || 'left', ALIGNMENTS, align => saveConfig({align: align === 'left' ? undefined : align}))}
                 <div class="insp-label">
                   Font size
                   <div class="insp-range" style={{'--from': fitRatio(fit.min), '--to': fitRatio(fit.max)}}>
