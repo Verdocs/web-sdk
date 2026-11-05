@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 import type {IAttachmentFieldConfig, IDateFieldConfig, TDataCatalogEntryType} from '@verdocs/js-sdk';
-import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
+import {Component, h, Element, Event, EventEmitter, forceUpdate, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
 import {formatFieldNumber, getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, ITextFieldConfig, saveDataCatalogEntries} from '@verdocs/js-sdk';
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import type {ICheckboxFieldConfig, IDropdownFieldConfig, IFieldTextFit, IRadioFieldConfig, ISignatureFieldConfig, ITimestampFieldConfig, TFieldConfig} from '@verdocs/js-sdk';
@@ -10,6 +10,7 @@ import {AlignLeftIcon, CloseIcon, DataIcon, DocumentPageIcon, DuplicateIcon, Pen
 import {drawRecipientField, FIELD_TYPES, radioGroup, recipientNumber} from '../../../utils/RecipientFields';
 import {TEXT_FORMATS} from '../../../utils/FieldFormats';
 import {IDocumentPageInfo} from '../../../utils/Types';
+import {SNAP_PX} from '../../../utils/SnapToFields';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
@@ -23,9 +24,6 @@ const GEOMETRY_KEYS: (keyof TFieldGeometry)[] = ['x', 'y', 'width', 'height', 'p
 const NUDGE_SAVE_DELAY_MS = 400;
 
 const MAX_UNDO = 50;
-
-// How close (in screen pixels) an edge has to come to another field's edge before it snaps.
-const SNAP_PX = 5;
 
 const isTypingTarget = (el: Element | null) => !!el && (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || (el as HTMLElement).isContentEditable);
 
@@ -143,6 +141,12 @@ const OVERFLOWS: [IFieldTextFit['overflow'], string][] = [
   ['truncate', 'Cut off'],
   ['ellipsize', 'Ellipsis …'],
   ['overflow', 'Run over'],
+];
+
+const ALIGNMENTS: [ITextFieldConfig['align'], string][] = [
+  ['left', 'Left'],
+  ['center', 'Center'],
+  ['right', 'Right'],
 ];
 
 // The smallest a field can be typed in, matching what dragging its corner allows
@@ -314,9 +318,11 @@ export class VerdocsBuilderFields {
   nudgeTimer: ReturnType<typeof setTimeout> | null = null;
   dragBefore: {name: string; before: TFieldGeometry} | null = null;
 
-  // Geometry we've sent but the server hasn't confirmed yet, so a new nudge or undo starts from where the field is drawn.
-  optimistic = new Map<string, Partial<TFieldGeometry>>();
+  // Changes we've sent but the server hasn't confirmed yet, so the next click, nudge, or undo starts from what's on screen.
+  optimistic = new Map<string, Partial<ITemplateField>>();
   inFlight = new Set<Promise<unknown>>();
+  // One field's saves go out in order, so a quick second change can't land first and be overwritten.
+  saveQueues = new Map<string, Promise<void>>();
 
   // Field components save their own resizes and announce them with settingsChanged; undo waits for that.
   pendingResizes = new Map<string, {before: TFieldGeometry; settle: () => void; done: Promise<void>}>();
@@ -351,6 +357,21 @@ export class VerdocsBuilderFields {
     this.selectField(name);
     this.startResize(name);
   };
+
+  // The field snaps its own edges while resizing; we draw a guide wherever a moving edge lines up with another field.
+  handleFieldResizeMove = (e: any) => {
+    const el = e.target as HTMLElement;
+    const edges = e.edges || {};
+    const rect = {left: e.rect.left - window.scrollX, right: e.rect.right - window.scrollX, top: e.rect.top - window.scrollY, bottom: e.rect.bottom - window.scrollY};
+    const others = [...el.parentElement.querySelectorAll('.verdocs-field')].filter(other => other !== el).map(other => other.getBoundingClientRect());
+    const lined = (value: number, sides: ('left' | 'right' | 'top' | 'bottom')[]) => others.some(other => sides.some(side => Math.abs(other[side] - value) < 0.5));
+    const moving = (['left', 'right', 'top', 'bottom'] as const).filter(side => edges[side]);
+    const guideX = moving.filter(side => side === 'left' || side === 'right').find(side => lined(rect[side], ['left', 'right']));
+    const guideY = moving.filter(side => side === 'top' || side === 'bottom').find(side => lined(rect[side], ['top', 'bottom']));
+    this.showGuides(el.parentElement, guideX ? rect[guideX] : null, guideY ? rect[guideY] : null);
+  };
+
+  handleFieldResizeEnd = () => this.clearGuides();
 
   handleWindowResize = () => this.positionQuickBar();
 
@@ -652,7 +673,11 @@ export class VerdocsBuilderFields {
       .off('tap', this.handleFieldTap)
       .on('tap', this.handleFieldTap)
       .off('resizestart', this.handleFieldResizeStart)
-      .on('resizestart', this.handleFieldResizeStart);
+      .on('resizestart', this.handleFieldResizeStart)
+      .off('resizemove', this.handleFieldResizeMove)
+      .on('resizemove', this.handleFieldResizeMove)
+      .off('resizeend', this.handleFieldResizeEnd)
+      .on('resizeend', this.handleFieldResizeEnd);
   }
 
   findField(name: string | null) {
@@ -663,9 +688,13 @@ export class VerdocsBuilderFields {
     return radioGroup(this.template?.fields, field);
   }
 
-  // Where the field is drawn right now: its saved geometry plus anything still on its way to the server.
+  // The field as it's shown right now: what's saved plus anything still on its way to the server.
+  pendingField(field: ITemplateField): ITemplateField {
+    return {...field, ...this.optimistic.get(field.name)};
+  }
+
   currentGeometry(field: ITemplateField): TFieldGeometry {
-    const {x, y, width, height, page, multiline} = {...field, ...this.optimistic.get(field.name)};
+    const {x, y, width, height, page, multiline} = this.pendingField(field);
     return {x, y, width, height, page, multiline};
   }
 
@@ -1161,9 +1190,11 @@ export class VerdocsBuilderFields {
   }
 
   drawField(field: ITemplateField, geometry: Partial<TFieldGeometry> = {}) {
-    const pageInfo = this.cachedPageInfo[field.document_id]?.[geometry.page ?? field.page];
+    const page = geometry.page ?? field.page;
+    const pageInfo = this.cachedPageInfo[field.document_id]?.[page];
     const el = document.getElementById(getFieldId(field));
-    if (el && pageInfo) {
+    // A field moving to another page is drawn there once that page renders it
+    if (el && pageInfo && el.closest('verdocs-template-document-page')?.getAttribute('page-number') === String(page)) {
       setControlStyles(el, {...field, ...geometry}, pageInfo.xScale, pageInfo.yScale);
     }
     this.applySelection();
@@ -1392,11 +1423,12 @@ export class VerdocsBuilderFields {
       return Promise.resolve();
     }
 
-    const sent = {...changes};
+    const sent = {...this.optimistic.get(name), ...changes};
     this.optimistic.set(name, sent);
     this.drawField(field, changes);
+    forceUpdate(this);
 
-    const save = (async () => {
+    const save = (this.saveQueues.get(name) || Promise.resolve()).then(async () => {
       try {
         const updatedField = await updateField(this.endpoint, this.templateId, name, changes);
         const newTemplate = JSON.parse(JSON.stringify(this.template));
@@ -1427,10 +1459,16 @@ export class VerdocsBuilderFields {
           this.optimistic.delete(name);
         }
       }
-    })();
+    });
 
+    this.saveQueues.set(name, save);
     this.inFlight.add(save);
-    save.finally(() => this.inFlight.delete(save));
+    save.finally(() => {
+      this.inFlight.delete(save);
+      if (this.saveQueues.get(name) === save) {
+        this.saveQueues.delete(name);
+      }
+    });
     return save;
   }
 
@@ -1550,11 +1588,13 @@ export class VerdocsBuilderFields {
 
   // A read-only field can't be required, so turning either on turns the other off.
   toggleRequired(field: ITemplateField) {
-    return this.saveGroup(field, {required: !field.required, readonly: field.required ? field.readonly : false});
+    const required = !this.pendingField(field).required;
+    return this.saveGroup(field, required ? {required, readonly: false} : {required});
   }
 
   toggleReadonly(field: ITemplateField) {
-    return this.saveGroup(field, {readonly: !field.readonly, required: field.readonly ? field.required : false});
+    const readonly = !this.pendingField(field).readonly;
+    return this.saveGroup(field, readonly ? {readonly, required: false} : {readonly});
   }
 
   // Field names are unique, and selection and undo history follow a field by its name.
@@ -1695,6 +1735,8 @@ export class VerdocsBuilderFields {
       this.selectField(name);
     }
     this.el.classList.add('moving');
+    // Later pages would cover a field dragged off its own page
+    event.target.closest('verdocs-template-document-page')?.classList.add('vb-carrying');
 
     const field = this.findField(name);
     this.dragBefore = field ? {name, before: this.currentGeometry(field)} : null;
@@ -1730,6 +1772,7 @@ export class VerdocsBuilderFields {
   async handleMoveEnd(event: any) {
     this.clearGuides();
     this.el.classList.remove('moving');
+    this.el.querySelectorAll('.vb-carrying').forEach(page => page.classList.remove('vb-carrying'));
 
     const name = event.target.getAttribute('fieldname');
     const field = this.findField(name);
@@ -1741,44 +1784,45 @@ export class VerdocsBuilderFields {
     // From the field rather than the element's attributes, which a field dropped since the last page render doesn't have yet.
     const documentId = field.document_id;
     const pageNumber = this.currentGeometry(field).page;
-    let {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[documentId][pageNumber];
     const clientRect = event.target.getBoundingClientRect();
-    const parentRect = event.target.parentElement.getBoundingClientRect();
-
     const width = field.width || defaultWidth(field.type);
     const height = field.height || defaultHeight(field.type);
+    const group = this.groupDrag;
+    this.groupDrag = null;
 
-    // These two being backwards is not a mistake. Left measures "over" from the left
-    // (positive displacement) while bottom measures "up" from the bottom (negative displacement).
-    const newX = Math.max(clientRect.left - parentRect.left, 0);
-    let newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
+    // A field lands on whichever page of its document is nearest its center. A selection stays on its page.
+    const center = clientRect.top + clientRect.height / 2;
+    const away = (page: Element) => {
+      const rect = page.getBoundingClientRect();
+      return Math.max(rect.top - center, center - rect.bottom, 0);
+    };
+    const pages = group ? [] : [...this.el.querySelectorAll('verdocs-template-document-page')].filter(page => page.getAttribute('document-id') === documentId);
+    const target = pages.reduce<Element | null>((nearest, page) => (!nearest || away(page) < away(nearest) ? page : nearest), null);
+    const targetNumber = target ? +target.getAttribute('page-number') : pageNumber;
+    const newPageNumber = this.cachedPageInfo[documentId]?.[targetNumber] ? targetNumber : pageNumber;
+    const layer = newPageNumber === pageNumber ? event.target.parentElement : target.querySelector('.verdocs-template-document-page-layer[id$="-controls"]');
+    const layerRect = layer.getBoundingClientRect();
 
-    let newPageNumber = pageNumber;
-    if (newY > renderedHeight) {
-      newPageNumber = Math.min(newPageNumber + 1, (this.template?.documents || [])?.[0]?.pages || 1);
-      newY -= renderedHeight;
-      renderedHeight = this.cachedPageInfo[documentId][newPageNumber].renderedHeight;
-    } else if (newY < 0) {
-      newPageNumber = Math.max(newPageNumber - 1, 1);
-      renderedHeight = this.cachedPageInfo[documentId][newPageNumber].renderedHeight;
-      newY += renderedHeight;
+    // PDF y counts up from the bottom. Round rather than floor, so drops don't creep down and to the left.
+    const {naturalWidth = 612, naturalHeight = 792, xScale = 1, yScale = 1} = this.cachedPageInfo[documentId][newPageNumber];
+    const x = Math.round(clamp((clientRect.left - layerRect.left) / xScale, 0, naturalWidth - width));
+    const y = Math.round(clamp((layerRect.bottom - clientRect.bottom) / yScale, 0, naturalHeight - height));
+
+    // A field moving to another page stays where it was dropped until that page draws it.
+    if (newPageNumber === pageNumber) {
+      event.target.removeAttribute('posX');
+      event.target.removeAttribute('posY');
+      removeCssTransform(event.target);
     }
-
-    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, documentId, pageNumber, naturalWidth - width, naturalHeight - height);
-    event.target.removeAttribute('posX');
-    event.target.removeAttribute('posY');
-    removeCssTransform(event.target);
 
     const before = this.dragBefore?.name === name ? this.dragBefore.before : undefined;
     this.dragBefore = null;
 
-    const group = this.groupDrag;
-    this.groupDrag = null;
     if (group) {
       // A selection moves within its page, by however far the dragged field went, and stops at the page edges
       const dragged = group.befores.get(name);
       let moveX = x - dragged.x;
-      let moveY = (newPageNumber === pageNumber ? y : dragged.y) - dragged.y;
+      let moveY = y - dragged.y;
       group.befores.forEach((start, other) => {
         const size = this.pageSizeOf(this.findField(other) || field);
         moveX = clamp(moveX, -start.x, size.width - start.width - start.x);
@@ -1796,6 +1840,12 @@ export class VerdocsBuilderFields {
     }
 
     await this.saveField(name, {x, y, page: newPageNumber}, before);
+    // A move to another page that didn't save goes back where it started
+    if (newPageNumber !== pageNumber && this.findField(name)?.page === pageNumber && event.target.isConnected) {
+      event.target.removeAttribute('posX');
+      event.target.removeAttribute('posY');
+      removeCssTransform(event.target);
+    }
   }
 
   // Pass `taken` when adding several fields at once, so names picked before any of them is saved can't collide
@@ -1809,15 +1859,6 @@ export class VerdocsBuilderFields {
 
     taken.add(fieldName);
     return fieldName;
-  }
-
-  // Scale the X,Y clicks to the virtual page dimensions. Also ensure the field doesn't go off the page.
-  viewCoordinatesToPageCoordinates(viewX: number, viewY: number, documentId: string, pageNumber: number, xMax: number, yMax: number) {
-    const {xScale = 1, yScale = 1, renderedHeight = 792} = this.cachedPageInfo[documentId][pageNumber];
-    // Round rather than floor: PDF y counts up from the bottom, so flooring would pull every drop down and to the left.
-    const x = Math.round(Math.min(viewX / xScale, xMax));
-    const y = Math.round(Math.min(Math.max(renderedHeight - viewY, 0) / yScale, yMax));
-    return {x, y};
   }
 
   startPaletteDrag(e: PointerEvent, type: TFieldType) {
@@ -2201,6 +2242,7 @@ export class VerdocsBuilderFields {
     const options = this.draftOptions(field);
     const radio = field.type === 'radio';
     const members = this.groupMembers(field);
+    const shown = this.pendingField(field);
     // A validator the builder doesn't offer stays listed so it isn't lost
     const unknownFormat = field.validator && !TEXT_FORMATS.some(format => format.value === field.validator) ? [{value: field.validator, label: field.validator}] : [];
     const formats = [...TEXT_FORMATS, {value: 'pattern', label: 'Pattern'}, ...unknownFormat];
@@ -2225,6 +2267,7 @@ export class VerdocsBuilderFields {
     const fitSummary = [
       fit.min < fit.max ? `${fit.max} to ${fit.min} pt` : `${fit.max} pt`,
       config.fit?.overflow === 'truncate' ? 'Cut off' : config.fit?.overflow === 'ellipsize' ? 'Ellipsis' : '',
+      config.align === 'center' ? 'Centered' : config.align === 'right' ? 'Right' : '',
     ]
       .filter(Boolean)
       .join(' · ');
@@ -2391,10 +2434,10 @@ export class VerdocsBuilderFields {
         )}
         {recipient}
         <div class="insp-checks">
-          {toggle('Required', !!field.required, () => this.toggleRequired(field))}
-          {toggle('Read-only', !!field.readonly, () => this.toggleReadonly(field))}
+          {toggle('Required', !!shown.required, () => this.toggleRequired(field))}
+          {toggle('Read-only', !!shown.readonly, () => this.toggleReadonly(field))}
         </div>
-        {radio && field.required && <div class="insp-hint">The recipient has to choose one option.</div>}
+        {radio && shown.required && <div class="insp-hint">The recipient has to choose one option.</div>}
 
         <div class="insp-sections">
           {radio &&
@@ -2796,8 +2839,9 @@ export class VerdocsBuilderFields {
             )}
 
           {textField &&
-            this.renderSection('fit', 'Fit', fitSummary, !!config.fit, () => (
+            this.renderSection('fit', 'Fit', fitSummary, !!config.fit || !!config.align, () => (
               <Fragment>
+                {segmented('Alignment', 'align', config.align || 'left', ALIGNMENTS, align => saveConfig({align: align === 'left' ? undefined : align}))}
                 <div class="insp-label">
                   Font size
                   <div class="insp-range" style={{'--from': fitRatio(fit.min), '--to': fitRatio(fit.max)}}>
@@ -3163,6 +3207,7 @@ export class VerdocsBuilderFields {
   }
 
   renderQuickBar(field: ITemplateField) {
+    const {required, readonly} = this.pendingField(field);
     return (
       <div class="quick-bar" ref={el => (this.quickBarEl = el)} onPointerDown={e => e.stopPropagation()}>
         <button class="quick-button signer" onClick={() => (this.signerMenuOpen = !this.signerMenuOpen)}>
@@ -3172,20 +3217,12 @@ export class VerdocsBuilderFields {
           <span class="caret" />
         </button>
         <span class="separator" />
-        <button
-          class="quick-button"
-          aria-pressed={String(!!field.required)}
-          onClick={() => this.toggleRequired(field)}
-        >
-          <span class={{check: true, on: !!field.required}} />
+        <button class="quick-button" aria-pressed={String(!!required)} onClick={() => this.toggleRequired(field)}>
+          <span class={{check: true, on: !!required}} />
           Required
         </button>
-        <button
-          class="quick-button"
-          aria-pressed={String(!!field.readonly)}
-          onClick={() => this.toggleReadonly(field)}
-        >
-          <span class={{check: true, on: !!field.readonly}} />
+        <button class="quick-button" aria-pressed={String(!!readonly)} onClick={() => this.toggleReadonly(field)}>
+          <span class={{check: true, on: !!readonly}} />
           Read-only
         </button>
         <span class="separator" />
@@ -3330,9 +3367,10 @@ export class VerdocsBuilderFields {
     const width = shared(geometries.map(geometry => geometry.width));
     const height = shared(geometries.map(geometry => geometry.height));
 
-    // Off, On, or Mixed when the fields disagree; Mixed shows the state but isn't something you can pick
+    // Off, On, or Mixed when the fields disagree; Mixed shows the state but isn't something you can pick. On turns the other one off.
     const triState = (label: string, key: 'required' | 'readonly') => {
-      const value = shared(fields.map(field => !!field[key]));
+      const value = shared(fields.map(field => !!this.pendingField(field)[key]));
+      const other = key === 'required' ? 'readonly' : 'required';
       return (
         <div class="insp-label">
           {label}
@@ -3345,7 +3383,7 @@ export class VerdocsBuilderFields {
                 Mixed
               </button>
             )}
-            <button type="button" role="radio" aria-checked={String(value === true)} class={{on: value === true}} onClick={() => value !== true && this.saveSelection({[key]: true})}>
+            <button type="button" role="radio" aria-checked={String(value === true)} class={{on: value === true}} onClick={() => value !== true && this.saveSelection({[key]: true, [other]: false})}>
               On
             </button>
           </div>

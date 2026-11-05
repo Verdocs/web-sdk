@@ -5,6 +5,7 @@ import {IEnvelopeField, ITemplate, ITemplateField, updateField, VerdocsEndpoint}
 import {formatFieldNumber, getFieldFormatProblem, parseFieldNumber, TFieldFormatProblem} from '@verdocs/js-sdk';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State, Listen, Watch} from '@stencil/core';
 import {FORMAT_MESSAGES} from '../../../utils/FieldFormats';
+import {snapToFields} from '../../../utils/SnapToFields';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -175,6 +176,7 @@ export class VerdocsFieldTextbox {
           right: '.edge-right',
         },
         modifiers: [
+          snapToFields(this.el),
           interact.modifiers.restrictSize({
             min: {width: 30, height: 10},
           }),
@@ -302,7 +304,11 @@ export class VerdocsFieldTextbox {
     };
 
     if (done) {
-      return <Host class={{'verdocs-field': true, done}}>{value}</Host>;
+      return (
+        <Host class={{'verdocs-field': true, done}} style={{textAlign: config?.align}}>
+          {value}
+        </Host>
+      );
     }
 
     return (
@@ -319,6 +325,7 @@ export class VerdocsFieldTextbox {
             name={fieldname}
             required={required}
             placeholder={placeholder}
+            style={{textAlign: config?.align}}
             disabled={readonly || disabled}
             ref={el => (this.inputEl = el)}
             onFocus={() => (this.focused = true)}
@@ -337,6 +344,7 @@ export class VerdocsFieldTextbox {
             name={fieldname}
             required={required}
             maxlength={maxlength}
+            style={{textAlign: config?.align}}
             placeholder={placeholder || config?.input_mask || (config?.number ? formatFieldNumber(config.number, '1234.56') : '')}
             disabled={readonly || disabled}
             ref={el => (this.inputEl = el)}

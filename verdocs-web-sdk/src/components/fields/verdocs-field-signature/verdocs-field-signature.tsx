@@ -2,6 +2,7 @@ import interact from 'interactjs';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {ITemplateField, IEnvelopeField, VerdocsEndpoint, updateField, ITemplate} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Event, EventEmitter, Method, Fragment, State, Element, Listen, Watch} from '@stencil/core';
+import {snapToFields} from '../../../utils/SnapToFields';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -205,6 +206,7 @@ export class VerdocsFieldSignature {
           right: '.edge-right',
         },
         modifiers: [
+          snapToFields(this.el),
           interact.modifiers.restrictSize({
             min: {width: 71, height: 36},
           }),
