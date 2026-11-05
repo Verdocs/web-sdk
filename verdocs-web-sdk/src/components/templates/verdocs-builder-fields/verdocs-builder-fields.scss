@@ -71,6 +71,10 @@ verdocs-builder-fields {
   // Fields carry an inline z-index of 100, so each page keeps them to itself and the quick bar and its menus stay on top.
   verdocs-template-document-page {
     isolation: isolate;
+
+    &.vb-carrying {
+      z-index: 1;
+    }
   }
 
   // Fields filled from data carry a small mark, so the signer's color still shows. Amber means the key isn't in the catalog.

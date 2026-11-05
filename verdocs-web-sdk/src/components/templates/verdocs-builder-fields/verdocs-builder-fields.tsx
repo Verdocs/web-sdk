@@ -1184,9 +1184,11 @@ export class VerdocsBuilderFields {
   }
 
   drawField(field: ITemplateField, geometry: Partial<TFieldGeometry> = {}) {
-    const pageInfo = this.cachedPageInfo[field.document_id]?.[geometry.page ?? field.page];
+    const page = geometry.page ?? field.page;
+    const pageInfo = this.cachedPageInfo[field.document_id]?.[page];
     const el = document.getElementById(getFieldId(field));
-    if (el && pageInfo) {
+    // A field moving to another page is drawn there once that page renders it
+    if (el && pageInfo && el.closest('verdocs-template-document-page')?.getAttribute('page-number') === String(page)) {
       setControlStyles(el, {...field, ...geometry}, pageInfo.xScale, pageInfo.yScale);
     }
     this.applySelection();
@@ -1727,6 +1729,8 @@ export class VerdocsBuilderFields {
       this.selectField(name);
     }
     this.el.classList.add('moving');
+    // Later pages would cover a field dragged off its own page
+    event.target.closest('verdocs-template-document-page')?.classList.add('vb-carrying');
 
     const field = this.findField(name);
     this.dragBefore = field ? {name, before: this.currentGeometry(field)} : null;
@@ -1762,6 +1766,7 @@ export class VerdocsBuilderFields {
   async handleMoveEnd(event: any) {
     this.clearGuides();
     this.el.classList.remove('moving');
+    this.el.querySelectorAll('.vb-carrying').forEach(page => page.classList.remove('vb-carrying'));
 
     const name = event.target.getAttribute('fieldname');
     const field = this.findField(name);
@@ -1773,44 +1778,45 @@ export class VerdocsBuilderFields {
     // From the field rather than the element's attributes, which a field dropped since the last page render doesn't have yet.
     const documentId = field.document_id;
     const pageNumber = this.currentGeometry(field).page;
-    let {naturalWidth = 612, naturalHeight = 792, renderedHeight = 792} = this.cachedPageInfo[documentId][pageNumber];
     const clientRect = event.target.getBoundingClientRect();
-    const parentRect = event.target.parentElement.getBoundingClientRect();
-
     const width = field.width || defaultWidth(field.type);
     const height = field.height || defaultHeight(field.type);
+    const group = this.groupDrag;
+    this.groupDrag = null;
 
-    // These two being backwards is not a mistake. Left measures "over" from the left
-    // (positive displacement) while bottom measures "up" from the bottom (negative displacement).
-    const newX = Math.max(clientRect.left - parentRect.left, 0);
-    let newY = Math.max(renderedHeight - (parentRect.bottom - clientRect.bottom), 0);
+    // A field lands on whichever page of its document is nearest its center. A selection stays on its page.
+    const center = clientRect.top + clientRect.height / 2;
+    const away = (page: Element) => {
+      const rect = page.getBoundingClientRect();
+      return Math.max(rect.top - center, center - rect.bottom, 0);
+    };
+    const pages = group ? [] : [...this.el.querySelectorAll('verdocs-template-document-page')].filter(page => page.getAttribute('document-id') === documentId);
+    const target = pages.reduce<Element | null>((nearest, page) => (!nearest || away(page) < away(nearest) ? page : nearest), null);
+    const targetNumber = target ? +target.getAttribute('page-number') : pageNumber;
+    const newPageNumber = this.cachedPageInfo[documentId]?.[targetNumber] ? targetNumber : pageNumber;
+    const layer = newPageNumber === pageNumber ? event.target.parentElement : target.querySelector('.verdocs-template-document-page-layer[id$="-controls"]');
+    const layerRect = layer.getBoundingClientRect();
 
-    let newPageNumber = pageNumber;
-    if (newY > renderedHeight) {
-      newPageNumber = Math.min(newPageNumber + 1, (this.template?.documents || [])?.[0]?.pages || 1);
-      newY -= renderedHeight;
-      renderedHeight = this.cachedPageInfo[documentId][newPageNumber].renderedHeight;
-    } else if (newY < 0) {
-      newPageNumber = Math.max(newPageNumber - 1, 1);
-      renderedHeight = this.cachedPageInfo[documentId][newPageNumber].renderedHeight;
-      newY += renderedHeight;
+    // PDF y counts up from the bottom. Round rather than floor, so drops don't creep down and to the left.
+    const {naturalWidth = 612, naturalHeight = 792, xScale = 1, yScale = 1} = this.cachedPageInfo[documentId][newPageNumber];
+    const x = Math.round(clamp((clientRect.left - layerRect.left) / xScale, 0, naturalWidth - width));
+    const y = Math.round(clamp((layerRect.bottom - clientRect.bottom) / yScale, 0, naturalHeight - height));
+
+    // A field moving to another page stays where it was dropped until that page draws it.
+    if (newPageNumber === pageNumber) {
+      event.target.removeAttribute('posX');
+      event.target.removeAttribute('posY');
+      removeCssTransform(event.target);
     }
-
-    const {x, y} = this.viewCoordinatesToPageCoordinates(newX, newY, documentId, pageNumber, naturalWidth - width, naturalHeight - height);
-    event.target.removeAttribute('posX');
-    event.target.removeAttribute('posY');
-    removeCssTransform(event.target);
 
     const before = this.dragBefore?.name === name ? this.dragBefore.before : undefined;
     this.dragBefore = null;
 
-    const group = this.groupDrag;
-    this.groupDrag = null;
     if (group) {
       // A selection moves within its page, by however far the dragged field went, and stops at the page edges
       const dragged = group.befores.get(name);
       let moveX = x - dragged.x;
-      let moveY = (newPageNumber === pageNumber ? y : dragged.y) - dragged.y;
+      let moveY = y - dragged.y;
       group.befores.forEach((start, other) => {
         const size = this.pageSizeOf(this.findField(other) || field);
         moveX = clamp(moveX, -start.x, size.width - start.width - start.x);
@@ -1828,6 +1834,12 @@ export class VerdocsBuilderFields {
     }
 
     await this.saveField(name, {x, y, page: newPageNumber}, before);
+    // A move to another page that didn't save goes back where it started
+    if (newPageNumber !== pageNumber && this.findField(name)?.page === pageNumber && event.target.isConnected) {
+      event.target.removeAttribute('posX');
+      event.target.removeAttribute('posY');
+      removeCssTransform(event.target);
+    }
   }
 
   // Pass `taken` when adding several fields at once, so names picked before any of them is saved can't collide
@@ -1841,15 +1853,6 @@ export class VerdocsBuilderFields {
 
     taken.add(fieldName);
     return fieldName;
-  }
-
-  // Scale the X,Y clicks to the virtual page dimensions. Also ensure the field doesn't go off the page.
-  viewCoordinatesToPageCoordinates(viewX: number, viewY: number, documentId: string, pageNumber: number, xMax: number, yMax: number) {
-    const {xScale = 1, yScale = 1, renderedHeight = 792} = this.cachedPageInfo[documentId][pageNumber];
-    // Round rather than floor: PDF y counts up from the bottom, so flooring would pull every drop down and to the left.
-    const x = Math.round(Math.min(viewX / xScale, xMax));
-    const y = Math.round(Math.min(Math.max(renderedHeight - viewY, 0) / yScale, yMax));
-    return {x, y};
   }
 
   startPaletteDrag(e: PointerEvent, type: TFieldType) {
