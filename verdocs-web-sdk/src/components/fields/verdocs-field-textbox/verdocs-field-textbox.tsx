@@ -5,6 +5,7 @@ import {IEnvelopeField, ITemplate, ITemplateField, updateField, VerdocsEndpoint}
 import {formatFieldNumber, getFieldFormatProblem, parseFieldNumber, TFieldFormatProblem} from '@verdocs/js-sdk';
 import {Component, h, Host, Element, Prop, Method, Event, EventEmitter, Fragment, State, Listen, Watch} from '@stencil/core';
 import {FORMAT_MESSAGES} from '../../../utils/FieldFormats';
+import {snapToFields} from '../../../utils/SnapToFields';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -175,6 +176,7 @@ export class VerdocsFieldTextbox {
           right: '.edge-right',
         },
         modifiers: [
+          snapToFields(this.el),
           interact.modifiers.restrictSize({
             min: {width: 30, height: 10},
           }),

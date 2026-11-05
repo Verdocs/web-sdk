@@ -5,6 +5,7 @@ import localeEn from 'air-datepicker/locale/en';
 import {ResizeEvent} from '@interactjs/actions/resize/plugin';
 import {type IEnvelopeField, type ITemplate, type ITemplateField, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {Component, Element, Event, EventEmitter, h, Host, Method, Prop, Fragment, State, Listen, Watch} from '@stencil/core';
+import {snapToFields} from '../../../utils/SnapToFields';
 import {SettingsIcon} from '../../../utils/Icons';
 import {FORMAT_DATE} from '../../../utils/Types';
 import {Store} from '../../../utils/Datastore';
@@ -188,6 +189,7 @@ export class VerdocsFieldDate {
           right: '.edge-right',
         },
         modifiers: [
+          snapToFields(this.el),
           interact.modifiers.restrictSize({
             min: {width: 50, height: 12},
           }),

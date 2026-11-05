@@ -10,6 +10,7 @@ import {AlignLeftIcon, CloseIcon, DataIcon, DocumentPageIcon, DuplicateIcon, Pen
 import {drawRecipientField, FIELD_TYPES, radioGroup, recipientNumber} from '../../../utils/RecipientFields';
 import {TEXT_FORMATS} from '../../../utils/FieldFormats';
 import {IDocumentPageInfo} from '../../../utils/Types';
+import {SNAP_PX} from '../../../utils/SnapToFields';
 import {VerdocsToast} from '../../../utils/Toast';
 import {SDKError} from '../../../utils/errors';
 import {Store} from '../../../utils/Datastore';
@@ -23,9 +24,6 @@ const GEOMETRY_KEYS: (keyof TFieldGeometry)[] = ['x', 'y', 'width', 'height', 'p
 const NUDGE_SAVE_DELAY_MS = 400;
 
 const MAX_UNDO = 50;
-
-// How close (in screen pixels) an edge has to come to another field's edge before it snaps.
-const SNAP_PX = 5;
 
 const isTypingTarget = (el: Element | null) => !!el && (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || (el as HTMLElement).isContentEditable);
 
@@ -354,6 +352,21 @@ export class VerdocsBuilderFields {
     this.startResize(name);
   };
 
+  // The field snaps its own edges while resizing; we draw a guide wherever a moving edge lines up with another field.
+  handleFieldResizeMove = (e: any) => {
+    const el = e.target as HTMLElement;
+    const edges = e.edges || {};
+    const rect = {left: e.rect.left - window.scrollX, right: e.rect.right - window.scrollX, top: e.rect.top - window.scrollY, bottom: e.rect.bottom - window.scrollY};
+    const others = [...el.parentElement.querySelectorAll('.verdocs-field')].filter(other => other !== el).map(other => other.getBoundingClientRect());
+    const lined = (value: number, sides: ('left' | 'right' | 'top' | 'bottom')[]) => others.some(other => sides.some(side => Math.abs(other[side] - value) < 0.5));
+    const moving = (['left', 'right', 'top', 'bottom'] as const).filter(side => edges[side]);
+    const guideX = moving.filter(side => side === 'left' || side === 'right').find(side => lined(rect[side], ['left', 'right']));
+    const guideY = moving.filter(side => side === 'top' || side === 'bottom').find(side => lined(rect[side], ['top', 'bottom']));
+    this.showGuides(el.parentElement, guideX ? rect[guideX] : null, guideY ? rect[guideY] : null);
+  };
+
+  handleFieldResizeEnd = () => this.clearGuides();
+
   handleWindowResize = () => this.positionQuickBar();
 
   @Watch('templateId')
@@ -654,7 +667,11 @@ export class VerdocsBuilderFields {
       .off('tap', this.handleFieldTap)
       .on('tap', this.handleFieldTap)
       .off('resizestart', this.handleFieldResizeStart)
-      .on('resizestart', this.handleFieldResizeStart);
+      .on('resizestart', this.handleFieldResizeStart)
+      .off('resizemove', this.handleFieldResizeMove)
+      .on('resizemove', this.handleFieldResizeMove)
+      .off('resizeend', this.handleFieldResizeEnd)
+      .on('resizeend', this.handleFieldResizeEnd);
   }
 
   findField(name: string | null) {
