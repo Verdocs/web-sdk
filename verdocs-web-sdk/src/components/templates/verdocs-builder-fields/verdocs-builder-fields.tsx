@@ -1,6 +1,6 @@
 import interact from 'interactjs';
 import type {IAttachmentFieldConfig, IDateFieldConfig, TDataCatalogEntryType} from '@verdocs/js-sdk';
-import {Component, h, Element, Event, EventEmitter, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
+import {Component, h, Element, Event, EventEmitter, forceUpdate, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
 import {formatFieldNumber, getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, ITextFieldConfig, saveDataCatalogEntries} from '@verdocs/js-sdk';
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import type {ICheckboxFieldConfig, IDropdownFieldConfig, IFieldTextFit, IRadioFieldConfig, ISignatureFieldConfig, ITimestampFieldConfig, TFieldConfig} from '@verdocs/js-sdk';
@@ -314,9 +314,11 @@ export class VerdocsBuilderFields {
   nudgeTimer: ReturnType<typeof setTimeout> | null = null;
   dragBefore: {name: string; before: TFieldGeometry} | null = null;
 
-  // Geometry we've sent but the server hasn't confirmed yet, so a new nudge or undo starts from where the field is drawn.
-  optimistic = new Map<string, Partial<TFieldGeometry>>();
+  // Changes we've sent but the server hasn't confirmed yet, so the next click, nudge, or undo starts from what's on screen.
+  optimistic = new Map<string, Partial<ITemplateField>>();
   inFlight = new Set<Promise<unknown>>();
+  // One field's saves go out in order, so a quick second change can't land first and be overwritten.
+  saveQueues = new Map<string, Promise<void>>();
 
   // Field components save their own resizes and announce them with settingsChanged; undo waits for that.
   pendingResizes = new Map<string, {before: TFieldGeometry; settle: () => void; done: Promise<void>}>();
@@ -663,9 +665,13 @@ export class VerdocsBuilderFields {
     return radioGroup(this.template?.fields, field);
   }
 
-  // Where the field is drawn right now: its saved geometry plus anything still on its way to the server.
+  // The field as it's shown right now: what's saved plus anything still on its way to the server.
+  pendingField(field: ITemplateField): ITemplateField {
+    return {...field, ...this.optimistic.get(field.name)};
+  }
+
   currentGeometry(field: ITemplateField): TFieldGeometry {
-    const {x, y, width, height, page, multiline} = {...field, ...this.optimistic.get(field.name)};
+    const {x, y, width, height, page, multiline} = this.pendingField(field);
     return {x, y, width, height, page, multiline};
   }
 
@@ -1392,11 +1398,12 @@ export class VerdocsBuilderFields {
       return Promise.resolve();
     }
 
-    const sent = {...changes};
+    const sent = {...this.optimistic.get(name), ...changes};
     this.optimistic.set(name, sent);
     this.drawField(field, changes);
+    forceUpdate(this);
 
-    const save = (async () => {
+    const save = (this.saveQueues.get(name) || Promise.resolve()).then(async () => {
       try {
         const updatedField = await updateField(this.endpoint, this.templateId, name, changes);
         const newTemplate = JSON.parse(JSON.stringify(this.template));
@@ -1427,10 +1434,16 @@ export class VerdocsBuilderFields {
           this.optimistic.delete(name);
         }
       }
-    })();
+    });
 
+    this.saveQueues.set(name, save);
     this.inFlight.add(save);
-    save.finally(() => this.inFlight.delete(save));
+    save.finally(() => {
+      this.inFlight.delete(save);
+      if (this.saveQueues.get(name) === save) {
+        this.saveQueues.delete(name);
+      }
+    });
     return save;
   }
 
@@ -1550,11 +1563,13 @@ export class VerdocsBuilderFields {
 
   // A read-only field can't be required, so turning either on turns the other off.
   toggleRequired(field: ITemplateField) {
-    return this.saveGroup(field, {required: !field.required, readonly: field.required ? field.readonly : false});
+    const required = !this.pendingField(field).required;
+    return this.saveGroup(field, required ? {required, readonly: false} : {required});
   }
 
   toggleReadonly(field: ITemplateField) {
-    return this.saveGroup(field, {readonly: !field.readonly, required: field.readonly ? field.required : false});
+    const readonly = !this.pendingField(field).readonly;
+    return this.saveGroup(field, readonly ? {readonly, required: false} : {readonly});
   }
 
   // Field names are unique, and selection and undo history follow a field by its name.
@@ -2201,6 +2216,7 @@ export class VerdocsBuilderFields {
     const options = this.draftOptions(field);
     const radio = field.type === 'radio';
     const members = this.groupMembers(field);
+    const shown = this.pendingField(field);
     // A validator the builder doesn't offer stays listed so it isn't lost
     const unknownFormat = field.validator && !TEXT_FORMATS.some(format => format.value === field.validator) ? [{value: field.validator, label: field.validator}] : [];
     const formats = [...TEXT_FORMATS, {value: 'pattern', label: 'Pattern'}, ...unknownFormat];
@@ -2391,10 +2407,10 @@ export class VerdocsBuilderFields {
         )}
         {recipient}
         <div class="insp-checks">
-          {toggle('Required', !!field.required, () => this.toggleRequired(field))}
-          {toggle('Read-only', !!field.readonly, () => this.toggleReadonly(field))}
+          {toggle('Required', !!shown.required, () => this.toggleRequired(field))}
+          {toggle('Read-only', !!shown.readonly, () => this.toggleReadonly(field))}
         </div>
-        {radio && field.required && <div class="insp-hint">The recipient has to choose one option.</div>}
+        {radio && shown.required && <div class="insp-hint">The recipient has to choose one option.</div>}
 
         <div class="insp-sections">
           {radio &&
@@ -3163,6 +3179,7 @@ export class VerdocsBuilderFields {
   }
 
   renderQuickBar(field: ITemplateField) {
+    const {required, readonly} = this.pendingField(field);
     return (
       <div class="quick-bar" ref={el => (this.quickBarEl = el)} onPointerDown={e => e.stopPropagation()}>
         <button class="quick-button signer" onClick={() => (this.signerMenuOpen = !this.signerMenuOpen)}>
@@ -3172,20 +3189,12 @@ export class VerdocsBuilderFields {
           <span class="caret" />
         </button>
         <span class="separator" />
-        <button
-          class="quick-button"
-          aria-pressed={String(!!field.required)}
-          onClick={() => this.toggleRequired(field)}
-        >
-          <span class={{check: true, on: !!field.required}} />
+        <button class="quick-button" aria-pressed={String(!!required)} onClick={() => this.toggleRequired(field)}>
+          <span class={{check: true, on: !!required}} />
           Required
         </button>
-        <button
-          class="quick-button"
-          aria-pressed={String(!!field.readonly)}
-          onClick={() => this.toggleReadonly(field)}
-        >
-          <span class={{check: true, on: !!field.readonly}} />
+        <button class="quick-button" aria-pressed={String(!!readonly)} onClick={() => this.toggleReadonly(field)}>
+          <span class={{check: true, on: !!readonly}} />
           Read-only
         </button>
         <span class="separator" />
@@ -3330,9 +3339,10 @@ export class VerdocsBuilderFields {
     const width = shared(geometries.map(geometry => geometry.width));
     const height = shared(geometries.map(geometry => geometry.height));
 
-    // Off, On, or Mixed when the fields disagree; Mixed shows the state but isn't something you can pick
+    // Off, On, or Mixed when the fields disagree; Mixed shows the state but isn't something you can pick. On turns the other one off.
     const triState = (label: string, key: 'required' | 'readonly') => {
-      const value = shared(fields.map(field => !!field[key]));
+      const value = shared(fields.map(field => !!this.pendingField(field)[key]));
+      const other = key === 'required' ? 'readonly' : 'required';
       return (
         <div class="insp-label">
           {label}
@@ -3345,7 +3355,7 @@ export class VerdocsBuilderFields {
                 Mixed
               </button>
             )}
-            <button type="button" role="radio" aria-checked={String(value === true)} class={{on: value === true}} onClick={() => value !== true && this.saveSelection({[key]: true})}>
+            <button type="button" role="radio" aria-checked={String(value === true)} class={{on: value === true}} onClick={() => value !== true && this.saveSelection({[key]: true, [other]: false})}>
               On
             </button>
           </div>
