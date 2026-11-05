@@ -50,6 +50,30 @@ interface IHistoryEntry {
   date: Date;
 }
 
+const QES_ERROR_REASONS: Record<string, string> = {
+  prepare_failed: 'the signing session could not be started',
+  not_qualified: 'the signature was not a qualified electronic signature',
+  download_failed: 'the signed documents could not be retrieved',
+};
+
+// recipient:qes_error's event_detail is JSON: {reason, signature_level?}
+const formatQesErrorMessage = (fullName: string, event_detail: string | null | undefined) => {
+  let detail: {reason?: string; signature_level?: string} = {};
+  try {
+    detail = JSON.parse(event_detail || '{}');
+  } catch (e) {
+    // Older entries have no detail
+  }
+
+  const reason = QES_ERROR_REASONS[detail.reason || ''];
+  if (!reason) {
+    return `QES session failed for ${fullName}.`;
+  }
+
+  const level = detail.reason === 'not_qualified' && detail.signature_level ? ` (${detail.signature_level})` : '';
+  return `QES session failed for ${fullName}: ${reason}${level}.`;
+};
+
 /**
  * Displays a file upload mechanism suitable for the first step of creating a template.
  * This is typically the first step in a template creation workflow.
@@ -411,6 +435,19 @@ export class VerdocsEnvelopeSidebar {
           break;
         case 'owner:updated_recipient_info':
           entries.push({icon: 'perm_identity', message: history.event_detail, date: new Date(history.created_at)});
+          break;
+        // The API's certificate (Conversions.generateHistoryItems) words these the same way
+        case 'recipient:qes_invited':
+          entries.push({icon: 'mail', message: `${fullName} has been invited to sign with a qualified electronic signature.`, date: new Date(history.created_at)});
+          break;
+        case 'recipient:qes_started':
+          entries.push({icon: 'send', message: `QES session started by ${fullName}.`, date: new Date(history.created_at)});
+          break;
+        case 'recipient:qes_signed':
+          entries.push({icon: 'verified_user', message: `QES signature successful for ${fullName}.`, date: new Date(history.created_at)});
+          break;
+        case 'recipient:qes_error':
+          entries.push({icon: 'cancel', message: formatQesErrorMessage(fullName, history.event_detail), date: new Date(history.created_at)});
           break;
         case 'created':
           entries.push({icon: 'create', message: `Envelope was created.`, date: new Date(history.created_at)});

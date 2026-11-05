@@ -171,6 +171,23 @@ verdocs-sign {
     padding-top: 100px;
   }
 
+  .qes-step {
+    gap: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 12px 20px;
+    align-items: center;
+    justify-content: center;
+    background: #eef0fb;
+    border-bottom: 1px solid $verdocs-light-blue;
+
+    .qes-message {
+      max-width: 640px;
+      font-size: 14px;
+      color: $verdocs-dark-blue;
+    }
+  }
+
   .loading-indicator {
     top: 0;
     left: 0;

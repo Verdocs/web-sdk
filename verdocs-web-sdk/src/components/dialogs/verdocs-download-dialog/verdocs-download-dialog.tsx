@@ -46,12 +46,18 @@ export class VerdocsDownloadDialog {
    */
   @Prop() hasCertificate = false;
 
+  /**
+   * If true, the envelope has 'qualified' (QES) recipients. Its documents carry their qualified signatures, and there is no
+   * combined PDF: merging the documents would strip those signatures.
+   */
+  @Prop() qualified = false;
+
   handleOptionClick(action: DownloadAction, documentId?: string) {
     const hasCert = this.documents.some(d => d.type === 'certificate') || this.hasCertificate;
     const isCertReady = this.signed && hasCert;
     const isCertificateDisabled = action === DownloadAction.certificate && !isCertReady;
     const isZipDisabled = action === DownloadAction.zip && (this.polling || !isCertReady);
-    const isCombinedDisabled = action === DownloadAction.combined && (this.polling || !isCertReady || !documentId);
+    const isCombinedDisabled = action === DownloadAction.combined && (this.qualified || this.polling || !isCertReady || !documentId);
 
     if (isCertificateDisabled || isZipDisabled || isCombinedDisabled) return;
     this.download.emit({action, documentId});
@@ -88,7 +94,7 @@ export class VerdocsDownloadDialog {
                 ) : (
                   <div class="status-indicator">
                     <div class="signed" innerHTML={CheckIcon}></div>
-                    <span>Signed</span>
+                    <span>{this.qualified ? 'Qualified signature' : 'Signed'}</span>
                   </div>
                 )}
               </div>
@@ -118,27 +124,29 @@ export class VerdocsDownloadDialog {
             )}
           </div>
 
-          <div
-            class={{'download-option': true, 'disabled': !isCombinedReady}}
-            onClick={() => this.handleOptionClick(DownloadAction.combined, certificateDocument?.id)}
-            title={!isCombinedReady ? 'Waiting for all documents to be ready' : ''}
-          >
-            <div class="icon-container" innerHTML={ZipIcon}></div>
-            <div class="text-container">
-              <div class="label">Combined</div>
-              <div class="description">Merge envelopes & certificate into a single PDF</div>
+          {!this.qualified && (
+            <div
+              class={{'download-option': true, 'disabled': !isCombinedReady}}
+              onClick={() => this.handleOptionClick(DownloadAction.combined, certificateDocument?.id)}
+              title={!isCombinedReady ? 'Waiting for all documents to be ready' : ''}
+            >
+              <div class="icon-container" innerHTML={ZipIcon}></div>
+              <div class="text-container">
+                <div class="label">Combined</div>
+                <div class="description">Merge envelopes & certificate into a single PDF</div>
+              </div>
+              {isCombinedReady ? (
+                <div class="status-indicator">
+                  <div class="signed" innerHTML={CheckIcon}></div>
+                  <span>Ready</span>
+                </div>
+              ) : (
+                <div class="status-indicator">
+                  <div class="spinner-inline" innerHTML={RefreshIcon}></div>
+                </div>
+              )}
             </div>
-            {isCombinedReady ? (
-              <div class="status-indicator">
-                <div class="signed" innerHTML={CheckIcon}></div>
-                <span>Ready</span>
-              </div>
-            ) : (
-              <div class="status-indicator">
-                <div class="spinner-inline" innerHTML={RefreshIcon}></div>
-              </div>
-            )}
-          </div>
+          )}
 
           <div
             class={{'download-option': true, 'disabled': !allDone}}

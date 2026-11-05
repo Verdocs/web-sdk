@@ -456,6 +456,11 @@ export namespace Components {
          */
         "polling": boolean;
         /**
+          * If true, the envelope has 'qualified' (QES) recipients. Its documents carry their qualified signatures, and there is no combined PDF: merging the documents would strip those signatures.
+          * @default false
+         */
+        "qualified": boolean;
+        /**
           * If true, the envelope is considered signed.
           * @default false
          */
@@ -5462,6 +5467,11 @@ declare namespace LocalJSX {
          */
         "polling"?: boolean;
         /**
+          * If true, the envelope has 'qualified' (QES) recipients. Its documents carry their qualified signatures, and there is no combined PDF: merging the documents would strip those signatures.
+          * @default false
+         */
+        "qualified"?: boolean;
+        /**
           * If true, the envelope is considered signed.
           * @default false
          */
@@ -8330,6 +8340,7 @@ declare namespace LocalJSX {
         "signed": boolean;
         "polling": boolean;
         "hasCertificate": boolean;
+        "qualified": boolean;
     }
     interface VerdocsEnvelopeDocumentPageAttributes {
         "envelopeId": string;

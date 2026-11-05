@@ -508,6 +508,45 @@ describe('verdocs-view', () => {
       expect(instance.polling).toBe(expected);
     });
 
+    it('does not start polling while a qualified recipient still owes a QES', async () => {
+      const {instance} = await loadEnvelopeView({}, {
+        ...mockEnvelope,
+        status: 'pending',
+        signed: false,
+        documents: [attachmentDocument],
+        recipients: [{status: 'submitted'}, {status: 'submitted', signature_level: 'qualified'}] as any,
+      });
+      const intervalSpy = jest.spyOn(global, 'setInterval');
+      const expected = false;
+
+      instance.startPolling();
+
+      expect(instance.polling).toBe(expected);
+      expect(intervalSpy).toHaveBeenCalledTimes(0);
+
+      intervalSpy.mockRestore();
+    });
+
+    it('starts polling for a complete qualified envelope still waiting on its certificate', async () => {
+      const {instance} = await loadEnvelopeView({}, {
+        ...mockEnvelope,
+        status: 'complete',
+        signed: true,
+        documents: [attachmentDocument],
+        recipients: [{status: 'submitted', signature_level: 'qualified'}] as any,
+      });
+      const intervalSpy = jest.spyOn(global, 'setInterval');
+      const expected = true;
+
+      instance.startPolling();
+
+      expect(instance.polling).toBe(expected);
+      expect(intervalSpy).toHaveBeenCalledTimes(1);
+
+      intervalSpy.mockRestore();
+      instance.stopPolling();
+    });
+
     it('refreshes the envelope on each polling interval', async () => {
       const updatedEnvelope = {...mockEnvelope, signed: true};
       (getEnvelope as jest.Mock).mockResolvedValue(updatedEnvelope);
@@ -668,6 +707,31 @@ describe('verdocs-view', () => {
 
       expect(instance.showDownloadDialog).toBe(expected);
       expect(page.root.querySelector('verdocs-download-dialog')).toBeTruthy();
+    });
+
+    it('marks the download dialog qualified when a recipient is qualified', async () => {
+      const {page, instance} = await loadEnvelopeView({}, {
+        ...mockEnvelope,
+        recipients: [{status: 'submitted'}, {status: 'submitted', signature_level: 'qualified'}] as any,
+      });
+      const expected = true;
+
+      instance.showDownloadDialog = true;
+      await page.waitForChanges();
+
+      // verdocs-download-dialog isn't registered here, so the boolean prop lands as an attribute
+      expect(page.root.querySelector('verdocs-download-dialog').hasAttribute('qualified')).toBe(expected);
+    });
+
+    it('does not mark the download dialog qualified without qualified recipients', async () => {
+      const {page, instance} = await loadEnvelopeView();
+      const expected = false;
+
+      instance.showDownloadDialog = true;
+      await page.waitForChanges();
+
+      // verdocs-download-dialog isn't registered here, so the boolean prop lands as an attribute
+      expect(page.root.querySelector('verdocs-download-dialog').hasAttribute('qualified')).toBe(expected);
     });
 
     it('closes the download dialog and stops polling on exit', async () => {
