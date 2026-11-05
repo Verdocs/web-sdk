@@ -107,7 +107,7 @@ export class VerdocsContactPicker {
   @State() showMessage: boolean = false;
   @State() delegator: boolean = false;
   @State() name_locked: boolean = false;
-  @State() signatureLevel: ERecipientSignatureLevel = 'simple'; // TODO: 'simple'|'qualified'
+  @State() signatureLevel: ERecipientSignatureLevel = 'simple';
   @State() auth_methods: TRecipientAuthMethod[] = [];
   @State() passcode: string = '';
 
