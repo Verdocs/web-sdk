@@ -1,12 +1,25 @@
 import interact from 'interactjs';
-import type {IAttachmentFieldConfig, IDateFieldConfig, TDataCatalogEntryType} from '@verdocs/js-sdk';
+import {createTemplateAnalysis, getOrganizationPipelineSettings, getTemplateAnalysis} from '@verdocs/js-sdk';
+import type {IAttachmentFieldConfig, IDateFieldConfig, IProfile, ITemplateAnalysisPlacement, TDataCatalogEntryType} from '@verdocs/js-sdk';
 import {Component, h, Element, Event, EventEmitter, forceUpdate, Fragment, Host, Listen, Prop, State, Watch} from '@stencil/core';
 import {formatFieldNumber, getDataCatalog, getDataCatalogs, IDataCatalog, IDataCatalogEntry, ITextFieldConfig, saveDataCatalogEntries} from '@verdocs/js-sdk';
 import {createField, deleteField, getTemplate, IDropdownOption, integerSequence, ITemplate, ITemplateField, TFieldType, updateField, VerdocsEndpoint} from '@verdocs/js-sdk';
 import type {ICheckboxFieldConfig, IDropdownFieldConfig, IFieldTextFit, IRadioFieldConfig, ISignatureFieldConfig, ITimestampFieldConfig, TFieldConfig} from '@verdocs/js-sdk';
 import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlStyles, updateCssTransform} from '../../../utils/utils';
 import {AlignBottomIcon, AlignCenterIcon, AlignMiddleIcon, AlignRightIcon, AlignTopIcon, MatchHeightIcon, MatchWidthIcon, SpaceAcrossIcon} from '../../../utils/Icons';
-import {AlignLeftIcon, CloseIcon, DataIcon, DocumentPageIcon, DuplicateIcon, PencilIcon, ResetIcon, SettingsIcon, SpaceEvenlyIcon, TrashIcon} from '../../../utils/Icons';
+import {
+  AlignLeftIcon,
+  CloseIcon,
+  DataIcon,
+  DocumentPageIcon,
+  DuplicateIcon,
+  PencilIcon,
+  ResetIcon,
+  SettingsIcon,
+  SpaceEvenlyIcon,
+  SparkleIcon,
+  TrashIcon,
+} from '../../../utils/Icons';
 import {drawRecipientField, FIELD_TYPES, radioGroup, recipientNumber} from '../../../utils/RecipientFields';
 import {TEXT_FORMATS} from '../../../utils/FieldFormats';
 import {IDocumentPageInfo} from '../../../utils/Types';
@@ -28,6 +41,10 @@ const MAX_UNDO = 50;
 const isTypingTarget = (el: Element | null) => !!el && (['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName) || (el as HTMLElement).isContentEditable);
 
 const defaultRequired = (type: TFieldType) => !['radio', 'attachment', 'checkbox'].includes(type);
+
+const SUGGEST_POLL_MS = 3000;
+
+type TSuggestion = ITemplateAnalysisPlacement & {id: string; document_id: string; page: number};
 
 // Field types that can take a data key, and the kinds of catalog key each one fits.
 const KEY_FITS: Partial<Record<TFieldType, TDataCatalogEntryType[]>> = {textbox: ['text'], date: ['date'], checkbox: ['boolean'], radio: ['choice'], dropdown: ['choice']};
@@ -181,7 +198,6 @@ const humanizeKey = (key: string) => {
   return words.charAt(0).toUpperCase() + words.slice(1);
 };
 
-
 // Lines a rect up with the left or right edge, and the top or vertical center, of the nearest other field.
 const snapRect = (rect: {left: number; top: number; width: number; height: number}, others: DOMRect[]) => {
   let dx = 0;
@@ -304,7 +320,12 @@ export class VerdocsBuilderFields {
   @State() tourIndex = 0;
   @State() tourLayout: TTourLayout | null = null;
   @State() advancedSections: Record<string, boolean> = {};
+  @State() canSuggest = false;
+  // What field suggestions are doing right now, or null when idle.
+  @State() suggestBusy: string | null = null;
+  @State() suggestions: TSuggestion[] = [];
   catalogLoadedFor: string | null = null;
+  unlistenSession: (() => void) | null = null;
 
   // Undo entries are recorded only once their save lands, so the stack never holds a change the server didn't take.
   // Entries that share a batch came from one action on several fields, and undo reverses them together.
@@ -522,6 +543,7 @@ export class VerdocsBuilderFields {
       }
 
       this.listenToTemplate();
+      this.listenToSession();
     } catch (e) {
       console.log('[BUILDER] Error with fields session', e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
@@ -552,11 +574,14 @@ export class VerdocsBuilderFields {
   connectedCallback() {
     if (this.template && !this.templateListenerId) {
       this.listenToTemplate();
+      this.listenToSession();
     }
   }
 
   disconnectedCallback() {
     this.unlistenToTemplate();
+    this.unlistenSession?.();
+    this.unlistenSession = null;
     this.flushNudge();
     this.endPaletteDrag();
     window.removeEventListener('resize', this.handleWindowResize);
@@ -659,6 +684,7 @@ export class VerdocsBuilderFields {
 
     this.applySelection();
     this.positionQuickBar();
+    this.drawSuggestions();
   }
 
   makeDraggable(el: HTMLElement) {
@@ -1501,6 +1527,227 @@ export class VerdocsBuilderFields {
     return this.addField({...field, name: this.generateFieldName(field.type, field.page), y: Math.max(0, field.y - height - 10)});
   }
 
+  // Only admins can read pipeline settings, so only they see Suggest fields for now. The profile usually arrives after we load.
+  listenToSession() {
+    this.unlistenSession?.();
+    this.unlistenSession = this.endpoint.onSessionChanged(async (_endpoint, _session, profile: IProfile | null) => {
+      if (!profile?.organization_id || !profile.roles?.some(role => role === 'owner' || role === 'admin')) {
+        this.canSuggest = false;
+        return;
+      }
+
+      try {
+        const settings = await getOrganizationPipelineSettings(this.endpoint, profile.organization_id);
+        this.canSuggest = !!settings?.ai_field_suggestions;
+      } catch (e) {
+        console.log('[BUILDER] Unable to check field suggestions', e);
+      }
+    });
+  }
+
+  async suggestFields() {
+    if (!this.sortedRoles().length) {
+      this.showMustSelectRole = true;
+      return;
+    }
+
+    this.suggestBusy = 'Starting';
+    try {
+      let analysis = await createTemplateAnalysis(this.endpoint, this.templateId);
+      while (analysis.status === 'queued' || analysis.status === 'running') {
+        this.suggestBusy = `Reading page ${Math.min(analysis.pages_done + 1, analysis.pages_total)} of ${analysis.pages_total}`;
+        await new Promise(resolve => setTimeout(resolve, SUGGEST_POLL_MS));
+        if (!this.el.isConnected) {
+          return;
+        }
+
+        analysis = await getTemplateAnalysis(this.endpoint, this.templateId, analysis.id);
+      }
+
+      this.suggestions = (analysis.result?.pages || []).flatMap(page =>
+        (page.placements || []).map((placement, index) => ({...placement, id: `${page.document_id}-${page.page}-${index}`, document_id: page.document_id, page: page.page})),
+      );
+      if (!this.suggestions.length) {
+        const failed = analysis.status === 'failed';
+        VerdocsToast(failed ? 'Unable to suggest fields. Please try again.' : 'No blanks to fill were found.', {style: failed ? 'error' : 'info'});
+      }
+      this.drawSuggestions();
+    } catch (e) {
+      console.log('[BUILDER] Error suggesting fields', e);
+      VerdocsToast(e.response?.data?.error || 'Unable to suggest fields. Please try again.', {style: 'error'});
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+    } finally {
+      this.suggestBusy = null;
+    }
+  }
+
+  // A suggestion keeps the model's signer when the template has a role by that name, and goes to the palette's recipient otherwise.
+  suggestionRole(suggestion: TSuggestion) {
+    return this.sortedRoles().find(role => role.name.toLowerCase() === suggestion.role.toLowerCase())?.name || this.paletteRoleName();
+  }
+
+  fieldFromSuggestion(suggestion: TSuggestion, taken: Set<string>): ITemplateField {
+    const base = suggestion.api_name.trim();
+    let name = base || this.generateFieldName(suggestion.type, suggestion.page, taken);
+    for (let i = 2; base && (taken.has(name) || this.findField(name)); i++) {
+      name = `${base}_${i}`;
+    }
+    taken.add(name);
+
+    const group = suggestion.type === 'radio' ? suggestion.group || this.generateGroupName() : null;
+    const option = (this.template?.fields || []).filter(field => group && field.group === group).length + 1;
+    return {
+      name,
+      role_name: this.suggestionRole(suggestion),
+      template_id: this.templateId,
+      document_id: suggestion.document_id,
+      type: suggestion.type,
+      required: defaultRequired(suggestion.type),
+      page: suggestion.page,
+      validator: null,
+      label: suggestion.label || null,
+      default: null,
+      placeholder: null,
+      group,
+      settings: {},
+      x: suggestion.x,
+      y: suggestion.y,
+      width: suggestion.width,
+      height: suggestion.height,
+      multiline: false,
+      readonly: false,
+      options: suggestion.type === 'radio' ? [{id: `option-${option}`, label: suggestion.label || `Option ${option}`}] : [],
+    };
+  }
+
+  async acceptSuggestion(id: string) {
+    const suggestion = this.suggestions.find(other => other.id === id);
+    if (!suggestion) {
+      return;
+    }
+
+    this.suggestions = this.suggestions.filter(other => other.id !== id);
+    this.drawSuggestions();
+    await this.addField(this.fieldFromSuggestion(suggestion, new Set()));
+  }
+
+  // One at a time, so each new field sees the names and radio options already added.
+  async acceptAllSuggestions() {
+    const pending = this.suggestions;
+    this.suggestions = [];
+    this.drawSuggestions();
+
+    const taken = new Set<string>();
+    for (const [index, suggestion] of pending.entries()) {
+      this.suggestBusy = `Adding ${index + 1} of ${pending.length}`;
+      await this.addField(this.fieldFromSuggestion(suggestion, taken), false);
+    }
+    this.suggestBusy = null;
+  }
+
+  // Suggestions sit in each page's controls layer like fields do, so they're redrawn whenever a page renders.
+  drawSuggestions() {
+    this.el.querySelectorAll('.vb-suggestion').forEach(el => el.remove());
+    for (const suggestion of this.suggestions) {
+      const pageInfo = this.cachedPageInfo[suggestion.document_id]?.[suggestion.page];
+      const page = this.el.querySelector(`verdocs-template-document-page[document-id="${suggestion.document_id}"][page-number="${suggestion.page}"]`);
+      const layer = page?.querySelector('.verdocs-template-document-page-layer[id$="-controls"]');
+      if (!pageInfo || !layer) {
+        continue;
+      }
+
+      const el = document.createElement('div');
+      el.className = `vb-suggestion vb-suggestion-${suggestion.type}`;
+      el.tabIndex = 0;
+      el.setAttribute('role', 'button');
+      el.title = `Add ${suggestion.label || suggestion.type} for ${this.suggestionRole(suggestion)}`;
+      el.setAttribute('aria-label', el.title);
+      el.style.left = `${suggestion.x * pageInfo.xScale}px`;
+      el.style.bottom = `${suggestion.y * pageInfo.yScale}px`;
+      el.style.width = `${suggestion.width * pageInfo.xScale}px`;
+      el.style.height = `${suggestion.height * pageInfo.yScale}px`;
+
+      const label = document.createElement('span');
+      label.className = 'vb-suggestion-label';
+      label.textContent = suggestion.label;
+
+      const clear = document.createElement('button');
+      clear.type = 'button';
+      clear.className = 'vb-suggestion-clear';
+      clear.title = 'Dismiss this suggestion';
+      clear.setAttribute('aria-label', clear.title);
+      clear.innerHTML = CloseIcon;
+      clear.addEventListener('click', e => {
+        e.stopPropagation();
+        this.suggestions = this.suggestions.filter(other => other.id !== suggestion.id);
+        this.drawSuggestions();
+      });
+
+      el.append(label, clear);
+      el.addEventListener('pointerdown', e => e.stopPropagation());
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        this.acceptSuggestion(suggestion.id);
+      });
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.acceptSuggestion(suggestion.id);
+        }
+      });
+      layer.appendChild(el);
+    }
+  }
+
+  renderSuggestions() {
+    const blank = !(this.template?.fields || []).length;
+    if (!this.canSuggest || (!blank && !this.suggestions.length && !this.suggestBusy)) {
+      return null;
+    }
+
+    return (
+      <div class="suggest-panel">
+        <div class="palette-title">Suggestions</div>
+        {this.suggestBusy ? (
+          <div class="suggest-status">
+            <span class="suggest-spinner" />
+            {this.suggestBusy}
+          </div>
+        ) : this.suggestions.length ? (
+          <Fragment>
+            <div class="suggest-count">
+              {this.suggestions.length} suggested {this.suggestions.length === 1 ? 'field' : 'fields'}
+            </div>
+            <div class="palette-hint">Click a suggestion on the page to add it.</div>
+            <div class="suggest-actions">
+              <button type="button" class="suggest-add-all" onClick={() => this.acceptAllSuggestions()}>
+                Add all
+              </button>
+              <button
+                type="button"
+                class="suggest-clear"
+                onClick={() => {
+                  this.suggestions = [];
+                  this.drawSuggestions();
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <button type="button" class="suggest-button" onClick={() => this.suggestFields()}>
+              <span innerHTML={SparkleIcon} />
+              Suggest fields
+            </button>
+            <div class="palette-hint">Finds the blanks on each page and suggests a field for each one.</div>
+          </Fragment>
+        )}
+      </div>
+    );
+  }
+
   // Radio group keys are generated, and a radio placed before groups existed gets one when it gains a second option.
   generateGroupName() {
     const used = new Set((this.template?.fields || []).map(field => field.group));
@@ -1625,7 +1872,10 @@ export class VerdocsBuilderFields {
 
   // A loose radio can join an existing group by its name, but renaming a whole group onto another one would merge them.
   async saveGroupName(field: ITemplateField, value: string) {
-    const group = value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    const group = value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
     const members = this.groupMembers(field);
     this.groupError = '';
     if (group === (field.group || '')) {
@@ -1682,7 +1932,15 @@ export class VerdocsBuilderFields {
   saveOptions(field: ITemplateField, draft: IDropdownOption[]) {
     const rows = draft.map(option => {
       const label = (option.label || '').trim();
-      return {id: (option.id || '').trim() || label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), label};
+      return {
+        id:
+          (option.id || '').trim() ||
+          label
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, ''),
+        label,
+      };
     });
     const options = rows.filter(option => option.id || option.label);
 
@@ -2254,7 +2512,9 @@ export class VerdocsBuilderFields {
     const saveSettings = <T extends TFieldConfig>(changes: Partial<T>) => this.saveGroup(field, {config: tidyConfig({...settings<T>(), ...changes})});
 
     const fit =
-      this.fitDraft?.name === field.name ? this.fitDraft : {max: config.fit?.max_font_size ?? FIT_DEFAULT, min: config.fit?.min_font_size ?? config.fit?.max_font_size ?? FIT_DEFAULT};
+      this.fitDraft?.name === field.name
+        ? this.fitDraft
+        : {max: config.fit?.max_font_size ?? FIT_DEFAULT, min: config.fit?.min_font_size ?? config.fit?.max_font_size ?? FIT_DEFAULT};
     const fitRatio = (size: number) => String(Math.min(1, Math.max(0, (size - FIT_RANGE.min) / (FIT_RANGE.max - FIT_RANGE.min))));
     // Dragging one handle past the other pushes it along
     const dragFit = (min: number, max: number) => (this.fitDraft = {name: field.name, min, max});
@@ -2275,7 +2535,13 @@ export class VerdocsBuilderFields {
     const stamp = settings<ISignatureFieldConfig>().stamp || {};
     const signer = field.type === 'initial' ? 'initials' : 'signature';
     const stampSummary =
-      stamp.hash !== false && stamp.date !== false ? 'Hash and date' : stamp.hash !== false ? 'Hash only' : stamp.date !== false ? 'Date only' : `${signer.charAt(0).toUpperCase()}${signer.slice(1)} only`;
+      stamp.hash !== false && stamp.date !== false
+        ? 'Hash and date'
+        : stamp.hash !== false
+          ? 'Hash only'
+          : stamp.date !== false
+            ? 'Date only'
+            : `${signer.charAt(0).toUpperCase()}${signer.slice(1)} only`;
     const includeTime = settings<ITimestampFieldConfig>().include_time !== false;
     const checkbox = settings<ICheckboxFieldConfig>();
 
@@ -2429,7 +2695,14 @@ export class VerdocsBuilderFields {
         {!radio && (
           <label class="insp-label">
             Label
-            <input name="label" class="insp-input" value={field.label || ''} placeholder="Optional" onChange={(e: any) => this.saveRename(field, e.target.value)} onKeyDown={keys(field.label || '')} />
+            <input
+              name="label"
+              class="insp-input"
+              value={field.label || ''}
+              placeholder="Optional"
+              onChange={(e: any) => this.saveRename(field, e.target.value)}
+              onKeyDown={keys(field.label || '')}
+            />
           </label>
         )}
         {recipient}
@@ -2881,7 +3154,9 @@ export class VerdocsBuilderFields {
             this.renderSection('stamp', 'Stamp', stampSummary, stamp.hash === false || stamp.date === false, () => (
               <Fragment>
                 {toggle('Hash', stamp.hash !== false, () => saveSettings<ISignatureFieldConfig>({stamp: tidyGroup({...stamp, hash: stamp.hash === false ? undefined : false})}))}
-                {toggle('Date and time', stamp.date !== false, () => saveSettings<ISignatureFieldConfig>({stamp: tidyGroup({...stamp, date: stamp.date === false ? undefined : false})}))}
+                {toggle('Date and time', stamp.date !== false, () =>
+                  saveSettings<ISignatureFieldConfig>({stamp: tidyGroup({...stamp, date: stamp.date === false ? undefined : false})}),
+                )}
                 <div class="insp-hint">Printed beside the {signer} on the signed PDF.</div>
               </Fragment>
             ))}
@@ -3060,7 +3335,12 @@ export class VerdocsBuilderFields {
                           title="Remove option"
                           aria-label="Remove option"
                           innerHTML={TrashIcon}
-                          onClick={() => this.saveOptions(field, options.filter((_, i) => i !== index))}
+                          onClick={() =>
+                            this.saveOptions(
+                              field,
+                              options.filter((_, i) => i !== index),
+                            )
+                          }
                         />
                       )}
                     </div>
@@ -3170,7 +3450,11 @@ export class VerdocsBuilderFields {
 
   renderZoomBar() {
     const widest = this.widestZoom();
-    const choices: [TZoom, string][] = [['page', 'Whole page'], ['width', 'Page width'], ...ZOOM_STEPS.filter(step => step < widest).map(step => [step, `${step}%`] as [TZoom, string])];
+    const choices: [TZoom, string][] = [
+      ['page', 'Whole page'],
+      ['width', 'Page width'],
+      ...ZOOM_STEPS.filter(step => step < widest).map(step => [step, `${step}%`] as [TZoom, string]),
+    ];
 
     return (
       <div class="zoom-dock">
@@ -3375,7 +3659,13 @@ export class VerdocsBuilderFields {
         <div class="insp-label">
           {label}
           <div class="insp-seg" role="radiogroup" aria-label={label} data-name={key}>
-            <button type="button" role="radio" aria-checked={String(value === false)} class={{on: value === false}} onClick={() => value !== false && this.saveSelection({[key]: false})}>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={String(value === false)}
+              class={{on: value === false}}
+              onClick={() => value !== false && this.saveSelection({[key]: false})}
+            >
               Off
             </button>
             {value === undefined && (
@@ -3383,7 +3673,13 @@ export class VerdocsBuilderFields {
                 Mixed
               </button>
             )}
-            <button type="button" role="radio" aria-checked={String(value === true)} class={{on: value === true}} onClick={() => value !== true && this.saveSelection({[key]: true, [other]: false})}>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={String(value === true)}
+              class={{on: value === true}}
+              onClick={() => value !== true && this.saveSelection({[key]: true, [other]: false})}
+            >
               On
             </button>
           </div>
@@ -3501,6 +3797,7 @@ export class VerdocsBuilderFields {
             </div>
           ))}
           <div class="palette-hint">Drag a field onto the page, or click it and then click where it goes.</div>
+          {this.renderSuggestions()}
           {this.showTour && (
             <button type="button" class="tour-help" title="Show the builder tour" aria-label="Show the builder tour" onClick={() => this.startTour()}>
               ?
@@ -3579,11 +3876,7 @@ export class VerdocsBuilderFields {
         {this.tourSteps && this.renderTour()}
 
         {this.showMustSelectRole && (
-          <verdocs-ok-dialog
-            heading="Unable to add field"
-            message="Please add at least one role before adding fields."
-            onNext={() => (this.showMustSelectRole = false)}
-          />
+          <verdocs-ok-dialog heading="Unable to add field" message="Please add at least one role before adding fields." onNext={() => (this.showMustSelectRole = false)} />
         )}
       </Host>
     );
