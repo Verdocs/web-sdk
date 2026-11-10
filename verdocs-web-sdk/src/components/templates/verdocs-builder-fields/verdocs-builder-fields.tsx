@@ -9,6 +9,7 @@ import {defaultHeight, defaultWidth, getFieldId, removeCssTransform, setControlS
 import {AlignBottomIcon, AlignCenterIcon, AlignMiddleIcon, AlignRightIcon, AlignTopIcon, MatchHeightIcon, MatchWidthIcon, SpaceAcrossIcon} from '../../../utils/Icons';
 import {
   AlignLeftIcon,
+  CheckIcon,
   CloseIcon,
   DataIcon,
   DocumentPageIcon,
@@ -324,6 +325,9 @@ export class VerdocsBuilderFields {
   // What field suggestions are doing right now, or null when idle.
   @State() suggestBusy: string | null = null;
   @State() suggestions: TSuggestion[] = [];
+  @State() selectedSuggestion: string | null = null;
+  @State() suggestReview: {total: number; kept: number; dropped: number; pages: {document_id: string; page: number}[]} | null = null;
+  keepQueue: Promise<void> = Promise.resolve();
   catalogLoadedFor: string | null = null;
   unlistenSession: (() => void) | null = null;
 
@@ -439,6 +443,17 @@ export class VerdocsBuilderFields {
 
     // Keys pressed in a dialog, menu, or anything else outside the builder belong to that control.
     if (target !== document.body && target !== document.documentElement && !this.el.contains(target)) {
+      return;
+    }
+
+    if (this.selectedSuggestion && ['Enter', 'Delete', 'Backspace'].includes(ev.key) && !ev.metaKey && !ev.ctrlKey && !ev.altKey && !target.closest?.('button')) {
+      ev.preventDefault();
+      const unit = this.suggestionUnit(this.selectedSuggestion);
+      if (ev.key === 'Enter') {
+        this.keepSuggestions(unit);
+      } else {
+        this.dropSuggestions(unit);
+      }
       return;
     }
 
@@ -725,6 +740,10 @@ export class VerdocsBuilderFields {
   }
 
   selectField(name: string | null) {
+    if (this.selectedSuggestion) {
+      this.selectedSuggestion = null;
+      this.drawSuggestions();
+    }
     if (this.pendingNudge && this.pendingNudge.name !== name) {
       this.flushNudge();
     }
@@ -1564,9 +1583,14 @@ export class VerdocsBuilderFields {
         analysis = await getTemplateAnalysis(this.endpoint, this.templateId, analysis.id);
       }
 
-      this.suggestions = (analysis.result?.pages || []).flatMap(page =>
+      const pages = (analysis.result?.pages || []).filter(page => page.placements?.length);
+      this.suggestions = pages.flatMap(page =>
         (page.placements || []).map((placement, index) => ({...placement, id: `${page.document_id}-${page.page}-${index}`, document_id: page.document_id, page: page.page})),
       );
+      this.selectedSuggestion = null;
+      this.suggestReview = this.suggestions.length
+        ? {total: this.suggestions.length, kept: 0, dropped: 0, pages: pages.map(page => ({document_id: page.document_id, page: page.page}))}
+        : null;
       if (!this.suggestions.length) {
         const failed = analysis.status === 'failed';
         VerdocsToast(failed ? 'Unable to suggest fields. Please try again.' : 'No blanks to fill were found.', {style: failed ? 'error' : 'info'});
@@ -1620,130 +1644,308 @@ export class VerdocsBuilderFields {
     };
   }
 
-  async acceptSuggestion(id: string) {
+  // A radio group's options are kept or dropped together
+  suggestionUnit(id: string) {
     const suggestion = this.suggestions.find(other => other.id === id);
-    if (!suggestion) {
-      return;
+    if (!suggestion || suggestion.type !== 'radio' || !suggestion.group) {
+      return suggestion ? [suggestion] : [];
     }
 
-    this.suggestions = this.suggestions.filter(other => other.id !== id);
-    this.drawSuggestions();
-    await this.addField(this.fieldFromSuggestion(suggestion, new Set()));
+    return this.suggestions.filter(other => other.type === 'radio' && other.document_id === suggestion.document_id && other.group === suggestion.group);
   }
 
-  // One at a time, so each new field sees the names and radio options already added.
-  async acceptAllSuggestions() {
-    const pending = this.suggestions;
-    this.suggestions = [];
+  selectSuggestion(id: string) {
+    this.selectField(null);
+    this.selectedSuggestion = id;
     this.drawSuggestions();
-
-    const taken = new Set<string>();
-    for (const [index, suggestion] of pending.entries()) {
-      this.suggestBusy = `Adding ${index + 1} of ${pending.length}`;
-      await this.addField(this.fieldFromSuggestion(suggestion, taken), false);
-    }
-    this.suggestBusy = null;
   }
 
-  // Suggestions sit in each page's controls layer like fields do, so they're redrawn whenever a page renders.
+  // Keeps wait their turn and add one field at a time, so each new field sees the names and radio options already added.
+  keepSuggestions(keep: TSuggestion[]) {
+    const ids = new Set(keep.map(suggestion => suggestion.id));
+    this.suggestions = this.suggestions.filter(other => !ids.has(other.id));
+    this.selectedSuggestion = null;
+    this.suggestReview = this.suggestReview && {...this.suggestReview, kept: this.suggestReview.kept + keep.length};
+    this.drawSuggestions();
+
+    this.keepQueue = this.keepQueue.then(async () => {
+      const taken = new Set<string>();
+      for (const [index, suggestion] of keep.entries()) {
+        if (keep.length > 1) {
+          this.suggestBusy = `Adding ${index + 1} of ${keep.length}`;
+        }
+        await this.addField(this.fieldFromSuggestion(suggestion, taken), false);
+      }
+      this.suggestBusy = null;
+    });
+    return this.keepQueue;
+  }
+
+  dropSuggestions(drop: TSuggestion[]) {
+    const ids = new Set(drop.map(suggestion => suggestion.id));
+    this.suggestions = this.suggestions.filter(other => !ids.has(other.id));
+    this.selectedSuggestion = null;
+    this.suggestReview = this.suggestReview && {...this.suggestReview, dropped: this.suggestReview.dropped + drop.length};
+    this.drawSuggestions();
+  }
+
+  // Suggestions sit in each page's controls layer like fields do, so they're redrawn whenever a page renders. A radio group's options
+  // share one outline, and the selected suggestion gets keep and drop buttons beside it.
   drawSuggestions() {
-    this.el.querySelectorAll('.vb-suggestion').forEach(el => el.remove());
-    for (const suggestion of this.suggestions) {
+    this.el.querySelectorAll('.vb-suggestion, .vb-suggestion-group, .vb-suggestion-actions').forEach(el => el.remove());
+    const unit = this.selectedSuggestion ? this.suggestionUnit(this.selectedSuggestion) : [];
+    const selected = new Set(unit.map(suggestion => suggestion.id));
+
+    const layerFor = (suggestion: TSuggestion) => {
       const pageInfo = this.cachedPageInfo[suggestion.document_id]?.[suggestion.page];
       const page = this.el.querySelector(`verdocs-template-document-page[document-id="${suggestion.document_id}"][page-number="${suggestion.page}"]`);
-      const layer = page?.querySelector('.verdocs-template-document-page-layer[id$="-controls"]');
-      if (!pageInfo || !layer) {
+      const layer = page?.querySelector<HTMLElement>('.verdocs-template-document-page-layer[id$="-controls"]');
+      return pageInfo && layer ? {pageInfo, layer} : null;
+    };
+
+    // In px from the page's bottom left, like the fields
+    const boxOf = (members: TSuggestion[], pageInfo: IDocumentPageInfo, pad: number) => {
+      const left = Math.min(...members.map(member => member.x)) * pageInfo.xScale - pad;
+      const bottom = Math.min(...members.map(member => member.y)) * pageInfo.yScale - pad;
+      const right = Math.max(...members.map(member => member.x + member.width)) * pageInfo.xScale + pad;
+      const top = Math.max(...members.map(member => member.y + member.height)) * pageInfo.yScale + pad;
+      return {left, bottom, width: right - left, height: top - bottom};
+    };
+
+    const groups = new Map<string, TSuggestion[]>();
+    for (const suggestion of this.suggestions) {
+      const target = layerFor(suggestion);
+      if (!target) {
         continue;
       }
 
+      if (suggestion.type === 'radio' && suggestion.group) {
+        const key = `${suggestion.document_id}:${suggestion.page}:${suggestion.group}`;
+        groups.set(key, [...(groups.get(key) || []), suggestion]);
+      }
+
       const el = document.createElement('div');
-      el.className = `vb-suggestion vb-suggestion-${suggestion.type}`;
+      el.className = `vb-suggestion vb-suggestion-${suggestion.type}${selected.has(suggestion.id) ? ' vb-suggestion-selected' : ''}`;
       el.tabIndex = 0;
       el.setAttribute('role', 'button');
-      el.title = `Add ${suggestion.label || suggestion.type} for ${this.suggestionRole(suggestion)}`;
-      el.setAttribute('aria-label', el.title);
-      el.style.left = `${suggestion.x * pageInfo.xScale}px`;
-      el.style.bottom = `${suggestion.y * pageInfo.yScale}px`;
-      el.style.width = `${suggestion.width * pageInfo.xScale}px`;
-      el.style.height = `${suggestion.height * pageInfo.yScale}px`;
+      el.title = `${suggestion.label || suggestion.type} for ${this.suggestionRole(suggestion)}`;
+      el.setAttribute('aria-label', `Review the suggested ${el.title}`);
+      el.style.left = `${suggestion.x * target.pageInfo.xScale}px`;
+      el.style.bottom = `${suggestion.y * target.pageInfo.yScale}px`;
+      el.style.width = `${suggestion.width * target.pageInfo.xScale}px`;
+      el.style.height = `${suggestion.height * target.pageInfo.yScale}px`;
 
       const label = document.createElement('span');
       label.className = 'vb-suggestion-label';
       label.textContent = suggestion.label;
+      el.append(label);
 
-      const clear = document.createElement('button');
-      clear.type = 'button';
-      clear.className = 'vb-suggestion-clear';
-      clear.title = 'Dismiss this suggestion';
-      clear.setAttribute('aria-label', clear.title);
-      clear.innerHTML = CloseIcon;
-      clear.addEventListener('click', e => {
-        e.stopPropagation();
-        this.suggestions = this.suggestions.filter(other => other.id !== suggestion.id);
-        this.drawSuggestions();
-      });
-
-      el.append(label, clear);
       el.addEventListener('pointerdown', e => e.stopPropagation());
       el.addEventListener('click', e => {
         e.stopPropagation();
-        this.acceptSuggestion(suggestion.id);
+        this.selectSuggestion(suggestion.id);
       });
+      // Once it's selected, Enter goes on to the builder's keys and keeps it
       el.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if ((e.key === 'Enter' || e.key === ' ') && !selected.has(suggestion.id)) {
           e.preventDefault();
-          this.acceptSuggestion(suggestion.id);
+          e.stopPropagation();
+          this.selectSuggestion(suggestion.id);
         }
       });
-      layer.appendChild(el);
+      target.layer.appendChild(el);
     }
+
+    for (const members of groups.values()) {
+      const target = members.length > 1 && layerFor(members[0]);
+      if (!target) {
+        continue;
+      }
+
+      const box = boxOf(members, target.pageInfo, 4);
+      const hull = document.createElement('div');
+      hull.className = `vb-suggestion-group${selected.has(members[0].id) ? ' vb-suggestion-selected' : ''}`;
+      hull.style.left = `${box.left}px`;
+      hull.style.bottom = `${box.bottom}px`;
+      hull.style.width = `${box.width}px`;
+      hull.style.height = `${box.height}px`;
+
+      const tag = document.createElement('span');
+      tag.className = 'vb-suggestion-group-tag';
+      tag.textContent = members[0].group;
+      hull.append(tag);
+      target.layer.appendChild(hull);
+    }
+
+    const target = unit.length > 0 && layerFor(unit[0]);
+    if (!target) {
+      return;
+    }
+
+    const box = boxOf(unit, target.pageInfo, unit.length > 1 ? 4 : 0);
+    const actions = document.createElement('div');
+    actions.className = 'vb-suggestion-actions';
+    // Beside the suggestion, or above it when there's no room before the page's right edge
+    const width = 56;
+    const beside = box.left + box.width + 6 + width <= target.layer.clientWidth;
+    actions.style.left = `${beside ? box.left + box.width + 6 : Math.max(0, box.left + box.width - width)}px`;
+    actions.style.bottom = `${beside ? box.bottom + box.height / 2 - 12 : box.bottom + box.height + 6}px`;
+    actions.addEventListener('pointerdown', e => e.stopPropagation());
+
+    for (const [kind, icon, title, act] of [
+      ['keep', CheckIcon, 'Keep (Enter)', () => this.keepSuggestions(unit)],
+      ['drop', CloseIcon, 'Drop (Delete)', () => this.dropSuggestions(unit)],
+    ] as const) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `vb-suggestion-${kind}`;
+      button.title = title;
+      button.setAttribute('aria-label', title);
+      button.innerHTML = icon;
+      button.addEventListener('click', e => {
+        e.stopPropagation();
+        act();
+      });
+      actions.append(button);
+    }
+    target.layer.appendChild(actions);
   }
 
   renderSuggestions() {
     const blank = !(this.template?.fields || []).length;
-    if (!this.canSuggest || (!blank && !this.suggestions.length && !this.suggestBusy)) {
+    const review = this.suggestReview;
+    if (!this.canSuggest || (!blank && !this.suggestions.length && !this.suggestBusy && !review)) {
       return null;
+    }
+
+    if (this.suggestBusy) {
+      return (
+        <div class="suggest-panel">
+          <div class="palette-title">Suggestions</div>
+          <div class="suggest-status">
+            <span class="suggest-spinner" />
+            {this.suggestBusy}
+          </div>
+        </div>
+      );
+    }
+
+    if (review && this.suggestions.length) {
+      const reviewed = review.kept + review.dropped;
+      const unit = this.selectedSuggestion ? this.suggestionUnit(this.selectedSuggestion) : [];
+      const first = unit[0];
+      const typeLabel = first ? FIELD_TYPES.find(fieldType => fieldType.type === first.type)?.label || first.type : '';
+      const documentIds = (this.template?.documents || []).map(document => document.id);
+      const manyDocuments = new Set(review.pages.map(page => page.document_id)).size > 1;
+
+      return (
+        <div class="suggest-panel">
+          <div class="palette-title">Suggestions</div>
+          <div class="suggest-count">{this.suggestions.length} to review</div>
+          <div class="suggest-meter">
+            <i style={{width: `${Math.round((reviewed / review.total) * 100)}%`}} />
+          </div>
+          <div class="suggest-progress">
+            {reviewed} of {review.total} reviewed
+          </div>
+
+          {first ? (
+            <div class="suggest-selected">
+              <div class="suggest-selected-label">{unit.length > 1 ? (first.group || '').replace(/_/g, ' ') : first.label || typeLabel}</div>
+              <div class="suggest-selected-meta">
+                {unit.length > 1 ? `Radio group, ${unit.length} options` : typeLabel} for {this.suggestionRole(first)}
+              </div>
+              {unit.length > 1 && <div class="suggest-selected-meta">{unit.map(option => option.label).join(' / ')}</div>}
+              {first.reason && <div class="suggest-selected-reason">{first.reason}</div>}
+              <div class="suggest-actions">
+                <button type="button" class="suggest-clear" onClick={() => this.dropSuggestions(unit)}>
+                  Drop
+                </button>
+                <button type="button" class="suggest-add-all" onClick={() => this.keepSuggestions(unit)}>
+                  Keep
+                </button>
+              </div>
+              <div class="palette-hint">Enter keeps it, and Delete drops it.</div>
+            </div>
+          ) : (
+            <Fragment>
+              <div class="palette-hint">Click a suggestion on the page to review it, or keep and drop a page at a time.</div>
+              <div class="suggest-pages">
+                {review.pages.map(page => {
+                  const left = this.suggestions.filter(suggestion => suggestion.document_id === page.document_id && suggestion.page === page.page);
+                  const name = manyDocuments ? `Document ${documentIds.indexOf(page.document_id) + 1}, page ${page.page}` : `Page ${page.page}`;
+                  return (
+                    <div class={{'suggest-page': true, 'done': !left.length}}>
+                      <button
+                        type="button"
+                        class="suggest-page-name"
+                        onClick={() =>
+                          this.el
+                            .querySelector(`verdocs-template-document-page[document-id="${page.document_id}"][page-number="${page.page}"]`)
+                            ?.scrollIntoView({behavior: 'smooth', block: 'start'})
+                        }
+                      >
+                        {name}
+                      </button>
+                      <span class="suggest-page-left">{left.length ? `${left.length} left` : 'Done'}</span>
+                      {left.length > 0 && (
+                        <Fragment>
+                          <button
+                            type="button"
+                            class="suggest-mini keep"
+                            title={`Keep everything suggested on ${name.toLowerCase()}`}
+                            aria-label={`Keep everything suggested on ${name.toLowerCase()}`}
+                            innerHTML={CheckIcon}
+                            onClick={() => this.keepSuggestions(left)}
+                          />
+                          <button
+                            type="button"
+                            class="suggest-mini drop"
+                            title={`Drop everything suggested on ${name.toLowerCase()}`}
+                            aria-label={`Drop everything suggested on ${name.toLowerCase()}`}
+                            innerHTML={CloseIcon}
+                            onClick={() => this.dropSuggestions(left)}
+                          />
+                        </Fragment>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <div class="suggest-actions">
+                <button type="button" class="suggest-clear" onClick={() => this.dropSuggestions(this.suggestions)}>
+                  Clear all
+                </button>
+                <button type="button" class="suggest-add-all" onClick={() => this.keepSuggestions(this.suggestions)}>
+                  Keep all
+                </button>
+              </div>
+            </Fragment>
+          )}
+        </div>
+      );
+    }
+
+    if (review && !blank) {
+      return (
+        <div class="suggest-panel">
+          <div class="palette-title">Suggestions</div>
+          <div class="suggest-count">All suggestions reviewed</div>
+          <div class="palette-hint">
+            {review.kept} {review.kept === 1 ? 'field' : 'fields'} kept, {review.dropped} dropped.
+          </div>
+        </div>
+      );
     }
 
     return (
       <div class="suggest-panel">
         <div class="palette-title">Suggestions</div>
-        {this.suggestBusy ? (
-          <div class="suggest-status">
-            <span class="suggest-spinner" />
-            {this.suggestBusy}
-          </div>
-        ) : this.suggestions.length ? (
-          <Fragment>
-            <div class="suggest-count">
-              {this.suggestions.length} suggested {this.suggestions.length === 1 ? 'field' : 'fields'}
-            </div>
-            <div class="palette-hint">Click a suggestion on the page to add it.</div>
-            <div class="suggest-actions">
-              <button type="button" class="suggest-add-all" onClick={() => this.acceptAllSuggestions()}>
-                Add all
-              </button>
-              <button
-                type="button"
-                class="suggest-clear"
-                onClick={() => {
-                  this.suggestions = [];
-                  this.drawSuggestions();
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <button type="button" class="suggest-button" onClick={() => this.suggestFields()}>
-              <span innerHTML={SparkleIcon} />
-              Suggest fields
-            </button>
-            <div class="palette-hint">Finds the blanks on each page and suggests a field for each one.</div>
-          </Fragment>
-        )}
+        <button type="button" class="suggest-button" onClick={() => this.suggestFields()}>
+          <span innerHTML={SparkleIcon} />
+          Suggest fields
+        </button>
+        <div class="palette-hint">Finds the blanks on each page and suggests a field for each one.</div>
       </div>
     );
   }
