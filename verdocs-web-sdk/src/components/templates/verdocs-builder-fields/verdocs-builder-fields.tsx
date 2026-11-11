@@ -252,6 +252,7 @@ export class VerdocsBuilderFields {
   private inspectorBeforeTour = false;
 
   private quickBarEl: HTMLElement | null = null;
+  private pagesObserver: ResizeObserver | null = null;
 
   @Element() el: HTMLElement;
 
@@ -583,6 +584,12 @@ export class VerdocsBuilderFields {
 
     this.applySelection();
     this.positionQuickBar();
+
+    // The pages area narrows while the inspector slides open, and the quick bar has to move with it
+    if (this.pagesEl && !this.pagesObserver) {
+      this.pagesObserver = new ResizeObserver(() => this.positionQuickBar());
+      this.pagesObserver.observe(this.pagesEl);
+    }
   }
 
   // Stencil doesn't rerun componentWillLoad when an element is reattached, so we listen again here.
@@ -600,6 +607,8 @@ export class VerdocsBuilderFields {
     this.flushNudge();
     this.endPaletteDrag();
     window.removeEventListener('resize', this.handleWindowResize);
+    this.pagesObserver?.disconnect();
+    this.pagesObserver = null;
     this.stopTourListeners();
   }
 
