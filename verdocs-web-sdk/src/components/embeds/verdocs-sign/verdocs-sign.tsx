@@ -5,6 +5,7 @@ import {verifySigner, IEnvelope, IEnvelopeField, IRecipient, TAuthenticateRecipi
 import {createInitials, createSignature, envelopeRecipientAgree, envelopeRecipientDecline, envelopeRecipientSubmit} from '@verdocs/js-sdk';
 import {askQuestion, DEFAULT_DISCLOSURES, integerSequence, isFieldFilled, isFieldValid, getCombinedEnvelopeDocumentDownloadLink, parseFieldNumber} from '@verdocs/js-sdk';
 import {uploadEnvelopeFieldAttachment, VerdocsEndpoint, TRecipientAuthMethod, getEnvelopeDocumentDownloadLink, getEnvelopesZip} from '@verdocs/js-sdk';
+import {consumeQesResult, getQesReturnUrl, getQesState, isQualifiedRecipient, startQesSession, TQesState} from '../../../utils/Qes';
 import {getFieldId, renderDocumentField, renderDocumentFlag, updateDocumentFieldValue, defaultHeight} from '../../../utils/utils';
 import {IDocumentPageInfo, IDownloadEvent, DownloadAction, IFieldNotVisible} from '../../../utils/Types';
 import {DocumentPageIcon, CheckCircleIcon} from '../../../utils/Icons';
@@ -156,6 +157,8 @@ export class VerdocsSign {
   @State() zoomLevel: 'normal' | 'zoom1' | 'zoom2' = 'normal';
   @State() signingProgressMode: 'start' | 'signing' | 'completed' = 'start';
   @State() polling = true;
+  @State() startingQes = false;
+  @State() qesState: TQesState | null = null;
 
   private renderedPages: Record<string, IDocumentPageInfo> = {};
   private missingFieldsTimer: any = null;
@@ -163,6 +166,7 @@ export class VerdocsSign {
   private missingFieldsReported = new Set<string>();
   private observer: IntersectionObserver;
   private pollingInterval: any = null;
+  private qesPollingInterval: any = null;
 
   async componentDidLoad() {
     this.updateZoomFromWindow();
@@ -273,7 +277,79 @@ export class VerdocsSign {
       console.warn('[SIGN] Error refreshing envelope after submit', e);
     }
 
+    // The last recipient to fill is often the next QES signer too, and becomes 'ready' a moment after submitting
+    await this.refreshQesState();
+    if (this.qesState === 'waiting') {
+      this.startQesPolling();
+    }
+
     this.showDone = true;
+  }
+
+  // Asks the API where this signer stands in the QES phase. Only 'qualified' signers have one.
+  async refreshQesState() {
+    if (!isQualifiedRecipient(this.recipient)) {
+      this.qesState = null;
+      return;
+    }
+
+    try {
+      this.qesState = (await getQesState(this.endpoint)).qes_state;
+    } catch (e) {
+      console.warn('[SIGN] Unable to get the QES state', e);
+    }
+  }
+
+  // True while a 'qualified' recipient still owes a QES: the envelope only completes once they've all signed
+  isQesPending() {
+    return this.envelope?.status !== 'complete' && (this.envelope?.recipients || []).some(isQualifiedRecipient);
+  }
+
+  async startQes() {
+    this.startingQes = true;
+    try {
+      // eID Easy sends the signer back here, so they land in this same session wherever it's hosted
+      const {signing_page_url} = await startQesSession(this.endpoint, getQesReturnUrl());
+      // eID Easy's page hands off to Mobile-ID, Smart-ID and card readers, so it gets the whole window rather than a frame or popup
+      window.location.assign(signing_page_url);
+    } catch (e) {
+      console.log('[SIGN] Unable to start the QES session', e);
+      this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
+      this.startingQes = false;
+      VerdocsToast(e.response?.data?.error || 'Unable to start signing with your eID. Please try again.', {style: 'error'});
+    }
+  }
+
+  // Watches for the next QES step: 'waiting' turning 'ready' right after submit, or 'in_progress' turning 'signed' once eID Easy's
+  // webhook is processed. Gives up after two minutes; the signer is emailed either way.
+  startQesPolling() {
+    this.stopQesPolling();
+    const started = Date.now();
+
+    this.qesPollingInterval = setInterval(async () => {
+      try {
+        const {qes_state} = await getQesState(this.endpoint);
+        // The API failed the attempt (recipient:qes_error), e.g. the signer chose a method that isn't a qualified signature
+        if (this.qesState === 'in_progress' && qes_state === 'ready') {
+          VerdocsToast("We couldn't accept your eID signature as a qualified signature. Please sign with your eID again.", {style: 'error'});
+        }
+        this.qesState = qes_state;
+
+        if (qes_state === 'ready' || qes_state === 'signed' || Date.now() - started > 2 * 60 * 1000) {
+          this.stopQesPolling();
+        }
+      } catch (e) {
+        console.error('[SIGN] QES polling error', e);
+        this.stopQesPolling();
+      }
+    }, 5000);
+  }
+
+  stopQesPolling() {
+    if (this.qesPollingInterval) {
+      clearInterval(this.qesPollingInterval);
+      this.qesPollingInterval = null;
+    }
   }
 
   componentDidRender() {
@@ -291,6 +367,7 @@ export class VerdocsSign {
   disconnectedCallback() {
     clearInterval(this.missingFieldsTimer);
     this.stopPolling();
+    this.stopQesPolling();
     this.observer?.disconnect();
     window.removeEventListener('resize', () => this.updateZoomFromWindow());
     document.getElementById(this.getOrgStyleOverridesId())?.remove();
@@ -476,6 +553,23 @@ export class VerdocsSign {
     this.envelopeLoaded?.emit({endpoint: this.endpoint, envelope: this.envelope});
     clearInterval(this.missingFieldsTimer);
     this.missingFieldsTimer = setInterval(() => this.checkForMissingFields(), 5000);
+
+    // A 'qualified' signer who has submitted may still owe a QES. Back from eID Easy (or reopened mid-session), wait for the
+    // webhook to confirm the signature. A canceled or failed session gets no webhook, so there's nothing to wait for.
+    const qesResult = consumeQesResult();
+    if (qesResult === 'cancel') {
+      VerdocsToast('Signing with your eID was canceled. Select "Start again" when you\'re ready.');
+    } else if (qesResult === 'fail') {
+      VerdocsToast('Signing with your eID did not complete. Please try again.', {style: 'error'});
+    }
+
+    if (this.submitted) {
+      this.refreshQesState().then(() => {
+        if (this.qesState === 'in_progress' && qesResult !== 'cancel' && qesResult !== 'fail') {
+          this.startQesPolling();
+        }
+      });
+    }
   }
 
   // A signer's field has gone missing a few times in the wild without a repro, so we report what we know about it
@@ -611,6 +705,8 @@ export class VerdocsSign {
 
       if (isSigned && hasCertificate) return false;
       if (!allRecipientsSubmitted) return false;
+      // Everyone has submitted before the QES phase starts, but finalizing waits on people signing with their eID, possibly for days
+      if (this.isQesPending()) return false;
 
       return true;
     };
@@ -1358,6 +1454,30 @@ export class VerdocsSign {
     }
   }
 
+  // Shown above the finished document while this 'qualified' recipient still owes a QES
+  renderQesStep(state: Exclude<TQesState, 'signed'>) {
+    const messages: Record<Exclude<TQesState, 'signed'>, string> = {
+      waiting: "This document also needs your qualified electronic signature. We'll email you when it's your turn to sign with your eID.",
+      ready: "It's your turn to add your qualified electronic signature. You'll sign with your eID on eID Easy's secure page.",
+      in_progress: "We're confirming your eID signature. If you didn't finish signing, you can start again.",
+    };
+
+    return (
+      <div class="qes-step">
+        <div class="qes-message">{messages[state]}</div>
+        {state !== 'waiting' && (
+          <verdocs-button
+            size="small"
+            label={state === 'ready' ? 'Sign with your eID' : 'Start again'}
+            variant={state === 'ready' ? 'standard' : 'outline'}
+            disabled={this.startingQes}
+            onClick={() => this.startQes()}
+          />
+        )}
+      </div>
+    );
+  }
+
   render() {
     if (this.inviteExpired) {
       const sent = this.freshLinkState === 'sent';
@@ -1425,14 +1545,26 @@ export class VerdocsSign {
     }
 
     if (this.isDone) {
+      const qesState = this.qesState;
+      const qesOwed = !!qesState && qesState !== 'signed';
+      const qesDoneMessage =
+        `You also need to sign the ${this.documentsSingularPlural} with your eID. ` +
+        (qesState === 'waiting' ? "We'll email you when it's your turn." : 'Close this message, then select "Sign with your eID".');
+
       return (
         <Host class={{agreed: this.agreed}}>
+          {qesOwed && this.renderQesStep(qesState)}
+
           <verdocs-view endpoint={this.endpoint} envelopeId={this.envelopeId} onSdkError={e => this.sdkError?.emit(e.detail)} />
 
           {this.showDone && (
             <verdocs-ok-dialog
-              heading="You're Done!"
-              message={`You can access the ${this.documentsSingularPlural} at any time by clicking on the link from the invitation email.<br /><br />After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.`}
+              heading={qesOwed ? 'Your Fields Are Complete' : "You're Done!"}
+              message={
+                qesOwed
+                  ? qesDoneMessage
+                  : `You can access the ${this.documentsSingularPlural} at any time by clicking on the link from the invitation email.<br /><br />After all recipients have completed their actions, you will receive an email with the document and envelope certificate attached.`
+              }
               onNext={(e: any) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1942,6 +2074,7 @@ export class VerdocsSign {
             signed={this.envelope.signed}
             polling={this.polling}
             documents={this.envelope.documents}
+            qualified={(this.envelope.recipients || []).some(isQualifiedRecipient)}
             onExit={() => {
               this.showDownloadDialog = false;
               this.stopPolling();
