@@ -5,6 +5,7 @@ $builder-ink: $verdocs-bg-5;
 $builder-line: #e3e5ee;
 $builder-muted: #7b7f97;
 $builder-guide: #e0338f;
+$builder-suggestion: #2f7fc1;
 
 // High contrast shows selection with an ink outline instead of the purple ring, and adds recipient numbers to the quick bar.
 @mixin builder-high-contrast {
@@ -193,6 +194,334 @@ verdocs-builder-fields {
       outline: 2px solid $verdocs-purple;
       outline-offset: 2px;
     }
+  }
+
+  // Suggestions are dashed blue and breathe, so they never read as placed fields.
+  .vb-suggestion {
+    z-index: 101;
+    display: flex;
+    cursor: pointer;
+    padding: 0 3px;
+    position: absolute;
+    align-items: center;
+    border-radius: 3px;
+    box-sizing: border-box;
+    border: 1.5px dashed $builder-suggestion;
+    background: rgba(47, 127, 193, 0.1);
+    animation: vb-suggestion-breathe 2.4s ease-in-out infinite;
+
+    &:hover,
+    &:focus-visible {
+      outline: none;
+      animation: none;
+      border-style: solid;
+      background: rgba(47, 127, 193, 0.22);
+    }
+
+    &.vb-suggestion-radio {
+      border-radius: 50%;
+    }
+
+    &.vb-suggestion-radio .vb-suggestion-label,
+    &.vb-suggestion-checkbox .vb-suggestion-label {
+      display: none;
+    }
+
+    &.vb-suggestion-selected {
+      animation: none;
+      border-style: solid;
+      background: rgba(47, 127, 193, 0.22);
+      box-shadow: 0 0 0 2px rgba(47, 127, 193, 0.3);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  .vb-suggestion-group {
+    z-index: 100;
+    position: absolute;
+    border-radius: 6px;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: 1.5px dashed rgba(47, 127, 193, 0.6);
+
+    &.vb-suggestion-selected {
+      border-style: solid;
+      border-color: $builder-suggestion;
+    }
+  }
+
+  .vb-suggestion-group-tag {
+    left: 0;
+    top: -15px;
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 0 4px;
+    line-height: 14px;
+    position: absolute;
+    white-space: nowrap;
+    border-radius: 3px;
+    color: $builder-suggestion;
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .vb-suggestion-actions {
+    gap: 4px;
+    z-index: 102;
+    display: flex;
+    position: absolute;
+
+    button {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      display: grid;
+      cursor: pointer;
+      border-radius: 50%;
+      place-items: center;
+      background: #ffffff;
+      border: 1px solid $builder-line;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .vb-suggestion-keep {
+    color: #227948;
+  }
+
+  .vb-suggestion-drop {
+    color: #b4233a;
+  }
+
+  .vb-suggestion-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    text-overflow: ellipsis;
+    color: $builder-suggestion;
+  }
+
+  .suggest-panel {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid $builder-line;
+  }
+
+  .suggest-button {
+    gap: 8px;
+    width: 100%;
+    display: flex;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 8px 10px;
+    align-items: center;
+    border-radius: 8px;
+    font-family: inherit;
+    background: #eef5fb;
+    color: $builder-suggestion;
+    border: 1px dashed $builder-suggestion;
+
+    span {
+      display: grid;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background: #e1eef8;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $builder-suggestion;
+      outline-offset: 1px;
+    }
+  }
+
+  .suggest-status {
+    gap: 8px;
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+    color: $verdocs-dark-blue;
+  }
+
+  .suggest-spinner {
+    width: 12px;
+    height: 12px;
+    flex: none;
+    border-radius: 50%;
+    border: 2px solid #cfe1f1;
+    border-top-color: $builder-suggestion;
+    animation: vb-suggest-spin 0.8s linear infinite;
+  }
+
+  .suggest-count {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: $verdocs-dark-blue;
+  }
+
+  .suggest-meter {
+    height: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #e1eef8;
+
+    i {
+      height: 100%;
+      display: block;
+      transition: width 0.2s;
+      background: $builder-suggestion;
+    }
+  }
+
+  .suggest-progress {
+    margin-top: 4px;
+    font-size: 11.5px;
+    color: #6b7280;
+  }
+
+  .suggest-selected {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f5f9fd;
+    border: 1px solid #cfe1f1;
+  }
+
+  .suggest-selected-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: $verdocs-dark-blue;
+  }
+
+  .suggest-selected-meta {
+    margin-top: 2px;
+    font-size: 11.5px;
+    color: #4b5563;
+  }
+
+  .suggest-selected-reason {
+    margin-top: 6px;
+    font-size: 11.5px;
+    overflow: hidden;
+    color: #6b7280;
+    font-style: italic;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+
+  .suggest-pages {
+    margin-top: 8px;
+  }
+
+  .suggest-page {
+    gap: 6px;
+    display: flex;
+    padding: 5px 0;
+    align-items: center;
+    border-bottom: 1px solid $builder-line;
+
+    &.done {
+      opacity: 0.6;
+    }
+  }
+
+  .suggest-page-name {
+    flex: 1;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    background: none;
+    font-family: inherit;
+    color: $verdocs-dark-blue;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .suggest-page-left {
+    font-size: 11.5px;
+    color: #6b7280;
+    white-space: nowrap;
+  }
+
+  .suggest-mini {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    flex: none;
+    display: grid;
+    cursor: pointer;
+    border-radius: 50%;
+    place-items: center;
+    background: #ffffff;
+    border: 1px solid $builder-line;
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    &.keep {
+      color: #227948;
+    }
+
+    &.drop {
+      color: #b4233a;
+    }
+  }
+
+  .suggest-actions {
+    gap: 8px;
+    display: flex;
+    margin-top: 10px;
+  }
+
+  .suggest-add-all,
+  .suggest-clear {
+    flex: 1;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-family: inherit;
+  }
+
+  .suggest-add-all {
+    color: #ffffff;
+    background: $builder-suggestion;
+    border: 1px solid $builder-suggestion;
+  }
+
+  .suggest-clear {
+    background: #ffffff;
+    color: $verdocs-dark-blue;
+    border: 1px solid $builder-line;
   }
 
   .signer-num {
@@ -813,7 +1142,9 @@ verdocs-builder-fields {
     appearance: none;
     background-size: 5px 5px;
     background-repeat: no-repeat;
-    background-position: calc(100% - 15px) 13px, calc(100% - 10px) 13px;
+    background-position:
+      calc(100% - 15px) 13px,
+      calc(100% - 10px) 13px;
     background-image: linear-gradient(45deg, transparent 50%, $builder-muted 50%), linear-gradient(135deg, $builder-muted 50%, transparent 50%);
   }
 
@@ -1605,7 +1936,9 @@ verdocs-builder-fields {
     background: $verdocs-purple;
 
     &.current {
-      box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px $verdocs-purple;
+      box-shadow:
+        0 0 0 2px #ffffff,
+        0 0 0 4px $verdocs-purple;
     }
 
     &:focus-visible {
@@ -1778,4 +2111,21 @@ body.verdocs-builder-dragging,
 body.verdocs-builder-dragging * {
   user-select: none;
   cursor: grabbing !important;
+}
+
+@keyframes vb-suggestion-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes vb-suggest-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
