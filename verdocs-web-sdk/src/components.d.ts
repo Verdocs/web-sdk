@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ICreateEnvelopeRecipientFromTemplate, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+import { IClickwrapOutcomeResult, IClickwrapPublicSession, ICreateEnvelopeRecipientFromTemplate, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 import { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 import { SDKError } from "./utils/errors";
 import { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -25,7 +25,7 @@ import { TVerdocsBuildStep as TVerdocsBuildStep2 } from "./components/templates/
 import { TAllowedTemplateAction } from "./components/templates/verdocs-templates-list/verdocs-templates-list";
 import { IToggleIconButtons } from "./components/controls/verdocs-toggle/verdocs-toggle";
 import { Placement } from "@popperjs/core/lib/enums";
-export { ICreateEnvelopeRecipientFromTemplate, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
+export { IClickwrapOutcomeResult, IClickwrapPublicSession, ICreateEnvelopeRecipientFromTemplate, IEnvelope, IEnvelopeField, IOrganization, IRecipient, IRole, ISignerTokenResponse, ITemplate, ITemplateField, TEnvelopeStatus, TRecipientStatus, VerdocsEndpoint } from "@verdocs/js-sdk";
 export { IAuthStatus } from "./components/embeds/verdocs-auth/verdocs-auth";
 export { SDKError } from "./utils/errors";
 export { TVerdocsBuildStep } from "./components/embeds/verdocs-build/verdocs-build";
@@ -312,6 +312,55 @@ export namespace Components {
           * @default ''
          */
         "value": string;
+    }
+    /**
+     * Show clickwrap terms and record the person's acceptance or decline. Your server creates the session with
+     * createClickwrapSession and hands the token to the page; this component does the rest. When the person is already
+     * current there's no token, so pass an empty string and the component emits `current` and renders nothing.
+     * ```ts
+     * <verdocs-clickwrap
+     *   token={session.token ?? ''}
+     *   onAccepted={({detail}) => console.log('Accepted', detail.acceptance_id)}
+     *   onSdkError={({detail}) => console.log('SDK error', detail)}
+     *   />
+     * ```
+     */
+    interface VerdocsClickwrap {
+        /**
+          * The accept button's label. Keep "agree" or "accept" in it; a console warning flags labels without either.
+          * @default 'Agree and continue'
+         */
+        "acceptLabel": string;
+        /**
+          * Each agreement checkbox's label. {name} becomes the agreement's name. In inline mode, the text from {name} to the end of the label links to the agreement's full text.
+          * @default 'I have read and agree to the {name}'
+         */
+        "checkboxLabel": string;
+        /**
+          * The decline button's label.
+          * @default 'Decline'
+         */
+        "declineLabel": string;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default null
+         */
+        "endpoint": VerdocsEndpoint | null;
+        /**
+          * The heading shown above the terms in modal mode.
+          * @default 'Please review and accept'
+         */
+        "heading": string;
+        /**
+          * Where the component runs. The Verdocs hosted page sets 'hosted'; everything else uses the default.
+          * @default 'component'
+         */
+        "surface": 'component' | 'hosted';
+        /**
+          * The session token from createClickwrapSession. Empty means the person is already current: the component emits `current` and renders nothing.
+          * @default ''
+         */
+        "token": string;
     }
     /**
      * Render a simple error message.
@@ -2716,6 +2765,10 @@ export interface VerdocsBuilderFieldsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsBuilderFieldsElement;
 }
+export interface VerdocsClickwrapCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLVerdocsClickwrapElement;
+}
 export interface VerdocsContactPickerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLVerdocsContactPickerElement;
@@ -3162,6 +3215,39 @@ declare global {
     var HTMLVerdocsCheckboxElement: {
         prototype: HTMLVerdocsCheckboxElement;
         new (): HTMLVerdocsCheckboxElement;
+    };
+    interface HTMLVerdocsClickwrapElementEventMap {
+        "current": void;
+        "shown": IClickwrapPublicSession;
+        "accepted": IClickwrapOutcomeResult;
+        "declined": IClickwrapOutcomeResult;
+        "sdkError": SDKError;
+    }
+    /**
+     * Show clickwrap terms and record the person's acceptance or decline. Your server creates the session with
+     * createClickwrapSession and hands the token to the page; this component does the rest. When the person is already
+     * current there's no token, so pass an empty string and the component emits `current` and renders nothing.
+     * ```ts
+     * <verdocs-clickwrap
+     *   token={session.token ?? ''}
+     *   onAccepted={({detail}) => console.log('Accepted', detail.acceptance_id)}
+     *   onSdkError={({detail}) => console.log('SDK error', detail)}
+     *   />
+     * ```
+     */
+    interface HTMLVerdocsClickwrapElement extends Components.VerdocsClickwrap, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLVerdocsClickwrapElementEventMap>(type: K, listener: (this: HTMLVerdocsClickwrapElement, ev: VerdocsClickwrapCustomEvent<HTMLVerdocsClickwrapElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLVerdocsClickwrapElementEventMap>(type: K, listener: (this: HTMLVerdocsClickwrapElement, ev: VerdocsClickwrapCustomEvent<HTMLVerdocsClickwrapElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLVerdocsClickwrapElement: {
+        prototype: HTMLVerdocsClickwrapElement;
+        new (): HTMLVerdocsClickwrapElement;
     };
     /**
      * Render a simple error message.
@@ -4850,6 +4936,7 @@ declare global {
         "verdocs-button": HTMLVerdocsButtonElement;
         "verdocs-button-panel": HTMLVerdocsButtonPanelElement;
         "verdocs-checkbox": HTMLVerdocsCheckboxElement;
+        "verdocs-clickwrap": HTMLVerdocsClickwrapElement;
         "verdocs-component-error": HTMLVerdocsComponentErrorElement;
         "verdocs-contact-picker": HTMLVerdocsContactPickerElement;
         "verdocs-date-input": HTMLVerdocsDateInputElement;
@@ -5275,6 +5362,75 @@ declare namespace LocalJSX {
           * @default ''
          */
         "value"?: string;
+    }
+    /**
+     * Show clickwrap terms and record the person's acceptance or decline. Your server creates the session with
+     * createClickwrapSession and hands the token to the page; this component does the rest. When the person is already
+     * current there's no token, so pass an empty string and the component emits `current` and renders nothing.
+     * ```ts
+     * <verdocs-clickwrap
+     *   token={session.token ?? ''}
+     *   onAccepted={({detail}) => console.log('Accepted', detail.acceptance_id)}
+     *   onSdkError={({detail}) => console.log('SDK error', detail)}
+     *   />
+     * ```
+     */
+    interface VerdocsClickwrap {
+        /**
+          * The accept button's label. Keep "agree" or "accept" in it; a console warning flags labels without either.
+          * @default 'Agree and continue'
+         */
+        "acceptLabel"?: string;
+        /**
+          * Each agreement checkbox's label. {name} becomes the agreement's name. In inline mode, the text from {name} to the end of the label links to the agreement's full text.
+          * @default 'I have read and agree to the {name}'
+         */
+        "checkboxLabel"?: string;
+        /**
+          * The decline button's label.
+          * @default 'Decline'
+         */
+        "declineLabel"?: string;
+        /**
+          * The endpoint to use to communicate with Verdocs. If not set, the default endpoint will be used.
+          * @default null
+         */
+        "endpoint"?: VerdocsEndpoint | null;
+        /**
+          * The heading shown above the terms in modal mode.
+          * @default 'Please review and accept'
+         */
+        "heading"?: string;
+        /**
+          * Event fired when the person accepts and the record is saved.
+         */
+        "onAccepted"?: (event: VerdocsClickwrapCustomEvent<IClickwrapOutcomeResult>) => void;
+        /**
+          * Event fired when there's nothing to accept (the token is empty). Nothing is rendered.
+         */
+        "onCurrent"?: (event: VerdocsClickwrapCustomEvent<void>) => void;
+        /**
+          * Event fired when the person declines and the record is saved.
+         */
+        "onDeclined"?: (event: VerdocsClickwrapCustomEvent<IClickwrapOutcomeResult>) => void;
+        /**
+          * Event fired if an error occurs, such as an expired token or a failed save. The component stays usable after a failed save, so the person can try again.
+         */
+        "onSdkError"?: (event: VerdocsClickwrapCustomEvent<SDKError>) => void;
+        /**
+          * Event fired once the terms are on screen.
+         */
+        "onShown"?: (event: VerdocsClickwrapCustomEvent<IClickwrapPublicSession>) => void;
+        /**
+          * Where the component runs. The Verdocs hosted page sets 'hosted'; everything else uses the default.
+          * @default 'component'
+         */
+        "surface"?: 'component' | 'hosted';
+        /**
+          * The session token from createClickwrapSession. Empty means the person is already current: the component emits `current` and renders nothing.
+          * @default ''
+         */
+        "token"?: string;
     }
     /**
      * Render a simple error message.
@@ -8305,6 +8461,14 @@ declare namespace LocalJSX {
         "size": 'normal' | 'small';
         "disabled": boolean;
     }
+    interface VerdocsClickwrapAttributes {
+        "token": string;
+        "surface": 'component' | 'hosted';
+        "acceptLabel": string;
+        "declineLabel": string;
+        "checkboxLabel": string;
+        "heading": string;
+    }
     interface VerdocsComponentErrorAttributes {
         "message": string;
     }
@@ -8743,6 +8907,7 @@ declare namespace LocalJSX {
         "verdocs-button": Omit<VerdocsButton, keyof VerdocsButtonAttributes> & { [K in keyof VerdocsButton & keyof VerdocsButtonAttributes]?: VerdocsButton[K] } & { [K in keyof VerdocsButton & keyof VerdocsButtonAttributes as `attr:${K}`]?: VerdocsButtonAttributes[K] } & { [K in keyof VerdocsButton & keyof VerdocsButtonAttributes as `prop:${K}`]?: VerdocsButton[K] } & OneOf<"label", VerdocsButton["label"], VerdocsButtonAttributes["label"]>;
         "verdocs-button-panel": Omit<VerdocsButtonPanel, keyof VerdocsButtonPanelAttributes> & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes]?: VerdocsButtonPanel[K] } & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes as `attr:${K}`]?: VerdocsButtonPanelAttributes[K] } & { [K in keyof VerdocsButtonPanel & keyof VerdocsButtonPanelAttributes as `prop:${K}`]?: VerdocsButtonPanel[K] };
         "verdocs-checkbox": Omit<VerdocsCheckbox, keyof VerdocsCheckboxAttributes> & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes]?: VerdocsCheckbox[K] } & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes as `attr:${K}`]?: VerdocsCheckboxAttributes[K] } & { [K in keyof VerdocsCheckbox & keyof VerdocsCheckboxAttributes as `prop:${K}`]?: VerdocsCheckbox[K] };
+        "verdocs-clickwrap": Omit<VerdocsClickwrap, keyof VerdocsClickwrapAttributes> & { [K in keyof VerdocsClickwrap & keyof VerdocsClickwrapAttributes]?: VerdocsClickwrap[K] } & { [K in keyof VerdocsClickwrap & keyof VerdocsClickwrapAttributes as `attr:${K}`]?: VerdocsClickwrapAttributes[K] } & { [K in keyof VerdocsClickwrap & keyof VerdocsClickwrapAttributes as `prop:${K}`]?: VerdocsClickwrap[K] };
         "verdocs-component-error": Omit<VerdocsComponentError, keyof VerdocsComponentErrorAttributes> & { [K in keyof VerdocsComponentError & keyof VerdocsComponentErrorAttributes]?: VerdocsComponentError[K] } & { [K in keyof VerdocsComponentError & keyof VerdocsComponentErrorAttributes as `attr:${K}`]?: VerdocsComponentErrorAttributes[K] } & { [K in keyof VerdocsComponentError & keyof VerdocsComponentErrorAttributes as `prop:${K}`]?: VerdocsComponentError[K] };
         "verdocs-contact-picker": Omit<VerdocsContactPicker, keyof VerdocsContactPickerAttributes> & { [K in keyof VerdocsContactPicker & keyof VerdocsContactPickerAttributes]?: VerdocsContactPicker[K] } & { [K in keyof VerdocsContactPicker & keyof VerdocsContactPickerAttributes as `attr:${K}`]?: VerdocsContactPickerAttributes[K] } & { [K in keyof VerdocsContactPicker & keyof VerdocsContactPickerAttributes as `prop:${K}`]?: VerdocsContactPicker[K] };
         "verdocs-date-input": Omit<VerdocsDateInput, keyof VerdocsDateInputAttributes> & { [K in keyof VerdocsDateInput & keyof VerdocsDateInputAttributes]?: VerdocsDateInput[K] } & { [K in keyof VerdocsDateInput & keyof VerdocsDateInputAttributes as `attr:${K}`]?: VerdocsDateInputAttributes[K] } & { [K in keyof VerdocsDateInput & keyof VerdocsDateInputAttributes as `prop:${K}`]?: VerdocsDateInput[K] };
@@ -8918,6 +9083,19 @@ declare module "@stencil/core" {
              * ```
              */
             "verdocs-checkbox": LocalJSX.IntrinsicElements["verdocs-checkbox"] & JSXBase.HTMLAttributes<HTMLVerdocsCheckboxElement>;
+            /**
+             * Show clickwrap terms and record the person's acceptance or decline. Your server creates the session with
+             * createClickwrapSession and hands the token to the page; this component does the rest. When the person is already
+             * current there's no token, so pass an empty string and the component emits `current` and renders nothing.
+             * ```ts
+             * <verdocs-clickwrap
+             *   token={session.token ?? ''}
+             *   onAccepted={({detail}) => console.log('Accepted', detail.acceptance_id)}
+             *   onSdkError={({detail}) => console.log('SDK error', detail)}
+             *   />
+             * ```
+             */
+            "verdocs-clickwrap": LocalJSX.IntrinsicElements["verdocs-clickwrap"] & JSXBase.HTMLAttributes<HTMLVerdocsClickwrapElement>;
             /**
              * Render a simple error message.
              */

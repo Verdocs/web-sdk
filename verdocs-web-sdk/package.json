@@ -17,6 +17,7 @@
     "dist/"
   ],
   "scripts": {
+    "prepublishOnly": "node ../scripts/check-no-local-links.mjs",
     "push": "npm run build && npm publish",
     "push-beta": "npm run build && npm publish --tag beta",
     "build": "stencil build --docs && npm run copy-assets",

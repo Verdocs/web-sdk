@@ -1,4 +1,6 @@
+import {fileURLToPath} from 'node:url';
 import remarkGfm from 'remark-gfm';
+import {searchForWorkspaceRoot} from 'vite';
 import {StorybookConfig} from '@storybook/web-components-vite';
 
 const config: StorybookConfig = {
@@ -38,6 +40,20 @@ const config: StorybookConfig = {
   docs: {
     // autodocs: true
     docsMode: true,
+  },
+
+  // LOCAL_JS_SDK=1: let Vite serve ../hub/packages/js-sdk, which scripts/local-js-sdk.sh links into node_modules.
+  // Linked packages outside node_modules are served as source, and Vite refuses files outside the workspace root.
+  async viteFinal(config) {
+    if (process.env.LOCAL_JS_SDK) {
+      config.server ??= {};
+      config.server.fs ??= {};
+      config.server.fs.allow = [
+        ...(config.server.fs.allow ?? [searchForWorkspaceRoot(process.cwd())]),
+        fileURLToPath(new URL('../../../hub/packages/js-sdk', import.meta.url)),
+      ];
+    }
+    return config;
   },
 };
 

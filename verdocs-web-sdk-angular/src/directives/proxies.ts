@@ -14,6 +14,7 @@ import { defineCustomElement as defineVerdocsBuilderFields } from '@verdocs/web-
 import { defineCustomElement as defineVerdocsButton } from '@verdocs/web-sdk/components/verdocs-button.js';
 import { defineCustomElement as defineVerdocsButtonPanel } from '@verdocs/web-sdk/components/verdocs-button-panel.js';
 import { defineCustomElement as defineVerdocsCheckbox } from '@verdocs/web-sdk/components/verdocs-checkbox.js';
+import { defineCustomElement as defineVerdocsClickwrap } from '@verdocs/web-sdk/components/verdocs-clickwrap.js';
 import { defineCustomElement as defineVerdocsComponentError } from '@verdocs/web-sdk/components/verdocs-component-error.js';
 import { defineCustomElement as defineVerdocsContactPicker } from '@verdocs/web-sdk/components/verdocs-contact-picker.js';
 import { defineCustomElement as defineVerdocsDateInput } from '@verdocs/web-sdk/components/verdocs-date-input.js';
@@ -412,6 +413,61 @@ export class VerdocsCheckbox {
 
 
 export declare interface VerdocsCheckbox extends Components.VerdocsCheckbox {}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineVerdocsClickwrap,
+  inputs: ['acceptLabel', 'checkboxLabel', 'declineLabel', 'endpoint', 'heading', 'surface', 'token']
+})
+@Component({
+  selector: 'verdocs-clickwrap',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['acceptLabel', 'checkboxLabel', 'declineLabel', 'endpoint', 'heading', 'surface', 'token'],
+  outputs: ['current', 'shown', 'accepted', 'declined', 'sdkError'],
+})
+export class VerdocsClickwrap {
+  protected el: HTMLVerdocsClickwrapElement;
+  @Output() current = new EventEmitter<CustomEvent<void>>();
+  @Output() shown = new EventEmitter<CustomEvent<IVerdocsClickwrapIClickwrapPublicSession>>();
+  @Output() accepted = new EventEmitter<CustomEvent<IVerdocsClickwrapIClickwrapOutcomeResult>>();
+  @Output() declined = new EventEmitter<CustomEvent<IVerdocsClickwrapIClickwrapOutcomeResult>>();
+  @Output() sdkError = new EventEmitter<CustomEvent<IVerdocsClickwrapSDKError>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { IClickwrapPublicSession as IVerdocsClickwrapIClickwrapPublicSession } from '@verdocs/web-sdk/components';
+import type { IClickwrapOutcomeResult as IVerdocsClickwrapIClickwrapOutcomeResult } from '@verdocs/web-sdk/components';
+import type { SDKError as IVerdocsClickwrapSDKError } from '@verdocs/web-sdk/components';
+
+export declare interface VerdocsClickwrap extends Components.VerdocsClickwrap {
+  /**
+   * Event fired when there's nothing to accept (the token is empty). Nothing is rendered.
+   */
+  current: EventEmitter<CustomEvent<void>>;
+  /**
+   * Event fired once the terms are on screen.
+   */
+  shown: EventEmitter<CustomEvent<IVerdocsClickwrapIClickwrapPublicSession>>;
+  /**
+   * Event fired when the person accepts and the record is saved.
+   */
+  accepted: EventEmitter<CustomEvent<IVerdocsClickwrapIClickwrapOutcomeResult>>;
+  /**
+   * Event fired when the person declines and the record is saved.
+   */
+  declined: EventEmitter<CustomEvent<IVerdocsClickwrapIClickwrapOutcomeResult>>;
+  /**
+   * Event fired if an error occurs, such as an expired token or a failed save. The component stays usable after a
+failed save, so the person can try again.
+   */
+  sdkError: EventEmitter<CustomEvent<IVerdocsClickwrapSDKError>>;
+}
 
 
 @ProxyCmp({
