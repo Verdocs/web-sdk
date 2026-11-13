@@ -147,8 +147,8 @@ export class VerdocsTemplateBuildTabs {
     const canPreview = canEditFields && (this.template?.fields || []).length > 0;
 
     const tabs: IBuildTab[] = [
-      {id: 'attachments', label: 'Attachments', disabled: false},
-      {id: 'roles', label: 'Workflow', disabled: !canEditRoles},
+      {id: 'attachments', label: 'Documents', disabled: false},
+      {id: 'roles', label: 'Recipients', disabled: !canEditRoles},
       {id: 'fields', label: 'Fields', disabled: !canEditFields},
       {id: 'preview', label: 'Preview & Send', disabled: !canPreview},
     ];
