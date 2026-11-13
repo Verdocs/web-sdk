@@ -2228,8 +2228,8 @@ export namespace Components {
         "tabs": ITab[];
     }
     /**
-     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
-     * Note that an active session and valid template ID must be supplied.
+     * Displays an edit form that allows the user to view, add, reorder, rename, download, or remove a template's documents.
+     * Files may be dropped anywhere on the component. Note that an active session and valid template ID must be supplied.
      */
     interface VerdocsTemplateAttachments {
         /**
@@ -4452,8 +4452,8 @@ declare global {
         "sdkError": SDKError;
     }
     /**
-     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
-     * Note that an active session and valid template ID must be supplied.
+     * Displays an edit form that allows the user to view, add, reorder, rename, download, or remove a template's documents.
+     * Files may be dropped anywhere on the component. Note that an active session and valid template ID must be supplied.
      */
     interface HTMLVerdocsTemplateAttachmentsElement extends Components.VerdocsTemplateAttachments, HTMLStencilElement {
         addEventListener<K extends keyof HTMLVerdocsTemplateAttachmentsElementEventMap>(type: K, listener: (this: HTMLVerdocsTemplateAttachmentsElement, ev: VerdocsTemplateAttachmentsCustomEvent<HTMLVerdocsTemplateAttachmentsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -7596,8 +7596,8 @@ declare namespace LocalJSX {
         "tabs"?: ITab[];
     }
     /**
-     * Displays an edit form that allows the user to view, add, or remove a template's attachments.
-     * Note that an active session and valid template ID must be supplied.
+     * Displays an edit form that allows the user to view, add, reorder, rename, download, or remove a template's documents.
+     * Files may be dropped anywhere on the component. Note that an active session and valid template ID must be supplied.
      */
     interface VerdocsTemplateAttachments {
         /**
@@ -9327,8 +9327,8 @@ declare module "@stencil/core" {
              */
             "verdocs-tabs": LocalJSX.IntrinsicElements["verdocs-tabs"] & JSXBase.HTMLAttributes<HTMLVerdocsTabsElement>;
             /**
-             * Displays an edit form that allows the user to view, add, or remove a template's attachments.
-             * Note that an active session and valid template ID must be supplied.
+             * Displays an edit form that allows the user to view, add, reorder, rename, download, or remove a template's documents.
+             * Files may be dropped anywhere on the component. Note that an active session and valid template ID must be supplied.
              */
             "verdocs-template-attachments": LocalJSX.IntrinsicElements["verdocs-template-attachments"] & JSXBase.HTMLAttributes<HTMLVerdocsTemplateAttachmentsElement>;
             /**
