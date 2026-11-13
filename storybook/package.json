@@ -23,6 +23,7 @@
     "@storybook/react": "10.4.4",
     "@storybook/react-vite": "10.4.4",
     "@storybook/web-components-vite": "10.4.4",
+    "@types/node": "^24.13.4",
     "es-toolkit": "^1.52.0",
     "lit": "3.3.3",
     "prettier": "^3.9.9",

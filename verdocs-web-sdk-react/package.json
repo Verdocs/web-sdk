@@ -10,6 +10,7 @@
     "dist/"
   ],
   "scripts": {
+    "prepublishOnly": "node ../scripts/check-no-local-links.mjs",
     "push": "npm i && npm run build && npm publish",
     "push-beta": "npm i && npm run build && npm publish --tag beta",
     "build": "npm run clean && npm run compile",

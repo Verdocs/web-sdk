@@ -118,6 +118,28 @@ export const VerdocsCheckbox: StencilVueComponent<JSX.VerdocsCheckbox> = /*@__PU
 ]);
 
 
+export const VerdocsClickwrap: StencilVueComponent<JSX.VerdocsClickwrap> = /*@__PURE__*/ defineContainer<JSX.VerdocsClickwrap>('verdocs-clickwrap', undefined, [
+  'endpoint',
+  'token',
+  'surface',
+  'acceptLabel',
+  'declineLabel',
+  'checkboxLabel',
+  'heading',
+  'current',
+  'shown',
+  'accepted',
+  'declined',
+  'sdkError'
+], [
+  'current',
+  'shown',
+  'accepted',
+  'declined',
+  'sdkError'
+]);
+
+
 export const VerdocsComponentError: StencilVueComponent<JSX.VerdocsComponentError> = /*@__PURE__*/ defineContainer<JSX.VerdocsComponentError>('verdocs-component-error', undefined, [
   'message'
 ]);
