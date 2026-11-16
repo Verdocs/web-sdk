@@ -72,6 +72,9 @@ export const collectRules = (tags: string[]) => {
 export const capturePresentation = (host: HTMLElement, linkedTerms: ILinkedTerms[] = []) => {
   const clone = host.cloneNode(true) as HTMLElement;
 
+  // Status messages (like a failed save's error) aren't part of what the person agreed to
+  clone.querySelectorAll('[data-cw-transient]').forEach(element => element.remove());
+
   // cloneNode copies attributes, not live properties. Without this every checkbox would replay as unchecked.
   const live = Array.from(host.querySelectorAll('input'));
   Array.from(clone.querySelectorAll('input')).forEach((input, index) => {

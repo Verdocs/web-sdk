@@ -1,4 +1,10 @@
-export const loadStoryDefaults = (storyId: string, defaults: Record<string, any>) => {
+/**
+ * The api the stories talk to, from STORYBOOK_API_URL in storybook/.env.local (for example http://localhost:3000 for a
+ * local api server). Empty means the js-sdk default. Restart Storybook after changing it.
+ */
+export const API_URL: string = (import.meta as any).env?.STORYBOOK_API_URL || '';
+
+export const loadStoryDefaults =(storyId: string, defaults: Record<string, any>) => {
   try {
     const existing = localStorage.getItem(`sb-default-${storyId}`) || '{}';
     const existingObj = JSON.parse(existing);

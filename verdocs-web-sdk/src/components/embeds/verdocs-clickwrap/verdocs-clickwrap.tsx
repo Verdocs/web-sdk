@@ -107,6 +107,7 @@ export class VerdocsClickwrap {
   @State() openVersionId: string | null = null;
   @State() submitting = false;
   @State() finished = false;
+  @State() errorMessage = '';
 
   // The endpoint prop is immutable, so the default endpoint (when none is given) lives here
   private api: VerdocsEndpoint;
@@ -240,6 +241,7 @@ export class VerdocsClickwrap {
     };
 
     this.submitting = true;
+    this.errorMessage = '';
     try {
       if (outcome === 'accept') {
         const result = await acceptClickwrap(this.api, this.token, params);
@@ -252,10 +254,27 @@ export class VerdocsClickwrap {
       }
     } catch (e) {
       console.log('[CLICKWRAP] Unable to record outcome', outcome, e);
+      this.errorMessage = this.extractErrorText(e);
       this.sdkError?.emit(new SDKError(e.message, e.response?.status, e.response?.data));
     } finally {
       this.submitting = false;
     }
+  }
+
+  // The api's errors arrive as {status: 'ERROR', error: '...'}. JSX can't render that object, only its text. Anything
+  // without that text (a network failure, say) gets a general message.
+  private extractErrorText(e: any) {
+    const error = e?.response?.data?.error;
+    return typeof error === 'string' && error ? error : 'Unable to save your response. Please try again.';
+  }
+
+  // data-cw-transient keeps the message out of the captured presentation, so a retry's evidence doesn't show it
+  private renderError() {
+    return this.errorMessage ? (
+      <div class="cw-error" role="alert" data-cw-transient>
+        {this.errorMessage}
+      </div>
+    ) : null;
   }
 
   private renderLabel(agreement: IClickwrapSessionAgreement, linked: boolean) {
@@ -338,6 +357,7 @@ export class VerdocsClickwrap {
           </div>
           {this.renderScrollHint()}
           {this.renderChecks(false)}
+          {this.renderError()}
           {this.renderButtons()}
         </div>
       </div>
@@ -349,6 +369,7 @@ export class VerdocsClickwrap {
     return [
       this.renderChecks(true),
       this.renderScrollHint(),
+      this.renderError(),
       this.renderButtons(),
       open && (
         <div class="cw-overlay" onClick={e => (e.target as HTMLElement).classList.contains('cw-overlay') && (this.openVersionId = null)}>

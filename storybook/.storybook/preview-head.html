@@ -257,25 +257,30 @@
         // Parse the story ID from the URL query parameters
         // viewMode=docs&id=embeds-send--docs&globals=
         const storyId = (new URLSearchParams(location.search).get('id') || '').replace('--docs', '');
-        let {id, name, type, value} = e.target;
+        let {id, name, type, value, checked} = e.target;
 
         if (!storyId) {
           return;
         }
 
+        // Only textareas and checkboxes carry a name. Other controls have an id like "control-<story id>-<arg>" in
+        // Storybook 10 ("control-embeds-clickwrap--clickwrap-baseURL"), or "control-<arg>" in older versions.
         if (!name && id && id.startsWith('control-')) {
           name = id.replace(/^control-/, '');
+          if (name.includes('--')) {
+            name = name.slice(name.lastIndexOf('-') + 1);
+          }
         }
 
         if (!name) {
           return;
         }
 
-        if (type === 'textarea' || type === 'text' || type === 'select-one') {
+        if (type === 'textarea' || type === 'text' || type === 'select-one' || type === 'checkbox') {
           try {
             const existing = localStorage.getItem(`sb-default-${storyId}`) || '{}';
             const existingObj = JSON.parse(existing);
-            existingObj[name] = value;
+            existingObj[name] = type === 'checkbox' ? checked : value;
             localStorage.setItem(`sb-default-${storyId}`, JSON.stringify(existingObj));
             console.log('Input', type, storyId, existingObj);
           } catch (e) {
