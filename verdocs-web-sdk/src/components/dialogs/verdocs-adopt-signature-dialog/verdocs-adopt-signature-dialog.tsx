@@ -223,12 +223,12 @@ export class VerdocsAdoptSignatureDialog {
   }
 
   computeEnteredInitials(name: string) {
-    const nameComponents = name
+    const nameComponents = (name || '')
       .trim()
       .split(' ')
       .filter(part => part.length > 0);
 
-    this.enteredInitials = nameComponents.length > 1 ? nameComponents.map(word => word.charAt(0).toUpperCase()).join('') : nameComponents[0].toUpperCase();
+    this.enteredInitials = nameComponents.length > 1 ? nameComponents.map(word => word.charAt(0).toUpperCase()).join('') : (nameComponents[0] || '').toUpperCase();
   }
 
   handleCancel(e: any) {
