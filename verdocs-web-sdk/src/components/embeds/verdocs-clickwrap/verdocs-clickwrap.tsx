@@ -293,12 +293,12 @@ export class VerdocsClickwrap {
           href="#"
           class="cw-link"
           data-cw-link
+          aria-haspopup="dialog"
           onClick={e => {
             e.preventDefault();
             e.stopPropagation();
             this.openVersionId = agreement.version_id;
-          }}
-        >
+          }}>
           {label.slice(start)}
         </a>
       </span>
@@ -309,7 +309,7 @@ export class VerdocsClickwrap {
     return (
       <div class="cw-checks" data-cw-notice>
         {this.session.agreements.map(agreement => (
-          <label class={{'cw-check': true, 'locked': this.isLocked(agreement)}} key={agreement.version_id}>
+          <label class={{'cw-check': true, locked: this.isLocked(agreement)}} key={agreement.version_id}>
             <input
               type="checkbox"
               checked={!!this.checked[agreement.version_id]}
@@ -329,16 +329,27 @@ export class VerdocsClickwrap {
         <button type="button" class="cw-decline" disabled={this.submitting} onClick={() => this.finish('decline')}>
           {this.declineLabel}
         </button>
-        <button type="button" class="cw-accept" data-cw-accept disabled={!this.allChecked || this.submitting} onClick={() => this.finish('accept')}>
+        <button
+          type="button"
+          class="cw-accept"
+          data-cw-accept
+          disabled={!this.allChecked || this.submitting}
+          onClick={() => this.finish('accept')}>
           {this.acceptLabel}
         </button>
       </div>
     );
   }
 
-  private renderScrollHint() {
+  private renderScrollHint(inline = false) {
     const unread = this.session.require_scroll && this.session.agreements.some(a => !this.scrolled[a.version_id]);
-    return unread ? <div class="cw-scroll-hint">Scroll to the end of the terms to continue.</div> : null;
+    return unread ? (
+      <p class="cw-scroll-hint">
+        {inline
+          ? 'Open each agreement and scroll to the end before checking its box.'
+          : 'Scroll to the end of the terms to enable the checkboxes.'}
+      </p>
+    ) : null;
   }
 
   private renderModal() {
@@ -346,18 +357,26 @@ export class VerdocsClickwrap {
     return (
       <div class="cw-overlay">
         <div class="cw-dialog" role="dialog" aria-modal="true" aria-label={this.heading}>
-          <div class="cw-heading">{this.heading}</div>
-          <div class="cw-terms" data-versions={versions} tabindex="0" onScroll={e => this.checkScroll(e.target as HTMLElement)}>
-            {this.session.agreements.map(agreement => (
-              <section class="cw-agreement" key={agreement.version_id}>
-                <h2 class="cw-agreement-name">{agreement.name}</h2>
-                <div class="cw-agreement-content" innerHTML={agreement.content} />
-              </section>
-            ))}
+          <div class="cw-body">
+            <h1 class="cw-heading">{this.heading}</h1>
+            <div
+              class="cw-terms"
+              data-versions={versions}
+              role="region"
+              aria-label="Agreement text"
+              tabindex="0"
+              onScroll={e => this.checkScroll(e.target as HTMLElement)}>
+              {this.session.agreements.map(agreement => (
+                <section class="cw-agreement" key={agreement.version_id}>
+                  <h2 class="cw-agreement-name">{agreement.name}</h2>
+                  <div class="cw-agreement-content" innerHTML={agreement.content} />
+                </section>
+              ))}
+            </div>
+            {this.renderScrollHint()}
+            {this.renderChecks(false)}
+            {this.renderError()}
           </div>
-          {this.renderScrollHint()}
-          {this.renderChecks(false)}
-          {this.renderError()}
           {this.renderButtons()}
         </div>
       </div>
@@ -368,15 +387,23 @@ export class VerdocsClickwrap {
     const open = this.session.agreements.find(a => a.version_id === this.openVersionId);
     return [
       this.renderChecks(true),
-      this.renderScrollHint(),
+      this.renderScrollHint(true),
       this.renderError(),
       this.renderButtons(),
       open && (
         <div class="cw-overlay" onClick={e => (e.target as HTMLElement).classList.contains('cw-overlay') && (this.openVersionId = null)}>
           <div class="cw-dialog" role="dialog" aria-modal="true" aria-label={open.name}>
-            <div class="cw-heading">{open.name}</div>
-            <div class="cw-terms" data-versions={open.version_id} tabindex="0" onScroll={e => this.checkScroll(e.target as HTMLElement)}>
-              <div class="cw-agreement-content" innerHTML={open.content} />
+            <div class="cw-body">
+              <h1 class="cw-heading">{open.name}</h1>
+              <div
+                class="cw-terms"
+                data-versions={open.version_id}
+                role="region"
+                aria-label="Agreement text"
+                tabindex="0"
+                onScroll={e => this.checkScroll(e.target as HTMLElement)}>
+                <div class="cw-agreement-content" innerHTML={open.content} />
+              </div>
             </div>
             <div class="cw-buttons">
               <button type="button" class="cw-close" onClick={() => (this.openVersionId = null)}>

@@ -32,6 +32,12 @@ export interface ILinkedTerms {
  */
 export const collectRules = (tags: string[]) => {
   const rules: string[] = [];
+
+  // Stencil hides every component until it loads: one rule listing every tag with only `visibility: hidden`, undone by a
+  // separate `.hydrated` rule that names no tag. Copying the first without the second hides the whole replay, and a
+  // capture is always of a loaded component, so the hiding rule stays out.
+  const isHydrationRule = (rule: CSSStyleRule) => rule.selectorText.includes(',') && rule.style.length === 1 && rule.style.visibility === 'hidden';
+
   const visit = (list: CSSRuleList) => {
     for (const rule of Array.from(list)) {
       if ('cssRules' in rule && !(rule as CSSStyleRule).selectorText) {
@@ -45,7 +51,7 @@ export const collectRules = (tags: string[]) => {
         continue;
       }
       const selector = (rule as CSSStyleRule).selectorText;
-      if (selector && tags.some(tag => selector.includes(tag))) {
+      if (selector && tags.some(tag => selector.includes(tag)) && !isHydrationRule(rule as CSSStyleRule)) {
         rules.push(rule.cssText);
       }
     }
