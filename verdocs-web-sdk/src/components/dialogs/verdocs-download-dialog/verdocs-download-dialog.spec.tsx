@@ -34,6 +34,7 @@ const createPage = async (
     polling?: boolean;
     documents?: any[];
     hasCertificate?: boolean;
+    qualified?: boolean;
   } = {},
 ) => {
   return newSpecPage({
@@ -44,6 +45,7 @@ const createPage = async (
         polling={props.polling ?? false}
         documents={props.documents ?? []}
         hasCertificate={props.hasCertificate ?? false}
+        qualified={props.qualified ?? false}
       ></verdocs-download-dialog>
     ),
   });
@@ -167,6 +169,21 @@ describe('verdocs-download-dialog', () => {
       expect(zipOption?.classList.contains('disabled')).toBe(false);
       expect(zipOption?.querySelector('.signed')).toBeTruthy();
       expect(zipOption?.querySelector('.status-indicator span')?.textContent).toBe(expected);
+    });
+
+    it('hides the combined option for qualified envelopes', async () => {
+      const page = await createPage({signed: true, qualified: true, documents: [attachmentOne, certificateDocument]});
+      const expected = ['Contract.pdf', 'Certificate', 'All Files'];
+
+      const labels = Array.from(page.root.querySelectorAll('.content > .download-option .label')).map(el => el.textContent);
+      expect(labels).toEqual(expected);
+    });
+
+    it('labels attachments as qualified signatures for qualified envelopes', async () => {
+      const page = await createPage({signed: true, qualified: true, documents: [attachmentOne]});
+      const expected = 'Qualified signature';
+
+      expect(page.root.querySelector('.download-option .status-indicator span')?.textContent).toBe(expected);
     });
   });
 
@@ -292,6 +309,20 @@ describe('verdocs-download-dialog', () => {
 
       expect(downloadSpy).toHaveBeenCalledTimes(1);
       expect(downloadSpy.mock.calls[0][0].detail).toEqual(expected);
+    });
+
+    it('does not emit download for combined on qualified envelopes', async () => {
+      const page = await createPage({
+        signed: true,
+        polling: false,
+        qualified: true,
+        documents: [attachmentOne, certificateDocument],
+      });
+      listenForDownload(page);
+
+      (page.rootInstance as VerdocsDownloadDialog).handleOptionClick(DownloadAction.combined, certificateDocument.id);
+
+      expect(downloadSpy).not.toHaveBeenCalled();
     });
 
     it('does not emit download for combined without a document id', async () => {

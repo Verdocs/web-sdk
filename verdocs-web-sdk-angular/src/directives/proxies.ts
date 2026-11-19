@@ -612,14 +612,14 @@ export declare interface VerdocsDisclosureDialog extends Components.VerdocsDiscl
 
 @ProxyCmp({
   defineCustomElementFn: defineVerdocsDownloadDialog,
-  inputs: ['documents', 'hasCertificate', 'polling', 'signed']
+  inputs: ['documents', 'hasCertificate', 'polling', 'qualified', 'signed']
 })
 @Component({
   selector: 'verdocs-download-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['documents', 'hasCertificate', 'polling', 'signed'],
+  inputs: ['documents', 'hasCertificate', 'polling', 'qualified', 'signed'],
   outputs: ['download', 'exit'],
 })
 export class VerdocsDownloadDialog {
