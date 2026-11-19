@@ -165,9 +165,9 @@ const OVERRIDE_NOTE =
   'With a real token this only changes what the component shows; the api still holds the real session, so an accept that no longer matches it may be refused.';
 
 export default {
-  title: 'Embeds/Clickwrap',
+  title: 'Embeds/Verdocs Accept',
   component: 'verdocs-clickwrap',
-  args: {...loadStoryDefaults('embeds-clickwrap', defaults), ...overrideDefaults},
+  args: {...loadStoryDefaults('embeds-verdocs-accept', defaults), ...overrideDefaults},
   argTypes: {
     token: {
       control: 'text',

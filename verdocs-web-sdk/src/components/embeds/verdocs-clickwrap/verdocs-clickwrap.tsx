@@ -18,7 +18,7 @@ import {SDKError} from '../../../utils/errors';
 const SCROLL_END_SLACK = 4;
 
 /**
- * Show clickwrap terms and record the person's acceptance or decline. Your server creates the session with
+ * Show Verdocs Accept terms and record the person's acceptance or decline. Your server creates the session with
  * createClickwrapSession and hands the token to the page; this component does the rest. When the person is already
  * current there's no token, so pass an empty string and the component emits `current` and renders nothing.
  *
