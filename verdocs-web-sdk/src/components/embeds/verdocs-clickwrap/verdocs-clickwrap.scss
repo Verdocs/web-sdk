@@ -1,0 +1,274 @@
+// Keep all rules scoped to the tag so the presentation capture includes them in the replay.
+verdocs-clickwrap {
+  display: block;
+  font-family: var(--verdocs-primary-font, Inter, system-ui, sans-serif);
+  color: var(--verdocs-clickwrap-text-color, #262b3d);
+
+  &.empty {
+    display: none;
+  }
+
+  .cw-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    place-items: center;
+    box-sizing: border-box;
+    padding: clamp(8px, 3vw, 24px);
+    background: var(--verdocs-dialog-backdrop-color, rgba(24, 28, 45, 0.56));
+  }
+
+  .cw-dialog {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 680px;
+    max-height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid var(--verdocs-clickwrap-border-color, #dce0e9);
+    border-radius: var(--verdocs-dialog-radius, 16px);
+    background: var(--verdocs-clickwrap-background, #fff);
+    box-shadow: 0 20px 60px rgba(18, 23, 40, 0.24);
+  }
+
+  .cw-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: clamp(16px, 4vw, 28px);
+  }
+
+  .cw-heading {
+    margin: 0;
+    font-family: inherit;
+    font-size: clamp(20px, 3vw, 25px);
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+
+  .cw-terms {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    max-height: var(--verdocs-clickwrap-scroll-height, 320px);
+    max-height: min(var(--verdocs-clickwrap-scroll-height, 320px), 45dvh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    padding: clamp(12px, 3vw, 20px);
+    border: 1px solid var(--verdocs-clickwrap-border-color, #dce0e9);
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+
+  .cw-agreement + .cw-agreement {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--verdocs-clickwrap-border-color, #dce0e9);
+  }
+
+  .cw-agreement-name {
+    margin: 0 0 10px;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 650;
+  }
+
+  .cw-agreement-content {
+    > :first-child {
+      margin-top: 0;
+    }
+    > :last-child {
+      margin-bottom: 0;
+    }
+
+    p,
+    ul,
+    ol {
+      margin: 0.75em 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: 1.15em 0 0.4em;
+      line-height: 1.35;
+    }
+
+    a {
+      color: var(--verdocs-link-color, #5240ad);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+
+  .cw-scroll-hint {
+    margin: 0;
+    padding: 10px 12px;
+    border-inline-start: 3px solid var(--verdocs-primary-color, #654dcb);
+    border-radius: 4px;
+    background: rgba(101, 77, 203, 0.07);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .cw-checks {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .cw-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    box-sizing: border-box;
+    min-height: 44px;
+    padding: 11px 12px;
+    border: 1px solid var(--verdocs-clickwrap-border-color, #dce0e9);
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+
+    &:not(.locked):hover,
+    &:has(input:checked) {
+      background: rgba(101, 77, 203, 0.05);
+    }
+
+    input {
+      flex: 0 0 auto;
+      width: 18px;
+      height: 18px;
+      margin: 1px 0 0;
+      accent-color: var(
+        --verdocs-checkbox-color,
+        var(--verdocs-primary-color, #654dcb)
+      );
+      cursor: inherit;
+    }
+
+    &.locked {
+      cursor: default;
+    }
+  }
+
+  .cw-link {
+    color: var(--verdocs-link-color, #5240ad);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .cw-terms:focus-visible,
+  .cw-link:focus-visible,
+  .cw-check input:focus-visible,
+  .cw-buttons button:focus-visible {
+    outline: 2px solid var(--verdocs-link-color, #5240ad);
+    outline-offset: 2px;
+  }
+
+  .cw-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+
+    button {
+      flex: 0 1 auto;
+      min-width: 0;
+      min-height: 44px;
+      padding: 10px 16px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      border-radius: var(--verdocs-button-radius, 8px);
+      cursor: pointer;
+
+      &:disabled {
+        cursor: not-allowed;
+        background: var(--verdocs-button-disabled-bg, #eef0f4);
+        color: var(--verdocs-button-disabled-color, #62697b);
+        border-color: transparent;
+      }
+    }
+
+    .cw-accept {
+      border: 1px solid transparent;
+      background: var(--verdocs-primary-color, #654dcb);
+      color: #fff;
+
+      &:hover:not(:disabled) {
+        background: var(
+          --verdocs-primary-color-hover,
+          var(--verdocs-primary-color, #5240ad)
+        );
+      }
+    }
+
+    .cw-decline,
+    .cw-close {
+      border: 1px solid var(--verdocs-clickwrap-border-color, #dce0e9);
+      background: transparent;
+      color: var(
+        --verdocs-button-secondary-color,
+        var(--verdocs-clickwrap-text-color, #343b50)
+      );
+
+      &:hover:not(:disabled) {
+        background: rgba(101, 77, 203, 0.06);
+      }
+    }
+  }
+
+  .cw-dialog > .cw-buttons {
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    padding: 12px clamp(16px, 4vw, 28px);
+    border-top: 1px solid var(--verdocs-clickwrap-border-color, #dce0e9);
+  }
+
+  &.inline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    > .cw-buttons {
+      justify-content: flex-start;
+    }
+  }
+
+  .cw-error {
+    padding: 10px 12px;
+    border: 1px solid #f4c5c0;
+    border-radius: 8px;
+    background: #fff4f2;
+    color: #9d241c;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 420px) {
+    .cw-dialog > .cw-buttons button {
+      flex: 1 1 auto;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import {html} from 'lit';
 import {Meta} from '@storybook/web-components-vite';
-import {loadStoryDefaults} from '../utils';
+import {VerdocsEndpoint} from '@verdocs/js-sdk';
+import {API_URL, loadStoryDefaults} from '../utils';
 
 export default {
   title: 'Embeds/Sign',
@@ -34,4 +35,19 @@ export default {
 export const Sign = ({envelopeId, roleId, inviteCode, toolbarStyle}) =>
   !envelopeId || !roleId || !inviteCode
     ? html`<img src="https://public-assets.verdocs.com/sample-signing-envelope.png" alt="Document sample" />`
-    : html`<verdocs-sign .envelopeId=${envelopeId} .roleId=${roleId} .inviteCode=${inviteCode} .toolbarStyle=${toolbarStyle} />`;
+    : html`<verdocs-sign
+        .endpoint=${signingEndpoint()}
+        .envelopeId=${envelopeId}
+        .roleId=${roleId}
+        .inviteCode=${inviteCode}
+        .toolbarStyle=${toolbarStyle}
+      />`;
+
+// verdocs-sign makes its own signing endpoint instead of using the default, so it needs STORYBOOK_API_URL passed in
+const signingEndpoint = () => {
+  const endpoint = new VerdocsEndpoint({sessionType: 'signing'});
+  if (API_URL) {
+    endpoint.setBaseURL(API_URL);
+  }
+  return endpoint;
+};
