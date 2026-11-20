@@ -42,3 +42,43 @@ export default create({
   // inputTextColor: '#10162F',
   // inputBorderRadius: 2,
 });
+
+
+/**
+ * Summary:
+ * {
+  queryId: 7264228041,
+  captureResult: 'capture.image.error',
+  captureDecision: undefined,
+  qualifiers: [ undefined ],
+  captureData: {
+    'first-name': null,
+    'last-name': null,
+    'last-name2': null,
+    'last-name3': null,
+    'street-address': null,
+    'street-address2': null,
+    'street-address3': null,
+    'street-address4': null,
+    'street-address5': null,
+    'street-address6': null,
+    city: null,
+    state: null,
+    zip: null,
+    country: null,
+    'expiration-date': null,
+    'issuance-date': null,
+    'document-number': null,
+    'document-type': 'DL',
+    'capture-confidence-score': '0',
+    'capture-facial-match-score': null
+  },
+  errors: []
+}
+ */
+
+/**
+ * Response:
+ * 
+ * 
+ */

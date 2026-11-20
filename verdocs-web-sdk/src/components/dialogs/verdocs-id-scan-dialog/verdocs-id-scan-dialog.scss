@@ -1,0 +1,218 @@
+@import '../../../theme.scss';
+
+verdocs-id-scan-dialog {
+  font-family: $primary-font;
+  box-sizing: border-box;
+
+  div {
+    box-sizing: border-box;
+  }
+
+  // NOTE: background-overlay and .dialog are handled by verdocs-dialog
+
+  .heading {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .title {
+      font-size: 20px;
+      font-weight: 500;
+    }
+  }
+
+  .help-box {
+    padding: 0;
+    color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .help-details {
+    gap: 5px;
+    display: flex;
+    margin-left: 0;
+    font-size: 14px;
+    flex-direction: column;
+  }
+
+  .help-text {
+    font-weight: 400;
+  }
+
+  .photos {
+    gap: 10px;
+    display: flex;
+    margin-top: 10px;
+    flex-direction: column;
+  }
+
+  .photo {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .document-type-select {
+    margin-bottom: 2px;
+  }
+
+  .photo-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 2px;
+  }
+
+  .photo-label {
+    gap: 6px;
+    display: flex;
+    font-size: 14px;
+    font-weight: 700;
+    align-items: center;
+    justify-self: start;
+    align-self: flex-start;
+    color: $label-color-light;
+  }
+
+  .photo-check {
+    display: flex;
+  }
+
+  .error {
+    margin-top: 20px;
+    color: $verdocs-red-1;
+  }
+
+  .file-input-wrapper.has-error {
+    border-color: $verdocs-red-1;
+  }
+
+  .photo-errors {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    font-size: 13px;
+    align-self: flex-start;
+    color: $verdocs-red-1;
+  }
+
+  .buttons {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    verdocs-button {
+      margin-left: 16px;
+    }
+  }
+
+  .file-input-wrapper {
+    min-height: 40px;
+    max-height: 100px;
+    width: 100%;
+    border: $light-border-color 1px solid;
+    border-radius: 5px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .photo-icon {
+      flex: 1;
+      display: flex;
+      align-items: center;
+
+      .photo-preview {
+        width: 50px;
+        height: 50px;
+        border-radius: 6px;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+    }
+
+    .photo-info {
+      flex: 5;
+      padding: 0px 6px;
+      min-height: 40px;
+      // background: lightblue;
+      display: flex;
+      align-items: center;
+
+      .file-placeholder-text {
+        color: $verdocs-bg-3;
+      }
+
+      .info-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        justify-content: space-between;
+
+        .info-file-name {
+          color: $verdocs-grey-1;
+          // text-align: left;
+        }
+        .info-file-size {
+          color: $verdocs-grey-2;
+          font-size: 12px;
+          // text-align: left;
+        }
+      }
+    }
+
+    .photo-actions {
+      flex: 3;
+      min-height: 40px;
+      // background: rgb(255, 142, 61);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      
+      .photo-actions-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 5px;
+      }
+
+      .replace-button {
+        // background: #f4f4f4;
+        border-radius: 4px;
+        padding: 2px 0px;
+        transition: background 0.2s;
+
+        &:hover {
+          background: #e9e8e8;
+        }
+      }
+
+      .trash-button {
+        border: $verdocs-bg-1 1px solid;
+        border-radius: 6px;
+        padding: 2px;
+        width: 32px;
+        height: 32px;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          cursor: pointer;
+          background: #e9e8e8;
+        }
+        // background: #888888;
+      }
+    }
+  }
+}

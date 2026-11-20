@@ -4,3 +4,4 @@ dist/
 /docs
 
 *storybook.log
+.vscode/

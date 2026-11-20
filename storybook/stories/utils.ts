@@ -1,3 +1,8 @@
+/// <reference types="vite/client" />
+
+// Set STORYBOOK_API_URL (e.g. in storybook/.env.local) to point the stories at another API, such as a local one
+export const API_URL: string | undefined = import.meta.env.STORYBOOK_API_URL;
+
 export const loadStoryDefaults = (storyId: string, defaults: Record<string, any>) => {
   try {
     const existing = localStorage.getItem(`sb-default-${storyId}`) || '{}';

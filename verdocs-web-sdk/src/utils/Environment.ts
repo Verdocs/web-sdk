@@ -4,7 +4,8 @@ export const BETA_ORIGINS = ['https://beta.verdocs.com', 'https://stage.verdocs.
 
 export const IS_BETA = BETA_ORIGINS.includes(window.location.origin);
 
-export const API_URL = IS_BETA ? 'https://stage-api.verdocs.com' : 'https://api.verdocs.com';
+// export const API_URL = IS_BETA ? 'https://stage-api.verdocs.com' : 'https://api.verdocs.com';
+export const API_URL = 'http://localhost:3000';
 
 // NOTE: Do not call setBaseURL(). The constructor already does, but more important, in most environments
 // this particular code block is lazily loaded and gets run on a component render. That creates a race
