@@ -68,7 +68,9 @@ export const drawRecipientField = (el: HTMLElement, field: ITemplateField, templ
   const label = toggle ? '' : field.label || field.placeholder || fieldType.label;
   // A radio group shows its recipient number once, on its first option.
   const marker = radioGroup(template?.fields, field)[0]?.name === field.name;
-  const key = [n, field.type, label, field.required, field.readonly, marker].join('|');
+  // The label sits where the value will
+  const align = field.config?.type === 'textbox' || field.config?.type === 'textarea' ? field.config.align : undefined;
+  const key = [n, field.type, label, field.required, field.readonly, marker, align].join('|');
 
   el.classList.add('vb-field');
   el.style.setProperty('--vb-color', `var(--verdocs-recipient-${n})`);
@@ -90,6 +92,7 @@ export const drawRecipientField = (el: HTMLElement, field: ITemplateField, templ
 
   face.dataset.key = key;
   face.classList.toggle('has-badges', !!field.readonly);
+  face.style.justifyContent = align === 'right' ? 'flex-end' : align === 'center' ? 'center' : '';
   face.textContent = '';
 
   if (!toggle) {

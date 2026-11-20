@@ -97,6 +97,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     text-box: trim-both cap alphabetic;
+    // Room inside the clip for descenders, given back so the centering doesn't move
+    padding-bottom: 0.3em;
+    margin-bottom: -0.3em;
   }
 
   .vb-req {

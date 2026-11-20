@@ -1,116 +1,228 @@
 @import '../../../theme.scss';
 
+$attachments-line: #e3e5ee;
+$attachments-muted: #7b7f97;
+
 verdocs-template-attachments {
+  display: block;
   font-family: $verdocs-primary-font;
+  color: $label-color;
+
+  &.file-drag-active {
+    outline: 2px dashed $item-border-color;
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  .header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 0 0 12px 0;
+  }
+
+  .titles {
+    flex: 1;
+    min-width: 0;
+  }
 
   h5 {
     font-size: 16px;
-    font-weight: bold;
-    margin: 0 0 10px 0;
-    color: $verdocs-grey-blue;
+    font-weight: 700;
+    margin: 0;
+    color: $label-color;
+  }
+
+  .subtitle {
+    font-size: 12px;
+    margin-top: 2px;
+    color: $attachments-muted;
+  }
+
+  .file-input {
+    display: none;
   }
 
   .attachments {
-    margin: 0 0 40px 0;
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
   }
 
   .attachment {
     display: flex;
-    padding: 5px 0;
-    column-gap: 15px;
+    gap: 11px;
     align-items: center;
-    flex-direction: row;
-    color: $label-color;
+    padding: 8px 6px 8px 10px;
+    border: 1px solid $attachments-line;
+    border-radius: 9px;
+    background: #ffffff;
+    position: relative;
 
-    &:hover {
-      .trash-icon {
-        display: flex;
-      }
+    &:hover .grip {
+      opacity: 1;
+    }
 
-      .pages {
-        display: none;
-      }
+    &.dragging {
+      opacity: 0.4;
+    }
+
+    &.drop-before {
+      box-shadow: 0 -2px 0 $item-border-color;
+    }
+
+    &.drop-after {
+      box-shadow: 0 2px 0 $item-border-color;
+    }
+
+    &.uploading {
+      border-style: dashed;
     }
   }
 
-  svg {
+  .grip {
+    width: 8px;
+    height: 14px;
+    flex: none;
+    cursor: grab;
+    opacity: 0.6;
+    background-image: radial-gradient(#b8bccb 1px, transparent 1.2px);
+    background-size: 4px 4px;
+  }
+
+  .uploading .grip {
+    visibility: hidden;
+  }
+
+  .thumbnail {
     width: 28px;
-    height: 28px;
-    fill: $verdocs-bg-4;
-    margin: 2px 0 0 0;
+    height: 36px;
+    flex: none;
+    box-sizing: border-box;
+    border: 1px solid #d8dae4;
+    border-radius: 2px;
+    background: #ffffff;
+    object-fit: cover;
+    object-position: top;
   }
 
   .file-icon {
-    flex: 0;
-  }
+    display: grid;
+    place-items: center;
+    border-color: transparent;
 
-  .pages {
-    width: 24px;
-    height: 24px;
-    flex: 0 0 24px;
-    padding-left: 4px;
-    position: relative;
-    margin: -10px 0 0 0;
-
-    .pages-icon {
-      top: 0;
-      left: 0;
+    svg {
       width: 24px;
       height: 24px;
-      position: absolute;
+      fill: $verdocs-bg-4;
     }
+  }
 
-    .count {
-      top: 11px;
-      left: 7px;
-      z-index: 1;
-      width: 18px;
-      font-size: 12px;
-      font-weight: 500;
-      position: absolute;
-      text-align: center;
-      letter-spacing: -2px;
-    }
+  .details {
+    flex: 1;
+    min-width: 0;
   }
 
   .filename {
-    flex: 1;
-    display: block;
+    font-size: 13px;
+    font-weight: 600;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    border-bottom: 1px dotted #cccccc;
   }
 
-  .trash-icon {
-    flex: 0;
-    display: none;
+  .rename {
+    width: 100%;
+    box-sizing: border-box;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: $label-color;
+    padding: 2px 6px;
+    margin: -3px 0 -1px -7px;
+    border: 1px solid $item-border-color;
+    border-radius: 6px;
+    outline: none;
+  }
+
+  .meta {
+    font-size: 12px;
+    margin-top: 2px;
+    color: $attachments-muted;
+  }
+
+  .progress {
+    height: 4px;
+    margin-top: 7px;
+    border-radius: 2px;
+    overflow: hidden;
+    background: #e1e4ee;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: $item-border-color;
+    transition: width 0.2s;
+  }
+
+  .status {
+    font-size: 12px;
+    padding-right: 6px;
+    color: $attachments-muted;
+  }
+
+  .menu-button {
+    width: 28px;
+    height: 28px;
+    flex: none;
+    padding: 0;
+    border: 0;
+    display: grid;
+    cursor: pointer;
+    place-items: center;
+    border-radius: 6px;
+    background: transparent;
+    color: $attachments-muted;
 
     &:hover {
-      cursor: pointer;
+      background: #f4f5f8;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
     }
   }
 
-  verdocs-file-chooser {
-    margin: 10px 0;
-    border: 2px dashed #979797;
-  }
-
-  .loader-wrapper {
-    background-color: $verdocs-grey-4;
+  .dropzone {
     display: flex;
+    gap: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 14px;
+    align-items: center;
     flex-direction: column;
-    box-sizing: border-box;
-    position: relative;
-    width: 320px;
-    height: 320px;
     text-align: center;
-    border: 2px dashed #979797;
-    justify-content: flex-end;
+    font-size: 12px;
+    color: #5c6575;
+    border: 1.5px dashed #c9cbe0;
+    border-radius: 10px;
+
+    b {
+      font-size: 13px;
+      color: $label-color;
+    }
+
+    &.active {
+      border-color: $item-border-color;
+      background: rgba(101, 77, 203, 0.07);
+    }
   }
 
-  .progress-wrapper {
-    padding: 20px;
+  .dropzone-icon svg {
+    width: 22px;
+    height: 22px;
+    color: $item-border-color;
   }
 
   .buttons {
@@ -118,15 +230,44 @@ verdocs-template-attachments {
     column-gap: 8px;
     margin-top: 16px;
     align-items: center;
-    flex-direction: row;
     justify-content: flex-end;
+  }
+}
 
-    .flex-fill {
-      flex: 1;
-    }
+// The menu renders in a portal at the end of the body, outside the component
+.verdocs-attachment-menu {
+  display: flex;
+  min-width: 150px;
+  padding: 4px;
+  flex-direction: column;
+  font-family: $verdocs-primary-font;
+  background: #ffffff;
+  border: 1px solid $attachments-line;
+  border-radius: 9px;
+  box-shadow: 0 10px 28px rgba(30, 32, 49, 0.18);
+}
+
+.verdocs-attachment-menu-item {
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  color: $label-color;
+
+  &:hover:not([disabled]) {
+    background: #f4f5f8;
   }
 
-  ::placeholder {
-    color: $verdocs-bg-2;
+  &[disabled] {
+    cursor: default;
+    color: #b8bccb;
+  }
+
+  &.danger {
+    color: #b4233a;
   }
 }

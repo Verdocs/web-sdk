@@ -613,6 +613,20 @@ export class VerdocsSend {
           templateRole={(this.rolesCompleted[role.id] ?? role) as IRecipient}
           onSearchContacts={e => this.searchContacts?.emit(e.detail)}
         />
+        {this.rolesCompleted[role.id] && this.template?.roles?.find(templateRole => templateRole.name === role.role_name)?.required === false && (
+          <div class="leave-out">
+            <verdocs-button
+              label="Leave out"
+              variant="text"
+              size="small"
+              onClick={() => {
+                const {[role.id]: _left, ...rest} = this.rolesCompleted;
+                this.rolesCompleted = rest;
+                this.showView('main');
+              }}
+            />
+          </div>
+        )}
       </div>
     );
   }
@@ -813,14 +827,17 @@ export class VerdocsSend {
 
     const levels = this.getSequenceNumbers();
     const rolesAssigned = Object.values(this.rolesCompleted).filter(recipient => isValidEmail(recipient.email) && recipient.first_name && recipient.last_name);
-    const allRolesAssigned = rolesAssigned.length >= getRoleNames(this.template).length;
+    // Optional roles left blank stay off the envelope, so only required ones count toward ready
+    const optional = new Set((this.template?.roles || []).filter(role => role.required === false).map(role => role.name));
+    const recipientCount = getRoleNames(this.template).filter(name => !optional.has(name)).length;
+    const requiredAssigned = rolesAssigned.filter(recipient => !optional.has(recipient.role_name)).length;
+    const allRolesAssigned = requiredAssigned >= recipientCount;
     const assignedEmails = rolesAssigned.map(r => r.email.toLowerCase());
     const hasDuplicateEmails = new Set(assignedEmails).size < assignedEmails.length;
     const expiresAt = this.expiresAt();
     const expiresDate = expiresAt.toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'});
     const expiryDays = this.effectiveExpiryDays();
-    const recipientCount = getRoleNames(this.template).length;
-    const readyCount = Math.min(rolesAssigned.length, recipientCount);
+    const readyCount = Math.min(requiredAssigned, recipientCount);
 
     return (
       <Host class={{'sendable': this.template?.is_sendable, 'detail-open': this.view !== 'main'}}>
@@ -862,6 +879,8 @@ export class VerdocsSend {
                           <span class="who-detail">
                             {formatFullName(completed)} · {completed.email}
                           </span>
+                        ) : optional.has(role.role_name) ? (
+                          <span class="who-detail">Optional</span>
                         ) : (
                           <span class="who-detail needs">Needs a name and email</span>
                         )}

@@ -1,6 +1,7 @@
 import interact from 'interactjs';
 import {IEnvelopeField, VerdocsEndpoint, ITemplateField, updateField} from '@verdocs/js-sdk';
 import {Component, h, Host, Prop, Method, Event, EventEmitter, Element, Fragment, State, Listen, Watch} from '@stencil/core';
+import {snapToFields} from '../../../utils/SnapToFields';
 import {SettingsIcon} from '../../../utils/Icons';
 import {Store} from '../../../utils/Datastore';
 
@@ -146,6 +147,7 @@ export class VerdocsFieldTextarea {
     if (this.editable) {
       interact(this.el).resizable({
         edges: {top: true, bottom: true, left: true, right: true},
+        modifiers: [snapToFields(this.el)],
         listeners: {
           start: this.handleResizeStart.bind(this),
           move: this.handleResize.bind(this),
