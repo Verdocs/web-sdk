@@ -314,7 +314,7 @@ export namespace Components {
         "value": string;
     }
     /**
-     * Show clickwrap terms and record the person's acceptance or decline. Your server creates the session with
+     * Show Verdocs Accept terms and record the person's acceptance or decline. Your server creates the session with
      * createClickwrapSession and hands the token to the page; this component does the rest. When the person is already
      * current there's no token, so pass an empty string and the component emits `current` and renders nothing.
      * ```ts
@@ -3224,7 +3224,7 @@ declare global {
         "sdkError": SDKError;
     }
     /**
-     * Show clickwrap terms and record the person's acceptance or decline. Your server creates the session with
+     * Show Verdocs Accept terms and record the person's acceptance or decline. Your server creates the session with
      * createClickwrapSession and hands the token to the page; this component does the rest. When the person is already
      * current there's no token, so pass an empty string and the component emits `current` and renders nothing.
      * ```ts
@@ -5364,7 +5364,7 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     /**
-     * Show clickwrap terms and record the person's acceptance or decline. Your server creates the session with
+     * Show Verdocs Accept terms and record the person's acceptance or decline. Your server creates the session with
      * createClickwrapSession and hands the token to the page; this component does the rest. When the person is already
      * current there's no token, so pass an empty string and the component emits `current` and renders nothing.
      * ```ts
@@ -9084,7 +9084,7 @@ declare module "@stencil/core" {
              */
             "verdocs-checkbox": LocalJSX.IntrinsicElements["verdocs-checkbox"] & JSXBase.HTMLAttributes<HTMLVerdocsCheckboxElement>;
             /**
-             * Show clickwrap terms and record the person's acceptance or decline. Your server creates the session with
+             * Show Verdocs Accept terms and record the person's acceptance or decline. Your server creates the session with
              * createClickwrapSession and hands the token to the page; this component does the rest. When the person is already
              * current there's no token, so pass an empty string and the component emits `current` and renders nothing.
              * ```ts
