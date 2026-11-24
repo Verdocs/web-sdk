@@ -1,6 +1,5 @@
 import {Component, Element, h, Event, EventEmitter, Listen, Prop, State} from '@stencil/core';
 import {formatFullName, getActiveEntitlements, IEntitlement, IProfile, IRecipient, isValidEmail, TEntitlement, TRecipientAuthMethod, VerdocsEndpoint} from '@verdocs/js-sdk';
-import {format} from 'date-fns';
 import {updateScrollFade} from '../../../utils/ScrollFade';
 import {convertToE164} from '../../../utils/utils';
 

@@ -8,6 +8,14 @@ import {API_URL} from '../stories/utils';
 import '../../verdocs-web-sdk/src/globals.css';
 import '../../verdocs-web-sdk/src/overrides.css';
 
+// Point every component that uses the default endpoint at STORYBOOK_API_URL (a local api server, say). The default
+// endpoint lives on globalThis, so this reaches the components' copy of the js-sdk too. Set it before the components
+// load, so nothing calls the api first.
+if (API_URL) {
+  VerdocsEndpoint.getDefault().setBaseURL(API_URL);
+  console.log('[STORYBOOK] Using api', API_URL);
+}
+
 // Saved sessions are keyed by environment, not by API URL, so after switching APIs a session from the
 // previous one would be sent to the new one and rejected. Clear them whenever the API URL changes.
 if ((localStorage.getItem('sb-api-url') || '') !== (API_URL || '')) {
