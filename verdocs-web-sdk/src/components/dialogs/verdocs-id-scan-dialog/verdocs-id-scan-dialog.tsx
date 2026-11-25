@@ -1,42 +1,31 @@
 import {Component, Host, Prop, h, Event, EventEmitter, State} from '@stencil/core';
-import {IRecipient, ISignerTokenResponse, VerdocsEndpoint} from '@verdocs/js-sdk';
+import {IRecipient, ISignerTokenResponse, VerdocsEndpoint, verifySigner, TIdDocumentType, TIdImageField, TIdImageError} from '@verdocs/js-sdk';
 import {CheckCircleIcon, SelfieIcon} from '../../../utils/Icons';
-
-// TODO: Replace these with js-sdk imports
-type TScanDocumentType = 'driverLicense' | 'idCard' | 'passport';
-type TImageUpload = 'front_image' | 'back_image' | 'face_image';
-type TScanBadImageError =
-  | 'Image Too Small'
-  | 'Document Missing Four Corners'
-  | 'Document Too Small'
-  | 'Document Border Too Small'
-  | 'Face Image Not Detected'
-  | 'Barcode Not Detected'
-  | 'Image Error'
-  | 'Document is Skewed'
-  | 'Image same as Document Image';
-
-// Why a photo needs retaking. GBG's names, plus "Image Too Large" from the API's own checks.
-type TIdImageError = TScanBadImageError | 'Image Too Large';
 
 // One entry in the API's `images` list when code is "id_retake"
 interface IIdImageErrors {
-  image: TImageUpload;
+  image: TIdImageField;
   errors: TIdImageError[];
 }
 
 type TStepStatus = 'intro' | 'document' | 'capture' | 'review' | 'submitting';
 
-const SLOTS_BY_TYPE: Record<TScanDocumentType, TImageUpload[]> = {
+const SLOTS_BY_TYPE: Record<TIdDocumentType, TIdImageField[]> = {
   driverLicense: ['front_image', 'back_image', 'face_image'],
   idCard: ['front_image', 'back_image', 'face_image'],
   passport: ['front_image', 'face_image'],
 };
 
-const SLOT_LABELS: Record<TImageUpload, string> = {
-  front_image: 'Front',
-  back_image: 'Back',
+const SLOT_LABELS: Record<TIdImageField, string> = {
+  front_image: 'Front of ID',
+  back_image: 'Back of ID',
   face_image: 'Selfie',
+};
+
+const SLOT_HINTS: Record<TIdImageField, string> = {
+  front_image: 'Show all four corners',
+  back_image: 'Keep the barcode in focus',
+  face_image: 'Face the camera in good light',
 };
 
 // Why a photo needs retaking, in words the signer can act on. The API always sends the documented spelling. Anything
@@ -52,6 +41,8 @@ const RETAKE_MESSAGES: Record<TIdImageError, string> = {
   'Image Error': "This photo is blurry, has glare, or couldn't be read. Please retake it.",
   'Document is Skewed': 'Your ID is rotated in the photo. Hold the camera straight above it.',
   'Image Too Large': 'This photo is too large. Please retake it.',
+  "ID Not Readable": 'Unable to read your ID.',
+  "Poor Quality Selfie": "Selfie did not meet required quality."
 };
 
 const describeIdError = (error: TIdImageError) => RETAKE_MESSAGES[error] || error;
@@ -59,39 +50,16 @@ const describeIdError = (error: TIdImageError) => RETAKE_MESSAGES[error] || erro
 const IdCardIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="6" fill="#E8ECFC"/><g stroke="#4A68DD" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="9.5" width="15" height="13" rx="1.5"/><path d="M8.5 12.5h15M17 15.5h3.5M17 17.5h2"/></g><g fill="#4A68DD"><circle cx="13" cy="15.25" r="1.25"/><path d="M10.75 19.25c0-1.2 1-2 2.25-2s2.25.8 2.25 2z"/></g></svg>`;
 const TrashIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#888"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>`;
 
-interface IAuthenticateRecipientViaIdRequest {
-  auth_method: 'id';
-  country_code: string; // ISO 3166 alpha-3
-  document_type: TScanDocumentType;
-  front_image: Blob;
-  back_image?: Blob;
-  face_image: Blob;
-}
-
 interface IDocumentTypeOption {
   label: string;
-  value: TScanDocumentType;
+  value: TIdDocumentType;
 }
 
 const typeOptions: IDocumentTypeOption[] = [
-  {label: 'Drivers License', value: 'driverLicense'},
-  {label: 'ID Card', value: 'idCard'},
+  {label: "Driver's license", value: 'driverLicense'},
+  {label: 'ID card', value: 'idCard'},
   {label: 'Passport', value: 'passport'},
 ];
-
-// TODO: Import from js-sdk
-const verifySignerId = (endpoint: VerdocsEndpoint, params: IAuthenticateRecipientViaIdRequest) => {
-  const formData = new FormData();
-  formData.append('auth_method', 'id');
-  formData.append('country_code', params.country_code);
-  formData.append('document_type', params.document_type);
-  formData.append('front_image', params.front_image, 'front.jpg');
-  if (params.back_image) formData.append('back_image', params.back_image, 'back.jpg');
-  if (params.face_image) formData.append('face_image', params.face_image, 'face.jpg');
-
-  // Upload plus GBG's synchronous processing can exceed the 60s default
-  return endpoint.api.post<ISignerTokenResponse>(`/v2/sign/verify`, formData, {timeout: 120000}).then(r => r.data);
-};
 
 @Component({
   tag: 'verdocs-id-scan-dialog',
@@ -112,16 +80,16 @@ export class VerdocsIdScanDialog {
 
   @State() step: TStepStatus = 'intro';
   @State() countryCode = 'USA';
-  @State() documentType: TScanDocumentType = 'driverLicense';
+  @State() documentType: TIdDocumentType = 'driverLicense';
   @State() slotIndex = 0;
-  @State() images: Partial<Record<TImageUpload, File>> = {};
-  @State() previews: Partial<Record<TImageUpload, string>> = {};
+  @State() images: Partial<Record<TIdImageField, File>> = {};
+  @State() previews: Partial<Record<TIdImageField, string>> = {};
   @State() error: string | null = null;
-  @State() fieldErrors: Partial<Record<TImageUpload, string[]>> = {};
+  @State() fieldErrors: Partial<Record<TIdImageField, string[]>> = {};
 
-  fileInputs: Partial<Record<TImageUpload, HTMLInputElement>> = {};
+  fileInputs: Partial<Record<TIdImageField, HTMLInputElement>> = {};
 
-  get slots(): TImageUpload[] {
+  get slots(): TIdImageField[] {
     return [...SLOTS_BY_TYPE[this.documentType]];
   }
 
@@ -150,7 +118,7 @@ export class VerdocsIdScanDialog {
     this.error = null;
     this.fieldErrors = {};
     try {
-      const response = await verifySignerId(this.endpoint, {
+      const response = await verifySigner(this.endpoint, {
         auth_method: 'id',
         country_code: this.countryCode,
         document_type: this.documentType,
@@ -165,7 +133,7 @@ export class VerdocsIdScanDialog {
 
       // The API or GBG couldn't use some photos. Show what's wrong under each one so the signer can retake them.
       if (data?.code === 'id_retake') {
-        const fieldErrors: Partial<Record<TImageUpload, string[]>> = {};
+        const fieldErrors: Partial<Record<TIdImageField, string[]>> = {};
         const general: string[] = [];
         const images: IIdImageErrors[] = data.images || [];
 
@@ -210,19 +178,19 @@ export class VerdocsIdScanDialog {
     Object.values(this.previews).forEach(url => url && URL.revokeObjectURL(url));
   };
 
-  setPreview = (slot: TImageUpload, file?: File) => {
+  setPreview = (slot: TIdImageField, file?: File) => {
     if (this.previews[slot]) URL.revokeObjectURL(this.previews[slot]);
     this.previews = {...this.previews, [slot]: file ? URL.createObjectURL(file) : undefined};
   };
 
-  handleChoosePhoto(slot: TImageUpload) {
+  handleChoosePhoto(slot: TIdImageField) {
     const input = this.fileInputs[slot];
     // Clear first so choosing the same photo again still fires a change event
     input.value = '';
     input.click();
   }
 
-  async handleFileSelected(slot: TImageUpload, input: HTMLInputElement) {
+  async handleFileSelected(slot: TIdImageField, input: HTMLInputElement) {
     const file = input.files?.[0];
     if (!file) {
       return;
@@ -242,10 +210,10 @@ export class VerdocsIdScanDialog {
     }
   }
 
-  handleRemoveImage(slot: TImageUpload) {
-    console.log('Should be removing this slot: ', slot);
+  handleRemoveImage(slot: TIdImageField) {
+    if (this.step === 'submitting') return;
     this.images = {...this.images, [slot]: undefined};
-    this.previews = {...this.previews, [slot]: undefined};
+    this.setPreview(slot);
   }
 
   handleSelectDocumentType(e: any) {
@@ -259,63 +227,85 @@ export class VerdocsIdScanDialog {
   render() {
     const submitting = this.step === 'submitting';
     const isDisabled = submitting || this.slots.some(slot => !this.images[slot]) || !!this.error || this.hasFieldErrors;
+    const slotLabels = this.documentType === 'passport' ? {...SLOT_LABELS, front_image: 'Passport photo page'} : SLOT_LABELS;
 
     return (
       <Host>
         <verdocs-dialog persistent onExit={() => this.handleCancel()}>
           <div slot="heading" class="heading">
-            <div class="title">ID Verification Required</div>
+            <span class="verification-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3 4.5 6v5c0 4.4 3 7.8 7.5 10 4.5-2.2 7.5-5.6 7.5-10V6L12 3Z" />
+                <path d="m8.5 12 2.3 2.3 4.7-4.6" />
+              </svg>
+            </span>
+            <div class="heading-copy">
+              <div class="title">Verify your identity</div>
+              <div class="heading-subtitle">Required to continue signing</div>
+            </div>
           </div>
 
           <div slot="content" class="content">
-            <div class="help-box">
-              <div class="help-details">
-                <div class="help-text">
-                  This document requires you to verify your identity with a photo ID. For best results, use your phone's camera, place your ID on a dark surface, and make sure all
-                  four corners are visible.
-                </div>
-              </div>
-            </div>
+            <p class="intro-text">Use your phone's camera for the clearest photos. Place your ID on a dark surface and avoid glare.</p>
 
-            <verdocs-select-input label="Document Type" options={typeOptions} value={this.documentType} disabled={submitting} onChange={e => this.handleSelectDocumentType(e)} />
+            <verdocs-select-input label="Document type" options={typeOptions} value={this.documentType} disabled={submitting} onChange={e => this.handleSelectDocumentType(e)} />
+
+            <div class="photos-heading">
+              <span>Required photos</span>
+              <span class="photo-count" role="status">
+                {this.slots.filter(slot => !!this.images[slot]).length} of {this.slots.length} added
+              </span>
+            </div>
 
             <div class="photos">
               {this.slots.map(slot => (
                 <div class="photo-col" key={slot}>
-                  <div class="photo-label">
-                    {this.images[slot] && <span class="photo-check" innerHTML={CheckCircleIcon} />}
-                    {SLOT_LABELS[slot]}
-                  </div>
-
-                  <div class={{'file-input-wrapper': true, 'has-error': !!this.fieldErrors[slot]?.length}}>
+                  <div class={{'file-input-wrapper': true, 'has-photo': !!this.images[slot], 'has-error': !!this.fieldErrors[slot]?.length}}>
                     {this.images[slot] ? (
                       <div class="photo-icon">
-                        <img class="photo-preview" src={this.previews[slot]} alt={SLOT_LABELS[slot]} />
+                        <img class="photo-preview" src={this.previews[slot]} alt={slotLabels[slot]} />
                       </div>
                     ) : (
                       <div class="photo-icon" innerHTML={slot === 'face_image' ? SelfieIcon : IdCardIcon} />
                     )}
                     <div class="photo-info">
+                      <div class="photo-label">
+                        {slotLabels[slot]}
+                        {this.images[slot] && !this.fieldErrors[slot]?.length && <span class="photo-check" aria-hidden="true" innerHTML={CheckCircleIcon} />}
+                      </div>
                       {this.images[slot] ? (
                         <div class="info-wrapper">
                           <span class="info-file-name">{this.images[slot].name}</span>
                           <span class="info-file-size">{formatFileSize(this.images[slot].size)}</span>
                         </div>
                       ) : (
-                        <div class="file-placeholder-text">No photo added</div>
+                        <div class="file-placeholder-text">{SLOT_HINTS[slot]}</div>
                       )}
                     </div>
                     <div class="photo-actions">
                       {this.images[slot] ? (
                         <div class="photo-actions-wrapper">
-                          <verdocs-button class="replace-button" size="small" variant="text" label="Replace" disabled={submitting} onClick={() => this.handleChoosePhoto(slot)} />
-                          <div class="trash-button" innerHTML={TrashIcon} onClickCapture={() => this.handleRemoveImage(slot)} />
+                          <verdocs-button
+                            size="small"
+                            variant="text"
+                            label={this.fieldErrors[slot]?.length ? 'Retake' : 'Replace'}
+                            disabled={submitting}
+                            onClick={() => this.handleChoosePhoto(slot)}
+                          />
+                          <button
+                            type="button"
+                            class="trash-button"
+                            aria-label={`Remove photo for ${slotLabels[slot]}`}
+                            disabled={submitting}
+                            innerHTML={TrashIcon}
+                            onClick={() => this.handleRemoveImage(slot)}
+                          />
                         </div>
                       ) : (
                         <verdocs-button
                           size="small"
-                          variant="outline"
-                          label={this.images[slot] ? 'Retake' : 'Add Photo'}
+                          variant="secondary"
+                          label={this.fieldErrors[slot]?.length ? 'Retake' : 'Add photo'}
                           disabled={submitting}
                           onClick={() => this.handleChoosePhoto(slot)}
                         />
@@ -342,12 +332,16 @@ export class VerdocsIdScanDialog {
               ))}
             </div>
 
-            {this.error && <div class="error">{this.error}</div>}
+            {this.error && (
+              <div class="error" role="alert">
+                {this.error}
+              </div>
+            )}
           </div>
 
           <div slot="footer" class="buttons footer">
-            <verdocs-button label="Cancel" variant="outline" disabled={submitting} onClick={() => this.handleCancel()} />
-            <verdocs-button label={submitting ? 'Verifying...' : 'Submit'} disabled={isDisabled} onClick={() => this.handleSubmit()} />
+            <verdocs-button label="Cancel" variant="text" disabled={submitting} onClick={() => this.handleCancel()} />
+            <verdocs-button label={submitting ? 'Verifying...' : 'Verify identity'} disabled={isDisabled} onClick={() => this.handleSubmit()} />
           </div>
         </verdocs-dialog>
       </Host>
@@ -366,7 +360,7 @@ const MIN_SHORT = 1536;
 const MAX_LONG = 4288;
 const MAX_SHORT = 3216;
 
-async function normalizeIdImage(file: File, slot: TImageUpload): Promise<Blob> {
+async function normalizeIdImage(file: File, slot: TIdImageField): Promise<Blob> {
   const bitmap = await createImageBitmap(file).catch(() => {
     throw new Error("We couldn't read that photo. Please try again.");
   });

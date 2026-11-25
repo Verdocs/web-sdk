@@ -178,6 +178,10 @@ verdocs-contact-picker {
     }
   }
 
+  verdocs-select-input {
+    margin: 0 0 0 0 !important;
+  }
+  
   .passcode {
     display: flex;
     align-items: center;
@@ -277,6 +281,7 @@ verdocs-contact-picker {
   }
 
   .identification-data {
+    padding-top: 3px;
     .field {
       width: 100% !important;
     }
