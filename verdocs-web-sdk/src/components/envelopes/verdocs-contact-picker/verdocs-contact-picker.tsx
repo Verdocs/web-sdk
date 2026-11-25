@@ -2,6 +2,8 @@ import {Component, Element, h, Event, EventEmitter, Listen, Prop, State} from '@
 import {formatFullName, getActiveEntitlements, IEntitlement, IProfile, IRecipient, isValidEmail, TEntitlement, TRecipientAuthMethod, VerdocsEndpoint} from '@verdocs/js-sdk';
 import {updateScrollFade} from '../../../utils/ScrollFade';
 import {convertToE164} from '../../../utils/utils';
+import { TRecipientIdVerificationLevel } from '@verdocs/js-sdk';
+import { properNounify } from '@verdocs/js-sdk';
 
 const addrBookIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-user"><path d="M15 13a3 3 0 1 0-6 0"/><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><circle cx="12" cy="8" r="2"/></svg>`;
 
@@ -25,6 +27,9 @@ export interface IContactSelectEvent {
   passcode: string;
   address: string;
   zip: string;
+  dob: string;
+  ssn_last_4: string;
+  id_verification_level: TRecipientIdVerificationLevel
 }
 
 export type TPickerContact = Partial<IProfile>;
@@ -107,11 +112,16 @@ export class VerdocsContactPicker {
   @State() name_locked: boolean = false;
   @State() auth_methods: TRecipientAuthMethod[] = [];
   @State() passcode: string = '';
+  @State() dob: string;
+  @State() ssn_last_4: string;
+  @State() id_verification_level: TRecipientIdVerificationLevel | null;
 
   @State() firstNameFieldId = `verdocs-contact-picker-firstname-${Math.random().toString(36).substring(2, 11)}`;
   @State() lastNameFieldId = `verdocs-contact-picker-lastname-${Math.random().toString(36).substring(2, 11)}`;
   @State() emailFieldId = `verdocs-contact-picker-email-${Math.random().toString(36).substring(2, 11)}`;
   @State() phoneFieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
+  @State() dobFieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
+  @State() ssnLast4FieldId = `verdocs-contact-picker-phone-${Math.random().toString(36).substring(2, 11)}`;
 
   @State() activeEntitlements: Partial<Record<TEntitlement, IEntitlement>> = {};
   @State() authMethodsLoading: boolean = true;
@@ -120,6 +130,7 @@ export class VerdocsContactPicker {
     this.endpoint.loadSession();
 
     if (this.templateRole) {
+      console.log('The templateRole: ', this.templateRole)
       const fullName = formatFullName(this.templateRole);
       const nameComponents = fullName.split(' ');
       const firstName = this.templateRole.first_name || nameComponents.shift() || '';
@@ -136,6 +147,10 @@ export class VerdocsContactPicker {
       this.showMessage = this.message !== '';
       this.auth_methods = this.templateRole.auth_methods || [];
       this.passcode = this.templateRole.passcode || '';
+      this.id_verification_level = this.templateRole.id_verification_level || null
+      // We do not want these values to persist
+      this.dob = this.templateRole.dob || '';
+      this.ssn_last_4 = this.templateRole.ssn_last_4 || '';
     }
 
     // Entitlements only gate optional methods like KBA. We need error handling here in case the getActiveEntitlements
@@ -163,6 +178,24 @@ export class VerdocsContactPicker {
     if (this.showSuggestions && !this.el.contains(e.target as Node)) {
       this.showSuggestions = false;
     }
+  }
+
+  handleResolveIdVerificationLevel(){
+    const idVerificationTypes: TRecipientIdVerificationLevel[] = []
+    const hasIdVerification = !!this.activeEntitlements.id_verification;
+    const hasIdVerificationPlus = !!this.activeEntitlements.id_verification_plus
+    const hasIdCheck = hasIdVerification || hasIdVerificationPlus
+    if(hasIdVerification) idVerificationTypes.push('base')
+    if(hasIdVerificationPlus) idVerificationTypes.push('plus')
+
+    if(!hasIdCheck || idVerificationTypes.length === 0) {
+      this.id_verification_level = null
+    }
+
+    if(idVerificationTypes.length <= 1){
+      this.id_verification_level = idVerificationTypes[0]
+    }
+    return {idVerificationTypes, hasIdVerification, hasIdVerificationPlus, hasIdCheck}
   }
 
   handleFirstNameChange(e: any) {
@@ -197,6 +230,9 @@ export class VerdocsContactPicker {
       passcode: this.passcode,
       address: this.address,
       zip: this.zip,
+      dob: this.dob,
+      ssn_last_4: this.ssn_last_4,
+      id_verification_level: this.id_verification_level
     });
   }
 
@@ -260,13 +296,17 @@ export class VerdocsContactPicker {
           return !!this.email;
         case 'sms':
           return !!this.phone;
+        case 'id':
+          return !!this.dob && !!this.ssn_last_4
         default:
           return true;
       }
     });
 
+    // const idVerificationTypes: TRecipientIdVerificationLevel[] = []
     const canSubmit = hasBasics && hasAuthRequirements;
     const hasSMSAuth = !!this.activeEntitlements.sms_auth;
+    const {idVerificationTypes, hasIdCheck} = this.handleResolveIdVerificationLevel()
 
     // TODO: We show non-entitled options disabled so folks know what's possible. We could alternatively hide them.
     const verificationOptions: {label: string; value: TRecipientAuthMethod; locked?: boolean}[] = [
@@ -274,10 +314,11 @@ export class VerdocsContactPicker {
       {label: 'Passcode', value: 'passcode'},
       {label: 'SMS OTP', value: 'sms', locked: !hasSMSAuth},
       {label: 'KBA', value: 'kba', locked: !this.activeEntitlements.kba_auth},
-      {label: 'ID check', value: 'id', locked: !this.activeEntitlements.id_auth},
+      {label: 'ID check', value: 'id', locked: !hasIdCheck},
     ];
 
     const signingOption: TSigningOption = this.delegator ? 'delegator' : this.name_locked ? 'name_locked' : 'none';
+    const idVerificationLevelOptions = idVerificationTypes.map(type => ({value: type, label: properNounify(type)}))
 
     return (
       <form onSubmit={e => e.preventDefault()} autocomplete="off">
@@ -364,6 +405,55 @@ export class VerdocsContactPicker {
                     this.phone = convertToE164(e.target.value);
                   }}
                 />
+              </div>
+            )}
+
+            {this.auth_methods.includes('id') && (
+              <div class="identification-data">
+                <div class="group">
+                  <div class="group-label">Identification Data</div>
+                    {idVerificationLevelOptions.length > 1 && (
+                      <div class="field">
+                      <label htmlFor={this.id_verification_level}>ID Verification Level</label>
+                      <verdocs-select-input
+                        class="verification-select" 
+                        value={this.id_verification_level}
+                        options={idVerificationLevelOptions}
+                        onInput={(e: any) => {
+                          this.id_verification_level = e.target.value
+                        }}
+                      />
+                    </div>
+                    )}
+                    <div class="field">
+                      <label htmlFor={this.dobFieldId}>DOB</label>
+                      <input
+                        id={this.dobFieldId}
+                        name={this.dobFieldId}
+                        type="date"
+                        data-lpignore="true"
+                        autoComplete="blocked"
+                        aria-autocomplete="none"
+                        value={this.dob}
+                        onFocus={() => (this.showSuggestions = false)}
+                        onInput={(e: any) => (this.dob = e.target.value)}
+                      />
+                    </div>
+                    <div class="field">
+                      <label htmlFor={this.ssnLast4FieldId}>SSN Last Four</label>
+                      <input
+                        id={this.ssnLast4FieldId}
+                        name={this.ssnLast4FieldId}
+                        type="password"
+                        data-lpignore="true"
+                        autoComplete="blocked"
+                        aria-autocomplete="none"
+                        value={this.ssn_last_4}
+                        onFocus={() => (this.showSuggestions = false)}
+                        onInput={(e: any) => (this.ssn_last_4 = e.target.value)}
+                      />
+                    </div>
+                </div>
               </div>
             )}
 

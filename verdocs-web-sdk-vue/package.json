@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@stencil/vue-output-target": "^0.11.8",
-    "@verdocs/web-sdk": "^6.17.6"
+    "@verdocs/web-sdk": "^6.20.0"
   },
   "peerDependencies": {
     "vue": "^4",

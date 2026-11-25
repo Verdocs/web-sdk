@@ -458,7 +458,7 @@ export class VerdocsSend {
 
   handleSelectContact(e: any, role: Partial<IRecipient>) {
     e.preventDefault();
-    this.rolesCompleted = {...this.rolesCompleted, [role.id]: {...role, ...e.detail}};
+    this.rolesCompleted = structuredClone({...this.rolesCompleted, [role.id]: {...role, ...e.detail}});
     this.editingRoleId = '';
     this.view = 'main';
   }
